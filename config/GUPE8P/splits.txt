@@ -329,8 +329,16 @@ CRI/sfd_aoap.c:
 	.text       start:0x803EEB60 end:0x803EF03C
 	.rodata     start:0x805185C0 end:0x805185F8
 
+CRI/sfd_buf.c:
+	.text       start:0x803EF03C end:0x803F05D0
+	.bss        start:0x805CA988 end:0x805CA990
+
 CRI/sfd_con.c:
 	.text       start:0x803F05D0 end:0x803F08F0
+
+CRI/sfd_hds.c:
+	.text       start:0x803F08F0 end:0x803F1338
+	.bss        start:0x805CA990 end:0x805CAB98
 
 CRI/sfd_mpvf.c:
 	.text       start:0x803F8974 end:0x803F90A8
@@ -341,8 +349,11 @@ CRI/sfd_pl2.c:
 CRI/sfd_ply.c:
 	.text       start:0x803F94D8 end:0x803FB488
 	.rodata     start:0x80518770 end:0x80518908
-	.data       start:0x80569CB0 end:0x80569CCC
+	.data       start:0x80569CB0 end:0x80569CD0
 	.bss        start:0x805DD688 end:0x805DD698
+
+CRI/sfd_pts.c:
+	.text       start:0x803FB488 end:0x803FB7FC
 
 CRI/sfd_see.c:
 	.text       start:0x803FB7FC end:0x803FC04C
@@ -355,6 +366,12 @@ CRI/sfd_trn.c:
 
 CRI/sfd_tmr.c:
 	.text       start:0x803FE8A8 end:0x803FE96C
+
+CRI/sfh_main.c:
+	.text       start:0x803FF848 end:0x804021BC
+	.rodata     start:0x80518B98 end:0x80518BF0
+	.data       start:0x80569CD0 end:0x80569CF8
+	.bss        start:0x805DD6D0 end:0x805DD6E8
 
 CRI/cmptime.c:
 	.text       start:0x804021BC end:0x80402208

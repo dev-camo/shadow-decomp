@@ -810,8 +810,8 @@ typedef struct {
 Sint32 SFBUF_RingAddWrite(SFD sfd, Sint32 buf, Sint32 nbyte,
                           Sint32 rsv); /* rsv: SFBUF_RINF.rsv[1] of the caller, unused */
 Sint32 SFBUF_RingGetWrite(SFD sfd, Sint32 buf, SFBUF_RINF *inf);
-Sint32 SFBUF_VfrmAddRead(SFD sfd, Sint32 buf, void *frm);
-Sint32 SFBUF_VfrmGetRead(SFD sfd, Sint32 buf, void **frm);
+Sint32 SFBUF_VfrmAddRead(SFD sfd, Sint32 buf, void *frm, Sint32 arg);
+Sint32 SFBUF_VfrmGetRead(SFD sfd, Sint32 buf, void **frm, Sint32 arg);
 Sint32 UTY_MulDiv(Sint32 a, Sint32 b, Sint32 c);
 Sint32 SFCON_IsEndcodeSkip(SFD sfd);
 Sint32 SFHDS_GetMuxVerNum(SFD sfd);

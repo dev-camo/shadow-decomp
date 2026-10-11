@@ -49,6 +49,7 @@ struct SJ_OBJ {
 #define SJ_PutChunk(sj, id, ck) (*(sj)->vtbl->PutChunk)((sj), (id), (ck))
 #define SJ_UngetChunk(sj, id, ck) (*(sj)->vtbl->UngetChunk)((sj), (id), (ck))
 #define SJ_GetNumData(sj, id) (*(sj)->vtbl->GetNumData)((sj), (id))
+#define SJ_GetUuid(sj) (*(sj)->vtbl->GetUuid)(sj)
 
 #ifdef __cplusplus
 extern "C" {
