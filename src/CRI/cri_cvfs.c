@@ -11,7 +11,7 @@
  * reference-derived and unverified, and only the error literals and storage order they
  * produce are checked.
  */
-#include "CRI/cri_xpt.h"
+#include "CRI/cvfs.h"
 
 extern unsigned int strlen(const char *text);
 extern char *strcpy(char *destination, const char *source);
@@ -22,15 +22,11 @@ extern void *memset(void *destination, int value, unsigned int size);
 extern void *memcpy(void *destination, const void *source, unsigned int size);
 
 typedef void (*CVFS_ERRFUNC)(void *obj, const Char8 *msg, void *hn);
-typedef struct CVFS_IF CVFS_IF;
 
 #define CVFS_MAX_DEV 32
 #define CVFS_MAX_HN 40
 #define CVFS_NAME_LEN 0x129
 #define CVFS_DEVNAME_LEN 12
-
-typedef void (*CVFS_USRERRFN)(void *obj, const Char8 *msg, void *hn);
-typedef CVFS_IF *(*CVFS_GETIFFN)(void);
 
 /* device interface table (CVFS_IF) with its option function slot */
 typedef struct {
@@ -1004,8 +1000,9 @@ static CVFS_DEVIF *cvfs_AddDevTbl(Char8 *devname, void *vt) {
 }
 
 /* Registers a device by name (upper-cased) with its xxCiGetInterface function, and points the */
-/* device's error callback at cvFsCallUsrErrFn. Called for "MFS" and "GCD" by ADXGC_SetupDvdFs. */
-void cvFsAddDev(Char8 *devname, CVFS_GETIFFN getif) {
+/* device's error callback at cvFsCallUsrErrFn. Called for "MFS" and "GCD" by ADXGC_SetupDvdFs, */
+/* which passes 0 for the device parameter prm (unused here). */
+void cvFsAddDev(Char8 *devname, CVFS_GETIFFN getif, void *prm) {
     Char8 *name;
     CVFS_DEVIF *vtbl;
     CVFS_GETIFFN fn;

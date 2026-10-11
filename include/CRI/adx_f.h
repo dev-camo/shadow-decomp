@@ -9,6 +9,7 @@
 #include "CRI/cri_xpt.h"
 #include "CRI/sj.h"
 #include "CRI/adx_stm.h"
+#include "CRI/adx.h"
 
 #define ADXF_OBJ_MAX 16
 #define ADXF_PART_MAX 256
@@ -114,13 +115,6 @@ void ADXF_CloseAll(void);
 void ADXF_ExecServer(void);
 Sint32 ADXF_GetFnameRangeEx(Sint32 ptid, Sint32 flid, Char8 *fname, void **dir, Sint32 *ofst,
                             Sint32 *fnsct);
-
-/* adx_crs.c, adx_errs.c */
-void ADXCRS_Lock(void);
-void ADXCRS_Unlock(void);
-void ADXCRS_Enter(void);
-void ADXCRS_Leave(void);
-void ADXERR_CallErrFunc1(const Char8 *msg);
 
 #ifdef __cplusplus
 }
