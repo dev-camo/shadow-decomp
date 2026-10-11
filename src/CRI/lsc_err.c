@@ -1,43 +1,35 @@
-/* CRI LSC error reporting (lsc_err.c). */
+/* CRI LSC error reporting (lsc_err.c): printf-style messages into a 256-byte buffer, passed
+ * to the installed error callback. Names follow the RE4 GameCube decompilation of the same
+ * file.
+ */
 
 #include "mwcc_varargs.h"
 
-/* Inferred callback signature; its return value is unused. */
-typedef void (*DiagnosticCallback)(void *context, const char *text);
+/* CRI basic types (cri_xpt.h). */
+typedef char Char8;
 
-/* Inferred storage view from this helper and LSC_EntryErrFunc. */
-typedef struct {
-    /* 0x00 */ DiagnosticCallback callback;
-    /* 0x04 */ void *context;
-    /* 0x08 */ char text[0x100];
-} DiagnosticState;
+static void (*lsc_err_func)(void *obj, Char8 *msg) = 0;
+static void *lsc_err_obj = 0;
+static Char8 lsc_err_msg[256];
 
-/* Incomplete storage views preserve the target's absolute-address loads and stores. */
-extern DiagnosticCallback lbl_805B6498[];
-extern void *lbl_805B649C[];
+/* Formats and reports a scheduler error. */
+void LSC_CallErrFunc(Char8 *fmt, ...) {
+    MwccVaList ap;
 
-/* Inferred variadic diagnostic signature; callers do not consume a result. */
-void LSC_CallErrFunc(const char *format, ...) {
-    MwccVaList args;
-    DiagnosticCallback callback;
-    DiagnosticState *state = (DiagnosticState *)lbl_805B6498;
-
-    /* Use the compiler intrinsic to save registers and initialize the varargs cursor. */
-    __builtin_va_info(args);
-    vsprintf(state->text, format, args);
-    callback = state->callback;
-    if (callback != 0) {
-        callback(state->context, state->text);
+    __builtin_va_info(ap);
+    vsprintf(lsc_err_msg, fmt, ap);
+    if (lsc_err_func != 0) {
+        lsc_err_func(lsc_err_obj, lsc_err_msg);
     }
 }
 
-/* Inferred setter signature; callers do not consume a result. */
-void LSC_EntryErrFunc(DiagnosticCallback callback, void *context) {
-    if (callback == 0) {
-        lbl_805B6498[0] = 0;
-        lbl_805B649C[0] = 0;
+/* Installs (or clears with a null callback) the error callback. */
+void LSC_EntryErrFunc(void (*func)(void *obj, Char8 *msg), void *obj) {
+    if (func == 0) {
+        lsc_err_func = 0;
+        lsc_err_obj = 0;
     } else {
-        lbl_805B6498[0] = callback;
-        lbl_805B649C[0] = context;
+        lsc_err_func = func;
+        lsc_err_obj = obj;
     }
 }

@@ -337,7 +337,6 @@ config.libs = [
                 ),
                 Object(Matching, "Game/fn_803ACABC.c"),
                 # CRI middleware units named after their original source files.
-                Object(Matching, "CRI/lsc_err.c"),
                 Object(Matching, "Game/fn_803C80C4.c"),
                 Object(Matching, "Game/fn_803C8100.c"),
                 Object(Matching, "Game/fn_803C9A7C.c"),
@@ -458,6 +457,7 @@ config.libs = [
         "cflags": cflags_base,
         "progress_category": "game",
         "objects": [
+            Object(Matching, "CRI/lsc_err.c", extra_cflags=["-sdata 0"]),
             Object(Matching, "CRI/lsc_crs.c"),
             Object(Matching, "CRI/sj_crs.c", extra_cflags=["-sdata 0"]),
             # The two-part error messages need the readonly string pool.

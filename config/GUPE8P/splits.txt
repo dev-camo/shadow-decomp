@@ -84,6 +84,7 @@ Game/fn_803BF924.c:
 
 CRI/lsc_err.c:
 	.text       start:0x803C7F90 end:0x803C8084
+	.bss        start:0x805B6498 end:0x805B65A0
 
 CRI/lsc_crs.c:
 	.text       start:0x803C8084 end:0x803C80C4
