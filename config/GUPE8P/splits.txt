@@ -133,41 +133,11 @@ CRI/sj_mem.c:
 	.data       start:0x80568C80 end:0x80568CB0
 	.bss        start:0x805BACC8 end:0x805BB150
 
-Game/lbl_805BB150.c:
+CRI/sj_rbf.c:
+	.text       start:0x803C9A7C end:0x803CAC1C
+	.rodata     start:0x80517288 end:0x80517490
+	.data       start:0x80568CB0 end:0x80568CE0
 	.bss        start:0x805BB150 end:0x805BF158
-
-Game/fn_803C9A7C.c:
-	.text       start:0x803C9A7C end:0x803C9B50
-
-Game/fn_803C9B50.c:
-	.text       start:0x803C9B50 end:0x803C9BFC
-
-Game/fn_803C9BFC.c:
-	.text       start:0x803C9BFC end:0x803C9CA8
-
-Game/fn_803C9CA8.c:
-	.text       start:0x803C9CA8 end:0x803C9D54
-
-Game/fn_803C9D54.c:
-	.text       start:0x803C9D54 end:0x803C9EB8
-
-Game/fn_803CA598.c:
-	.text       start:0x803CA598 end:0x803CA68C
-
-Game/fn_803CA68C.c:
-	.text       start:0x803CA68C end:0x803CA750
-
-Game/fn_803CA750.c:
-	.text       start:0x803CA750 end:0x803CA80C
-
-Game/fn_803CA80C.c:
-	.text       start:0x803CA80C end:0x803CA8B8
-
-Game/fn_803CA8B8.c:
-	.text       start:0x803CA8B8 end:0x803CA96C
-
-Game/fn_803CAB40.c:
-	.text       start:0x803CAB40 end:0x803CAC1C
 
 CRI/sj_uni.c:
 	.text       start:0x803CAC1C end:0x803CACD0

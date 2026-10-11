@@ -339,20 +339,6 @@ config.libs = [
                 # CRI middleware units named after their original source files.
                 Object(Matching, "Game/fn_803C80C4.c"),
                 Object(Matching, "Game/fn_803C8100.c"),
-                Object(Matching, "Game/fn_803C9A7C.c"),
-                Object(Matching, "Game/fn_803C9B50.c"),
-                Object(Matching, "Game/fn_803C9BFC.c"),
-                Object(Matching, "Game/fn_803C9CA8.c"),
-                Object(
-                    Matching, "Game/fn_803C9D54.c", extra_cflags=["-use_lmw_stmw on"]
-                ),
-                Object(Matching, "Game/fn_803CA598.c"),
-                Object(Matching, "Game/fn_803CA68C.c"),
-                Object(Matching, "Game/fn_803CA750.c"),
-                Object(Matching, "Game/fn_803CA80C.c"),
-                Object(Matching, "Game/fn_803CA8B8.c"),
-                Object(Matching, "Game/fn_803CAB40.c", extra_cflags=["-sdata 0"]),
-                Object(Matching, "Game/lbl_805BB150.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "Game/lbl_805B65B0.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "Game/fn_803C8140.c"),
                 Object(Matching, "Game/fn_803C81A4.c"),
@@ -464,6 +450,16 @@ config.libs = [
             Object(
                 Matching,
                 "CRI/sj_mem.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/sj_rbf.c",
                 extra_cflags=[
                     "-sdata 0",
                     "-sdata2 0",

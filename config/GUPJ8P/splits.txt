@@ -74,6 +74,12 @@ CRI/sj_mem.c:
 	.data       start:0x80569300 end:0x80569330
 	.bss        start:0x805BB2E8 end:0x805BB770
 
+CRI/sj_rbf.c:
+	.text       start:0x803CA0BC end:0x803CB25C
+	.rodata     start:0x80517928 end:0x80517B30
+	.data       start:0x80569330 end:0x80569360
+	.bss        start:0x805BB770 end:0x805BF778
+
 CRI/sj_uni.c:
 	.text       start:0x803CB25C end:0x803CB310
 	.bss        start:0x805BF778 end:0x805C0380
