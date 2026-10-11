@@ -1,16 +1,4 @@
-#if defined(VERSION_GUPJ8P)
-#define ALLOCATOR_RESIZE_FUNCTION fn_803A34CC
-#define ALLOCATOR_ALLOCATE_HELPER fn_803A3CD8
-#define ALLOCATOR_RELEASE_HELPER fn_803A3C80
-#elif defined(VERSION_GUPP8P)
-#define ALLOCATOR_RESIZE_FUNCTION fn_803A3EDC
-#define ALLOCATOR_ALLOCATE_HELPER fn_803A46E8
-#define ALLOCATOR_RELEASE_HELPER fn_803A4690
-#else
-#define ALLOCATOR_RESIZE_FUNCTION fn_803A2E8C
-#define ALLOCATOR_ALLOCATE_HELPER fn_803A3698
-#define ALLOCATOR_RELEASE_HELPER fn_803A3640
-#endif
+/* MSL runtime pool resize (alloc.c __pool_realloc); nonmatching research. */
 
 #define BLOCK_SIZE_MASK 0xFFFFFFF8
 #define BLOCK_FLAG_2 0x2
@@ -46,8 +34,8 @@ struct AllocatorArea {
     unsigned int free_list_offset;
     unsigned int active_block_count;
 };
-extern void *ALLOCATOR_ALLOCATE_HELPER(void *heap, unsigned int size);
-extern void ALLOCATOR_RELEASE_HELPER(void *heap, void *ptr);
+extern void *__pool_alloc(void *pool, unsigned int size);
+extern void __pool_free(void *pool, void *ptr);
 extern void *memcpy(void *destination, const void *source, unsigned int size);
 inline static unsigned int BlockSize(AllocatorBlock *block) {
     return block->size_flags & BLOCK_SIZE_MASK;
@@ -86,7 +74,7 @@ inline static void UnlinkFreeBlock(AllocatorArea *area, unsigned int offset,
  * the unit is still NonMatching, so whether the repeated split/reinsert blocks reflect required
  * original source expansion or merely the current matching reconstruction remains provisional.
  */
-void *ALLOCATOR_RESIZE_FUNCTION(void *heap, void *ptr, unsigned int size) {
+void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
     AllocatorBlock *block;
     AllocatorBlock *following;
     unsigned int free_head_offset;
@@ -99,10 +87,10 @@ void *ALLOCATOR_RESIZE_FUNCTION(void *heap, void *ptr, unsigned int size) {
     unsigned int combined_size;
     void *new_ptr;
     if (ptr == 0) {
-        return ALLOCATOR_ALLOCATE_HELPER(heap, size);
+        return __pool_alloc(pool, size);
     }
     if (size == 0) {
-        ALLOCATOR_RELEASE_HELPER(heap, ptr);
+        __pool_free(pool, ptr);
         return 0;
     }
     owner = *((unsigned int *)(((unsigned char *)ptr) - 4));
@@ -355,12 +343,12 @@ void *ALLOCATOR_RESIZE_FUNCTION(void *heap, void *ptr, unsigned int size) {
                 }
             }
         }
-        new_ptr = ALLOCATOR_ALLOCATE_HELPER(heap, size);
+        new_ptr = __pool_alloc(pool, size);
         if (new_ptr == 0) {
             return 0;
         }
         memcpy(new_ptr, ptr, old_size);
-        ALLOCATOR_RELEASE_HELPER(heap, ptr);
+        __pool_free(pool, ptr);
         return new_ptr;
     }
     if ((owner & 1) != 0) {
@@ -568,6 +556,6 @@ void *ALLOCATOR_RESIZE_FUNCTION(void *heap, void *ptr, unsigned int size) {
 #undef BLOCK_FLAG_4
 #undef BLOCK_FLAG_2
 #undef BLOCK_SIZE_MASK
-#undef ALLOCATOR_RELEASE_HELPER
-#undef ALLOCATOR_ALLOCATE_HELPER
-#undef ALLOCATOR_RESIZE_FUNCTION
+#undef __pool_free
+#undef __pool_alloc
+#undef __pool_realloc

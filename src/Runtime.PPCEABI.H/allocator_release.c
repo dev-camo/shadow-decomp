@@ -1,21 +1,9 @@
-#if defined(VERSION_GUPJ8P)
-#define ALLOCATOR_RELEASE_FUNCTION fn_803A3C80
-#define FREE_SMALL_BLOCK fn_803A3D2C
-#define FREE_LARGE_BLOCK fn_803A4154
-#elif defined(VERSION_GUPP8P)
-#define ALLOCATOR_RELEASE_FUNCTION fn_803A4690
-#define FREE_SMALL_BLOCK fn_803A473C
-#define FREE_LARGE_BLOCK fn_803A4B64
-#else
-#define ALLOCATOR_RELEASE_FUNCTION fn_803A3640
-#define FREE_SMALL_BLOCK fn_803A36EC
-#define FREE_LARGE_BLOCK fn_803A3B14
-#endif
+/* MSL runtime pool release (alloc.c __pool_free). */
 
-extern void FREE_SMALL_BLOCK(void *heap, void *ptr);
-extern void FREE_LARGE_BLOCK(void *heap, void *ptr);
+extern void deallocate_from_fixed_pools(void *pool, void *ptr, unsigned int size);
+extern void deallocate_from_var_pools(void *pool, void *ptr);
 
-void ALLOCATOR_RELEASE_FUNCTION(void *heap, void *ptr) {
+void __pool_free(void *pool, void *ptr) {
     void *block_header;
     unsigned int block_size;
 
@@ -29,9 +17,9 @@ void ALLOCATOR_RELEASE_FUNCTION(void *heap, void *ptr) {
         }
 
         if (block_size <= 0x44) {
-            FREE_SMALL_BLOCK(heap, ptr);
+            deallocate_from_fixed_pools(pool, ptr, block_size);
         } else {
-            FREE_LARGE_BLOCK(heap, ptr);
+            deallocate_from_var_pools(pool, ptr);
         }
     }
 }

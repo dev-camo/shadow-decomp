@@ -1,34 +1,12 @@
+/* MSL runtime malloc-pool entry points (alloc.c). */
+
 #if defined(VERSION_GUPJ8P)
-#define CALLOC_FUNCTION fn_803A3280
-#define ALLOCATE_FUNCTION fn_803A3308
-#define CALLOC_ZERO_FILL_HELPER fn_803A3480
-#define ALLOCATE_HELPER fn_803A34CC
-#define ALLOCATOR_RELEASE_FUNCTION fn_803A3394
-#define ALLOCATOR_RELEASE_HELPER fn_803A3C80
-#define ALLOCATOR_ALLOCATE_FUNCTION fn_803A3404
-#define ALLOCATOR_ALLOCATE_HELPER fn_803A3CD8
 #define ALLOCATOR_STATE lbl_805A5860
 #define ALLOCATOR_INITIALIZED lbl_805F18F8
 #elif defined(VERSION_GUPP8P)
-#define CALLOC_FUNCTION fn_803A3C90
-#define ALLOCATE_FUNCTION fn_803A3D18
-#define CALLOC_ZERO_FILL_HELPER fn_803A3E90
-#define ALLOCATE_HELPER fn_803A3EDC
-#define ALLOCATOR_RELEASE_FUNCTION fn_803A3DA4
-#define ALLOCATOR_RELEASE_HELPER fn_803A4690
-#define ALLOCATOR_ALLOCATE_FUNCTION fn_803A3E14
-#define ALLOCATOR_ALLOCATE_HELPER fn_803A46E8
 #define ALLOCATOR_STATE lbl_805A6300
 #define ALLOCATOR_INITIALIZED lbl_805F2390
 #else
-#define CALLOC_FUNCTION fn_803A2C40
-#define ALLOCATE_FUNCTION fn_803A2CC8
-#define CALLOC_ZERO_FILL_HELPER fn_803A2E40
-#define ALLOCATE_HELPER fn_803A2E8C
-#define ALLOCATOR_RELEASE_FUNCTION fn_803A2D54
-#define ALLOCATOR_RELEASE_HELPER fn_803A3640
-#define ALLOCATOR_ALLOCATE_FUNCTION fn_803A2DC4
-#define ALLOCATOR_ALLOCATE_HELPER fn_803A3698
 #define ALLOCATOR_STATE lbl_805A5240
 #define ALLOCATOR_INITIALIZED lbl_805F12E8
 #endif
@@ -40,12 +18,12 @@ extern unsigned char ALLOCATOR_INITIALIZED;
 extern void __begin_critical_region(int region);
 extern void __end_critical_region(int region);
 extern void *memset(void *destination, int value, unsigned int size);
-extern void *CALLOC_ZERO_FILL_HELPER(void *heap, unsigned int size);
-extern void *ALLOCATE_HELPER(void *heap, void *ptr, unsigned int size);
-extern void ALLOCATOR_RELEASE_HELPER(void *heap, void *ptr);
-extern void *ALLOCATOR_ALLOCATE_HELPER(void *heap, unsigned int size);
+extern void *__pool_alloc_clear(void *pool, unsigned int size);
+extern void *__pool_realloc(void *pool, void *ptr, unsigned int size);
+extern void __pool_free(void *pool, void *ptr);
+extern void *__pool_alloc(void *pool, unsigned int size);
 
-void *CALLOC_FUNCTION(unsigned int count, unsigned int size) {
+void *calloc(unsigned int count, unsigned int size) {
     void *ptr;
 
     __begin_critical_region(1);
@@ -54,12 +32,12 @@ void *CALLOC_FUNCTION(unsigned int count, unsigned int size) {
         ALLOCATOR_INITIALIZED = 1;
     }
 
-    ptr = CALLOC_ZERO_FILL_HELPER(ALLOCATOR_STATE, size * count);
+    ptr = __pool_alloc_clear(ALLOCATOR_STATE, size * count);
     __end_critical_region(1);
     return ptr;
 }
 
-void *ALLOCATE_FUNCTION(void *ptr, unsigned int size) {
+void *realloc(void *ptr, unsigned int size) {
     void *result;
 
     __begin_critical_region(1);
@@ -68,23 +46,23 @@ void *ALLOCATE_FUNCTION(void *ptr, unsigned int size) {
         ALLOCATOR_INITIALIZED = 1;
     }
 
-    result = ALLOCATE_HELPER(ALLOCATOR_STATE, ptr, size);
+    result = __pool_realloc(ALLOCATOR_STATE, ptr, size);
     __end_critical_region(1);
     return result;
 }
 
-void ALLOCATOR_RELEASE_FUNCTION(void *ptr) {
+void free(void *ptr) {
     __begin_critical_region(1);
     if (ALLOCATOR_INITIALIZED == 0) {
         memset(ALLOCATOR_STATE, 0, 0x34);
         ALLOCATOR_INITIALIZED = 1;
     }
 
-    ALLOCATOR_RELEASE_HELPER(ALLOCATOR_STATE, ptr);
+    __pool_free(ALLOCATOR_STATE, ptr);
     __end_critical_region(1);
 }
 
-void *ALLOCATOR_ALLOCATE_FUNCTION(unsigned int size) {
+void *malloc(unsigned int size) {
     void *ptr;
 
     __begin_critical_region(1);
@@ -93,15 +71,15 @@ void *ALLOCATOR_ALLOCATE_FUNCTION(unsigned int size) {
         ALLOCATOR_INITIALIZED = 1;
     }
 
-    ptr = ALLOCATOR_ALLOCATE_HELPER(ALLOCATOR_STATE, size);
+    ptr = __pool_alloc(ALLOCATOR_STATE, size);
     __end_critical_region(1);
     return ptr;
 }
 
-void *CALLOC_ZERO_FILL_HELPER(void *heap, unsigned int size) {
+void *__pool_alloc_clear(void *pool, unsigned int size) {
     void *ptr;
 
-    ptr = ALLOCATOR_ALLOCATE_HELPER(heap, size);
+    ptr = __pool_alloc(pool, size);
     if (ptr != 0) {
         memset(ptr, 0, size);
     }
