@@ -279,6 +279,9 @@ cflags_sdk = [
     "-D__GEKKO__",
     "-DSDK_REVISION=1",
 ]
+# GX and OS in this game are the Nov 10 2004 builds (SDK_REVISION 2 in the reference sources);
+# the other SDK libraries are the Apr 2004 builds (revision 1).
+cflags_sdk_rev2 = [flag for flag in cflags_sdk if flag != "-DSDK_REVISION=1"] + ["-DSDK_REVISION=2"]
 
 
 # Helper function for Dolphin libraries
@@ -446,6 +449,8 @@ config.libs = [
     DolphinLib(
         "os",
         [
+            Object(Matching, "dolphin/OSAlarm.c"),
+            Object(Matching, "dolphin/OSCache.c"),
             Object(Matching, "dolphin/OSError.c"),
             Object(Matching, "dolphin/OSContext.c"),
             Object(Matching, "dolphin/OSArena.c"),
@@ -461,6 +466,7 @@ config.libs = [
     DolphinLib(
         "card",
         [
+            Object(Matching, "dolphin/CARDBios.c"),
             Object(Matching, "dolphin/CARDBlock.c"),
             Object(Matching, "dolphin/CARDDir.c"),
             Object(Matching, "dolphin/CARDRdwr.c"),
@@ -503,8 +509,27 @@ config.libs = [
         ],
     ),
     DolphinLib(
+        "base",
+        [
+            Object(Matching, "dolphin/PPCArch.c"),
+        ],
+    ),
+    DolphinLib(
+        "mtx",
+        [
+            Object(Matching, "dolphin/mtx.c"),
+        ],
+    ),
+    DolphinLib(
+        "exi",
+        [
+            Object(Matching, "dolphin/EXIUart.c"),
+        ],
+    ),
+    DolphinLib(
         "gx",
         [
+            Object(Matching, "dolphin/GXInit.c", cflags=cflags_sdk_rev2),
             Object(Matching, "dolphin/GXGeometry.c"),
             Object(Matching, "dolphin/GXLight.c"),
             Object(Matching, "dolphin/GXBump.c"),

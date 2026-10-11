@@ -13,6 +13,14 @@ Sections:
 	.sdata2     type:rodata align:8
 	.sbss2      type:bss align:16
 
+dolphin/PPCArch.c:
+	.text       start:0x80370ADC end:0x80370BF0
+
+dolphin/OSAlarm.c:
+	.text       start:0x803717A8 end:0x80371F04
+	.data       start:0x805612F0 end:0x80561300
+	.sbss       start:0x805F1F58 end:0x805F1F60
+
 dolphin/OSArena.c:
 	.text       start:0x80372214 end:0x80372260
 	.sdata      start:0x805EEBE8 end:0x805EEBF0
@@ -21,6 +29,10 @@ dolphin/OSArena.c:
 dolphin/OSAudioSystem.c:
 	.text       start:0x80372260 end:0x803724F4
 	.data       start:0x80561300 end:0x80561380
+
+dolphin/OSCache.c:
+	.text       start:0x803724F4 end:0x8037292C
+	.data       start:0x80561380 end:0x805615B0
 
 dolphin/OSContext.c:
 	.text       start:0x8037292C end:0x803731CC
@@ -57,12 +69,24 @@ dolphin/OSResetSW.c:
 dolphin/OSSync.c:
 	.text       start:0x8037829C end:0x80378320
 
+dolphin/mtx.c:
+	.text       start:0x80379740 end:0x80379860
+	.sdata      start:0x805EEC18 end:0x805EEC20
+	.sdata2     start:0x805FB6B0 end:0x805FB6B8
+
 dolphin/dvderror.c:
 	.text       start:0x8037DC80 end:0x8037DE18
 	.data       start:0x80562980 end:0x805629C8
 
 dolphin/delay.c:
 	.text       start:0x80389B5C end:0x8038A0DC
+
+dolphin/CARDBios.c:
+	.text       start:0x8038CDD8 end:0x8038E230
+	.data       start:0x80568310 end:0x80568380
+	.bss        start:0x805A2CA0 end:0x805A2EE0
+	.sdata      start:0x805EECC8 end:0x805EECD0
+	.sbss       start:0x805F22F0 end:0x805F22F8
 
 dolphin/CARDUnlock.c:
 	.text       start:0x8038E230 end:0x8038F490
@@ -102,6 +126,14 @@ dolphin/CARDDelete.c:
 
 dolphin/CARDStat.c:
 	.text       start:0x803931B4 end:0x80393634
+
+dolphin/GXInit.c:
+	.text       start:0x80393634 end:0x803949C0
+	.data       start:0x80568520 end:0x80568760 align:32
+	.bss        start:0x805A2EE0 end:0x805A3510
+	.sdata      start:0x805EECE0 end:0x805EECE8
+	.sbss       start:0x805F22F8 end:0x805F2320
+	.sdata2     start:0x805FB758 end:0x805FB780
 
 dolphin/GXGeometry.c:
 	.text       start:0x803968B4 end:0x80396BD4
@@ -171,6 +203,10 @@ Runtime.PPCEABI.H/allocator_core.c:
 
 Runtime.PPCEABI.H/allocator_release.c:
 	.text       start:0x803A4690 end:0x803A46E8
+
+dolphin/EXIUart.c:
+	.text       start:0x803B5490 end:0x803B5A48
+	.sbss       start:0x805F23D8 end:0x805F23E8
 
 CRI/adx_inis.c:
 	.text       start:0x803B7240 end:0x803B74B4

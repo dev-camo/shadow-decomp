@@ -29,6 +29,14 @@ Game/fn_80068A3C.c:
 	.text       start:0x80068A3C end:0x80068A48
 	.ctors      start:0x804A9C7C end:0x804A9C80
 
+dolphin/PPCArch.c:
+	.text       start:0x8036FC94 end:0x8036FDA8
+
+dolphin/OSAlarm.c:
+	.text       start:0x80370960 end:0x803710BC
+	.data       start:0x805601E8 end:0x805601F8
+	.sbss       start:0x805F0EB0 end:0x805F0EB8
+
 dolphin/OSArena.c:
 	.text       start:0x803713CC end:0x80371418
 	.sdata      start:0x805EDB38 end:0x805EDB40
@@ -37,6 +45,10 @@ dolphin/OSArena.c:
 dolphin/OSAudioSystem.c:
 	.text       start:0x80371418 end:0x803716AC
 	.data       start:0x805601F8 end:0x80560278
+
+dolphin/OSCache.c:
+	.text       start:0x803716AC end:0x80371AE4
+	.data       start:0x80560278 end:0x805604A8
 
 dolphin/OSContext.c:
 	.text       start:0x80371AE4 end:0x80372384
@@ -73,12 +85,24 @@ dolphin/OSResetSW.c:
 dolphin/OSSync.c:
 	.text       start:0x80377454 end:0x803774D8
 
+dolphin/mtx.c:
+	.text       start:0x803788F8 end:0x80378A18
+	.sdata      start:0x805EDB68 end:0x805EDB70
+	.sdata2     start:0x805FA640 end:0x805FA648
+
 dolphin/dvderror.c:
 	.text       start:0x8037CE38 end:0x8037CFD0
 	.data       start:0x80561878 end:0x805618C0
 
 dolphin/delay.c:
 	.text       start:0x80388D50 end:0x803892D0
+
+dolphin/CARDBios.c:
+	.text       start:0x8038BFCC end:0x8038D424
+	.data       start:0x80567210 end:0x80567280
+	.bss        start:0x805A1BE0 end:0x805A1E20
+	.sdata      start:0x805EDC18 end:0x805EDC20
+	.sbss       start:0x805F1248 end:0x805F1250
 
 dolphin/CARDUnlock.c:
 	.text       start:0x8038D424 end:0x8038E684
@@ -118,6 +142,14 @@ dolphin/CARDDelete.c:
 
 dolphin/CARDStat.c:
 	.text       start:0x803923A8 end:0x80392828
+
+dolphin/GXInit.c:
+	.text       start:0x80392828 end:0x80393BB4
+	.data       start:0x80567420 end:0x80567660 align:32
+	.bss        start:0x805A1E20 end:0x805A2450
+	.sdata      start:0x805EDC30 end:0x805EDC38
+	.sbss       start:0x805F1250 end:0x805F1278
+	.sdata2     start:0x805FA6E8 end:0x805FA710
 
 dolphin/GXGeometry.c:
 	.text       start:0x80395AA8 end:0x80395DC8
@@ -193,6 +225,10 @@ Game/fn_803AC8DC.c:
 
 Game/fn_803ACABC.c:
 	.text       start:0x803ACABC end:0x803ACB00
+
+dolphin/EXIUart.c:
+	.text       start:0x803B4440 end:0x803B49F8
+	.sbss       start:0x805F1330 end:0x805F1340
 
 CRI/adx_inis.c:
 	.text       start:0x803B61F0 end:0x803B6464
