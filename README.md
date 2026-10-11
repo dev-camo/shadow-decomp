@@ -1,21 +1,21 @@
 Shadow the Hedgehog  
 [![Build Status]][actions] [![Code Progress]][progress] [![Data Progress]][progress]
 =============
-[<img src="https://decomp.dev/dev-camo/ShadowTheHedgehog.svg?w=512&h=256" width="512" height="256">][Progress]
+[<img src="https://decomp.dev/dev-camo/shadow-decomp.svg?w=512&h=256" width="512" height="256">][Progress]
 =============
 
 <!--
 Replace with your repository's URL.
 -->
-[Build Status]: https://github.com/dev-camo/ShadowTheHedgehog/actions/workflows/build.yml/badge.svg
-[actions]: https://github.com/dev-camo/ShadowTheHedgehog/actions/workflows/build.yml
+[Build Status]: https://github.com/dev-camo/shadow-decomp/actions/workflows/build.yml/badge.svg
+[actions]: https://github.com/dev-camo/shadow-decomp/actions/workflows/build.yml
 <!--
 decomp.dev progress badges
 See https://decomp.dev/api for an API overview.
 -->
-[Code Progress]: https://decomp.dev/dev-camo/ShadowTheHedgehog.svg?mode=shield&measure=code&label=Code
-[Data Progress]: https://decomp.dev/dev-camo/ShadowTheHedgehog.svg?mode=shield&measure=data&label=Data
-[progress]: https://decomp.dev/dev-camo/ShadowTheHedgehog
+[Code Progress]: https://decomp.dev/dev-camo/shadow-decomp.svg?mode=shield&measure=code&label=Code
+[Data Progress]: https://decomp.dev/dev-camo/shadow-decomp.svg?mode=shield&measure=data&label=Data
+[progress]: https://decomp.dev/dev-camo/shadow-decomp
 
 A work-in-progress decompilation of Shadow the Hedgehog.
 
@@ -62,7 +62,7 @@ Building
 - Clone the repository:
 
   ```sh
-  git clone https://github.com/dev-camo/ShadowTheHedgehog.git
+  git clone https://github.com/dev-camo/shadow-decomp.git
   ```
 
 - Copy your game's disc image to `orig/{GUPE8P,GUPJ8P,GUPP8P}`.

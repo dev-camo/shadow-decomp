@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     # This is a *private* build container.
-    container: ghcr.io/dev-camo/shadowthehedgehog-build:main
+    container: ghcr.io/dev-camo/shadow-decomp-build:main
 
     runs-on: ubuntu-latest
     strategy:
