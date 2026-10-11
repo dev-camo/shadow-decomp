@@ -64,6 +64,11 @@ CRI/lsc_err.c:
 CRI/lsc_crs.c:
 	.text       start:0x803C90D4 end:0x803C9114
 
+CRI/lsc.c:
+	.text       start:0x803C9114 end:0x803C99A8
+	.rodata     start:0x80517DD8 end:0x805181A8
+	.bss        start:0x805B7660 end:0x805B7670
+
 CRI/lsc_ini.c:
 	.text       start:0x803C99A8 end:0x803C9AC4
 	.rodata     start:0x805181A8 end:0x805181E0

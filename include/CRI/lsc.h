@@ -70,15 +70,19 @@ void LSC_Init(void);
 void LSC_Finish(void);
 
 /* lsc.c */
-void LSC_CallStatFunc(void);
-void LSC_SetFlowLimit(LSC lsc, Sint32 min_val);
-Sint32 LSC_GetNumStm(LSC lsc);
-Sint32 LSC_GetStat(LSC lsc);
-void LSC_ExecServer(void);
-void LSC_Stop(LSC lsc);
-Sint32 LSC_EntryFileRange(LSC lsc, Char8 *fname, void *dir, Sint32 ofst, Sint32 nsct);
-void LSC_SetStmHndl(LSC lsc, ADXSTM stm);
+LSC LSC_Create(SJ sj);
 void LSC_Destroy(LSC lsc);
+void LSC_SetStmHndl(LSC lsc, ADXSTM stm);
+Sint32 LSC_EntryFileRange(LSC lsc, Char8 *fname, void *dir, Sint32 ofst, Sint32 nsct);
+void LSC_ResetEntry(LSC lsc);
+void LSC_Start(LSC lsc);
+void LSC_Stop(LSC lsc);
+void LSC_ExecServer(void);
+Sint32 LSC_GetStat(LSC lsc);
+Sint32 LSC_GetNumStm(LSC lsc);
+void LSC_SetFlowLimit(LSC lsc, Sint32 min_val);
+void LSC_CallStatFunc(void);
+void LSC_SetLpFlg(LSC lsc, Sint32 flg);
 
 /* lsc_svr.c */
 void lsc_ExecHndl(LSC lsc);

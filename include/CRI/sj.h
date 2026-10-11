@@ -39,6 +39,12 @@ typedef struct {
     void (*EntryErrFunc)(SJ sj, void (*func)(void *obj, Char8 *msg), void *obj);
 } SJ_IF;
 
+struct SJ_OBJ {
+    SJ_IF *vtbl;
+};
+
+#define SJ_GetNumData(sj, id) (*(sj)->vtbl->GetNumData)((sj), (id))
+
 #ifdef __cplusplus
 extern "C" {
 #endif

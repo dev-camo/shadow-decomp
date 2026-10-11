@@ -21,6 +21,7 @@ extern "C" {
 
 Sint32 ADXSTM_SetBufSize(ADXSTM stm, Sint32 min_nsct, Sint32 max_nsct);
 void ADXSTM_SetEos(ADXSTM stm, Sint32 nsct);
+void ADXSTM_Stop(ADXSTM stm);
 void ADXSTM_StopNw(ADXSTM stm);
 Sint32 ADXSTM_Start(ADXSTM stm);
 Sint32 ADXSTM_Tell(ADXSTM stm);

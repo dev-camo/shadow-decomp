@@ -337,17 +337,6 @@ config.libs = [
                 ),
                 Object(Matching, "Game/fn_803ACABC.c"),
                 # CRI middleware units named after their original source files.
-                Object(Matching, "Game/fn_803C80C4.c"),
-                Object(Matching, "Game/fn_803C8100.c", extra_cflags=["-sdata 0"]),
-                Object(Matching, "Game/fn_803C8140.c"),
-                Object(Matching, "Game/fn_803C81A4.c"),
-                Object(Matching, "Game/fn_803C8228.c"),
-                Object(Matching, "Game/fn_803C8294.c"),
-                Object(Matching, "Game/fn_803C8464.c"),
-                Object(
-                    Matching, "Game/fn_803C84B8.c", extra_cflags=["-use_lmw_stmw on"]
-                ),
-                Object(Matching, "Game/fn_803C86F4.c"),
                 Object(Matching, "Game/fn_803BF924.c"),
                 Object(Matching, "Game/fn_80403054.c"),
                 Object(Matching, "Game/fn_804030A8.c"),
@@ -443,6 +432,18 @@ config.libs = [
         "objects": [
             Object(Matching, "CRI/lsc_err.c", extra_cflags=["-sdata 0"]),
             Object(Matching, "CRI/lsc_crs.c"),
+            # Deferred inlining: MWCC emits the functions (and lays out .bss) in reverse order.
+            Object(
+                Matching,
+                "CRI/lsc.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                    "-inline auto,deferred",
+                ],
+            ),
             # The build string lives in .rodata (-str readonly).
             Object(
                 Matching,
