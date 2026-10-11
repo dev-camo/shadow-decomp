@@ -94,9 +94,16 @@ CRI/adx_bsps.c:
 	.text       start:0x803BCB14 end:0x803BD030
 	.rodata     start:0x80516048 end:0x80516050
 
+CRI/adx_amp.c:
+	.text       start:0x803BD030 end:0x803BD240
+
 CRI/adx_crs.c:
 	.text       start:0x803BD240 end:0x803BD2E8
 	.bss        start:0x805A8FB0 end:0x805A8FB8
+
+CRI/adx_dcd.c:
+	.text       start:0x803BD2E8 end:0x803BDB90
+	.rodata     start:0x80516050 end:0x80516098
 
 CRI/adx_errs.c:
 	.text       start:0x803BDB90 end:0x803BE1E0
@@ -106,6 +113,14 @@ CRI/adx_errs.c:
 CRI/adx_insh.c:
 	.text       start:0x803BE288 end:0x803BE430
 	.bss        start:0x805A90F0 end:0x805A9530
+
+CRI/adx_lsc.c:
+	.text       start:0x803BE430 end:0x803BE6A8
+	.rodata     start:0x805160A0 end:0x805161A8
+
+CRI/adx_sfa.c:
+	.text       start:0x803BE6A8 end:0x803BE6D8
+	.bss        start:0x805A9530 end:0x805A9538
 
 CRI/adx_xpnd.c:
 	.text       start:0x803C4CA4 end:0x803C5118
@@ -266,6 +281,9 @@ CRI/muldiv.c:
 
 CRI/muldivr.c:
 	.text       start:0x804033F0 end:0x8040354C
+
+CRI/mwstm.c:
+	.text       start:0x804043E8 end:0x8040455C
 
 CRI/cftcoladj.c:
 	.text       start:0x8040B4F8 end:0x8040BBE4

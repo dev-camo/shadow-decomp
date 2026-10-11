@@ -3,7 +3,8 @@
 
 /* CRI ADXT (ADX talk: stream playback handle) internals shared by the adx_*.c units. Layout
  * from the RE4 GameCube decompilation (Ver.9.31); this game's Ver.9.44 handle is 4 bytes
- * longer (ADXT_Init clears 16 * 0xC4 bytes), the extra field's place is not known yet.
+ * longer (ADXT_Init clears 16 * 0xC4 bytes): the extra field is at 0xC0, where the stream end
+ * callback at 0x803C3980 compares it with the decoded data length.
  */
 #include "CRI/cri_xpt.h"
 #include "CRI/sj.h"
@@ -81,7 +82,7 @@ typedef struct {
     void *stm_dir;   /* 0xB4 */
     Sint32 stm_ofst; /* 0xB8 */
     Sint32 stm_nsct; /* 0xBC */
-    Sint32 xc0;      /* Ver.9.44: 4 more bytes (position unknown) */
+    Sint32 xc0;      /* 0xC0 Ver.9.44 addition */
 } ADXT_OBJ;
 
 typedef ADXT_OBJ *ADXT;
@@ -108,7 +109,18 @@ void ADXT_ExecFsSvr(void);
 void ADXT_DestroyAll(void);
 void ADXT_SetDefSvrFreq(Sint32 freq);
 
-/* the load scheduler server under the ADX enter/leave lock (name inferred) */
+/* adx_tlk.c */
+void ADXT_StopWithoutLsc(ADXT adxt);
+void adxt_start_sj(ADXT adxt, SJ sj);
+void ADXT_SetLnkSw(ADXT adxt, Sint32 sw);
+
+/* adx_lsc.c; ADXT_ExecLscSvr's name is inferred */
+void ADXT_EntryFname(ADXT adxt, Char8 *fname);
+void ADXT_StartSeamless(ADXT adxt);
+void ADXT_SetSeamlessLp(ADXT adxt, Sint32 flg);
+void ADXT_StartFnameLp(ADXT adxt, Char8 *fname);
+Sint32 ADXT_GetNumFiles(ADXT adxt);
+void ADXT_ResetEntry(ADXT adxt);
 void ADXT_ExecLscSvr(void);
 
 /* adx_sjd.c */

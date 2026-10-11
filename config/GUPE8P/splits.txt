@@ -116,9 +116,16 @@ CRI/adx_bsps.c:
 	.text       start:0x803BBAC4 end:0x803BBFE0
 	.rodata     start:0x80514F30 end:0x80514F38
 
+CRI/adx_amp.c:
+	.text       start:0x803BBFE0 end:0x803BC1F0
+
 CRI/adx_crs.c:
 	.text       start:0x803BC1F0 end:0x803BC298
 	.bss        start:0x805A7EF0 end:0x805A7EF8
+
+CRI/adx_dcd.c:
+	.text       start:0x803BC298 end:0x803BCB40
+	.rodata     start:0x80514F38 end:0x80514F80
 
 CRI/adx_errs.c:
 	.text       start:0x803BCB40 end:0x803BD190
@@ -128,6 +135,14 @@ CRI/adx_errs.c:
 CRI/adx_insh.c:
 	.text       start:0x803BD238 end:0x803BD3E0
 	.bss        start:0x805A8030 end:0x805A8470
+
+CRI/adx_lsc.c:
+	.text       start:0x803BD3E0 end:0x803BD658
+	.rodata     start:0x80514F88 end:0x80515090
+
+CRI/adx_sfa.c:
+	.text       start:0x803BD658 end:0x803BD688
+	.bss        start:0x805A8470 end:0x805A8478
 
 Game/fn_803BF924.c:
 	.text       start:0x803BF924 end:0x803BF934
@@ -307,11 +322,11 @@ Game/fn_8040307C.c:
 Game/fn_804030A8.c:
 	.text       start:0x804030A8 end:0x804030F8
 
-Game/fn_804034B0.c:
-	.text       start:0x804034B0 end:0x804034D8
+CRI/mwstm.c:
+	.text       start:0x80403398 end:0x8040350C
 
-Game/fn_80403504.c:
-	.text       start:0x80403504 end:0x80403514
+Game/fn_8040350C.c:
+	.text       start:0x8040350C end:0x80403514
 
 Game/fn_80403514.c:
 	.text       start:0x80403514 end:0x80403520

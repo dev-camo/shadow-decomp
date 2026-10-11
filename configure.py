@@ -342,8 +342,7 @@ config.libs = [
                 Object(Matching, "Game/fn_804030A8.c"),
                 Object(Matching, "Game/fn_80403058.c"),
                 Object(Matching, "Game/fn_8040307C.c"),
-                Object(Matching, "Game/fn_804034B0.c"),
-                Object(Matching, "Game/fn_80403504.c"),
+                Object(Matching, "Game/fn_8040350C.c"),
                 Object(Matching, "Game/fn_80403514.c"),
                 Object(Matching, "Game/fn_80403E44.c"),
                 Object(Matching, "Game/fn_80406EB0.c"),
@@ -644,6 +643,16 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "CRI/adx_amp.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
                 "CRI/adx_bau.c",
                 extra_cflags=[
                     "-sdata 0",
@@ -692,6 +701,16 @@ config.libs = [
                     "-str readonly",
                     "-use_lmw_stmw on",
                     "-inline auto,deferred",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/adx_dcd.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
                 ],
             ),
             Object(
@@ -795,6 +814,28 @@ config.libs = [
             # Deferred inlining: MWCC emits the functions (and lays out .bss) in reverse order.
             Object(
                 Matching,
+                "CRI/adx_lsc.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                    "-inline auto,deferred",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/adx_sfa.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            # Deferred inlining: MWCC emits the functions (and lays out .bss) in reverse order.
+            Object(
+                Matching,
                 "CRI/adx_sjd.c",
                 extra_cflags=[
                     "-sdata 0",
@@ -802,6 +843,16 @@ config.libs = [
                     "-str readonly",
                     "-use_lmw_stmw on",
                     "-inline auto,deferred",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/mwstm.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
                 ],
             ),
             Object(Matching, "CRI/lsc_err.c", extra_cflags=["-sdata 0"]),

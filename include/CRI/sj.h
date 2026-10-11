@@ -44,6 +44,7 @@ struct SJ_OBJ {
 };
 
 #define SJ_Destroy(sj) (*(sj)->vtbl->Destroy)(sj)
+#define SJ_Reset(sj) (*(sj)->vtbl->Reset)(sj)
 #define SJ_GetChunk(sj, id, nbyte, ck) (*(sj)->vtbl->GetChunk)((sj), (id), (nbyte), (ck))
 #define SJ_PutChunk(sj, id, ck) (*(sj)->vtbl->PutChunk)((sj), (id), (ck))
 #define SJ_UngetChunk(sj, id, ck) (*(sj)->vtbl->UngetChunk)((sj), (id), (ck))
