@@ -4,13 +4,9 @@
  * Body from the RE4 GameCube decompilation of the same file. */
 #include "CRI/sj.h"
 #include "CRI/adx_sje.h"
+#include "CRI/adx_t.h"
 
 extern void *memcpy(void *destination, const void *source, unsigned int size);
-
-typedef struct {
-    Uint8 pad[0x14];
-    SJ sji;
-} ADXT_OBJ;
 
 static Uint8 adxt_dmybuf[0x40];
 static Uint8 adxt_hdbuf[0x400];

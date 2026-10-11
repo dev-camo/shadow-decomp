@@ -60,9 +60,13 @@ void SJCRS_Finish(void);
 
 /* sj_mem.c */
 SJ SJMEM_Create(void *buf, Sint32 bsize);
+void SJMEM_Init(void);
+void SJMEM_Finish(void);
 
 /* sj_rbf.c */
 SJ SJRBF_Create(void *buf, Sint32 bsize, Sint32 xsize);
+void SJRBF_Init(void);
+void SJRBF_Finish(void);
 
 /* sj_err.c */
 void SJERR_CallErr(Char8 *msg);

@@ -20,6 +20,8 @@ typedef struct ADXSTM_OBJ *ADXSTM;
 extern "C" {
 #endif
 
+Sint32 ADXSTM_Init(void);
+void ADXSTM_Finish(void);
 ADXSTM ADXSTM_Create(SJ sj, Sint32 mode);
 void ADXSTM_Destroy(ADXSTM stm);
 void ADXSTM_SetSj(ADXSTM stm, SJ sj);

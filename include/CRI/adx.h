@@ -11,6 +11,8 @@ extern "C" {
 #endif
 
 /* adx_crs.c */
+void ADXCRS_Init(void);
+void ADXCRS_Finish(void);
 void ADXCRS_Lock(void);
 void ADXCRS_Unlock(void);
 void ADXCRS_Enter(void);

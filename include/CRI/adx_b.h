@@ -100,7 +100,40 @@ extern "C" {
 #endif
 
 /* adx_xpnd.c */
+void ADXPD_ExecHndl(ADXPD pd);
+Sint32 ADXPD_GetNumBlk(ADXPD pd);
+void ADXPD_Reset(ADXPD pd);
+void ADXPD_Stop(ADXPD pd);
+void ADXPD_Start(ADXPD pd);
+Sint32 ADXPD_EntryPl2(ADXPD pd, void *in, Sint32 nblk, Sint16 *out0, Sint16 *out1);
+Sint32 ADXPD_EntrySte(ADXPD pd, void *in, Sint32 nblk, Sint16 *out0, Sint16 *out1);
+Sint32 ADXPD_EntryMono(ADXPD pd, void *in, Sint32 nblk, Sint16 *out0, Sint16 *out1);
 Sint32 ADXPD_GetStat(ADXPD pd);
+void ADXPD_Destroy(ADXPD pd);
+void ADXPD_GetExtPrm(ADXPD pd, Sint16 *e1, Sint16 *e2, Sint16 *e3);
+void ADXPD_SetExtPrm(ADXPD pd, Sint16 e1, Sint16 e2, Sint16 e3);
+void ADXPD_GetDly(ADXPD pd, Sint16 *d0, Sint16 *d1);
+void ADXPD_SetDly(ADXPD pd, Sint16 *d0, Sint16 *d1);
+void ADXPD_SetCoef(ADXPD pd, Sint32 sfreq, Sint32 cutoff);
+ADXPD ADXPD_Create(void);
+void ADXPD_Init(void);
+
+/* adx_bahx.c */
+void ADXB_AhxTermSupply(ADXB adxb);
+void ADXB_ExecOneAhx(ADXB adxb);
+void ADXB_SetAhxDecSmpl(ADXB adxb, Sint32 nsmpl);
+void ADXB_SetAhxInSj(ADXB adxb, void *sji);
+
+/* adx_bwav.c, adx_baif.c, adx_bau.c */
+void ADXB_ExecOneWav(ADXB adxb);
+Sint32 ADXB_CheckWav(Uint8 *buf);
+Sint32 ADXB_DecodeHeaderWav(ADXB adxb, void *buf, Sint32 bsize);
+void ADXB_ExecOneAiff(ADXB adxb);
+Sint32 ADXB_CheckAiff(Uint8 *buf);
+Sint32 ADXB_DecodeHeaderAiff(ADXB adxb, void *buf, Sint32 bsize);
+void ADXB_ExecOneAu(ADXB adxb);
+Sint32 ADXB_CheckAu(Uint8 *buf);
+Sint32 ADXB_DecodeHeaderAu(ADXB adxb, void *buf, Sint32 bsize);
 
 /* adx_bsps.c */
 Sint32 ADXB_CheckSpsd(void *buf);
