@@ -339,7 +339,6 @@ config.libs = [
                 # CRI middleware units named after their original source files.
                 Object(Matching, "Game/fn_803C80C4.c"),
                 Object(Matching, "Game/fn_803C8100.c"),
-                Object(Matching, "Game/lbl_805B65B0.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "Game/fn_803C8140.c"),
                 Object(Matching, "Game/fn_803C81A4.c"),
                 Object(Matching, "Game/fn_803C8228.c"),
@@ -349,7 +348,6 @@ config.libs = [
                     Matching, "Game/fn_803C84B8.c", extra_cflags=["-use_lmw_stmw on"]
                 ),
                 Object(Matching, "Game/fn_803C86F4.c"),
-                Object(Matching, "Game/fn_803C8958.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "Game/fn_803BF924.c"),
                 Object(Matching, "Game/fn_80403054.c"),
                 Object(Matching, "Game/fn_804030A8.c"),
@@ -445,6 +443,22 @@ config.libs = [
         "objects": [
             Object(Matching, "CRI/lsc_err.c", extra_cflags=["-sdata 0"]),
             Object(Matching, "CRI/lsc_crs.c"),
+            # The build string lives in .rodata (-str readonly).
+            Object(
+                Matching,
+                "CRI/lsc_ini.c",
+                extra_cflags=["-sdata 0", "-sdata2 0", "-str readonly"],
+            ),
+            Object(
+                Matching,
+                "CRI/lsc_svr.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
             Object(Matching, "CRI/sj_crs.c", extra_cflags=["-sdata 0"]),
             # The two-part error messages need the readonly string pool.
             Object(

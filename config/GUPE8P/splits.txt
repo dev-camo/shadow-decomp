@@ -96,9 +96,6 @@ Game/fn_803C8100.c:
 	.text       start:0x803C8100 end:0x803C8140
 	.bss        start:0x805B65A0 end:0x805B65B0
 
-Game/lbl_805B65B0.c:
-	.bss        start:0x805B65B0 end:0x805BACB8
-
 Game/fn_803C8140.c:
 	.text       start:0x803C8140 end:0x803C81A4
 
@@ -120,8 +117,14 @@ Game/fn_803C84B8.c:
 Game/fn_803C86F4.c:
 	.text       start:0x803C86F4 end:0x803C87CC
 
-Game/fn_803C8958.c:
-	.text       start:0x803C8958 end:0x803C89FC
+CRI/lsc_ini.c:
+	.text       start:0x803C8958 end:0x803C8A74
+	.rodata     start:0x80517090 end:0x805170C8
+	.bss        start:0x805B65B0 end:0x805BACB8
+
+CRI/lsc_svr.c:
+	.text       start:0x803C8A74 end:0x803C8D94
+	.rodata     start:0x805170C8 end:0x80517120
 
 CRI/sj_crs.c:
 	.text       start:0x803C8D94 end:0x803C8E8C
