@@ -1,11 +1,10 @@
 /* CRI Sofdec file header analyser (sfh_main.c): validates the 0x800-byte SofdecStream header and
  * reads the pack/element/feature fields out of it.
  *
- * 36/36 functions identical. The seven big-endian 32-bit readers (SFH_AnlyElemSmpHz, MaxFrmNum,
- * MaxPlyLenVid/Aud, ByteRate, PackSiz, HdrSiz) keep the original's `rlwinm 8,8,15 / rlwimi 24,0,7 /
- * rlwimi 24,16,23 / rlwimi 8,24,31 / stw` only because their store sits in another basic block than
- * the swap chain (a dead conditional between them, COMPILER-DIFF M4, see SFH_AnlyElemSmpHz): our 2.4.7's
- * post-RA peephole folds a same-block byte-swap store into `stwbrx`. */
+ * NonMatching (excluded): written as plain C, the seven big-endian 32-bit readers (SFH_AnlyElemSmpHz,
+ * MaxFrmNum, MaxPlyLenVid/Aud, ByteRate, PackSiz, HdrSiz) store the swapped word with `stwbrx`,
+ * where the original keeps a `rlwinm`/`rlwimi` swap chain and a plain `stw`; the other functions
+ * are identical. */
 #include "CRI/cri_xpt.h"
 #include "CRI/sfh.h"
 
@@ -500,9 +499,6 @@ Bool SFH_AnlyElemCodecVid(SFH sfh, Uint8 id, Sint32 *val) {
 // Audio element: sampling rate (big-endian 32-bit).
 Bool SFH_AnlyElemSmpHz(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
-    Uint32 w;
-    Sint32 z;
-    Bool ret;
 
     *val = 0;
     elem = sfh_GetElem(sfh, id);
@@ -512,21 +508,8 @@ Bool SFH_AnlyElemSmpHz(SFH sfh, Uint8 id, Sint32 *val) {
     if (sfh_GetStmType(id) != SFH_STM_AUD) {
         return FALSE;
     }
-    /* COMPILER-DIFF: M4 (dead conditional, CRI pass 77) -- the original keeps the rlwinm/rlwimi x3/stw
-	 * chain because its store sits in another basic block than the chain: the post-RA peephole's
-	 * stwbrx rule follows a per-block def table, so a block boundary between the value and the store
-	 * is what stops the fold. The frontend keeps `z = 0; if (z != 0)` (it does not propagate own-local
-	 * constants into relational compares), the post-RA peephole then folds `li; cmpi; bt` into the
-	 * fall-through and deletes the unreachable arm. `ret = TRUE` before the compare puts `li r3,1`
-	 * next to the load; the arm's read of `id` keeps r4 live across the load, so the word takes r6. */
-    w = SWAP32(SFH_ELEM_SMPHZ(elem));
-    ret = TRUE;
-    z = 0;
-    if (z != 0) {
-        ret = id;
-    }
-    *val = w;
-    return ret;
+    *val = SWAP32(SFH_ELEM_SMPHZ(elem));
+    return TRUE;
 }
 
 // Audio element: channel count.
@@ -581,28 +564,16 @@ Bool SFH_AnlyElemCodecAud(SFH sfh, Uint8 id, Sint32 *val) {
 }
 
 /* pack / file level fields: the public functions are wrappers around these readers, which gives
- * hdr the register below the IsValid flag (a caller-declared hdr gets the one above it). The two
- * 32-bit readers use the SFH_AnlyElemSmpHz dead-conditional form (COMPILER-DIFF M4): the block
- * boundary keeps the swap chain out of the stwbrx fold, and the arm's read of `hdr` keeps r5 live
- * across the load so the word takes r6. */
+ * hdr the register below the IsValid flag (a caller-declared hdr gets the one above it). */
 
 static Bool sfh_GetHdrU32(SFH sfh, Sint32 ofs, Sint32 *val) {
     Uint8 *hdr = sfh->hdr;
-    Uint32 w;
-    Sint32 z;
-    Bool ret;
 
     if (!sfh_IsAnlyOk(sfh)) {
         return FALSE;
     }
-    w = SWAP32(*(Uint32 *)(hdr + ofs));
-    ret = TRUE;
-    z = 0;
-    if (z != 0) {
-        ret = (Sint32)hdr;
-    }
-    *val = w;
-    return ret;
+    *val = SWAP32(*(Uint32 *)(hdr + ofs));
+    return TRUE;
 }
 
 // Big-endian 16-bit header field after the handle checks.
@@ -630,9 +601,6 @@ static Bool sfh_GetHdrU8(SFH sfh, Sint32 ofs, Sint32 *val) {
 // Big-endian 32-bit header field, only for tool versions >= `ver`.
 static Bool sfh_GetHdrU32Ver(SFH sfh, Sint32 ofs, Sint32 ver, Sint32 *val) {
     Uint8 *hdr = sfh->hdr;
-    Uint32 w;
-    Sint32 z;
-    Bool ret;
 
     if (!sfh_IsAnlyOk(sfh)) {
         return FALSE;
@@ -640,14 +608,8 @@ static Bool sfh_GetHdrU32Ver(SFH sfh, Sint32 ofs, Sint32 ver, Sint32 *val) {
     if (sfh->ver < ver) {
         return FALSE;
     }
-    w = SWAP32(*(Uint32 *)(hdr + ofs));
-    ret = TRUE;
-    z = 0;
-    if (z != 0) {
-        ret = (Sint32)hdr;
-    }
-    *val = w;
-    return ret;
+    *val = SWAP32(*(Uint32 *)(hdr + ofs));
+    return TRUE;
 }
 
 // Total video frame count (offset 0xC0; what mwPlyGetHdrInf reports as maxfrm).

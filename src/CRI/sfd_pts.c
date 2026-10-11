@@ -1,7 +1,7 @@
 /* CRI Sofdec PTS queues (sfd_pts.c): the demuxer records the presentation time stamp of each video
  * packet together with its ring-buffer position; the video driver reads the entry whose position
  * matches the picture it decodes to timestamp the frame (SFPTS_ReadPtsQue). Storage comes from
- * SFD_SetVideoPts. */
+ * SFD_SetVideoPts. NonMatching (excluded): SFPTS_ReadPtsQue differs; see its comment. */
 #include "CRI/cri_xpt.h"
 #include "CRI/sfd.h"
 extern void *memset(void *destination, int value, unsigned int size);
@@ -34,16 +34,12 @@ Sint32 SFPTS_IsPtsQueFull(SFD sfd, Sint32 strm) {
     return PQ(sfd, strm).cnt >= PQ(sfd, strm).num;
 }
 
-/* Register order (all volatile, no calls): the CSE temporaries e->pos (st r3) and e->pos + e->len (en r0)
- * are coloured first, then the own locals in declaration order: idx r4, hn r7 (r5/r6 are pos/out),
- * i r8, e r9, end r10, ent r11, rd r12, num/ofst/size r31/r30/r29. The search loop is therefore
- * written in this function (a helper's counter would be coloured before hn); the found blocks keep
- * their `b found` through the codeless self copy (deleted by the RA, no register reserved).
- * COMPILER-DIFF: M1 (codeless arm) */
+/* NonMatching: the original keeps each found test's branch as a separate `b found`, which this
+ * form merges (the remaining differences follow from that and the register order). */
 Sint32 SFPTS_ReadPtsQue(SFD sfd, Sint32 strm, Uint32 pos, SFPTS_ENT *out) {
     Sint32 idx;
     SFBUF_HN *hn;
-    register Sint32 i;
+    Sint32 i;
     SFPTS_ENT *e;
     Uint32 end;
     SFPTS_ENT *ent;
@@ -75,14 +71,10 @@ Sint32 SFPTS_ReadPtsQue(SFD sfd, Sint32 strm, Uint32 pos, SFPTS_ENT *out) {
             e = &ent[idx];
             if (e->pos + e->len <= end) {
                 if (e->pos <= pos && pos < e->pos + e->len) {
-                    asm { mr i, i
-                    } // COMPILER-DIFF: M1 (codeless arm: keeps the found block as `b found`)
                     goto found;
                 }
             } else {
                 if ((e->pos <= pos && pos < end) || (ofst <= pos && pos < e->pos + e->len - size)) {
-                    asm { mr i, i
-                    } // COMPILER-DIFF: M1 (codeless arm: keeps the found block as `b found`)
                     goto found;
                 }
             }

@@ -1,5 +1,6 @@
 /* CRI Sofdec: file header (SFD header packet) analysis and storage (sfd_hds.c). The 0x800-byte raw
- * header handed in by the input driver is parsed through the SFH analyser into SFHDS_FHD. */
+ * header handed in by the input driver is parsed through the SFH analyser into SFHDS_FHD.
+ * NonMatching (excluded): SFHDS_SetHdr differs in register allocation; see its comment. */
 #include "CRI/sfd.h"
 #include "CRI/sfh.h"
 
@@ -62,10 +63,8 @@ static Sint32 sfhds_SearchStmId(SFH sfh, Sint32 first, Sint32 last, Sint32 *exis
     return 0;
 }
 
-/* The vid-section results go through their own locals (v_*) instead of `?:`: the range-split copy of `id`
- * used there has 30 neighbours when the nine `?:` join values are frontend temporaries (created after
- * it, so scanned after it), which keeps it in the colouring level of fhd/sfh (r31); as own locals they
- * are removed first and `id` drops to the level of ver (r29), fhd r31 / sfh r30 as the target (CRI pass 13). */
+/* The video results go through their own locals (v_*) rather than `?:` expressions: only then do
+ * `id`, fhd and sfh get the original registers (id r29, fhd r31, sfh r30). */
 void sfhds_DoProcessHdr(SFH sfh, SFHDS_FHD *fhd) {
     Sint32 ver;
     Sint32 is_sfd;
@@ -354,23 +353,18 @@ static Bool sfhds_SetHdrPkt(SFD sfd, Uint8 *p, Sint32 len, Sint32 *result) {
 }
 
 /* the file header travels in a private stream 2 packet: `data` points at its payload */
-/* COMPILER-DIFF: M1 (codeless neighbour pin) - the target keeps a copy of `result` (`mr r30, r7`) as the
- * first own local (r30 above len r29 / p r28 / sfd r27). `result` only feeds stores, so a plain typed copy
- * is removed by the backend copy propagation (CRI pass 12); the pin's `mr r11, res` is a register move
- * that cannot collapse, which keeps the copy, and both `mr`s of the pin are deleted by the RA (pass 40) */
+/* NonMatching: the original keeps a copy of `result` as the first callee-saved local (`mr r30, r7`);
+ * this plain form allocates the locals differently (11 words). */
 Bool SFHDS_SetHdr(SFD sfd, Sint32 type, Uint8 *data, Sint32 size, Sint32 *result) {
-    register Sint32 *res;
-    Sint32 len;
     Uint8 *p;
+    Sint32 len;
 
-    res = (Sint32 *)(void *)result;
-    asm { mr r11, res; mr res, r11 } // COMPILER-DIFF: M1 (codeless neighbour pin)
-    *res = 0;
+    *result = 0;
     if (type != 2) {
         return 0;
     }
-    p = data - 6;
     len = size + 6;
+    p = data - 6;
     if (sfhds_GetStartCode(p) != SFHDS_STARTCODE_PRV2) {
         p -= 2;
         len += 2;
@@ -378,7 +372,7 @@ Bool SFHDS_SetHdr(SFD sfd, Sint32 type, Uint8 *data, Sint32 size, Sint32 *result
             return 0;
         }
     }
-    return sfhds_SetHdrPkt(sfd, p, len, res);
+    return sfhds_SetHdrPkt(sfd, p, len, result);
 }
 
 // Invalidates the header analysis (handle reset).

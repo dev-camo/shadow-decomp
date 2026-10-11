@@ -5,7 +5,8 @@
  * Bodies follow the RE4 GameCube decompilation of Ver.2.37. Only cvFsEntryErrFunc,
  * cvFsGetFileSize, cvFsGetStat, cvFsExecServer, cvFsStopTr, cvFsReqRd, cvFsSeek, cvFsTell,
  * cvFsClose, cvFsOpen, cvFsSetDefDev, cvFsAddDev and cvFsCallUsrErrFn are referenced and
- * survive linking; they are verified against this game. Every other function here
+ * survive linking. NonMatching (excluded): cvFsGetFileSize allocates one register differently in
+ * plain C (one word); the other referenced functions are identical to this game. Every other function here
  * (initialisation, volumes, directories, option functions, write, the remaining queries and
  * the out-of-line copies of the static helpers) is stripped by the linker: their bodies are
  * reference-derived and unverified, and only the error literals and storage order they
@@ -148,11 +149,8 @@ static CVFS_DEVIF *cvFsGetDevIf(CVFS_DEV *tbl, const Char8 *name) {
     return 0;
 }
 
-/* the second and third searches of cvfs_ResolveDev are INDEX loops (CRI pass 35): the stepping
- * pointer is then the frontend's strength-reduced IV temporary, copied from `tbl` in the loop
- * preheader (after the strlen) with a late id between the first and second strlen @ret copies
- * (target dev2 r20 below len1, above len2); the third copy coalesces with the dying `tbl`. A
- * pointer local `dev = tbl` is an early clone local (above the strlen copies: dev2 r22). */
+/* Device search by table index. cvfs_ResolveDev's second and third searches must be index loops:
+ * a pointer local (`dev = tbl`) gives the stepping pointer a different register than the original. */
 static CVFS_DEVIF *cvfs_SearchDev(CVFS_DEV *tbl, const Char8 *name) {
     Uint32 i;
     Sint32 len;
@@ -231,9 +229,9 @@ static void cvfs_GetDefDev(Char8 *dev) {
     }
 }
 
-/* the search loop of cvFsGetDevIf with the length computed by the caller (CRI pass 28: the
- * table base `tbl` is materialised AFTER the first strlen, so the name check + strlen belong
- * to cvfs_ResolveDev's own body and `tbl = cvfs_tbl` follows them) */
+/* The search loop of cvFsGetDevIf with the length computed by the caller. The original loads the
+ * table base after the first strlen, so the name check and strlen stay in cvfs_ResolveDev and
+ * `tbl = cvfs_tbl` follows them. */
 static CVFS_DEVIF *cvfs_FindDev(CVFS_DEV *tbl, const Char8 *name, Sint32 len) {
     CVFS_DEV *dev;
     Uint32 i;
@@ -248,11 +246,9 @@ static CVFS_DEVIF *cvfs_FindDev(CVFS_DEV *tbl, const Char8 *name, Sint32 len) {
     return 0;
 }
 
-/* the device of a split name: the name's device, else the default device (the path is then the
- * whole name); a device asking for it gets the "DEV:path" form. (Register ranking closed in CRI
- * pass 35: the second/third searches are index loops, see cvfs_SearchDev.) */
-/* the first search one inlining level deeper than the two SearchDev copies (CRI pass 32): cloned
- * after them, its i/dev get the lowest ids and the second copy's `i` takes r26 like the target */
+/* Whether the named device asks for the "DEV:path" form (option 100). This first search sits one
+ * inlining level deeper than the two cvfs_SearchDev copies, which gives its loop variables the
+ * original register order. */
 static Sint32 cvfs_WantsDevForm(CVFS_DEV *tbl, const Char8 *name, Sint32 len) {
     return cvfs_OptFn(cvfs_FindDev(tbl, name, len), 0, 100, 0, 0) == 1;
 }
@@ -692,15 +688,10 @@ void cvFsEntryErrFunc(CVFS_USRERRFN func, void *obj) {
     }
 }
 
-/* CRI pass 40: the target colours fname r29 > pdev r28 > tbl r27; ours removed pdev (28 neighbours) with
- * tbl in the same Chaitin iteration and coloured it after tbl. The pin to r11 - a register no value of this
- * function ever takes - is a codeless level-shifter: the physical neighbour holds pdev in the graph one
- * iteration longer, so it is coloured before tbl, and nothing else moves (a callee-saved pin reserves the
- * register and shifts the ResolveDev locals down one, pass 35's 20w). */
 Sint32 cvFsGetFileSize(const Char8 *fname) {
     Char8 dev[CVFS_NAME_LEN];
     Char8 path[CVFS_NAME_LEN];
-    register Char8 *pdev;
+    Char8 *pdev;
     CVFS_DEVIF *vtbl;
 
     if (fname == 0) {
@@ -713,7 +704,6 @@ Sint32 cvFsGetFileSize(const Char8 *fname) {
         return 0;
     }
     pdev = dev;
-    asm { mr r11, pdev; mr pdev, r11 } // COMPILER-DIFF: M1 (level-shifter, no code)
     vtbl = cvfs_ResolveDev(fname, pdev, path);
     if (dev == 0) {
         cvfs_Error("cvFsGetFileSize #2:illegal device name");
@@ -875,7 +865,7 @@ static CVFS_OBJ *cvfs_AllocObj(void) {
     return obj;
 }
 
-/* byte-identical since CRI pass 35 (the index-loop cvfs_SearchDev); pure C */
+/* Opens `fname` (see cvfs_ResolveDev for the device choice) and returns a handle, 0 on error. */
 CVFS_OBJ *cvFsOpen(const Char8 *fname, void *dir, Sint32 rw) {
     Char8 dev[CVFS_NAME_LEN];
     Char8 path[CVFS_NAME_LEN];
@@ -893,8 +883,8 @@ CVFS_OBJ *cvFsOpen(const Char8 *fname, void *dir, Sint32 rw) {
         cvfs_Error("cvFsOpen #1:illegal file name");
         return 0;
     }
-    hn =
-        cvfs_AllocObj(); /* `void *` + typed kept copy: the inlined @ret stays in r3 and `mr r30, r3` survives (CRI pass 28, +4 bytes) */
+    /* allocated through a `void *` and copied: the original keeps the copy (`mr r30, r3`) */
+    hn = cvfs_AllocObj();
     obj = hn;
     if (obj == 0) {
         cvfs_Error("cvFsOpen #3:failed handle alloced");
@@ -971,10 +961,9 @@ void cvFsDelDev(const Char8 *devname) {
     }
 }
 
-/* register the device in the table unless its name is already there; 0 when the table is full.
- * The `return vtbl` on the found path is the target's `beq add; b check` exit, the `void *` interface
- * pointer converted to the typed table entry is the kept copy that takes getif's result directly
- * (`mr r28, r3`; a fresh `vtbl = getif()` in the caller bounces through r0); CRI pass 13 */
+/* Registers the device in the table unless its name is already there; 0 when the table is full.
+ * The interface arrives as `void *` and is converted once: the original keeps that copy of getif's
+ * result (`mr r28, r3`). */
 static CVFS_DEVIF *cvfs_AddDevTbl(Char8 *devname, void *vt) {
     CVFS_DEV *dev;
     Sint32 i;
@@ -1008,8 +997,8 @@ void cvFsAddDev(Char8 *devname, CVFS_GETIFFN getif, void *prm) {
     CVFS_GETIFFN fn;
 
     cvfs_build;
-    /* kept copies (explicit casts, CRI pass 12 rule): devname r29 above the table entry r28, and the
-     * getif copy orders the two pool `lis` (rodata, then bss after `addi r30`) */
+    /* the original keeps copies of both parameters (devname above the table entry in register
+     * order; the getif copy fixes the order of the two pool loads); the casts make them kept copies */
     name = (Char8 *)(void *)devname;
     fn = (CVFS_GETIFFN)(void *)getif;
     if (name == 0) {

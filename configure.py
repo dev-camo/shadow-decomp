@@ -800,7 +800,7 @@ config.libs = [
                 ],
             ),
             Object(
-                Matching,
+                NonMatching,
                 "CRI/cri_cvfs.c",
                 extra_cflags=[
                     "-sdata 0",
@@ -1040,7 +1040,7 @@ config.libs = [
                 ],
             ),
             Object(
-                Matching,
+                NonMatching,
                 "CRI/sfd_hds.c",
                 extra_cflags=[
                     "-sdata 0",
@@ -1050,7 +1050,7 @@ config.libs = [
                 ],
             ),
             Object(
-                Matching,
+                NonMatching,
                 "CRI/sfd_pts.c",
                 extra_cflags=[
                     "-sdata 0",
@@ -1060,7 +1060,7 @@ config.libs = [
                 ],
             ),
             Object(
-                Matching,
+                NonMatching,
                 "CRI/sfh_main.c",
                 extra_cflags=[
                     "-sdata 0",
