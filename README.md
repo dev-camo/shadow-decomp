@@ -110,9 +110,9 @@ below; every reconstructed file is still verified against this game's own execut
 
 | Project | Used for |
 | --- | --- |
-| [Resident Evil 4](https://github.com/adonis-singh/re4) (GameCube) | CRI middleware sources used as the basis for most of `src/CRI/`: ADX (ADXF, ADXB format decoders, ADXPD, ADXRNA, errors), LSC, SJ, SVM, CVFS and the MFCI/GCCI device interfaces, and Sofdec MPV/MPS/SFD and UTY helper units; the CRI interface and Sofdec layout headers; names for CRI and Dolphin SDK functions |
+| [Resident Evil 4](https://github.com/adonis-singh/re4) (GameCube) | CRI middleware sources used as the basis for most of `src/CRI/`: ADX (ADXF, ADXB format decoders, ADXSJD, ADXT init, header decoding, ADXPD, ADXRNA, ADXAMP, errors), LSC, SJ, SVM, CVFS and the MFCI/GCCI device interfaces, Sofdec MPV/MPS/SFD and UTY helper units and the MWSTM stream glue; the CRI interface and Sofdec layout headers; names for CRI and Dolphin SDK functions |
 | [Mortal Kombat: Deception](https://github.com/ShulkMaster/mk-deception) (GameCube) | CRI svm.c, lsc.c and adx_fini.c references: function order and names such as `SVM_ExecSvrMain`/`Fs`/`Vsync`/`MwIdle`, `SVM_SetCbBdr`, `LSC_SetLpFlg` and `LSC_Start` |
-| [Street Fighter III: 3rd Strike](https://github.com/crowded-street/3s-decomp) | Newer CRI lsc.c reference: source order, error-code numbering and names such as `LSC_ResetEntry` and the LSC stream queries; CRI adx_fs.c function bodies and ADXF/ADXSTM function names |
+| [Street Fighter III: 3rd Strike](https://github.com/crowded-street/3s-decomp) | Newer CRI lsc.c reference: source order, error-code numbering and names such as `LSC_ResetEntry` and the LSC stream queries; CRI adx_fs.c function bodies and ADXF/ADXSTM function names; CRI adx_lsc.c function names, order and error codes, and ADXT callee names such as `ADXT_StopWithoutLsc` |
 | [Teenage Mutant Ninja Turtles 2: Battle Nexus](https://github.com/xntrz/tmnt2) (PC reimplementation) | CRI adx_fs.c structure: public `ADXF_*` entries wrapping `adxf_*` workers, and names such as `adxf_OpenRange` |
 | [The World Ends With You](https://github.com/Yotona/twewy) | CRI adx_crs.c function order and the names `ADXCRS_Enter` and `ADXCRS_Leave` |
 | [Dragon Ball Z: Budokai Tenkaichi 3](https://github.com/z3xox/Tenkaichi3Decomp) | CRI adx_fs.c worker and wrapper naming notes |
