@@ -43,6 +43,7 @@ struct SJ_OBJ {
     SJ_IF *vtbl;
 };
 
+#define SJ_Destroy(sj) (*(sj)->vtbl->Destroy)(sj)
 #define SJ_GetNumData(sj, id) (*(sj)->vtbl->GetNumData)((sj), (id))
 
 #ifdef __cplusplus
@@ -54,6 +55,9 @@ void SJCRS_Lock(void);
 void SJCRS_Unlock(void);
 void SJCRS_Init(void);
 void SJCRS_Finish(void);
+
+/* sj_rbf.c */
+SJ SJRBF_Create(void *buf, Sint32 bsize, Sint32 xsize);
 
 /* sj_err.c */
 void SJERR_CallErr(Char8 *msg);

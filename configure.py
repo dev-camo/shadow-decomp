@@ -436,6 +436,18 @@ config.libs = [
                 extra_cflags=["-sdata 0", "-sdata2 0", "-str readonly"],
             ),
             Object(Matching, "CRI/adx_fcch.c", extra_cflags=["-sdata 0"]),
+            # Only functions declared inline are expanded (-inline noauto).
+            Object(
+                Matching,
+                "CRI/adx_fs.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                    "-inline noauto",
+                ],
+            ),
             Object(
                 Matching,
                 "CRI/cri_cvfs.c",

@@ -5,17 +5,9 @@
  * Names and layout follow the RE4 and Mortal Kombat: Deception decompilations (Ver.7.18 and
  * 7.17). Ver.7.30 stores the build string's address in ADXF_Init.
  */
-#include "CRI/cri_xpt.h"
+#include "CRI/adx_f.h"
 
 extern void *memset(void *destination, int value, unsigned int size);
-
-#define ADXF_MAX_OBJ 16
-#define ADXF_OBJ_SIZE 0x44
-#define ADXF_MAX_PTINFO 0x100
-#define ADXF_CMD_HSTRY_NUM 0x100
-#define ADXF_CMD_NUM 8
-
-extern void ADXF_CloseAll(void);
 
 /* Build string followed by the compiler patch line. */
 const Char8 adxf_build[] =
@@ -24,18 +16,18 @@ const Char8 adxf_build[] =
 Sint32 adxf_init_cnt;
 Sint32 adxf_ldptnw_last_stat;
 Sint32 adxf_ldptnw_ptid;
-void *adxf_ldptnw_hn;
+ADXF adxf_ldptnw_hn;
 Sint32 adxf_flno;
 Sint32 adxf_hstry_no;
-Sint32 adxf_cmd_ncall[ADXF_CMD_NUM];
-Uint8 adxf_cmd_hstry[ADXF_CMD_HSTRY_NUM];
+Uint16 adxf_cmd_ncall[ADXF_CMD_NUM];
+ADXF_CMD_HSTRY adxf_cmd_hstry[ADXF_CMD_HSTRY_MAX];
 Sint32 adxf_ocbi_fg;
-void *adxf_ptinfo[ADXF_MAX_PTINFO];
-Uint8 adxf_obj[ADXF_MAX_OBJ * ADXF_OBJ_SIZE];
+ADXF_PTINFO *adxf_ptinfo[ADXF_PART_MAX];
+ADX_FS adxf_obj[ADXF_OBJ_MAX];
 /* Address of the build string, set by ADXF_Init (name inferred). */
 const Char8 *adxf_build_ptr;
 
-/* Unreferenced, so the linker strips it. Body from the RE4 decompilation (not verified
+/* Unreferenced, so the linker strips it. Body adapted from the RE4 decompilation (not verified
  * against Shadow); as the first function touching the globals it fixes their .bss order.
  */
 Sint32 ADXF_GetNumCmd(Sint32 *ncall) {
@@ -53,10 +45,10 @@ Sint32 ADXF_GetNumCmd(Sint32 *ncall) {
     n = 0;
     for (i = 0; i < ADXF_CMD_NUM; i++) {
         ncall[i] = adxf_cmd_ncall[i];
-        n += adxf_cmd_hstry[i];
+        n += adxf_cmd_hstry[i].ncall;
     }
     adxf_ocbi_fg = 0;
-    adxf_ptinfo[0] = adxf_obj;
+    adxf_ptinfo[0] = (ADXF_PTINFO *)adxf_obj;
     return n;
 }
 

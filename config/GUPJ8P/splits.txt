@@ -65,6 +65,11 @@ CRI/adx_fini.c:
 CRI/adx_fcch.c:
 	.text       start:0x803C5918 end:0x803C5938
 
+CRI/adx_fs.c:
+	.text       start:0x803C5938 end:0x803C71D8
+	.rodata     start:0x80516130 end:0x805167A0
+	.bss        start:0x805B45A8 end:0x805B6630
+
 CRI/cri_cvfs.c:
 	.text       start:0x803C71D8 end:0x803C85D0
 	.rodata     start:0x805167A0 end:0x80517360
