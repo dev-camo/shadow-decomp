@@ -653,7 +653,7 @@ Sint32 SFBUF_InitHn(SFD sfd, SFBUF_WORK *wk, SFBUF_PRM *prm) {
 
 /* This game only: empty, called by the library finish (inferred buffer-module finish; arguments,
  * if any, are unused) */
-void fn_803F052C(void) {}
+void fn_803F052C(void *work) {}
 
 // Library init: learns the UUIDs of the ring-buffer and memory joint classes from throwaway objects
 // so sfbuf_IsSjrbf/IsSjmem can classify supplies.

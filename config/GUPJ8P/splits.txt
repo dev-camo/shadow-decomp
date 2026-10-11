@@ -296,6 +296,11 @@ CRI/mpv_vlc.c:
 	.rodata     start:0x80518B20 end:0x80518BD0
 	.bss        start:0x805C98E8 end:0x805CAF40
 
+CRI/mpv_mcy.c:
+	.text       start:0x803E0138 end:0x803E1320
+	.rodata     start:0x80518BD8 end:0x80518BE8
+	.data       start:0x80569710 end:0x80569730
+
 CRI/mpv_m2v.c:
 	.text       start:0x803E1320 end:0x803E1348
 
@@ -319,9 +324,19 @@ CRI/sfd_hds.c:
 	.text       start:0x803F0F30 end:0x803F1978
 	.bss        start:0x805CAFB0 end:0x805CB1B8
 
+CRI/sfd_lib.c:
+	.text       start:0x803F1978 end:0x803F1DA8
+	.rodata     start:0x80518C98 end:0x80518CF0
+	.bss        start:0x805CB1B8 end:0x805CB3F0
+
 CRI/sfd_mem.c:
 	.text       start:0x803F1DA8 end:0x803F1EC4
 	.rodata     start:0x80518CF0 end:0x80518D28
+
+CRI/sfd_mps.c:
+	.text       start:0x803F1EC4 end:0x803F3BA4
+	.rodata     start:0x80518D28 end:0x80518D70
+	.bss        start:0x805CB3F0 end:0x805CBC08
 
 CRI/sfd_mpvf.c:
 	.text       start:0x803F8FB4 end:0x803F96E8
