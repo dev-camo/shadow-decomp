@@ -258,12 +258,35 @@ cflags_rel = [
 config.linker_version = "GC/2.7"
 
 
+# Dolphin SDK flags: Nintendo's prebuilt SDK libraries (GC/1.2.5n, -O4,p, unsigned char, default
+# small data). Headers in include/dolphin and include/libc; private SDK headers in src/dolphin.
+cflags_sdk = [
+    "-nodefaults",
+    "-proc gekko",
+    "-fp hard",
+    "-Cpp_exceptions off",
+    "-enum int",
+    "-char unsigned",
+    "-warn pragmas",
+    "-requireprotos",
+    '-pragma "cats off"',
+    "-O4,p",
+    "-inline auto",
+    "-I-",
+    "-i include",
+    "-i include/libc",
+    "-i src/dolphin",
+    "-D__GEKKO__",
+    "-DSDK_REVISION=1",
+]
+
+
 # Helper function for Dolphin libraries
 def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
         "lib": lib_name,
         "mw_version": "GC/1.2.5n",
-        "cflags": cflags_base,
+        "cflags": cflags_sdk,
         "progress_category": "sdk",
         "objects": objects,
     }
@@ -420,6 +443,12 @@ config.libs = [
             else []
         ),
     },
+    DolphinLib(
+        "gx",
+        [
+            Object(Matching, "dolphin/GXTev.c"),
+        ],
+    ),
     {
         # CRI middleware units that are identical and split in every region.
         "lib": "CRI",

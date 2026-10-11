@@ -13,6 +13,10 @@ Sections:
 	.sdata2     type:rodata align:8
 	.sbss2      type:bss align:16
 
+dolphin/GXTev.c:
+	.text       start:0x803992EC end:0x80399A0C
+	.data       start:0x80568B00 end:0x80568B78
+
 Runtime.PPCEABI.H/global_destructor_chain.c:
 	.text       start:0x803A11C8 end:0x803A1228
 	.sbss       start:0x805F2370 end:0x805F2374
