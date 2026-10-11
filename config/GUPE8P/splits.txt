@@ -325,11 +325,24 @@ CRI/mpvabdec.c:
 	.rodata     start:0x80518548 end:0x8051855C
 	.data       start:0x805690B0 end:0x80569CB0
 
+CRI/sfd_aoap.c:
+	.text       start:0x803EEB60 end:0x803EF03C
+	.rodata     start:0x805185C0 end:0x805185F8
+
 CRI/sfd_con.c:
 	.text       start:0x803F05D0 end:0x803F08F0
 
 CRI/sfd_pl2.c:
 	.text       start:0x803F90A8 end:0x803F94D8
+
+CRI/sfd_see.c:
+	.text       start:0x803FB7FC end:0x803FC04C
+
+CRI/sfd_set.c:
+	.text       start:0x803FC04C end:0x803FC458
+
+CRI/sfd_trn.c:
+	.text       start:0x803FDCE8 end:0x803FE3D4
 
 CRI/sfd_tmr.c:
 	.text       start:0x803FE8A8 end:0x803FE96C

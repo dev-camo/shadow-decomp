@@ -292,7 +292,7 @@ typedef struct {
     Sint32 len;
 } SFMPV_PICUSR;
 
-/* decoded frame object of the video driver (0xE0 bytes) */
+/* decoded frame object of the video driver (0xE8 bytes; RE4's is 0xE0) */
 typedef struct {
     Sint32 stat;          /* 0x00 */
     Sint32 lock;          /* 0x04 */
@@ -306,44 +306,45 @@ typedef struct {
     Sint32 x4c;           /* 0x4C ttu.val */
     Sint32 x50;           /* 0x50 ttu.val + concatenation time */
     SFMPV_PICUSR *picusr; /* 0x54 */
-    /* 0x58: the MPV_PICATR of the picture (mpv.h), 0x80 bytes */
-    Sint32 pa_width;      /* 0x58 */
-    Sint32 pa_height;     /* 0x5C */
-    Sint32 pa_mb_width;   /* 0x60 */
-    Sint32 pa_mb_height;  /* 0x64 */
-    Sint32 pa_frame_rate; /* 0x68 */
-    Sint32 tmpref;        /* 0x6C temporal reference (10-bit) */
-    Sint32 pa_pic_type;   /* 0x70 */
-    Sint32 pa_tc_drop;    /* 0x74 */
-    Sint32 pa_tc_hour;    /* 0x78 */
-    Sint32 pa_tc_min;     /* 0x7C */
-    Sint32 pa_tc_sec;     /* 0x80 */
-    Sint32 pa_tc_pic;     /* 0x84 */
-    Sint32 x88;           /* 0x88 GOP headers seen */
-    Sint32 x8c;           /* 0x8C sequence headers seen */
-    Sint32 pa_x90[3];     /* 0x90 */
-    Sint32 pa_x9c[3];     /* 0x9C */
-    Sint16 pa_xa8;        /* 0xA8 */
-    Sint16 pa_xaa;        /* 0xAA */
-    Sint8 pa_xac;         /* 0xAC */
-    Sint8 pa_xad;         /* 0xAD */
-    Sint8 pa_xae;         /* 0xAE */
-    Sint8 pa_xaf;         /* 0xAF */
-    Sint8 pa_xb0;         /* 0xB0 */
-    Sint8 pa_xb1;         /* 0xB1 */
-    Sint8 pa_xb2;         /* 0xB2 */
-    Sint8 pa_xb3;         /* 0xB3 */
-    Sint8 pa_xb4;         /* 0xB4 */
-    Sint8 pa_xb5;         /* 0xB5 */
-    Sint8 pa_xb6;         /* 0xB6 */
-    Sint8 pa_xb7;         /* 0xB7 */
-    Sint8 pa_xb8;         /* 0xB8 */
-    Sint8 pa_xb9;         /* 0xB9 */
-    Sint8 pa_xba;         /* 0xBA */
-    Sint8 pa_xbb;         /* 0xBB */
-    Sint8 pa_xbc;         /* 0xBC */
-    Uint8 padbd[0xD8 - 0xBD];
-    Sint64 pts; /* 0xD8 */
+    Sint32 x58;           /* 0x58 this game only (-1 when the frame is released for drawing) */
+    /* 0x5C: the MPV_PICATR of the picture (mpv.h), 0x80 bytes */
+    Sint32 pa_width;      /* 0x5C */
+    Sint32 pa_height;     /* 0x60 */
+    Sint32 pa_mb_width;   /* 0x64 */
+    Sint32 pa_mb_height;  /* 0x68 */
+    Sint32 pa_frame_rate; /* 0x6C */
+    Sint32 tmpref;        /* 0x70 temporal reference (10-bit) */
+    Sint32 pa_pic_type;   /* 0x74 */
+    Sint32 pa_tc_drop;    /* 0x78 */
+    Sint32 pa_tc_hour;    /* 0x7C */
+    Sint32 pa_tc_min;     /* 0x80 */
+    Sint32 pa_tc_sec;     /* 0x84 */
+    Sint32 pa_tc_pic;     /* 0x88 */
+    Sint32 x88;           /* 0x8C GOP headers seen */
+    Sint32 x8c;           /* 0x90 sequence headers seen */
+    Sint32 pa_x90[3];     /* 0x94 */
+    Sint32 pa_x9c[3];     /* 0xA0 */
+    Sint16 pa_xa8;        /* 0xAC */
+    Sint16 pa_xaa;        /* 0xAE */
+    Sint8 pa_xac;         /* 0xB0 */
+    Sint8 pa_xad;         /* 0xB1 */
+    Sint8 pa_xae;         /* 0xB2 */
+    Sint8 pa_xaf;         /* 0xB3 */
+    Sint8 pa_xb0;         /* 0xB4 */
+    Sint8 pa_xb1;         /* 0xB5 */
+    Sint8 pa_xb2;         /* 0xB6 */
+    Sint8 pa_xb3;         /* 0xB7 */
+    Sint8 pa_xb4;         /* 0xB8 */
+    Sint8 pa_xb5;         /* 0xB9 */
+    Sint8 pa_xb6;         /* 0xBA */
+    Sint8 pa_xb7;         /* 0xBB */
+    Sint8 pa_xb8;         /* 0xBC */
+    Sint8 pa_xb9;         /* 0xBD */
+    Sint8 pa_xba;         /* 0xBE */
+    Sint8 pa_xbb;         /* 0xBF */
+    Sint8 pa_xbc;         /* 0xC0 */
+    Uint8 padc1[0xE0 - 0xC1];
+    Sint64 pts; /* 0xE0 */
 } SFMPV_FRM;
 
 /* MPEG video decoder parameters (mwsfd_mpvpara, SFD_SetMpvParaTbl; 0x24 bytes) */
@@ -393,19 +394,20 @@ typedef struct {
     Sint32 nfrm;          /* 0x178 */
     Sint32 pad17c;
     SFMPV_FRM frm[SFMPV_FRM_NUM];       /* 0x180 */
-    void *picusr_buf;                   /* 0xF80 */
-    Sint32 picusr_num;                  /* 0xF84 */
-    Sint32 picusr_siz;                  /* 0xF88 */
-    Uint8 *picusr_dat;                  /* 0xF8C user data of the picture being decoded */
-    Sint32 picusr_len;                  /* 0xF90 */
-    SFMPV_PICUSR picusr[SFMPV_FRM_NUM]; /* 0xF94 */
-    Sint32 pad1014;
-    Sint64 pts; /* 0x1018 PTS of the picture being decoded */
+    void *picusr_buf;                   /* 0x1000 */
+    Sint32 picusr_num;                  /* 0x1004 */
+    Sint32 picusr_siz;                  /* 0x1008 */
+    Uint8 *picusr_dat;                  /* 0x100C user data of the picture being decoded */
+    Sint32 picusr_len;                  /* 0x1010 */
+    SFMPV_PICUSR picusr[SFMPV_FRM_NUM]; /* 0x1014 */
+    Sint32 pad1094;
+    Sint64 pts; /* 0x1098 PTS of the picture being decoded */
 } SFMPV_WORK;
 
-/* 0xA0-byte player information block returned by SFD_GetPlyInf */
+/* 0xA8-byte player information block returned by SFD_GetPlyInf; this game's block is 8 bytes longer
+ * than RE4's (its fields from +0x24 sit 4 bytes later, from +0x30 8 bytes later) */
 typedef struct {
-    Sint32 raw[0x28];
+    Sint32 raw[0x2A];
 } SFD_PLYINF;
 
 /* creation parameters passed to SFTRN_InitHn: trif_tbl[n] is driver n's function table
@@ -671,48 +673,49 @@ typedef struct SFD_OBJ {
     Sint32 x948;
     Sint32 x94c;
     SFD_PLYINF plyinf;             /* 0x950 */
-    SFLIB_ERRINF err;              /* 0x9F0 */
-    Sint32 cond[SFD_COND_NUM];     /* 0xA04 */
-    Sint32 cond_def[SFD_COND_NUM]; /* 0xB94 */
-    Uint8 padD24[0xD30 - 0xD24];
+    SFLIB_ERRINF err;              /* 0x9F8 */
+    Sint32 cond[SFD_COND_NUM];     /* 0xA0C (SFSET_GetCond) */
+    Sint32 cond_def[SFD_COND_NUM]; /* 0xB9C */
+    Uint8 padD2C[4];
     SFCON con; /* 0xD30 (also the SFTIM handle: &sfd->con; sfd_con.c) */
-    Uint8 padFAC[0x1018 - 0xD30 - sizeof(SFCON)];
-    Uint8 tst[0x1C0]; /* 0x1018 time stabiliser work (sfd_tst.c SFTST_WORK) */
-    Uint8 pad11D8[0x12D8 - 0x11D8];
-    SFPLY_PTSM ptsm; /* 0x12D8 */
-    Uint8 pad12E4[0x1308 - 0x12E4];
-    SFBUF_WORK buf[SFD_BUF_NUM]; /* 0x1308 */
-    SFD_VFRM vfrm[SFD_VFRM_NUM]; /* 0x16A8 */
+    Uint8 padFAC[0x1020 - 0xD30 - sizeof(SFCON)];
+    Uint8 tst[0x1C0]; /* 0x1020 time stabiliser work (sfd_tst.c SFTST_WORK) */
+    Uint8 pad11E0[0x12E0 - 0x11E0];
+    SFPLY_PTSM ptsm; /* 0x12E0 */
+    Uint8 pad12EC[0x1310 - 0x12EC];
+    SFBUF_WORK buf[SFD_BUF_NUM]; /* 0x1310 */
+    SFD_VFRM vfrm[SFD_VFRM_NUM]; /* 0x16B0 */
     SFD_TR tr
-        [SFD_TR_NUM]; /* 0x1F28 (tr[2].hn = SFMPV_WORK *, tr[3].hn = SFADXT_WORK *, tr[8].hn = SFUO *, tr[8].bufin = user-output SFBUF id) */
-    Sint32 pad218c;
-    SFMPS_WORK mps; /* 0x2190 system stream driver work (tr[1].hn) */
-    Uint8 pad22F8[0x23A0 - 0x22F8];
-    SFMPV_WORK mpv;   /* 0x23A0 video driver work (tr[2].hn) */
-    SFADXT_WORK adxt; /* 0x33C0 */
-    Uint8 pad3410[0x3474 - 0x3410];
-    SFAOAP aoap; /* 0x3474 (tr[7].hn) */
-    SFUO uo_tbl; /* 0x3490 */
-    Sint32 pad34c4;
-    SFSEE_HN see;       /* 0x34C8 */
-    SFTMR_TSUM tsum[6]; /* 0x34D8 server time statistics (tsum[5]: sfply_ExecOne) */
-} SFD_OBJ;              /* 0x3598; SFD_Create wants 0x35B8 (32-byte alignment slack) */
+        [SFD_TR_NUM]; /* 0x1F30 (tr[2].hn = SFMPV_WORK *, tr[3].hn = SFADXT_WORK *, tr[8].hn = SFUO *, tr[8].bufin = user-output SFBUF id) */
+    Sint32 pad2194;
+    SFMPS_WORK mps; /* 0x2198 system stream driver work (tr[1].hn) */
+    Uint8 pad2300[0x23A8 - 0x2300];
+    SFMPV_WORK mpv;   /* 0x23A8 video driver work (tr[2].hn) */
+    SFADXT_WORK adxt; /* 0x3448 */
+    Uint8 pad3498[0x34FC - 0x3498];
+    SFAOAP aoap; /* 0x34FC (tr[7].hn) */
+    SFUO uo_tbl; /* 0x3518 */
+    Sint32 pad354c;
+    SFSEE_HN see;       /* 0x3550 (SFD_EntrySeek) */
+    SFTMR_TSUM tsum[6]; /* 0x3560 server time statistics (tsum[5]: sfply_ExecOne) */
+} SFD_OBJ;              /* 0x3620 */
 
-/* 64-bit stream counters inside plyinf (SFD_OBJ + 0x9B0..0x9D8) seen through a separate view:
- * SFD_PLYINF itself has to stay 4-byte aligned (SFD_GetPlyInf copies it with a lwz/stw loop) */
+/* 64-bit stream counters inside plyinf seen through a separate view: SFD_PLYINF itself has to stay
+ * 4-byte aligned (SFD_GetPlyInf copies it with a lwz/stw loop). Offsets are RE4's + 8 (from the
+ * RE4 sfd_mps/sfd_mpv accesses); not yet confirmed against this game's code. */
 typedef struct {
-    Uint8 pad0[0x980];
-    Sint64 s_flow;    /* 0x980 system stream ring: flow count (sfd_mps.c) */
-    Sint64 s_byte;    /* 0x988 system stream bytes demultiplexed */
-    Sint64 s_skip;    /* 0x990 system stream bytes skipped */
-    Sint64 v_flow;    /* 0x998 video input ring: flow count (sfd_mpv.c) */
-    Sint64 v_byte;    /* 0x9A0 video bytes handed to the decoder */
-    Sint64 v_skip;    /* 0x9A8 video bytes skipped up to a start code */
-    Sint64 a_in_wcnt; /* 0x9B0 audio input ring: written */
-    Sint64 a_in_rcnt; /* 0x9B8 audio input ring: read */
-    Sint64 a_byte;    /* 0x9C0 audio bytes handed to the decoder */
-    Sint64 a_sj_wcnt; /* 0x9C8 decoder stream joint: written */
-    Sint64 a_sj_rcnt; /* 0x9D0 decoder stream joint: read */
+    Uint8 pad0[0x988];
+    Sint64 s_flow;    /* 0x988 system stream ring: flow count (sfd_mps.c) */
+    Sint64 s_byte;    /* 0x990 system stream bytes demultiplexed */
+    Sint64 s_skip;    /* 0x998 system stream bytes skipped */
+    Sint64 v_flow;    /* 0x9A0 video input ring: flow count (sfd_mpv.c) */
+    Sint64 v_byte;    /* 0x9A8 video bytes handed to the decoder */
+    Sint64 v_skip;    /* 0x9B0 video bytes skipped up to a start code */
+    Sint64 a_in_wcnt; /* 0x9B8 audio input ring: written */
+    Sint64 a_in_rcnt; /* 0x9C0 audio input ring: read */
+    Sint64 a_byte;    /* 0x9C8 audio bytes handed to the decoder */
+    Sint64 a_sj_wcnt; /* 0x9D0 decoder stream joint: written */
+    Sint64 a_sj_rcnt; /* 0x9D8 decoder stream joint: read */
 } SFD_CNT64;
 
 #define SFD_CNT(sfd) ((SFD_CNT64 *)(sfd))
