@@ -81,8 +81,13 @@ Game/fn_803ACABC.c:
 
 CRI/adx_inis.c:
 	.text       start:0x803B61F0 end:0x803B6464
-	.rodata     start:0x80514558 end:0x805145DC
-	.bss        start:0x805A5850 end:0x805A64AC
+	.rodata     start:0x80514558 end:0x805145E0
+	.bss        start:0x805A5850 end:0x805A64B0
+
+CRI/adx_sjd.c:
+	.text       start:0x803B6464 end:0x803B7808
+	.rodata     start:0x805145E0 end:0x80514668
+	.bss        start:0x805A64B0 end:0x805A6F38
 
 CRI/adx_bwav.c:
 	.text       start:0x803B7808 end:0x803B8690
@@ -105,11 +110,15 @@ CRI/adx_bau.c:
 CRI/adx_bsc.c:
 	.text       start:0x803BA1EC end:0x803BBAC4
 	.rodata     start:0x805146A8 end:0x80514F30
-	.bss        start:0x805A6F48 end:0x805A7EEC
+	.bss        start:0x805A6F48 end:0x805A7EF0
 
 CRI/adx_bsps.c:
 	.text       start:0x803BBAC4 end:0x803BBFE0
 	.rodata     start:0x80514F30 end:0x80514F38
+
+CRI/adx_crs.c:
+	.text       start:0x803BC1F0 end:0x803BC298
+	.bss        start:0x805A7EF0 end:0x805A7EF8
 
 CRI/adx_errs.c:
 	.text       start:0x803BCB40 end:0x803BD190

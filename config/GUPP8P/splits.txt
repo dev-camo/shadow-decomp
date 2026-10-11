@@ -59,8 +59,13 @@ Runtime.PPCEABI.H/allocator_release.c:
 
 CRI/adx_inis.c:
 	.text       start:0x803B7240 end:0x803B74B4
-	.rodata     start:0x80515670 end:0x805156F4
-	.bss        start:0x805A6910 end:0x805A756C
+	.rodata     start:0x80515670 end:0x805156F8
+	.bss        start:0x805A6910 end:0x805A7570
+
+CRI/adx_sjd.c:
+	.text       start:0x803B74B4 end:0x803B8858
+	.rodata     start:0x805156F8 end:0x80515780
+	.bss        start:0x805A7570 end:0x805A7FF8
 
 CRI/adx_bwav.c:
 	.text       start:0x803B8858 end:0x803B96E0
@@ -83,11 +88,15 @@ CRI/adx_bau.c:
 CRI/adx_bsc.c:
 	.text       start:0x803BB23C end:0x803BCB14
 	.rodata     start:0x805157C0 end:0x80516048
-	.bss        start:0x805A8008 end:0x805A8FAC
+	.bss        start:0x805A8008 end:0x805A8FB0
 
 CRI/adx_bsps.c:
 	.text       start:0x803BCB14 end:0x803BD030
 	.rodata     start:0x80516048 end:0x80516050
+
+CRI/adx_crs.c:
+	.text       start:0x803BD240 end:0x803BD2E8
+	.bss        start:0x805A8FB0 end:0x805A8FB8
 
 CRI/adx_errs.c:
 	.text       start:0x803BDB90 end:0x803BE1E0

@@ -118,6 +118,51 @@ void ADXPD_SetCoef(ADXPD pd, Sint32 sfreq, Sint32 cutoff);
 ADXPD ADXPD_Create(void);
 void ADXPD_Init(void);
 
+/* adx_bsc.c */
+void ADXB_SetAhxExtFunc(void (*func)(void *ahx, Sint16 *key));
+void ADXB_SetPl2Func(void (*encode)(ADXB adxb, Sint16 smpl, Sint16 *in, Sint16 *out),
+                     void (*reset)(ADXB adxb));
+void ADXB_SetDefKey(Sint16 k0, Sint16 km, Sint16 ka);
+void ADXB_SetIgnoreHdrErr(Sint32 flg);
+void ADXB_ExecHndl(ADXB adxb);
+void ADXB_ExecOneAdx(ADXB adxb);
+void ADXB_EvokeDecode(ADXB adxb);
+Sint32 ADXB_GetDecNumSmpl(ADXB adxb);
+Sint32 ADXB_GetDecDtLen(ADXB adxb);
+void ADXB_Reset(ADXB adxb);
+void ADXB_Stop(ADXB adxb);
+void ADXB_Start(ADXB adxb);
+void ADXB_EntryData(ADXB adxb, Sint16 *buf, Sint32 nbyte);
+Sint32 ADXB_GetStat(ADXB adxb);
+void ADXB_RestoreSnapshot(ADXB adxb);
+void ADXB_TakeSnapshot(ADXB adxb);
+Sint32 ADXB_GetDefPan(ADXB adxb, Sint32 ch);
+Sint32 ADXB_GetDefOutVol(ADXB adxb);
+Sint32 ADXB_GetAinfLen(ADXB adxb);
+Sint32 ADXB_GetLpEndOfst(ADXB adxb);
+Sint32 ADXB_GetLpEndPos(ADXB adxb);
+Sint32 ADXB_GetLpStartOfst(ADXB adxb);
+Sint32 ADXB_GetLpStartPos(ADXB adxb);
+Sint32 ADXB_GetNumLoop(ADXB adxb);
+Sint32 ADXB_GetTotalNumSmpl(ADXB adxb);
+Sint32 ADXB_GetBlkSmpl(ADXB adxb);
+Sint32 ADXB_GetOutBps(ADXB adxb);
+Sint32 ADXB_GetNumChan(ADXB adxb);
+Sint32 ADXB_GetSfreq(ADXB adxb);
+Sint32 ADXB_GetFormat(ADXB adxb);
+Sint16 *ADXB_GetPcmBuf(ADXB adxb);
+void ADXB_EntryGetWrFunc(ADXB adxb,
+                         void (*func)(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *x70),
+                         void *obj);
+Sint32 ADXB_DecodeHeader(ADXB adxb, void *buf, Sint32 bsize);
+void ADXB_SetDefPrm(ADXB adxb);
+Sint32 ADXB_DecodeHeaderAdx(ADXB adxb, Uint8 *buf, Sint32 bsize);
+const Char8 *ADXB_GetSignature(void);
+void ADXB_Destroy(ADXB adxb);
+ADXB ADXB_Create(Sint32 x38, Sint16 *pcmbuf, Sint32 bufsmpl, Sint32 chofst);
+void ADXB_Init(void);
+Sint32 ADXB_GetIgnoreHdrErr(void);
+
 /* adx_bahx.c */
 void ADXB_AhxTermSupply(ADXB adxb);
 void ADXB_ExecOneAhx(ADXB adxb);
