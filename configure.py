@@ -343,7 +343,6 @@ config.libs = [
                 Object(Matching, "Game/fn_80403058.c"),
                 Object(Matching, "Game/fn_8040307C.c"),
                 Object(Matching, "Game/fn_8040350C.c"),
-                Object(Matching, "Game/fn_80403514.c"),
                 Object(Matching, "Game/fn_80403E44.c"),
                 Object(Matching, "Game/fn_80406EB0.c"),
                 Object(Matching, "Game/fn_80406E88.c"),
@@ -848,6 +847,46 @@ config.libs = [
             Object(
                 Matching,
                 "CRI/mwstm.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/mcp_not.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/mpv_m2v.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/mwsfdsee.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/rna_crs.c",
                 extra_cflags=[
                     "-sdata 0",
                     "-sdata2 0",

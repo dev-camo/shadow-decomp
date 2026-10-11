@@ -223,6 +223,12 @@ CRI/rna_err.c:
 	.text       start:0x803CEB14 end:0x803CEB80
 	.bss        start:0x805C2C70 end:0x805C2D78
 
+CRI/rna_crs.c:
+	.text       start:0x803CEB80 end:0x803CEBC0
+
+CRI/mcp_not.c:
+	.text       start:0x803D4624 end:0x803D4644
+
 CRI/mps_dec.c:
 	.text       start:0x803D4644 end:0x803D58C4
 
@@ -256,6 +262,9 @@ CRI/mpv_vlc.c:
 	.rodata     start:0x80519598 end:0x80519648
 	.bss        start:0x805CA388 end:0x805CB9E0
 
+CRI/mpv_m2v.c:
+	.text       start:0x803E1D30 end:0x803E1D58
+
 CRI/mpvabdec.c:
 	.text       start:0x803E1D58 end:0x803EE628
 	.rodata     start:0x80519660 end:0x80519674
@@ -284,6 +293,9 @@ CRI/muldivr.c:
 
 CRI/mwstm.c:
 	.text       start:0x804043E8 end:0x8040455C
+
+CRI/mwsfdsee.c:
+	.text       start:0x80404564 end:0x80404570
 
 CRI/cftcoladj.c:
 	.text       start:0x8040B4F8 end:0x8040BBE4
