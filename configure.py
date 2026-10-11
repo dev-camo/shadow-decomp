@@ -444,6 +444,19 @@ config.libs = [
         ),
     },
     DolphinLib(
+        "os",
+        [
+            Object(Matching, "dolphin/OSArena.c"),
+            Object(Matching, "dolphin/OSAudioSystem.c"),
+            Object(Matching, "dolphin/OSSync.c"),
+            Object(Matching, "dolphin/OSInterrupt.c"),
+            Object(Matching, "dolphin/OSMemory.c"),
+            Object(Matching, "dolphin/OSReboot.c"),
+            Object(Matching, "dolphin/OSResetSW.c"),
+            Object(Matching, "dolphin/OSReset.c"),
+        ],
+    ),
+    DolphinLib(
         "gx",
         [
             Object(Matching, "dolphin/GXGeometry.c"),

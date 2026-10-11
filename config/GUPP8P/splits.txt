@@ -13,6 +13,40 @@ Sections:
 	.sdata2     type:rodata align:8
 	.sbss2      type:bss align:16
 
+dolphin/OSArena.c:
+	.text       start:0x80372214 end:0x80372260
+	.sdata      start:0x805EEBE8 end:0x805EEBF0
+	.sbss       start:0x805F1F70 end:0x805F1F78
+
+dolphin/OSAudioSystem.c:
+	.text       start:0x80372260 end:0x803724F4
+	.data       start:0x80561300 end:0x80561380
+
+dolphin/OSInterrupt.c:
+	.text       start:0x8037611C end:0x80376988
+	.data       start:0x805625C8 end:0x805625F8
+	.sbss       start:0x805F1F90 end:0x805F1FA8
+
+dolphin/OSMemory.c:
+	.text       start:0x803769A0 end:0x80376C78
+	.data       start:0x805625F8 end:0x80562608
+
+dolphin/OSReboot.c:
+	.text       start:0x80376CE8 end:0x80376D6C
+	.sbss       start:0x805F1FA8 end:0x805F1FB0
+
+dolphin/OSReset.c:
+	.text       start:0x80376D6C end:0x803771F0
+	.data       start:0x80562608 end:0x80562658
+	.sbss       start:0x805F1FB0 end:0x805F1FC0
+
+dolphin/OSResetSW.c:
+	.text       start:0x803771F0 end:0x8037757C
+	.sbss       start:0x805F1FC0 end:0x805F1FE0
+
+dolphin/OSSync.c:
+	.text       start:0x8037829C end:0x80378320
+
 dolphin/GXGeometry.c:
 	.text       start:0x803968B4 end:0x80396BD4
 
