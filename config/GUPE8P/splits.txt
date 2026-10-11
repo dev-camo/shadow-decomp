@@ -206,12 +206,6 @@ CRI/sj_uni.c:
 	.text       start:0x803CAC1C end:0x803CACD0
 	.bss        start:0x805BF158 end:0x805BFD60
 
-Game/lbl_805BFD60.c:
-	.bss        start:0x805BFD60 end:0x805BFE38
-
-Game/lbl_805BFE38.c:
-	.bss        start:0x805BFE38 end:0x805C00F8
-
 CRI/sj_utl.c:
 	.text       start:0x803CACD0 end:0x803CAF48
 	.data       start:0x80568CE0 end:0x80568EA0
@@ -219,17 +213,10 @@ CRI/sj_utl.c:
 CRI/sj_err.c:
 	.text       start:0x803CAF48 end:0x803CAF68
 
-Game/fn_803CB43C.c:
-	.text       start:0x803CB43C end:0x803CB45C
-
-Game/fn_803CB45C.c:
-	.text       start:0x803CB45C end:0x803CB4A0
-
-Game/fn_803CBADC.c:
-	.text       start:0x803CBADC end:0x803CBB34
-
-Game/fn_803CBB34.c:
-	.text       start:0x803CBB34 end:0x803CBC0C
+CRI/svm.c:
+	.text       start:0x803CAF68 end:0x803CBD04
+	.rodata     start:0x80517490 end:0x80517690
+	.bss        start:0x805BFD60 end:0x805C00F8
 
 CRI/mfci.c:
 	.text       start:0x803CBD04 end:0x803CC9D0

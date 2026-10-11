@@ -7,5 +7,5 @@ int fn_804030A8(const Fn803C81QueryView *object) {
 }
 /* Chosen side-effect projection; original full arity/types/return unknown. */
 void fn_804030D4(void) {
-    fn_803CB45C(6);
+    SVM_GotoSvrBorder(6);
 }

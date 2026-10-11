@@ -368,12 +368,6 @@ config.libs = [
                 Object(Matching, "Game/lbl_805BB150.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "CRI/sj_uni.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "CRI/sj_utl.c", extra_cflags=["-use_lmw_stmw on"]),
-                Object(Matching, "Game/lbl_805BFD60.c", extra_cflags=["-sdata 0"]),
-                Object(Matching, "Game/fn_803CB43C.c", extra_cflags=["-sdata 0"]),
-                Object(Matching, "Game/fn_803CB45C.c"),
-                Object(Matching, "Game/lbl_805BFE38.c"),
-                Object(Matching, "Game/fn_803CBADC.c", extra_cflags=["-sdata 0"]),
-                Object(Matching, "Game/fn_803CBB34.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "CRI/sj_err.c"),
                 Object(Matching, "Game/lbl_805B65B0.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "Game/lbl_805BACC8.c", extra_cflags=["-sdata 0"]),
@@ -486,6 +480,16 @@ config.libs = [
         "cflags": cflags_base,
         "progress_category": "game",
         "objects": [
+            Object(
+                Matching,
+                "CRI/svm.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
             # Const pointer data stays out of small data (-sdata2 0).
             Object(
                 Matching,
