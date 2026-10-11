@@ -1,3 +1,5 @@
+/* CRI stream-joint critical section (sj_crs.c). */
+
 /* Inferred raw 32-bit SDK call interfaces; the restore result is unused. */
 extern unsigned int OSDisableInterrupts(void);
 extern void OSRestoreInterrupts(unsigned int state);

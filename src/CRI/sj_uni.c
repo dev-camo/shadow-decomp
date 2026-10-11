@@ -1,8 +1,17 @@
+/* CRI universal stream joint (sj_uni.c); only Init and Finish survive linking. */
+
 #include "Game/fn_803C8_record_types.h"
 
-/* Inferred raw counter and external byte-span views; original types are unknown. */
-extern unsigned int sjuni_init_cnt;
-extern unsigned char sjuni_obj[];
+/* Inferred raw counter view; the original C type is unknown.
+ * An explicit zero definition preserves MWCC's BSS symbol order.
+ */
+unsigned int sjuni_init_cnt = 0;
+
+/* Observed clearing covers 0xC00 bytes. Preserve the four remaining
+ * allocation bytes without asserting original pool or slot types.
+ */
+unsigned char sjuni_obj[0xC00 + 4];
+
 extern void *memset(void *destination, int value, unsigned int size);
 /* Chosen side-effect projections; original full arity/returns unknown. */
 void fn_803C8E2C(void);

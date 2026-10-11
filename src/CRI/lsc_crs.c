@@ -1,3 +1,5 @@
+/* CRI LSC critical section (lsc_crs.c). */
+
 /* Inferred callee interfaces: neither body consumes incoming argument registers.
  * Original argument lists and return types are not established.
  */

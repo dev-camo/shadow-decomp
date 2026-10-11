@@ -1,9 +1,11 @@
+/* CRI LSC error reporting (lsc_err.c). */
+
 #include "mwcc_varargs.h"
 
 /* Inferred callback signature; its return value is unused. */
 typedef void (*DiagnosticCallback)(void *context, const char *text);
 
-/* Inferred storage view from this helper and fn_803C8050. */
+/* Inferred storage view from this helper and LSC_EntryErrFunc. */
 typedef struct {
     /* 0x00 */ DiagnosticCallback callback;
     /* 0x04 */ void *context;
@@ -30,7 +32,7 @@ void LSC_CallErrFunc(const char *format, ...) {
 }
 
 /* Inferred setter signature; callers do not consume a result. */
-void fn_803C8050(DiagnosticCallback callback, void *context) {
+void LSC_EntryErrFunc(DiagnosticCallback callback, void *context) {
     if (callback == 0) {
         lbl_805B6498[0] = 0;
         lbl_805B649C[0] = 0;
