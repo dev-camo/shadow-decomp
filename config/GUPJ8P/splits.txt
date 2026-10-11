@@ -57,6 +57,9 @@ Runtime.PPCEABI.H/allocator_core.c:
 Runtime.PPCEABI.H/allocator_release.c:
 	.text       start:0x803A3C80 end:0x803A3CD8
 
+CRI/lsc_crs.c:
+	.text       start:0x803C86C4 end:0x803C8704
+
 CRI/sj_crs.c:
 	.text       start:0x803C93D4 end:0x803C94CC
 	.bss        start:0x805BB2D8 end:0x805BB2E8
@@ -66,6 +69,17 @@ CRI/sj_mem.c:
 	.rodata     start:0x805177C0 end:0x80517928
 	.data       start:0x80569300 end:0x80569330
 	.bss        start:0x805BB2E8 end:0x805BB770
+
+CRI/sj_uni.c:
+	.text       start:0x803CB25C end:0x803CB310
+	.bss        start:0x805BF778 end:0x805C0380
+
+CRI/sj_utl.c:
+	.text       start:0x803CB310 end:0x803CB588
+	.data       start:0x80569360 end:0x80569520
+
+CRI/sj_err.c:
+	.text       start:0x803CB588 end:0x803CB5A8
 
 CRI/svm.c:
 	.text       start:0x803CB5A8 end:0x803CC344

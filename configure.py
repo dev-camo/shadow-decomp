@@ -338,7 +338,6 @@ config.libs = [
                 Object(Matching, "Game/fn_803ACABC.c"),
                 # CRI middleware units named after their original source files.
                 Object(Matching, "CRI/lsc_err.c"),
-                Object(Matching, "CRI/lsc_crs.c"),
                 Object(Matching, "Game/fn_803C80C4.c"),
                 Object(Matching, "Game/fn_803C8100.c"),
                 Object(Matching, "Game/fn_803C9A7C.c"),
@@ -355,9 +354,6 @@ config.libs = [
                 Object(Matching, "Game/fn_803CA8B8.c"),
                 Object(Matching, "Game/fn_803CAB40.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "Game/lbl_805BB150.c", extra_cflags=["-sdata 0"]),
-                Object(Matching, "CRI/sj_uni.c", extra_cflags=["-sdata 0"]),
-                Object(Matching, "CRI/sj_utl.c", extra_cflags=["-use_lmw_stmw on"]),
-                Object(Matching, "CRI/sj_err.c"),
                 Object(Matching, "Game/lbl_805B65B0.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "Game/fn_803C8140.c"),
                 Object(Matching, "Game/fn_803C81A4.c"),
@@ -462,6 +458,7 @@ config.libs = [
         "cflags": cflags_base,
         "progress_category": "game",
         "objects": [
+            Object(Matching, "CRI/lsc_crs.c"),
             Object(Matching, "CRI/sj_crs.c", extra_cflags=["-sdata 0"]),
             # The two-part error messages need the readonly string pool.
             Object(
@@ -474,6 +471,9 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            Object(Matching, "CRI/sj_uni.c", extra_cflags=["-sdata 0"]),
+            Object(Matching, "CRI/sj_utl.c", extra_cflags=["-use_lmw_stmw on"]),
+            Object(Matching, "CRI/sj_err.c"),
             Object(
                 Matching,
                 "CRI/svm.c",
