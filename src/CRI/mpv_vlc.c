@@ -5,7 +5,7 @@
  * code-generation order (see configure.py CRI_CFLAG_OVERRIDES).
  *
  * Entry formats (all Sint16 unless noted):
- *   run/level (Uint32):        (len << 16) | (run << 8) | level
+ *   run/level (Uint32):        (len << 16) | (level << 8) | run
  *   DC size (Sint8):           (size << 4) | len
  *   coded block pattern:       (cbp << 8) | len, bits 15/14 repeat the two chrominance bits
  *   motion code:               (len << 8) | (Uint8)code, 0x7F = invalid
@@ -14,6 +14,7 @@
  * Bodies from the RE4 GameCube decompilation of the same file.
  */
 #include "CRI/cri_xpt.h"
+#include "CRI/uty.h"
 
 #define MPVVLC_VLC_AREA_SIZE 0x5B0
 
@@ -28,14 +29,12 @@
 #define MBAI_ESCAPE 35
 #define MBAI_ERROR 36
 
-#define RL(len, run, level) (((len) << 16) | ((run) << 8) | (level))
+#define RL(len, level, run) (((len) << 16) | ((level) << 8) | (run))
 #define DCSIZ(size, len) (((size) << 4) | (len))
 #define CBP(cbp, len) ((((cbp) & 3) << 14) | ((cbp) << 8) | (len))
 #define MV(len, code) (((len) << 8) | (Uint8)(code))
 #define MBTYPE(type, len) (((type) << 8) | (len))
 #define MBAI(type, inc, len) (((type) << 10) | ((inc) << 4) | (len))
-
-extern void UTY_MemcpyDword(void *dst, const void *src, Sint32 ndword);
 
 /* run/level tables of the fixed-length code groups (rodata, copied into the VLC area) */
 const Uint32 mpvvlt_run_level_0c[8] = {
@@ -183,48 +182,51 @@ void MPVVLC_Init(Uint8 *vlc, void *ixa) {
         p = vlc + MPVVLC_VLC_AREA_SIZE;
         p -= sizeof(mpvvlt_run_level_8);
         mpvvlc_run_level_8 = (Uint32 *)p;
-        UTY_MemcpyDword(p, mpvvlt_run_level_8, sizeof(mpvvlt_run_level_8) / 4);
+        UTY_MemcpyDword((Uint32 *)p, (Uint32 *)mpvvlt_run_level_8, sizeof(mpvvlt_run_level_8) / 4);
         p -= sizeof(mpvvlt_run_level_4);
         mpvvlc_run_level_4 = (Uint32 *)p;
-        UTY_MemcpyDword(p, mpvvlt_run_level_4, sizeof(mpvvlt_run_level_4) / 4);
+        UTY_MemcpyDword((Uint32 *)p, (Uint32 *)mpvvlt_run_level_4, sizeof(mpvvlt_run_level_4) / 4);
         p -= sizeof(mpvvlt_run_level_2);
         mpvvlc_run_level_2 = (Uint32 *)p;
-        UTY_MemcpyDword(p, mpvvlt_run_level_2, sizeof(mpvvlt_run_level_2) / 4);
+        UTY_MemcpyDword((Uint32 *)p, (Uint32 *)mpvvlt_run_level_2, sizeof(mpvvlt_run_level_2) / 4);
         p -= sizeof(mpvvlt_run_level_1);
         mpvvlc_run_level_1 = (Uint32 *)p;
-        UTY_MemcpyDword(p, mpvvlt_run_level_1, sizeof(mpvvlt_run_level_1) / 4);
+        UTY_MemcpyDword((Uint32 *)p, (Uint32 *)mpvvlt_run_level_1, sizeof(mpvvlt_run_level_1) / 4);
         p -= sizeof(mpvvlt_run_level_0a);
         mpvvlc_run_level_0a = (Uint32 *)p;
-        UTY_MemcpyDword(p, mpvvlt_run_level_0a, sizeof(mpvvlt_run_level_0a) / 4);
+        UTY_MemcpyDword((Uint32 *)p, (Uint32 *)mpvvlt_run_level_0a,
+                        sizeof(mpvvlt_run_level_0a) / 4);
         p -= sizeof(mpvvlt_run_level_0b);
         mpvvlc_run_level_0b = (Uint32 *)p;
-        UTY_MemcpyDword(p, mpvvlt_run_level_0b, sizeof(mpvvlt_run_level_0b) / 4);
+        UTY_MemcpyDword((Uint32 *)p, (Uint32 *)mpvvlt_run_level_0b,
+                        sizeof(mpvvlt_run_level_0b) / 4);
         p -= sizeof(mpvvlt_run_level_0c);
         mpvvlc_run_level_0c = (Uint32 *)p;
-        UTY_MemcpyDword(p, mpvvlt_run_level_0c, sizeof(mpvvlt_run_level_0c) / 4);
+        UTY_MemcpyDword((Uint32 *)p, (Uint32 *)mpvvlt_run_level_0c,
+                        sizeof(mpvvlt_run_level_0c) / 4);
         /* the VLC tables below them (offsets from the run/level area) */
         rl = p;
         p -= sizeof(mpvvlt_y_dcsiz);
         mpvvlc_y_dcsiz = (Sint8 *)p;
-        UTY_MemcpyDword(p, mpvvlt_y_dcsiz, sizeof(mpvvlt_y_dcsiz) / 4);
+        UTY_MemcpyDword((Uint32 *)p, (Uint32 *)mpvvlt_y_dcsiz, sizeof(mpvvlt_y_dcsiz) / 4);
         p = rl - (sizeof(mpvvlt_y_dcsiz) + sizeof(mpvvlt_c_dcsiz));
         mpvvlc_c_dcsiz = (Sint8 *)p;
-        UTY_MemcpyDword(p, mpvvlt_c_dcsiz, sizeof(mpvvlt_c_dcsiz) / 4);
+        UTY_MemcpyDword((Uint32 *)p, (Uint32 *)mpvvlt_c_dcsiz, sizeof(mpvvlt_c_dcsiz) / 4);
         p = rl - (sizeof(mpvvlt_y_dcsiz) + sizeof(mpvvlt_c_dcsiz) + sizeof(mpvvlt_motion_0));
         mpvvlc_motion_0 = (Sint16 *)p;
-        UTY_MemcpyDword(p, mpvvlt_motion_0, sizeof(mpvvlt_motion_0) / 4);
+        UTY_MemcpyDword((Uint32 *)p, (Uint32 *)mpvvlt_motion_0, sizeof(mpvvlt_motion_0) / 4);
         p = rl - (sizeof(mpvvlt_y_dcsiz) + sizeof(mpvvlt_c_dcsiz) + sizeof(mpvvlt_motion_0) +
                   sizeof(mpvvlt_motion_1));
         mpvvlc_motion_1 = (Sint16 *)p;
-        UTY_MemcpyDword(p, mpvvlt_motion_1, sizeof(mpvvlt_motion_1) / 4);
+        UTY_MemcpyDword((Uint32 *)p, (Uint32 *)mpvvlt_motion_1, sizeof(mpvvlt_motion_1) / 4);
         p = rl - (sizeof(mpvvlt_y_dcsiz) + sizeof(mpvvlt_c_dcsiz) + sizeof(mpvvlt_motion_0) +
                   sizeof(mpvvlt_motion_1) + sizeof(mpvvlt_p_mbtype));
         mpvvlc_p_mbtype = (Sint16 *)p;
-        UTY_MemcpyDword(p, mpvvlt_p_mbtype, sizeof(mpvvlt_p_mbtype) / 4);
+        UTY_MemcpyDword((Uint32 *)p, (Uint32 *)mpvvlt_p_mbtype, sizeof(mpvvlt_p_mbtype) / 4);
         p = rl - (sizeof(mpvvlt_y_dcsiz) + sizeof(mpvvlt_c_dcsiz) + sizeof(mpvvlt_motion_0) +
                   sizeof(mpvvlt_motion_1) + sizeof(mpvvlt_p_mbtype) + sizeof(mpvvlt_b_mbtype));
         mpvvlc_b_mbtype = (Sint16 *)p;
-        UTY_MemcpyDword(p, mpvvlt_b_mbtype, sizeof(mpvvlt_b_mbtype) / 4);
+        UTY_MemcpyDword((Uint32 *)p, (Uint32 *)mpvvlt_b_mbtype, sizeof(mpvvlt_b_mbtype) / 4);
     }
 }
 

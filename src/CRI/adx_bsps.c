@@ -22,7 +22,7 @@ void ADXB_ExecOneSpsd(ADXB adxb) {
     Sint32 n;
 
     inbuf = (Uint16 *)adxb->inbuf;
-    if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == 0) {
+    if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == ADXPD_STAT_STOP) {
         adxb->getwr_func(adxb->getwr_obj, &adxb->wr_pos, &adxb->wr_nsmpl, &adxb->wr_x70);
         n = adxb->pcmbuf_nsmpl - adxb->wr_pos;
         if (n > adxb->wr_nsmpl) {

@@ -13,36 +13,6 @@ extern void *memset(void *destination, int value, unsigned int size);
 
 #define ADXPD_MAX_OBJ 16
 
-/* ADXPD_OBJ.stat */
-#define ADXPD_STAT_STOP 0
-#define ADXPD_STAT_START 1
-#define ADXPD_STAT_EXEC 2
-#define ADXPD_STAT_DONE 3
-
-/* ADXPD_OBJ.mode */
-#define ADXPD_MODE_MONO 1
-#define ADXPD_MODE_STE 2
-
-typedef struct ADXPD_OBJ {
-    Sint32 used;      /* 0x00 */
-    Sint32 id;        /* 0x04 */
-    Sint32 x08;       /* 0x08 */
-    Sint32 stat;      /* 0x0C */
-    Sint32 nblk;      /* 0x10 decoded blocks */
-    Sint32 mode;      /* 0x14 */
-    void *in;         /* 0x18 */
-    Sint32 nblk_in;   /* 0x1C */
-    Sint16 *out0;     /* 0x20 */
-    Sint16 *out1;     /* 0x24 */
-    Sint16 dly[2][2]; /* 0x28 */
-    Sint16 k1;        /* 0x30 */
-    Sint16 k2;        /* 0x32 */
-    Sint16 ext1;      /* 0x34 */
-    Sint16 ext2;      /* 0x36 */
-    Sint16 ext3;      /* 0x38 */
-    Sint16 pad3a;
-} ADXPD_OBJ;
-
 Sint32 adxpd_internal_error;
 ADXPD_OBJ adxpd_obj[ADXPD_MAX_OBJ];
 

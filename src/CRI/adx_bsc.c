@@ -4,14 +4,6 @@
 #include "CRI/adx_b.h"
 #include "CRI/adx_dcd.h"
 
-/* x98 format ids (adx_b.h's ADXB_FMT_* are the ADX header format field) */
-#define ADXB_TYPE_ADX 0
-#define ADXB_TYPE_WAV 1
-#define ADXB_TYPE_SPSD 2
-#define ADXB_TYPE_AIFF 3
-#define ADXB_TYPE_AU 4
-#define ADXB_TYPE_AHX 10
-
 extern void *memset(void *destination, int value, unsigned int size);
 extern int sprintf(char *buffer, const char *format, ...);
 
@@ -21,15 +13,6 @@ Sint32 ADXB_DecodeHeaderAdx(ADXB adxb, Uint8 *buf, Sint32 bsize);
 void ADXB_Destroy(ADXB adxb);
 void adxb_DefAddWr(void *obj, Sint32 nbyte, Sint32 nsmpl);
 Sint16 *adxb_DefGetWr(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *x70);
-
-/* ADXPD object fields used here */
-typedef struct ADXPD_OBJ {
-    Uint8 pad0[0x10];
-    Sint32 nblk; /* 0x10 */
-    Uint8 pad14[0x20 - 0x14];
-    Sint16 *out0; /* 0x20 */
-    Sint16 *out1; /* 0x24 */
-} ADXPD_OBJ;
 
 /* ---- SKG: key generation from the sample count (shared with adx_sje.c by inclusion) ---- */
 
@@ -149,7 +132,7 @@ void SKG_EntryErrFunc(void (*func)(void *obj, const Char8 *msg), void *obj) {
     skg_err_obj = obj;
 }
 
-/* Returns the SKG build string ("SKG/GC Ver.0.64 Build:Oct 8 2004"). */
+/* Returns the SKG build string (skg_version: "SKG/GC Ver.0.64 Build:Feb 28 2005 15:48:53"). */
 const Char8 *SKG_GetVersion(void) {
     return skg_version;
 }
@@ -157,10 +140,10 @@ const Char8 *SKG_GetVersion(void) {
 /* one step of the key chain */
 #define SKG_MIX(k, c) (skg_prim_tbl[((k) * skg_prim_tbl[0x80 + (c)]) % 1024])
 
-/* the three keys of a stream: hex digits of the sample count fed through the prime table. Shapes
- * (CRI pass 16b): `Sint16 k` (the extsh after the 7th step and on the third seed, where the backend's
- * 100-instruction block split falls), the keys cleared through the pointers after the init check, the
- * first two keys stored after the third seed is loaded (the stores land in the third split block) */
+/* The three keys of a stream: hex digits of the sample count fed through the prime table. Matching
+ * constraints: `k` is Sint16 (the original's extsh after the 7th step and on the third seed), the
+ * keys are cleared through the pointers after the init check, and the first two keys are stored after
+ * the third seed is loaded. */
 static Sint32 SKG_MakeKey(Sint32 nsmpl, Sint16 *k0, Sint16 *km, Sint16 *ka) {
     Char8 str[16];
     Sint16 k;
@@ -300,7 +283,7 @@ void ADXB_ExecOneAdx(ADXB adxb) {
     Sint32 ofst;
     Sint32 i;
     Sint32 n;
-    ADXPD_OBJ *pd;
+    ADXPD pd;
     Sint32 x70;
     Sint32 nsmpl;
     Sint32 nblk;
@@ -310,16 +293,16 @@ void ADXB_ExecOneAdx(ADXB adxb) {
     Sint16 *src;
     Sint16 *sp;
 
-    if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == 0) {
+    if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == ADXPD_STAT_STOP) {
         adxb->getwr_func(adxb->getwr_obj, &adxb->wr_pos, &adxb->wr_nsmpl, &adxb->wr_x70);
         ADXB_EvokeDecode(adxb);
         adxb->stat = ADXB_STAT_WRITE;
     }
     if (adxb->stat == ADXB_STAT_WRITE) {
         ADXPD_ExecHndl(adxb->pd);
-        if (ADXPD_GetStat(adxb->pd) == 3) {
+        if (ADXPD_GetStat(adxb->pd) == ADXPD_STAT_DONE) {
             if (adxb->xdc != 0) {
-                pd = (ADXPD_OBJ *)adxb->pd;
+                pd = adxb->pd;
                 ADXCRS_Lock();
                 for (i = 0, n = 0; i < pd->nblk * 32; i++) {
                     src = (Sint16 *)((Uint8 *)pd->out0 + n);
@@ -557,7 +540,8 @@ Sint32 ADXB_GetAinfLen(ADXB adxb) {
     return adxb->ainf_len;
 }
 
-/* Loop end offset in bytes within the loop-end block (x34), from the ADX loop header. */
+/* Loop end as a byte offset in the stream (x34), from the ADX loop header; ADXT derives the
+ * loop-end sector from it. */
 Sint32 ADXB_GetLpEndOfst(ADXB adxb) {
     return adxb->x34;
 }
@@ -567,7 +551,7 @@ Sint32 ADXB_GetLpEndPos(ADXB adxb) {
     return adxb->x30;
 }
 
-/* Loop start offset in bytes (x2c); tolerates a 0 handle (returns 0). */
+/* Loop start as a byte offset in the stream (x2c); tolerates a 0 handle (returns 0). */
 Sint32 ADXB_GetLpStartOfst(ADXB adxb) {
     if (adxb == 0) {
         return 0;
@@ -643,9 +627,7 @@ Sint16 *ADXB_GetPcmBuf(ADXB adxb) {
 
 /* Replaces the default write-window callback: the SJD installs adxsjd_get_wr so the decoder writes
  * straight into the free part of its output ring buffers. */
-void ADXB_EntryGetWrFunc(ADXB adxb,
-                         void (*func)(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *x70),
-                         void *obj) {
+void ADXB_EntryGetWrFunc(ADXB adxb, ADXB_GETWR_FUNC func, void *obj) {
     adxb->getwr_func = func;
     adxb->getwr_obj = obj;
 }
@@ -862,7 +844,7 @@ ADXB ADXB_Create(Sint32 x38, Sint16 *pcmbuf, Sint32 bufsmpl, Sint32 chofst) {
     adxb->x3c = (Sint32)pcmbuf;
     adxb->x40 = bufsmpl;
     adxb->x44 = chofst;
-    adxb->getwr_func = (void (*)(void *, Sint32 *, Sint32 *, Sint32 *))adxb_DefGetWr;
+    adxb->getwr_func = adxb_DefGetWr;
     adxb->getwr_obj = adxb;
     adxb->addwr_func = adxb_DefAddWr;
     adxb->addwr_obj = adxb;

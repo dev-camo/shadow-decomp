@@ -71,7 +71,8 @@ SJMEM_OBJ sjmem_obj[SJMEM_MAX_OBJ];
     }
 
 /* The fixed buffer size in bytes. */
-Sint32 SJMEM_GetBufSize(SJMEM_OBJ *sj) {
+Sint32 SJMEM_GetBufSize(SJ handle) {
+    SJMEM_OBJ *sj = (SJMEM_OBJ *)handle;
     Sint32 ret;
 
     SJCRS_Lock();
@@ -91,7 +92,8 @@ Sint32 SJMEM_GetBufSize(SJMEM_OBJ *sj) {
 /* Unreferenced, so the linker strips it. Body from the RE4 decompilation (not verified
  * against Shadow); its error literals are verified at their .rodata positions.
  */
-void *SJMEM_GetBufPtr(SJMEM_OBJ *sj) {
+void *SJMEM_GetBufPtr(SJ handle) {
+    SJMEM_OBJ *sj = (SJMEM_OBJ *)handle;
     void *ret;
 
     SJCRS_Lock();

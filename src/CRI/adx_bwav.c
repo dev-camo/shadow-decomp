@@ -1,6 +1,6 @@
 /* CRI ADXB RIFF WAVE support (adx_bwav.c): signature test, header parse ("fmt " / "data" chunks)
- * and the per-tick PCM copy steps for 8- and 16-bit little-endian WAV into the ADXB PCM ring (4-bit
- * WAV is recognised but not decoded). Selected by ADXB_DecodeHeader / ADXB_ExecHndl for type 1.
+ * and the per-tick PCM copy steps for 4-, 8- and 16-bit WAV into the ADXB PCM ring (the 4-bit step
+ * does no ADPCM decoding). Selected by ADXB_DecodeHeader / ADXB_ExecHndl for type 1.
  * Body from the RE4 GameCube decompilation of the same file.
  */
 #include "CRI/adx_b.h"
@@ -51,7 +51,9 @@ Sint32 ADXB_CheckWav(Uint8 *buf) {
     return 0;
 }
 
-/* 4-bit WAV is not decoded: the step only accounts the input as consumed and produces no samples. */
+/* Copy step for 4-bit WAV (x9c 2): no ADPCM decoding; each output sample is a little-endian 16-bit
+ * value assembled from two input bytes (stereo: bytes 0/2 for the left and 1/3 for the right channel
+ * of each 4-byte group). Reports the bytes consumed and samples written. */
 void ADXB_ExecOneWav4(ADXB adxb) {
     Uint8 *inbuf;
     Sint16 *out0;
@@ -60,7 +62,7 @@ void ADXB_ExecOneWav4(ADXB adxb) {
     Sint32 n;
 
     inbuf = (Uint8 *)adxb->inbuf;
-    if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == 0) {
+    if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == ADXPD_STAT_STOP) {
         adxb->getwr_func(adxb->getwr_obj, &adxb->wr_pos, &adxb->wr_nsmpl, &adxb->wr_x70);
         n = adxb->pcmbuf_nsmpl - adxb->wr_pos;
         if (n > adxb->wr_nsmpl) {
@@ -101,7 +103,7 @@ void ADXB_ExecOneWav8(ADXB adxb) {
     Sint32 n;
 
     inbuf = (Uint8 *)adxb->inbuf;
-    if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == 0) {
+    if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == ADXPD_STAT_STOP) {
         adxb->getwr_func(adxb->getwr_obj, &adxb->wr_pos, &adxb->wr_nsmpl, &adxb->wr_x70);
         n = adxb->pcmbuf_nsmpl - adxb->wr_pos;
         if (n > adxb->wr_nsmpl) {
@@ -141,7 +143,7 @@ void ADXB_ExecOneWav16(ADXB adxb) {
     Sint32 n;
 
     inbuf = (Uint16 *)adxb->inbuf;
-    if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == 0) {
+    if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == ADXPD_STAT_STOP) {
         adxb->getwr_func(adxb->getwr_obj, &adxb->wr_pos, &adxb->wr_nsmpl, &adxb->wr_x70);
         n = adxb->pcmbuf_nsmpl - adxb->wr_pos;
         if (n > adxb->wr_nsmpl) {

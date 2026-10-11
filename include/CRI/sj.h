@@ -58,6 +58,7 @@ extern "C" {
 /* sj_crs.c */
 /* sj_utl.c */
 void SJ_SplitChunk(SJCK *ck, Sint32 nbyte, SJCK *ck1, SJCK *ck2);
+Sint8 *SJ_SearchTag(SJCK *cki, Char8 *kw, Char8 *endkw, SJCK *cko);
 
 void SJCRS_Lock(void);
 void SJCRS_Unlock(void);
@@ -66,11 +67,18 @@ void SJCRS_Finish(void);
 
 /* sj_mem.c */
 SJ SJMEM_Create(void *buf, Sint32 bsize);
+Sint32 SJMEM_GetBufSize(SJ sj);
+void *SJMEM_GetBufPtr(SJ sj);
 void SJMEM_Init(void);
 void SJMEM_Finish(void);
 
 /* sj_rbf.c */
 SJ SJRBF_Create(void *buf, Sint32 bsize, Sint32 xsize);
+Sint32 SJRBF_GetFlowCnt(SJ sj, Sint32 id, Sint32 dir);
+Sint32 SJRBF_GetNumObj(SJ sj);
+Sint32 SJRBF_GetXtrSize(SJ sj);
+Sint32 SJRBF_GetBufSize(SJ sj);
+void *SJRBF_GetBufPtr(SJ sj);
 void SJRBF_Init(void);
 void SJRBF_Finish(void);
 

@@ -1,4 +1,5 @@
-/* CRI stream-joint utilities (sj_utl.c). */
+/* CRI stream-joint utilities (sj_utl.c). Signatures from the CRI SJ header (sj.h). */
+#include "CRI/sj.h"
 
 /* Inferred word lookup backing; original C type identity is unknown.
  * ASCII hexadecimal digits map to their numeric values; other entries are zero.
@@ -125,13 +126,6 @@ unsigned int sj_hexstr_to_val_tbl[112] = {
     0,
 };
 
-/* Two-word chunk descriptor view (data address, length) shared by both
- * functions; original field types are unknown. */
-typedef struct SjChunkView {
-    /* 0x00 */ unsigned int word_0;
-    /* 0x04 */ unsigned int word_4;
-} SjChunkView;
-
 /* MSL strncmp; see msl_string.h. */
 extern int strncmp(const char *left, const char *right, unsigned int count);
 
@@ -149,44 +143,46 @@ static inline unsigned int read_length(const signed char *record) {
     return length;
 }
 
-/* Selected raw-address/word interface; original full types/arity/return unknown. */
-unsigned int SJ_SearchTag(SjChunkView *span, const char *wanted, const char *stop,
-                          SjChunkView *output) {
-    unsigned int cursor;
-    unsigned int end;
+/* Finds the record tagged `kw` in the chunk (a record is a 7-character tag at +0, its data length
+ * as 7 hex digits at +8 and the data at +0x10); *cko gets the record's data. Stops at a record
+ * tagged `endkw`. Returns the record, or 0. */
+Sint8 *SJ_SearchTag(SJCK *cki, Char8 *kw, Char8 *endkw, SJCK *cko) {
+    Uint8 *cursor;
+    Uint8 *end;
 
-    output->word_0 = 0;
-    output->word_4 = 0;
-    end = span->word_0 + span->word_4;
-    cursor = span->word_0;
+    cko->data = 0;
+    cko->len = 0;
+    end = cki->data + cki->len;
+    cursor = cki->data;
     while (cursor < end) {
-        if (strncmp((const char *)cursor, wanted, 7) == 0) {
-            output->word_0 = cursor + 0x10;
-            output->word_4 = read_length((const signed char *)cursor);
+        if (strncmp((const char *)cursor, kw, 7) == 0) {
+            cko->data = cursor + 0x10;
+            cko->len = read_length((const signed char *)cursor);
             break;
         }
-        if (stop != 0 && strncmp((const char *)cursor, stop, 7) == 0) {
+        if (endkw != 0 && strncmp((const char *)cursor, endkw, 7) == 0) {
             return 0;
         }
         cursor += read_length((const signed char *)cursor) + 0x10;
     }
     if (cursor < end) {
-        return cursor;
+        return (Sint8 *)cursor;
     }
     return 0;
 }
 
-/* Chosen side-effect projection; original return and full arity unknown. */
-void SJ_SplitChunk(SjChunkView *input, int limit, SjChunkView *prefix, SjChunkView *suffix) {
-    *prefix = *input;
-    suffix->word_4 = prefix->word_4;
-    if ((int)prefix->word_4 > limit) {
-        prefix->word_4 = (unsigned int)limit;
+/* Splits *ck at nbyte: *ck1 gets the first nbyte bytes (or all of it), *ck2 the rest (data 0 when
+ * empty). ck may alias ck1 or ck2. */
+void SJ_SplitChunk(SJCK *ck, Sint32 nbyte, SJCK *ck1, SJCK *ck2) {
+    *ck1 = *ck;
+    ck2->len = ck1->len;
+    if (ck1->len > nbyte) {
+        ck1->len = nbyte;
     }
-    suffix->word_4 -= prefix->word_4;
-    if ((int)suffix->word_4 == 0) {
-        suffix->word_0 = 0;
+    ck2->len -= ck1->len;
+    if (ck2->len == 0) {
+        ck2->data = 0;
     } else {
-        suffix->word_0 = prefix->word_0 + prefix->word_4;
+        ck2->data = ck1->data + ck1->len;
     }
 }

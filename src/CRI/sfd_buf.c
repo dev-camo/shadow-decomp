@@ -3,8 +3,6 @@
 #include "CRI/sj.h"
 #include "CRI/sfd.h"
 
-extern Sint32 SJRBF_GetFlowCnt(SJ sj, Sint32 id, Sint32 dir);
-extern Sint32 SJMEM_GetBufSize(SJ sj);
 extern void SFPTS_InitPtsQue(SFPTS_QUE *que);
 
 #define SFBUF_TR_NONE 9

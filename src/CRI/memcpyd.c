@@ -1,7 +1,7 @@
 /* CRI UTY_MemcpyDword (memcpyd.c): word copy, 16-way unrolled, used for the MPV table setup.
  * Body from the RE4 GameCube decompilation of the same file.
  */
-#include "CRI/cri_xpt.h"
+#include "CRI/uty.h"
 
 /* Copies `ndw` 32-bit words. */
 void UTY_MemcpyDword(Uint32 *dst, Uint32 *src, Uint32 ndw) {

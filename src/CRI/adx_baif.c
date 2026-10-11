@@ -42,7 +42,7 @@ void ADXB_ExecOneAiff8(ADXB adxb) {
     Sint32 n;
 
     inbuf = (Sint8 *)adxb->inbuf;
-    if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == 0) {
+    if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == ADXPD_STAT_STOP) {
         adxb->getwr_func(adxb->getwr_obj, &adxb->wr_pos, &adxb->wr_nsmpl, &adxb->wr_x70);
         n = adxb->pcmbuf_nsmpl - adxb->wr_pos;
         if (n > adxb->wr_nsmpl) {
@@ -83,7 +83,7 @@ void ADXB_ExecOneAiff16(ADXB adxb) {
     Uint16 x;
 
     inbuf = (Uint16 *)adxb->inbuf;
-    if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == 0) {
+    if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == ADXPD_STAT_STOP) {
         adxb->getwr_func(adxb->getwr_obj, &adxb->wr_pos, &adxb->wr_nsmpl, &adxb->wr_x70);
         n = adxb->pcmbuf_nsmpl - adxb->wr_pos;
         if (n > adxb->wr_nsmpl) {
@@ -189,14 +189,11 @@ Sint32 ADXB_CheckAiff(Uint8 *buf) {
     return 0;
 }
 
-/* CRI pass 62: the header ckid/type are Sint32 locals compared with int constants: MWCC reads a
- * `long` compared with an `int` as an int-typed indirection, which the frontend does not propagate
- * into (the kept variable = the target's `mr r27,r30` before the last rlwimi); `end = p + cksz - 4`
- * gives the target's `subi; add`; the two 16-bit reads stored to *nch/*bps carry explicit
- * `& 0xFF` / `& 0xFFFF` masks (the `clrlslwi 16,8` + `rlwimi 0,24,31` shape), the exp/mant reads
- * do not; exp/mant are Uint16 own locals (kept: the `clrlwi r27/r28` write the variables) and
- * the `(Uint16)` cast on SWAP16's argument breaks the frontend CSE, so the 16-bit value is a
- * backend temp (coloured before the block's byte temps: r29/r30 handed out in the COMM block). */
+/* Matching constraints: ckid/type are Sint32 locals compared with int constants (the original keeps
+ * the variable, `mr r27, r30`); `end = p + cksz - 4` gives `subi; add`; the two 16-bit reads stored to
+ * *nch and *bps carry explicit `& 0xFF` / `& 0xFFFF` masks while the exponent/mantissa reads do not;
+ * exp/mant are Uint16 locals and the `(Uint16)` cast on SWAP16's argument keeps the 16-bit value a
+ * separate temporary, as in the original register order. */
 Uint8 *AIFF_GetInfo(Uint8 *buf, Sint32 *sfreq, Sint32 *nch, Sint32 *bps, Sint32 *nsmpl) {
     Uint8 *p;
     Uint8 *end;

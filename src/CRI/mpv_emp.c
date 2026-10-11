@@ -196,8 +196,10 @@ Sint32 MPV_IsEmptyPpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb) {
     return 1;
 }
 
-/* Whether the B picture at `buf` codes nothing (every macroblock skipped or an uncoded interpolated
- * block with zero vectors). */
+/* Whether the B picture at `buf` codes nothing: a single slice (start code 0x101, no extra slice
+ * information) whose first macroblock and last macroblock are forward- or backward-only predicted,
+ * not coded, with zero motion codes, and one address increment (with escapes) skipping all nmb - 2
+ * macroblocks between them; the slice must end within nbyte. */
 Sint32 MPV_IsEmptyBpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb) {
     Sint32 bitpos;
     Uint32 *ptr;
@@ -224,7 +226,8 @@ Sint32 MPV_IsEmptyBpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb) {
     if (val == 0) {
         return 0;
     }
-    /* macroblock_type: "01011x" forward/backward not coded (5 bits) or "001011" (6 bits) */
+    /* macroblock_type backward not coded "010" or forward not coded "0010", each followed by the
+     * zero horizontal and vertical motion codes "1" "1" (5 or 6 bits) */
     MPVEMP_PEEK(val, 6);
     switch (val) {
     case 0x16:

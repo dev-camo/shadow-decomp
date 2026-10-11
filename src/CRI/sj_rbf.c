@@ -80,7 +80,8 @@ static SJRBF_OBJ sjrbf_obj[SJRBF_MAX_OBJ];
 
 /* Byte counters of one side: flow[id][0] = bytes taken with GetChunk, [1] = bytes returned with */
 /* PutChunk (debug/statistics). */
-Sint32 SJRBF_GetFlowCnt(SJRBF_OBJ *sj, Sint32 id, Sint32 dir) {
+Sint32 SJRBF_GetFlowCnt(SJ handle, Sint32 id, Sint32 dir) {
+    SJRBF_OBJ *sj = (SJRBF_OBJ *)handle;
     Sint32 ret;
 
     SJCRS_Lock();
@@ -100,7 +101,8 @@ Sint32 SJRBF_GetFlowCnt(SJRBF_OBJ *sj, Sint32 id, Sint32 dir) {
 /* Unreferenced, so the linker strips it. Body from the RE4 decompilation (not verified
  * against Shadow); its error literals are verified at their .rodata positions.
  */
-Sint32 SJRBF_GetNumObj(SJRBF_OBJ *sj) {
+Sint32 SJRBF_GetNumObj(SJ handle) {
+    SJRBF_OBJ *sj = (SJRBF_OBJ *)handle;
     Sint32 ret;
 
     SJCRS_Lock();
@@ -118,7 +120,8 @@ Sint32 SJRBF_GetNumObj(SJRBF_OBJ *sj) {
 }
 
 /* The extra (mirror) area size in bytes. */
-Sint32 SJRBF_GetXtrSize(SJRBF_OBJ *sj) {
+Sint32 SJRBF_GetXtrSize(SJ handle) {
+    SJRBF_OBJ *sj = (SJRBF_OBJ *)handle;
     Sint32 ret;
 
     SJCRS_Lock();
@@ -136,7 +139,8 @@ Sint32 SJRBF_GetXtrSize(SJRBF_OBJ *sj) {
 }
 
 /* The ring size in bytes. */
-Sint32 SJRBF_GetBufSize(SJRBF_OBJ *sj) {
+Sint32 SJRBF_GetBufSize(SJ handle) {
+    SJRBF_OBJ *sj = (SJRBF_OBJ *)handle;
     Sint32 ret;
 
     SJCRS_Lock();
@@ -154,7 +158,8 @@ Sint32 SJRBF_GetBufSize(SJRBF_OBJ *sj) {
 }
 
 /* The ring buffer base; ADXSJD/AXRNA use it to turn chunk pointers into ring offsets. */
-void *SJRBF_GetBufPtr(SJRBF_OBJ *sj) {
+void *SJRBF_GetBufPtr(SJ handle) {
+    SJRBF_OBJ *sj = (SJRBF_OBJ *)handle;
     void *ret;
 
     SJCRS_Lock();

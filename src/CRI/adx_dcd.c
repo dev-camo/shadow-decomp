@@ -9,6 +9,7 @@
 #include "CRI/adx_dcd.h"
 
 extern unsigned int strlen(const char *text);
+extern void *memcpy(void *destination, const void *source, unsigned int size);
 
 extern double cos(double x);
 extern float __float_nan;
@@ -105,7 +106,7 @@ Sint32 ADX_DecodeFooter(Uint8 *data, Sint32 len, Sint16 *ofst) {
     return 0;
 }
 
-/* header check and encoder version bytes */
+/* header check, then the header version byte (0x12) and the byte after it (0x13) */
 static Sint32 adx_GetVer(Uint8 *data, Sint32 len, Uint8 *major, Uint8 *minor) {
     if (len < 0x14) {
         return -1;
@@ -248,7 +249,8 @@ Sint32 ADX_DecodeInfoExIdly(Uint8 *data, Sint32 len, Uint16 *idly, Uint16 *idly2
     return 0;
 }
 
-/* Encoder version bytes (major at 0x12, minor at 0x13) that select the decryption key scheme. */
+/* Header version byte (0x12; 3 or 4, which selects the loop/delay layout used above) and the byte
+ * after it (0x13), after the usual header checks. */
 Sint32 ADX_DecodeInfoExVer(Uint8 *data, Sint32 len, Uint8 *major, Uint8 *minor) {
     if (len < 0x14) {
         return -1;
@@ -306,7 +308,8 @@ Sint32 ADX_DecodeInfo(Uint8 *data, Sint32 len, Sint16 *hdrlen, Sint8 *fmt, Sint8
     return 0;
 }
 
-/* offset of the first 0x8000 info code word in data (-1: none); the word is compared unsigned */
+/* Finds the first 0x8000 header word at an even offset in data (compared unsigned): stores its offset
+ * in *ofst and returns 0, or stores 0 and returns -1 when there is none. */
 Sint32 ADX_ScanInfoCode(Uint8 *data, Sint32 len, Sint16 *ofst) {
     Sint32 i;
     Sint32 pos;

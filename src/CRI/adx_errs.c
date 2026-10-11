@@ -15,8 +15,11 @@ static void (*adxerr_func)(void *obj, Char8 *msg) = 0;
 static void *adxerr_obj = 0;
 static Char8 adxerr_msg[256];
 
-/* Decimal formatter for the two-number error suffixes, inlined into ADXERR_ItoA2 (its out-of-line
- * copy is stripped by the linker); verified through those inlined copies. */
+/* Intended as the decimal formatter for the two-number error suffixes; inlined into ADXERR_ItoA2
+ * (the out-of-line copy is stripped by the linker) and verified through those inlined copies.
+ * The matched body keeps an inherited CRI quirk: the digit loop stores raw digit values (no '0'
+ * offset) into `str`, `buf` is never written, and the reversed copy from the empty `buf` then
+ * leaves `str` as an empty string. */
 static void adxerr_itoa(Sint32 val, Char8 *str, Sint32 len) {
     static Char8 buf[32];
     Sint32 i;
@@ -42,7 +45,8 @@ static void adxerr_itoa(Sint32 val, Char8 *str, Sint32 len) {
     str[i] = '\0';
 }
 
-/* Formats "a b" into `str` (used by the talk server's decoder-information error message). */
+/* Meant to format "a b" into `str` for the talk server's decoder-information error message; with
+ * the adxerr_itoa quirk above the numbers come out empty and only the separating space remains. */
 void ADXERR_ItoA2(Sint32 a, Sint32 b, Char8 *str, Sint32 len) {
     adxerr_itoa(a, str, len);
     strncat(str, " ", len - strlen(str) - 1);

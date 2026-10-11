@@ -10,13 +10,56 @@
 
 typedef struct ADXPD_OBJ *ADXPD;
 
+/* write-window callback: returns the PCM buffer, *pos the write position in it, *nsmpl the samples
+ * that fit, *x70 the samples left before the trap point */
+typedef Sint16 *(*ADXB_GETWR_FUNC)(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *x70);
+
+/* ADPCM block decoder object (adx_xpnd.c) */
+/* ADXPD_OBJ.stat */
+#define ADXPD_STAT_STOP 0
+#define ADXPD_STAT_START 1
+#define ADXPD_STAT_EXEC 2
+#define ADXPD_STAT_DONE 3
+
+/* ADXPD_OBJ.mode */
+#define ADXPD_MODE_MONO 1
+#define ADXPD_MODE_STE 2
+
+typedef struct ADXPD_OBJ {
+    Sint32 used;      /* 0x00 */
+    Sint32 id;        /* 0x04 */
+    Sint32 x08;       /* 0x08 */
+    Sint32 stat;      /* 0x0C */
+    Sint32 nblk;      /* 0x10 decoded blocks */
+    Sint32 mode;      /* 0x14 */
+    void *in;         /* 0x18 */
+    Sint32 nblk_in;   /* 0x1C */
+    Sint16 *out0;     /* 0x20 */
+    Sint16 *out1;     /* 0x24 */
+    Sint16 dly[2][2]; /* 0x28 */
+    Sint16 k1;        /* 0x30 */
+    Sint16 k2;        /* 0x32 */
+    Sint16 ext1;      /* 0x34 */
+    Sint16 ext2;      /* 0x36 */
+    Sint16 ext3;      /* 0x38 */
+    Sint16 pad3a;
+} ADXPD_OBJ;
+
 /* ADXB_OBJ.stat */
 #define ADXB_STAT_STOP 0
 #define ADXB_STAT_DECODE 1
 #define ADXB_STAT_WRITE 2
 #define ADXB_STAT_DONE 3
 
-/* format ids stored in fmt / decoded by ADXB_DecodeHeader */
+/* container type ids stored in x98 and returned by ADXB_GetFormat */
+#define ADXB_TYPE_ADX 0
+#define ADXB_TYPE_WAV 1
+#define ADXB_TYPE_SPSD 2
+#define ADXB_TYPE_AIFF 3
+#define ADXB_TYPE_AU 4
+#define ADXB_TYPE_AHX 10
+
+/* ADX header format field values (not the container type above) */
 #define ADXB_FMT_ADX 0
 #define ADXB_FMT_AHX 1
 #define ADXB_FMT_PCM16 2
@@ -37,40 +80,40 @@ typedef struct {
     Sint32 total_nsmpl; /* 0x18 */
     Sint16 x1c;         /* 0x1C */
     Uint8 pad1e[2];
-    Sint32 x20;                                                             /* 0x20 */
-    Sint16 x24;                                                             /* 0x24 */
-    Sint16 x26;                                                             /* 0x26 */
-    Sint32 x28;                                                             /* 0x28 */
-    Sint32 x2c;                                                             /* 0x2C */
-    Sint32 x30;                                                             /* 0x30 */
-    Sint32 x34;                                                             /* 0x34 */
-    Sint32 x38;                                                             /* 0x38 */
-    Sint32 x3c;                                                             /* 0x3C */
-    Sint32 x40;                                                             /* 0x40 */
-    Sint32 x44;                                                             /* 0x44 */
-    Sint16 *inbuf;                                                          /* 0x48 */
-    Sint32 inbuf_nsmpl;                                                     /* 0x4C */
-    Sint32 out_nch;                                                         /* 0x50 */
-    Sint32 x54;                                                             /* 0x54 */
-    Sint32 out_fmt;                                                         /* 0x58 */
-    Sint16 *pcmbuf;                                                         /* 0x5C */
-    Sint32 pcmbuf_nsmpl;                                                    /* 0x60 */
-    Sint32 pcmbuf_chofst;                                                   /* 0x64 */
-    Sint32 wr_pos;                                                          /* 0x68 */
-    Sint32 wr_nsmpl;                                                        /* 0x6C */
-    Sint32 wr_x70;                                                          /* 0x70 */
-    Sint32 x74;                                                             /* 0x74 */
-    void (*getwr_func)(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *x70); /* 0x78 */
-    void *getwr_obj;                                                        /* 0x7C */
-    void (*addwr_func)(void *obj, Sint32 nbyte, Sint32 nsmpl);              /* 0x80 */
-    void *addwr_obj;                                                        /* 0x84 */
-    Sint32 x88;                                                             /* 0x88 */
-    Sint32 x8c;                                                             /* 0x8C */
-    Sint32 dec_nsmpl;                                                       /* 0x90 */
-    Sint32 dec_nbyte;                                                       /* 0x94 */
-    Sint16 x98;                                                             /* 0x98 */
-    Sint16 x9a;                                                             /* 0x9A */
-    Sint16 x9c;                                                             /* 0x9C */
+    Sint32 x20;                                                /* 0x20 */
+    Sint16 x24;                                                /* 0x24 */
+    Sint16 x26;                                                /* 0x26 */
+    Sint32 x28;                                                /* 0x28 */
+    Sint32 x2c;                                                /* 0x2C */
+    Sint32 x30;                                                /* 0x30 */
+    Sint32 x34;                                                /* 0x34 */
+    Sint32 x38;                                                /* 0x38 */
+    Sint32 x3c;                                                /* 0x3C */
+    Sint32 x40;                                                /* 0x40 */
+    Sint32 x44;                                                /* 0x44 */
+    Sint16 *inbuf;                                             /* 0x48 */
+    Sint32 inbuf_nsmpl;                                        /* 0x4C */
+    Sint32 out_nch;                                            /* 0x50 */
+    Sint32 x54;                                                /* 0x54 */
+    Sint32 out_fmt;                                            /* 0x58 */
+    Sint16 *pcmbuf;                                            /* 0x5C */
+    Sint32 pcmbuf_nsmpl;                                       /* 0x60 */
+    Sint32 pcmbuf_chofst;                                      /* 0x64 */
+    Sint32 wr_pos;                                             /* 0x68 */
+    Sint32 wr_nsmpl;                                           /* 0x6C */
+    Sint32 wr_x70;                                             /* 0x70 */
+    Sint32 x74;                                                /* 0x74 */
+    ADXB_GETWR_FUNC getwr_func;                                /* 0x78 */
+    void *getwr_obj;                                           /* 0x7C */
+    void (*addwr_func)(void *obj, Sint32 nbyte, Sint32 nsmpl); /* 0x80 */
+    void *addwr_obj;                                           /* 0x84 */
+    Sint32 x88;                                                /* 0x88 */
+    Sint32 x8c;                                                /* 0x8C */
+    Sint32 dec_nsmpl;                                          /* 0x90 */
+    Sint32 dec_nbyte;                                          /* 0x94 */
+    Sint16 x98;                                                /* 0x98 */
+    Sint16 x9a;                                                /* 0x9A */
+    Sint16 x9c;                                                /* 0x9C */
     Uint8 pad9e[2];
     Sint16 key[3];     /* 0xA0 encryption keys (k0, km, ka) */
     Sint16 extprm[3];  /* 0xA6 decoder extension parameters */
@@ -151,9 +194,7 @@ Sint32 ADXB_GetNumChan(ADXB adxb);
 Sint32 ADXB_GetSfreq(ADXB adxb);
 Sint32 ADXB_GetFormat(ADXB adxb);
 Sint16 *ADXB_GetPcmBuf(ADXB adxb);
-void ADXB_EntryGetWrFunc(ADXB adxb,
-                         void (*func)(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *x70),
-                         void *obj);
+void ADXB_EntryGetWrFunc(ADXB adxb, ADXB_GETWR_FUNC func, void *obj);
 Sint32 ADXB_DecodeHeader(ADXB adxb, void *buf, Sint32 bsize);
 void ADXB_SetDefPrm(ADXB adxb);
 Sint32 ADXB_DecodeHeaderAdx(ADXB adxb, Uint8 *buf, Sint32 bsize);

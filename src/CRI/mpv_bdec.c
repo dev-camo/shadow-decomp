@@ -4,6 +4,7 @@
  */
 #include "CRI/cri_xpt.h"
 #include "CRI/mpv.h"
+#include "CRI/uty.h"
 
 /* run/level VLC table entry pointers (mpv_vlc.c) */
 extern Uint32 *mpvvlc_run_level_4;
@@ -14,7 +15,6 @@ extern Uint32 *mpvvlc_run_level_0b;
 extern Uint32 *mpvvlc_run_level_0c;
 
 void DCT_FsriInitScanTbl(Sint8 *seq, Sint8 *scan);
-void UTY_MemcpyDword(void *dst, const void *src, Sint32 ndword);
 void *memcpy(void *dst, const void *src, Uint32 n);
 
 static const Uint16 mpvbdec_bitmsk[16] = {
@@ -47,8 +47,9 @@ Uint8 *MPVBDEC_GetDflIqm(void) {
     return mpvbdec_dfl_iqm;
 }
 
-/* Per-handle block decoder tables: the default MPEG-1 intra quantiser matrix in zigzag order, the
- * zigzag scan and the bit masks the coefficient decoder uses. */
+/* Per-handle block decoder tables: the default MPEG-1 intra quantiser matrix (org_iqm, raster order)
+ * permuted into the IDCT's coefficient order (DCT_FsriInitScanTbl), the zigzag scan mapped to that
+ * order, and the bit masks the coefficient decoder uses. */
 void MPVBDEC_Init(MPV mpv) {
     Sint8 seq[64];
     Sint8 scan[64];
@@ -67,11 +68,11 @@ void MPVBDEC_Init(MPV mpv) {
     }
     zigzag = mpv->zigzag;
     if (zigzag != 0) {
-        UTY_MemcpyDword(zigzag, mpvbdec_zigzag, sizeof(mpvbdec_zigzag) / 4);
+        UTY_MemcpyDword((Uint32 *)zigzag, (Uint32 *)mpvbdec_zigzag, sizeof(mpvbdec_zigzag) / 4);
     }
     bitmsk = mpv->bitmsk;
     if (bitmsk != 0) {
-        UTY_MemcpyDword(bitmsk, mpvbdec_bitmsk, sizeof(mpvbdec_bitmsk) / 4);
+        UTY_MemcpyDword((Uint32 *)bitmsk, (Uint32 *)mpvbdec_bitmsk, sizeof(mpvbdec_bitmsk) / 4);
     }
     memcpy(mpv->group_tbl, group_tbl, sizeof(group_tbl));
     mpv->rl[0].tbl = mpvvlc_run_level_4 - 4;

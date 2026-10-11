@@ -22,19 +22,20 @@
 #define ADXSJD_STAT_END 3
 #define ADXSJD_STAT_ERROR 4
 
-/* ADXB formats handled as raw (undecoded) streams */
+/* container types (ADXB_GetFormat) whose input is passed through undecoded: AHX and the
+ * unnamed types 11, 12, 15 and 20 */
 #define ADXSJD_IS_RAW_FMT(fmt)                                                                     \
-    ((fmt) == 10 || (fmt) == 11 || (fmt) == 12 || (fmt) == 20 || (fmt) == 15)
+    ((fmt) == ADXB_TYPE_AHX || (fmt) == 11 || (fmt) == 12 || (fmt) == 20 || (fmt) == 15)
 
 struct ADXSJD_OBJ {
-    Sint8 used;             /* 0x00 */
-    Sint8 stat;             /* 0x01 */
-    Sint8 nch;              /* 0x02 */
-    Sint8 spsd;             /* 0x03 SPSD stream: the input must hold data before a block starts */
-    ADXB adxb;              /* 0x04 */
-    SJ sji;                 /* 0x08 input */
-    SJ sjo[ADXSJD_MAX_NCH]; /* 0x0C outputs */
-    SJCK inck;              /* 0x14 input chunk handed to the decoder */
+    Sint8 used;                 /* 0x00 */
+    Sint8 stat;                 /* 0x01 */
+    Sint8 nch;                  /* 0x02 */
+    Sint8 au;                   /* 0x03 AU stream: the input must hold data before a block starts */
+    ADXB adxb;                  /* 0x04 */
+    SJ sji;                     /* 0x08 input */
+    SJ sjo[ADXSJD_MAX_NCH];     /* 0x0C outputs */
+    SJCK inck;                  /* 0x14 input chunk handed to the decoder */
     SJCK outck[ADXSJD_MAX_NCH]; /* 0x1C output chunks being written */
     Sint32 dec_nsmpl;           /* 0x2C samples decoded */
     Sint32 dec_nbyte;           /* 0x30 input bytes consumed */
@@ -57,10 +58,6 @@ typedef struct ADXSJD_OBJ ADXSJD_OBJ;
 
 extern void *memset(void *destination, int value, unsigned int size);
 extern void *memcpy(void *destination, const void *source, unsigned int size);
-/* sj_utl.c and sj_rbf.c define these on their private chunk and object types. */
-extern Sint32 SJRBF_GetBufSize(SJ sj);
-extern Sint32 SJRBF_GetXtrSize(SJ sj);
-extern void *SJRBF_GetBufPtr(SJ sj);
 
 ADXSJD_OBJ adxsjd_obj[ADXSJD_MAX_OBJ];
 void (*pl2setsfreqfunc)(ADXB adxb, Sint32 sfreq);
@@ -75,7 +72,7 @@ static void adxsjd_decexec_end(ADXSJD sjd);
 static void adxsjd_pad_out(ADXSJD sjd);
 
 void adxsjd_decexec_start(ADXSJD sjd);
-void *adxsjd_get_wr(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *trap);
+Sint16 *adxsjd_get_wr(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *trap);
 void adxsjd_decode_prep(ADXSJD sjd);
 
 /* Library init (reference counted): the first user brings up the ADXB decoder and clears the slots. */
@@ -122,8 +119,7 @@ ADXSJD ADXSJD_Create(SJ sji, Sint32 nch, SJ *sjo) {
     if (sjd->adxb == 0) {
         return 0;
     }
-    ADXB_EntryGetWrFunc(sjd->adxb, (void (*)(void *, Sint32 *, Sint32 *, Sint32 *))adxsjd_get_wr,
-                        sjd);
+    ADXB_EntryGetWrFunc(sjd->adxb, adxsjd_get_wr, sjd);
     sjd->sji = sji;
     sjd->nch = nch;
     for (i = 0; i < nch; i++) {
@@ -194,7 +190,7 @@ static void adxsjd_reset(ADXSJD sjd) {
     sjd->trap_nsmpl = -1;
     sjd->trap_cnt = 0;
     sjd->trap_dtlen = 0;
-    sjd->spsd = 0;
+    sjd->au = 0;
     sjd->pad_nsmpl = 0;
     sjd->skip_nsmpl = 0;
 }
@@ -257,10 +253,10 @@ void adxsjd_decode_prep(ADXSJD sjd) {
         }
     }
     sjd->hdrlen = hdrlen;
-    if (ADXB_GetFormat(adxb) == ADXB_FMT_SPSD) {
-        sjd->spsd = 1;
+    if (ADXB_GetFormat(adxb) == ADXB_TYPE_AU) {
+        sjd->au = 1;
     }
-    if (ADXB_GetFormat(adxb) == ADXB_FMT_PCM16) {
+    if (ADXB_GetFormat(adxb) == ADXB_TYPE_SPSD) {
         memcpy(sjd->spsdinf, ck.data, (ck.len < 0x40) ? ck.len : 0x40);
     }
     fmt = ADXB_GetFormat(adxb);
@@ -278,7 +274,7 @@ void adxsjd_decode_prep(ADXSJD sjd) {
 }
 
 /* ADXB write callback: where and how much PCM may be written. */
-void *adxsjd_get_wr(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *trap) {
+Sint16 *adxsjd_get_wr(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *trap) {
     /* the typed copy of the `void *` handle is a kept user copy (`mr r31, r3`) that ranks s r31 above
      * trap r30 / nsmpl r29; a typed parameter gets r29 below them */
     ADXSJD s = obj;
@@ -320,14 +316,14 @@ void adxsjd_decexec_start(ADXSJD sjd) {
     if (sjd->trap_nsmpl >= 0 && sjd->trap_cnt >= sjd->trap_nsmpl && sjd->trapfn != 0) {
         sjd->trapfn(sjd->trapobj);
     }
-    if (sjd->spsd == 1) {
+    if (sjd->au == 1) {
         if (SJ_GetNumData(sji, SJ_CK_DATA) == 0) {
             sjd->stat = ADXSJD_STAT_END;
             return;
         }
     }
     SJ_GetChunk(sji, SJ_CK_DATA, 0x7FFFFFFF, &sjd->inck);
-    if (ADXB_GetFormat(adxb) == ADXB_FMT_ADX && sjd->inck.len >= 4 &&
+    if (ADXB_GetFormat(adxb) == ADXB_TYPE_ADX && sjd->inck.len >= 4 &&
         (Uint16) * (Sint16 *)sjd->inck.data == 0x8001) {
         sjd->stat = ADXSJD_STAT_END;
         if (ADX_DecodeFooter(sjd->inck.data, sjd->inck.len, &ftrlen) == 0) {
@@ -373,7 +369,7 @@ void adxsjd_decexec_start(ADXSJD sjd) {
         SJ_UngetChunk(sji, SJ_CK_DATA, &sjd->inck);
         return;
     }
-    if (ADXB_GetFormat(adxb) == 10) {
+    if (ADXB_GetFormat(adxb) == ADXB_TYPE_AHX) {
         SJ_UngetChunk(sji, SJ_CK_DATA, &sjd->inck);
     }
     ADXB_EntryData(adxb, (Sint16 *)sjd->inck.data, sjd->inck.len);
@@ -439,7 +435,7 @@ static void adxsjd_decode(ADXSJD sjd) {
             adxsjd_decexec_end(sjd);
         }
         fmt = adxb->x98;
-        if (fmt == 10 || fmt == 20 || (Uint16)(fmt - 11) <= 1 || fmt == 15) {
+        if (fmt == ADXB_TYPE_AHX || fmt == 20 || (Uint16)(fmt - 11) <= 1 || fmt == 15) {
             adxsjd_rawexec_end(sjd);
         }
     } else if (stat == ADXSJD_STAT_PREP) {
@@ -635,7 +631,7 @@ Sint32 ADXSJD_GetLpStartPos(ADXSJD sjd) {
     return ADXB_GetLpStartPos(sjd->adxb);
 }
 
-/* Loop start byte offset; 0 for a 0 handle. */
+/* Loop start byte offset in the stream; 0 for a 0 handle. */
 Sint32 ADXSJD_GetLpStartOfst(ADXSJD sjd) {
     if (sjd == 0) {
         return 0;
@@ -672,7 +668,7 @@ Sint16 ADXSJD_GetDefPan(ADXSJD sjd, Sint32 ch) {
     return -128;
 }
 
-/* The 64-byte header copy kept for SPSD/PCM16 streams (spsdinf). */
+/* The 64-byte header copy kept for SPSD streams (spsdinf). */
 void *ADXSJD_GetSpsdInfo(ADXSJD sjd) {
     return sjd->spsdinf;
 }
