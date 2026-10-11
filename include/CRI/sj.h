@@ -44,6 +44,8 @@ struct SJ_OBJ {
 };
 
 #define SJ_Destroy(sj) (*(sj)->vtbl->Destroy)(sj)
+#define SJ_GetChunk(sj, id, nbyte, ck) (*(sj)->vtbl->GetChunk)((sj), (id), (nbyte), (ck))
+#define SJ_PutChunk(sj, id, ck) (*(sj)->vtbl->PutChunk)((sj), (id), (ck))
 #define SJ_GetNumData(sj, id) (*(sj)->vtbl->GetNumData)((sj), (id))
 
 #ifdef __cplusplus
@@ -55,6 +57,9 @@ void SJCRS_Lock(void);
 void SJCRS_Unlock(void);
 void SJCRS_Init(void);
 void SJCRS_Finish(void);
+
+/* sj_mem.c */
+SJ SJMEM_Create(void *buf, Sint32 bsize);
 
 /* sj_rbf.c */
 SJ SJRBF_Create(void *buf, Sint32 bsize, Sint32 xsize);

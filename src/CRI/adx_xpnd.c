@@ -6,7 +6,7 @@
  *
  * Body from the RE4 GameCube decompilation of the same file.
  */
-#include "CRI/cri_xpt.h"
+#include "CRI/adx_b.h"
 #include "CRI/adx_dcd.h"
 
 extern void *memset(void *destination, int value, unsigned int size);
@@ -42,8 +42,6 @@ typedef struct ADXPD_OBJ {
     Sint16 ext3;      /* 0x38 */
     Sint16 pad3a;
 } ADXPD_OBJ;
-
-typedef ADXPD_OBJ *ADXPD;
 
 Sint32 adxpd_internal_error;
 ADXPD_OBJ adxpd_obj[ADXPD_MAX_OBJ];

@@ -57,6 +57,37 @@ Runtime.PPCEABI.H/allocator_core.c:
 Runtime.PPCEABI.H/allocator_release.c:
 	.text       start:0x803A3C80 end:0x803A3CD8
 
+CRI/adx_bwav.c:
+	.text       start:0x803B7E48 end:0x803B8CD0
+	.rodata     start:0x80514D08 end:0x80514D28
+	.data       start:0x805690B8 end:0x805690C0
+
+CRI/adx_bahx.c:
+	.text       start:0x803B8CD0 end:0x803B8DDC
+	.bss        start:0x805A7558 end:0x805A7568
+
+CRI/adx_baif.c:
+	.text       start:0x803B8DDC end:0x803B9954
+	.rodata     start:0x80514D28 end:0x80514D38
+
+CRI/adx_bau.c:
+	.text       start:0x803B9954 end:0x803BA82C
+	.rodata     start:0x80514D38 end:0x80514D48
+	.data       start:0x805690C0 end:0x805692C0
+
+CRI/adx_bsps.c:
+	.text       start:0x803BC104 end:0x803BC620
+	.rodata     start:0x805155D0 end:0x805155D8
+
+CRI/adx_errs.c:
+	.text       start:0x803BD180 end:0x803BD7D0
+	.rodata     start:0x80515620 end:0x80515628
+	.bss        start:0x805A8520 end:0x805A8648
+
+CRI/adx_insh.c:
+	.text       start:0x803BD878 end:0x803BDA20
+	.bss        start:0x805A8650 end:0x805A8A90
+
 CRI/adx_xpnd.c:
 	.text       start:0x803C4294 end:0x803C4708
 	.bss        start:0x805ABBA8 end:0x805ABF70
