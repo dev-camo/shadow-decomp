@@ -1,7 +1,7 @@
 #include "Game/fn_8040_vector_types.h"
 
 typedef struct Fn8041157CMatrix {
-    float values[3][4];
+    /* 0x00 */ float values[3][4];
 } Fn8041157CMatrix;
 
 extern void *lbl_805F13A8;

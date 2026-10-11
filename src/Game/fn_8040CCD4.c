@@ -1,6 +1,6 @@
 typedef struct Fn8040CCD4Args {
-    float x;
-    float y;
+    /* 0x00 */ float x;
+    /* 0x04 */ float y;
 } Fn8040CCD4Args;
 
 #pragma fp_contract off

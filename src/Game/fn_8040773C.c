@@ -1,6 +1,6 @@
 typedef struct Fn8040773CObject {
-    unsigned char padding[0x40];
-    void *field_40;
+    /* 0x00 */ unsigned char padding[0x40];
+    /* 0x40 */ void *field_40;
 } Fn8040773CObject;
 
 extern void fn_804034B0(void *object, int value_1C, int value_18);

@@ -1,6 +1,6 @@
 typedef struct Fn80406F08Object {
-    unsigned char padding[0x1C8];
-    int field_1C8;
+    /* 0x000 */ unsigned char padding[0x1C8];
+    /* 0x1C8 */ int field_1C8;
 } Fn80406F08Object;
 
 extern void fn_8040773C(Fn80406F08Object *object, int value, int value_18);

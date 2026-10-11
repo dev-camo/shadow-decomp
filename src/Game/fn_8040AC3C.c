@@ -1,11 +1,11 @@
 typedef struct Fn8040AC40Node {
-    struct Fn8040AC40Node *next;
-    unsigned int value;
+    /* 0x00 */ struct Fn8040AC40Node *next;
+    /* 0x04 */ unsigned int value;
 } Fn8040AC40Node;
 
 typedef struct Fn8040AC40List {
-    unsigned int unknown;
-    Fn8040AC40Node *sentinel;
+    /* 0x00 */ unsigned int unknown;
+    /* 0x04 */ Fn8040AC40Node *sentinel;
 } Fn8040AC40List;
 
 void fn_8040AC3C(void) {}

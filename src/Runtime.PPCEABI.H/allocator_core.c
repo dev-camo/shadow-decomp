@@ -22,17 +22,17 @@
 typedef struct AllocatorBlock AllocatorBlock;
 typedef struct AllocatorArea AllocatorArea;
 struct AllocatorBlock {
-    unsigned int size_flags;
-    unsigned int tagged_area;
-    AllocatorBlock *previous_free;
-    AllocatorBlock *next_free;
+    /* 0x00 */ unsigned int size_flags;
+    /* 0x04 */ unsigned int tagged_area;
+    /* 0x08 */ AllocatorBlock *previous_free;
+    /* 0x0C */ AllocatorBlock *next_free;
 };
 struct AllocatorArea {
-    AllocatorArea *previous_area;
-    AllocatorArea *next_area;
-    unsigned int largest_free_size;
-    unsigned int free_list_offset;
-    unsigned int active_block_count;
+    /* 0x00 */ AllocatorArea *previous_area;
+    /* 0x04 */ AllocatorArea *next_area;
+    /* 0x08 */ unsigned int largest_free_size;
+    /* 0x0C */ unsigned int free_list_offset;
+    /* 0x10 */ unsigned int active_block_count;
 };
 extern void *__pool_alloc(void *pool, unsigned int size);
 extern void __pool_free(void *pool, void *ptr);
@@ -93,11 +93,11 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
         __pool_free(pool, ptr);
         return 0;
     }
-    owner = *((unsigned int *)(((unsigned char *)ptr) - 4));
+    owner = *(unsigned int *)((unsigned char *)ptr - 4);
     if ((owner & 1) == 0) {
-        old_size = *((unsigned int *)(((unsigned char *)owner) + 8));
+        old_size = *(unsigned int *)((unsigned char *)owner + 8);
     } else {
-        block = (AllocatorBlock *)(((unsigned char *)ptr) - 8);
+        block = (AllocatorBlock *)((unsigned char *)ptr - 8);
         old_size = BlockSize(block) - 8;
     }
     if (size > old_size) {
@@ -109,27 +109,26 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
             if (required_size < MINIMUM_BLOCK_SIZE) {
                 required_size = MINIMUM_BLOCK_SIZE;
             }
-            block = (AllocatorBlock *)(((unsigned char *)ptr) - 8);
+            block = (AllocatorBlock *)((unsigned char *)ptr - 8);
             block_size = BlockSize(block);
             area = BlockArea(block);
             free_head_offset = FreeListOffset(area);
-            following = (AllocatorBlock *)(((unsigned char *)block) + block_size);
+            following = (AllocatorBlock *)((unsigned char *)block + block_size);
             if ((following->size_flags & BLOCK_FLAG_2) == 0) {
                 combined_size = block_size + BlockSize(following);
                 block->size_flags &= 7;
                 block->size_flags |= combined_size & BLOCK_SIZE_MASK;
                 if ((block->size_flags & BLOCK_FLAG_2) == 0) {
-                    *((unsigned int *)((((unsigned char *)block) + combined_size) - 4)) =
-                        combined_size;
+                    *(unsigned int *)(((unsigned char *)block + combined_size) - 4) = combined_size;
                 }
                 if ((block->size_flags & BLOCK_FLAG_2) == 0) {
-                    *((unsigned int *)(((unsigned char *)block) + combined_size)) &= ~BLOCK_FLAG_4;
+                    *(unsigned int *)((unsigned char *)block + combined_size) &= ~BLOCK_FLAG_4;
                 } else {
-                    *((unsigned int *)(((unsigned char *)block) + combined_size)) |= BLOCK_FLAG_4;
+                    *(unsigned int *)((unsigned char *)block + combined_size) |= BLOCK_FLAG_4;
                 }
                 coalesced_block = block;
                 UnlinkFreeBlock(area, free_head_offset,
-                                (AllocatorBlock *)(((unsigned char *)block) + block_size));
+                                (AllocatorBlock *)((unsigned char *)block + block_size));
                 combined_size = BlockSize(coalesced_block);
                 if (combined_size >= required_size) {
                     if ((combined_size - required_size) >= MINIMUM_BLOCK_SIZE) {
@@ -152,7 +151,7 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                             split_is_allocated = !split_is_free;
                             split_owner = (split_block->tagged_area & (~1)) | 1;
                             split_remaining =
-                                (AllocatorBlock *)(((unsigned char *)split_block) + split_size);
+                                (AllocatorBlock *)((unsigned char *)split_block + split_size);
                             split_block->tagged_area = split_owner;
                             split_block->size_flags = split_size;
                             if ((split_old_flags & BLOCK_FLAG_4) != 0) {
@@ -163,7 +162,7 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                                 /* The target ORs this header before overwriting its size below. */
                                 split_remaining->size_flags |= BLOCK_FLAG_4;
                             } else {
-                                *((unsigned int *)(((unsigned char *)split_remaining) - 4)) =
+                                *(unsigned int *)((unsigned char *)split_remaining - 4) =
                                     split_size;
                             }
                             split_remaining->tagged_area = split_owner;
@@ -175,14 +174,14 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                             if (split_is_allocated != 0) {
                                 split_remaining->size_flags |= BLOCK_FLAG_2;
                                 split_following =
-                                    (AllocatorBlock *)(((unsigned char *)split_remaining) +
+                                    (AllocatorBlock *)((unsigned char *)split_remaining +
                                                        split_remaining_size);
                                 split_following->size_flags |= BLOCK_FLAG_4;
                             } else {
                                 split_following =
-                                    (AllocatorBlock *)(((unsigned char *)split_remaining) +
+                                    (AllocatorBlock *)((unsigned char *)split_remaining +
                                                        split_remaining_size);
-                                *((unsigned int *)(((unsigned char *)split_following) - 4)) =
+                                *(unsigned int *)((unsigned char *)split_following - 4) =
                                     split_remaining_size;
                             }
                             if (split_is_free != 0) {
@@ -194,11 +193,10 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                             split_boundary_flags = split_remaining->size_flags;
                             split_boundary_size = split_boundary_flags & BLOCK_SIZE_MASK;
                             split_remaining->size_flags = split_boundary_flags & (~BLOCK_FLAG_2);
-                            split_following =
-                                (AllocatorBlock *)(((unsigned char *)split_remaining) +
-                                                   split_boundary_size);
+                            split_following = (AllocatorBlock *)((unsigned char *)split_remaining +
+                                                                 split_boundary_size);
                             split_following->size_flags &= ~BLOCK_FLAG_4;
-                            *((unsigned int *)(((unsigned char *)split_following) - 4)) =
+                            *(unsigned int *)((unsigned char *)split_following - 4) =
                                 split_boundary_size;
                             do {
                                 AllocatorArea *insert_area = BlockArea(split_block);
@@ -232,13 +230,13 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                                                                        (sizeof(AllocatorBlock *))];
                                     /* A free block footer supplies the prior block's size. */
                                     if ((insert_block->size_flags & BLOCK_FLAG_4) == 0) {
-                                        insert_previous_size = *(
-                                            (unsigned int *)(((unsigned char *)insert_block) - 4));
+                                        insert_previous_size =
+                                            *((unsigned int *)((unsigned char *)insert_block - 4));
                                         if ((insert_previous_size & BLOCK_FLAG_2) != 0) {
                                             insert_previous = insert_block;
                                         } else {
                                             insert_previous =
-                                                (AllocatorBlock *)(((unsigned char *)insert_block) -
+                                                (AllocatorBlock *)((unsigned char *)insert_block -
                                                                    insert_previous_size);
                                             insert_previous->size_flags &= 7;
                                             insert_previous->size_flags |=
@@ -247,10 +245,10 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                                             if ((insert_previous->size_flags & BLOCK_FLAG_2) == 0) {
                                                 insert_size =
                                                     insert_previous_size + BlockSize(insert_block);
-                                                *((unsigned int *)((((unsigned char *)
-                                                                         insert_previous) +
-                                                                    insert_size) -
-                                                                   4)) = insert_size;
+                                                *(unsigned int *)((((unsigned char *)
+                                                                        insert_previous) +
+                                                                   insert_size) -
+                                                                  4) = insert_size;
                                             }
                                             if (((AllocatorBlock **)
                                                      insert_area)[insert_head_offset /
@@ -277,9 +275,9 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                                                                        (sizeof(AllocatorBlock *))];
                                     insert_size = BlockSize(insert_block);
                                     insert_following =
-                                        (AllocatorBlock *)(((unsigned char *)insert_block) +
+                                        (AllocatorBlock *)((unsigned char *)insert_block +
                                                            insert_size);
-                                    if ((((AllocatorBlock *)(((unsigned char *)insert_block) +
+                                    if ((((AllocatorBlock *)((unsigned char *)insert_block +
                                                              insert_size))
                                              ->size_flags &
                                          BLOCK_FLAG_2) == 0) {
@@ -288,17 +286,17 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                                         insert_size += insert_following_size;
                                         insert_block->size_flags |= insert_size & BLOCK_SIZE_MASK;
                                         if ((insert_block->size_flags & BLOCK_FLAG_2) == 0) {
-                                            *((unsigned int *)((((unsigned char *)insert_block) +
-                                                                insert_size) -
-                                                               4)) = insert_size;
+                                            *(unsigned int *)(((unsigned char *)insert_block +
+                                                               insert_size) -
+                                                              4) = insert_size;
                                         }
                                         if ((insert_block->size_flags & BLOCK_FLAG_2) == 0) {
-                                            *((unsigned int *)(((unsigned char *)insert_block) +
-                                                               insert_size)) &= ~BLOCK_FLAG_4;
+                                            *(unsigned int *)((unsigned char *)insert_block +
+                                                              insert_size) &= ~BLOCK_FLAG_4;
 
                                         } else {
-                                            *((unsigned int *)(((unsigned char *)insert_block) +
-                                                               insert_size)) |= BLOCK_FLAG_4;
+                                            *(unsigned int *)((unsigned char *)insert_block +
+                                                              insert_size) |= BLOCK_FLAG_4;
                                         }
                                         if (((AllocatorBlock **)
                                                  insert_area)[insert_head_offset /
@@ -356,7 +354,7 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
         if (required_size < MINIMUM_BLOCK_SIZE) {
             required_size = MINIMUM_BLOCK_SIZE;
         }
-        block = (AllocatorBlock *)(((unsigned char *)ptr) - 8);
+        block = (AllocatorBlock *)((unsigned char *)ptr - 8);
         block_size = BlockSize(block);
         if ((block_size - required_size) >= MINIMUM_BLOCK_SIZE) {
             do {
@@ -377,7 +375,7 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                 split_is_free = !(split_old_flags & BLOCK_FLAG_2);
                 split_is_allocated = !split_is_free;
                 split_owner = (split_block->tagged_area & (~1)) | 1;
-                split_remaining = (AllocatorBlock *)(((unsigned char *)split_block) + split_size);
+                split_remaining = (AllocatorBlock *)((unsigned char *)split_block + split_size);
                 split_block->tagged_area = split_owner;
                 split_block->size_flags = split_size;
                 if ((split_old_flags & BLOCK_FLAG_4) != 0) {
@@ -388,7 +386,7 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                     /* The target ORs this header before overwriting its size below. */
                     split_remaining->size_flags |= BLOCK_FLAG_4;
                 } else {
-                    *((unsigned int *)(((unsigned char *)split_remaining) - 4)) = split_size;
+                    *(unsigned int *)((unsigned char *)split_remaining - 4) = split_size;
                 }
                 split_remaining->tagged_area = split_owner;
                 split_remaining_size = split_old_size - split_size;
@@ -398,14 +396,13 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                 }
                 if (split_is_allocated != 0) {
                     split_remaining->size_flags |= BLOCK_FLAG_2;
-                    split_following = (AllocatorBlock *)(((unsigned char *)split_remaining) +
-                                                         split_remaining_size);
+                    split_following =
+                        (AllocatorBlock *)((unsigned char *)split_remaining + split_remaining_size);
                     split_following->size_flags |= BLOCK_FLAG_4;
                 } else {
-                    split_following = (AllocatorBlock *)(((unsigned char *)split_remaining) +
-                                                         split_remaining_size);
-                    *((unsigned int *)(((unsigned char *)split_following) - 4)) =
-                        split_remaining_size;
+                    split_following =
+                        (AllocatorBlock *)((unsigned char *)split_remaining + split_remaining_size);
+                    *(unsigned int *)((unsigned char *)split_following - 4) = split_remaining_size;
                 }
                 if (split_is_free != 0) {
                     split_remaining->next_free = split_block->next_free;
@@ -417,9 +414,9 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                 split_boundary_size = split_boundary_flags & BLOCK_SIZE_MASK;
                 split_remaining->size_flags = split_boundary_flags & (~BLOCK_FLAG_2);
                 split_following =
-                    (AllocatorBlock *)(((unsigned char *)split_remaining) + split_boundary_size);
+                    (AllocatorBlock *)((unsigned char *)split_remaining + split_boundary_size);
                 split_following->size_flags &= ~BLOCK_FLAG_4;
-                *((unsigned int *)(((unsigned char *)split_following) - 4)) = split_boundary_size;
+                *(unsigned int *)((unsigned char *)split_following - 4) = split_boundary_size;
                 do {
                     AllocatorArea *insert_area = BlockArea(split_block);
                     unsigned int insert_head_offset;
@@ -452,22 +449,21 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                         /* A free block footer supplies the prior block's size. */
                         if ((insert_block->size_flags & BLOCK_FLAG_4) == 0) {
                             insert_previous_size =
-                                *((unsigned int *)(((unsigned char *)insert_block) - 4));
+                                *(unsigned int *)((unsigned char *)insert_block - 4);
                             if ((insert_previous_size & BLOCK_FLAG_2) != 0) {
                                 insert_previous = insert_block;
                             } else {
-                                insert_previous =
-                                    (AllocatorBlock *)(((unsigned char *)insert_block) -
-                                                       insert_previous_size);
+                                insert_previous = (AllocatorBlock *)((unsigned char *)insert_block -
+                                                                     insert_previous_size);
                                 insert_previous->size_flags &= 7;
                                 insert_previous->size_flags |=
                                     (insert_previous_size + BlockSize(insert_block)) &
                                     BLOCK_SIZE_MASK;
                                 if ((insert_previous->size_flags & BLOCK_FLAG_2) == 0) {
                                     insert_size = insert_previous_size + BlockSize(insert_block);
-                                    *((unsigned int *)((((unsigned char *)insert_previous) +
-                                                        insert_size) -
-                                                       4)) = insert_size;
+                                    *(unsigned int *)(((unsigned char *)insert_previous +
+                                                       insert_size) -
+                                                      4) = insert_size;
                                 }
                                 if (((AllocatorBlock **)insert_area)[insert_head_offset /
                                                                      (sizeof(AllocatorBlock *))] ==
@@ -491,8 +487,8 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                                  insert_area)[insert_head_offset / (sizeof(AllocatorBlock *))];
                         insert_size = BlockSize(insert_block);
                         insert_following =
-                            (AllocatorBlock *)(((unsigned char *)insert_block) + insert_size);
-                        if ((((AllocatorBlock *)(((unsigned char *)insert_block) + insert_size))
+                            (AllocatorBlock *)((unsigned char *)insert_block + insert_size);
+                        if ((((AllocatorBlock *)((unsigned char *)insert_block + insert_size))
                                  ->size_flags &
                              BLOCK_FLAG_2) == 0) {
                             insert_following_size = BlockSize(insert_following);
@@ -500,16 +496,16 @@ void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
                             insert_size += insert_following_size;
                             insert_block->size_flags |= insert_size & BLOCK_SIZE_MASK;
                             if ((insert_block->size_flags & BLOCK_FLAG_2) == 0) {
-                                *((unsigned int *)((((unsigned char *)insert_block) + insert_size) -
-                                                   4)) = insert_size;
+                                *(unsigned int *)(((unsigned char *)insert_block + insert_size) -
+                                                  4) = insert_size;
                             }
                             if ((insert_block->size_flags & BLOCK_FLAG_2) == 0) {
-                                *((unsigned int *)(((unsigned char *)insert_block) +
-                                                   insert_size)) &= ~BLOCK_FLAG_4;
+                                *(unsigned int *)((unsigned char *)insert_block + insert_size) &=
+                                    ~BLOCK_FLAG_4;
 
                             } else {
-                                *((unsigned int *)(((unsigned char *)insert_block) +
-                                                   insert_size)) |= BLOCK_FLAG_4;
+                                *(unsigned int *)((unsigned char *)insert_block + insert_size) |=
+                                    BLOCK_FLAG_4;
                             }
                             if (((AllocatorBlock **)insert_area)[insert_head_offset /
                                                                  (sizeof(AllocatorBlock *))] ==

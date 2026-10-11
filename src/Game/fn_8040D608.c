@@ -1,14 +1,14 @@
 typedef struct Fn8040D608Args {
-    unsigned char state;
-    unsigned char padding1;
-    unsigned short flags;
-    unsigned short limit;
-    unsigned short padding6;
-    unsigned int field8;
-    unsigned int field12;
-    unsigned int field16;
-    unsigned int field20;
-    unsigned int field24;
+    /* 0x00 */ unsigned char state;
+    /* 0x01 */ unsigned char padding1;
+    /* 0x02 */ unsigned short flags;
+    /* 0x04 */ unsigned short limit;
+    /* 0x06 */ unsigned short padding6;
+    /* 0x08 */ unsigned int field8;
+    /* 0x0C */ unsigned int field12;
+    /* 0x10 */ unsigned int field16;
+    /* 0x14 */ unsigned int field20;
+    /* 0x18 */ unsigned int field24;
 } Fn8040D608Args;
 
 void fn_8040D608(Fn8040D608Args *object) {

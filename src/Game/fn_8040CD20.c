@@ -1,6 +1,6 @@
 typedef struct Fn8040CD20Vector {
-    float x;
-    float y;
+    /* 0x00 */ float x;
+    /* 0x04 */ float y;
 } Fn8040CD20Vector;
 
 float fn_8040CD20(Fn8040CD20Vector *left, Fn8040CD20Vector *right) {

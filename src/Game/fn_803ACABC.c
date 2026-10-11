@@ -1,7 +1,7 @@
-#include "Game/fn_803CB_text_types.h"
+#include "msl_string.h"
 
-/* Chosen byte-buffer/count projection; original full interface unknown. */
-char *fn_803ACABC(char *destination, const char *source, unsigned int count) {
+/* MSL strncpy. */
+char *strncpy(char *destination, const char *source, unsigned int count) {
     /* Target-word addresses preserve the preincrement byte access idiom. */
     unsigned int source_address = (unsigned int)source - 1;
     unsigned int destination_address = (unsigned int)destination - 1;

@@ -1,53 +1,53 @@
 typedef struct ExceptionIndex {
-    unsigned int start;
-    unsigned int size_and_flags;
-    unsigned int exception_table;
+    /* 0x00 */ unsigned int start;
+    /* 0x04 */ unsigned int size_and_flags;
+    /* 0x08 */ unsigned int exception_table;
 } ExceptionIndex;
 
 struct __eti_init_info {
-    ExceptionIndex *index_begin;
-    ExceptionIndex *index_end;
-    char *text_start;
-    unsigned int text_size;
+    /* 0x00 */ ExceptionIndex *index_begin;
+    /* 0x04 */ ExceptionIndex *index_end;
+    /* 0x08 */ char *text_start;
+    /* 0x0C */ unsigned int text_size;
 };
 
 typedef struct FragmentRegistration {
-    struct __eti_init_info *init_info;
-    char *toc;
-    int active;
+    /* 0x00 */ struct __eti_init_info *init_info;
+    /* 0x04 */ char *toc;
+    /* 0x08 */ int active;
 } FragmentRegistration;
 
 typedef struct FragmentInfo {
-    void *exception_record;
-    char *exception_start;
-    void *exception_data;
-    unsigned int address_base;
-    void *relative_base;
-    char *toc;
-    unsigned int reserved_18;
-    unsigned int reserved_1C;
+    /* 0x00 */ void *exception_record;
+    /* 0x04 */ char *exception_start;
+    /* 0x08 */ void *exception_data;
+    /* 0x0C */ unsigned int address_base;
+    /* 0x10 */ void *relative_base;
+    /* 0x14 */ char *toc;
+    /* 0x18 */ unsigned int reserved_18;
+    /* 0x1C */ unsigned int reserved_1C;
 } FragmentInfo;
 
 typedef struct FragmentSearchInfo {
-    ExceptionIndex *index_begin;
-    ExceptionIndex *index_end;
+    /* 0x00 */ ExceptionIndex *index_begin;
+    /* 0x04 */ ExceptionIndex *index_end;
     /* USA uses paired words at sp+0x10/14 and sp+0x18/1c; consumers use 32-bit values. */
     /* These accesses do not prove the original semantic type was unsigned long long. */
-    unsigned long long address_base;
-    unsigned long long relative_base;
-    char *toc;
+    /* 0x08 */ unsigned long long address_base;
+    /* 0x10 */ unsigned long long relative_base;
+    /* 0x18 */ char *toc;
 } FragmentSearchInfo;
 
 typedef struct LongExceptionEntry {
-    unsigned int start;
-    unsigned short length;
-    unsigned short exception_offset;
+    /* 0x00 */ unsigned int start;
+    /* 0x04 */ unsigned short length;
+    /* 0x06 */ unsigned short exception_offset;
 } LongExceptionEntry;
 
 typedef struct ShortExceptionEntry {
-    unsigned short start;
-    unsigned short end;
-    unsigned short exception_offset;
+    /* 0x00 */ unsigned short start;
+    /* 0x02 */ unsigned short end;
+    /* 0x04 */ unsigned short exception_offset;
 } ShortExceptionEntry;
 
 static FragmentRegistration fragmentinfo[1];

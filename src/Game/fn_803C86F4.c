@@ -2,7 +2,7 @@
 
 extern void *memset(void *destination, int value, unsigned int size);
 
-void fn_803C86F4(Fn803C82RecordView *object) {
+void LSC_Destroy(Fn803C82RecordView *object) {
     if (object != 0) {
         fn_803C82_reset_record(object);
         object->byte_0 = 0;

@@ -1,7 +1,7 @@
 typedef struct Fn8040CF90Vector {
-    float x;
-    float y;
-    float z;
+    /* 0x00 */ float x;
+    /* 0x04 */ float y;
+    /* 0x08 */ float z;
 } Fn8040CF90Vector;
 
 float fn_8040CF90(const Fn8040CF90Vector *left, const Fn8040CF90Vector *right) {

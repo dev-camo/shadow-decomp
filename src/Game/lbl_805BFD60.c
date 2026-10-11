@@ -5,6 +5,6 @@
  */
 Fn803CBPairView lbl_805BFE30;
 Fn803CBPairView lbl_805BFE28;
-Fn803CBPairView lbl_805BFE20;
-unsigned char lbl_805BFDA0[0x80];
+Fn803CBPairView svm_err_func;
+unsigned char svmerr_msg[0x80];
 Fn803CBStateView lbl_805BFD60;

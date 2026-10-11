@@ -1,7 +1,7 @@
 typedef struct GlobalDestructorChain {
-    struct GlobalDestructorChain *next;
-    void (*destructor)(void *, int);
-    void *object;
+    /* 0x00 */ struct GlobalDestructorChain *next;
+    /* 0x04 */ void (*destructor)(void *, int);
+    /* 0x08 */ void *object;
 } GlobalDestructorChain;
 
 GlobalDestructorChain *__global_destructor_chain;

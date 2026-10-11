@@ -1,8 +1,8 @@
 typedef struct Fn8040E310Args {
-    unsigned short state;
-    unsigned short padding;
-    unsigned int value;
-    unsigned int mode;
+    /* 0x00 */ unsigned short state;
+    /* 0x02 */ unsigned short padding;
+    /* 0x04 */ unsigned int value;
+    /* 0x08 */ unsigned int mode;
 } Fn8040E310Args;
 
 void fn_8040E310(Fn8040E310Args *object, unsigned int value) {

@@ -1,7 +1,7 @@
 typedef struct Fn80406EBCObject {
-    unsigned char padding[60];
-    void *field_3C;
-    void *field_40;
+    /* 0x00 */ unsigned char padding[60];
+    /* 0x3C */ void *field_3C;
+    /* 0x40 */ void *field_40;
 } Fn80406EBCObject;
 
 extern int fn_80403398(void *object);

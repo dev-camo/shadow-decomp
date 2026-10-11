@@ -1,7 +1,7 @@
 typedef struct Fn80411548Vector {
-    float x;
-    float y;
-    float z;
+    /* 0x00 */ float x;
+    /* 0x04 */ float y;
+    /* 0x08 */ float z;
 } Fn80411548Vector;
 
 void fn_80411548(Fn80411548Vector *destination, const Fn80411548Vector *left,

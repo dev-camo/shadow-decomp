@@ -1,29 +1,29 @@
 #include "Game/fn_803C8_record_types.h"
 
 /* Inferred raw counter and external byte-span views; original types are unknown. */
-extern unsigned int lbl_805BF158;
-extern unsigned char lbl_805BF15C[];
+extern unsigned int sjuni_init_cnt;
+extern unsigned char sjuni_obj[];
 extern void *memset(void *destination, int value, unsigned int size);
 /* Chosen side-effect projections; original full arity/returns unknown. */
 void fn_803C8E2C(void);
 void fn_803C8E5C(void);
 
 /* Inferred side-effect interfaces; original full arity/returns unknown. */
-void fn_803CAC1C(void) {
-    fn_803C8DE0();
-    if (--lbl_805BF158 == 0) {
-        memset(&lbl_805BF15C, 0, 0xC00);
+void SJUNI_Finish(void) {
+    SJCRS_Lock();
+    if (--sjuni_init_cnt == 0) {
+        memset(&sjuni_obj, 0, 0xC00);
     }
-    fn_803C8D94();
+    SJCRS_Unlock();
     fn_803C8E2C();
 }
 
-void fn_803CAC70(void) {
+void SJUNI_Init(void) {
     fn_803C8E5C();
-    fn_803C8DE0();
-    if ((int)lbl_805BF158 == 0) {
-        memset(&lbl_805BF15C, 0, 0xC00);
+    SJCRS_Lock();
+    if ((int)sjuni_init_cnt == 0) {
+        memset(&sjuni_obj, 0, 0xC00);
     }
-    lbl_805BF158++;
-    fn_803C8D94();
+    sjuni_init_cnt++;
+    SJCRS_Unlock();
 }

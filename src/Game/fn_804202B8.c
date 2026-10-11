@@ -1,14 +1,14 @@
 typedef struct Fn804202B8FlagData {
-    char padding[10];
-    volatile unsigned short flags;
+    /* 0x00 */ char padding[10];
+    /* 0x0A */ volatile unsigned short flags;
 } Fn804202B8FlagData;
 
 typedef struct Fn804202B8Vector {
-    float x;
-    float y;
-    float z;
-    unsigned int unknown[2];
-    Fn804202B8FlagData *flag_data;
+    /* 0x00 */ float x;
+    /* 0x04 */ float y;
+    /* 0x08 */ float z;
+    /* 0x0C */ unsigned int unknown[2];
+    /* 0x14 */ Fn804202B8FlagData *flag_data;
 } Fn804202B8Vector;
 
 void fn_804202B8(Fn804202B8Vector *vector) {

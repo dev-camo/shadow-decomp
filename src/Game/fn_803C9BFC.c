@@ -1,28 +1,28 @@
 #include "Game/fn_803C9_record_types.h"
 
 /* Body-inferred raw-word result; original full types/arity are unknown. */
-unsigned int fn_803C9BFC(const Fn803C9RecordView *record) {
+unsigned int SJRBF_GetBufSize(const Fn803C9RecordView *record) {
     const char *diagnostics = lbl_80517288;
     unsigned int result;
 
-    fn_803C8DE0();
+    SJCRS_Lock();
     if (record == 0) {
         char message[64];
 
-        fn_803ACB00(message, diagnostics + 0xC4);
-        fn_803ACA90(message, diagnostics + 0x48);
-        fn_803CAF48(message);
+        strcpy(message, diagnostics + 0xC4);
+        strcat(message, diagnostics + 0x48);
+        SJERR_CallErr(message);
         result = 0;
     } else if ((int)record->word_4 == 0) {
         char message[64];
 
-        fn_803ACB00(message, diagnostics + 0xD0);
-        fn_803ACA90(message, diagnostics + 0x74);
-        fn_803CAF48(message);
+        strcpy(message, diagnostics + 0xD0);
+        strcat(message, diagnostics + 0x74);
+        SJERR_CallErr(message);
         result = 0;
     } else {
         result = record->word_20;
     }
-    fn_803C8D94();
+    SJCRS_Unlock();
     return result;
 }

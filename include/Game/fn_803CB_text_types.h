@@ -8,10 +8,9 @@ typedef void (*Fn803CBTextCallback)(unsigned int argument, const char *text);
 extern "C" {
 #endif
 
-/* Chosen byte-buffer interfaces; original full types/arity/returns unknown. */
-char *fn_803ACABC(char *destination, const char *source, unsigned int count);
-void fn_803CBADC(const char *text);
-void fn_803CBB34(const char *format, ...);
+/* Chosen text interfaces; original full types/arity/returns unknown. */
+void SVM_CallErr1(const char *text);
+void SVM_CallErr(const char *format, ...);
 
 #ifdef __cplusplus
 }

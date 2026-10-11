@@ -1,22 +1,22 @@
 #include "Game/fn_803C9_record_types.h"
 
 /* Inferred side-effect projection; original full types/arity/return unknown. */
-void fn_803CA68C(Fn803C9RecordView *record) {
+void SJRBF_Reset(Fn803C9RecordView *record) {
     const char *diagnostics = lbl_80517288;
 
-    fn_803C8DE0();
+    SJCRS_Lock();
     if (record == 0) {
         char message[64];
 
-        fn_803ACB00(message, diagnostics + 0x19C);
-        fn_803ACA90(message, diagnostics + 0x48);
-        fn_803CAF48(message);
+        strcpy(message, diagnostics + 0x19C);
+        strcat(message, diagnostics + 0x48);
+        SJERR_CallErr(message);
     } else if ((int)record->word_4 == 0) {
         char message[64];
 
-        fn_803ACB00(message, diagnostics + 0x1A8);
-        fn_803ACA90(message, diagnostics + 0x74);
-        fn_803CAF48(message);
+        strcpy(message, diagnostics + 0x1A8);
+        strcat(message, diagnostics + 0x74);
+        SJERR_CallErr(message);
     } else {
         record->word_C = 0;
         record->word_10 = record->word_20;
@@ -27,5 +27,5 @@ void fn_803CA68C(Fn803C9RecordView *record) {
         record->word_30 = 0;
         record->word_34 = 0;
     }
-    fn_803C8D94();
+    SJCRS_Unlock();
 }

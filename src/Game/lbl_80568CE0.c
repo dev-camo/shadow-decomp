@@ -1,7 +1,7 @@
 /* Inferred word lookup backing; original C type identity is unknown.
  * ASCII hexadecimal digits map to their numeric values; other entries are zero.
  */
-unsigned int lbl_80568CE0[112] = {
+unsigned int sj_hexstr_to_val_tbl[112] = {
     /* 0x00..0x0F */
     0,
     0,

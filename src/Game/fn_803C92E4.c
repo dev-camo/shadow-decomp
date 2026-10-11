@@ -1,23 +1,23 @@
 #include "Game/fn_803C8_record_types.h"
 
 /* Inferred side-effect interface; original full arity and return type are unknown. */
-void fn_803C92E4(Fn803C8RecordView *record, int mode, int requested,
-                 Fn803C8DescriptorView *descriptor) {
+void SJMEM_GetChunk(Fn803C8RecordView *record, int mode, int requested,
+                    Fn803C8DescriptorView *descriptor) {
     const char *diagnostics = lbl_80517120;
 
-    fn_803C8DE0();
+    SJCRS_Lock();
     if (record == 0) {
         char message[64];
 
-        fn_803ACB00(message, diagnostics + 0xC8);
-        fn_803ACA90(message, diagnostics + 0x1C);
-        fn_803CAF48(message);
+        strcpy(message, diagnostics + 0xC8);
+        strcat(message, diagnostics + 0x1C);
+        SJERR_CallErr(message);
     } else if ((int)record->word_4 == 0) {
         char message[64];
 
-        fn_803ACB00(message, diagnostics + 0xD4);
-        fn_803ACA90(message, diagnostics + 0x48);
-        fn_803CAF48(message);
+        strcpy(message, diagnostics + 0xD4);
+        strcat(message, diagnostics + 0x48);
+        SJERR_CallErr(message);
     } else if (mode == 0) {
         descriptor->word_4 = 0;
         descriptor->word_0 = 0;
@@ -33,5 +33,5 @@ void fn_803C92E4(Fn803C8RecordView *record, int mode, int requested,
             record->callback_1C(record->argument_20, -3);
         }
     }
-    fn_803C8D94();
+    SJCRS_Unlock();
 }

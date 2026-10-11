@@ -2,14 +2,14 @@
 #define FN_8040_VECTOR_TYPES_H
 
 typedef struct Fn8040Vector2 {
-    float x;
-    float y;
+    /* 0x00 */ float x;
+    /* 0x04 */ float y;
 } Fn8040Vector2;
 
 typedef struct Fn8040Vector3 {
-    float x;
-    float y;
-    float z;
+    /* 0x00 */ float x;
+    /* 0x04 */ float y;
+    /* 0x08 */ float z;
 } Fn8040Vector3;
 
 #ifdef __cplusplus

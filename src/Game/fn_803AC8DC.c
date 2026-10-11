@@ -1,7 +1,7 @@
-#include "Game/fn_803AC8DC.h"
+#include "msl_string.h"
 
-/* Chosen byte-pointer/count projection; original full interface unknown. */
-int fn_803AC8DC(const char *left, const char *right, unsigned int count) {
+/* MSL strncmp. */
+int strncmp(const char *left, const char *right, unsigned int count) {
     /* Modular target addresses preserve the preincrement load idiom. */
     unsigned int left_address = (unsigned int)left - 1;
     unsigned int right_address = (unsigned int)right - 1;

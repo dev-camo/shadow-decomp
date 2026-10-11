@@ -5,20 +5,20 @@ extern void OSRestoreInterrupts(unsigned int state);
 /* Inferred raw storage views; volatile preserves the observed count reload.
  * The signed zero-test view selects MWCC cmpwi without asserting original signedness.
  */
-volatile unsigned int lbl_805BACB8;
-unsigned int lbl_805BACBC;
+volatile unsigned int sjcrs_lvl;
+unsigned int sjcrs_msk;
 
 /* Inferred side-effect interfaces; original argument lists/return types unknown. */
-void fn_803C8D94(void) {
-    lbl_805BACB8--;
-    if ((int)lbl_805BACB8 == 0) {
-        OSRestoreInterrupts(lbl_805BACBC);
+void SJCRS_Unlock(void) {
+    sjcrs_lvl--;
+    if ((int)sjcrs_lvl == 0) {
+        OSRestoreInterrupts(sjcrs_msk);
     }
 }
 
-void fn_803C8DE0(void) {
-    if ((int)lbl_805BACB8 == 0) {
-        lbl_805BACBC = OSDisableInterrupts();
+void SJCRS_Lock(void) {
+    if ((int)sjcrs_lvl == 0) {
+        sjcrs_msk = OSDisableInterrupts();
     }
-    lbl_805BACB8++;
+    sjcrs_lvl++;
 }

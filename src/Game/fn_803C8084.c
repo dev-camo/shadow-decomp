@@ -1,16 +1,16 @@
 /* Inferred callee interfaces: neither body consumes incoming argument registers.
  * Original argument lists and return types are not established.
  */
-extern void fn_803C8D94(void);
-extern void fn_803C8DE0(void);
+extern void SJCRS_Unlock(void);
+extern void SJCRS_Lock(void);
 
 /* Inferred wrapper interfaces: several callers pass an opaque stack address.
  * It is unused here; the original type, full arity and return types are unknown.
  */
-void fn_803C8084(void *unused_context) {
-    fn_803C8D94();
+void LSC_UnlockCrs(void *unused_context) {
+    SJCRS_Unlock();
 }
 
-void fn_803C80A4(void *unused_context) {
-    fn_803C8DE0();
+void LSC_LockCrs(void *unused_context) {
+    SJCRS_Lock();
 }

@@ -11,8 +11,8 @@ extern "C" {
 #endif
 
 /* Chosen consumed-pointer and result projections; original full interfaces unknown. */
-unsigned int fn_803C81A4(const Fn803C81QueryView *object);
-int fn_803C81E4(const Fn803C81QueryView *object);
+unsigned int LSC_GetNumStm(const Fn803C81QueryView *object);
+int LSC_GetStat(const Fn803C81QueryView *object);
 int fn_804030A8(const Fn803C81QueryView *object);
 /* Chosen side-effect projection; original full arity/types/return unknown. */
 void fn_804030D4(void);

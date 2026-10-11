@@ -2,25 +2,25 @@
 
 extern const char lbl_80516FD4[];
 extern const char lbl_80517000[];
-extern void fn_803C7F90(const char *format, ...);
+extern void LSC_CallErrFunc(const char *format, ...);
 extern unsigned int strlen(const char *text);
 /* Chosen consumed-register/returned-word projection; original full interface unknown. */
-int fn_803C84B8(Fn803C84RecordView *record, const char *text, unsigned int word_C,
-                unsigned int word_10, unsigned int word_14) {
+int LSC_EntryFileRange(Fn803C84RecordView *record, const char *text, unsigned int word_C,
+                       unsigned int word_10, unsigned int word_14) {
     Fn803C84EntryView *entry;
     int generation;
     unsigned int length;
     unsigned int index;
     unsigned int previous;
     if (record == 0) {
-        fn_803C7F90(lbl_80516FD4);
+        LSC_CallErrFunc(lbl_80516FD4);
         return -1;
     }
     if ((int)record->header.word_24 >= 16) {
         return -1;
     }
     if (text == 0) {
-        fn_803C7F90(lbl_80517000);
+        LSC_CallErrFunc(lbl_80517000);
         return -1;
     }
     previous = record->entries_38[(int)(record->header.word_1C + 15u) % 16].word_0;

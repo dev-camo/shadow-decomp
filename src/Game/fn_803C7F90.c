@@ -5,9 +5,9 @@ typedef void (*DiagnosticCallback)(void *context, const char *text);
 
 /* Inferred storage view from this helper and fn_803C8050. */
 typedef struct {
-    DiagnosticCallback callback;
-    void *context;
-    char text[0x100];
+    /* 0x00 */ DiagnosticCallback callback;
+    /* 0x04 */ void *context;
+    /* 0x08 */ char text[0x100];
 } DiagnosticState;
 
 /* Incomplete storage views preserve the target's absolute-address loads and stores. */
@@ -15,14 +15,14 @@ extern DiagnosticCallback lbl_805B6498[];
 extern void *lbl_805B649C[];
 
 /* Inferred variadic diagnostic signature; callers do not consume a result. */
-void fn_803C7F90(const char *format, ...) {
+void LSC_CallErrFunc(const char *format, ...) {
     MwccVaList args;
     DiagnosticCallback callback;
     DiagnosticState *state = (DiagnosticState *)lbl_805B6498;
 
     /* Use the compiler intrinsic to save registers and initialize the varargs cursor. */
     __builtin_va_info(args);
-    fn_803A92D8(state->text, format, args);
+    vsprintf(state->text, format, args);
     callback = state->callback;
     if (callback != 0) {
         callback(state->context, state->text);
