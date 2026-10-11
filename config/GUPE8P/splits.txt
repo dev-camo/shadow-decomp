@@ -234,6 +234,9 @@ Game/fn_803CBB34.c:
 Game/fn_803CC9D0.c:
 	.text       start:0x803CC9D0 end:0x803CCA88
 
+Game/fn_803CCA8C.c:
+	.text       start:0x803CCA8C end:0x803CCC94
+
 Game/fn_80403054.c:
 	.text       start:0x80403054 end:0x80403058
 

@@ -335,6 +335,7 @@ config.libs = [
                     "Game/fn_803CC9D0.c",
                     extra_cflags=["-sdata 0", "-use_lmw_stmw on"],
                 ),
+                Object(Matching, "Game/fn_803CCA8C.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "Game/fn_803ACABC.c"),
                 # CRI middleware units named after their original source files.
                 Object(Matching, "CRI/lsc_err.c"),
