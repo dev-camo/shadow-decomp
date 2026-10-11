@@ -1,3 +1,5 @@
+#include "Game/fn_803AC8DC.h"
+
 /* Chosen byte-pointer/count projection; original full interface unknown. */
 int fn_803AC8DC(const char *left, const char *right, unsigned int count) {
     /* Modular target addresses preserve the preincrement load idiom. */
