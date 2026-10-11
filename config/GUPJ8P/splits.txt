@@ -307,8 +307,17 @@ CRI/sfd_aoap.c:
 CRI/sfd_con.c:
 	.text       start:0x803F0C10 end:0x803F0F30
 
+CRI/sfd_mpvf.c:
+	.text       start:0x803F8FB4 end:0x803F96E8
+
 CRI/sfd_pl2.c:
 	.text       start:0x803F96E8 end:0x803F9B18
+
+CRI/sfd_ply.c:
+	.text       start:0x803F9B18 end:0x803FBAC8
+	.rodata     start:0x80518E10 end:0x80518FA8
+	.data       start:0x8056A330 end:0x8056A34C
+	.bss        start:0x805DDCA8 end:0x805DDCB8
 
 CRI/sfd_see.c:
 	.text       start:0x803FBE3C end:0x803FC68C

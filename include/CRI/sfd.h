@@ -31,9 +31,13 @@ typedef struct {
     Sint32 x18;
 } SFAOAP;
 
+/* clock source (sfd_tim.c) */
+typedef Sint32 (*SFTIM_FN)(SFD sfd, Sint32 *ncount, Sint32 *tscale);
+
 /* concatenated-play work (sfd_con.c), at SFD_OBJ + 0xD30 */
 typedef struct {
-    Uint8 pad0[0xB8];
+    SFTIM_FN timefn[6]; /* 0x00 clock sources (the SFTIM_WORK view of this memory) */
+    Uint8 pad18[0xB8 - 0x18];
     Sint32 tottime; /* 0xB8 total time of the concatenated files */
     Sint32 tunit;   /* 0xBC */
     Uint8 padc0[0x150 - 0xC0];
@@ -70,8 +74,6 @@ typedef struct {
     Sint32 val;   /* 0x24 */
     Sint32 unit;  /* 0x28 */
 } SFTIM_TTU;
-
-typedef Sint32 (*SFTIM_FN)(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 
 /* timing work (sfd_tim.c), the same memory as SFCON at SFD_OBJ + 0xD30 (SFD_TIM(sfd)) */
 typedef struct {
@@ -343,7 +345,9 @@ typedef struct {
     Sint8 pa_xba;         /* 0xBE */
     Sint8 pa_xbb;         /* 0xBF */
     Sint8 pa_xbc;         /* 0xC0 */
-    Uint8 padc1[0xE0 - 0xC1];
+    Uint8 padc1[0xC4 - 0xC1];
+    Sint32 xc4; /* 0xC4 last key compared by SFMPVF_HoldFrm (this game only) */
+    Uint8 padc8[0xE0 - 0xC8];
     Sint64 pts; /* 0xE0 */
 } SFMPV_FRM;
 
@@ -405,7 +409,8 @@ typedef struct {
 } SFMPV_WORK;
 
 /* 0xA8-byte player information block returned by SFD_GetPlyInf; this game's block is 8 bytes longer
- * than RE4's (its fields from +0x24 sit 4 bytes later, from +0x30 8 bytes later) */
+ * than RE4's: a frame counter is added at +0x18 (so RE4's fields from +0x18 sit 4 bytes later) and the
+ * 64-bit counters from +0x30 are realigned 8 bytes later (sfd_ply.c SFPLY_PLYINF is the field view) */
 typedef struct {
     Sint32 raw[0x2A];
 } SFD_PLYINF;
@@ -616,6 +621,15 @@ typedef struct {
     Sint32 cnt;
 } SFTMR_TSUM;
 
+/* this game only: frame statistics of one play (sfd_ply.c; field meanings inferred from use) */
+typedef struct {
+    Sint64 t0;    /* 0x00 clock at the first SFD_GetFrm (fn_803FEA5C) */
+    Sint64 t1;    /* 0x08 clock when the play ended */
+    Sint64 tunit; /* 0x10 clock units per second at the end (fn_803FE96C) */
+    Sint32 nfrm;  /* 0x18 frames taken by SFD_GetFrm */
+    Float32 rate; /* 0x1C nfrm * tunit / (t1 - t0) */
+} SFPLY_FRMSTAT;
+
 /* system stream (MPS) driver work (sfd_mps.c), SFD_OBJ + 0x2190, tr[1].hn */
 #define SFMPS_STMID_MIN 0xBC
 #define SFMPS_STMID_MAX 0xFF
@@ -652,7 +666,9 @@ typedef struct SFD_OBJ {
     Sint32 req;       /* 0x4C requested state (3 = standby, 4 = start) */
     Sint32 pause_sw;  /* 0x50 */
     Sint32 pause_cnt; /* 0x54 */
-    Uint8 pad58[0x74 - 0x58];
+    Sint32 x58;       /* 0x58 frame access claimed by SFD_GetFrm/SFD_RelFrm (this game only) */
+    Sint32 x5c;       /* 0x5C (this game only) */
+    Uint8 pad60[0x74 - 0x60];
     Sint32 pad74;
     SFHDS_FHD fhd; /* 0x78 file header analysis */
     Sint32 x90c;   /* 0x90C stream information (16 words cleared by sfply_InitHn) */
@@ -696,9 +712,10 @@ typedef struct SFD_OBJ {
     SFAOAP aoap; /* 0x34FC (tr[7].hn) */
     SFUO uo_tbl; /* 0x3518 */
     Sint32 pad354c;
-    SFSEE_HN see;       /* 0x3550 (SFD_EntrySeek) */
-    SFTMR_TSUM tsum[6]; /* 0x3560 server time statistics (tsum[5]: sfply_ExecOne) */
-} SFD_OBJ;              /* 0x3620 */
+    SFSEE_HN see;          /* 0x3550 (SFD_EntrySeek) */
+    SFTMR_TSUM tsum[6];    /* 0x3560 server time statistics (tsum[5]: sfply_ExecOne) */
+    SFPLY_FRMSTAT frmstat; /* 0x3620 (this game only) */
+} SFD_OBJ;                 /* 0x3640 */
 
 /* 64-bit stream counters inside plyinf seen through a separate view: SFD_PLYINF itself has to stay
  * 4-byte aligned (SFD_GetPlyInf copies it with a lwz/stw loop). Offsets are RE4's + 8 (from the
@@ -811,6 +828,7 @@ void SFSEE_InitHn(SFSEE_HN *see);
 void SFSEE_ExecServer(SFD sfd);
 void SFSEE_FixAvPlay(SFD sfd, Sint32 a, Sint32 b);
 Sint32 SFD_GetPlyInf(SFD sfd, SFD_PLYINF *inf);
+Sint32 SFD_TermSupply(SFD sfd);
 Sint32 SFD_SetCond(SFD sfd, Sint32 id, Sint32 val);
 Sint32 SFD_GetHnStat(SFD sfd);
 Sint32 SFD_GetTime(SFD sfd, Sint32 *ncount, Sint32 *tscale);
