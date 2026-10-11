@@ -110,7 +110,7 @@ below; every reconstructed file is still verified against this game's own execut
 
 | Project | Used for |
 | --- | --- |
-| [Resident Evil 4](https://github.com/adonis-singh/re4) (GameCube) | CRI middleware sources used as the basis for `src/CRI/` (gcci.c, gcci_sub.c, mfci.c, svm.c, sj_mem.c, sj_rbf.c, lsc_ini.c, lsc_svr.c, lsc_err.c, lsc.c, cri_cvfs.c, adx_fini.c, adx_fcch.c), the CRI interface headers, and names for CRI and Dolphin SDK functions |
+| [Resident Evil 4](https://github.com/adonis-singh/re4) (GameCube) | CRI middleware sources used as the basis for most of `src/CRI/`: ADX (ADXF, ADXB format decoders, ADXPD, ADXRNA, errors), LSC, SJ, SVM, CVFS and the MFCI/GCCI device interfaces, and Sofdec MPV/MPS/SFD and UTY helper units; the CRI interface and Sofdec layout headers; names for CRI and Dolphin SDK functions |
 | [Mortal Kombat: Deception](https://github.com/ShulkMaster/mk-deception) (GameCube) | CRI svm.c, lsc.c and adx_fini.c references: function order and names such as `SVM_ExecSvrMain`/`Fs`/`Vsync`/`MwIdle`, `SVM_SetCbBdr`, `LSC_SetLpFlg` and `LSC_Start` |
 | [Street Fighter III: 3rd Strike](https://github.com/crowded-street/3s-decomp) | Newer CRI lsc.c reference: source order, error-code numbering and names such as `LSC_ResetEntry` and the LSC stream queries; CRI adx_fs.c function bodies and ADXF/ADXSTM function names |
 | [Teenage Mutant Ninja Turtles 2: Battle Nexus](https://github.com/xntrz/tmnt2) (PC reimplementation) | CRI adx_fs.c structure: public `ADXF_*` entries wrapping `adxf_*` workers, and names such as `adxf_OpenRange` |
