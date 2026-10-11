@@ -341,8 +341,6 @@ config.libs = [
                 Object(Matching, "CRI/lsc_crs.c"),
                 Object(Matching, "Game/fn_803C80C4.c"),
                 Object(Matching, "Game/fn_803C8100.c"),
-                Object(Matching, "CRI/sj_crs.c", extra_cflags=["-sdata 0"]),
-                Object(Matching, "Game/fn_803C8E2C.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "Game/fn_803C9A7C.c"),
                 Object(Matching, "Game/fn_803C9B50.c"),
                 Object(Matching, "Game/fn_803C9BFC.c"),
@@ -464,6 +462,7 @@ config.libs = [
         "cflags": cflags_base,
         "progress_category": "game",
         "objects": [
+            Object(Matching, "CRI/sj_crs.c", extra_cflags=["-sdata 0"]),
             # The two-part error messages need the readonly string pool.
             Object(
                 Matching,
