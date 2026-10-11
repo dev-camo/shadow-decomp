@@ -723,6 +723,16 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "CRI/adx_fsvr.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
                 "CRI/adx_gc.c",
                 extra_cflags=[
                     "-sdata 0",
@@ -843,6 +853,30 @@ config.libs = [
                     "-inline noauto",
                 ],
             ),
+            # Deferred inlining: MWCC emits the functions (and lays out .bss) in reverse order.
+            Object(
+                Matching,
+                "CRI/adx_tlk.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                    "-inline auto,deferred",
+                ],
+            ),
+            # Deferred inlining: MWCC emits the functions (and lays out .bss) in reverse order.
+            Object(
+                Matching,
+                "CRI/adx_tlk2.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                    "-inline auto,deferred",
+                ],
+            ),
             Object(
                 Matching,
                 "CRI/adx_sfa.c",
@@ -908,6 +942,26 @@ config.libs = [
             Object(
                 Matching,
                 "CRI/rna_crs.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/mpv_cmc.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/sfd_con.c",
                 extra_cflags=[
                     "-sdata 0",
                     "-sdata2 0",

@@ -10,6 +10,7 @@
 #include "CRI/adx.h"
 #include "CRI/adx_b.h"
 #include "CRI/adx_dcd.h"
+#include "CRI/adx_sjd.h"
 
 #define ADXSJD_MAX_OBJ 16
 #define ADXSJD_MAX_NCH 2
@@ -25,7 +26,7 @@
 #define ADXSJD_IS_RAW_FMT(fmt)                                                                     \
     ((fmt) == 10 || (fmt) == 11 || (fmt) == 12 || (fmt) == 20 || (fmt) == 15)
 
-typedef struct {
+struct ADXSJD_OBJ {
     Sint8 used;             /* 0x00 */
     Sint8 stat;             /* 0x01 */
     Sint8 nch;              /* 0x02 */
@@ -51,9 +52,8 @@ typedef struct {
     Sint32 lnksw;      /* 0x9C linked (concatenated) files */
     Sint32 pad_nsmpl;  /* 0xA0 silence samples to insert before the output */
     Sint32 skip_nsmpl; /* 0xA4 output samples to discard */
-} ADXSJD_OBJ;
-
-typedef ADXSJD_OBJ *ADXSJD;
+};
+typedef struct ADXSJD_OBJ ADXSJD_OBJ;
 
 extern void *memset(void *destination, int value, unsigned int size);
 extern void *memcpy(void *destination, const void *source, unsigned int size);
@@ -74,34 +74,9 @@ static void adxsjd_rawexec_end(ADXSJD sjd);
 static void adxsjd_decexec_end(ADXSJD sjd);
 static void adxsjd_pad_out(ADXSJD sjd);
 
-void ADXSJD_ExecHndl(ADXSJD sjd);
 void adxsjd_decexec_start(ADXSJD sjd);
 void *adxsjd_get_wr(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *trap);
 void adxsjd_decode_prep(ADXSJD sjd);
-
-void ADXSJD_RestoreSnapshot(ADXSJD sjd);
-void ADXSJD_TakeSnapshot(ADXSJD sjd);
-void *ADXSJD_GetSpsdInfo(ADXSJD sjd);
-Sint32 ADXSJD_GetDefPan(ADXSJD sjd, Sint32 ch);
-Sint32 ADXSJD_GetDefOutVol(ADXSJD sjd);
-Sint32 ADXSJD_GetLpEndOfst(ADXSJD sjd);
-Sint32 ADXSJD_GetLpEndPos(ADXSJD sjd);
-Sint32 ADXSJD_GetLpStartOfst(ADXSJD sjd);
-Sint32 ADXSJD_GetLpStartPos(ADXSJD sjd);
-Sint32 ADXSJD_GetNumLoop(ADXSJD sjd);
-Sint32 ADXSJD_GetTotalNumSmpl(ADXSJD sjd);
-Sint32 ADXSJD_GetBlkSmpl(ADXSJD sjd);
-Sint32 ADXSJD_GetOutBps(ADXSJD sjd);
-Sint32 ADXSJD_GetNumChan(ADXSJD sjd);
-Sint32 ADXSJD_GetSfreq(ADXSJD sjd);
-Sint32 ADXSJD_GetFormat(ADXSJD sjd);
-void ADXSJD_SetTrapDtLen(ADXSJD sjd, Sint32 len);
-void ADXSJD_SetTrapCnt(ADXSJD sjd, Sint32 cnt);
-void ADXSJD_SetTrapNumSmpl(ADXSJD sjd, Sint32 nsmpl);
-void ADXSJD_EntryTrapFunc(ADXSJD sjd, void (*fn)(void *obj), void *obj);
-void ADXSJD_SetLnkSw(ADXSJD sjd, Sint32 sw);
-void ADXSJD_SetDecPos(ADXSJD sjd, Sint32 pos);
-Sint32 ADXSJD_GetDecNumSmpl(ADXSJD sjd);
 
 /* Library init (reference counted): the first user brings up the ADXB decoder and clears the slots. */
 void ADXSJD_Init(void) {
@@ -679,7 +654,7 @@ Sint32 ADXSJD_GetLpEndOfst(ADXSJD sjd) {
 }
 
 /* Default output volume from the stream's AINF chunk once decoding has begun; 0 otherwise. */
-Sint32 ADXSJD_GetDefOutVol(ADXSJD sjd) {
+Sint16 ADXSJD_GetDefOutVol(ADXSJD sjd) {
     if (ADXB_GetAinfLen(sjd->adxb) > 0 &&
         (sjd->stat == ADXSJD_STAT_DECODE || sjd->stat == ADXSJD_STAT_END)) {
         return ADXB_GetDefOutVol(sjd->adxb);
@@ -689,7 +664,7 @@ Sint32 ADXSJD_GetDefOutVol(ADXSJD sjd) {
 
 /* Default pan of channel `ch` from the stream's AINF chunk, only once the header has been decoded
  * (stat DECODE/END); -128 otherwise. */
-Sint32 ADXSJD_GetDefPan(ADXSJD sjd, Sint32 ch) {
+Sint16 ADXSJD_GetDefPan(ADXSJD sjd, Sint32 ch) {
     if (ADXB_GetAinfLen(sjd->adxb) > 0 &&
         (sjd->stat == ADXSJD_STAT_DECODE || sjd->stat == ADXSJD_STAT_END)) {
         return ADXB_GetDefPan(sjd->adxb, ch);

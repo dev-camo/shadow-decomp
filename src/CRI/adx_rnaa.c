@@ -19,9 +19,9 @@ Sint32 ADXRNA_SetStmHdInfo(AXRNA rna, void *hdinfo) {
 /* No-op: the AX renderer does not need the total sample count. */
 void ADXRNA_SetTotalNumSmpl(AXRNA rna, Sint32 nsmpl) {}
 
-/* Forwards a discard request (AXRNA does not implement it). */
-void ADXRNA_DiscardData(AXRNA rna, Sint32 nsmpl) {
-    AXRNA_DiscardData(rna, nsmpl);
+/* Forwards a discard request (AXRNA does not implement it and returns 0). */
+Sint32 ADXRNA_DiscardData(AXRNA rna, Sint32 nsmpl) {
+    return AXRNA_DiscardData(rna, nsmpl);
 }
 
 /* Forwards the PCM bit depth. */
@@ -84,9 +84,9 @@ void ADXRNA_Destroy(AXRNA rna) {
     AXRNA_Destroy(rna);
 }
 
-/* Creates an AXRNA over the decoder output stream joints. */
-AXRNA ADXRNA_Create(Sint32 nch, void *sj) {
-    return AXRNA_Create(nch, sj);
+/* Creates an AXRNA over the decoder output stream joints (the work area is not used on AX). */
+AXRNA ADXRNA_Create(SJ *sjo, Sint32 nch, void *work) {
+    return AXRNA_Create(sjo, nch);
 }
 
 /* Registers the renderer error callback. */

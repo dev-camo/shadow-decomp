@@ -31,7 +31,7 @@ typedef struct {
     Sint32 x18;
 } SFAOAP;
 
-/* concatenated-play work (sfd_con.c), at SFD_OBJ + 0xD28 */
+/* concatenated-play work (sfd_con.c), at SFD_OBJ + 0xD30 */
 typedef struct {
     Uint8 pad0[0xB8];
     Sint32 tottime; /* 0xB8 total time of the concatenated files */
@@ -73,7 +73,7 @@ typedef struct {
 
 typedef Sint32 (*SFTIM_FN)(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 
-/* timing work (sfd_tim.c), the same memory as SFCON at SFD_OBJ + 0xD28 (SFD_TIM(sfd)) */
+/* timing work (sfd_tim.c), the same memory as SFCON at SFD_OBJ + 0xD30 (SFD_TIM(sfd)) */
 typedef struct {
     SFTIM_FN timefn[6];  /* 0x000 clock sources (SFTIM_SetTimeFn / cond 0xF) */
     Bool (*isskipfn)();  /* 0x018 SFD_SetUsrIsSkipFn */
@@ -674,10 +674,9 @@ typedef struct SFD_OBJ {
     SFLIB_ERRINF err;              /* 0x9F0 */
     Sint32 cond[SFD_COND_NUM];     /* 0xA04 */
     Sint32 cond_def[SFD_COND_NUM]; /* 0xB94 */
-    Uint8 padD24[4];
-    /* 0xD28 */
-    SFCON con; /* 0xD28 (also the SFTIM handle: &sfd->con) */
-    Uint8 padFA4[0x1018 - 0xD28 - sizeof(SFCON)];
+    Uint8 padD24[0xD30 - 0xD24];
+    SFCON con; /* 0xD30 (also the SFTIM handle: &sfd->con; sfd_con.c) */
+    Uint8 padFAC[0x1018 - 0xD30 - sizeof(SFCON)];
     Uint8 tst[0x1C0]; /* 0x1018 time stabiliser work (sfd_tst.c SFTST_WORK) */
     Uint8 pad11D8[0x12D8 - 0x11D8];
     SFPLY_PTSM ptsm; /* 0x12D8 */

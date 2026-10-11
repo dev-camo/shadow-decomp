@@ -7,6 +7,7 @@
  * callback at 0x803C3980 compares it with the decoded data length.
  */
 #include "CRI/cri_xpt.h"
+#include "CRI/adx_sjd.h"
 #include "CRI/sj.h"
 
 #define ADXT_MAX_OBJ 16
@@ -76,7 +77,8 @@ typedef struct {
     Sint32 startvsync; /* 0xA0 adxt_vsync_cnt at start */
     Sint32 decsmpl;    /* 0xA4 samples decoded before the current (linked) file */
     Sint8 stmstart;    /* 0xA8 start the stream when the decoder is ready */
-    Uint8 pada9[0xAC - 0xA9];
+    Sint8 xa9;         /* 0xA9 Ver.9.44: 1 = apply the header default volume and pan */
+    Uint8 padaa[0xAC - 0xAA];
     Uint8 *wkend;    /* 0xAC end of the file stream ring buffer (ADXT_Create) */
     void *stm_fname; /* 0xB0 pending adxt_start_stm arguments */
     void *stm_dir;   /* 0xB4 */
@@ -110,6 +112,7 @@ void ADXT_DestroyAll(void);
 void ADXT_SetDefSvrFreq(Sint32 freq);
 
 /* adx_tlk.c */
+void ADXT_Stop(ADXT adxt);
 void ADXT_StopWithoutLsc(ADXT adxt);
 void adxt_start_sj(ADXT adxt, SJ sj);
 void ADXT_SetLnkSw(ADXT adxt, Sint32 sw);
@@ -123,9 +126,8 @@ Sint32 ADXT_GetNumFiles(ADXT adxt);
 void ADXT_ResetEntry(ADXT adxt);
 void ADXT_ExecLscSvr(void);
 
-/* adx_sjd.c */
-void ADXSJD_Init(void);
-void ADXSJD_Finish(void);
+/* adx_tsvr.c */
+void ADXT_ExecHndl(ADXT adxt);
 
 /* adx_insh.c */
 void ADXT_InsertHdrSfa(ADXT_OBJ *adxt, Sint32 a, Sint32 b, Sint32 c);

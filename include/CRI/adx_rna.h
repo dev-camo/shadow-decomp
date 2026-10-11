@@ -5,6 +5,7 @@
  * (AXRNA_*). The renderer handle stays opaque. Signatures follow the RE4 decompilation.
  */
 #include "CRI/cri_xpt.h"
+#include "CRI/sj.h"
 
 typedef struct AXRNA_OBJ *AXRNA;
 
@@ -16,7 +17,7 @@ extern "C" {
 void ADXRNA_SetAdjsfreqFlg(AXRNA rna, Sint32 flg);
 Sint32 ADXRNA_SetStmHdInfo(AXRNA rna, void *hdinfo);
 void ADXRNA_SetTotalNumSmpl(AXRNA rna, Sint32 nsmpl);
-void ADXRNA_DiscardData(AXRNA rna, Sint32 nsmpl);
+Sint32 ADXRNA_DiscardData(AXRNA rna, Sint32 nsmpl);
 void ADXRNA_SetBitPerSmpl(AXRNA rna, Sint32 bps);
 void ADXRNA_SetOutBalance(AXRNA rna, Sint32 bal);
 void ADXRNA_SetOutPan(AXRNA rna, Sint32 ch, Sint32 pan);
@@ -29,7 +30,7 @@ Sint32 ADXRNA_GetNumData(AXRNA rna);
 void ADXRNA_SetPlaySw(AXRNA rna, Sint32 sw);
 void ADXRNA_SetTransSw(AXRNA rna, Sint32 sw);
 void ADXRNA_Destroy(AXRNA rna);
-AXRNA ADXRNA_Create(Sint32 nch, void *sj);
+AXRNA ADXRNA_Create(SJ *sjo, Sint32 nch, void *work);
 void ADXRNA_EntryErrFunc(void (*func)(void *obj, Char8 *msg), void *obj);
 void ADXRNA_Finish(void);
 void ADXRNA_Init(void);
@@ -37,7 +38,7 @@ void ADXRNA_Init(void);
 /* AX renderer */
 void AXRNA_SetAdjsfreqFlg(AXRNA rna, Sint32 flg);
 void AXRNA_SetStmHdInfo(AXRNA rna, void *hdinfo);
-void AXRNA_DiscardData(AXRNA rna, Sint32 nsmpl);
+Sint32 AXRNA_DiscardData(AXRNA rna, Sint32 nsmpl);
 void AXRNA_SetBitPerSmpl(AXRNA rna, Sint32 bps);
 void AXRNA_SetOutPan(AXRNA rna, Sint32 ch, Sint32 pan);
 void AXRNA_SetOutVol(AXRNA rna, Sint32 vol);
@@ -49,7 +50,7 @@ Sint32 AXRNA_GetNumData(AXRNA rna);
 void AXRNA_SetPlaySw(AXRNA rna, Sint32 sw);
 void AXRNA_SetTransSw(AXRNA rna, Sint32 sw);
 void AXRNA_Destroy(AXRNA rna);
-AXRNA AXRNA_Create(Sint32 nch, void *sj);
+AXRNA AXRNA_Create(SJ *sj, Sint32 maxnch);
 void AXRNA_EntryErrFunc(void (*func)(void *obj, Char8 *msg), void *obj);
 void AXRNA_Finish(void);
 void AXRNA_Init(void);

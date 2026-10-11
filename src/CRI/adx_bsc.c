@@ -543,12 +543,12 @@ void ADXB_TakeSnapshot(ADXB adxb) {
 }
 
 /* Default pan of channel `ch` from the AINF header chunk (-128 = none), as ADXT applies at start. */
-Sint32 ADXB_GetDefPan(ADXB adxb, Sint32 ch) {
+Sint16 ADXB_GetDefPan(ADXB adxb, Sint32 ch) {
     return adxb->def_pan[ch];
 }
 
 /* Default output volume from the AINF header chunk (0 if the stream carries none). */
-Sint32 ADXB_GetDefOutVol(ADXB adxb) {
+Sint16 ADXB_GetDefOutVol(ADXB adxb) {
     return adxb->def_outvol;
 }
 

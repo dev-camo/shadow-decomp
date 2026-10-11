@@ -6,11 +6,12 @@
  * decompilation's extra volume setters (with their literals and statics) are left out.
  */
 #include "CRI/adx.h"
+#include "CRI/adx_amp.h"
 #include "CRI/sj.h"
 
 extern void *memset(void *destination, int value, unsigned int size);
 
-typedef struct {
+struct ADXAMP_OBJ {
     Sint8 used;      /* 0x00 */
     Sint8 stat;      /* 0x01 */
     Sint8 nch;       /* 0x02 */
@@ -23,7 +24,8 @@ typedef struct {
     Float32 vol;     /* 0x24 */
     Sint32 rsv28;    /* 0x28 */
     Sint32 total;    /* 0x2C */
-} ADXAMP_OBJ;
+};
+typedef struct ADXAMP_OBJ ADXAMP_OBJ;
 
 // Records the sampling rate.
 void ADXAMP_SetSfreq(ADXAMP_OBJ *amp, Sint32 sfreq) {

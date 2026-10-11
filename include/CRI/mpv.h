@@ -13,6 +13,12 @@ typedef struct {
     Sint32 n;
 } MPVCMC_REF;
 
+/* an output block table: chroma block count (-1: none) and the six block descriptors */
+typedef struct {
+    Sint32 ccnt;
+    MPVCMC_REF oi[6];
+} MPVCMC_OUTBLK;
+
 /* error record (MPVERR_InitErrInf clears all five words) */
 typedef struct {
     void (*func)(void *obj, Sint32 code);
@@ -150,10 +156,8 @@ typedef struct MPV_OBJ {
     Sint32 cbp_msk; /* 0x0A0 */
     Uint8 padA4[0xCC - 0xA4];
     MPVMC mc;            /* 0x0CC */
-    Sint32 ccnt_rt;      /* 0x120 */
-    MPVCMC_REF oi_rt[6]; /* 0x124 */
-    Sint32 ccnt;         /* 0x154 */
-    MPVCMC_REF oi[6];    /* 0x158 */
+    MPVCMC_OUTBLK ob_rt; /* 0x120 */
+    MPVCMC_OUTBLK ob;    /* 0x154 */
     Sint32 stat;         /* 0x188 */
     Sint32 x18c;         /* 0x18C */
     Sint32 cond[16];     /* 0x190 (cond[5] = mcflag) */
@@ -192,7 +196,8 @@ typedef struct MPV_OBJ {
     Float64 blk[6][32];         /* 0x680 six 0x100-byte coefficient blocks */
     Uint8 intra_iqm[64];        /* 0xC80 */
     Uint8 nintra_iqm[64];       /* 0xCC0 */
-    Uint8 work[0x1100 - 0xD00]; /* 0xD00 */
+    Uint8 padD00[0xD20 - 0xD00];
+    Uint8 work[0x1100 - 0xD20]; /* 0xD20 (MPVCMC_InitObj) */
     Uint16 bitmsk[16];          /* 0x1100 */
     Sint8 zigzag[64];           /* 0x1120 */
     Uint8 pad1160[0x1260 - 0x1160];
@@ -225,6 +230,21 @@ Sint32 MPV_IsEmptyPpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb);
 Sint32 MPV_IsEmptyBpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb);
 Sint32 MPVLIB_CheckHn(MPV_OBJ *mpv);
 Sint32 MPVERR_SetCode(MPV_OBJ *mpv, Sint32 code);
+
+/* mpv_cmc.c */
+extern void (*mpvcmc_oneref[8])(MPVMC *mc);
+void MPVCMC_SetCcnt(MPV_OBJ *mpv);
+void MPVCMC_InitMcOiRt(MPV_OBJ *mpv);
+void MPVCMC_InitObj(MPV_OBJ *mpv);
+void MPVCMC_Init(void);
+
+/* mpv_mc.c, mpv_mcy.c: motion compensation kernels */
+void MPVMC08_Init(MPVMC *mc);
+void MPVMC16_Init(MPVMC *mc);
+void MPVMC08_OneRef1p_TuneC(MPVMC *mc);
+void MPVMC08_OneRefH2_TuneC(MPVMC *mc);
+void MPVMC08_OneRefV2_TuneC(MPVMC *mc);
+void MPVMC08_OneRef4p_TuneC(MPVMC *mc);
 
 #define MPV_ERR_INVALID_HN 0xFF030200
 

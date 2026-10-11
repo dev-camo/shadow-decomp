@@ -110,6 +110,10 @@ CRI/adx_errs.c:
 	.rodata     start:0x80516098 end:0x805160A0
 	.bss        start:0x805A8FC0 end:0x805A90E8
 
+CRI/adx_fsvr.c:
+	.text       start:0x803BE1E0 end:0x803BE288
+	.bss        start:0x805A90E8 end:0x805A90F0
+
 CRI/adx_insh.c:
 	.text       start:0x803BE288 end:0x803BE430
 	.bss        start:0x805A90F0 end:0x805A9530
@@ -133,6 +137,16 @@ CRI/adx_stmc.c:
 	.rodata     start:0x805161C0 end:0x805161F0
 	.data       start:0x80569D08 end:0x80569D18
 	.bss        start:0x805AB6C8 end:0x805AC5E0
+
+CRI/adx_tlk.c:
+	.text       start:0x803C1AE0 end:0x803C3D94
+	.rodata     start:0x805161F0 end:0x80516950
+	.data       start:0x80569D18 end:0x80569D20
+	.bss        start:0x805AC5E0 end:0x805AC638
+
+CRI/adx_tlk2.c:
+	.text       start:0x803C3D94 end:0x803C3F4C
+	.rodata     start:0x80516950 end:0x805169D0
 
 CRI/adx_xpnd.c:
 	.text       start:0x803C4CA4 end:0x803C5118
@@ -255,6 +269,10 @@ CRI/mpv_bdec.c:
 	.rodata     start:0x805193E0 end:0x805194A0
 	.bss        start:0x805C9D68 end:0x805C9DE8
 
+CRI/mpv_cmc.c:
+	.text       start:0x803D693C end:0x803D6A70
+	.bss        start:0x805C9DE8 end:0x805C9E08
+
 CRI/mpv_deli.c:
 	.text       start:0x803D8088 end:0x803D8324
 
@@ -281,6 +299,9 @@ CRI/mpvabdec.c:
 	.text       start:0x803E1D58 end:0x803EE628
 	.rodata     start:0x80519660 end:0x80519674
 	.data       start:0x8056A170 end:0x8056AD70
+
+CRI/sfd_con.c:
+	.text       start:0x803F1620 end:0x803F1940
 
 CRI/sfd_pl2.c:
 	.text       start:0x803FA0F8 end:0x803FA528
