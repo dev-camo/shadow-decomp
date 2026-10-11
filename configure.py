@@ -337,7 +337,6 @@ config.libs = [
                 ),
                 Object(Matching, "Game/fn_803ACABC.c"),
                 # CRI middleware units named after their original source files.
-                Object(Matching, "Game/fn_803BF924.c"),
                 Object(Matching, "Game/fn_80403054.c"),
                 Object(Matching, "Game/fn_804030A8.c"),
                 Object(Matching, "Game/fn_80403058.c"),
@@ -830,6 +829,18 @@ config.libs = [
                     "-sdata2 0",
                     "-str readonly",
                     "-use_lmw_stmw on",
+                ],
+            ),
+            # -inline noauto: only the helpers declared inline are expanded.
+            Object(
+                Matching,
+                "CRI/adx_stmc.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                    "-inline noauto",
                 ],
             ),
             Object(

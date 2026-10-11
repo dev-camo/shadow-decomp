@@ -58,7 +58,6 @@ typedef ADXSJD_OBJ *ADXSJD;
 extern void *memset(void *destination, int value, unsigned int size);
 extern void *memcpy(void *destination, const void *source, unsigned int size);
 /* sj_utl.c and sj_rbf.c define these on their private chunk and object types. */
-extern void SJ_SplitChunk(SJCK *ck, Sint32 nbyte, SJCK *ck1, SJCK *ck2);
 extern Sint32 SJRBF_GetBufSize(SJ sj);
 extern Sint32 SJRBF_GetXtrSize(SJ sj);
 extern void *SJRBF_GetBufPtr(SJ sj);

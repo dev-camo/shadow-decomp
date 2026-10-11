@@ -128,6 +128,12 @@ CRI/adx_sje.c:
 	.data       start:0x805692C0 end:0x805692C8
 	.bss        start:0x805A8A98 end:0x805AAC28
 
+CRI/adx_stmc.c:
+	.text       start:0x803BFEC0 end:0x803C10D0
+	.rodata     start:0x80515748 end:0x80515778
+	.data       start:0x805692C8 end:0x805692D8
+	.bss        start:0x805AAC28 end:0x805ABB40
+
 CRI/adx_xpnd.c:
 	.text       start:0x803C4294 end:0x803C4708
 	.bss        start:0x805ABBA8 end:0x805ABF70

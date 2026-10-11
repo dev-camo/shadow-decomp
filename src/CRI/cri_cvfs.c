@@ -55,10 +55,10 @@ typedef struct {
     Char8 name[CVFS_DEVNAME_LEN]; /* 0x04 */
 } CVFS_DEV;
 
-typedef struct {
+struct CVFS_OBJ {
     CVFS_DEVIF *vtbl; /* 0x00 */
     void *hn;         /* 0x04 the device's handle */
-} CVFS_OBJ;
+};
 
 CVFS_USRERRFN cvfs_errfn;
 static void *cvfs_errobj;
