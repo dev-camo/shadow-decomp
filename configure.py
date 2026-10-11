@@ -432,6 +432,12 @@ config.libs = [
         "objects": [
             Object(
                 Matching,
+                "CRI/adx_fini.c",
+                extra_cflags=["-sdata 0", "-sdata2 0", "-str readonly"],
+            ),
+            Object(Matching, "CRI/adx_fcch.c", extra_cflags=["-sdata 0"]),
+            Object(
+                Matching,
                 "CRI/cri_cvfs.c",
                 extra_cflags=[
                     "-sdata 0",

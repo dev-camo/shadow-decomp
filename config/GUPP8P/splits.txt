@@ -57,6 +57,14 @@ Runtime.PPCEABI.H/allocator_core.c:
 Runtime.PPCEABI.H/allocator_release.c:
 	.text       start:0x803A4690 end:0x803A46E8
 
+CRI/adx_fini.c:
+	.text       start:0x803C61D0 end:0x803C6328
+	.rodata     start:0x80516B58 end:0x80516BA8
+	.bss        start:0x805B46C8 end:0x805B5048
+
+CRI/adx_fcch.c:
+	.text       start:0x803C6328 end:0x803C6348
+
 CRI/cri_cvfs.c:
 	.text       start:0x803C7BE8 end:0x803C8FE0
 	.rodata     start:0x80517218 end:0x80517DD8

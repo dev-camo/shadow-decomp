@@ -82,6 +82,14 @@ Game/fn_803ACABC.c:
 Game/fn_803BF924.c:
 	.text       start:0x803BF924 end:0x803BF934
 
+CRI/adx_fini.c:
+	.text       start:0x803C5180 end:0x803C52D8
+	.rodata     start:0x80515A40 end:0x80515A90
+	.bss        start:0x805B3608 end:0x805B3F88
+
+CRI/adx_fcch.c:
+	.text       start:0x803C52D8 end:0x803C52F8
+
 CRI/cri_cvfs.c:
 	.text       start:0x803C6B98 end:0x803C7F90
 	.rodata     start:0x80516100 end:0x80516CC0
