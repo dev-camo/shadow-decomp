@@ -446,6 +446,8 @@ config.libs = [
     DolphinLib(
         "os",
         [
+            Object(Matching, "dolphin/OSError.c"),
+            Object(Matching, "dolphin/OSContext.c"),
             Object(Matching, "dolphin/OSArena.c"),
             Object(Matching, "dolphin/OSAudioSystem.c"),
             Object(Matching, "dolphin/OSSync.c"),

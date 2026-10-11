@@ -38,6 +38,16 @@ dolphin/OSAudioSystem.c:
 	.text       start:0x80371418 end:0x803716AC
 	.data       start:0x805601F8 end:0x80560278
 
+dolphin/OSContext.c:
+	.text       start:0x80371AE4 end:0x80372384
+	.data       start:0x805604A8 end:0x80560680
+
+dolphin/OSError.c:
+	.text       start:0x80372384 end:0x80372A30
+	.data       start:0x80560680 end:0x805609A0
+	.bss        start:0x80585BF0 end:0x80585C38
+	.sdata      start:0x805EDB40 end:0x805EDB48
+
 dolphin/OSInterrupt.c:
 	.text       start:0x803752D4 end:0x80375B40
 	.data       start:0x805614C0 end:0x805614F0
