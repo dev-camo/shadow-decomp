@@ -100,3 +100,22 @@ Download the latest release from [encounter/objdiff](https://github.com/encounte
 Select an object from the left sidebar to begin diffing. Changes to the project will rebuild automatically: changes to source files, headers, `configure.py`, `splits.txt` or `symbols.txt`.
 
 ![](.github/assets/objdiff.png)
+
+Attribution
+===========
+
+This decompilation builds on work published by other decompilation projects. Their
+sources were used as references for the code, names and layouts listed below; every
+reconstructed file is still verified against this game's own executable.
+
+| Project | Used for |
+| --- | --- |
+| [Resident Evil 4](https://github.com/adonis-singh/re4) (GameCube) | CRI middleware sources used as the basis for `src/CRI/` (gcci.c, gcci_sub.c, mfci.c, svm.c, sj_mem.c, sj_rbf.c, lsc_ini.c, lsc_svr.c, lsc_err.c, lsc.c, cri_cvfs.c, adx_fini.c, adx_fcch.c), the CRI interface headers, and names for CRI and Dolphin SDK functions |
+| [Mortal Kombat: Deception](https://github.com/ShulkMaster/mk-deception) (GameCube) | CRI svm.c, lsc.c and adx_fini.c references: function order and names such as `SVM_ExecSvrMain`/`Fs`/`Vsync`/`MwIdle`, `SVM_SetCbBdr`, `LSC_SetLpFlg` and `LSC_Start` |
+| [Street Fighter III: 3rd Strike](https://github.com/crowded-street/3s-decomp) | Newer CRI lsc.c reference: source order, error-code numbering and names such as `LSC_ResetEntry` and the LSC stream queries; CRI adx_fs.c reference |
+| [Xenoblade Chronicles](https://github.com/xbret/xenoblade) | CRI sj_crs.c names `SJCRS_Init` and `SJCRS_Finish` |
+| [Sonic Heroes](https://github.com/Jovinull/sonicheroes) | CRI cri_cvfs.c and adx_fini.c comparison references |
+| [The Legend of Zelda: The Wind Waker](https://github.com/zeldaret/tww) and [Twilight Princess](https://github.com/zeldaret/tp) | Metrowerks runtime and Dolphin OS references for GCN_mem_alloc.c, abort, signal and heap function names |
+| [Pikmin 2](https://github.com/projectPiki/pikmin2) | Metrowerks MSL allocator references (alloc.c function names and sizes) |
+| [Metroid Prime](https://github.com/PrimeDecomp/prime) and [Mario Kart: Double Dash!!](https://github.com/doldecomp/mkdd) | Metrowerks MSL allocator comparison references |
+| [decomp-toolkit](https://github.com/encounter/decomp-toolkit), [dtk-template](https://github.com/encounter/dtk-template) and [objdiff](https://github.com/encounter/objdiff) | Project tooling, build template and object diffing |
