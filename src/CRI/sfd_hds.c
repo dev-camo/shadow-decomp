@@ -1,6 +1,5 @@
 /* CRI Sofdec: file header (SFD header packet) analysis and storage (sfd_hds.c). The 0x800-byte raw
- * header handed in by the input driver is parsed through the SFH analyser into SFHDS_FHD.
- * NonMatching (excluded): SFHDS_SetHdr differs in register allocation; see its comment. */
+ * header handed in by the input driver is parsed through the SFH analyser into SFHDS_FHD. */
 #include "CRI/sfd.h"
 #include "CRI/sfh.h"
 
@@ -353,18 +352,22 @@ static Bool sfhds_SetHdrPkt(SFD sfd, Uint8 *p, Sint32 len, Sint32 *result) {
 }
 
 /* the file header travels in a private stream 2 packet: `data` points at its payload */
-/* NonMatching: the original keeps a copy of `result` as the first callee-saved local (`mr r30, r7`);
- * this plain form allocates the locals differently (11 words). */
+/* the file header travels in a private stream 2 packet: `data` points at its payload. Matching
+ * constraint: the original keeps a copy of `result` in a callee-saved register (`mr r30, r7`); the
+ * codeless register move below keeps that copy (COMPILER-DIFF M1; both moves are deleted). */
 Bool SFHDS_SetHdr(SFD sfd, Sint32 type, Uint8 *data, Sint32 size, Sint32 *result) {
-    Uint8 *p;
+    register Sint32 *res;
     Sint32 len;
+    Uint8 *p;
 
-    *result = 0;
+    res = (Sint32 *)(void *)result;
+    asm { mr r11, res; mr res, r11 } // COMPILER-DIFF: M1 (codeless neighbour pin)
+    *res = 0;
     if (type != 2) {
         return 0;
     }
-    len = size + 6;
     p = data - 6;
+    len = size + 6;
     if (sfhds_GetStartCode(p) != SFHDS_STARTCODE_PRV2) {
         p -= 2;
         len += 2;
@@ -372,7 +375,7 @@ Bool SFHDS_SetHdr(SFD sfd, Sint32 type, Uint8 *data, Sint32 size, Sint32 *result
             return 0;
         }
     }
-    return sfhds_SetHdrPkt(sfd, p, len, result);
+    return sfhds_SetHdrPkt(sfd, p, len, res);
 }
 
 // Invalidates the header analysis (handle reset).

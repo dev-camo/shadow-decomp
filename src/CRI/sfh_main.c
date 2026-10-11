@@ -1,10 +1,8 @@
 /* CRI Sofdec file header analyser (sfh_main.c): validates the 0x800-byte SofdecStream header and
  * reads the pack/element/feature fields out of it.
  *
- * NonMatching (excluded): written as plain C, the seven big-endian 32-bit readers (SFH_AnlyElemSmpHz,
- * MaxFrmNum, MaxPlyLenVid/Aud, ByteRate, PackSiz, HdrSiz) store the swapped word with `stwbrx`,
- * where the original keeps a `rlwinm`/`rlwimi` swap chain and a plain `stw`; the other functions
- * are identical. */
+ * The seven big-endian 32-bit readers keep the original's `rlwinm`/`rlwimi` swap chain and plain
+ * `stw` through a never-taken conditional (see SFH_AnlyElemSmpHz). */
 #include "CRI/cri_xpt.h"
 #include "CRI/sfh.h"
 
@@ -497,8 +495,14 @@ Bool SFH_AnlyElemCodecVid(SFH sfh, Uint8 id, Sint32 *val) {
 }
 
 // Audio element: sampling rate (big-endian 32-bit).
+/* Matching constraint (COMPILER-DIFF M4): the original stores the swapped word with `stw` after a
+ * `rlwinm`/`rlwimi` chain; our compiler folds a same-block swap+store into `stwbrx`, so the never-taken
+ * `if (z != 0)` puts the store in another basic block. */
 Bool SFH_AnlyElemSmpHz(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
+    Uint32 w;
+    Sint32 z;
+    Bool ret;
 
     *val = 0;
     elem = sfh_GetElem(sfh, id);
@@ -508,8 +512,14 @@ Bool SFH_AnlyElemSmpHz(SFH sfh, Uint8 id, Sint32 *val) {
     if (sfh_GetStmType(id) != SFH_STM_AUD) {
         return FALSE;
     }
-    *val = SWAP32(SFH_ELEM_SMPHZ(elem));
-    return TRUE;
+    w = SWAP32(SFH_ELEM_SMPHZ(elem));
+    ret = TRUE;
+    z = 0;
+    if (z != 0) {
+        ret = id;
+    }
+    *val = w;
+    return ret;
 }
 
 // Audio element: channel count.
@@ -563,17 +573,24 @@ Bool SFH_AnlyElemCodecAud(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-/* pack / file level fields: the public functions are wrappers around these readers, which gives
- * hdr the register below the IsValid flag (a caller-declared hdr gets the one above it). */
-
+/* Big-endian 32-bit header field after the handle checks (same store constraint as SFH_AnlyElemSmpHz). */
 static Bool sfh_GetHdrU32(SFH sfh, Sint32 ofs, Sint32 *val) {
     Uint8 *hdr = sfh->hdr;
+    Uint32 w;
+    Sint32 z;
+    Bool ret;
 
     if (!sfh_IsAnlyOk(sfh)) {
         return FALSE;
     }
-    *val = SWAP32(*(Uint32 *)(hdr + ofs));
-    return TRUE;
+    w = SWAP32(*(Uint32 *)(hdr + ofs));
+    ret = TRUE;
+    z = 0;
+    if (z != 0) {
+        ret = (Sint32)hdr;
+    }
+    *val = w;
+    return ret;
 }
 
 // Big-endian 16-bit header field after the handle checks.
@@ -599,8 +616,12 @@ static Bool sfh_GetHdrU8(SFH sfh, Sint32 ofs, Sint32 *val) {
 }
 
 // Big-endian 32-bit header field, only for tool versions >= `ver`.
+/* Big-endian 32-bit header field, only for tool versions >= `ver` (same store constraint). */
 static Bool sfh_GetHdrU32Ver(SFH sfh, Sint32 ofs, Sint32 ver, Sint32 *val) {
     Uint8 *hdr = sfh->hdr;
+    Uint32 w;
+    Sint32 z;
+    Bool ret;
 
     if (!sfh_IsAnlyOk(sfh)) {
         return FALSE;
@@ -608,8 +629,14 @@ static Bool sfh_GetHdrU32Ver(SFH sfh, Sint32 ofs, Sint32 ver, Sint32 *val) {
     if (sfh->ver < ver) {
         return FALSE;
     }
-    *val = SWAP32(*(Uint32 *)(hdr + ofs));
-    return TRUE;
+    w = SWAP32(*(Uint32 *)(hdr + ofs));
+    ret = TRUE;
+    z = 0;
+    if (z != 0) {
+        ret = (Sint32)hdr;
+    }
+    *val = w;
+    return ret;
 }
 
 // Total video frame count (offset 0xC0; what mwPlyGetHdrInf reports as maxfrm).

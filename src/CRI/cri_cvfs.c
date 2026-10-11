@@ -5,8 +5,7 @@
  * Bodies follow the RE4 GameCube decompilation of Ver.2.37. Only cvFsEntryErrFunc,
  * cvFsGetFileSize, cvFsGetStat, cvFsExecServer, cvFsStopTr, cvFsReqRd, cvFsSeek, cvFsTell,
  * cvFsClose, cvFsOpen, cvFsSetDefDev, cvFsAddDev and cvFsCallUsrErrFn are referenced and
- * survive linking. NonMatching (excluded): cvFsGetFileSize allocates one register differently in
- * plain C (one word); the other referenced functions are identical to this game. Every other function here
+ * survive linking; they are verified against this game. Every other function here
  * (initialisation, volumes, directories, option functions, write, the remaining queries and
  * the out-of-line copies of the static helpers) is stripped by the linker: their bodies are
  * reference-derived and unverified, and only the error literals and storage order they
@@ -688,10 +687,12 @@ void cvFsEntryErrFunc(CVFS_USRERRFN func, void *obj) {
     }
 }
 
+/* Matching constraint: the original allocates `pdev` before the device table; the codeless move
+ * through r11 keeps pdev live long enough to get that register order (COMPILER-DIFF M1; no code). */
 Sint32 cvFsGetFileSize(const Char8 *fname) {
     Char8 dev[CVFS_NAME_LEN];
     Char8 path[CVFS_NAME_LEN];
-    Char8 *pdev;
+    register Char8 *pdev;
     CVFS_DEVIF *vtbl;
 
     if (fname == 0) {
@@ -704,6 +705,7 @@ Sint32 cvFsGetFileSize(const Char8 *fname) {
         return 0;
     }
     pdev = dev;
+    asm { mr r11, pdev; mr pdev, r11 } // COMPILER-DIFF: M1 (level-shifter, no code)
     vtbl = cvfs_ResolveDev(fname, pdev, path);
     if (dev == 0) {
         cvfs_Error("cvFsGetFileSize #2:illegal device name");
