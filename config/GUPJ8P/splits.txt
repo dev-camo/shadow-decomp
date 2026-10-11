@@ -13,9 +13,30 @@ Sections:
 	.sdata2     type:rodata align:32
 	.sbss2      type:bss align:32
 
+dolphin/GXGeometry.c:
+	.text       start:0x803960DC end:0x803963FC
+
+dolphin/GXLight.c:
+	.text       start:0x80396D60 end:0x8039735C
+	.data       start:0x80567F70 end:0x80567F90
+	.sdata2     start:0x805FAD40 end:0x805FAD70
+
+dolphin/GXBump.c:
+	.text       start:0x80398404 end:0x803988DC
+	.sdata2     start:0x805FADA8 end:0x805FADB0
+
 dolphin/GXTev.c:
 	.text       start:0x803988DC end:0x80398FFC
 	.data       start:0x805680C0 end:0x80568138
+
+dolphin/GXPixel.c:
+	.text       start:0x80398FFC end:0x80399634
+	.data       start:0x80568138 end:0x80568158
+	.sdata2     start:0x805FADB0 end:0x805FADE8
+
+dolphin/GXTransform.c:
+	.text       start:0x803996A4 end:0x80399C38
+	.sdata2     start:0x805FADE8 end:0x805FADF8
 
 Runtime.PPCEABI.H/global_destructor_chain.c:
 	.text       start:0x803A07B8 end:0x803A0818

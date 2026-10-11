@@ -29,9 +29,30 @@ Game/fn_80068A3C.c:
 	.text       start:0x80068A3C end:0x80068A48
 	.ctors      start:0x804A9C7C end:0x804A9C80
 
+dolphin/GXGeometry.c:
+	.text       start:0x80395AA8 end:0x80395DC8
+
+dolphin/GXLight.c:
+	.text       start:0x8039672C end:0x80396D28
+	.data       start:0x805678F0 end:0x80567910
+	.sdata2     start:0x805FA718 end:0x805FA748
+
+dolphin/GXBump.c:
+	.text       start:0x80397DD0 end:0x803982A8
+	.sdata2     start:0x805FA780 end:0x805FA788
+
 dolphin/GXTev.c:
 	.text       start:0x803982A8 end:0x803989C8
 	.data       start:0x80567A40 end:0x80567AB8
+
+dolphin/GXPixel.c:
+	.text       start:0x803989C8 end:0x80399000
+	.data       start:0x80567AB8 end:0x80567AD8
+	.sdata2     start:0x805FA788 end:0x805FA7C0
+
+dolphin/GXTransform.c:
+	.text       start:0x80399070 end:0x80399604
+	.sdata2     start:0x805FA7C0 end:0x805FA7D0
 
 Runtime.PPCEABI.H/global_destructor_chain.c:
 	.text       start:0x803A0178 end:0x803A01D8

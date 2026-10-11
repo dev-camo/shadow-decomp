@@ -446,7 +446,12 @@ config.libs = [
     DolphinLib(
         "gx",
         [
+            Object(Matching, "dolphin/GXGeometry.c"),
+            Object(Matching, "dolphin/GXLight.c"),
+            Object(Matching, "dolphin/GXBump.c"),
             Object(Matching, "dolphin/GXTev.c"),
+            Object(Matching, "dolphin/GXPixel.c"),
+            Object(Matching, "dolphin/GXTransform.c"),
         ],
     ),
     {
