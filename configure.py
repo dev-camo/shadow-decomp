@@ -486,6 +486,17 @@ config.libs = [
         "cflags": cflags_base,
         "progress_category": "game",
         "objects": [
+            # Const pointer data stays out of small data (-sdata2 0).
+            Object(
+                Matching,
+                "CRI/mfci.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
             # String literals live in .rodata (-str readonly).
             Object(
                 Matching,
