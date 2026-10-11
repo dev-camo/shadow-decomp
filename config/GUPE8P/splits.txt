@@ -340,6 +340,10 @@ CRI/sfd_hds.c:
 	.text       start:0x803F08F0 end:0x803F1338
 	.bss        start:0x805CA990 end:0x805CAB98
 
+CRI/sfd_mem.c:
+	.text       start:0x803F1768 end:0x803F1884
+	.rodata     start:0x80518650 end:0x80518688
+
 CRI/sfd_mpvf.c:
 	.text       start:0x803F8974 end:0x803F90A8
 
@@ -364,8 +368,21 @@ CRI/sfd_set.c:
 CRI/sfd_trn.c:
 	.text       start:0x803FDCE8 end:0x803FE3D4
 
+CRI/sfd_uo.c:
+	.text       start:0x803FE3D4 end:0x803FE688
+	.rodata     start:0x80518988 end:0x805189C0
+
+CRI/sfd_vom.c:
+	.text       start:0x803FE688 end:0x803FE8A8
+	.rodata     start:0x805189C0 end:0x805189F8
+
 CRI/sfd_tmr.c:
 	.text       start:0x803FE8A8 end:0x803FE96C
+
+CRI/sfd_tst.c:
+	.text       start:0x803FEB30 end:0x803FF848
+	.rodata     start:0x805189F8 end:0x80518B98
+	.bss        start:0x805DD6B8 end:0x805DD6D0
 
 CRI/sfh_main.c:
 	.text       start:0x803FF848 end:0x804021BC

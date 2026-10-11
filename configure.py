@@ -1069,6 +1069,46 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            Object(
+                Matching,
+                "CRI/sfd_mem.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/sfd_uo.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/sfd_vom.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/sfd_tst.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
             Object(Matching, "CRI/lsc_err.c", extra_cflags=["-sdata 0"]),
             Object(Matching, "CRI/lsc_crs.c"),
             # Deferred inlining: MWCC emits the functions (and lays out .bss) in reverse order.
