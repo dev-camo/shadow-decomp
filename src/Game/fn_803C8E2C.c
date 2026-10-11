@@ -7,17 +7,17 @@ typedef struct {
 NestingState lbl_805BACC0;
 extern volatile unsigned int sjcrs_lvl;
 
-/* Inferred side-effect interfaces; original argument lists/return types unknown.
+/* SJCRS_Finish/SJCRS_Init (names and bodies as in the Xenoblade CRI sj_crs.c).
  * Signed comparison views select target cmpwi without asserting original signedness.
  */
-void fn_803C8E2C(void) {
+void SJCRS_Finish(void) {
     lbl_805BACC0.count--;
     if ((int)lbl_805BACC0.count == 0) {
         sjcrs_lvl = 0;
     }
 }
 
-void fn_803C8E5C(void) {
+void SJCRS_Init(void) {
     lbl_805BACC0.count++;
     if ((int)lbl_805BACC0.count == 1) {
         sjcrs_lvl = 0;

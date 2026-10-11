@@ -343,15 +343,6 @@ config.libs = [
                 Object(Matching, "Game/fn_803C8100.c"),
                 Object(Matching, "CRI/sj_crs.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "Game/fn_803C8E2C.c", extra_cflags=["-sdata 0"]),
-                Object(Matching, "Game/fn_803C8E8C.c"),
-                Object(Matching, "Game/fn_803C904C.c"),
-                Object(Matching, "Game/fn_803C91E0.c"),
-                Object(Matching, "Game/fn_803C9418.c"),
-                Object(Matching, "Game/fn_803C950C.c"),
-                Object(Matching, "Game/fn_803C95B8.c"),
-                Object(Matching, "Game/fn_803C9674.c"),
-                Object(Matching, "Game/fn_803C9720.c"),
-                Object(Matching, "Game/fn_803C99A0.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "Game/fn_803C9A7C.c"),
                 Object(Matching, "Game/fn_803C9B50.c"),
                 Object(Matching, "Game/fn_803C9BFC.c"),
@@ -370,13 +361,6 @@ config.libs = [
                 Object(Matching, "CRI/sj_utl.c", extra_cflags=["-use_lmw_stmw on"]),
                 Object(Matching, "CRI/sj_err.c"),
                 Object(Matching, "Game/lbl_805B65B0.c", extra_cflags=["-sdata 0"]),
-                Object(Matching, "Game/lbl_805BACC8.c", extra_cflags=["-sdata 0"]),
-                Object(
-                    Matching, "Game/fn_803C92E4.c", extra_cflags=["-use_lmw_stmw on"]
-                ),
-                Object(
-                    Matching, "Game/fn_803C8F38.c", extra_cflags=["-use_lmw_stmw on"]
-                ),
                 Object(Matching, "Game/fn_803C8140.c"),
                 Object(Matching, "Game/fn_803C81A4.c"),
                 Object(Matching, "Game/fn_803C8228.c"),
@@ -480,6 +464,17 @@ config.libs = [
         "cflags": cflags_base,
         "progress_category": "game",
         "objects": [
+            # The two-part error messages need the readonly string pool.
+            Object(
+                Matching,
+                "CRI/sj_mem.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
             Object(
                 Matching,
                 "CRI/svm.c",

@@ -130,44 +130,14 @@ Game/fn_803C8E2C.c:
 	.text       start:0x803C8E2C end:0x803C8E8C
 	.bss        start:0x805BACC0 end:0x805BACC8
 
-Game/lbl_805BACC8.c:
+CRI/sj_mem.c:
+	.text       start:0x803C8E8C end:0x803C9A7C
+	.rodata     start:0x80517120 end:0x80517288
+	.data       start:0x80568C80 end:0x80568CB0
 	.bss        start:0x805BACC8 end:0x805BB150
 
 Game/lbl_805BB150.c:
 	.bss        start:0x805BB150 end:0x805BF158
-
-Game/fn_803C8E8C.c:
-	.text       start:0x803C8E8C end:0x803C8F38
-
-Game/fn_803C8F38.c:
-	.text       start:0x803C8F38 end:0x803C904C
-
-Game/fn_803C904C.c:
-	.text       start:0x803C904C end:0x803C91E0
-
-Game/fn_803C91E0.c:
-	.text       start:0x803C91E0 end:0x803C92E4
-
-Game/fn_803C92E4.c:
-	.text       start:0x803C92E4 end:0x803C9418
-
-Game/fn_803C9418.c:
-	.text       start:0x803C9418 end:0x803C950C
-
-Game/fn_803C950C.c:
-	.text       start:0x803C950C end:0x803C95B8
-
-Game/fn_803C95B8.c:
-	.text       start:0x803C95B8 end:0x803C9674
-
-Game/fn_803C9674.c:
-	.text       start:0x803C9674 end:0x803C9720
-
-Game/fn_803C9720.c:
-	.text       start:0x803C9720 end:0x803C97D4
-
-Game/fn_803C99A0.c:
-	.text       start:0x803C99A0 end:0x803C9A7C
 
 Game/fn_803C9A7C.c:
 	.text       start:0x803C9A7C end:0x803C9B50

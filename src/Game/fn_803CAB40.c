@@ -6,8 +6,8 @@ extern unsigned char sjrbf_obj[];
 extern const char lbl_80517484[];
 extern void *memset(void *destination, int value, unsigned int size);
 /* Chosen side-effect projections; original full arity/returns unknown. */
-void fn_803C8E2C(void);
-void fn_803C8E5C(void);
+void SJCRS_Finish(void);
+void SJCRS_Init(void);
 
 /* Inferred side-effect interfaces; original full arity/returns unknown. */
 void SJRBF_Finish(void) {
@@ -16,11 +16,11 @@ void SJRBF_Finish(void) {
         memset(&sjrbf_obj, 0, 0x4000);
     }
     SJCRS_Unlock();
-    fn_803C8E2C();
+    SJCRS_Finish();
 }
 
 void SJRBF_Init(void) {
-    fn_803C8E5C();
+    SJCRS_Init();
     SJCRS_Lock();
     if ((int)sjrbf_init_cnt == 0) {
         memset(&sjrbf_obj, 0, 0x4000);

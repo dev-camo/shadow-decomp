@@ -14,8 +14,8 @@ unsigned char sjuni_obj[0xC00 + 4];
 
 extern void *memset(void *destination, int value, unsigned int size);
 /* Chosen side-effect projections; original full arity/returns unknown. */
-void fn_803C8E2C(void);
-void fn_803C8E5C(void);
+void SJCRS_Finish(void);
+void SJCRS_Init(void);
 
 /* Inferred side-effect interfaces; original full arity/returns unknown. */
 void SJUNI_Finish(void) {
@@ -24,11 +24,11 @@ void SJUNI_Finish(void) {
         memset(&sjuni_obj, 0, 0xC00);
     }
     SJCRS_Unlock();
-    fn_803C8E2C();
+    SJCRS_Finish();
 }
 
 void SJUNI_Init(void) {
-    fn_803C8E5C();
+    SJCRS_Init();
     SJCRS_Lock();
     if ((int)sjuni_init_cnt == 0) {
         memset(&sjuni_obj, 0, 0xC00);
