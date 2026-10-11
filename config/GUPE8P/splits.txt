@@ -63,6 +63,52 @@ dolphin/OSResetSW.c:
 dolphin/OSSync.c:
 	.text       start:0x80377454 end:0x803774D8
 
+dolphin/dvderror.c:
+	.text       start:0x8037CE38 end:0x8037CFD0
+	.data       start:0x80561878 end:0x805618C0
+
+dolphin/delay.c:
+	.text       start:0x80388D50 end:0x803892D0
+
+dolphin/CARDUnlock.c:
+	.text       start:0x8038D424 end:0x8038E684
+	.data       start:0x80567280 end:0x805673E0 align:32
+	.sdata      start:0x805EDC20 end:0x805EDC28
+
+dolphin/CARDRdwr.c:
+	.text       start:0x8038E684 end:0x8038E914
+
+dolphin/CARDBlock.c:
+	.text       start:0x8038E914 end:0x8038ED18
+
+dolphin/CARDDir.c:
+	.text       start:0x8038ED18 end:0x8038EF7C
+
+dolphin/CARDCheck.c:
+	.text       start:0x8038EF7C end:0x8038FEB8
+
+dolphin/CARDMount.c:
+	.text       start:0x8038FEB8 end:0x80390974
+	.data       start:0x805673E0 end:0x80567420
+
+dolphin/CARDFormat.c:
+	.text       start:0x80390974 end:0x80391158
+
+dolphin/CARDCreate.c:
+	.text       start:0x80391744 end:0x80391A94
+
+dolphin/CARDRead.c:
+	.text       start:0x80391A94 end:0x80391EC0
+
+dolphin/CARDWrite.c:
+	.text       start:0x80391EC0 end:0x803921F4
+
+dolphin/CARDDelete.c:
+	.text       start:0x803921F4 end:0x803923A8
+
+dolphin/CARDStat.c:
+	.text       start:0x803923A8 end:0x80392828
+
 dolphin/GXGeometry.c:
 	.text       start:0x80395AA8 end:0x80395DC8
 

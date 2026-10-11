@@ -457,6 +457,50 @@ config.libs = [
         ],
     ),
     DolphinLib(
+        "card",
+        [
+            Object(Matching, "dolphin/CARDBlock.c"),
+            Object(Matching, "dolphin/CARDDir.c"),
+            Object(Matching, "dolphin/CARDRdwr.c"),
+            Object(Matching, "dolphin/CARDCheck.c"),
+            Object(Matching, "dolphin/CARDMount.c"),
+            Object(Matching, "dolphin/CARDFormat.c"),
+            Object(Matching, "dolphin/CARDCreate.c"),
+            Object(Matching, "dolphin/CARDRead.c"),
+            Object(Matching, "dolphin/CARDWrite.c"),
+            Object(Matching, "dolphin/CARDDelete.c"),
+            Object(Matching, "dolphin/CARDStat.c"),
+            Object(Matching, "dolphin/CARDUnlock.c"),
+        ],
+    ),
+    DolphinLib(
+        "ax",
+        [
+        ],
+    ),
+    DolphinLib(
+        "axfx",
+        [
+            Object(Matching, "dolphin/delay.c"),
+        ],
+    ),
+    DolphinLib(
+        "dsp",
+        [
+        ],
+    ),
+    DolphinLib(
+        "si",
+        [
+        ],
+    ),
+    DolphinLib(
+        "dvd",
+        [
+            Object(Matching, "dolphin/dvderror.c"),
+        ],
+    ),
+    DolphinLib(
         "gx",
         [
             Object(Matching, "dolphin/GXGeometry.c"),
