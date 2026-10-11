@@ -213,6 +213,69 @@ CRI/gcci.c:
 	.data       start:0x80568F08 end:0x80568F70
 	.bss        start:0x805C0AF8 end:0x805C1AB0
 
+CRI/rna_err.c:
+	.text       start:0x803CDAC4 end:0x803CDB30
+	.bss        start:0x805C1BB0 end:0x805C1CB8
+
+CRI/mps_dec.c:
+	.text       start:0x803D35F4 end:0x803D4874
+
+CRI/mps_del.c:
+	.text       start:0x803D4874 end:0x803D48F0
+
+CRI/mps_get.c:
+	.text       start:0x803D48F0 end:0x803D4B24
+
+CRI/mpv_bdec.c:
+	.text       start:0x803D50D4 end:0x803D53D8
+	.rodata     start:0x805182C8 end:0x80518388
+	.bss        start:0x805C8CA8 end:0x805C8D28
+
+CRI/mpv_deli.c:
+	.text       start:0x803D7038 end:0x803D72D4
+
+CRI/mpv_emp.c:
+	.text       start:0x803D72D4 end:0x803D7940
+	.data       start:0x80569028 end:0x80569070
+
+CRI/mpv_err.c:
+	.text       start:0x803D7940 end:0x803D7A90
+	.bss        start:0x805C8D48 end:0x805C8D5C
+
+CRI/mpv_get.c:
+	.text       start:0x803D7CAC end:0x803D7EC4
+
+CRI/mpv_vlc.c:
+	.text       start:0x803DB504 end:0x803DE58C
+	.rodata     start:0x80518480 end:0x80518530
+	.bss        start:0x805C92C8 end:0x805CA920
+
+CRI/mpvabdec.c:
+	.text       start:0x803E0D08 end:0x803ED5D8
+	.rodata     start:0x80518548 end:0x8051855C
+	.data       start:0x805690B0 end:0x80569CB0
+
+CRI/sfd_pl2.c:
+	.text       start:0x803F90A8 end:0x803F94D8
+
+CRI/sfd_tmr.c:
+	.text       start:0x803FE8A8 end:0x803FE96C
+
+CRI/cmptime.c:
+	.text       start:0x804021BC end:0x80402208
+
+CRI/memcpyd.c:
+	.text       start:0x80402208 end:0x804022CC
+
+CRI/memsetd.c:
+	.text       start:0x804022CC end:0x80402344
+
+CRI/muldiv.c:
+	.text       start:0x80402344 end:0x804023A0
+
+CRI/muldivr.c:
+	.text       start:0x804023A0 end:0x804024FC
+
 Game/fn_80403054.c:
 	.text       start:0x80403054 end:0x80403058
 
@@ -261,6 +324,10 @@ Game/fn_80407920.c:
 
 Game/fn_80407930.c:
 	.text       start:0x80407930 end:0x80407960
+
+CRI/cftcoladj.c:
+	.text       start:0x8040A4A8 end:0x8040AB94
+	.rodata     start:0x8051A250 end:0x8051A254
 
 Game/fn_8040AB94.c:
 	.text       start:0x8040AB94 end:0x8040AB98

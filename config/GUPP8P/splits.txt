@@ -184,3 +184,70 @@ CRI/gcci.c:
 	.rodata     start:0x80518A40 end:0x80518C78
 	.data       start:0x80569FC8 end:0x8056A030
 	.bss        start:0x805C1BB8 end:0x805C2B70
+
+CRI/rna_err.c:
+	.text       start:0x803CEB14 end:0x803CEB80
+	.bss        start:0x805C2C70 end:0x805C2D78
+
+CRI/mps_dec.c:
+	.text       start:0x803D4644 end:0x803D58C4
+
+CRI/mps_del.c:
+	.text       start:0x803D58C4 end:0x803D5940
+
+CRI/mps_get.c:
+	.text       start:0x803D5940 end:0x803D5B74
+
+CRI/mpv_bdec.c:
+	.text       start:0x803D6124 end:0x803D6428
+	.rodata     start:0x805193E0 end:0x805194A0
+	.bss        start:0x805C9D68 end:0x805C9DE8
+
+CRI/mpv_deli.c:
+	.text       start:0x803D8088 end:0x803D8324
+
+CRI/mpv_emp.c:
+	.text       start:0x803D8324 end:0x803D8990
+	.data       start:0x8056A0E8 end:0x8056A130
+
+CRI/mpv_err.c:
+	.text       start:0x803D8990 end:0x803D8AE0
+	.bss        start:0x805C9E08 end:0x805C9E1C
+
+CRI/mpv_get.c:
+	.text       start:0x803D8CFC end:0x803D8F14
+
+CRI/mpv_vlc.c:
+	.text       start:0x803DC554 end:0x803DF5DC
+	.rodata     start:0x80519598 end:0x80519648
+	.bss        start:0x805CA388 end:0x805CB9E0
+
+CRI/mpvabdec.c:
+	.text       start:0x803E1D58 end:0x803EE628
+	.rodata     start:0x80519660 end:0x80519674
+	.data       start:0x8056A170 end:0x8056AD70
+
+CRI/sfd_pl2.c:
+	.text       start:0x803FA0F8 end:0x803FA528
+
+CRI/sfd_tmr.c:
+	.text       start:0x803FF8F8 end:0x803FF9BC
+
+CRI/cmptime.c:
+	.text       start:0x8040320C end:0x80403258
+
+CRI/memcpyd.c:
+	.text       start:0x80403258 end:0x8040331C
+
+CRI/memsetd.c:
+	.text       start:0x8040331C end:0x80403394
+
+CRI/muldiv.c:
+	.text       start:0x80403394 end:0x804033F0
+
+CRI/muldivr.c:
+	.text       start:0x804033F0 end:0x8040354C
+
+CRI/cftcoladj.c:
+	.text       start:0x8040B4F8 end:0x8040BBE4
+	.rodata     start:0x8051B368 end:0x8051B36C
