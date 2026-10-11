@@ -1,11 +1,12 @@
-#include "Game/fn_803C81_query_types.h"
-#include "Game/fn_803CB_state_types.h"
+#include "CRI/lsc.h"
+#include "CRI/svm.h"
 
-/* Chosen pointer/predicate projection; original full types/arity unknown. */
-int fn_804030A8(const Fn803C81QueryView *object) {
-    return LSC_GetStat(object) == 3;
+/* Chosen predicate projection; original name and return type unknown. */
+int fn_804030A8(LSC lsc) {
+    return LSC_GetStat(lsc) == LSC_STAT_ERROR;
 }
-/* Chosen side-effect projection; original full arity/types/return unknown. */
+
+/* Chosen side-effect projection; original name unknown. Server type 6 is the MW idle server. */
 void fn_804030D4(void) {
     SVM_GotoSvrBorder(6);
 }

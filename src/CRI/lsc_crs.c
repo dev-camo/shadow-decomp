@@ -1,18 +1,12 @@
-/* CRI LSC critical section (lsc_crs.c). */
+/* CRI LSC critical section (lsc_crs.c): the scheduler lock maps onto the stream-joint lock. */
 
-/* Inferred callee interfaces: neither body consumes incoming argument registers.
- * Original argument lists and return types are not established.
- */
-extern void SJCRS_Unlock(void);
-extern void SJCRS_Lock(void);
+#include "CRI/lsc.h"
 
-/* Inferred wrapper interfaces: several callers pass an opaque stack address.
- * It is unused here; the original type, full arity and return types are unknown.
- */
-void LSC_UnlockCrs(void *unused_context) {
+/* The mask argument is unused: SJCRS keeps the saved interrupt state itself. */
+void LSC_UnlockCrs(Sint32 *msk) {
     SJCRS_Unlock();
 }
 
-void LSC_LockCrs(void *unused_context) {
+void LSC_LockCrs(Sint32 *msk) {
     SJCRS_Lock();
 }

@@ -1,15 +1,16 @@
-#include "Game/fn_803C82_record_types.h"
+#include "CRI/lsc.h"
 
-extern const char lbl_80516D18[];
-extern const char lbl_80516D44[];
-extern void LSC_CallErrFunc(const char *format, ...);
+/* lsc.c error literals (its .rodata is not sourced yet). */
+extern Char8 lbl_80516D18[];
+extern Char8 lbl_80516D44[];
 
-void LSC_SetFlowLimit(Fn803C82RecordView *object, int value) {
-    if (object == 0) {
+/* Refill threshold for the stream controller. */
+void LSC_SetFlowLimit(LSC lsc, Sint32 min_val) {
+    if (lsc == 0) {
         LSC_CallErrFunc(lbl_80516D18);
-    } else if (value < 0 || value > (int)object->word_18) {
-        LSC_CallErrFunc(lbl_80516D44, value);
+    } else if (min_val < 0 || min_val > lsc->bufsize) {
+        LSC_CallErrFunc(lbl_80516D44, min_val);
     } else {
-        object->word_14 = value;
+        lsc->min_val = min_val;
     }
 }

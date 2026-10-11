@@ -1,22 +1,13 @@
-/* Inferred callback signature; only the two 32-bit argument slots are observed. */
-typedef void (*Callback)(unsigned int argument_4, unsigned int argument_8);
+#include "CRI/lsc.h"
 
-/* Inferred storage layout; the final four bytes have no observed accesses. */
-typedef struct {
-    /* 0x00 */ Callback callback;
-    /* 0x04 */ unsigned int argument_4;
-    /* 0x08 */ unsigned int argument_8;
-    /* 0x0C */ unsigned char reserved[4];
-} CallbackState;
+/* Status callback installed by LSC_EntryStatFunc (unreferenced in this game). */
+void (*lsc_stat_func)(void *obj1, void *obj2);
+void *lsc_stat_obj1;
+void *lsc_stat_obj2;
 
-CallbackState lbl_805B65A0;
-
-/* Inferred dispatcher signature; the observed caller prepares no arguments or result use. */
+/* Calls the status callback when a scheduler's queue runs empty. */
 void LSC_CallStatFunc(void) {
-    CallbackState *state = &lbl_805B65A0;
-    Callback callback = state->callback;
-
-    if (callback != 0) {
-        callback(state->argument_4, state->argument_8);
+    if (lsc_stat_func != 0) {
+        lsc_stat_func(lsc_stat_obj1, lsc_stat_obj2);
     }
 }

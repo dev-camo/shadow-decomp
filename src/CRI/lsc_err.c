@@ -3,10 +3,8 @@
  * file.
  */
 
+#include "CRI/lsc.h"
 #include "mwcc_varargs.h"
-
-/* CRI basic types (cri_xpt.h). */
-typedef char Char8;
 
 static void (*lsc_err_func)(void *obj, Char8 *msg) = 0;
 static void *lsc_err_obj = 0;

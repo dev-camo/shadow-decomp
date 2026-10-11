@@ -1,10 +1,9 @@
 /* CRI stream-joint error reporting (sj_err.c). */
 
-#include "Game/fn_803C8_record_types.h"
+#include "CRI/sj.h"
+#include "CRI/svm.h"
 
-#include "Game/fn_803CB_text_types.h"
-
-/* Chosen forwarding projection; original full types/arity/return unknown. */
-void SJERR_CallErr(const char *text) {
-    SVM_CallErr1(text);
+/* Reports a stream-joint error message through the server manager's error callback. */
+void SJERR_CallErr(Char8 *msg) {
+    SVM_CallErr1(msg);
 }

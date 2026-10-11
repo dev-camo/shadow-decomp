@@ -2,8 +2,7 @@
  * init count. Names follow the Xenoblade CRI sj_crs.c, whose bodies match this file.
  */
 
-/* CRI basic types (cri_xpt.h); 32-bit integers are long. */
-typedef signed long Sint32;
+#include "CRI/sj.h"
 
 extern Sint32 OSDisableInterrupts(void);
 extern Sint32 OSRestoreInterrupts(Sint32 level);

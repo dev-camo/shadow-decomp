@@ -1,20 +1,17 @@
-#include "Game/fn_803C82_pool_types.h"
+#include "CRI/lsc.h"
 
-/* Chosen side-effect interfaces; original full types/arity/returns unknown. */
-extern void lsc_ExecHndl(void *entry);
-extern void LSC_LockCrs(void *context);
-extern void LSC_UnlockCrs(void *context);
+/* Scheduler server pass: lsc_ExecHndl on every live scheduler, under the lock. */
+void LSC_ExecServer(void) {
+    Sint32 msk;
+    LSC_OBJ *lsc;
+    Sint32 i;
 
-void fn_803C8228(void) {
-    /* Chosen opaque stack word; original context type/extent unknown. */
-    unsigned int context;
-    int index;
-    LSC_LockCrs(&context);
-    for (index = 0; index < 32; index++) {
-        unsigned char *entry = &lsc_obj[index * 0x238];
-        if ((int)entry[0] == 1) {
-            lsc_ExecHndl(entry);
+    LSC_LockCrs(&msk);
+    for (i = 0; i < LSC_MAX_OBJ; i++) {
+        lsc = &lsc_obj[i];
+        if (lsc->used == 1) {
+            lsc_ExecHndl(lsc);
         }
     }
-    LSC_UnlockCrs(&context);
+    LSC_UnlockCrs(&msk);
 }

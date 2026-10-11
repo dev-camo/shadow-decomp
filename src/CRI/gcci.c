@@ -10,13 +10,7 @@
 extern void *memset(void *destination, int value, unsigned int size);
 extern unsigned int strlen(const char *text);
 
-/* CRI basic types (cri_xpt.h); 32-bit integers are long. */
-typedef unsigned char Uint8;
-typedef signed char Sint8;
-typedef unsigned long Uint32;
-typedef signed long Sint32;
-typedef char Char8;
-typedef Sint32 Bool;
+#include "CRI/cri_xpt.h"
 
 #define GCCI_MAX_OBJ 40
 #define GCCI_DEF_SCTLEN 0x800
@@ -182,9 +176,10 @@ CVFS_IF gcg_ci_vtbl = {
     (Sint32 (*)(void *))gcCiGetNumTr,
 };
 
-/* Unreferenced, so the linker strips it from the executable. MWCC places .bss objects in
- * order of first reference; this is the first function to touch the debug block, error
- * object and error callback, which gives the target's .bss order (as in RE4's gcci.c).
+/* Unreferenced, so the linker strips it from the executable. Body from RE4's gcci.c (not
+ * verified against Shadow). MWCC places .bss objects in order of first reference; this is
+ * the first function to touch the debug block, error object and error callback, and the
+ * target's .bss order (which the match does verify) follows from it.
  */
 void gcCiInit(void) {
     gcg_ci_debug.cbstat = 0;

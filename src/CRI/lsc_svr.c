@@ -3,77 +3,9 @@
  * the RE4 GameCube decompilation of the same file.
  */
 
+#include "CRI/lsc.h"
+
 extern unsigned int strlen(const char *text);
-
-/* CRI basic types (cri_xpt.h); 32-bit integers are long. */
-typedef unsigned char Uint8;
-typedef signed char Sint8;
-typedef signed long Sint32;
-typedef unsigned long Uint32;
-typedef char Char8;
-
-#define LSC_MAX_ENTRY 16
-
-typedef struct {
-    /* 0x00 */ Sint32 id;
-    /* 0x04 */ Char8 *fname;
-    /* 0x08 */ Sint32 fname_sum;
-    /* 0x0C */ void *dir;
-    /* 0x10 */ Sint32 ofst;
-    /* 0x14 */ Sint32 nsct;
-    /* 0x18 */ Sint32 stat;
-    /* 0x1C */ Sint32 pos;
-} LSC_ENTRY;
-
-typedef struct {
-    /* 0x00 */ Sint8 used;
-    /* 0x01 */ Sint8 stat;
-    /* 0x02 */ Sint8 stm_start;
-    /* 0x03 */ Sint8 loop_flag;
-    /* 0x04 */ Sint8 pause_flag;
-    /* 0x05 */ Uint8 pad5[3];
-    /* 0x08 */ void *sj;
-    /* 0x0C */ Sint32 pad0c;
-    /* 0x10 */ Sint32 pad10;
-    /* 0x14 */ Sint32 min_val;
-    /* 0x18 */ Sint32 bufsize;
-    /* 0x1C */ Sint32 wr_idx;
-    /* 0x20 */ Sint32 rd_idx;
-    /* 0x24 */ Sint32 num_stm;
-    /* 0x28 */ void *stm;
-    /* 0x2C */ Sint32 cur_nsct;
-    /* 0x30 */ Sint32 pad30;
-    /* 0x34 */ Sint32 pad34;
-    /* 0x38 */ LSC_ENTRY tbl[LSC_MAX_ENTRY];
-} LSC_OBJ;
-
-#define LSC_STAT_STOP 0
-#define LSC_STAT_PREP 1
-#define LSC_STAT_EXEC 2
-#define LSC_STAT_ERROR 3
-
-#define LSC_ENT_WAIT 0
-#define LSC_ENT_LOADING 1
-#define LSC_ENT_DONE 2
-
-#define ADXSTM_STAT_EXEC 2
-#define ADXSTM_STAT_END 3
-#define ADXSTM_STAT_ERROR 4
-
-extern void LSC_CallStatFunc(void);
-extern void LSC_CallErrFunc(Char8 *fmt, ...);
-extern Sint32 LSC_EntryFileRange(LSC_OBJ *lsc, Char8 *fname, void *dir, Sint32 ofst, Sint32 nsct);
-
-/* ADX stream controller (adx_stmc.c). */
-extern Sint32 ADXSTM_GetStat(void *stm);
-extern Sint32 ADXSTM_Tell(void *stm);
-extern void ADXSTM_StopNw(void *stm);
-extern void ADXSTM_ReleaseFileNw(void *stm);
-extern void ADXSTM_BindFileNw(void *stm, const Char8 *fname, void *dir, Sint32 ofst, Sint32 nsct);
-extern void ADXSTM_SetEos(void *stm, Sint32 nsct);
-extern Sint32 ADXSTM_SetBufSize(void *stm, Sint32 min_nsct, Sint32 max_nsct);
-extern Sint32 ADXSTM_Seek(void *stm, Sint32 pos);
-extern Sint32 ADXSTM_Start(void *stm);
 
 /* Byte sum of a file name (compared with the sum taken at entry time). */
 static inline Uint32 lsc_CalcSum(Char8 *fname) {

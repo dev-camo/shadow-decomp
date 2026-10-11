@@ -11,12 +11,8 @@ extern void *memset(void *destination, int value, unsigned int size);
 extern void *memcpy(void *destination, const void *source, unsigned int size);
 extern unsigned int strlen(const char *text);
 
-/* CRI basic types (cri_xpt.h); 32-bit integers are long. */
-typedef unsigned char Uint8;
-typedef signed char Sint8;
-typedef unsigned long Uint32;
-typedef signed long Sint32;
-typedef char Char8;
+#include "CRI/cri_xpt.h"
+#include "CRI/svm.h"
 
 #define MFCI_MAX_OBJ 40
 #define MFCI_DEF_SCTLEN 0x800
@@ -33,10 +29,6 @@ typedef char Char8;
 
 extern int sprintf(char *buffer, const char *format, ...);
 extern unsigned long strtoul(const char *text, char **end, int base);
-
-/* CRI server lock (svm.c). */
-extern void SVM_Unlock(void);
-extern void SVM_Lock(void);
 
 typedef void (*CVFS_ERRFUNC)(void *obj, const Char8 *msg, void *hn);
 
@@ -224,7 +216,9 @@ Sint32 mfCiOptFn(void *hn, Sint32 fnid, Sint32 a, Sint32 b) {
     return ret;
 }
 
-/* Unreferenced, so the linker strips it; its literals and mfci_init_flag remain. */
+/* Unreferenced, so the linker strips it. Body from the RE4 decompilation (not verified
+ * against Shadow); its literals and the mfci_init_flag storage are verified in the object.
+ */
 MFCI mfCiOpenEntry(Sint32 entry, Sint32 rw) {
     MFCI mfci;
 

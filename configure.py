@@ -338,7 +338,7 @@ config.libs = [
                 Object(Matching, "Game/fn_803ACABC.c"),
                 # CRI middleware units named after their original source files.
                 Object(Matching, "Game/fn_803C80C4.c"),
-                Object(Matching, "Game/fn_803C8100.c"),
+                Object(Matching, "Game/fn_803C8100.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "Game/fn_803C8140.c"),
                 Object(Matching, "Game/fn_803C81A4.c"),
                 Object(Matching, "Game/fn_803C8228.c"),

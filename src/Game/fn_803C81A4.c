@@ -1,21 +1,23 @@
-#include "Game/fn_803C81_query_types.h"
-extern const char lbl_80516ECC[];
-extern const char lbl_80516EF8[];
-extern void LSC_CallErrFunc(const char *format, ...);
+#include "CRI/lsc.h"
 
-unsigned int LSC_GetNumStm(const Fn803C81QueryView *object) {
-    if (object == 0) {
+/* lsc.c error literals (its .rodata is not sourced yet). */
+extern Char8 lbl_80516ECC[];
+extern Char8 lbl_80516EF8[];
+
+/* Entries still queued (including the one loading). */
+Sint32 LSC_GetNumStm(LSC lsc) {
+    if (lsc == 0) {
         LSC_CallErrFunc(lbl_80516ECC);
-        return (unsigned int)-1;
-    } else {
-        return object->word_24;
+        return -1;
     }
+    return lsc->num_stm;
 }
-int LSC_GetStat(const Fn803C81QueryView *object) {
-    if (object == 0) {
+
+/* Scheduler state (LSC_STAT_*). */
+Sint32 LSC_GetStat(LSC lsc) {
+    if (lsc == 0) {
         LSC_CallErrFunc(lbl_80516EF8);
         return -1;
-    } else {
-        return object->byte_1;
     }
+    return lsc->stat;
 }

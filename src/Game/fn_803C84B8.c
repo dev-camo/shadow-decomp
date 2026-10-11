@@ -1,52 +1,56 @@
-#include "Game/fn_803C84_entry_types.h"
+#include "CRI/lsc.h"
 
-extern const char lbl_80516FD4[];
-extern const char lbl_80517000[];
-extern void LSC_CallErrFunc(const char *format, ...);
+/* lsc.c error literals (its .rodata is not sourced yet). */
+extern Char8 lbl_80516FD4[];
+extern Char8 lbl_80517000[];
+
 extern unsigned int strlen(const char *text);
-/* Chosen consumed-register/returned-word projection; original full interface unknown. */
-int LSC_EntryFileRange(Fn803C84RecordView *record, const char *text, unsigned int word_C,
-                       unsigned int word_10, unsigned int word_14) {
-    Fn803C84EntryView *entry;
-    int generation;
-    unsigned int length;
-    unsigned int index;
-    unsigned int previous;
-    if (record == 0) {
+
+/* Queues a file range after the previous entries and returns its id (-1 when the queue is
+ * full); the file name is checksummed so a changed string is detected at load time.
+ */
+Sint32 LSC_EntryFileRange(LSC lsc, Char8 *fname, void *dir, Sint32 ofst, Sint32 nsct) {
+    LSC_ENTRY *ent;
+    Sint32 id;
+    Uint32 len;
+    Uint32 i;
+    Uint32 prev;
+
+    if (lsc == 0) {
         LSC_CallErrFunc(lbl_80516FD4);
         return -1;
     }
-    if ((int)record->header.word_24 >= 16) {
+    if (lsc->num_stm >= LSC_MAX_ENTRY) {
         return -1;
     }
-    if (text == 0) {
+    if (fname == 0) {
         LSC_CallErrFunc(lbl_80517000);
         return -1;
     }
-    previous = record->entries_38[(int)(record->header.word_1C + 15u) % 16].word_0;
-    generation = (int)(previous == 0x7FFFFFFF ? 0u : previous + 1u);
-    entry = &record->entries_38[record->header.word_1C];
-    entry->word_0 = generation;
-    entry->text_4 = text;
-    length = strlen(text);
-    entry->word_8 = 0;
-    for (index = 0; index < length; index++) {
-        entry->word_8 += (unsigned char)text[index];
+    prev = lsc->tbl[(Sint32)((Uint32)lsc->wr_idx + (LSC_MAX_ENTRY - 1)) % LSC_MAX_ENTRY].id;
+    id = (prev == LSC_ID_MAX) ? 0 : prev + 1;
+    ent = &lsc->tbl[lsc->wr_idx];
+    ent->id = id;
+    ent->fname = fname;
+    len = strlen(fname);
+    ent->fname_sum = 0;
+    for (i = 0; i < len; i++) {
+        ent->fname_sum += (Uint8)fname[i];
     }
-    entry->word_10 = word_10;
-    entry->word_14 = word_14;
-    entry->word_C = word_C;
-    entry->word_18 = 0;
-    entry->word_1C = 0;
-    record->header.word_24++;
-    record->header.word_1C = (int)(record->header.word_1C + 1u) % 16;
-    if ((int)(unsigned char)record->header.byte_1 == 1) {
-        record->header.byte_1 = 2;
+    ent->ofst = ofst;
+    ent->nsct = nsct;
+    ent->dir = dir;
+    ent->stat = LSC_ENT_WAIT;
+    ent->pos = 0;
+    lsc->num_stm++;
+    lsc->wr_idx = (Sint32)((Uint32)lsc->wr_idx + 1) % LSC_MAX_ENTRY;
+    if ((Sint32)(Uint8)lsc->stat == LSC_STAT_PREP) {
+        lsc->stat = LSC_STAT_EXEC;
     }
-    return generation;
+    return id;
 }
 
-/* Chosen installed-pointer projection; original full interface unknown. */
-void fn_803C86EC(Fn803C82RecordView *record, void *value) {
-    record->pointer_28 = value;
+/* The ADX stream controller the scheduler drives. */
+void LSC_SetStmHndl(LSC lsc, ADXSTM stm) {
+    lsc->stm = stm;
 }

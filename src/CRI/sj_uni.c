@@ -1,6 +1,6 @@
 /* CRI universal stream joint (sj_uni.c); only Init and Finish survive linking. */
 
-#include "Game/fn_803C8_record_types.h"
+#include "CRI/sj.h"
 
 /* Inferred raw counter view; the original C type is unknown.
  * An explicit zero definition preserves MWCC's BSS symbol order.
@@ -13,11 +13,7 @@ unsigned int sjuni_init_cnt = 0;
 unsigned char sjuni_obj[0xC00 + 4];
 
 extern void *memset(void *destination, int value, unsigned int size);
-/* Chosen side-effect projections; original full arity/returns unknown. */
-void SJCRS_Finish(void);
-void SJCRS_Init(void);
 
-/* Inferred side-effect interfaces; original full arity/returns unknown. */
 void SJUNI_Finish(void) {
     SJCRS_Lock();
     if (--sjuni_init_cnt == 0) {

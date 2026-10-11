@@ -2,11 +2,11 @@
 
 extern void *memset(void *destination, int value, unsigned int size);
 
-void LSC_Destroy(Fn803C82RecordView *object) {
-    if (object != 0) {
-        fn_803C82_reset_record(object);
-        object->byte_0 = 0;
-        /* Observed clear length; the view does not claim the original allocation type. */
-        memset(object, 0, 0x238);
+/* Stops and clears the scheduler. */
+void LSC_Destroy(LSC lsc) {
+    if (lsc != 0) {
+        lsc_stop_body(lsc);
+        lsc->used = 0;
+        memset(lsc, 0, sizeof(LSC_OBJ));
     }
 }

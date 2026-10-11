@@ -5,54 +5,10 @@
  * codes and function order). Shadow's SJ (Ver.6.31) builds each message from the error code
  * and a shared suffix, and pairs init/finish with the SJCRS init count.
  */
+#include "CRI/sj.h"
 #include "msl_string.h"
 
 extern void *memset(void *destination, int value, unsigned int size);
-
-/* CRI basic types (cri_xpt.h); 32-bit integers are long. */
-typedef unsigned char Uint8;
-typedef signed long Sint32;
-typedef char Char8;
-
-typedef struct SJ_OBJ *SJ;
-
-typedef struct {
-    Uint8 *data;
-    Sint32 len;
-} SJCK;
-
-typedef struct {
-    Uint8 data[16];
-} SJUUID;
-
-/* chunk ids */
-#define SJ_CK_FREE 0
-#define SJ_CK_DATA 1
-
-/* error code passed to the error callback in place of the message */
-#define SJ_ERR_PRM ((Char8 *)-3)
-
-typedef struct {
-    void *QueryInterface;
-    void *AddRef;
-    void *Release;
-    void (*Destroy)(SJ sj);
-    const SJUUID *(*GetUuid)(SJ sj);
-    void (*Reset)(SJ sj);
-    void (*GetChunk)(SJ sj, Sint32 id, Sint32 nbyte, SJCK *ck);
-    void (*UngetChunk)(SJ sj, Sint32 id, SJCK *ck);
-    void (*PutChunk)(SJ sj, Sint32 id, SJCK *ck);
-    Sint32 (*GetNumData)(SJ sj, Sint32 id);
-    Sint32 (*IsGetChunk)(SJ sj, Sint32 id, Sint32 nbyte, Sint32 *rbyte);
-    void (*EntryErrFunc)(SJ sj, void (*func)(void *obj, Char8 *msg), void *obj);
-} SJ_IF;
-
-extern void SJCRS_Lock(void);
-extern void SJCRS_Unlock(void);
-extern void SJERR_CallErr(const Char8 *msg);
-/* SJCRS init count (sj_crs.c). */
-extern void SJCRS_Init(void);
-extern void SJCRS_Finish(void);
 
 #define SJMEM_MAX_OBJ 32
 
@@ -132,7 +88,9 @@ Sint32 SJMEM_GetBufSize(SJMEM_OBJ *sj) {
     return ret;
 }
 
-/* dead-stripped by the linker */
+/* Unreferenced, so the linker strips it. Body from the RE4 decompilation (not verified
+ * against Shadow); its error literals are verified at their .rodata positions.
+ */
 void *SJMEM_GetBufPtr(SJMEM_OBJ *sj) {
     void *ret;
 

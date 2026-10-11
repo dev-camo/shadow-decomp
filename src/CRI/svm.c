@@ -13,10 +13,7 @@ extern void *memset(void *destination, int value, unsigned int size);
 extern unsigned int strlen(const char *text);
 extern char *strncat(char *destination, const char *source, unsigned int count);
 
-/* CRI basic types (cri_xpt.h); 32-bit integers are long. */
-typedef signed long Sint32;
-typedef unsigned long Uint32;
-typedef char Char8;
+#include "CRI/svm.h"
 
 #define SVM_MAX_SVTYPE 8
 #define SVM_MAX_SVR_FUNC 6
@@ -43,8 +40,6 @@ typedef struct {
     void *obj;
 } SvmErrFunc;
 
-void SVM_CallErr(Char8 *fmt, ...);
-
 /* Version string, kept by its pointer in .rodata. */
 const Char8 *const svm_build = "\nSVM/GC Ver.1.58 Build:Feb 28 2005 15:48:25\n";
 
@@ -64,12 +59,20 @@ SvmSvrFunc svm_svr_ftbl[SVM_MAX_SVTYPE][SVM_MAX_SVR_FUNC];
 Sint32 svm_svr_exec_flag[SVM_MAX_SVTYPE];
 Sint32 svm_exec_cnt[SVM_MAX_SVTYPE];
 
-/* The unreferenced functions below are stripped by the linker. MWCC places .bss objects in
- * order of first reference, and these are the first to touch the itoa buffer, the hooks
- * and the server tables, which gives the target's .bss order.
+/* Unreferenced functions (stripped by the linker): svm_itoa, SVM_SetCbWaitVsync,
+ * SVM_SetCbTestAndSet, SVM_SetCbGotoSvrBorder, SVM_GetNumCbSvr, SVM_SetCbErr,
+ * SVM_ExecSvrFuncId and SVM_ItoA2. Their bodies are taken unchanged from the RE4 and
+ * Mortal Kombat: Deception decompilations of SVM/GC Ver.1.54; Shadow's executable does not
+ * contain them, so their code is not verified. What the match does verify is their effect on
+ * the object: MWCC places .bss objects in order of first reference (these functions touch the
+ * itoa buffer, the hooks and the server tables first) and emits their string literals
+ * (ExecSvrFuncId's error codes, ItoA2's " ") at the observed .rodata positions.
  */
 
-/* Decimal digits of val into str (at most len - 1 characters). */
+/* Reference body, kept as written in both decompilations: it stores raw digit values
+ * (0-9, not ASCII) and its loop overwrites the last digit with the terminator, so it is not
+ * a working decimal formatter. Only its 32-byte static buffer is checked (.bss offset 0x0C).
+ */
 static void svm_itoa(Sint32 val, Char8 *str, Sint32 len) {
     static Char8 buf[32];
     Sint32 i;
@@ -401,7 +404,7 @@ void SVM_CallErr(Char8 *fmt, ...) {
     }
 }
 
-/* "a b" decimal formatter. */
+/* Joins two svm_itoa results with a space (reference body; unverified, see above). */
 void SVM_ItoA2(Sint32 a, Sint32 b, Char8 *str, Sint32 len) {
     svm_itoa(a, str, len);
     strncat(str, " ", len - strlen(str) - 1);

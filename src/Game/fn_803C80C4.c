@@ -1,13 +1,13 @@
-extern const char lbl_80516CC0[];
-extern void LSC_CallErrFunc(const char *format, ...);
+#include "CRI/lsc.h"
 
-/* Inferred signature: the caller supplies a pointer and a 32-bit argument.
- * Only the low byte of the second argument is observed; no result is consumed.
- */
-void fn_803C80C4(unsigned char *object, unsigned int value) {
-    if (object == 0) {
+/* lsc.c error literal (its .rodata is not sourced yet). */
+extern Char8 lbl_80516CC0[];
+
+/* Sets the scheduler's loop flag (LSC/GC Ver.2.22 addition; original name unknown). */
+void fn_803C80C4(LSC lsc, Sint32 flag) {
+    if (lsc == 0) {
         LSC_CallErrFunc(lbl_80516CC0);
     } else {
-        object[3] = value;
+        lsc->loop_flag = flag;
     }
 }
