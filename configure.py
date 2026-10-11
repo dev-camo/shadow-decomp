@@ -335,7 +335,6 @@ config.libs = [
                     "Game/fn_803CC9D0.c",
                     extra_cflags=["-sdata 0", "-use_lmw_stmw on"],
                 ),
-                Object(Matching, "Game/fn_803CCA8C.c", extra_cflags=["-sdata 0"]),
                 Object(Matching, "Game/fn_803ACABC.c"),
                 # CRI middleware units named after their original source files.
                 Object(Matching, "CRI/lsc_err.c"),
@@ -479,6 +478,21 @@ config.libs = [
             if config.version == "GUPE8P"
             else []
         ),
+    },
+    {
+        # CRI middleware units that are identical and split in every region.
+        "lib": "CRI",
+        "mw_version": config.linker_version,
+        "cflags": cflags_base,
+        "progress_category": "game",
+        "objects": [
+            # String literals live in .rodata (-str readonly).
+            Object(
+                Matching,
+                "CRI/gcci.c",
+                extra_cflags=["-sdata 0", "-str readonly", "-use_lmw_stmw on"],
+            ),
+        ],
     },
 ]
 
