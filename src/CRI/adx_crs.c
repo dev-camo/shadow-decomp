@@ -8,7 +8,7 @@
 #include "CRI/adx.h"
 #include "CRI/svm.h"
 
-/* volatile: the counter is reloaded after each update. */
+/* volatile as in The World Ends With You's adx_crs.c (the counter is reloaded after each update). */
 volatile Sint32 adxcrs_msk = 0;
 volatile Sint32 adxcrs_cnt = 0;
 

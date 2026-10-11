@@ -65,7 +65,7 @@ extern void *SJRBF_GetBufPtr(SJ sj);
 
 ADXSJD_OBJ adxsjd_obj[ADXSJD_MAX_OBJ];
 void (*pl2setsfreqfunc)(ADXB adxb, Sint32 sfreq);
-/* volatile: the counter is reloaded after each update. */
+/* volatile like the other CRI reference counts (adx_crs.c); the count is reloaded after each update. */
 static volatile Sint32 adxsjd_init_cnt;
 
 static void adxsjd_reset(ADXSJD sjd);

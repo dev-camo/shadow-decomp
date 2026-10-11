@@ -2,10 +2,13 @@
 #define CRI_ADX_SJE_H
 
 /* CRI ADX stream-joint encoder (adx_sje.c) entry points used by the SFA header insertion
- * (adx_insh.c). The encoder handle stays opaque. Signatures follow the RE4 decompilation.
+ * (adx_insh.c). The encoder handle stays opaque outside adx_sje.c. Signatures follow the RE4
+ * decompilation.
  */
 #include "CRI/cri_xpt.h"
 #include "CRI/sj.h"
+
+typedef struct ADXSJE_OBJ *ADXSJE;
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,12 +16,13 @@ extern "C" {
 
 void ADXSJE_Init(void);
 void ADXSJE_Finish(void);
-void *ADXSJE_Create(Sint32 nsj, SJ *sjs, SJ sjo);
-void ADXSJE_Destroy(void *sje);
-void ADXSJE_SetConfigSfa(void *sje, Sint32 a, Sint32 b, Sint32 c);
-void ADXSJE_Start(void *sje);
-void ADXSJE_Stop(void *sje);
+ADXSJE ADXSJE_Create(Sint32 nch, SJ *sji, SJ sjo);
+void ADXSJE_Destroy(ADXSJE sje);
+void ADXSJE_SetConfigSfa(ADXSJE sje, Sint32 nch, Sint32 sfreq, Sint32 nsmpl);
+void ADXSJE_Start(ADXSJE sje);
+void ADXSJE_Stop(ADXSJE sje);
 void ADXSJE_ExecServer(void);
+void ADXSJE_ExecHndl(void *obj);
 
 #ifdef __cplusplus
 }
