@@ -1,10 +1,10 @@
 /* CRI ADXT file starts (adx_tlk2.c, ADXT Ver.9.44): playback of a named file or of a file inside an
  * AFS archive through the handle's stream controller.
  *
- * Functions from Street Fighter III 3rd Strike's (PS2) adx_tlk2.c. Ver.9.44 wraps the public entries
- * in ADXCRS_Enter/ADXCRS_Leave around adxt_* workers and starts a named file as a full range. The
- * file is compiled with deferred inlining, so the functions are emitted in reverse order.
- */
+ * Functions from Street Fighter III 3rd Strike's (PS2) adx_tlk2.c. Ver.9.44 wraps the public
+ * entries in ADXCRS_Enter/ADXCRS_Leave around adxt_* workers and starts a named file as a full
+ * range. The file is compiled with deferred inlining, so the functions are emitted in reverse
+ * order. */
 #include <string.h>
 
 #include "CRI/adx.h"

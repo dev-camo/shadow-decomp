@@ -1,7 +1,8 @@
 #ifndef CRI_MWSTM_H
 #define CRI_MWSTM_H
 
-/* CRI Sofdec MW player stream-controller glue (mwstm.c). Signatures follow the RE4 decompilation. */
+/* CRI Sofdec MW player stream-controller glue (mwstm.c). Signatures follow the RE4
+ * decompilation. */
 #include "CRI/adx_stm.h"
 
 #ifdef __cplusplus

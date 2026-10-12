@@ -1,8 +1,8 @@
-/* CRI Sofdec MPEG video motion-compensation setup (mpv_cmc.c): the output block tables (chroma count
- * and the six block descriptors) and the library table of the 8x8 one-reference kernels.
+/* CRI Sofdec MPEG video motion-compensation setup (mpv_cmc.c): the output block tables (chroma
+ * count and the six block descriptors) and the library table of the 8x8 one-reference kernels.
  *
- * Source from the RE4 GameCube decompilation, unchanged apart from using the shared MPV_OBJ layout.
- */
+ * Source from the RE4 GameCube decompilation, unchanged apart from using the shared MPV_OBJ
+ * layout. */
 #include "CRI/mpv.h"
 
 void (*mpvcmc_oneref[8])(MPVMC *mc);

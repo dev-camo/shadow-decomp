@@ -7,7 +7,8 @@
  */
 #include "CRI/sfd.h"
 
-/* Driver `strm`'s handle (e.g. 3 -> the ADXT audio driver work), 0 when the driver is not set up. */
+/* Driver `strm`'s handle (e.g. 3 -> the ADXT audio driver work), 0 when the driver is not set
+ * up. */
 Sint32 SFD_GetTrHn(SFD sfd, Sint32 strm, void **hn) {
     void **trhn;
 
@@ -50,7 +51,8 @@ Sint32 SFD_GetCond(SFD sfd, Sint32 id, Sint32 *val) {
     return 0;
 }
 
-/* Video (5) / audio (6) cannot be enabled on a handle whose video (tr 2) / audio (tr 3) driver is absent. */
+/* Video (5) / audio (6) cannot be enabled on a handle whose video (tr 2) / audio (tr 3) driver is
+ * absent. */
 static Sint32 sfset_IsSettable(SFD sfd, Sint32 id, Sint32 val) {
     Sint32 ok;
 
@@ -78,10 +80,10 @@ static void sfset_SetCondDef(SFD sfd, Sint32 id, Sint32 val) {
     }
 }
 
-/* Matching constraint (COMPILER-DIFF): the library condition is written through a byte offset
- * `ofs = id << 2`, an own local declared last that the inlined SFSET_SetCond reuses for its index.
- * `SFLIB_libwork.cond[id] = val`, an index local and a `Sint32 *` slot all give a different register
- * assignment (verified: the unit drops to 53%). */
+/* Matching constraint (COMPILER-DIFF): the library condition is written through a byte offset `ofs
+ * = id << 2`, an own local declared last that the inlined SFSET_SetCond reuses for its index.
+ * `SFLIB_libwork.cond[id] = val`, an index local and a `Sint32 *` slot all give a different
+ * register assignment (verified: the unit drops to 53%). */
 Sint32 SFD_SetCond(SFD sfd, Sint32 id, Sint32 val) {
     SFD hn;
     Sint32 i;

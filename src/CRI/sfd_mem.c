@@ -1,7 +1,7 @@
 /* CRI Sofdec memory input driver (sfd_mem.c, SFD_tr_in_mem): transfer driver slot 0 of every player
  * in this game. It has no data source of its own: the input buffer (SFBUF ring 0/1/2) is supplied
- * through a stream joint (SFD_SetSupplySj), so the driver only marks the buffer prepared each server
- * pass and forwards GetWrite/AddWrite to the ring for callers that push data by hand. */
+ * through a stream joint (SFD_SetSupplySj), so the driver only marks the buffer prepared each
+ * server pass and forwards GetWrite/AddWrite to the ring for callers that push data by hand. */
 #include "CRI/sfd.h"
 
 /* No seek support (0). */

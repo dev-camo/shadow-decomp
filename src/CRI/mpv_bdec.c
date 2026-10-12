@@ -40,9 +40,9 @@ Uint8 *MPVBDEC_GetDflIqm(void) {
     return mpvbdec_dfl_iqm;
 }
 
-/* Per-handle block decoder tables: the default MPEG-1 intra quantiser matrix (org_iqm, raster order)
- * permuted into the IDCT's coefficient order (DCT_FsriInitScanTbl), the zigzag scan mapped to that
- * order, and the bit masks the coefficient decoder uses. */
+/* Per-handle block decoder tables: the default MPEG-1 intra quantiser matrix (org_iqm, raster
+ * order) permuted into the IDCT's coefficient order (DCT_FsriInitScanTbl), the zigzag scan mapped
+ * to that order, and the bit masks the coefficient decoder uses. */
 void MPVBDEC_Init(MPV mpv) {
     Sint8 seq[64];
     Sint8 scan[64];

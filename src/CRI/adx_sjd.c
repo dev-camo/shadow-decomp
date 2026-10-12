@@ -60,7 +60,8 @@ typedef struct ADXSJD_OBJ ADXSJD_OBJ;
 
 ADXSJD_OBJ adxsjd_obj[ADXSJD_MAX_OBJ];
 void (*pl2setsfreqfunc)(ADXB adxb, Sint32 sfreq);
-/* volatile like the other CRI reference counts (adx_crs.c); the count is reloaded after each update. */
+/* volatile like the other CRI reference counts (adx_crs.c); the count is reloaded after each
+ * update. */
 static volatile Sint32 adxsjd_init_cnt;
 
 static void adxsjd_reset(ADXSJD sjd);
@@ -74,7 +75,8 @@ void adxsjd_decexec_start(ADXSJD sjd);
 Sint16 *adxsjd_get_wr(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *trap);
 void adxsjd_decode_prep(ADXSJD sjd);
 
-/* Library init (reference counted): the first user brings up the ADXB decoder and clears the slots. */
+/* Library init (reference counted): the first user brings up the ADXB decoder and clears the
+ * slots. */
 void ADXSJD_Init(void) {
     if (adxsjd_init_cnt == 0) {
         ADXB_Init();
@@ -91,8 +93,9 @@ void ADXSJD_Finish(void) {
     }
 }
 
-/* Takes a free adxsjd_obj slot; the ADXB writes into the ring buffer of the first output stream joint
- * (`sjo[0]`, its size and extra area in samples), the other channels are `chofst` samples apart. */
+/* Takes a free adxsjd_obj slot; the ADXB writes into the ring buffer of the first output stream
+ * joint (`sjo[0]`, its size and extra area in samples), the other channels are `chofst` samples
+ * apart. */
 ADXSJD ADXSJD_Create(SJ sji, Sint32 nch, SJ *sjo) {
     ADXSJD sjd;
     Sint32 i;
@@ -162,7 +165,8 @@ void ADXSJD_SetInSj(ADXSJD sjd, SJ sji) {
     ADXB_SetAhxInSj(sjd->adxb, sji);
 }
 
-/* Caps the samples decoded per server tick (ADXT: obufsize/svrfreq derived), also for the AHX path. */
+/* Caps the samples decoded per server tick (ADXT: obufsize/svrfreq derived), also for the AHX
+ * path. */
 void ADXSJD_SetMaxDecSmpl(ADXSJD sjd, Sint32 nsmpl) {
     sjd->maxdecsmpl = nsmpl;
     ADXB_SetAhxDecSmpl(sjd->adxb, nsmpl);
@@ -562,20 +566,21 @@ void ADXSJD_SetDecPos(ADXSJD sjd, Sint32 pos) {
     sjd->decpos = pos;
 }
 
-/* Enables linked playback: after an ADX footer the decoder skips the zero padding and continues with
- * the next concatenated file instead of ending. */
+/* Enables linked playback: after an ADX footer the decoder skips the zero padding and continues
+ * with the next concatenated file instead of ending. */
 void ADXSJD_SetLnkSw(ADXSJD sjd, Sint32 sw) {
     sjd->lnksw = sw;
 }
 
-/* Registers the trap callback (`fn(obj)`) run by adxsjd_decexec_start when trap_cnt reaches trap_nsmpl. */
+/* Registers the trap callback (`fn(obj)`) run by adxsjd_decexec_start when trap_cnt reaches
+ * trap_nsmpl. */
 void ADXSJD_EntryTrapFunc(ADXSJD sjd, void (*fn)(void *obj), void *obj) {
     sjd->trapfn = fn;
     sjd->trapobj = obj;
 }
 
-/* Sets the sample count at which the trap callback fires before the next block starts (-1: no trap).
- * ADXT uses it for the loop end and for the linked-file boundary. */
+/* Sets the sample count at which the trap callback fires before the next block starts (-1: no
+ * trap). ADXT uses it for the loop end and for the linked-file boundary. */
 void ADXSJD_SetTrapNumSmpl(ADXSJD sjd, Sint32 nsmpl) {
     sjd->trap_nsmpl = nsmpl;
 }
@@ -585,7 +590,8 @@ void ADXSJD_SetTrapCnt(ADXSJD sjd, Sint32 cnt) {
     sjd->trap_cnt = cnt;
 }
 
-/* Presets the input-byte counter of the trap (used by ADXT to align the loop-end trap to a file position). */
+/* Presets the input-byte counter of the trap (used by ADXT to align the loop-end trap to a file
+ * position). */
 void ADXSJD_SetTrapDtLen(ADXSJD sjd, Sint32 len) {
     sjd->trap_dtlen = len;
 }
@@ -677,8 +683,8 @@ void ADXSJD_TakeSnapshot(ADXSJD sjd) {
     ADXB_TakeSnapshot(sjd->adxb);
 }
 
-/* Restores the block decoder's ADPCM history/key snapshot (see ADXB_RestoreSnapshot); ADXT uses it to
- * resume after a loop/seek. */
+/* Restores the block decoder's ADPCM history/key snapshot (see ADXB_RestoreSnapshot); ADXT uses it
+ * to resume after a loop/seek. */
 void ADXSJD_RestoreSnapshot(ADXSJD sjd) {
     ADXB_RestoreSnapshot(sjd->adxb);
 }

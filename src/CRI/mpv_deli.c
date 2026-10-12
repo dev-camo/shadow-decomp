@@ -6,8 +6,8 @@
 
 Sint32 MPV_CheckDelim(void *ptr);
 
-/* Byte-state-machine scan for the first 00 00 01 xx start code in [p, p+n) whose class (MPV_CheckDelim)
- * is in `mask`; returns its address or 0. */
+/* Byte-state-machine scan for the first 00 00 01 xx start code in [p, p+n) whose class
+ * (MPV_CheckDelim) is in `mask`; returns its address or 0. */
 Sint8 *MPV_SearchDelim(Sint8 *p, Sint32 n, Sint32 mask) {
     Sint8 *end;
     Sint8 c;

@@ -126,7 +126,8 @@ void SKG_Finish(void) {
     }
 }
 
-/* Registers the SKG error callback (never invoked by this build: the key generator has no error paths). */
+/* Registers the SKG error callback (never invoked by this build: the key generator has no error
+ * paths). */
 void SKG_EntryErrFunc(void (*func)(void *obj, const Char8 *msg), void *obj) {
     skg_err_func = func;
     skg_err_obj = obj;
@@ -142,8 +143,8 @@ const Char8 *SKG_GetVersion(void) {
 
 /* The three keys of a stream: hex digits of the sample count fed through the prime table. Matching
  * constraints: `k` is Sint16 (the original's extsh after the 7th step and on the third seed), the
- * keys are cleared through the pointers after the init check, and the first two keys are stored after
- * the third seed is loaded. */
+ * keys are cleared through the pointers after the init check, and the first two keys are stored
+ * after the third seed is loaded. */
 static Sint32 SKG_MakeKey(Sint32 nsmpl, Sint16 *k0, Sint16 *km, Sint16 *ka) {
     Char8 str[16];
     Sint16 k;
@@ -218,9 +219,10 @@ void ADXB_SetIgnoreHdrErr(Sint32 flg) {
     adxb_ignore_hdrerr = flg;
 }
 
-/* One server tick of a block decoder: dispatches on the container type in x98 (ADX/AHX/SPSD/AIFF/AU/
- * WAV), then fires the decode callback cb_func with the input bytes consumed since the previous tick
- * (wrapping at 0x7FFFFFFF) and the PCM bytes produced (nch * nsmpl * 2). Called by adxsjd_decode. */
+/* One server tick of a block decoder: dispatches on the container type in x98
+ * (ADX/AHX/SPSD/AIFF/AU/WAV), then fires the decode callback cb_func with the input bytes consumed
+ * since the previous tick (wrapping at 0x7FFFFFFF) and the PCM bytes produced (nch * nsmpl * 2).
+ * Called by adxsjd_decode. */
 void ADXB_ExecHndl(ADXB adxb) {
     Sint32 nsmpl;
     Sint32 nbyte;
@@ -261,10 +263,10 @@ static void adxb_CopySmpl(Sint16 *dst, Sint16 *src, Sint32 n) {
 }
 
 /* Decode step for ADX: on DECODE fetches the write window from the SJD (adxsjd_get_wr), queues the
- * blocks in the ADXPD (ADXB_EvokeDecode) and waits in WRITE; when the ADPCM core is DONE, optionally
- * runs the Pro Logic II encoder over the output, computes the samples produced (trimming the
- * padding of the last partial block at the stream end), copies samples decoded past the ring end
- * back to its start (mirror), resets the core and reports through addwr_func; state DONE. */
+ * blocks in the ADXPD (ADXB_EvokeDecode) and waits in WRITE; when the ADPCM core is DONE,
+ * optionally runs the Pro Logic II encoder over the output, computes the samples produced (trimming
+ * the padding of the last partial block at the stream end), copies samples decoded past the ring
+ * end back to its start (mirror), resets the core and reports through addwr_func; state DONE. */
 /* Matching constraints: `ofst = x70 + ofst` (not `ofst += x70`, which swaps the add operands) with
  * opt_lifetimes off gives the target's in-place add and keeps pad's subtraction where it is. The
  * mono copy loop reads through its own pointer `sp`; sharing `src` with the Pro Logic loop gives
@@ -352,9 +354,10 @@ void ADXB_ExecOneAdx(ADXB adxb) {
 }
 #pragma opt_lifetimes on
 
-/* hand the input to the expander: stereo, Pro Logic II or mono. Matching constraints: the `void *`
- * copies keep the arms' wr_pos reloads apart from the caller's pos, and `pcm = pcmbuf; pcm +=
- * wr_pos` gives the original argument registers and moves the pd load below pcmbuf in the mono arm. */
+/* hand the input to the expander: stereo, Pro Logic II or mono. Matching constraints: the `void
+ * *` copies keep the arms' wr_pos reloads apart from the caller's pos, and `pcm = pcmbuf; pcm +=
+ * wr_pos` gives the original argument registers and moves the pd load below pcmbuf in the mono
+ * arm. */
 static void adxb_EntrySte(void *obj, Sint32 n) {
     ADXB adxb = obj;
     ADXPD pd;
@@ -368,7 +371,8 @@ static void adxb_EntrySte(void *obj, Sint32 n) {
     ADXPD_Start(pd);
 }
 
-/* Pro Logic II variant: mono decode of n blocks into the two channel planes (encoded after decode). */
+/* Pro Logic II variant: mono decode of n blocks into the two channel planes (encoded after
+ * decode). */
 static void adxb_EntryPl2(void *obj, Sint32 n) {
     ADXB adxb = obj;
     ADXPD pd;
@@ -457,13 +461,15 @@ Sint32 ADXB_GetDecNumSmpl(ADXB adxb) {
     return adxb->dec_nsmpl;
 }
 
-/* Input bytes consumed by the block that just completed; the SJD frees that much of its input chunk. */
+/* Input bytes consumed by the block that just completed; the SJD frees that much of its input
+ * chunk. */
 Sint32 ADXB_GetDecDtLen(ADXB adxb) {
     return adxb->dec_nbyte;
 }
 
-/* After the SJD has taken the result of a finished block (stat DONE): resets the ADPCM core, clears the
- * ring write position x8c and returns to STOP so the next ADXB_Start can begin another block. */
+/* After the SJD has taken the result of a finished block (stat DONE): resets the ADPCM core,
+ * clears the ring write position x8c and returns to STOP so the next ADXB_Start can begin
+ * another block. */
 void ADXB_Reset(ADXB adxb) {
     if (adxb->stat == ADXB_STAT_DONE) {
         ADXPD_Reset(adxb->pd);
@@ -481,15 +487,17 @@ void ADXB_Stop(ADXB adxb) {
     adxb->stat = ADXB_STAT_STOP;
 }
 
-/* Arms a stopped decoder (STOP -> DECODE); ADXB_ExecHndl then fetches the write window and decodes. */
+/* Arms a stopped decoder (STOP -> DECODE); ADXB_ExecHndl then fetches the write window and
+ * decodes. */
 void ADXB_Start(ADXB adxb) {
     if (adxb->stat == ADXB_STAT_STOP) {
         adxb->stat = ADXB_STAT_DECODE;
     }
 }
 
-/* Points the decoder at the next input chunk (`buf`, `nbyte` bytes) and converts its length into whole
- * blocks (ADX: block bytes x0f; PCM types: bps/8 * nch). Clears the per-block decode counters. */
+/* Points the decoder at the next input chunk (`buf`, `nbyte` bytes) and converts its length into
+ * whole blocks (ADX: block bytes x0f; PCM types: bps/8 * nch). Clears the per-block decode
+ * counters. */
 void ADXB_EntryData(ADXB adxb, Sint16 *buf, Sint32 nbyte) {
     if (adxb->x98 == ADXB_TYPE_ADX) {
         adxb->inbuf = buf;
@@ -511,8 +519,8 @@ Sint32 ADXB_GetStat(ADXB adxb) {
     return adxb->stat;
 }
 
-/* Writes the saved ADPCM history (dly) and extension parameters (decryption key) back into the ADPCM
- * core; ADXT uses the pair to resume a stream after a seek/loop without an audible glitch. */
+/* Writes the saved ADPCM history (dly) and extension parameters (decryption key) back into the
+ * ADPCM core; ADXT uses the pair to resume a stream after a seek/loop without an audible glitch. */
 void ADXB_RestoreSnapshot(ADXB adxb) {
     ADXPD_SetDly(adxb->pd, adxb->dly[0], adxb->dly[1]);
     ADXPD_SetExtPrm(adxb->pd, adxb->extprm[0], adxb->extprm[1], adxb->extprm[2]);
@@ -524,7 +532,8 @@ void ADXB_TakeSnapshot(ADXB adxb) {
     ADXPD_GetExtPrm(adxb->pd, &adxb->extprm[0], &adxb->extprm[1], &adxb->extprm[2]);
 }
 
-/* Default pan of channel `ch` from the AINF header chunk (-128 = none), as ADXT applies at start. */
+/* Default pan of channel `ch` from the AINF header chunk (-128 = none), as ADXT applies at
+ * start. */
 Sint16 ADXB_GetDefPan(ADXB adxb, Sint32 ch) {
     return adxb->def_pan[ch];
 }
@@ -619,7 +628,8 @@ Sint32 ADXB_GetFormat(ADXB adxb) {
     return adxb->x98;
 }
 
-/* Base of the PCM output ring (the SJD's first output stream-joint buffer), as passed to ADXB_Create. */
+/* Base of the PCM output ring (the SJD's first output stream-joint buffer), as passed to
+ * ADXB_Create. */
 Sint16 *ADXB_GetPcmBuf(ADXB adxb) {
     return (Sint16 *)adxb->x3c;
 }
@@ -631,8 +641,9 @@ void ADXB_EntryGetWrFunc(ADXB adxb, ADXB_GETWR_FUNC func, void *obj) {
     adxb->getwr_obj = obj;
 }
 
-/* Identifies the container at `buf` (ADX magic 0x8000, then SPSD/WAV/AIFF/AU signatures) and decodes
- * its header into the handle. Returns the header length, 0 if more data is needed, -1 if unknown. */
+/* Identifies the container at `buf` (ADX magic 0x8000, then SPSD/WAV/AIFF/AU signatures) and
+ * decodes its header into the handle. Returns the header length, 0 if more data is needed, -1 if
+ * unknown. */
 Sint32 ADXB_DecodeHeader(ADXB adxb, void *buf, Sint32 bsize) {
     adxb->ainf_len = 0;
     adxb->def_outvol = 0;
@@ -714,8 +725,9 @@ static Sint32 adxb_SetKey(ADXB adxb, Uint8 major, Uint8 minor, Sint32 nsmpl, Sin
 }
 
 /* Decodes an ADX/AHX header: format, rate, channels, sample count, version-dependent decryption key
- * (adxb_SetKey), ADPCM cutoff and initial history, loop points and AINF defaults; programs the ADPCM
- * core. Returns the header length, 0 if the header is incomplete, -1 on an AHX stream without an AHX decoder. */
+ * (adxb_SetKey), ADPCM cutoff and initial history, loop points and AINF defaults; programs the
+ * ADPCM core. Returns the header length, 0 if the header is incomplete, -1 on an AHX stream without
+ * an AHX decoder. */
 Sint32 ADXB_DecodeHeaderAdx(ADXB adxb, Uint8 *buf, Sint32 bsize) {
     Sint16 hdrlen;
     Uint8 major;
@@ -797,7 +809,8 @@ Sint32 ADXB_DecodeHeaderAdx(ADXB adxb, Uint8 *buf, Sint32 bsize) {
     return hdrlen;
 }
 
-/* dead-stripped by the linker; the literal stays in the .rodata pool after DecodeHeaderAdx's messages */
+/* dead-stripped by the linker; the literal stays in the .rodata pool after DecodeHeaderAdx's
+ * messages */
 const Char8 *ADXB_GetSignature(void) {
     return "CRI-MW";
 }
@@ -817,8 +830,8 @@ void ADXB_Destroy(ADXB adxb) {
 }
 
 /* Takes a free adxb_obj slot for a stream of up to `x38` channels writing PCM into `pcmbuf`
- * (`bufsmpl` samples per channel, channel planes `chofst` samples apart); creates the ADPCM core and
- * installs the default in-place write callbacks. Called by ADXSJD_Create. */
+ * (`bufsmpl` samples per channel, channel planes `chofst` samples apart); creates the ADPCM core
+ * and installs the default in-place write callbacks. Called by ADXSJD_Create. */
 ADXB ADXB_Create(Sint32 x38, Sint16 *pcmbuf, Sint32 bufsmpl, Sint32 chofst) {
     ADXB adxb;
     Sint32 i;
@@ -855,8 +868,8 @@ ADXB ADXB_Create(Sint32 x38, Sint16 *pcmbuf, Sint32 bufsmpl, Sint32 chofst) {
     return adxb;
 }
 
-/* Default write-advance callback: moves the ring write position x8c and the total written x88 by the
- * samples just decoded (used only when no SJD callback is installed). */
+/* Default write-advance callback: moves the ring write position x8c and the total written x88 by
+ * the samples just decoded (used only when no SJD callback is installed). */
 void adxb_DefAddWr(void *obj, Sint32 nbyte, Sint32 nsmpl) {
     ADXB adxb = obj;
 
@@ -864,8 +877,8 @@ void adxb_DefAddWr(void *obj, Sint32 nbyte, Sint32 nsmpl) {
     adxb->x88 += nsmpl;
 }
 
-/* Default write-window callback: the whole remaining ring after x8c, with the samples left until the
- * stream end as the trap distance. */
+/* Default write-window callback: the whole remaining ring after x8c, with the samples left until
+ * the stream end as the trap distance. */
 Sint16 *adxb_DefGetWr(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *x70) {
     ADXB adxb = obj;
 
@@ -875,7 +888,8 @@ Sint16 *adxb_DefGetWr(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *x70) {
     return (Sint16 *)adxb->x3c;
 }
 
-/* Library init: brings up the ADPCM core (ADXPD) and the key generator and clears the 16 decoder slots. */
+/* Library init: brings up the ADPCM core (ADXPD) and the key generator and clears the 16 decoder
+ * slots. */
 void ADXB_Init(void) {
     ADXPD_Init();
     SKG_Init();

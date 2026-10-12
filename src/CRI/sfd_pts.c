@@ -131,7 +131,8 @@ Sint32 SFPTS_WritePtsQue(SFD sfd, Sint32 strm, SFPTS_ENT *in, Sint32 *full) {
     return 0;
 }
 
-/* Gives the video ring (1) a PTS queue in the caller's buffer (8-byte aligned, 16 bytes per entry). */
+/* Gives the video ring (1) a PTS queue in the caller's buffer (8-byte aligned, 16 bytes per
+ * entry). */
 Sint32 SFD_SetVideoPts(SFD sfd, void *buf, Sint32 size) {
     Uint8 *p;
 

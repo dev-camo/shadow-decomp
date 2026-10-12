@@ -109,9 +109,9 @@ typedef struct {
 static const Char8 sftst_msg_fmt[] =
     "%p, %ld, %ld, %08lX%08lX, %ld, %ld, %ld, %ld,   %ld, %ld,   %ld, %ld, %ld, %ld,   %ld, %ld,   %ld, %ld, %ld, %ld, %ld,   %ld, %ld,   %ld \n";
 
-/* Matching constraints: the absolute difference is computed with the `diff = ..` assignment nested in
- * its condition, which keeps it before the sftst_Conv call as in the original; `tol` is written out
- * (see below). */
+/* Matching constraints: the absolute difference is computed with the `diff = ..` assignment nested
+ * in its condition, which keeps it before the sftst_Conv call as in the original; `tol` is written
+ * out (see below). */
 void SFTST_Calc(SFTST tst, SFTST_TIME *mt, SFTST_TIME *hlp, SFTST_TIME *out) {
     Sint64 est;
     Sint64 q;

@@ -33,7 +33,8 @@ inline static unsigned int FreeListOffset(Block *area) {
 
 /* The target reloads the head between these checks; preserve both updates in order. */
 /* The head is the block's last word, at the variable offset FreeListOffset() returns (MSL's
- * Block_start); indexing the block as words keeps 95% of the target, a separate head pointer 94.6%. */
+ * Block_start); indexing the block as words keeps 95% of the target, a separate head pointer
+ * 94.6%. */
 inline static void UnlinkFreeBlock(Block *area, unsigned int offset, SubBlock *block) {
     if (((SubBlock **)area)[offset / sizeof(SubBlock *)] == block) {
         ((SubBlock **)area)[offset / sizeof(SubBlock *)] = block->next;
@@ -288,7 +289,8 @@ void *__pool_realloc(__mem_pool *pool, void *ptr, unsigned long size) {
                                         insert_following->prev->next = insert_following->next;
                                     }
                                 } else {
-                                    /* An empty free list starts as a circular doubly linked list. */
+                                    /* An empty free list starts as a circular doubly linked
+                                     * list. */
                                     ((SubBlock **)
                                          insert_area)[insert_head_offset / (sizeof(SubBlock *))] =
                                         insert_block;

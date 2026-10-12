@@ -96,7 +96,8 @@ void FIND_EXCEPTION_FRAGMENT(char *pc, FragmentInfo *info) {
     found_module = 0;
     if (registration->active != 0) {
         module = registration->exception_info;
-        /* the exit test inside the loop stays closer to the target (87% vs 84% as a while condition) */
+        /* the exit test inside the loop stays closer to the target (87% vs 84% as a while
+         * condition) */
         while (1) {
             if (module->text_size == 0) {
                 break;

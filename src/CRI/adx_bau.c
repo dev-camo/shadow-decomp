@@ -1,8 +1,7 @@
 /* CRI ADXB Sun AU (.snd) support (adx_bau.c): magic test, header parse and the per-tick decode
- * steps for u-law (table expansion), 8-bit and 16-bit linear PCM into the ADXB PCM ring. Selected by
- * ADXB_DecodeHeader / ADXB_ExecHndl for type 4.
- * Body from the RE4 GameCube decompilation of the same file.
- */
+ * steps for u-law (table expansion), 8-bit and 16-bit linear PCM into the ADXB PCM ring. Selected
+ * by ADXB_DecodeHeader / ADXB_ExecHndl for type 4. Body from the RE4 GameCube decompilation of the
+ * same file. */
 #include <string.h>
 
 #include "CRI/adx_b.h"

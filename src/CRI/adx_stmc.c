@@ -132,8 +132,8 @@ void ADXSTM_ExecServer(void) {
 
 /* Per-controller step of the deferred (no-wait) requests once no read is in flight: stop_req ->
  * PREP, release_req -> cvFsClose, bind_req -> cvFsOpen the bound file, measure it (whole file when
- * the range was "infinite", clamp ofst/nsct to the file) and rewind; then, in EXEC and bound, run the
- * reading state (adxstmf_stat_exec). */
+ * the range was "infinite", clamp ofst/nsct to the file) and rewind; then, in EXEC and bound, run
+ * the reading state (adxstmf_stat_exec). */
 void ADXSTMF_ExecHndl(ADXSTM stm) {
     void *fs;
     Sint32 fnsct;
@@ -216,11 +216,11 @@ static inline void adxstmf_retry(ADXSTM stm) {
     }
 }
 
-/* The reading state: if a request is outstanding, on CVFS completion publish the sectors read as DATA
- * in the stream joint, advance pos, fire the end-of-stream callback at eos_nsct and go to END at the
- * range end or the read limit; on CVFS error give the chunk back and retry. Otherwise, when the ring
- * holds less than rd_min bytes, take a FREE chunk (<= rd_max), clamp to eos/range/rd_lim (0x200
- * sectors) and issue cvFsReqRd at ofst + pos. */
+/* The reading state: if a request is outstanding, on CVFS completion publish the sectors read as
+ * DATA in the stream joint, advance pos, fire the end-of-stream callback at eos_nsct and go to END
+ * at the range end or the read limit; on CVFS error give the chunk back and retry. Otherwise, when
+ * the ring holds less than rd_min bytes, take a FREE chunk (<= rd_max), clamp to eos/range/rd_lim
+ * (0x200 sectors) and issue cvFsReqRd at ofst + pos. */
 void adxstmf_stat_exec(ADXSTM stm) {
     SJ sj;
     Sint32 fstat;
@@ -350,8 +350,8 @@ static inline void adxstm_stop_nw(ADXSTM stm) {
     SVM_Unlock();
 }
 
-/* Blocking stop: cancels the CVFS transfer, forces PREP and pumps ADXT_ExecFsSvr until the controller
- * has settled with no chunk held. */
+/* Blocking stop: cancels the CVFS transfer, forces PREP and pumps ADXT_ExecFsSvr until the
+ * controller has settled with no chunk held. */
 static inline void adxstm_stop(ADXSTM stm) {
     if (stm->fs != 0 && stm->release_req == 0) {
         cvFsStopTr(stm->fs);
@@ -471,7 +471,8 @@ void ADXSTM_ReleaseFileNw(ADXSTM stm) {
     adxstm_release_nw(stm);
 }
 
-/* Blocking bind: records the file like ADXSTM_BindFileNw and pumps the file server until it is open. */
+/* Blocking bind: records the file like ADXSTM_BindFileNw and pumps the file server until it is
+ * open. */
 void ADXSTM_BindFile(ADXSTM stm, const Char8 *fname, void *dir, Sint32 ofst, Sint32 nsct) {
     SVM_Lock();
     stm->ofst = ofst;
@@ -486,8 +487,8 @@ void ADXSTM_BindFile(ADXSTM stm, const Char8 *fname, void *dir, Sint32 ofst, Sin
     } while (stm->bind_req != 0);
 }
 
-/* Records the file to stream (`fname` on CVFS device `dir`, `ofst`/`nsct` in sectors; nsct 0xFFFFF =
- * whole file) and asks the server to open it (bind_req). */
+/* Records the file to stream (`fname` on CVFS device `dir`, `ofst`/`nsct` in sectors; nsct 0xFFFFF
+ * = whole file) and asks the server to open it (bind_req). */
 void ADXSTM_BindFileNw(ADXSTM stm, const Char8 *fname, void *dir, Sint32 ofst, Sint32 nsct) {
     SVM_Lock();
     stm->ofst = ofst;
@@ -522,9 +523,9 @@ static inline ADXSTM adxstmf_create(SJ sj, Sint32 ofst, Sint32 num, Sint32 rtim)
     Sint32 i;
 
     for (i = 0; i < num; i++) {
-        /* Matching constraint (COMPILER-DIFF): &adxstmf_obj[ofst] here turns the scaled index into a
-         * pointer induction variable; the byte-offset form keeps `ofst` as the loop variable, as in
-         * the original (verified: &adxstmf_obj[ofst] drops the unit to 86%). */
+        /* Matching constraint (COMPILER-DIFF): &adxstmf_obj[ofst] here turns the scaled index into
+         * a pointer induction variable; the byte-offset form keeps `ofst` as the loop variable, as
+         * in the original (verified: &adxstmf_obj[ofst] drops the unit to 86%). */
         stm = (ADXSTM)((Uint8 *)adxstmf_obj + ofst * sizeof(ADXSTM_OBJ));
         if (stm->used == 0) {
             break;

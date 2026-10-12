@@ -105,8 +105,9 @@ Sint32 SFUO_Init(void) {
     return 0;
 }
 
-/* Registers stream joint `sj` (+ parameter) as user-output channel `chno`; the demuxer then copies
- * the matching private stream into it. Error 0xFF000602 when the handle has no user output buffer. */
+/* Registers stream joint `sj` (+ parameter) as user-output channel `chno`; the demuxer then
+ * copies the matching private stream into it. Error 0xFF000602 when the handle has no user
+ * output buffer. */
 Sint32 SFD_SetUsrSj(SFD sfd, Sint32 chno, void *sj, void *prm) {
     SFUO *uo;
     Sint32 uobuf;

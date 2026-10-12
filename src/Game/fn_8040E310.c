@@ -5,7 +5,8 @@ typedef struct Fn8040E310Object {
     /* 0x08 */ unsigned int mode;
 } Fn8040E310Object;
 
-/* Both setters clear the object first; the cleared fields are then overwritten (inferred helper). */
+/* Both setters clear the object first; the cleared fields are then overwritten (inferred
+ * helper). */
 static inline void fn_8040E310_clear(Fn8040E310Object *object) {
     object->value = 0;
     object->state = 0;

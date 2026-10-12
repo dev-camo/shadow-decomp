@@ -72,8 +72,8 @@ Sint32 SFVOM_Create(void) {
     return 0;
 }
 
-/* With video enabled: terminates the driver when the frame buffer terminated and the clock has passed
- * the video end (or no clock is used), and mirrors the prepared flag. */
+/* With video enabled: terminates the driver when the frame buffer terminated and the clock has
+ * passed the video end (or no clock is used), and mirrors the prepared flag. */
 Sint32 SFVOM_ExecServer(SFD sfd) {
     Sint32 term;
 

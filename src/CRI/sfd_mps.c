@@ -1,6 +1,7 @@
 /* CRI Sofdec: MPEG system stream driver (sfd_mps.c). Transfer driver 1: takes the muxed stream out
  * of ring buffer 0, demultiplexes it through an MPS handle and copies the packet payloads into the
- * video (buf 1), audio (buf 2) and private/user-output (buf 7) buffers or user element stream joints.
+ * video (buf 1), audio (buf 2) and private/user-output (buf 7) buffers or user element stream
+ * joints.
  *
  * Bodies from the RE4 GameCube decompilation; this game's buffer view starts at 0x1310. */
 #include "CRI/cri_xpt.h"
@@ -283,9 +284,9 @@ static inline void sfmps_ProcPrepSee(SFD sfd) {
 }
 
 /* PREP-state bookkeeping each pass: marks the three output buffers prepared once the input ring
- * holds cond 0x16 bytes (or its whole size), records mux rate and system-header rate scale, publishes
- * the stream counts, auto-disables audio/video whose element buffer never received data, and fills
- * the seek work's system analysis. */
+ * holds cond 0x16 bytes (or its whole size), records mux rate and system-header rate scale,
+ * publishes the stream counts, auto-disables audio/video whose element buffer never received data,
+ * and fills the seek work's system analysis. */
 static void sfmps_ProcPrep(SFD sfd) {
     MPS mps;
     SFMPS_WORK *wk;
@@ -478,8 +479,8 @@ static Sint32 sfmps_CopyUo(SFD sfd, Sint32 chno, Uint8 *data, Sint32 len) {
 }
 
 /* Private stream 1/2 packet: a Sofdec header packet goes to the header analyser (SFHDS_SetHdr; when
- * flagged also to user channel 0 with its 0x12-byte packet header), any other private payload to the
- * user output channel of its stream id (the MW player's additional-info ring). */
+ * flagged also to user channel 0 with its 0x12-byte packet header), any other private payload to
+ * the user output channel of its stream id (the MW player's additional-info ring). */
 Sint32 sfmps_CopyPrvate(SFD sfd, Sint32 stmid, Uint8 *data, Sint32 len, Sint64 pts) {
     Sint32 result;
     Sint32 ret;
@@ -579,8 +580,9 @@ Sint32 sfmps_CopyVideo(SFD sfd, Sint32 stmid, Uint8 *data, Sint32 len, Sint64 pt
     return sfmps_CopyDstBuft(sfd, sfd->tr[SFMPS_TR].bufout, data, len, pts);
 }
 
-/* Audio packet: when audio is on, selects the audio stream (cond 0x1F..), drops other streams, tracks
- * the minimum audio PTS (start alignment) and copies the payload into the audio ring (buf 2). */
+/* Audio packet: when audio is on, selects the audio stream (cond 0x1F..), drops other streams,
+ * tracks the minimum audio PTS (start alignment) and copies the payload into the audio ring (buf
+ * 2). */
 Sint32 sfmps_CopyAudio(SFD sfd, Sint32 stmid, Uint8 *data, Sint32 len, Sint64 pts) {
     SFMPS_WORK *wk;
     Sint32 cur;
@@ -856,8 +858,9 @@ no_syshd:
     } else if (delim == 0) {
         *nskip = 0;
         p = (Sint8 *)data;
-        /* Matching constraint (COMPILER-DIFF): the original reads the unit for the compare separately from
-         * the later reads; reading it through the creation-parameter view of the handle keeps it apart. */
+        /* Matching constraint (COMPILER-DIFF): the original reads the unit for the compare
+         * separately from the later reads; reading it through the creation-parameter view of the
+         * handle keeps it apart. */
         if (len >= ((SFD_CREPRM *)sfd)->unit + 3 && sfmps_IsZero(p, sfd->prm.unit)) {
             *nskip = sfd->prm.unit;
         } else {
@@ -1042,7 +1045,8 @@ Sint32 SFMPS_Finish(void) {
     return 0;
 }
 
-/* Library init: checks the work size (spins on a mismatch) and initialises the MPS parser with 8 handles. */
+/* Library init: checks the work size (spins on a mismatch) and initialises the MPS parser with 8
+ * handles. */
 Sint32 SFMPS_Init(void) {
     Sint32 ret;
     Sint32 wksize = sizeof(SFMPS_WORK);

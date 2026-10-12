@@ -1,7 +1,7 @@
 /* CRI Sofdec decoder core library init and errors (sfd_lib.c, "CRI SFD/GC Ver.1.947", Sep 22 2004):
- * SFD_Init sets up the library work (default conditions, driver table, timing, buffers), SFLIB_CheckHn
- * validates handles and SFLIB_SetErr is the error path every SFD_* function returns through
- * (0xFF00xxxx codes, first code kept, handle state negated, callback to the MW player). */
+ * SFD_Init sets up the library work (default conditions, driver table, timing, buffers),
+ * SFLIB_CheckHn validates handles and SFLIB_SetErr is the error path every SFD_* function returns
+ * through (0xFF00xxxx codes, first code kept, handle state negated, callback to the MW player). */
 #include "CRI/cri_xpt.h"
 #include "CRI/sfd.h"
 #include "CRI/svm.h"
@@ -42,8 +42,8 @@ Sint32 SFLIB_CheckHn(SFD sfd) {
     return 0;
 }
 
-/* Records the first error code (per handle or library-wide), calls the error callback, and makes the
- * handle's state negative so the player sees an error. */
+/* Records the first error code (per handle or library-wide), calls the error callback, and makes
+ * the handle's state negative so the player sees an error. */
 static Sint32 sflib_SetErr(SFD sfd, Sint32 code) {
     if (sfd == 0) {
         if (SFLIB_libwork.err.code == 0) {
@@ -152,7 +152,8 @@ Sint32 SFD_Init(register SFD_INIT_PRM *prm) {
     UTY_MemsetDword(&SFLIB_libwork, 0, sizeof(SFLIB_libwork) / 4 - 1);
     MEM_Copy(&SFLIB_libwork, SFPLY_cond_dfl, sizeof(SFLIB_libwork.cond));
     /* Matching constraint (COMPILER-DIFF): the original loads prm1 before trif_tbl into r4/r5 and
-     * stores trif_tbl first; the `+ 0` copy of tbl gives that register order (it generates no code). */
+     * stores trif_tbl first; the `+ 0` copy of tbl gives that register order (it generates no
+     * code). */
     p1 = prm->prm1;
     tbl = prm->trif_tbl;
     tbl = (SFTRN_TRIF_TBL *)((Uint32)tbl + 0);

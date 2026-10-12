@@ -1,11 +1,10 @@
 /* CRI ADXT file-system server (adx_fsvr.c): one pass of the data-loading side of the pipeline (CVFS
- * device servers, ADX stream controllers, ADX file handles). Called from the SVM file-system callback
- * (adxt_exec_fssvr) once per game frame; the phase counter adxt_fssvr_enter_cnt rejects re-entry from
- * a callback.
+ * device servers, ADX stream controllers, ADX file handles). Called from the SVM file-system
+ * callback (adxt_exec_fssvr) once per game frame; the phase counter adxt_fssvr_enter_cnt rejects
+ * re-entry from a callback.
  *
  * Body from the RE4 GameCube decompilation. Ver.9.44 wraps it in ADXCRS_Enter/ADXCRS_Leave and runs
- * the CVFS server through adx_stmc.c's wrapper.
- */
+ * the CVFS server through adx_stmc.c's wrapper. */
 #include "CRI/adx.h"
 #include "CRI/adx_f.h"
 #include "CRI/adx_stm.h"

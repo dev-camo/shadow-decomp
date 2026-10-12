@@ -17,7 +17,8 @@ typedef CVFS_IF *(*CVFS_GETIFFN)(void);
 #define CVFS_SEEK_CUR 1
 #define CVFS_SEEK_END 2
 
-/* device interface table: every device (mfci.c, gcci.c) fills one, and cri_cvfs.c calls through it */
+/* device interface table: every device (mfci.c, gcci.c) fills one, and cri_cvfs.c calls through
+ * it */
 struct CVFS_IF {
     void (*ExecServer)(void);                                   /* 0x00 */
     void (*EntryErrFunc)(CVFS_USRERRFN func, void *obj);        /* 0x04 */
