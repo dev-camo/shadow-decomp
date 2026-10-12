@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include "CRI/cri_xpt.h"
-#include "CRI/sfd.h"
+#include "CRI/uty.h"
 
 extern Sint32 sfadxt_stat;
 
