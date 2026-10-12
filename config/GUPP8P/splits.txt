@@ -171,6 +171,38 @@ dolphin/GXTransform.c:
 	.text       start:0x8039A0B4 end:0x8039A648
 	.sdata2     start:0x805FB838 end:0x805FB848
 
+PowerPC_EABI_Support/MetroTRK/mainloop.c:
+	.text       start:0x8039AEA0 end:0x8039AF98
+
+PowerPC_EABI_Support/MetroTRK/nubevent.c:
+	.text       start:0x8039AF98 end:0x8039B1C0
+	.bss        start:0x805A3510 end:0x805A3538
+
+PowerPC_EABI_Support/MetroTRK/msg.c:
+	.text       start:0x8039B358 end:0x8039B39C
+	.rodata     start:0x80514478 end:0x805144A0
+
+PowerPC_EABI_Support/MetroTRK/msgbuf.c:
+	.text       start:0x8039B39C end:0x8039BBD8
+	.rodata     start:0x805144A0 end:0x805144C0
+	.bss        start:0x805A3540 end:0x805A4EF0
+
+PowerPC_EABI_Support/MetroTRK/usr_put.c:
+	.text       start:0x8039BE90 end:0x8039BF1C
+
+PowerPC_EABI_Support/MetroTRK/mutex_TRK.c:
+	.text       start:0x8039D818 end:0x8039D830
+
+PowerPC_EABI_Support/MetroTRK/notify.c:
+	.text       start:0x8039D830 end:0x8039D8C8
+
+PowerPC_EABI_Support/MetroTRK/flush_cache.c:
+	.text       start:0x8039D8C8 end:0x8039D900
+
+PowerPC_EABI_Support/MetroTRK/mem_TRK.c:
+	.init       start:0x80003458 end:0x800034AC
+	.text       start:0x8039D900 end:0x8039D9B8
+
 PowerPC_EABI_Support/MetroTRK/target_options.c:
 	.text       start:0x803A0500 end:0x803A051C
 	.bss        start:0x805A54A8 end:0x805A54B0
