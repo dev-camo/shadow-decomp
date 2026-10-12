@@ -544,6 +544,7 @@ config.libs = [
             Object(Matching, "dolphin/OSLink.c"),
             Object(Matching, "dolphin/OSMutex.c"),
             Object(Matching, "dolphin/OSThread.c"),
+            Object(Matching, "dolphin/OSTime.c"),
         ],
     ),
     DolphinLib(
