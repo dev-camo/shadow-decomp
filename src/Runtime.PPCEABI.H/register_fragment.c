@@ -11,11 +11,12 @@ struct __eti_init_info {
     /* 0x0C */ unsigned int text_size;
 };
 
-typedef struct FragmentRegistration {
-    /* 0x00 */ struct __eti_init_info *init_info;
-    /* 0x04 */ char *toc;
+/* registered exception-table fragment (names from MSL's Gecko_ExceptionPPC.cp) */
+typedef struct ProcessInfo {
+    /* 0x00 */ struct __eti_init_info *exception_info;
+    /* 0x04 */ char *TOC;
     /* 0x08 */ int active;
-} FragmentRegistration;
+} ProcessInfo;
 
 typedef struct FragmentInfo {
     /* 0x00 */ void *exception_record;
@@ -50,7 +51,7 @@ typedef struct ShortExceptionEntry {
     /* 0x04 */ unsigned short exception_offset;
 } ShortExceptionEntry;
 
-static FragmentRegistration fragmentinfo[1];
+static ProcessInfo fragmentinfo[1];
 
 #if defined(VERSION_GUPJ8P)
 #define FIND_EXCEPTION_FRAGMENT fn_803A2D0C
@@ -70,7 +71,7 @@ static FragmentRegistration fragmentinfo[1];
  * established.
  */
 void FIND_EXCEPTION_FRAGMENT(char *pc, FragmentInfo *info) {
-    FragmentRegistration *registration;
+    ProcessInfo *registration;
     struct __eti_init_info *module;
     ExceptionIndex *index;
     FragmentSearchInfo search;
@@ -92,7 +93,8 @@ void FIND_EXCEPTION_FRAGMENT(char *pc, FragmentInfo *info) {
 
     found_module = 0;
     if (registration->active != 0) {
-        module = registration->init_info;
+        module = registration->exception_info;
+        /* the exit test inside the loop stays closer to the target (87% vs 84% as a while condition) */
         while (1) {
             if (module->text_size == 0) {
                 break;
@@ -103,7 +105,7 @@ void FIND_EXCEPTION_FRAGMENT(char *pc, FragmentInfo *info) {
                 search_info->index_end = module->index_end;
                 search_info->address_base = 0;
                 search_info->relative_base = 0;
-                search_info->toc = registration->toc;
+                search_info->toc = registration->TOC;
                 found_module = 1;
                 break;
             }
@@ -177,19 +179,25 @@ void FIND_EXCEPTION_FRAGMENT(char *pc, FragmentInfo *info) {
 
 void __unregister_fragment(int fragment_id) {
     if (fragment_id >= 0 && fragment_id < 1) {
-        FragmentRegistration *entry = &fragmentinfo[fragment_id];
-        entry->init_info = 0;
-        entry->toc = 0;
+        ProcessInfo *entry = &fragmentinfo[fragment_id];
+        entry->exception_info = 0;
+        entry->TOC = 0;
         entry->active = 0;
     }
 }
 
+/* loop form as in MSL's Gecko_ExceptionPPC.cp */
 int __register_fragment(struct __eti_init_info *init_info, char *toc) {
-    if (fragmentinfo[0].active == 0) {
-        fragmentinfo[0].init_info = init_info;
-        fragmentinfo[0].toc = toc;
-        fragmentinfo[0].active = 1;
-        return 0;
+    ProcessInfo *entry;
+    int i;
+
+    for (i = 0, entry = fragmentinfo; i < 1; ++i, ++entry) {
+        if (entry->active == 0) {
+            entry->exception_info = init_info;
+            entry->TOC = toc;
+            entry->active = 1;
+            return i;
+        }
     }
 
     return -1;
