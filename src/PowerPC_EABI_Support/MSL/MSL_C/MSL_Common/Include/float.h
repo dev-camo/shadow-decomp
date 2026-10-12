@@ -111,6 +111,7 @@ int __fpclassifyl(long double __value);
 #define DBL_MIN_10_EXP (-308)
 #define DBL_MAX_EXP 1024
 #define DBL_MAX_10_EXP 308
+#define DBL_MAX (*(double *)__double_max)
 
 #define LDBL_MANT_DIG 53
 #define LDBL_DIG 15
