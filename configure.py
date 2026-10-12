@@ -583,6 +583,7 @@ config.libs = [
     DolphinLib(
         "axfx",
         [
+            Object(Matching, "dolphin/reverb_hi.c"),
             Object(Matching, "dolphin/delay.c"),
         ],
     ),
