@@ -238,6 +238,17 @@ PowerPC_EABI_Support/MetroTRK/targimpl.c:
 PowerPC_EABI_Support/MetroTRK/mpc_7xx_603e.c:
 	.text       start:0x8039F570 end:0x8039F8E0
 
+PowerPC_EABI_Support/MetroTRK/dolphin_trk.c:
+	.init       start:0x800053E0 end:0x8000540C
+	.text       start:0x8039F8E0 end:0x8039FF1C
+	.data       start:0x80568D60 end:0x80568DA0
+	.bss        start:0x805A5490 end:0x805A5498
+
+PowerPC_EABI_Support/MetroTRK/main_TRK.c:
+	.text       start:0x8039FF1C end:0x8039FF74
+	.rodata     start:0x805149B8 end:0x805149C8
+	.bss        start:0x805A5498 end:0x805A54A0
+
 PowerPC_EABI_Support/MetroTRK/dolphin_trk_glue.c:
 	.text       start:0x8039FF74 end:0x803A04CC
 	.rodata     start:0x805149C8 end:0x80514AD0
@@ -265,6 +276,12 @@ PowerPC_EABI_Support/MetroTRK/ddh/main.c:
 
 PowerPC_EABI_Support/MetroTRK/CircleBuffer.c:
 	.text       start:0x803A0AA4 end:0x803A0D0C
+
+PowerPC_EABI_Support/MetroTRK/MWTrace.c:
+	.text       start:0x803A1058 end:0x803A10A8
+
+PowerPC_EABI_Support/MetroTRK/MWCriticalSection_gc.cpp:
+	.text       start:0x803A10A8 end:0x803A1100
 
 PowerPC_EABI_Support/Runtime/Src/__va_arg.c:
 	.text       start:0x803A1100 end:0x803A11C8
