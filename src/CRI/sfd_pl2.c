@@ -6,10 +6,6 @@
 #include "CRI/cri_xpt.h"
 #include "CRI/sfd.h"
 
-#define SFD_REQ_STANDBY 3
-#define SFD_REQ_START 4
-#define SFD_STAT_PLAYING 4
-
 /* Playback speed in 1/1000 (1000 = normal) to the clock and the audio output. */
 Sint32 SFD_SetSpeed(SFD sfd, Sint32 speed) {
     if (SFLIB_CheckHn(sfd) != 0) {
@@ -22,7 +18,7 @@ Sint32 SFD_SetSpeed(SFD sfd, Sint32 speed) {
 
 /* Requests standby (req 3): prepare and buffer but do not start. */
 Sint32 SFPL2_Standby(SFD sfd) {
-    sfd->req = SFD_REQ_STANDBY;
+    sfd->req = SFD_REQ_STBY;
     return 0;
 }
 
@@ -41,7 +37,7 @@ static Sint32 sfpl2_PauseSub(SFD sfd, Sint32 sw) {
     Sint32 ret;
     Sint32 r;
 
-    if (sfd->req != SFD_REQ_STANDBY && sfd->req != SFD_REQ_START) {
+    if (sfd->req != SFD_REQ_STBY && sfd->req != SFD_REQ_START) {
         ret = 0;
     } else {
         SFTIM_Pause(sfd, sw);

@@ -21,7 +21,7 @@ extern "C" {
 
 void fn_8040307C(Fn8040StreamObject *object, Sint32 min_val);
 void fn_80406F08(Fn8040StreamObject *object);
-void fn_8040773C(Fn8040StreamObject *object, int value, int value_18);
+void fn_8040773C(Fn8040StreamObject *object, int min_nsct, int max_nsct);
 
 #ifdef __cplusplus
 }

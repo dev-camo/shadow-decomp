@@ -7,10 +7,6 @@
 
 #include "CRI/adx_b.h"
 
-#define SWAP16(x) ((((x) >> 8) & 0xFF) | (((x) & 0xFF) << 8))
-#define SWAP32(x)                                                                                  \
-    ((((x) >> 24) & 0xFF) | (((x) >> 8) & 0xFF00) | (((x) << 8) & 0xFF0000) | ((x) << 24))
-
 void ADXB_ExecOneWav4(ADXB adxb);
 void ADXB_ExecOneWav8(ADXB adxb);
 void ADXB_ExecOneWav16(ADXB adxb);
