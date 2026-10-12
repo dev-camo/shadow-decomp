@@ -576,6 +576,8 @@ config.libs = [
             Object(Matching, "dolphin/AXSPB.c"),
             Object(Matching, "dolphin/AXVPB.c"),
             Object(Matching, "dolphin/AXProf.c"),
+            Object(Matching, "dolphin/AXComp.c"),
+            Object(Matching, "dolphin/DSPCode.c"),
         ],
     ),
     DolphinLib(
