@@ -184,7 +184,7 @@ void SFTST_Calc(SFTST tst, SFTST_TIME *mt, SFTST_TIME *hlp, SFTST_TIME *out) {
             tst->movave_1st = (Sint32)ave;
             tst->movave_2nd = (Sint32)ave;
             /* written out rather than sftst_Conv(): through the helper `tol` would take a different
-			 * register than in the original */
+             * register than in the original */
             tol = mt->unit * tst->tolerance.cnt / tst->tolerance.unit;
             aave = (ave < 0) ? -ave : ave;
             if (tol < aave) {
@@ -331,7 +331,7 @@ void SFTST_Create(SFTST tst) {
     tst->diff_a_min = 0;
     {
         /* `Char8 hdr[] = "..."` with the literal named (see sftst_msg_hdr): a struct copy is the
-		 * same inline block copy as the array initialiser */
+         * same inline block copy as the array initialiser */
         SFTST_HDRSTR hdr = *(const SFTST_HDRSTR *)sftst_msg_hdr;
 
         if (sftst_debout_buf != 0) {

@@ -857,7 +857,7 @@ no_syshd:
         *nskip = 0;
         p = (Sint8 *)data;
         /* Matching constraint (COMPILER-DIFF): the original reads the unit for the compare separately from
-		 * the later reads; reading it through the creation-parameter view of the handle keeps it apart. */
+         * the later reads; reading it through the creation-parameter view of the handle keeps it apart. */
         if (len >= ((SFD_CREPRM *)sfd)->unit + 3 && sfmps_IsZero(p, sfd->prm.unit)) {
             *nskip = sfd->prm.unit;
         } else {
