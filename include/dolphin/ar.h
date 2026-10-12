@@ -40,6 +40,8 @@ typedef struct ARQRequest ARQRequest;
 ARQCallback ARRegisterDMACallback(ARQCallback callback);
 u32 ARGetDMAStatus(void);
 void ARStartDMA(u32 type, u32 mainmem_addr, u32 aram_addr, u32 length);
+void __ARClearInterrupt(void);
+u16 __ARGetInterruptStatus(void);
 u32 ARAlloc(u32 length);
 u32 ARFree(u32 *length);
 BOOL ARCheckInit(void);
