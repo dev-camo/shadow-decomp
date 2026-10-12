@@ -7,6 +7,8 @@
 extern "C" {
 #endif
 
+/* Called from the ARAM DMA interrupt, without arguments. */
+typedef void (*ARCallback)(void);
 typedef void (*ARQCallback)(u32 pointerToARQRequest);
 
 struct ARQRequest {
@@ -37,7 +39,7 @@ typedef struct ARQRequest ARQRequest;
 #define ARQ_PRIORITY_HIGH 1
 
 // AR
-ARQCallback ARRegisterDMACallback(ARQCallback callback);
+ARCallback ARRegisterDMACallback(ARCallback callback);
 u32 ARGetDMAStatus(void);
 void ARStartDMA(u32 type, u32 mainmem_addr, u32 aram_addr, u32 length);
 void __ARClearInterrupt(void);
