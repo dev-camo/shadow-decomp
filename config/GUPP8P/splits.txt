@@ -125,9 +125,54 @@ dolphin/mtx.c:
 	.sdata      start:0x805EEC18 end:0x805EEC20
 	.sdata2     start:0x805FB6B0 end:0x805FB6B8
 
+dolphin/mtx44.c:
+	.text       start:0x80379860 end:0x803798F8
+	.sdata2     start:0x805FB6B8 end:0x805FB6C8
+
+dolphin/dvdlow.c:
+	.text       start:0x803798F8 end:0x8037A774
+	.bss        start:0x80587A30 end:0x80587B00
+	.sdata      start:0x805EEC20 end:0x805EEC28
+	.sbss       start:0x805F1FF8 end:0x805F2040
+
+dolphin/dvdfs.c:
+	.text       start:0x8037A774 end:0x8037B300
+	.data       start:0x80562658 end:0x805627F8
+	.sdata      start:0x805EEC28 end:0x805EEC30
+	.sbss       start:0x805F2040 end:0x805F2060
+
+dolphin/dvd.c:
+	.text       start:0x8037B300 end:0x8037DA88
+	.data       start:0x805627F8 end:0x80562980
+	.bss        start:0x80587B00 end:0x80587B98 align:32
+	.sdata      start:0x805EEC30 end:0x805EEC48
+	.sbss       start:0x805F2060 end:0x805F20B0
+
+dolphin/dvdqueue.c:
+	.text       start:0x8037DA88 end:0x8037DC80
+	.bss        start:0x80587B98 end:0x80587BB8
+
 dolphin/dvderror.c:
 	.text       start:0x8037DC80 end:0x8037DE18
 	.data       start:0x80562980 end:0x805629C8
+
+dolphin/dvdidutils.c:
+	.text       start:0x8037DE18 end:0x8037DF10
+
+dolphin/dvdFatal.c:
+	.text       start:0x8037DF10 end:0x8037E03C
+	.rodata     start:0x80514430 end:0x80514448
+	.data       start:0x805629C8 end:0x80562D78
+	.sdata      start:0x805EEC48 end:0x805EEC50
+	.sbss       start:0x805F20B0 end:0x805F20B8
+	.sdata2     start:0x805FB6C8 end:0x805FB6D0
+
+dolphin/fstload.c:
+	.text       start:0x8037E03C end:0x8037E27C
+	.data       start:0x80562D78 end:0x80562DE8
+	.bss        start:0x80587BB8 end:0x80587C28
+	.sdata      start:0x805EEC50 end:0x805EEC60
+	.sbss       start:0x805F20B8 end:0x805F20C8
 
 dolphin/delay.c:
 	.text       start:0x80389B5C end:0x8038A0DC
