@@ -16,10 +16,27 @@ Sections:
 dolphin/PPCArch.c:
 	.text       start:0x80370ADC end:0x80370BF0
 
+dolphin/db.c:
+	.text       start:0x80370BF0 end:0x80370CDC
+	.data       start:0x805610E0 end:0x805610F8
+	.sbss       start:0x805F1F18 end:0x805F1F20
+
+dolphin/OS.c:
+	.text       start:0x80370CDC end:0x803717A8
+	.data       start:0x805610F8 end:0x805612F0
+	.bss        start:0x80586C40 end:0x80586CB0
+	.sdata      start:0x805EEBD0 end:0x805EEBE0
+	.sbss       start:0x805F1F20 end:0x805F1F58
+
 dolphin/OSAlarm.c:
 	.text       start:0x803717A8 end:0x80371F04
 	.data       start:0x805612F0 end:0x80561300
 	.sbss       start:0x805F1F58 end:0x805F1F60
+
+dolphin/OSAlloc.c:
+	.text       start:0x80371F04 end:0x80372214
+	.sdata      start:0x805EEBE0 end:0x805EEBE8
+	.sbss       start:0x805F1F60 end:0x805F1F70
 
 dolphin/OSArena.c:
 	.text       start:0x80372214 end:0x80372260
@@ -44,14 +61,39 @@ dolphin/OSError.c:
 	.bss        start:0x80586CB0 end:0x80586CF8
 	.sdata      start:0x805EEBF0 end:0x805EEBF8
 
+dolphin/OSExec.c:
+	.text       start:0x80373878 end:0x803741D8
+	.data       start:0x80561AA8 end:0x80561AB8
+	.sdata      start:0x805EEBF8 end:0x805EEC00
+	.sbss       start:0x805F1F78 end:0x805F1F80
+
+dolphin/OSFatal.c:
+	.text       start:0x803741D8 end:0x80374E68
+	.bss        start:0x80586CF8 end:0x80586FD0
+	.sdata      start:0x805EEC00 end:0x805EEC08
+	.sdata2     start:0x805FB668 end:0x805FB6A8
+
+dolphin/OSFont.c:
+	.text       start:0x80374E68 end:0x8037611C
+	.data       start:0x80561AB8 end:0x805625C8
+	.sdata      start:0x805EEC08 end:0x805EEC10
+	.sbss       start:0x805F1F80 end:0x805F1F90
+	.sdata2     start:0x805FB6A8 end:0x805FB6B0
+
 dolphin/OSInterrupt.c:
 	.text       start:0x8037611C end:0x80376988
 	.data       start:0x805625C8 end:0x805625F8
 	.sbss       start:0x805F1F90 end:0x805F1FA8
 
+dolphin/OSLink.c:
+	.text       start:0x80376988 end:0x803769A0
+
 dolphin/OSMemory.c:
 	.text       start:0x803769A0 end:0x80376C78
 	.data       start:0x805625F8 end:0x80562608
+
+dolphin/OSMutex.c:
+	.text       start:0x80376C78 end:0x80376CE8
 
 dolphin/OSReboot.c:
 	.text       start:0x80376CE8 end:0x80376D6C
@@ -68,6 +110,15 @@ dolphin/OSResetSW.c:
 
 dolphin/OSSync.c:
 	.text       start:0x8037829C end:0x80378320
+
+dolphin/OSThread.c:
+	.text       start:0x80378320 end:0x80379628
+	.bss        start:0x80587038 end:0x80587A30
+	.sdata      start:0x805EEC10 end:0x805EEC18
+	.sbss       start:0x805F1FE0 end:0x805F1FF0
+
+dolphin/OSTime.c:
+	.text       start:0x80379628 end:0x803796AC
 
 dolphin/mtx.c:
 	.text       start:0x80379740 end:0x80379860
