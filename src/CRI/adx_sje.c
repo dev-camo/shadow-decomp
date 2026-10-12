@@ -116,6 +116,7 @@ Sint32 AdxGainDataMax = 0x1000;
 Char8 *cri_str = "(c)CRI";
 
 static Sint32 skg_init_count = 0;
+/* the SKG error callback; unreferenced in this game but part of the original data */
 static void (*skg_err_func)(void *obj, const Char8 *msg) = 0;
 static void *skg_err_obj = 0;
 /* volatile like the other CRI reference counts (adx_crs.c); the count is reloaded after each update. */
