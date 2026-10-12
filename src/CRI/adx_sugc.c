@@ -2,7 +2,6 @@
  * devices the ADX file layer reads from. Body from the RE4 GameCube decompilation of the same
  * file.
  */
-#include "CRI/adx_f.h"
 #include "CRI/cvfs.h"
 
 typedef struct {
