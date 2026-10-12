@@ -152,7 +152,7 @@ Sint32 SFD_Init(register SFD_INIT_PRM *prm) {
     UTY_MemsetDword(&SFLIB_libwork, 0, sizeof(SFLIB_libwork) / 4 - 1);
     MEM_Copy(&SFLIB_libwork, SFPLY_cond_dfl, sizeof(SFLIB_libwork.cond));
     /* Matching constraint (COMPILER-DIFF): the original loads prm1 before trif_tbl into r4/r5 and
-	 * stores trif_tbl first; the `+ 0` copy of tbl gives that register order (it generates no code). */
+     * stores trif_tbl first; the `+ 0` copy of tbl gives that register order (it generates no code). */
     p1 = prm->prm1;
     tbl = prm->trif_tbl;
     tbl = (SFTRN_TRIF_TBL *)((Uint32)tbl + 0);

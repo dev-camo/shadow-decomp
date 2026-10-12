@@ -630,7 +630,7 @@ static Bool sfply_IsBpaOn(SFD sfd) {
         return 0;
     }
     /* sfply_IsTermAny written out: as a helper call the function would be small enough to be
-	 * inlined into sfply_StatPlay */
+     * inlined into sfply_StatPlay */
     if (SFSET_GetCond(sfd, 5) && SFTRN_GetTermFlg(sfd, 6)) {
         term = 1;
     } else if (SFSET_GetCond(sfd, 6) && SFTRN_GetTermFlg(sfd, 7)) {
@@ -1011,7 +1011,7 @@ void sfply_ExecOne(SFD sfd) {
         SFSEE_ExecServer(sfd);
     }
     /* the three idle states re-read the state: MWCC only builds the jump table for 7 separate
-	 * case bodies, and the re-read folds into the loaded value */
+     * case bodies, and the re-read folds into the loaded value */
     stat = sfd->stat;
     switch (stat) {
     case SFD_STAT_STOP:

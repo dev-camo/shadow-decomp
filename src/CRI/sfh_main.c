@@ -464,7 +464,7 @@ Bool SFH_AnlyElemBitRate(SFH sfh, Uint8 id, Sint32 *val) {
         return FALSE;
     }
     /* 16-bit swap written with a (Uint8) cast: keeps srawi/clrlwi unmerged (the & 0xFF form of
-	 * SWAP16 gives extrwi) */
+     * SWAP16 gives extrwi) */
     rate = (Sint16)(Uint16)(((SFH_ELEM_BITRATE(elem) & 0xFF) << 8) |
                             (Uint8)(SFH_ELEM_BITRATE(elem) >> 8));
     tmp = rate;
