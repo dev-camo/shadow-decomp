@@ -159,11 +159,9 @@ Sint32 ADX_DecodeInfoAinf(Uint8 *data, Sint32 len, Sint32 *ainfsiz, void *ainf, 
     if (*(Sint16 *)(p + 2) != 0) {
         ofs += 0x14;
     }
-    /* the AINF address is an expression, not a local: `data + ofs` of data[ofs] and of the +4 read is
-     * one frontend CSE temp (byte 0 = `lbz 0(t)`), the +1..+3 reads and the memcpy argument recompute
-     * it as backend adds that the pre-RA CSE folds into that one add; the argument's copy `mr r4, t;
-     * addi r4, r4, 8` is coalesced, so the address takes r4 and the byte temporaries r3/r7/r8. A `q`
-     * local ranks below the byte temporaries (q r8). */
+    /* Matching constraint: the AINF address is the expression `&data[ofs]`, not a local; the compiler
+     * folds its repeated uses into one add, as in the original. A `q` local gets a different
+     * register order. */
     if (ADX_LD32(&data[ofs]) != ADX_AINF) {
         return -2;
     }

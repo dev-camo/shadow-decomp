@@ -265,12 +265,10 @@ static void adxb_CopySmpl(Sint16 *dst, Sint16 *src, Sint32 n) {
  * runs the Pro Logic II encoder over the output, computes the samples produced (trimming the
  * padding of the last partial block at the stream end), copies samples decoded past the ring end
  * back to its start (mirror), resets the core and reports through addwr_func; state DONE. */
-/* `ofst = x70 + ofst` is the target's in-place `add o, X, o`: with range splitting on the frontend
- * gives the new value its own web (the old one stays live for pad's `blksmpl - 1` through the pre-RA
- * CSE, `add o', X, o`), while `o += X` is an EADDASS = `add o, o, X`; without splitting the add is in
- * place, pad's second `subi` is hoisted above it by the scheduler and becomes `mr` in the post-RA CSE.
- * The mono copy loop reads through its own pointer `sp` (one `src` web would also cover the Pro Logic
- * loop, where src is the r5 argument next to the r4 sample -> the copy loop's pointer must be r4). */
+/* Matching constraints: `ofst = x70 + ofst` (not `ofst += x70`, which swaps the add operands) with
+ * opt_lifetimes off gives the target's in-place add and keeps pad's subtraction where it is. The
+ * mono copy loop reads through its own pointer `sp`; sharing `src` with the Pro Logic loop gives
+ * the copy loop a different register. */
 #pragma opt_lifetimes off
 void ADXB_ExecOneAdx(ADXB adxb) {
     Sint32 chofst;
@@ -354,10 +352,9 @@ void ADXB_ExecOneAdx(ADXB adxb) {
 }
 #pragma opt_lifetimes on
 
-/* hand the input to the expander: stereo, Pro Logic II or mono (the `void *` copies keep the
- * arms' wr_pos reloads apart from the caller's pos, and the out_nch/xdc tests in the caller;
- * `pcm = pcmbuf; pcm += wr_pos` makes pcmbuf the in-place destination of the add = arg r6, the
- * shifted offset r7, and moves the pd load below pcmbuf in the mono arm) */
+/* hand the input to the expander: stereo, Pro Logic II or mono. Matching constraints: the `void *`
+ * copies keep the arms' wr_pos reloads apart from the caller's pos, and `pcm = pcmbuf; pcm +=
+ * wr_pos` gives the original argument registers and moves the pd load below pcmbuf in the mono arm. */
 static void adxb_EntrySte(void *obj, Sint32 n) {
     ADXB adxb = obj;
     ADXPD pd;

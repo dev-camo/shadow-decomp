@@ -59,8 +59,8 @@ typedef void (*MPSDEC_PESFN)(void *obj, Uint8 stmid);
         pos += (n);                                                                                \
     }
 
-/* the last field of a header: nothing but the value is needed (the compiler drops the dead state
- * updates of BS_GET differently: the original recomputes `pos - 10` into r0 twice) */
+/* the last field of a header: only the value is needed (BS_GET's dead state updates would compile
+ * differently: the original recomputes `pos - 10` twice) */
 #define BS_GET_LAST(n, val)                                                                        \
     if (pos >= 32 - (n)) {                                                                         \
         if (pos - (32 - (n)) != 0) {                                                               \
@@ -308,11 +308,10 @@ void mpsdec_DecSysHd(MPS mps, Uint8 *adr, Sint32 *hdrlen) {
     }
 }
 
-/* pack header: adr points at the 00 00 01 BA start code; MPEG-1 packs are 12 bytes. The reader
- * init is written out: `cur = p[0]; ... cur <<= pos;` loads p[0] straight into cur's register and
- * shifts in place (the BS_INIT macro's `cur = p[0] << pos` goes through r0), which is the target's
- * shape here (the other decoders use the macro); with it the declaration order p, pos, cur, nxt
- * gives the target's p r4 (adr's register, dead after the init) / nxt r8. */
+/* pack header: adr points at the 00 00 01 BA start code; MPEG-1 packs are 12 bytes. Matching
+ * constraint: the reader init is written out (`cur = p[0]; ... cur <<= pos;` shifts in place, where
+ * the BS_INIT macro's `cur = p[0] << pos` uses a temporary), and the declaration order p, pos, cur,
+ * nxt gives the original register order; the other decoders use the macro. */
 void mpsdec_DecPackHd(MPS mps, Uint8 *adr, Sint32 *hdrlen) {
     Uint32 *p;
     Sint32 pos;
