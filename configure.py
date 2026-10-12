@@ -536,6 +536,7 @@ config.libs = [
             Object(Matching, "dolphin/OSResetSW.c"),
             Object(Matching, "dolphin/OSReset.c"),
             Object(Matching, "dolphin/db.c"),
+            Object(Matching, "dolphin/OS.c", cflags=cflags_sdk_rev2),
         ],
     ),
     DolphinLib(
