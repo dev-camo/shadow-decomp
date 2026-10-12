@@ -1,5 +1,6 @@
 #include "alloc.h"
 #include "ansi_files.h"
+#include "file_io.h"
 #include "critical_regions.h"
 
 #include "global.h"

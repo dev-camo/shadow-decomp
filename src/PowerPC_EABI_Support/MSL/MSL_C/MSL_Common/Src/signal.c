@@ -1,4 +1,5 @@
 #include "signal.h"
+#include "abort_exit.h"
 #include "critical_regions.h"
 
 #if PLATFORM_GCN

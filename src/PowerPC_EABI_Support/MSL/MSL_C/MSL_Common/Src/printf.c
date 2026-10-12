@@ -2,6 +2,7 @@
 #include "ansi_fp.h"
 #include "critical_regions.h"
 #include "direct_io.h"
+#include "mbstring.h"
 #include "wchar_io.h"
 #include <cctype>
 #include <cmath>

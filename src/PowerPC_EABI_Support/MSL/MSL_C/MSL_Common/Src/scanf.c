@@ -1,4 +1,5 @@
 #include "scanf.h"
+#include "mbstring.h"
 #include "strtold.h"
 #include "strtoul.h"
 #include <cctype>
