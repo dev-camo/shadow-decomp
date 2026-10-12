@@ -8,25 +8,7 @@
 #include "CRI/mps.h"
 #include "CRI/sj.h"
 
-extern void MEM_Copy(void *dst, const void *src, Uint32 nbytes);
-extern Sint32 SFBUF_GetWTot(SFD sfd, Sint32 buf);
-extern Sint32 SFBUF_GetRTot(SFD sfd, Sint32 buf);
-extern Sint32 SFBUF_RingGetRead(SFD sfd, Sint32 buf, SFBUF_RINF *inf);
-extern Sint32 SFBUF_RingAddRead(SFD sfd, Sint32 buf, Sint32 nbyte);
-extern void SFBUF_GetFlowCnt(SJ sj, Sint32 *wcnt, Sint32 *rcnt);
-extern Sint64 SFBUF_UpdateFlowCnt(Sint64 cnt, Uint32 pos);
-extern void SFBUF_SetTermFlg(SFD sfd, Sint32 buf, Sint32 flg);
-extern void SFBUF_GetUoch(SFD sfd, Sint32 buf, Sint32 chno, SFUO_CH *ch);
-extern Sint32 SFPTS_IsPtsQueFull(SFD sfd, Sint32 strm);
-extern Sint32 SFPTS_WritePtsQue(SFD sfd, Sint32 strm, SFPTS_ENT *in, Sint32 *full);
-extern Sint32 SFCON_IsSystemEndcodeSkip(SFD sfd);
 extern Sint32 (*SFPLY_SetPtsInfo)(SFPLY_PTSM *ptsm, SFPTS_ENT *ent);
-extern Sint32 MPS_SetErrFn(MPS mps, void (*fn)(void *obj, Sint32 code), void *obj);
-extern void MPS_SetPesFn(MPS mps, void *fn, void *obj);
-extern void MPS_SetPsMapFn(MPS mps, void *fn, void *obj);
-extern void MPS_SetSystemFn(MPS mps, void *fn, void *obj);
-extern Sint32 MPS_Init(Sint32 num_hn, void *work);
-extern void MPS_Finish(void);
 
 #define SFMPS_TR 1
 #define SFMPS_NUM_HN 8

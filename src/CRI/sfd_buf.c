@@ -3,8 +3,6 @@
 #include "CRI/sj.h"
 #include "CRI/sfd.h"
 
-extern void SFPTS_InitPtsQue(SFPTS_QUE *que);
-
 #define SFBUF_TR_NONE 9
 #define SFBUF_PRV_XSIZE 0x800
 
@@ -16,15 +14,6 @@ typedef struct {
 } SFBUF_HN;
 
 #define SFBUF_GET_HN(sfd, n) ((SFBUF_HN *)((Uint8 *)(sfd) + (n) * sizeof(SFBUF_WORK)))
-
-/* creation parameters of SFBUF_InitHn */
-typedef struct {
-    Sint32 x00;
-    Uint32 adr;     /* 0x04 work base */
-    Sint32 size[7]; /* 0x08 sizes of buffers 0..6 */
-    Sint32 x24;
-    Sint32 unit; /* 0x28 ring buffer 0 alignment */
-} SFBUF_PRM;
 
 static const SJUUID *sfbuf_sjmem_uuid;
 static const SJUUID *sfbuf_sjrbf_uuid;

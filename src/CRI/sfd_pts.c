@@ -139,7 +139,7 @@ Sint32 SFPTS_WritePtsQue(SFD sfd, Sint32 strm, SFPTS_ENT *in, Sint32 *full) {
 }
 
 // Gives the video ring (1) a PTS queue in the caller's buffer (8-byte aligned, 16 bytes per entry).
-Sint32 SFD_SetVideoPts(SFD sfd, Uint8 *buf, Sint32 size) {
+Sint32 SFD_SetVideoPts(SFD sfd, void *buf, Sint32 size) {
     Uint8 *p;
 
     if (buf == 0 || size <= 0) {
@@ -149,7 +149,7 @@ Sint32 SFD_SetVideoPts(SFD sfd, Uint8 *buf, Sint32 size) {
         return SFLIB_SetErr(0, 0xFF000165);
     }
     p = (Uint8 *)(((Uint32)buf + 7) & ~7);
-    size -= p - buf;
+    size -= p - (Uint8 *)buf;
     memset(p, 0, size);
     sfd->buf[1].u.ring.ptsque.ent = (SFPTS_ENT *)p;
     sfd->buf[1].u.ring.ptsque.num = size / 16;

@@ -3,6 +3,7 @@
  * Body from the RE4 GameCube decompilation of the same file.
  */
 #include "CRI/cri_xpt.h"
+#include "CRI/uty.h"
 
 /* (a * b) / c without intermediate overflow; +-INT_MAX by the sign of a*b when c is 0. */
 Sint32 UTY_MulDiv(Sint32 a, Sint32 b, Sint32 c) {

@@ -191,8 +191,10 @@ static Sint32 sftrn_BuildAll(SFD sfd, SFD_TR_FUNC **tbl) {
 }
 
 /* Fills the 9 driver slots from the creation table (no handle, flags cleared, buffer ids 8 = none)
- * and wires the buffers (error 0xFF000302 when nothing can be built). */
-Sint32 SFTRN_InitHn(SFD sfd, SFD_TR *tr, SFTRN_PRM *prm) {
+ * and wires the buffers (error 0xFF000302 when nothing can be built). `x` is the second SFD_Create
+ * argument, which sfply_InitHn passes on (it is loaded into r6 for the call) but this function
+ * never reads. */
+Sint32 SFTRN_InitHn(SFD sfd, SFD_TR *tr, SFTRN_PRM *prm, Sint32 x) {
     SFD_TR_FUNC **trif;
     SFD_TR_FUNC **tbl;
     SFD_TR_FUNC *f;

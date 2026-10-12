@@ -40,6 +40,11 @@ Sint32 ADXSJD_GetOutBps(ADXSJD sjd);
 Sint32 ADXSJD_GetBlkSmpl(ADXSJD sjd);
 Sint32 ADXSJD_GetTotalNumSmpl(ADXSJD sjd);
 Sint32 ADXSJD_GetNumLoop(ADXSJD sjd);
+
+/* Not yet decompiled; used only by unreferenced (linker-stripped) ADXT functions. */
+void ADXSJD_SetKeyString(ADXSJD sjd, Char8 *str);
+Sint32 ADXSJD_GetFmtBps(ADXSJD sjd);
+Sint32 ADXSJD_GetHdrLen(ADXSJD sjd);
 Sint32 ADXSJD_GetLpStartPos(ADXSJD sjd);
 Sint32 ADXSJD_GetLpStartOfst(ADXSJD sjd);
 Sint32 ADXSJD_GetLpEndPos(ADXSJD sjd);

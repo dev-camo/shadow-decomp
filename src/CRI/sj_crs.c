@@ -1,11 +1,9 @@
 /* CRI stream-joint critical section (sj_crs.c): a nesting interrupt lock and the SJ library
  * init count. Names follow the Xenoblade CRI sj_crs.c, whose bodies match this file.
  */
+#include <dolphin/os.h>
 
 #include "CRI/sj.h"
-
-extern Sint32 OSDisableInterrupts(void);
-extern Sint32 OSRestoreInterrupts(Sint32 level);
 
 /* volatile: the nesting level is reloaded after each update. */
 volatile Sint32 sjcrs_lvl;
