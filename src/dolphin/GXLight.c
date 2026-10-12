@@ -273,7 +273,7 @@ void GXInitLightColor(GXLightObj *lt_obj, GXColor color) {
     obj = (__GXLightObjInt_struct *)lt_obj;
     CHECK_GXBEGIN(463, "GXInitLightColor");
 
-    *(u32 *)&obj->Color = *(u32 *)&color;
+    obj->Color = *(u32 *)&color;
 }
 
 void GXGetLightColor(const GXLightObj *lt_obj, GXColor *color) {
@@ -283,7 +283,7 @@ void GXGetLightColor(const GXLightObj *lt_obj, GXColor *color) {
     obj = (__GXLightObjInt_struct *)lt_obj;
     CHECK_GXBEGIN(477, "GXGetLightColor");
 
-    *(u32 *)color = *(u32 *)&obj->Color;
+    *(u32 *)color = obj->Color;
 }
 
 #if DEBUG

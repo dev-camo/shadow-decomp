@@ -65,8 +65,8 @@ OSErrorHandler OSSetErrorHandler(OSError error, OSErrorHandler handler) {
                 if ((thread->context.state & OS_CONTEXT_STATE_FPSAVED) == 0) {
                     thread->context.state |= OS_CONTEXT_STATE_FPSAVED;
                     for (i = 0; i < 32; ++i) {
-                        *(u64 *)&thread->context.fpr[i] = (u64)0xffffffffffffffffLL;
-                        *(u64 *)&thread->context.psf[i] = (u64)0xffffffffffffffffLL;
+                        *(u64 *)&thread->context.fpr[i] = 0xffffffffffffffffLL;
+                        *(u64 *)&thread->context.psf[i] = 0xffffffffffffffffLL;
                     }
                     thread->context.fpscr = FPSCR_NI;
                 }

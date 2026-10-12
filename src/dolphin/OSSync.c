@@ -3,10 +3,6 @@
 
 #include "__os.h"
 
-// prototypes
-void __OSSystemCallVectorStart(void);
-void __OSSystemCallVectorEnd(void);
-
 #ifdef __GEKKO__
 // clang-format off
 static asm void SystemCallVector(void) {
@@ -26,7 +22,7 @@ entry __OSSystemCallVectorEnd
 #endif
 
 void __OSInitSystemCall(void) {
-    void *addr = (void *)OSPhysicalToCached(0xC00);
+    void *addr = OSPhysicalToCached(0xC00);
 
     memcpy(addr, __OSSystemCallVectorStart,
            (u32)&__OSSystemCallVectorEnd - (u32)&__OSSystemCallVectorStart);

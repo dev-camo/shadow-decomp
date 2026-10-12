@@ -49,8 +49,6 @@ char *__OSPIErrors[8] = {
 
 // prototypes
 static void ExternalInterruptHandler(register __OSException exception, register OSContext *context);
-extern void __RAS_OSDisableInterrupts_begin(void);
-extern void __RAS_OSDisableInterrupts_end(void);
 
 #ifdef __GEKKO__
 // clang-format off
@@ -118,7 +116,7 @@ __OSInterruptHandler __OSGetInterruptHandler(__OSInterrupt interrupt) {
 }
 
 void __OSInterruptInit(void) {
-    InterruptHandlerTable = (void *)OSPhysicalToCached(0x3040);
+    InterruptHandlerTable = OSPhysicalToCached(0x3040);
 
     memset(InterruptHandlerTable, 0, __OS_INTERRUPT_MAX * sizeof(__OSInterruptHandler));
 

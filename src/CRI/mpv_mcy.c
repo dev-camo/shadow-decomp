@@ -26,7 +26,9 @@ void MPVMC16_OneRef4p_TuneC(MPVMC *mc) {
     /* Three rotating pixel pairs (pixel k lives in pair k % 3) and the sums p0..p7 reused for both
 	 * halves. Matching constraints (COMPILER-DIFF): the pixel words are declared before the sums and
 	 * loop variables, their never-used `= 0` initialisers and the pixel-9 loads placed before the
-	 * d[0]/d[1] stores give the original's register assignment and schedule. */
+	 * d[0]/d[1] stores give the original's register assignment and schedule. The (Uint32) casts on
+	 * the already-Uint32 pixel words are kept on purpose: MWCC builds a different add tree without
+	 * them (verified: removing them drops this unit to 88% matched code). */
     Uint32 a0 = 0, b0 = 0, a1 = 0, b1 = 0, a2 = 0, b2 = 0;
     Uint32 p0, p1, p2, p3, p4, p5, p6, p7;
     Sint32 i;

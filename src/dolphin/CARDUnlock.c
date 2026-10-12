@@ -134,7 +134,7 @@ static s32 ReadArrayUnlock(s32 chan, u32 data, void *rbuf, s32 rlen, int mode) {
 
     err = FALSE;
     err |= !EXIImmEx(chan, cmd, 5, 1);
-    err |= !EXIImmEx(chan, (u8 *)card->workArea + (u32)sizeof(CARDID), card->latency, 1);
+    err |= !EXIImmEx(chan, (u8 *)card->workArea + sizeof(CARDID), card->latency, 1);
     err |= !EXIImmEx(chan, rbuf, rlen, 0);
     err |= !EXIDeselect(chan);
 
@@ -214,7 +214,7 @@ s32 __CARDUnlock(s32 chan, u8 flashID[12]) {
     card = &__CARDBlock[chan];
     task = &card->task;
     param = (CARDDecParam *)card->workArea;
-    input = (u8 *)((u8 *)param + sizeof(CARDDecParam));
+    input = (u8 *)param + sizeof(CARDDecParam);
     input = (u8 *)OSRoundUp32B(input);
     output = input + 32;
 
@@ -318,7 +318,7 @@ static void InitCallback(void *_task) {
     task = _task;
     for (chan = 0; chan < 2; ++chan) {
         card = &__CARDBlock[chan];
-        if ((DSPTaskInfo *)&card->task == task)
+        if (&card->task == task)
             break;
     }
 
@@ -357,14 +357,14 @@ static void DoneCallback(void *_task) {
     task = _task;
     for (chan = 0; chan < 2; ++chan) {
         card = &__CARDBlock[chan];
-        if ((DSPTaskInfo *)&card->task == task)
+        if (&card->task == task)
             break;
     }
 
     ASSERTLINE(563, 0 <= chan && chan < 2);
 
     param = (CARDDecParam *)card->workArea;
-    input = (u8 *)((u8 *)param + sizeof(CARDDecParam));
+    input = (u8 *)param + sizeof(CARDDecParam);
     input = (u8 *)OSRoundUp32B(input);
     output = input + 32;
 

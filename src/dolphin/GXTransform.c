@@ -122,7 +122,7 @@ void GXSetProjectionv(const f32 *ptr) {
 void GXGetProjectionv(f32 *ptr) {
     ASSERTMSGLINE(370, ptr, "GXGet*: invalid null pointer");
 
-    ptr[0] = (u32)__GXData->projType != GX_PERSPECTIVE ? 1.0f : 0.0f;
+    ptr[0] = __GXData->projType != GX_PERSPECTIVE ? 1.0f : 0.0f;
 
 #if DEBUG
     ptr[1] = __GXData->projMtx[0];
