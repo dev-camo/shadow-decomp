@@ -6,5 +6,5 @@ void fn_80068A3C(void) {
 }
 
 #pragma force_active on
-__declspec(section ".ctors") extern void (*const fn_80068A3C_reference)(void) = fn_80068A3C;
+__declspec(section ".ctors") void (*const fn_80068A3C_reference)(void) = fn_80068A3C;
 #pragma force_active reset

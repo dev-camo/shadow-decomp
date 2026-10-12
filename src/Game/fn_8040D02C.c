@@ -11,5 +11,5 @@ void fn_8040D02C(void) {
 
 #pragma force_active on
 #pragma section ".ctors$50"
-__declspec(section ".ctors$50") extern void (*const fn_8040D02C_reference)(void) = fn_8040D02C;
+__declspec(section ".ctors$50") void (*const fn_8040D02C_reference)(void) = fn_8040D02C;
 #pragma force_active reset

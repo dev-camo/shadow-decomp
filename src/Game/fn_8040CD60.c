@@ -11,5 +11,5 @@ void fn_8040CD60(void) {
 // Keep this entry in the regular constructor-order band.
 #pragma force_active on
 #pragma section ".ctors$50"
-__declspec(section ".ctors$50") extern void (*const fn_8040CD60_reference)(void) = fn_8040CD60;
+__declspec(section ".ctors$50") void (*const fn_8040CD60_reference)(void) = fn_8040CD60;
 #pragma force_active reset
