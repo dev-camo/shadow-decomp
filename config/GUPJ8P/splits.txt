@@ -669,6 +669,18 @@ dolphin/EXIUart.c:
 	.text       start:0x803B4A80 end:0x803B5038
 	.sbss       start:0x805F1940 end:0x805F1950
 
+dolphin/SIBios.c:
+	.text       start:0x803B5038 end:0x803B6728
+	.data       start:0x80568F08 end:0x80569020
+	.bss        start:0x805A5C70 end:0x805A5E70
+	.sdata      start:0x805EE318 end:0x805EE320
+	.sbss       start:0x805F1950 end:0x805F1960
+
+dolphin/SISamplingRate.c:
+	.text       start:0x803B6728 end:0x803B6830
+	.data       start:0x80569020 end:0x805690B8
+	.sbss       start:0x805F1960 end:0x805F1968
+
 CRI/adx_inis.c:
 	.text       start:0x803B6830 end:0x803B6AA4
 	.rodata     start:0x80514BF8 end:0x80514C80
