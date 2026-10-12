@@ -199,15 +199,15 @@ typedef struct _AXPROFILE {
 
 typedef struct AX_AUX_DATA {
     /* 0x00 */ s32 *l;
-    /* 0x00 */ s32 *r;
-    /* 0x00 */ s32 *s;
+    /* 0x04 */ s32 *r;
+    /* 0x08 */ s32 *s;
 } AX_AUX_DATA;
 
 typedef struct AX_AUX_DATA_DPL2 {
     /* 0x00 */ s32 *l;
-    /* 0x00 */ s32 *r;
-    /* 0x00 */ s32 *ls;
-    /* 0x00 */ s32 *rs;
+    /* 0x04 */ s32 *r;
+    /* 0x08 */ s32 *ls;
+    /* 0x0C */ s32 *rs;
 } AX_AUX_DATA_DPL2;
 
 typedef void (*AXCallback)();

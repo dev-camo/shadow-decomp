@@ -40,11 +40,6 @@ Sint32 ADXSJD_GetOutBps(ADXSJD sjd);
 Sint32 ADXSJD_GetBlkSmpl(ADXSJD sjd);
 Sint32 ADXSJD_GetTotalNumSmpl(ADXSJD sjd);
 Sint32 ADXSJD_GetNumLoop(ADXSJD sjd);
-
-/* Not yet decompiled; used only by unreferenced (linker-stripped) ADXT functions. */
-void ADXSJD_SetKeyString(ADXSJD sjd, Char8 *str);
-Sint32 ADXSJD_GetFmtBps(ADXSJD sjd);
-Sint32 ADXSJD_GetHdrLen(ADXSJD sjd);
 Sint32 ADXSJD_GetLpStartPos(ADXSJD sjd);
 Sint32 ADXSJD_GetLpStartOfst(ADXSJD sjd);
 Sint32 ADXSJD_GetLpEndPos(ADXSJD sjd);
@@ -54,6 +49,11 @@ Sint16 ADXSJD_GetDefPan(ADXSJD sjd, Sint32 ch);
 void *ADXSJD_GetSpsdInfo(ADXSJD sjd);
 void ADXSJD_TakeSnapshot(ADXSJD sjd);
 void ADXSJD_RestoreSnapshot(ADXSJD sjd);
+
+/* Not in this executable: only unreferenced (linker-stripped) ADXT functions call these. */
+void ADXSJD_SetKeyString(ADXSJD sjd, Char8 *str);
+Sint32 ADXSJD_GetFmtBps(ADXSJD sjd);
+Sint32 ADXSJD_GetHdrLen(ADXSJD sjd);
 
 #ifdef __cplusplus
 }

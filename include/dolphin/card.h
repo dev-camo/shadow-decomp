@@ -53,8 +53,8 @@ typedef struct CARDControl {
     /* 0x018 */ u8 id[12];
     /* 0x024 */ int mountStep;
     /* 0x028 */ int formatStep;
-    /* 0x028 */ u32 scramble;
-    /* 0x02C */ DSPTaskInfo task;
+    /* 0x02C */ u32 scramble;
+    /* 0x030 */ DSPTaskInfo task;
     /* 0x080 */ void *workArea;
     /* 0x084 */ CARDDir *currentDir;
     /* 0x088 */ u16 *currentFat;

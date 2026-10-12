@@ -22,7 +22,8 @@ static BOOL autoInvalidation = TRUE;
 static void defaultOptionalCommandChecker(DVDCommandBlock *, DVDCommandCheckerCallback);
 static DVDCommandChecker checkOptionalCommand = defaultOptionalCommandChecker;
 
-static DVDBB2 BB2 ATTRIBUTE_ALIGN(32); // DMA target: 32-byte aligned in the original (0x80282FC0)
+static DVDBB2
+    BB2 ATTRIBUTE_ALIGN(32); // DMA target: 32-byte aligned in the original (USA 0x80586A40)
 static DVDDiskID CurrDiskID ATTRIBUTE_ALIGN(32);
 static DVDCommandBlock DummyCommandBlock;
 static OSAlarm ResetAlarm;
