@@ -1,7 +1,7 @@
 #ifndef __METROTRK_TRK_H__
 #define __METROTRK_TRK_H__
 
-#include <types.h>
+#include <dolphin/types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -250,6 +250,22 @@ typedef struct ProcessorRestoreFlags_PPC {
 } ProcessorRestoreFlags_PPC;
 
 void TRKSaveExtended1Block();
+
+/* dolphin_trk_glue.c */
+int GetTRKConnected(void);
+
+/* targsupp.s */
+u32 TRKAccessFile(u32 command, u32 file_handle, size_t *length_ptr, u8 *buffer_ptr);
+u32 TRKCloseFile(u32 command, u32 file_handle);
+
+/* target_options.c */
+void SetUseSerialIO(u8 sio);
+u8 GetUseSerialIO(void);
+
+/* mslsupp.c */
+DSIOResult __read_console(u32 handle, u8 *buffer, size_t *count, void *ref_con);
+DSIOResult __TRK_write_console(u32 handle, u8 *buffer, size_t *count, void *ref_con);
+DSIOResult __close_console(u32 handle, u8 *buffer, size_t *count, void *ref_con);
 
 #define SPR_XER 1
 #define SPR_LR 8
