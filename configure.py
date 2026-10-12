@@ -597,6 +597,7 @@ config.libs = [
             Object(Matching, "dolphin/dvdfs.c", extra_cflags=["-char signed"]),
             Object(Matching, "dolphin/dvd.c"),
             Object(Matching, "dolphin/dvdqueue.c"),
+            Object(Matching, "dolphin/dvdidutils.c", extra_cflags=["-char signed"]),
         ],
     ),
     DolphinLib(
