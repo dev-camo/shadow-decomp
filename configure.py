@@ -586,6 +586,7 @@ config.libs = [
     DolphinLib(
         "si",
         [
+            Object(Matching, "dolphin/SIBios.c"),
         ],
     ),
     DolphinLib(
