@@ -29,7 +29,3 @@ int __write_console(__file_handle handle, unsigned char *buffer, size_t *count,
     __TRK_write_console(handle, buffer, count, idle_fn);
     return 0;
 }
-
-int __close_console(__file_handle handle) {
-    return 0;
-}
