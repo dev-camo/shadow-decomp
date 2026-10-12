@@ -1,6 +1,8 @@
 #ifndef FN_8040_VECTOR_TYPES_H
 #define FN_8040_VECTOR_TYPES_H
 
+/* 2- and 3-float vectors used by the fn_8040xxxx vector helpers. Layouts come from their accesses;
+ * the original type and function names are unknown. */
 typedef struct Fn8040Vector2 {
     /* 0x00 */ float x;
     /* 0x04 */ float y;

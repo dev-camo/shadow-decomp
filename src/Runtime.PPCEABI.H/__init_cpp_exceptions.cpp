@@ -1,3 +1,5 @@
+/* CodeWarrior runtime C++ exception setup (__init_cpp_exceptions.cpp): registers the exception
+ * tables at startup and installs the init/fini entries in .ctors/.dtors. */
 #include "NMWException.h"
 
 struct __eti_init_info;

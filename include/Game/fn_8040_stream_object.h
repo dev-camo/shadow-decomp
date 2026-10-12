@@ -1,6 +1,8 @@
 #ifndef FN_8040_STREAM_OBJECT_H
 #define FN_8040_STREAM_OBJECT_H
 
+/* The stream object shared by fn_80406F08, fn_8040773C and fn_8040307C (see below). */
+
 #include "CRI/lsc.h"
 
 /* Object handed through fn_80406F08 -> fn_8040773C -> fn_8040307C (each passes the same
