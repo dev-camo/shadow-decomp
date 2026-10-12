@@ -381,6 +381,11 @@ config.libs = [
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/target_options.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/mslsupp.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/UDP_Stubs.c"),
+            Object(
+                Matching,
+                "PowerPC_EABI_Support/MetroTRK/ddh/main.c",
+                extra_cflags=["-sdata 8"],
+            ),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/CircleBuffer.c"),
         ],
     },
