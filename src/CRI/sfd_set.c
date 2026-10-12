@@ -78,9 +78,10 @@ static void sfset_SetCondDef(SFD sfd, Sint32 id, Sint32 val) {
     }
 }
 
-/* The byte offset id*4 is an own local declared last (coloured after hn/i/p, so it takes the dead
- * sfd register r28); spelled `id << 2` it stays an arithmetic-defined variable that the frontend CSE
- * reuses for the inlined SFSET_SetCond index, where `id * 4` becomes a hoisted temporary (r31). */
+/* Matching constraint (COMPILER-DIFF): the library condition is written through a byte offset
+ * `ofs = id << 2`, an own local declared last (it takes the dead sfd register r28, and the inlined
+ * SFSET_SetCond reuses it for its index). `SFLIB_libwork.cond[id] = val`, an index local and a
+ * `Sint32 *` slot all give a different register assignment (verified: the unit drops to 53%). */
 Sint32 SFD_SetCond(SFD sfd, Sint32 id, Sint32 val) {
     SFD hn;
     Sint32 i;
@@ -96,7 +97,7 @@ Sint32 SFD_SetCond(SFD sfd, Sint32 id, Sint32 val) {
                 SFSET_SetCond(hn, id, val);
             }
         }
-        *(Sint32 *)((Uint8 *)SFLIB_libwork.cond + ofs) = val; /* SFLIB_libwork.cond[id] = val */
+        *(Sint32 *)((Uint8 *)SFLIB_libwork.cond + ofs) = val; /* SFLIB_libwork.cond[id] */
     } else {
         if (SFLIB_CheckHn(sfd) != 0) {
             return SFLIB_SetErr(0, 0xFF000112);

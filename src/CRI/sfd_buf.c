@@ -6,15 +6,6 @@
 #define SFBUF_TR_NONE 9
 #define SFBUF_PRV_XSIZE 0x800
 
-/* buffer n is addressed as SFD + n * sizeof(SFBUF_WORK) with the offsets of buf[0] folded into the
- * displacements: a view of the SFD object shifted by n buffers */
-typedef struct {
-    Uint8 pad[0x1310];
-    SFBUF_WORK w;
-} SFBUF_HN;
-
-#define SFBUF_GET_HN(sfd, n) ((SFBUF_HN *)((Uint8 *)(sfd) + (n) * sizeof(SFBUF_WORK)))
-
 static const SJUUID *sfbuf_sjmem_uuid;
 static const SJUUID *sfbuf_sjrbf_uuid;
 

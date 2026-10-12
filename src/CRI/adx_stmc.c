@@ -522,6 +522,9 @@ static inline ADXSTM adxstmf_create(SJ sj, Sint32 ofst, Sint32 num, Sint32 rtim)
     Sint32 i;
 
     for (i = 0; i < num; i++) {
+        /* Matching constraint (COMPILER-DIFF): &adxstmf_obj[ofst] here turns the scaled index into a
+         * pointer induction variable; the byte-offset form keeps `ofst` as the loop variable, as in
+         * the original (verified: &adxstmf_obj[ofst] drops the unit to 86%). */
         stm = (ADXSTM)((Uint8 *)adxstmf_obj + ofst * sizeof(ADXSTM_OBJ));
         if (stm->used == 0) {
             break;

@@ -304,6 +304,8 @@ void ADXB_ExecOneAdx(ADXB adxb) {
             if (adxb->xdc != 0) {
                 pd = adxb->pd;
                 ADXCRS_Lock();
+                /* Matching constraint (COMPILER-DIFF): the samples are stepped by a separate byte
+                 * offset n; indexing out0/out1 by i gives a different loop (verified: 86%). */
                 for (i = 0, n = 0; i < pd->nblk * 32; i++) {
                     src = (Sint16 *)((Uint8 *)pd->out0 + n);
                     dst = (Sint16 *)((Uint8 *)pd->out1 + n);
