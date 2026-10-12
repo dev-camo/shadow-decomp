@@ -107,9 +107,9 @@ __OSInterruptHandler __OSGetInterruptHandler(__OSInterrupt interrupt);
 void __OSDispatchInterrupt(__OSException exception, OSContext *context);
 
 OSInterruptMask OSGetInterruptMask(void);
-OSInterruptMask OSSetInterruptMask(OSInterruptMask mask);
-OSInterruptMask __OSMaskInterrupts(OSInterruptMask mask);
-OSInterruptMask __OSUnmaskInterrupts(OSInterruptMask mask);
+OSInterruptMask OSSetInterruptMask(OSInterruptMask local);
+OSInterruptMask __OSMaskInterrupts(OSInterruptMask global);
+OSInterruptMask __OSUnmaskInterrupts(OSInterruptMask global);
 
 #ifdef __cplusplus
 }

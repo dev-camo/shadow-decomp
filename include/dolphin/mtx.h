@@ -59,7 +59,7 @@ void C_MTXReflect(Mtx m, const Vec *p, const Vec *n);
 // PS version
 void PSMTXIdentity(Mtx m);
 void PSMTXCopy(const Mtx src, Mtx dst);
-void PSMTXConcat(const Mtx lhs, const Mtx rhs, Mtx ab);
+void PSMTXConcat(const Mtx a, const Mtx b, Mtx ab);
 void PSMTXConcatArray(const Mtx a, const Mtx *srcBase, Mtx *dstBase, u32 count);
 void PSMTXTranspose(const Mtx src, Mtx xPose);
 u32 PSMTXInverse(const Mtx src, Mtx inv);
