@@ -7,6 +7,8 @@
  * version reference-counts Init/Finish, adds ADXSJD_GetDecDtLen and checks the leading padding
  * and ADXB_GetIgnoreHdrErr in adxsjd_decode_prep; ADXSJD_EntryPl2SetSfreqFunc is not in it.
  */
+#include <string.h>
+
 #include "CRI/adx.h"
 #include "CRI/adx_b.h"
 #include "CRI/adx_dcd.h"
@@ -55,9 +57,6 @@ struct ADXSJD_OBJ {
     Sint32 skip_nsmpl; /* 0xA4 output samples to discard */
 };
 typedef struct ADXSJD_OBJ ADXSJD_OBJ;
-
-extern void *memset(void *destination, int value, unsigned int size);
-extern void *memcpy(void *destination, const void *source, unsigned int size);
 
 ADXSJD_OBJ adxsjd_obj[ADXSJD_MAX_OBJ];
 void (*pl2setsfreqfunc)(ADXB adxb, Sint32 sfreq);

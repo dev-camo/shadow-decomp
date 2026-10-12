@@ -11,10 +11,7 @@
  * are not verified against this game; the linker strips them.
  */
 #include "CRI/adx_f.h"
-#include "msl_string.h"
-
-extern void *memset(void *destination, int value, unsigned int size);
-extern int memcmp(const void *left, const void *right, unsigned int count);
+#include <string.h>
 
 /* AFS table load scratch state (partition loader). */
 Uint8 *adxf_ldpt_buf;

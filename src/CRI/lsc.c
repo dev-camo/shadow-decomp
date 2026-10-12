@@ -13,10 +13,9 @@
  * at the observed .rodata positions, are.
  */
 
-#include "CRI/lsc.h"
+#include <string.h>
 
-extern void *memset(void *destination, int value, unsigned int size);
-extern unsigned int strlen(const char *text);
+#include "CRI/lsc.h"
 
 /* Status callback installed by LSC_EntryChgStatFunc (not present in this game). With deferred
  * inlining MWCC lays out .bss in reverse declaration order, so these are declared last-first.

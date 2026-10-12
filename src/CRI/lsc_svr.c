@@ -3,9 +3,9 @@
  * the RE4 GameCube decompilation of the same file.
  */
 
-#include "CRI/lsc.h"
+#include <string.h>
 
-extern unsigned int strlen(const char *text);
+#include "CRI/lsc.h"
 
 /* Byte sum of a file name (compared with the sum taken at entry time). */
 static inline Uint32 lsc_CalcSum(Char8 *fname) {

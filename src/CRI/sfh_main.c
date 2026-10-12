@@ -3,13 +3,10 @@
  *
  * The seven big-endian 32-bit readers keep the original's `rlwinm`/`rlwimi` swap chain and plain
  * `stw` through a never-taken conditional (see SFH_AnlyElemSmpHz). */
+#include <string.h>
+
 #include "CRI/cri_xpt.h"
 #include "CRI/sfh.h"
-
-extern void *memset(void *, int, unsigned long);
-extern void *memcpy(void *, const void *, unsigned long);
-extern int memcmp(const void *, const void *, unsigned long);
-extern char *strstr(const char *, const char *);
 
 #define SFH_VER_STR "1.19"
 #define SFH_VER_DATE "SFH_VER_DATE"

@@ -5,11 +5,11 @@
  * Source from the RE4 GameCube decompilation. RE4's map lists only these four functions; that
  * decompilation's extra volume setters (with their literals and statics) are left out.
  */
+#include <string.h>
+
 #include "CRI/adx.h"
 #include "CRI/adx_amp.h"
 #include "CRI/sj.h"
-
-extern void *memset(void *destination, int value, unsigned int size);
 
 struct ADXAMP_OBJ {
     Sint8 used;      /* 0x00 */

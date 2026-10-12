@@ -1,9 +1,10 @@
 /* CRI Sofdec: time stabiliser (sfd_tst.c). Smooths the master clock against a helper clock: the
  * difference history is averaged and the output time base is shifted in tolerance steps. */
+#include <string.h>
+#include <stdio.h>
+
 #include "CRI/cri_xpt.h"
 #include "CRI/sfd.h"
-extern void *memset(void *destination, int value, unsigned int size);
-extern int sprintf(char *s, const char *format, ...);
 
 extern Sint32 sfadxt_stat;
 

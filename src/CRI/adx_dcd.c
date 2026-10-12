@@ -6,12 +6,11 @@
  * the 4-byte code (ADX_DecodeFooter) and compares the info code word unsigned (ADX_ScanInfoCode).
  * adx_GetVer is unreferenced, so the linker strips it.
  */
+#include <string.h>
+#include <math.h>
+
 #include "CRI/adx_dcd.h"
 
-extern unsigned int strlen(const char *text);
-extern void *memcpy(void *destination, const void *source, unsigned int size);
-
-extern double cos(double x);
 extern float __float_nan;
 
 #define FP_NAN 1

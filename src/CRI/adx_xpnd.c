@@ -6,10 +6,10 @@
  *
  * Body from the RE4 GameCube decompilation of the same file.
  */
+#include <string.h>
+
 #include "CRI/adx_b.h"
 #include "CRI/adx_dcd.h"
-
-extern void *memset(void *destination, int value, unsigned int size);
 
 #define ADXPD_MAX_OBJ 16
 

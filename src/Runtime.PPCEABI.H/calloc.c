@@ -1,4 +1,5 @@
 /* MSL runtime malloc-pool entry points (alloc.c). */
+#include <string.h>
 
 #if defined(VERSION_GUPJ8P)
 #define ALLOCATOR_STATE lbl_805A5860
@@ -17,7 +18,6 @@ extern unsigned char ALLOCATOR_INITIALIZED;
 
 extern void __begin_critical_region(int region);
 extern void __end_critical_region(int region);
-extern void *memset(void *destination, int value, unsigned int size);
 extern void *__pool_alloc_clear(void *pool, unsigned int size);
 extern void *__pool_realloc(void *pool, void *ptr, unsigned int size);
 extern void __pool_free(void *pool, void *ptr);

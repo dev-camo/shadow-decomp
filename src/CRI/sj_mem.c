@@ -6,9 +6,7 @@
  * and a shared suffix, and pairs init/finish with the SJCRS init count.
  */
 #include "CRI/sj.h"
-#include "msl_string.h"
-
-extern void *memset(void *destination, int value, unsigned int size);
+#include <string.h>
 
 #define SJMEM_MAX_OBJ 32
 

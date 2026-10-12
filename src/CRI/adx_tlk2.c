@@ -5,11 +5,11 @@
  * in ADXCRS_Enter/ADXCRS_Leave around adxt_* workers and starts a named file as a full range. The
  * file is compiled with deferred inlining, so the functions are emitted in reverse order.
  */
+#include <string.h>
+
 #include "CRI/adx.h"
 #include "CRI/adx_f.h"
 #include "CRI/adx_t.h"
-
-extern Char8 *strcpy(Char8 *destination, const Char8 *source);
 
 /* Starts an AFS file: looks up patid/fid, then the next server pass opens the range. */
 static inline void adxt_StartAfs(ADXT adxt, Sint32 patid, Sint32 fid) {

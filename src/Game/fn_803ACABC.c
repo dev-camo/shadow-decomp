@@ -1,4 +1,4 @@
-#include "msl_string.h"
+#include <string.h>
 
 /* MSL strncpy. */
 char *strncpy(char *destination, const char *source, unsigned int count) {

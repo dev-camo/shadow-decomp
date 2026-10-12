@@ -1,11 +1,11 @@
 /* CRI ADX: basic decoder object (ADXB) - creation, header decoding (with the SKG key generation
  * for encrypted ADX/AHX data), per-frame block decoding, snapshots and the getters. */
+#include <string.h>
+#include <stdio.h>
+
 #include "CRI/adx.h"
 #include "CRI/adx_b.h"
 #include "CRI/adx_dcd.h"
-
-extern void *memset(void *destination, int value, unsigned int size);
-extern int sprintf(char *buffer, const char *format, ...);
 
 void ADXB_ExecOneAdx(ADXB adxb);
 void ADXB_EvokeDecode(ADXB adxb);

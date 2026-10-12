@@ -1,4 +1,4 @@
-#include "msl_string.h"
+#include <string.h>
 
 /* Inferred access view: twelve key bytes followed by one raw word.
  * Original record/array identity and complete types remain unknown. */

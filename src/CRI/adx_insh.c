@@ -2,11 +2,11 @@
  * temporary ADXSJE joint encoder over two dummy memory joints, runs it once to synthesise an SFA
  * header into adxt_hdbuf and copies that header in front of the handle's decoder input stream joint.
  * Body from the RE4 GameCube decompilation of the same file. */
+#include <string.h>
+
 #include "CRI/sj.h"
 #include "CRI/adx_sje.h"
 #include "CRI/adx_t.h"
-
-extern void *memcpy(void *destination, const void *source, unsigned int size);
 
 static Uint8 adxt_dmybuf[0x40];
 static Uint8 adxt_hdbuf[0x400];

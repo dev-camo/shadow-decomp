@@ -2,9 +2,10 @@
  * packet together with its ring-buffer position; the video driver reads the entry whose position
  * matches the picture it decodes to timestamp the frame (SFPTS_ReadPtsQue). Storage comes from
  * SFD_SetVideoPts. */
+#include <string.h>
+
 #include "CRI/cri_xpt.h"
 #include "CRI/sfd.h"
-extern void *memset(void *destination, int value, unsigned int size);
 
 #define PQ(sfd, strm) ((sfd)->buf[strm].u.ring.ptsque)
 

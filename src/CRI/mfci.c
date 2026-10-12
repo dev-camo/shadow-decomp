@@ -5,11 +5,9 @@
  * Names, types and layout follow MFCI Ver.1.09 in the RE4 GameCube decompilation (same
  * error codes and function order); Ver.1.10 adds mfCiOptFn for the CVFS OptFn slot.
  */
-#include "msl_string.h"
-
-extern void *memset(void *destination, int value, unsigned int size);
-extern void *memcpy(void *destination, const void *source, unsigned int size);
-extern unsigned int strlen(const char *text);
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "CRI/cri_xpt.h"
 #include "CRI/svm.h"
@@ -26,9 +24,6 @@ extern unsigned int strlen(const char *text);
 #define CVFS_SEEK_SET 0
 #define CVFS_SEEK_CUR 1
 #define CVFS_SEEK_END 2
-
-extern int sprintf(char *buffer, const char *format, ...);
-extern unsigned long strtoul(const char *text, char **end, int base);
 
 typedef void (*CVFS_ERRFUNC)(void *obj, const Char8 *msg, void *hn);
 

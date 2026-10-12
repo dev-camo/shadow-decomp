@@ -1,4 +1,4 @@
-#include "msl_string.h"
+#include <string.h>
 
 /* MSL strncmp. */
 int strncmp(const char *left, const char *right, unsigned int count) {

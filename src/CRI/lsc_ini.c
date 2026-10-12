@@ -2,9 +2,9 @@
  * build string. Names and layout follow the RE4 GameCube decompilation of the same file.
  */
 
-#include "CRI/lsc.h"
+#include <string.h>
 
-extern void *memset(void *destination, int value, unsigned int size);
+#include "CRI/lsc.h"
 
 /* volatile: LSC_Init reads the build string pointer without using it. */
 const Char8 *const volatile lsc_build = "\nLSC/GC Ver.2.22 Build:Feb 28 2005 15:48:30\n";
