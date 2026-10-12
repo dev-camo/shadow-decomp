@@ -225,13 +225,11 @@ void SFBUF_RingGetDlm(SFD sfd, Sint32 n, Uint8 **pos, Sint32 *len) {
     SFLIB_UnlockCs(&cs);
 }
 
-/* AddRead/AddWrite: the bodies are inlined helpers so that the first arm's `ret = 0` is a helper
- * temporary (the backend CSE turns it into the entry zero and the arm empties: `bne body; b end`);
- * the helper locals are declared in reverse of the target's register order. `ring` is reached in two
- * steps through `wk` (an own local with its own uses): add-propagation folds `addi wk` into
- * `addi ring, wk, 0x10` but never propagates the addi it has just rewritten, so `ring` stays a node
- * (`addi rR, hn, 0x1318`) while the sj/used reads through wk fold into hn. The delimiter check reads
- * `ring->dlm_pos` inline (a `pos` local would outrank the ck.data CSE temporaries). */
+/* Matching constraints (AddRead/AddWrite): the bodies are inlined helpers so that the first arm's
+ * `ret = 0` folds into the entry zero as in the original, and the helper locals are declared in
+ * reverse of the original register order. `ring` is reached in two steps through `wk` (an own local
+ * with its own uses), which keeps ring's address separate while the sj/used reads fold into hn. The
+ * delimiter check reads `ring->dlm_pos` inline; a `pos` local changes the register order. */
 static inline Sint32 sfbuf_RingAddReadSub(SFD sfd, Sint32 n, Sint32 nbyte) {
     SJCK ck1;
     SJCK ckw;

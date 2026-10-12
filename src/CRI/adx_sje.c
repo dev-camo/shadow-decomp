@@ -195,8 +195,8 @@ void ADXSJE_ExecServer(void) {
 }
 
 /* header stage: wait for the first sample of every input (the decoder history seed), write the
- * header and program the filter coefficients. An inlined helper so that its counters rank above the
- * loops' stepping pointers (own locals rank below the strength-reduction temporaries).
+ * header and program the filter coefficients. An inlined helper, which gives its counters the
+ * original registers relative to the loops' stepping pointers.
  * Matching constraint (COMPILER-DIFF): the per-channel fields are reached through `Uint8 *` copies
  * of the handle stepped by 4/2 plus the member offset (the adx_tsvr ExecHndl idiom: `mr rIV, sje` +
  * offset loads), declared in the order that gives the original register assignment.
@@ -692,9 +692,8 @@ static Sint32 adxsje_read_pcm(ADXSJE sje, Sint16 **bufs, Sint32 n) {
     return cnt;
 }
 
-/* predict, quantise and pack one block per channel (a helper: its `ch` is a clone local, coloured
- * before the loop temporaries of encode_data like the original's; `iir = prd->iir` hoists the iir
- * load right after prd) */
+/* predict, quantise and pack one block per channel. Matching constraints: a separate helper so its
+ * `ch` gets the original register, and `iir = prd->iir` places the iir load right after prd. */
 static void adxsje_encode_blocks(ADXSJE sje) {
     Sint32 ch;
     ADXSJE_PRDFLT *prd;
