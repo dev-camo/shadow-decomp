@@ -539,6 +539,7 @@ config.libs = [
             Object(Matching, "dolphin/OS.c", cflags=cflags_sdk_rev2),
             Object(Matching, "dolphin/OSAlloc.c"),
             Object(Matching, "dolphin/OSExec.c", cflags=cflags_sdk_rev2),
+            Object(Matching, "dolphin/OSFatal.c"),
         ],
     ),
     DolphinLib(
