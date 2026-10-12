@@ -30,8 +30,9 @@
 #define MBAI_ERROR 36
 
 #define RL(len, level, run) (((len) << 16) | ((level) << 8) | (run))
-#define DCSIZ(size, len) (((size) << 4) | (len))
-#define CBP(cbp, len) ((((cbp) & 3) << 14) | ((cbp) << 8) | (len))
+/* packed table entries; DCSIZ fills Sint8 tables and CBP Sint16 tables, so both narrow explicitly */
+#define DCSIZ(size, len) ((Sint8)(((size) << 4) | (len)))
+#define CBP(cbp, len) ((Sint16)((((cbp) & 3) << 14) | ((cbp) << 8) | (len)))
 #define MV(len, code) (((len) << 8) | (Uint8)(code))
 #define MBTYPE(type, len) (((type) << 8) | (len))
 #define MBAI(type, inc, len) (((type) << 10) | ((inc) << 4) | (len))
