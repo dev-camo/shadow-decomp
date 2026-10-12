@@ -12,7 +12,7 @@ unsigned long __strtoul(int base, int max_width, int (*ReadProc)(void *, int, in
 unsigned long long __strtoull(int base, int max_width, int (*ReadProc)(void *, int, int),
                               void *ReadProcArg, int *chars_scanned, int *negative, int *overflow);
 int atoi(const char *str);
-float atof(const char *str);
+double atof(const char *str);
 
 #ifdef __cplusplus
 }
