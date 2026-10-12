@@ -89,7 +89,7 @@ void GXSetPointSize(u8 pointSize, GXTexOffset texOffsets) {
 void GXGetPointSize(u8 *pointSize, GXTexOffset *texOffsets) {
     ASSERTMSGLINE(507, pointSize != NULL && texOffsets != NULL, "GXGet*: invalid null pointer");
 
-    *pointSize = (int)GET_REG_FIELD(__GXData->lpSize, 8, 8);
+    *pointSize = GET_REG_FIELD(__GXData->lpSize, 8, 8);
     *texOffsets = GET_REG_FIELD(__GXData->lpSize, 3, 19);
 }
 

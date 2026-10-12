@@ -86,9 +86,9 @@ static inline float adx_sqrtf(float x) {
  * `addi`); without it MWCC defers the leaf next to the strlen() call to the end of the chain. */
 Sint32 ADX_CalcHdrInfoLen(Sint32 loop, Sint32 infolen, Sint32 ofst, Sint32 align) {
     if (loop == 0) {
-        return (Uint32)(0x1B + infolen + strlen("(c)CRI") + ofst + align) / align * align - ofst;
+        return (0x1B + infolen + strlen("(c)CRI") + ofst + align) / align * align - ofst;
     }
-    return (Uint32)(0x33 + infolen + strlen("(c)CRI") + ofst + align) / align * align - ofst;
+    return (0x33 + infolen + strlen("(c)CRI") + ofst + align) / align * align - ofst;
 }
 
 /* Parses an ADX end code (0x8001) block: *ofst = its length (padding + 4), stored before the

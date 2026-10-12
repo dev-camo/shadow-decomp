@@ -609,7 +609,7 @@ void CARDInit(void) {
         OSInitThreadQueue(&card->threadQueue);
         OSCreateAlarm(&card->alarm);
     }
-    __CARDSetDiskID((void *)OSPhysicalToCached(0));
+    __CARDSetDiskID(OSPhysicalToCached(0));
 
     OSRegisterResetFunction(&ResetFunctionInfo);
 }
@@ -735,7 +735,7 @@ s32 CARDFreeBlocks(s32 chan, s32 *byteNotUsed, s32 *filesNotUsed) {
     }
 
     if (byteNotUsed) {
-        *byteNotUsed = (s32)(card->sectorSize * fat[CARD_FAT_FREEBLOCKS]);
+        *byteNotUsed = card->sectorSize * fat[CARD_FAT_FREEBLOCKS];
     }
 
     if (filesNotUsed) {
