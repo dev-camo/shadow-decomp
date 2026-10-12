@@ -1,6 +1,7 @@
 #include <dolphin/types.h>
 
-// can't include OS headers bc report needs to not generate crclr
+// No OS or TRK header is included: the original OSReport call has no crclr, so OSReport's variadic
+// prototype was not in scope, and GetTRKConnected/SetTRKConnected are called undeclared too.
 
 BOOL usr_puts_serial(const char *msg) {
     BOOL connect_ = FALSE;

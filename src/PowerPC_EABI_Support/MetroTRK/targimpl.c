@@ -4,6 +4,8 @@
 #include "MetroTRK/dstypes.h"
 #include "MetroTRK/memmap.h"
 
+static BOOL TRKTargetCheckStep();
+
 typedef struct StopInfo_PPC {
     u32 PC;
     u32 PCInstruction;
@@ -573,6 +575,8 @@ DSError TRKTargetSupportRequest() {
         TRKPostEvent(&event);
         return DS_NoError;
     } else if (commandId == DSMSG_OpenFile) {
+        // Called without a prototype in scope: the saved register values are passed as they are.
+        // A typed prototype (support.c) changes the register allocation of this call.
         error = HandleOpenFileSupportRequest(gTRKCPUState.Default.GPR[4],
                                              gTRKCPUState.Default.GPR[5] & 0xff,
                                              gTRKCPUState.Default.GPR[6], &ioResult);
@@ -783,7 +787,7 @@ void TRKTargetSetInputPendingPtr(void *ptr) {
     gTRKState.inputPendingPtr = ptr;
 }
 
-DSError TRKTargetAccessARAM(u32 p1, u32 p2, u32 *p3, BOOL read) {
+DSError TRKTargetAccessARAM(u32 p1, u32 p2, size_t *p3, BOOL read) {
     DSError err;
     TRKExceptionStatus status;
 

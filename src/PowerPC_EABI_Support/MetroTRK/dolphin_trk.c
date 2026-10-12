@@ -44,9 +44,9 @@ u32 TRKTargetTranslate(u32 val) {
 }
 
 void TRK_copy_vector(u32 offset) {
-    void *destPtr = (void *)TRKTargetTranslate(offset);
-    TRK_memcpy(destPtr, (void *)(gTRKInterruptVectorTable + offset), 0x100);
-    TRK_flush_cache(destPtr, 0x100);
+    u32 dest = TRKTargetTranslate(offset);
+    TRK_memcpy((void *)dest, (void *)(gTRKInterruptVectorTable + offset), 0x100);
+    TRK_flush_cache(dest, 0x100);
 }
 
 void __TRK_copy_vectors(void) {

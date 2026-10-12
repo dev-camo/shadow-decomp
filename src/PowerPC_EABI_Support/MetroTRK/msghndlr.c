@@ -103,7 +103,7 @@ DSError TRKDoReadMemory(MessageBuffer *buffer) {
     tempLength = length;
 
     if (options & DSMSGMEMORY_Space_data) {
-        result = TRKTargetAccessARAM(buf, start, &tempLength, TRUE);
+        result = TRKTargetAccessARAM((u32)buf, start, &tempLength, TRUE);
     } else {
         result = TRKTargetAccessMemory(buf, start, &tempLength,
                                        options & DSMSGMEMORY_Userview ? 0 : 1, TRUE);
@@ -178,7 +178,7 @@ DSError TRKDoWriteMemory(MessageBuffer *b) {
     TRKSetBufferPosition(b, DSMSGMEMORY_Space_data);
     if (options & DSMSGMEMORY_Space_data) {
         TRKReadBuffer(b, buf + (start & 0x1f), tempLength);
-        result = TRKTargetAccessARAM(buf, start, &tempLength, FALSE);
+        result = TRKTargetAccessARAM((u32)buf, start, &tempLength, FALSE);
     } else {
         TRKReadBuffer(b, buf, tempLength);
         result = TRKTargetAccessMemory(buf, start, &tempLength,

@@ -36,6 +36,12 @@ void TRKResetBuffer(MessageBuffer *msg, BOOL keepData);
 
 DSError TRKReadBuffer1_ui64(MessageBuffer *buffer, u64 *data);
 DSError TRKAppendBuffer1_ui64(MessageBuffer *buffer, const u64 data);
+DSError TRKReadBuffer(MessageBuffer *msg, void *data, size_t length);
+DSError TRKAppendBuffer(MessageBuffer *msg, const void *data, size_t length);
+DSError TRKReadBuffer_ui8(MessageBuffer *buffer, u8 *data, int count);
+DSError TRKReadBuffer_ui32(MessageBuffer *buffer, u32 *data, int count);
+DSError TRKAppendBuffer_ui32(MessageBuffer *buffer, const u32 *data, int count);
+DSError TRKDoNotifyStopped(MessageCommandID cmd);
 ////////////////////////////////////
 
 /////// DOLPHIN TRK FUNCTIONS //////
@@ -48,6 +54,13 @@ void TRKSaveExtended1Block();
 void TRKRestoreExtended1Block();
 int InitMetroTRKCommTable(int);
 void TRK_board_display(char *);
+void __TRK_reset(void);
+void __TRK_copy_vectors(void);
+u32 TRKTargetTranslate(u32 val);
+void TRK__read_aram(int c, u32 p2, void *p3);
+void TRK__write_aram(int c, u32 p2, void *p3);
+void EnableEXI2Interrupts(void);
+void TRK_flush_cache(u32 param_1, int param_2);
 ////////////////////////////////////
 
 ////////// GDEV FUNCTIONS //////////
@@ -61,6 +74,11 @@ int gdev_cc_pre_continue();
 int gdev_cc_post_stop();
 int gdev_cc_peek();
 int gdev_cc_initinterrupts();
+/* Weak stub in an unsplit unit; its body only returns 0. */
+int Hu_IsStub(void);
+/* Also declared in dolphin/amc/AmcExi2Comm.h, which the TRK sources do not include: that header's
+ * anonymous enum would shift this unit's string label numbering against the original. */
+int AMC_IsStub(void);
 ////////////////////////////////////
 
 /////////// UDP FUNCTIONS //////////
@@ -102,6 +120,8 @@ DSError TRKDispatchMessage(MessageBuffer *);
 void *TRKGetBuffer(int);
 void TRKReleaseBuffer(int);
 void TRKGetInput();
+MessageBufferID TRKTestForPacket();
+void TRKProcessInput(int bufferIdx);
 ////////////////////////////////////
 
 ///////// TARGET FUNCTIONS /////////
@@ -110,6 +130,22 @@ DSError TRKTargetInterrupt(TRKEvent *);
 BOOL TRKTargetStopped();
 void TRKTargetSetStopped(unsigned int);
 DSError TRKTargetSupportRequest();
+DSError TRKTargetAccessMemory(void *data, u32 start, size_t *length,
+                              MemoryAccessOptions accessOptions, BOOL read);
+DSError TRKTargetAccessDefault(u32 firstRegister, u32 lastRegister, MessageBuffer *b,
+                               size_t *registersLengthPtr, BOOL read);
+DSError TRKTargetAccessFP(u32 firstRegister, u32 lastRegister, MessageBuffer *b,
+                          size_t *registersLengthPtr, BOOL read);
+DSError TRKTargetAccessExtended1(u32 firstRegister, u32 lastRegister, MessageBuffer *b,
+                                 size_t *registersLengthPtr, BOOL read);
+DSError TRKTargetAccessExtended2(u32 firstRegister, u32 lastRegister, MessageBuffer *b,
+                                 size_t *registerStorageSize, BOOL read);
+DSError TRKTargetAccessARAM(u32 p1, u32 p2, size_t *p3, BOOL read);
+u32 TRKTargetGetPC(void);
+DSError TRKTargetSingleStep(u32 count, BOOL stepOver);
+DSError TRKTargetStepOutOfRange(u32 rangeStart, u32 rangeEnd, BOOL stepOver);
+BOOL TRKTargetStop();
+u32 __TRK_get_MSR(void);
 ////////////////////////////////////
 
 ////// NUB AND MEM FUNCTIONS ///////
@@ -120,6 +156,7 @@ DSError TRKMessageSend(MessageBuffer *);
 void TRKSwapAndGo(void);
 DSError TRKInitializeNub(void);
 DSError TRKTerminateNub(void);
+BOOL TRKInitializeEndian(void);
 void TRKNubWelcome(void);
 void TRKNubMainLoop(void);
 
@@ -127,6 +164,7 @@ DSError TRKInitializeMutex(void *);
 DSError TRKAcquireMutex(void *);
 DSError TRKReleaseMutex(void *);
 void *TRK_memcpy(void *dst, const void *src, size_t n);
+void *TRK_memset(void *dst, int val, size_t n);
 ////////////////////////////////////
 
 /////// INITIALIZE FUNCTIONS ///////
@@ -150,9 +188,14 @@ void MWTRACE(u8, char *, ...);
 ////////////////////////////////////
 
 //////// SUPPORT FUNCTIONS /////////
-DSError TRKRequestSend();
+DSError TRKRequestSend(MessageBuffer *msgBuf, int *bufferId, u32 p1, u32 p2, int p3);
 u32 TRKAccessFile(u32 command, u32 file_handle, size_t *length_ptr, u8 *buffer_ptr);
 u32 TRKCloseFile(u32 command, u32 file_handle);
+DSError TRKSuppAccessFile(u32 file_handle, u8 *data, size_t *count, DSIOResult *io_result,
+                          BOOL need_reply, BOOL read);
+DSError HandleCloseFileSupportRequest(int replyError, DSIOResult *ioResult);
+DSError HandlePositionFileSupportRequest(DSReplyError replyErr, u32 *param_2, u8 param_3,
+                                         DSIOResult *ioResult);
 ////////////////////////////////////
 
 ////////// OTHER FUNCTIONS /////////

@@ -1,4 +1,5 @@
 #include <dolphin/os.h>
+#include "MetroTRK/MWCriticalSection_gc.h"
 
 extern "C" {
 
