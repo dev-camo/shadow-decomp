@@ -604,6 +604,7 @@ config.libs = [
         "mtx",
         [
             Object(Matching, "dolphin/mtx.c"),
+            Object(Matching, "dolphin/mtx44.c"),
         ],
     ),
     DolphinLib(
