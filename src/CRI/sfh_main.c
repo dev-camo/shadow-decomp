@@ -101,7 +101,7 @@ static const Char8 *sfhlib_version_dummy;
 #define SWAP32(x)                                                                                  \
     (((x) << 24) | (((x) << 8) & 0x00FF0000) | (((x) >> 8) & 0x0000FF00) | (((x) >> 24) & 0xFF))
 
-// Picture rate code (1..8) -> frame rate x1000 (23976 .. 60000); 0 for unknown.
+/* Picture rate code (1..8) -> frame rate x1000 (23976 .. 60000); 0 for unknown. */
 Sint32 getPicRate(Uint32 code) {
     switch (code) {
     case 1:
@@ -125,7 +125,7 @@ Sint32 getPicRate(Uint32 code) {
     }
 }
 
-// The handle has a validated header (SFH_IsSfdHeader succeeded).
+/* The handle has a validated header (SFH_IsSfdHeader succeeded). */
 static Bool sfh_IsValid(SFH sfh) {
     Bool ret;
 
@@ -142,17 +142,17 @@ static Bool sfh_IsValid(SFH sfh) {
     return ret;
 }
 
-// The handle slot is unused.
+/* The handle slot is unused. */
 static Bool sfh_IsFree(SFH sfh) {
     return (sfh->stat == SFH_STAT_FREE);
 }
 
-// Header tool version 1.07 or >= 1.10 can be analysed.
+/* Header tool version 1.07 or >= 1.10 can be analysed. */
 static Bool sfh_IsVerOk(SFH sfh) {
     return (sfh->ver == SFH_VER_107 || sfh->ver >= SFH_VER_110);
 }
 
-// Valid handle with an analysable version.
+/* Valid handle with an analysable version. */
 static Bool sfh_IsAnlyOk(SFH sfh) {
     if (!sfh_IsValid(sfh)) {
         return FALSE;
@@ -163,7 +163,7 @@ static Bool sfh_IsAnlyOk(SFH sfh) {
     return TRUE;
 }
 
-// The 0x40-byte element record of stream `id` among the 26 at offset 0x180, 0 if absent.
+/* The 0x40-byte element record of stream `id` among the 26 at offset 0x180, 0 if absent. */
 static SFH_ELEM *sfh_SearchElem(Uint8 *hdr, Uint32 id) {
     Sint32 i;
     SFH_ELEM *p;
@@ -179,7 +179,7 @@ static SFH_ELEM *sfh_SearchElem(Uint8 *hdr, Uint32 id) {
     return elem;
 }
 
-// Element record of stream `id` after the handle checks.
+/* Element record of stream `id` after the handle checks. */
 static SFH_ELEM *sfh_GetElem(SFH sfh, Uint32 id) {
     Uint8 *hdr = sfh->hdr;
 
@@ -189,7 +189,7 @@ static SFH_ELEM *sfh_GetElem(SFH sfh, Uint32 id) {
     return sfh_SearchElem(hdr, id);
 }
 
-// Stream id class: 0xC0..0xDF audio, 0xE0..0xEF video, 0xBD/0xBF private, else 0.
+/* Stream id class: 0xC0..0xDF audio, 0xE0..0xEF video, 0xBD/0xBF private, else 0. */
 static Uint32 sfh_GetStmType(Uint8 id) {
     Uint32 type = id;
 
@@ -205,7 +205,7 @@ static Uint32 sfh_GetStmType(Uint8 id) {
     return type;
 }
 
-// The element is of the expected class and its feature block is present (flag == 1).
+/* The element is of the expected class and its feature block is present (flag == 1). */
 static Bool sfh_IsEffFtr(SFH_ELEM *elem, Uint8 id, Uint32 type) {
     Uint32 flg;
 
@@ -221,12 +221,12 @@ static Bool sfh_IsEffFtr(SFH_ELEM *elem, Uint8 id, Uint32 type) {
     return TRUE;
 }
 
-// ASCII digit test.
+/* ASCII digit test. */
 static Bool sfh_IsDigit(Sint32 c) {
     return (c >= '0' && c <= '9');
 }
 
-// Copies the 32-character muxer tool string (offset 0x60) into a NUL-terminated buffer.
+/* Copies the 32-character muxer tool string (offset 0x60) into a NUL-terminated buffer. */
 static Bool sfh_GetToolStr(SFH sfh, Uint8 *str, Char8 *buf) {
     if (!sfh_IsValid(sfh)) {
         return FALSE;
@@ -236,7 +236,7 @@ static Bool sfh_GetToolStr(SFH sfh, Uint8 *str, Char8 *buf) {
     return TRUE;
 }
 
-// Parses a decimal number up to '.', ' ' or NUL, advancing the pointer.
+/* Parses a decimal number up to '.', ' ' or NUL, advancing the pointer. */
 static Sint32 sfh_Atoi(const Char8 **pp) {
     const Char8 *p = *pp;
     Sint32 c;
@@ -258,7 +258,7 @@ static Sint32 sfh_Atoi(const Char8 **pp) {
     return num;
 }
 
-// "Ver.M.m" out of the tool string.
+/* "Ver.M.m" out of the tool string. */
 static Bool sfh_GetStrVer(const Char8 *buf, Sint32 *major, Sint32 *minor) {
     const Char8 *p;
 
@@ -293,7 +293,7 @@ Bool SFH_AnlyFtrFxType(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-// Video feature: GOP M (P-picture spacing).
+/* Video feature: GOP M (P-picture spacing). */
 Bool SFH_AnlyFtrGopM(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
 
@@ -312,7 +312,7 @@ Bool SFH_AnlyFtrGopM(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-// Video feature: GOP N (GOP length).
+/* Video feature: GOP N (GOP length). */
 Bool SFH_AnlyFtrGopN(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
 
@@ -331,7 +331,7 @@ Bool SFH_AnlyFtrGopN(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-// Video feature: expand flag.
+/* Video feature: expand flag. */
 Bool SFH_AnlyFtrExpand(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
 
@@ -347,7 +347,7 @@ Bool SFH_AnlyFtrExpand(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-// Video feature: sequence-header-code fixed flag.
+/* Video feature: sequence-header-code fixed flag. */
 Bool SFH_AnlyFtrShcFixFlg(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
 
@@ -363,7 +363,7 @@ Bool SFH_AnlyFtrShcFixFlg(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-// Video feature: fixed flag.
+/* Video feature: fixed flag. */
 Bool SFH_AnlyFtrFixFlg(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
 
@@ -379,7 +379,7 @@ Bool SFH_AnlyFtrFixFlg(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-// Video feature: picture type restriction.
+/* Video feature: picture type restriction. */
 Bool SFH_AnlyFtrPicType(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
 
@@ -395,7 +395,7 @@ Bool SFH_AnlyFtrPicType(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-// Video feature: colour type (3 = colour-space conversion needed; drives the SFX colour adjustment).
+/* Video feature: colour type (3 = colour-space conversion needed; drives the SFX colour adjustment). */
 Bool SFH_AnlyFtrColType(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
 
@@ -428,7 +428,7 @@ Bool SFH_AnlyElemPicRate(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-// Video element: picture width and height (24-bit fields).
+/* Video element: picture width and height (24-bit fields). */
 Bool SFH_AnlyElemPicSz(SFH sfh, Uint8 id, Sint32 *width, Sint32 *height) {
     SFH_ELEM *elem;
 
@@ -450,7 +450,7 @@ Bool SFH_AnlyElemPicSz(SFH sfh, Uint8 id, Sint32 *width, Sint32 *height) {
     return TRUE;
 }
 
-// Video element: bit rate (big-endian 16-bit).
+/* Video element: bit rate (big-endian 16-bit). */
 Bool SFH_AnlyElemBitRate(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
     Sint32 rate, tmp;
@@ -475,7 +475,7 @@ Bool SFH_AnlyElemBitRate(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-// Video element: codec id.
+/* Video element: codec id. */
 Bool SFH_AnlyElemCodecVid(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
 
@@ -491,7 +491,7 @@ Bool SFH_AnlyElemCodecVid(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-// Audio element: sampling rate (big-endian 32-bit).
+/* Audio element: sampling rate (big-endian 32-bit). */
 /* Matching constraint (COMPILER-DIFF M4): the original stores the swapped word with `stw` after a
  * `rlwinm`/`rlwimi` chain; our compiler folds a same-block swap+store into `stwbrx`, so the never-taken
  * `if (z != 0)` puts the store in another basic block. */
@@ -519,7 +519,7 @@ Bool SFH_AnlyElemSmpHz(SFH sfh, Uint8 id, Sint32 *val) {
     return ret;
 }
 
-// Audio element: channel count.
+/* Audio element: channel count. */
 Bool SFH_AnlyElemChNum(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
 
@@ -535,7 +535,7 @@ Bool SFH_AnlyElemChNum(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-// Audio element: layer.
+/* Audio element: layer. */
 Bool SFH_AnlyElemLayer(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
 
@@ -554,7 +554,7 @@ Bool SFH_AnlyElemLayer(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-// Audio element: codec id.
+/* Audio element: codec id. */
 Bool SFH_AnlyElemCodecAud(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
 
@@ -590,7 +590,7 @@ static Bool sfh_GetHdrU32(SFH sfh, Sint32 ofs, Sint32 *val) {
     return ret;
 }
 
-// Big-endian 16-bit header field after the handle checks.
+/* Big-endian 16-bit header field after the handle checks. */
 static Bool sfh_GetHdrS16(SFH sfh, Sint32 ofs, Sint32 *val) {
     Uint8 *hdr = sfh->hdr;
 
@@ -601,7 +601,7 @@ static Bool sfh_GetHdrS16(SFH sfh, Sint32 ofs, Sint32 *val) {
     return TRUE;
 }
 
-// Byte header field after the handle checks.
+/* Byte header field after the handle checks. */
 static Bool sfh_GetHdrU8(SFH sfh, Sint32 ofs, Sint32 *val) {
     Uint8 *hdr = sfh->hdr;
 
@@ -612,7 +612,7 @@ static Bool sfh_GetHdrU8(SFH sfh, Sint32 ofs, Sint32 *val) {
     return TRUE;
 }
 
-// Big-endian 32-bit header field, only for tool versions >= `ver`.
+/* Big-endian 32-bit header field, only for tool versions >= `ver`. */
 /* Big-endian 32-bit header field, only for tool versions >= `ver` (same store constraint). */
 static Bool sfh_GetHdrU32Ver(SFH sfh, Sint32 ofs, Sint32 ver, Sint32 *val) {
     Uint8 *hdr = sfh->hdr;
@@ -636,80 +636,80 @@ static Bool sfh_GetHdrU32Ver(SFH sfh, Sint32 ofs, Sint32 ver, Sint32 *val) {
     return ret;
 }
 
-// Total video frame count (offset 0xC0; what mwPlyGetHdrInf reports as maxfrm).
+/* Total video frame count (offset 0xC0; what mwPlyGetHdrInf reports as maxfrm). */
 Bool SFH_AnlyMaxFrmNum(SFH sfh, Sint32 *val) {
     *val = 0;
     return sfh_GetHdrU32(sfh, SFH_HDR_MAXFRMNUM_OFS, val);
 }
 
-// Maximum video packet payload length (0xBC).
+/* Maximum video packet payload length (0xBC). */
 Bool SFH_AnlyMaxPlyLenVid(SFH sfh, Sint32 *val) {
     *val = 0;
     return sfh_GetHdrU32(sfh, SFH_HDR_MAXPLYLEN_VID_OFS, val);
 }
 
-// Maximum audio packet payload length (0xB8).
+/* Maximum audio packet payload length (0xB8). */
 Bool SFH_AnlyMaxPlyLenAud(SFH sfh, Sint32 *val) {
     *val = 0;
     return sfh_GetHdrU32(sfh, SFH_HDR_MAXPLYLEN_AUD_OFS, val);
 }
 
-// Byte rate (0xB4; versions before 1.10 report it negative).
+/* Byte rate (0xB4; versions before 1.10 report it negative). */
 Bool SFH_AnlyByteRate(SFH sfh, Sint32 *val) {
     *val = 0;
     return sfh_GetHdrU32Ver(sfh, SFH_HDR_BYTERATE_OFS, SFH_VER_110, val);
 }
 
-// Number of private elements (0xB3).
+/* Number of private elements (0xB3). */
 Bool SFH_AnlyNumElemPrv(SFH sfh, Sint32 *val) {
     *val = 0;
     return sfh_GetHdrU8(sfh, SFH_HDR_NUMELEM_PRV_OFS, val);
 }
 
-// Number of video elements (0xB2).
+/* Number of video elements (0xB2). */
 Bool SFH_AnlyNumElemVid(SFH sfh, Sint32 *val) {
     *val = 0;
     return sfh_GetHdrU8(sfh, SFH_HDR_NUMELEM_VID_OFS, val);
 }
 
-// Number of audio elements (0xB1).
+/* Number of audio elements (0xB1). */
 Bool SFH_AnlyNumElemAud(SFH sfh, Sint32 *val) {
     *val = 0;
     return sfh_GetHdrU8(sfh, SFH_HDR_NUMELEM_AUD_OFS, val);
 }
 
-// Total element count (0xB0).
+/* Total element count (0xB0). */
 Bool SFH_AnlyNumElemTot(SFH sfh, Sint32 *val) {
     *val = 0;
     return sfh_GetHdrU8(sfh, SFH_HDR_NUMELEM_TOT_OFS, val);
 }
 
-// Pack size (0x8C; 0x800 for GameCube movies).
+/* Pack size (0x8C; 0x800 for GameCube movies). */
 Bool SFH_AnlyPackSiz(SFH sfh, Sint32 *val) {
     *val = 0;
     return sfh_GetHdrU32(sfh, SFH_HDR_PACKSIZ_OFS, val);
 }
 
-// Packet size field length (0x88).
+/* Packet size field length (0x88). */
 Bool SFH_AnlyPketSizLen(SFH sfh, Sint32 *val) {
     *val = 0;
     return sfh_GetHdrS16(sfh, SFH_HDR_PKETSIZLEN_OFS, val);
 }
 
-// Pack type (0x84).
+/* Pack type (0x84). */
 Bool SFH_AnlyPackType(SFH sfh, Sint32 *val) {
     *val = -1;
     return sfh_GetHdrU8(sfh, SFH_HDR_PACKTYPE_OFS, val);
 }
 
-// Header size (0x80).
+/* Header size (0x80). */
 Bool SFH_AnlyHdrSiz(SFH sfh, Sint32 *val) {
     *val = 0;
     return sfh_GetHdrU32(sfh, SFH_HDR_SIZ_OFS, val);
 }
 
-// Muxer tool version: the larger of the binary version bytes (0x38/0x39) and the "Ver.M.m" parsed
-// from the tool string.
+/* Muxer tool version: the larger of the binary version bytes (0x38/0x39) and the "Ver.M.m" parsed */
+/* from the tool string. */
 Bool SFH_AnlyHdrToolVer(SFH sfh, Sint32 *major, Sint32 *minor) {
     Char8 buf[SFH_HDR_TOOLSTR_LEN + 1];
     Uint8 *hdr;
@@ -740,7 +740,7 @@ Bool SFH_AnlyHdrToolVer(SFH sfh, Sint32 *major, Sint32 *minor) {
     return TRUE;
 }
 
-// Whether stream `id` (audio or video) carries a feature block (tool version >= 1.10).
+/* Whether stream `id` (audio or video) carries a feature block (tool version >= 1.10). */
 Bool SFH_IsEffFtrInf(SFH sfh, Uint8 id, Sint32 *flag) {
     SFH_ELEM *elem;
     Sint32 ver = sfh->ver; /* a local copy: the inlined sfh_IsVerOk reloads sfh->ver */
@@ -771,7 +771,7 @@ Bool SFH_IsEffFtrInf(SFH sfh, Uint8 id, Sint32 *flag) {
     return TRUE;
 }
 
-// Whether an element record for stream `id` exists.
+/* Whether an element record for stream `id` exists. */
 Bool SFH_IsExistStmId(SFH sfh, Uint8 id, Sint32 *flag) {
     Uint8 *hdr;
 
@@ -788,7 +788,7 @@ Bool SFH_IsExistStmId(SFH sfh, Uint8 id, Sint32 *flag) {
     return TRUE;
 }
 
-// Validates the header: >= 0x800 bytes and the "SofdecStream" id at 0x20; records the tool version.
+/* Validates the header: >= 0x800 bytes and the "SofdecStream" id at 0x20; records the tool version. */
 Bool SFH_IsSfdHeader(SFH sfh, Sint32 *flag) {
     Uint8 *idstr;
     Sint32 major, minor;
@@ -815,7 +815,7 @@ Bool SFH_IsSfdHeader(SFH sfh, Sint32 *flag) {
     return TRUE;
 }
 
-// Frees the analyser handle.
+/* Frees the analyser handle. */
 void SFH_Destroy(SFH sfh) {
     sfh->stat = SFH_STAT_FREE;
     sfh->hdr = 0;
@@ -824,7 +824,7 @@ void SFH_Destroy(SFH sfh) {
     sfh_objinf.used--;
 }
 
-// Takes a free analyser handle over the header bytes (state CREATED until validated).
+/* Takes a free analyser handle over the header bytes (state CREATED until validated). */
 SFH SFH_Create(void *hdr, Sint32 size) {
     Sint32 num = sfh_objinf.num;
     SFH_OBJ *hn = sfh_objinf.hn;
@@ -847,7 +847,7 @@ SFH SFH_Create(void *hdr, Sint32 size) {
     return sfh;
 }
 
-// Clears the handle table.
+/* Clears the handle table. */
 static void sfh_ClearHn(SFH_OBJ *hn, Sint32 num) {
     Sint32 i;
 
@@ -859,7 +859,7 @@ static void sfh_ClearHn(SFH_OBJ *hn, Sint32 num) {
     }
 }
 
-// Library init (once): handle table in the caller's work.
+/* Library init (once): handle table in the caller's work. */
 /* This game only: drops an init reference and clears the handle table at the last one
  * (inferred SFH library finish) */
 void fn_80402058(void) {

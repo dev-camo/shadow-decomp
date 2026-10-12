@@ -4,73 +4,73 @@
  * pass and forwards GetWrite/AddWrite to the ring for callers that push data by hand. */
 #include "CRI/sfd.h"
 
-// No seek support (0).
+/* No seek support (0). */
 Sint32 SFMEM_Seek(void) {
     return 0;
 }
 
-// Not an output driver: error 0xFF000501.
+/* Not an output driver: error 0xFF000501. */
 Sint32 SFMEM_AddRead(SFD sfd) {
     return SFLIB_SetErr(sfd, 0xFF000501);
 }
 
-// Not an output driver: error 0xFF000501.
+/* Not an output driver: error 0xFF000501. */
 Sint32 SFMEM_GetRead(SFD sfd) {
     return SFLIB_SetErr(sfd, 0xFF000501);
 }
 
-// Commits `a` bytes written into the input ring (SFBUF_RingAddWrite).
+/* Commits `a` bytes written into the input ring (SFBUF_RingAddWrite). */
 Sint32 SFMEM_AddWrite(SFD sfd, Sint32 a, Sint32 b) {
     return SFBUF_RingAddWrite(sfd, sfd->tr[0].bufout, a, b);
 }
 
-// Writable region of the input ring (SFBUF_RingGetWrite).
+/* Writable region of the input ring (SFBUF_RingGetWrite). */
 Sint32 SFMEM_GetWrite(SFD sfd, SFBUF_RINF *a) {
     return SFBUF_RingGetWrite(sfd, sfd->tr[0].bufout, a);
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFMEM_Pause(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFMEM_Stop(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFMEM_Start(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFMEM_Standby(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFMEM_Destroy(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFMEM_Create(void) {
     return 0;
 }
 
-// Each pass: the input buffer counts as prepared (the stream joint fills it asynchronously).
+/* Each pass: the input buffer counts as prepared (the stream joint fills it asynchronously). */
 Sint32 SFMEM_ExecServer(SFD sfd) {
     SFBUF_SetPrepFlg(sfd, sfd->tr[0].bufout, 1);
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFMEM_Finish(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFMEM_Init(void) {
     return 0;
 }

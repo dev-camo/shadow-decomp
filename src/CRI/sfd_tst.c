@@ -65,7 +65,7 @@ void SFTST_SetDebugOut(Char8 *buf, Sint32 siz) {
     sftst_debout_write = buf;
 }
 
-// Clears the difference history and its index.
+/* Clears the difference history and its index. */
 static void sftst_ResetHist(SFTST tst) {
     memset(tst->hist, 0, sizeof(tst->hist));
     tst->hist_idx = 0;
@@ -244,51 +244,51 @@ void SFTST_Calc(SFTST tst, SFTST_TIME *mt, SFTST_TIME *hlp, SFTST_TIME *out) {
     }
 }
 
-// Advances the output clock by one frame duration when the stabiliser is not adjusting.
+/* Advances the output clock by one frame duration when the stabiliser is not adjusting. */
 void SFTST_GoNextFrame(SFTST tst, SFTST_TIME *frm) {
     if (tst->adjflg == 0) {
         tst->out.cnt += tst->out.unit * frm->cnt / frm->unit;
     }
 }
 
-// Adjustment on/off.
+/* Adjustment on/off. */
 void SFTST_SetAdjFlg(SFTST tst, Sint32 flg) {
     tst->adjflg = flg;
 }
 
-// Pause state of the stabiliser (differences are not accumulated while paused).
+/* Pause state of the stabiliser (differences are not accumulated while paused). */
 void SFTST_Pause(SFTST tst, Sint32 sw) {
     tst->pastat = sw;
 }
 
-// Moving-average window (frames) for the difference history.
+/* Moving-average window (frames) for the difference history. */
 void SFTST_SetMovaveRange(SFTST tst, Sint32 range) {
     if (range > 0) {
         tst->movave_range = range;
     }
 }
 
-// Time after which an adjustment is switched off.
+/* Time after which an adjustment is switched off. */
 void SFTST_SetAdjPoff(SFTST tst, SFTST_TIME *t) {
     tst->adjpoff = *t;
 }
 
-// Difference from which an adjustment starts.
+/* Difference from which an adjustment starts. */
 void SFTST_SetAdjStart(SFTST tst, SFTST_TIME *t) {
     tst->adjstart = *t;
 }
 
-// Difference treated as a gross error (history reset).
+/* Difference treated as a gross error (history reset). */
 void SFTST_SetExcessErr(SFTST tst, SFTST_TIME *t) {
     tst->excesserr = *t;
 }
 
-// Step size of an output time base shift.
+/* Step size of an output time base shift. */
 void SFTST_SetTolerance(SFTST tst, SFTST_TIME *t) {
     tst->tolerance = *t;
 }
 
-// Stabiliser enable flag.
+/* Stabiliser enable flag. */
 void SFTST_SetTstFlg(SFTST tst, Sint32 flg) {
     tst->tstflg = flg;
 }

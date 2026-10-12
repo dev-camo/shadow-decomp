@@ -679,7 +679,7 @@ Sint32 cvFsGetFileSize(const Char8 *fname) {
         return 0;
     }
     pdev = dev;
-    asm { mr r11, pdev; mr pdev, r11 } // COMPILER-DIFF: M1 (level-shifter, no code)
+    asm { mr r11, pdev; mr pdev, r11 } /* COMPILER-DIFF: M1 (level-shifter, no code) */
     vtbl = cvfs_ResolveDev(fname, pdev, path);
     if (dev == 0) {
         cvfs_Error("cvFsGetFileSize #2:illegal device name");

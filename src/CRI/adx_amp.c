@@ -27,18 +27,18 @@ struct ADXAMP_OBJ {
 };
 typedef struct ADXAMP_OBJ ADXAMP_OBJ;
 
-// Records the sampling rate.
+/* Records the sampling rate. */
 void ADXAMP_SetSfreq(ADXAMP_OBJ *amp, Sint32 sfreq) {
     amp->sfreq = sfreq;
 }
 
-// Stops the stage (stat 0).
+/* Stops the stage (stat 0). */
 void ADXAMP_Stop(ADXAMP_OBJ *amp) {
     amp->stat = 0;
 }
 
-// Resets the sample counters and zero-fills / resets the input and output stream joints, then runs
-// (stat 2). Called by adxt_start_sjd when a handle has an amp.
+/* Resets the sample counters and zero-fills / resets the input and output stream joints, then runs
+ * (stat 2). Called by adxt_start_sjd when a handle has an amp. */
 void ADXAMP_Start(ADXAMP_OBJ *amp) {
     SJCK ck;
     Sint32 i;
@@ -68,7 +68,7 @@ void ADXAMP_Start(ADXAMP_OBJ *amp) {
     amp->stat = 2;
 }
 
-// Clears the object under the ADX lock.
+/* Clears the object under the ADX lock. */
 void ADXAMP_Destroy(ADXAMP_OBJ *amp) {
     if (amp != 0) {
         ADXCRS_Lock();

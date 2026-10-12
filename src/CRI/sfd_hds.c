@@ -20,8 +20,8 @@ static Uint8 sfhds_sfhlib_work[SFHDS_SFH_WORK_SIZE];
 #define SFHDS_GET_SEE_FHD(sfd)                                                                     \
     ((sfd)->see.wk == 0 ? 0 : SFMPS_GetConcatCnt(sfd) > 0 ? 0 : &(sfd)->see.wk->fhd)
 
-// Colour type from the Sofdec header's video feature block (3 = needs colour-space conversion), -1
-// when no header / no features.
+/* Colour type from the Sofdec header's video feature block (3 = needs colour-space conversion), -1
+ * when no header / no features. */
 Sint32 SFHDS_GetColType(SFD sfd) {
     SFHDS_FHD *fhd = &sfd->fhd;
     SFHDS_VID *vid = &fhd->vid;
@@ -40,7 +40,7 @@ static Sint32 sfhds_GetVerNum(SFHDS_FHD *fhd) {
     return fhd->ver_major * 100 + fhd->ver_minor;
 }
 
-// Muxer tool version of the analysed header as major*100+minor, 0 when unknown.
+/* Muxer tool version of the analysed header as major*100+minor, 0 when unknown. */
 Sint32 SFHDS_GetMuxVerNum(SFD sfd) {
     if (sfd->fhd.valid != 0) {
         return sfhds_GetVerNum(&sfd->fhd);
@@ -246,8 +246,8 @@ void sfhds_DoProcessHdr(SFH sfh, SFHDS_FHD *fhd) {
 }
 
 #pragma dont_inline on
-// Parses the raw 0x800-byte header packet through the SFH analyser into the SFHDS_FHD fields
-// (stream counts and ids, audio codec/rate/channels, video size/rate/bitrate, feature block).
+/* Parses the raw 0x800-byte header packet through the SFH analyser into the SFHDS_FHD fields
+ * (stream counts and ids, audio codec/rate/channels, video size/rate/bitrate, feature block). */
 void SFHDS_ProcessHdr(SFHDS_FHD *fhd) {
     SFH sfh;
 
@@ -259,8 +259,8 @@ void SFHDS_ProcessHdr(SFHDS_FHD *fhd) {
 }
 #pragma dont_inline off
 
-// Re-parses the header kept in the seek work (after a reset) into the handle and refreshes the
-// element counts.
+/* Re-parses the header kept in the seek work (after a reset) into the handle and refreshes the
+ * element counts. */
 void SFHDS_ReprocessHdr(SFD sfd) {
     SFHDS_FHD *src;
 
@@ -275,9 +275,9 @@ void SFHDS_ReprocessHdr(SFD sfd) {
 }
 
 #pragma dont_inline on
-// A Sofdec header packet arrived from the demuxer: calls the header callback (cond 0x4B/0x4C: the
-// MW player's mwsffrm_AnalySofdecHeader), and on the first header copies up to 0x800 bytes into the
-// handle, parses it, publishes the element counts and mirrors it into the seek work. 1 = consumed.
+/* A Sofdec header packet arrived from the demuxer: calls the header callback (cond 0x4B/0x4C: the
+ * MW player's mwsffrm_AnalySofdecHeader), and on the first header copies up to 0x800 bytes into the
+ * handle, parses it, publishes the element counts and mirrors it into the seek work. 1 = consumed. */
 Sint32 sfhds_SetHdrRaw(SFD sfd, Uint8 *data, Sint32 size) {
     SFHDS_HDRCB cbfn;
     void *cbobj;
@@ -310,7 +310,7 @@ Sint32 sfhds_SetHdrRaw(SFD sfd, Uint8 *data, Sint32 size) {
 }
 #pragma dont_inline off
 
-// Whether the bytes are a Sofdec header packet (SFH_IsSfdHeader on a temporary analyser).
+/* Whether the bytes are a Sofdec header packet (SFH_IsSfdHeader on a temporary analyser). */
 Bool SFHDS_IsSfdHeader(void *data, Sint32 size) {
     SFH sfh;
     Sint32 flag;
@@ -359,7 +359,7 @@ Bool SFHDS_SetHdr(SFD sfd, Sint32 type, Uint8 *data, Sint32 size, Sint32 *result
     Uint8 *p;
 
     res = (Sint32 *)(void *)result;
-    asm { mr r11, res; mr res, r11 } // COMPILER-DIFF: M1 (codeless neighbour pin)
+    asm { mr r11, res; mr res, r11 } /* COMPILER-DIFF: M1 (codeless neighbour pin) */
     *res = 0;
     if (type != 2) {
         return 0;
@@ -376,14 +376,14 @@ Bool SFHDS_SetHdr(SFD sfd, Sint32 type, Uint8 *data, Sint32 size, Sint32 *result
     return sfhds_SetHdrPkt(sfd, p, len, res);
 }
 
-// Invalidates the header analysis (handle reset).
+/* Invalidates the header analysis (handle reset). */
 void SFHDS_FinishFhd(SFHDS_FHD *fhd) {
     fhd->valid = 0;
     fhd->byterate = 0;
     fhd->rawsiz = 0;
 }
 
-// Clears the header analysis (handle creation).
+/* Clears the header analysis (handle creation). */
 void SFHDS_InitFhd(SFHDS_FHD *fhd) {
     fhd->valid = 0;
     fhd->ver_major = 0;
@@ -392,7 +392,7 @@ void SFHDS_InitFhd(SFHDS_FHD *fhd) {
     fhd->rawsiz = 0;
 }
 
-// Library init: gives the SFH analyser its 32 objects' work.
+/* Library init: gives the SFH analyser its 32 objects' work. */
 /* This game only: the header analyser part of the library finish (inferred) */
 void fn_803F12EC(void) {
     fn_80402058();
