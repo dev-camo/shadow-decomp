@@ -249,6 +249,17 @@ PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/string.c:
 	.rodata     start:0x80513E78 end:0x80514208
 	.sdata      start:0x805EDCC0 end:0x805EDCC8
 
+PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/strtoul.c:
+	.text       start:0x803ADBE0 end:0x803AE4D0
+	.data       start:0x805686F0 end:0x80568778
+
+PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/wchar_io.c:
+	.text       start:0x803AE4D0 end:0x803AE558
+
+PowerPC_EABI_Support/MSL/MSL_C/PPC_EABI/Src/uart_console_io_gcn.c:
+	.text       start:0x803AE558 end:0x803AE628
+	.sbss       start:0x805F12F8 end:0x805F1300
+
 PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_acos.c:
 	.text       start:0x803AE628 end:0x803AE864
 	.sdata2     start:0x805FA828 end:0x805FA8B0
