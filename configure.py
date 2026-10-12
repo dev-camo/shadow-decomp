@@ -369,6 +369,7 @@ config.libs = [
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/usr_put.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/dispatch.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/msghndlr.c"),
+            Object(Matching, "PowerPC_EABI_Support/MetroTRK/support.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/mutex_TRK.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/notify.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/flush_cache.c"),
