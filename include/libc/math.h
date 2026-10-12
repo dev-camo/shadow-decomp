@@ -49,27 +49,6 @@ extern inline float sqrtf(float x) {
     return x;
 }
 
-// TODO: this isn't correct! It's just to generate sdata2 in GXDraw.o
-extern inline float sqrt(float x) {
-    const double _half = .5;
-    const double _three = 3.0;
-    volatile float y;
-    if (x > 0.0f) {
-#ifdef __MWERKS__
-        double guess = __frsqrte((double)x); // returns an approximation to
-#else
-        double guess;
-        asm("frsqrte %0, %1" : "=f"(guess) : "f"(x));
-#endif
-        guess = _half * guess * (_three - guess * guess * x); // now have 12 sig bits
-        guess = _half * guess * (_three - guess * guess * x); // now have 24 sig bits
-        guess = _half * guess * (_three - guess * guess * x); // now have 32 sig bits
-        y = (float)(x * guess);
-        return y;
-    }
-    return x;
-}
-
 #ifdef __MWERKS__
 #define fabs(x) __fabs(x)
 #define fabsf(x) __fabsf(x)
