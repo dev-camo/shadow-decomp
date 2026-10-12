@@ -96,7 +96,7 @@ void ADXT_ResetEntry(ADXT adxt) {
     ADXCRS_Leave();
 }
 
-/* SVM main callback body: the load scheduler server under the enter/leave hooks. */
+/* SVM main callback body: the load scheduler server under the enter/leave hooks (name inferred). */
 void ADXT_ExecLscSvr(void) {
     ADXCRS_Enter();
     LSC_ExecServer();

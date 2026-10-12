@@ -128,7 +128,8 @@ unsigned int sj_hexstr_to_val_tbl[112] = {
     0,
 };
 
-/* The original uses signed byte indices without a range check. */
+/* Reads a record length through the hex lookup table (inferred helper name). The original uses
+ * signed byte indices without a range check. */
 static inline unsigned int read_length(const signed char *record) {
     unsigned int length;
 
