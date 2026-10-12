@@ -387,13 +387,11 @@ config.libs = [
                 Object(Matching, "Game/fn_80008DA4.c"),
                 Object(Matching, "Game/fn_80008E1C.c"),
                 Object(Matching, "Game/fn_800091D0.c"),
-                Object(Matching, "Game/fn_803AC8DC.c"),
                 Object(
                     Matching,
                     "Game/fn_803CC9D0.c",
                     extra_cflags=["-sdata 0", "-use_lmw_stmw on"],
                 ),
-                Object(Matching, "Game/fn_803ACABC.c"),
                 # CRI middleware units named after their original source files.
                 Object(Matching, "Game/fn_80403054.c"),
                 Object(Matching, "Game/fn_804030A8.c"),
@@ -592,6 +590,7 @@ config.libs = [
             Object(Matching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/mem_funcs.c"),
             Object(Matching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/direct_io.c"),
             Object(Matching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/signal.c"),
+            Object(Matching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/string.c"),
             Object(Matching, "PowerPC_EABI_Support/Runtime/Src/__va_arg.c"),
         ],
     },
