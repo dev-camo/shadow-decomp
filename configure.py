@@ -350,10 +350,10 @@ config.warn_missing_config = True
 config.warn_missing_source = False
 config.libs = [
     {
-        # MetroTRK debugger stub (TRK_MINNOW_DOLPHIN), built without small data
+        # MetroTRK debugger stub (TRK_MINNOW_DOLPHIN), built without small data or string pooling
         "lib": "MetroTRK",
         "mw_version": config.linker_version,
-        "cflags": [*cflags_runtime, "-inline deferred", "-sdata 0", "-sdata2 0"],
+        "cflags": [*cflags_runtime, "-str reuse,nopool,readonly", "-inline deferred", "-sdata 0", "-sdata2 0"],
         "progress_category": "sdk",
         "objects": [
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/mainloop.c"),
