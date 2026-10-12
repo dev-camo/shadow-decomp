@@ -4,9 +4,6 @@ Shadow the Hedgehog
 [<img src="https://decomp.dev/dev-camo/shadow-decomp.svg?w=512&h=256" width="512" height="256">][Progress]
 =============
 
-<!--
-Replace with your repository's URL.
--->
 [Build Status]: https://github.com/dev-camo/shadow-decomp/actions/workflows/build.yml/badge.svg
 [actions]: https://github.com/dev-camo/shadow-decomp/actions/workflows/build.yml
 <!--
