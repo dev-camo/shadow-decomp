@@ -1001,7 +1001,7 @@ static Sint32 sfmps_ExecServerLoop(SFD sfd, Sint32 *len) {
         SFD_CNT(sfd)->s_byte += tot;
         SFD_CNT(sfd)->s_skip += skiptot;
     }
-    if (sfd->stat == 2) {
+    if (sfd->stat == SFD_STAT_PREP) {
         sfmps_ProcPrep(sfd);
     }
     return ret;

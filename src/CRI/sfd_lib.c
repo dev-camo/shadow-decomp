@@ -35,7 +35,7 @@ Sint32 SFLIB_CheckHn(SFD sfd) {
     if (sfd == 0) {
         return -1;
     }
-    if (sfd->stat == 0) {
+    if (sfd->stat == SFD_STAT_NONE) {
         return -1;
     }
     sfd_hn_last = sfd;
@@ -59,7 +59,7 @@ static Sint32 sflib_SetErr(SFD sfd, Sint32 code) {
         if (code != 0 && sfd->err.fn != 0) {
             sfd->err.fn(sfd->err.obj, code);
         }
-        if (sfd->stat > 0) {
+        if (sfd->stat > SFD_STAT_NONE) {
             sfd->stat = -sfd->stat;
         }
     }

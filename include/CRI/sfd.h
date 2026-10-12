@@ -20,6 +20,7 @@ typedef struct SFD_OBJ *SFD;
 #define SFD_STAT_PLAYING 4
 #define SFD_STAT_PLAYEND 6
 
+#define SFD_REQ_NONE 0
 #define SFD_REQ_STOP 1
 #define SFD_REQ_PREP 2
 #define SFD_REQ_STBY 3
