@@ -735,10 +735,11 @@ typedef struct SFD_OBJ {
     Uint8 pad12EC[0x1310 - 0x12EC]; /* 0x12EC */
     SFBUF_WORK buf[SFD_BUF_NUM];    /* 0x1310 */
     SFD_VFRM vfrm[SFD_VFRM_NUM];    /* 0x16B0 */
-    SFD_TR tr
-        [SFD_TR_NUM]; /* 0x1F30 (tr[2].hn = SFMPV_WORK *, tr[3].hn = SFADXT_WORK *, tr[8].hn = SFUO *, tr[8].bufin = user-output SFBUF id) */
-    Sint32 pad2194;   /* 0x2194 */
-    SFMPS_WORK mps;   /* 0x2198 system stream driver work (tr[1].hn) */
+    /* tr[2].hn = SFMPV_WORK *, tr[3].hn = SFADXT_WORK *, tr[8].hn = SFUO *,
+     * tr[8].bufin = user-output SFBUF id */
+    SFD_TR tr[SFD_TR_NUM];          /* 0x1F30 */
+    Sint32 pad2194;                 /* 0x2194 */
+    SFMPS_WORK mps;                 /* 0x2198 system stream driver work (tr[1].hn) */
     Uint8 pad2300[0x23A8 - 0x2300]; /* 0x2300 */
     SFMPV_WORK mpv;                 /* 0x23A8 video driver work (tr[2].hn) */
     SFADXT_WORK adxt;               /* 0x3448 */

@@ -102,12 +102,16 @@ static void sftst_SubHist(SFTST tst, Sint32 sub) {
 /* .rodata order: the original emitted SFTST_Create's header string before SFTST_Calc's format (its
  * .text follows); both are named here (a named string is emitted at its declaration) */
 static const Char8 sftst_msg_hdr[] =
-    "tst, help_time_sec, help_time_msec, help_time_64, help_time, mt_max, master_time, out_time,  mt_ot, mtmax_ot,  diff_l_max, diff_l_min, diff_a_max, tst->diff_a_min, pastat, adjmode, resethist, excesserr, adj_limit, adj_front, adj_rear,  movave_1st, movave_2nd,  adxt_stat \n\n";
+    "tst, help_time_sec, help_time_msec, help_time_64, help_time, mt_max, master_time, out_time,  "
+    "mt_ot, mtmax_ot,  diff_l_max, diff_l_min, diff_a_max, tst->diff_a_min, pastat, adjmode, "
+    "resethist, excesserr, adj_limit, adj_front, adj_rear,  movave_1st, movave_2nd,  "
+    "adxt_stat \n\n";
 typedef struct {
     Char8 s[sizeof(sftst_msg_hdr)]; /* 0x00 */
 } SFTST_HDRSTR;
 static const Char8 sftst_msg_fmt[] =
-    "%p, %ld, %ld, %08lX%08lX, %ld, %ld, %ld, %ld,   %ld, %ld,   %ld, %ld, %ld, %ld,   %ld, %ld,   %ld, %ld, %ld, %ld, %ld,   %ld, %ld,   %ld \n";
+    "%p, %ld, %ld, %08lX%08lX, %ld, %ld, %ld, %ld,   %ld, %ld,   %ld, %ld, %ld, %ld,   %ld, %ld,   "
+    "%ld, %ld, %ld, %ld, %ld,   %ld, %ld,   %ld \n";
 
 /* Matching constraints: the absolute difference is computed with the `diff = ..` assignment nested
  * in its condition, which keeps it before the sftst_Conv call as in the original; `tol` is written

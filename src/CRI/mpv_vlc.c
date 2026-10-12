@@ -10,7 +10,8 @@
  *   coded block pattern:       (cbp << 8) | len, bits 15/14 repeat the two chrominance bits
  *   motion code:               (len << 8) | (Uint8)code, 0x7F = invalid
  *   macroblock_type:           (type << 8) | len
- *   macroblock_address_inc:    (type << 10) | (inc << 4) | len (inc 34 stuffing, 35 escape, 36 error)
+ *   macroblock_address_inc:    (type << 10) | (inc << 4) | len
+ *                              (inc 34 stuffing, 35 escape, 36 error)
  * Bodies from the RE4 GameCube decompilation of the same file.
  */
 #include "CRI/cri_xpt.h"
