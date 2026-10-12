@@ -203,12 +203,30 @@ PowerPC_EABI_Support/MetroTRK/mem_TRK.c:
 	.init       start:0x80003458 end:0x800034AC
 	.text       start:0x8039CEF0 end:0x8039CFA8
 
+PowerPC_EABI_Support/MetroTRK/targimpl.c:
+	.text       start:0x8039CFA8 end:0x8039EB34
+	.rodata     start:0x80513EA8 end:0x80513F40
+	.data       start:0x805682F0 end:0x80568320
+	.bss        start:0x805A4470 end:0x805A49F0
+
+PowerPC_EABI_Support/MetroTRK/mpc_7xx_603e.c:
+	.text       start:0x8039EB60 end:0x8039EED0
+
+PowerPC_EABI_Support/MetroTRK/targcont.c:
+	.text       start:0x8039FABC end:0x8039FAF0
+
 PowerPC_EABI_Support/MetroTRK/target_options.c:
 	.text       start:0x8039FAF0 end:0x8039FB0C
 	.bss        start:0x805A4A08 end:0x805A4A10
 
 PowerPC_EABI_Support/MetroTRK/mslsupp.c:
 	.text       start:0x8039FB0C end:0x8039FD08
+
+PowerPC_EABI_Support/MetroTRK/UDP_Stubs.c:
+	.text       start:0x8039FD08 end:0x8039FD50
+
+PowerPC_EABI_Support/MetroTRK/CircleBuffer.c:
+	.text       start:0x803A0094 end:0x803A02FC
 
 PowerPC_EABI_Support/Runtime/Src/__va_arg.c:
 	.text       start:0x803A06F0 end:0x803A07B8
