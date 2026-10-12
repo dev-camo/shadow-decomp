@@ -361,6 +361,11 @@ config.libs = [
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/nubinit.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/msg.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/msgbuf.c"),
+            Object(
+                Matching,
+                "PowerPC_EABI_Support/MetroTRK/serpoll.c",
+                extra_cflags=["-sdata 8"],
+            ),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/usr_put.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/mutex_TRK.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/notify.c"),
