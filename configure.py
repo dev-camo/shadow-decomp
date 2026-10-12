@@ -631,6 +631,19 @@ config.libs = [
             Object(Matching, "dolphin/AmcExi2Stubs.c"),
         ],
     ),
+    DolphinLib(
+        "odemustubs",
+        [
+            # Older compiler (epilogue scheduling) with deferred inlining: functions come out in
+            # reverse source order, and none are auto-inlined
+            Object(
+                Matching,
+                "dolphin/DebuggerDriver.c",
+                mw_version="GC/1.2.5",
+                extra_cflags=["-inline deferred,noauto"],
+            ),
+        ],
+    ),
     {
         "lib": "PowerPC_EABI_Support",
         "mw_version": config.linker_version,
