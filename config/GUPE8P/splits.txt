@@ -187,6 +187,13 @@ dolphin/GXTransform.c:
 	.text       start:0x80399070 end:0x80399604
 	.sdata2     start:0x805FA7C0 end:0x805FA7D0
 
+PowerPC_EABI_Support/MetroTRK/target_options.c:
+	.text       start:0x8039F4B0 end:0x8039F4CC
+	.bss        start:0x805A43E8 end:0x805A43F0
+
+PowerPC_EABI_Support/MetroTRK/mslsupp.c:
+	.text       start:0x8039F4CC end:0x8039F6C8
+
 PowerPC_EABI_Support/Runtime/Src/__va_arg.c:
 	.text       start:0x803A00B0 end:0x803A0178
 
@@ -233,6 +240,11 @@ Runtime.PPCEABI.H/allocator_core.c:
 
 Runtime.PPCEABI.H/allocator_release.c:
 	.text       start:0x803A3640 end:0x803A3698
+
+PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/ansi_files.c:
+	.text       start:0x803A442C end:0x803A4544
+	.data       start:0x80567E10 end:0x80567F50
+	.bss        start:0x805A5278 end:0x805A5578
 
 PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Src/ansi_fp.c:
 	.text       start:0x803A4544 end:0x803A7B20
