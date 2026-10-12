@@ -1091,7 +1091,8 @@ Bool SFD_IsSvrWait(void) {
 
 /* 1 when this handle has nothing to do (inactive state or no change flagged). */
 Bool SFD_IsHnSvrWait(SFD sfd) {
-    /* `> 3` written out: the negated SFD_STAT_IS_ACTIVE gives `bgt` with the `li r3,1` last */
+    /* matching constraint: the inactive test is written out rather than as !SFD_STAT_IS_ACTIVE,
+     * which orders the branch and the `return 1` differently */
     if ((Uint32)(sfd->stat - SFD_STAT_STOP) > SFD_STAT_PLAYING - SFD_STAT_STOP) {
         return 1;
     }
