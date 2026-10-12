@@ -87,7 +87,7 @@ Sint32 MPSLIB_SetErr(MPS mps, Sint32 code);
 MPS MPS_Create(void);
 Sint32 MPS_Destroy(MPS mps);
 Uint32 MPS_CheckDelim(Uint8 *p);
-Sint32 MPS_DecHd(MPS mps, Uint8 *data, Sint32 size, Sint32 *len, Sint32 *flags);
+Sint32 MPS_DecHd(MPS mps, Uint8 *adr, Sint32 len, Sint32 *used, Sint32 *flags);
 Sint32 MPS_GetPackHd(MPS mps, MPS_PACKHD *hd);
 Sint32 MPS_GetSysHd(MPS mps, MPS_SYSHD *hd, Sint32 no);
 Sint32 MPS_GetLastSysHd(MPS mps, MPS_SYSHD *hd);

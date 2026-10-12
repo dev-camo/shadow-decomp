@@ -67,18 +67,18 @@ void SJCRS_Finish(void);
 
 /* sj_mem.c */
 SJ SJMEM_Create(void *buf, Sint32 bsize);
-Sint32 SJMEM_GetBufSize(SJ sj);
-void *SJMEM_GetBufPtr(SJ sj);
+Sint32 SJMEM_GetBufSize(SJ handle);
+void *SJMEM_GetBufPtr(SJ handle);
 void SJMEM_Init(void);
 void SJMEM_Finish(void);
 
 /* sj_rbf.c */
 SJ SJRBF_Create(void *buf, Sint32 bsize, Sint32 xsize);
-Sint32 SJRBF_GetFlowCnt(SJ sj, Sint32 id, Sint32 dir);
-Sint32 SJRBF_GetNumObj(SJ sj);
-Sint32 SJRBF_GetXtrSize(SJ sj);
-Sint32 SJRBF_GetBufSize(SJ sj);
-void *SJRBF_GetBufPtr(SJ sj);
+Sint32 SJRBF_GetFlowCnt(SJ handle, Sint32 id, Sint32 dir);
+Sint32 SJRBF_GetNumObj(SJ handle);
+Sint32 SJRBF_GetXtrSize(SJ handle);
+Sint32 SJRBF_GetBufSize(SJ handle);
+void *SJRBF_GetBufPtr(SJ handle);
 void SJRBF_Init(void);
 void SJRBF_Finish(void);
 

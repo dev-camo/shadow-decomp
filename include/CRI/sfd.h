@@ -825,17 +825,17 @@ void SFSET_SetCond(SFD sfd, Sint32 id, Sint32 val);
 void SFTIM_Pause(SFD sfd, Sint32 sw);
 void SFTIM_SetSpeed(SFD sfd, Sint32 speed);
 void SFAOAP_SetSpeed(SFD sfd, Sint32 speed);
-Sint32 SFTRN_CallTrtTrif(SFD sfd, Sint32 a, Sint32 b, Sint32 c, Sint32 d);
-Sint32 SFTRN_IsSetup(SFD sfd, Sint32 id);
-void SFBUF_SetUoch(SFD sfd, Sint32 buf, Sint32 chno, SFUO_CH *ch);
+Sint32 SFTRN_CallTrtTrif(SFD sfd, Sint32 strm, Sint32 fn, Sint32 a, Sint32 b);
+Sint32 SFTRN_IsSetup(SFD sfd, Sint32 strm);
+void SFBUF_SetUoch(SFD sfd, Sint32 n, Sint32 chno, SFUO_CH *ch);
 Sint32 SFSET_GetCond(SFD sfd, Sint32 id);
-Sint32 SFTRN_GetTermFlg(SFD sfd, Sint32 id);
-void SFTRN_SetTermFlg(SFD sfd, Sint32 id, Sint32 flg);
-Sint32 SFTRN_GetPrepFlg(SFD sfd, Sint32 id);
-void SFTRN_SetPrepFlg(SFD sfd, Sint32 id, Sint32 flg);
-Sint32 SFBUF_GetTermFlg(SFD sfd, Sint32 buf);
-Sint32 SFBUF_GetPrepFlg(SFD sfd, Sint32 buf);
-void SFBUF_SetPrepFlg(SFD sfd, Sint32 buf, Sint32 flg);
+Sint32 SFTRN_GetTermFlg(SFD sfd, Sint32 strm);
+void SFTRN_SetTermFlg(SFD sfd, Sint32 strm, Sint32 flg);
+Sint32 SFTRN_GetPrepFlg(SFD sfd, Sint32 strm);
+void SFTRN_SetPrepFlg(SFD sfd, Sint32 strm, Sint32 flg);
+Sint32 SFBUF_GetTermFlg(SFD sfd, Sint32 n);
+Sint32 SFBUF_GetPrepFlg(SFD sfd, Sint32 n);
+void SFBUF_SetPrepFlg(SFD sfd, Sint32 n, Sint32 flg);
 /* readable / writable regions of a ring buffer (two chunks each, sfd_buf.c) */
 typedef struct {
     SJCK ck1;      /* 0x00 */
@@ -843,11 +843,11 @@ typedef struct {
     Sint32 rsv[3]; /* 0x10 */
 } SFBUF_RINF;
 
-Sint32 SFBUF_RingAddWrite(SFD sfd, Sint32 buf, Sint32 nbyte,
+Sint32 SFBUF_RingAddWrite(SFD sfd, Sint32 n, Sint32 nbyte,
                           Sint32 rsv); /* rsv: SFBUF_RINF.rsv[1] of the caller, unused */
-Sint32 SFBUF_RingGetWrite(SFD sfd, Sint32 buf, SFBUF_RINF *inf);
-Sint32 SFBUF_VfrmAddRead(SFD sfd, Sint32 buf, void *frm, Sint32 arg);
-Sint32 SFBUF_VfrmGetRead(SFD sfd, Sint32 buf, void **frm, Sint32 arg);
+Sint32 SFBUF_RingGetWrite(SFD sfd, Sint32 n, SFBUF_RINF *inf);
+Sint32 SFBUF_VfrmAddRead(SFD sfd, Sint32 n, void *frm, Sint32 arg);
+Sint32 SFBUF_VfrmGetRead(SFD sfd, Sint32 n, void **frm, Sint32 arg);
 Sint32 SFCON_IsEndcodeSkip(SFD sfd);
 Sint32 SFHDS_GetMuxVerNum(SFD sfd);
 Sint32 SFHDS_GetColType(SFD sfd);
@@ -877,6 +877,8 @@ Sint32 SFD_SetErrFn(SFD sfd, void (*fn)(void *obj, Sint32 code), void *obj);
 void SFLIB_InitErrInf(SFLIB_ERRINF *err);
 
 /* sfd_ply.c */
+/* default conditions; one entry longer than the SFD_COND_NUM copied into each handle */
+extern const Sint32 SFPLY_cond_dfl[101];
 void SFPLY_Init(void);
 Sint32 SFD_Destroy(SFD sfd);
 

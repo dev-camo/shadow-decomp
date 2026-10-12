@@ -17,9 +17,6 @@ const char *__DSPVersion = "<< Dolphin SDK - DSP\tdebug build: Apr  5 2004 03:56
 const char *__DSPVersion = "<< Dolphin SDK - DSP\trelease build: Apr  5 2004 04:15:32 (0x2301) >>";
 #endif
 
-extern DSPTaskInfo *__DSP_rude_task;
-extern int __DSP_rude_task_pending;
-
 static BOOL __DSP_init_flag;
 
 u32 DSPCheckMailToDSP(void) {
