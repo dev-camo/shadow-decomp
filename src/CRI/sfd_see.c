@@ -122,7 +122,7 @@ static void sfsee_ExecHeadAnaly(SFD sfd) {
     if (wk->analyzed != 0) {
         return;
     }
-    if (SFTRN_IsSetup(sfd, 3) != 0 && SFSET_GetCond(sfd, 6) == 1) {
+    if (SFTRN_IsSetup(sfd, 3) != 0 && SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 1) {
         a2 = 1;
         if (wk->a2hdr == 0) {
             wait = 1;
@@ -136,7 +136,7 @@ static void sfsee_ExecHeadAnaly(SFD sfd) {
     if (wait != 0) {
         return;
     }
-    if (SFTRN_IsSetup(sfd, 2) != 0 && SFSET_GetCond(sfd, 5) == 1) {
+    if (SFTRN_IsSetup(sfd, 2) != 0 && SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 1) {
         a1 = 1;
         if (wk->a1hdr == 0) {
             wait = 1;

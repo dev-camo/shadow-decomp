@@ -7,8 +7,6 @@
 #define SFHDS_SFH_WORK_SIZE 0x204
 
 /* SFD condition ids */
-#define SFD_COND_HDRCB_FN 0x4B
-#define SFD_COND_HDRCB_OBJ 0x4C
 
 typedef void (*SFHDS_HDRCB)(void *obj, Uint8 *data, Sint32 size);
 

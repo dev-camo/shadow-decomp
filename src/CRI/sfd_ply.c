@@ -571,10 +571,10 @@ SFD SFD_Create(SFD_CREPRM *prm, Sint32 x) {
 static Bool sfply_IsTermAny(SFD sfd) {
     Sint32 i;
 
-    if (SFSET_GetCond(sfd, 5) && SFTRN_GetTermFlg(sfd, 6)) {
+    if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) && SFTRN_GetTermFlg(sfd, 6)) {
         return 1;
     }
-    if (SFSET_GetCond(sfd, 6) && SFTRN_GetTermFlg(sfd, 7)) {
+    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) && SFTRN_GetTermFlg(sfd, 7)) {
         return 1;
     }
     for (i = 0; i < SFD_BUF_NUM; i++) {
@@ -632,9 +632,9 @@ static Bool sfply_IsBpaOn(SFD sfd) {
     }
     /* sfply_IsTermAny written out: as a helper call the function would be small enough to be
      * inlined into sfply_StatPlay */
-    if (SFSET_GetCond(sfd, 5) && SFTRN_GetTermFlg(sfd, 6)) {
+    if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) && SFTRN_GetTermFlg(sfd, 6)) {
         term = 1;
-    } else if (SFSET_GetCond(sfd, 6) && SFTRN_GetTermFlg(sfd, 7)) {
+    } else if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) && SFTRN_GetTermFlg(sfd, 7)) {
         term = 1;
     } else {
         for (i = 0; i < SFD_BUF_NUM; i++) {
@@ -649,16 +649,16 @@ term_end:
     if (term) {
         return 0;
     }
-    if (SFSET_GetCond(sfd, 5) == 1 && PLYINF(sfd)->x28 == 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 1 && PLYINF(sfd)->x28 == 0) {
         return 0;
     }
-    if (SFSET_GetCond(sfd, 6) == 1 && SFBUF_RingGetDataSiz(sfd, 2) > 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 1 && SFBUF_RingGetDataSiz(sfd, 2) > 0) {
         return 0;
     }
     if (SFTRN_IsSetup(sfd, 1) && SFBUF_RingGetDataSiz(sfd, 0) > 0) {
         return 0;
     }
-    if (SFSET_GetCond(sfd, 5) == 1) {
+    if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 1) {
         if (sfply_IsVidBufFull(sfd)) {
             return 0;
         }
@@ -683,12 +683,12 @@ static Bool sfply_IsBpaOff(SFD sfd) {
     if (sfply_IsTermAny(sfd)) {
         return 1;
     }
-    if (SFSET_GetCond(sfd, 5) == 1) {
+    if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 1) {
         if (sfply_IsVidBufFull(sfd)) {
             return 1;
         }
     }
-    if (SFSET_GetCond(sfd, 6) == 1) {
+    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 1) {
         if (sfply_IsAudBufFull(sfd)) {
             return 1;
         }
@@ -731,7 +731,7 @@ static Bool sfply_IsTermAll(SFD sfd) {
     Sint32 aterm;
     Bool term;
 
-    if (sfd->cond[6] == 0 && sfd->cond[5] == 0) {
+    if (sfd->cond[SFD_COND_AUDIO_ON] == 0 && sfd->cond[SFD_COND_VIDEO_ON] == 0) {
         return 1;
     }
     term = 0;
@@ -790,7 +790,7 @@ static Bool sfply_IsStartable(SFD sfd) {
     if (sfd->cond[14] == 0) {
         return 1;
     }
-    if (sfd->cond[5] == 0) {
+    if (sfd->cond[SFD_COND_VIDEO_ON] == 0) {
         return 1;
     }
     if (SFD_TIM(sfd)->x2b0 != 0) {
@@ -875,14 +875,14 @@ static Bool sfply_IsPrepared(SFD sfd) {
     Bool prep;
     Bool term;
 
-    if (SFSET_GetCond(sfd, 5) == 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 0) {
         vprep = 1;
     } else {
         prep = SFTRN_GetPrepFlg(sfd, 6);
         term = SFTRN_GetTermFlg(sfd, 6);
         vprep = prep | term;
     }
-    if (SFSET_GetCond(sfd, 6) == 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         aprep = 1;
     } else {
         prep = SFTRN_GetPrepFlg(sfd, 7);
@@ -910,24 +910,26 @@ static Sint32 sfply_StatPrep(SFD sfd) {
     if (!sfply_IsPrepared(sfd)) {
         return stat;
     }
-    if (sfd->cond[5] == 1 && SFBUF_GetWTot(sfd, 1) == 0 && SFBUF_GetRTot(sfd, 1) == 0) {
-        sfd->cond[5] = 0;
+    if (sfd->cond[SFD_COND_VIDEO_ON] == 1 && SFBUF_GetWTot(sfd, 1) == 0 &&
+        SFBUF_GetRTot(sfd, 1) == 0) {
+        sfd->cond[SFD_COND_VIDEO_ON] = 0;
     }
-    if (sfd->cond[6] == 1 && SFBUF_GetWTot(sfd, 2) == 0 && SFBUF_GetRTot(sfd, 2) == 0) {
-        sfd->cond[6] = 0;
+    if (sfd->cond[SFD_COND_AUDIO_ON] == 1 && SFBUF_GetWTot(sfd, 2) == 0 &&
+        SFBUF_GetRTot(sfd, 2) == 0) {
+        sfd->cond[SFD_COND_AUDIO_ON] = 0;
     }
-    SFSEE_FixAvPlay(sfd, sfd->cond[5], sfd->cond[6]);
-    if (sfd->cond[6] == 0 && sfd->cond[15] == 2) {
+    SFSEE_FixAvPlay(sfd, sfd->cond[SFD_COND_VIDEO_ON], sfd->cond[SFD_COND_AUDIO_ON]);
+    if (sfd->cond[SFD_COND_AUDIO_ON] == 0 && sfd->cond[15] == 2) {
         SFSET_SetCond(sfd, 15, 1);
     }
-    if (sfd->cond[5] == 0 && sfd->cond[15] == 1) {
+    if (sfd->cond[SFD_COND_VIDEO_ON] == 0 && sfd->cond[15] == 1) {
         SFSET_SetCond(sfd, 15, 2);
     }
     sel = 0;
-    if (sfd->cond[6] == 1) {
+    if (sfd->cond[SFD_COND_AUDIO_ON] == 1) {
         sel |= 1;
     }
-    if (sfd->cond[5] == 1) {
+    if (sfd->cond[SFD_COND_VIDEO_ON] == 1) {
         sel |= 2;
     }
     switch (sel) {

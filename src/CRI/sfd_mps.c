@@ -16,21 +16,6 @@ extern Sint32 (*SFPLY_SetPtsInfo)(SFPLY_PTSM *ptsm, SFPTS_ENT *ent);
 #define SFMPS_WORK_MAX 0x200
 
 /* SFD condition ids */
-#define SFD_COND_VIDEO_ON 0x05
-#define SFD_COND_PREPSIZE 0x16
-#define SFD_COND_AUDIO_ON 0x06
-#define SFD_COND_VID_STMID 0x1D
-#define SFD_COND_AUD_STMID 0x1E
-#define SFD_COND_STMID_STRICT 0x37
-#define SFD_COND_VID_SELECT 0x3B
-#define SFD_COND_AUDIO_AUTO_OFF 0x4F
-#define SFD_COND_VIDEO_AUTO_OFF 0x50
-#define SFD_COND_SYSFN 0x55
-#define SFD_COND_SYSOBJ 0x56
-#define SFD_COND_PSMAPFN 0x57
-#define SFD_COND_PSMAPOBJ 0x58
-#define SFD_COND_PESFN 0x5B
-#define SFD_COND_PESOBJ 0x5C
 
 /* error codes */
 #define SFMPS_ERR_INIT 0xFF000D01

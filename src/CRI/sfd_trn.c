@@ -95,7 +95,7 @@ void sftrn_BuildSystem(SFD sfd, SFD_TR_FUNC **tbl) {
             sfd->tr[6].bufin = 3;
         }
     } else {
-        SFSET_SetCond(sfd, 5, 0);
+        SFSET_SetCond(sfd, SFD_COND_VIDEO_ON, 0);
         sfd->cond_def[5] = 0;
     }
     if (tbl[3] != 0) {
@@ -117,7 +117,7 @@ void sftrn_BuildSystem(SFD sfd, SFD_TR_FUNC **tbl) {
             sfd->tr[7].bufin = 4;
         }
     } else {
-        SFSET_SetCond(sfd, 6, 0);
+        SFSET_SetCond(sfd, SFD_COND_AUDIO_ON, 0);
         sfd->cond_def[6] = 0;
     }
     if (tbl[8] != 0) {
@@ -153,7 +153,7 @@ static Sint32 sftrn_BuildAll(SFD sfd, SFD_TR_FUNC **tbl) {
             sfd->buf[3].out_tr = 6;
             sfd->tr[6].bufin = 3;
         }
-        SFSET_SetCond(sfd, 6, 0);
+        SFSET_SetCond(sfd, SFD_COND_AUDIO_ON, 0);
         sfd->cond_def[6] = 0;
     } else if (tbl[3] != 0) {
         sfd->tr[0].bufout = 2;
@@ -173,15 +173,15 @@ static Sint32 sftrn_BuildAll(SFD sfd, SFD_TR_FUNC **tbl) {
             sfd->buf[4].out_tr = 7;
             sfd->tr[7].bufin = 4;
         }
-        SFSET_SetCond(sfd, 5, 0);
+        SFSET_SetCond(sfd, SFD_COND_VIDEO_ON, 0);
         sfd->cond_def[5] = 0;
     } else if (tbl[8] != 0) {
         sfd->tr[0].bufout = 7;
         sfd->buf[7].in_tr = 0;
         sfd->buf[7].out_tr = 8;
         sfd->tr[8].bufin = 7;
-        SFSET_SetCond(sfd, 6, 0);
-        SFSET_SetCond(sfd, 5, 0);
+        SFSET_SetCond(sfd, SFD_COND_AUDIO_ON, 0);
+        SFSET_SetCond(sfd, SFD_COND_VIDEO_ON, 0);
         sfd->cond_def[6] = 0;
         sfd->cond_def[5] = 0;
     } else {
