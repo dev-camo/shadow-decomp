@@ -4,23 +4,20 @@
 void __sys_free(void *ptr);
 void *__sys_alloc(unsigned int size);
 
-/* The diagnostic strings keep their per-region data addresses. */
+/* The diagnostic strings are named after their per-region data addresses (placeholder labels). */
 #if defined(VERSION_GUPJ8P)
 #define INIT_ERROR_MESSAGE lbl_80514350
 #define INIT_HEAP_MESSAGE lbl_80514388
-const char lbl_80514350[] = "GCN_Mem_Alloc.c : InitDefaultHeap. No Heap Available\n";
-const char lbl_80514388[] = "Metrowerks CW runtime library initializing default heap\n";
 #elif defined(VERSION_GUPP8P)
 #define INIT_ERROR_MESSAGE lbl_80514DC8
 #define INIT_HEAP_MESSAGE lbl_80514E00
-const char lbl_80514DC8[] = "GCN_Mem_Alloc.c : InitDefaultHeap. No Heap Available\n";
-const char lbl_80514E00[] = "Metrowerks CW runtime library initializing default heap\n";
 #else
 #define INIT_ERROR_MESSAGE lbl_80513CB0
 #define INIT_HEAP_MESSAGE lbl_80513CE8
-const char lbl_80513CB0[] = "GCN_Mem_Alloc.c : InitDefaultHeap. No Heap Available\n";
-const char lbl_80513CE8[] = "Metrowerks CW runtime library initializing default heap\n";
 #endif
+
+const char INIT_ERROR_MESSAGE[] = "GCN_Mem_Alloc.c : InitDefaultHeap. No Heap Available\n";
+const char INIT_HEAP_MESSAGE[] = "Metrowerks CW runtime library initializing default heap\n";
 
 /* Name from the original diagnostic string above. */
 static inline void InitDefaultHeap(void) {
