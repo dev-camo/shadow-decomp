@@ -1040,8 +1040,8 @@ void ADXT_GetTime(ADXT adxt, Sint32 *ncount, Sint32 *tscale) {
     ADXCRS_Leave();
 }
 
-/* Playback time: sample mode (adxt_time_mode 0) returns decoded-and-rendered samples over the sampling
- * rate; vsync mode counts vsyncs since start in adxt_time_unit units and resynchronises to the sample
+/* Playback time, stored in *ncount / *tscale: sample mode (adxt_time_mode 0) gives decoded-and-rendered
+ * samples over the sampling rate; vsync mode counts vsyncs since start in adxt_time_unit units and resynchronises to the sample
  * time when they drift more than 60 ms apart (adxt_time_adjust_cnt). The Sofdec player uses this to
  * slave the video clock to the audio. */
 void adxt_GetTime(ADXT adxt, Sint32 *ncount, Sint32 *tscale) {
