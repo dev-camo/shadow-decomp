@@ -696,6 +696,12 @@ config.libs = [
         ],
     ),
     DolphinLib(
+        "ar",
+        [
+            Object(Matching, "dolphin/ar.c"),
+        ],
+    ),
+    DolphinLib(
         "gx",
         [
             Object(Matching, "dolphin/GXInit.c", cflags=cflags_sdk_rev2),
