@@ -268,7 +268,6 @@ SFD_VFRM *SFMPVF_SearchVfrmData(SFD sfd, SFMPV_FRM *frm) {
     return 0;
 }
 
-/* The frame object paired with the user-visible information block `inf`. */
 /* This game only: returns the frame whose x58 equals key (inferred). */
 SFMPV_FRM *fn_803F8FC0(SFD sfd, Sint32 key) {
     Sint32 i;

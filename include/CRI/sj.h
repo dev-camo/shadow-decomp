@@ -55,11 +55,11 @@ struct SJ_OBJ {
 extern "C" {
 #endif
 
-/* sj_crs.c */
 /* sj_utl.c */
 void SJ_SplitChunk(SJCK *ck, Sint32 nbyte, SJCK *ck1, SJCK *ck2);
 Sint8 *SJ_SearchTag(SJCK *cki, Char8 *kw, Char8 *endkw, SJCK *cko);
 
+/* sj_crs.c */
 void SJCRS_Lock(void);
 void SJCRS_Unlock(void);
 void SJCRS_Init(void);

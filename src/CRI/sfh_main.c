@@ -612,8 +612,8 @@ static Bool sfh_GetHdrU8(SFH sfh, Sint32 ofs, Sint32 *val) {
     return TRUE;
 }
 
-/* Big-endian 32-bit header field, only for tool versions >= `ver`. */
-/* Big-endian 32-bit header field, only for tool versions >= `ver` (same store constraint). */
+/* Big-endian 32-bit header field, only for tool versions >= `ver` (same store constraint as
+ * SFH_AnlyElemSmpHz). */
 static Bool sfh_GetHdrU32Ver(SFH sfh, Sint32 ofs, Sint32 ver, Sint32 *val) {
     Uint8 *hdr = sfh->hdr;
     Uint32 w;

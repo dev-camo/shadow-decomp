@@ -392,12 +392,12 @@ void SFHDS_InitFhd(SFHDS_FHD *fhd) {
     fhd->rawsiz = 0;
 }
 
-/* Library init: gives the SFH analyser its 32 objects' work. */
 /* This game only: the header analyser part of the library finish (inferred) */
 void fn_803F12EC(void) {
     fn_80402058();
 }
 
+/* Library init: gives the SFH analyser its 32 objects' work. */
 void SFHDS_Init(void) {
     SFH_Init(SFHDS_SFH_NUM, sfhds_sfhlib_work);
 }
