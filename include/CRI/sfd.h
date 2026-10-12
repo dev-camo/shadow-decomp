@@ -6,6 +6,10 @@
 #include "CRI/sj.h"
 #include "CRI/uty.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct SFD_OBJ *SFD;
 
 /* handle states (SFD_OBJ.stat, SFD_GetHnStat) and state requests (SFD_OBJ.req) */
@@ -943,5 +947,9 @@ Sint32 SFD_SetUsrIsSkipFn(SFD sfd, Bool (*fn)());
 Sint32 SFTIM_GetTimeSub(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 Bool SFTIM_IsStagnant(SFD sfd);
 Sint32 SFD_CmpTime(Sint32 a, Sint32 aunit, Sint32 b, Sint32 bunit);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

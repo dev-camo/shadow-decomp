@@ -7,6 +7,10 @@
 
 #include "CRI/cri_xpt.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct MPS_OBJ *MPS;
 
 /* pack header (16 bytes, 8-byte aligned: holds the 64-bit SCR) */
@@ -100,5 +104,9 @@ void MPS_SetSystemFn(MPS mps, void *fn, void *obj);
 Sint32 MPS_Init(Sint32 num_hn, void *work);
 void MPS_Finish(void);
 Sint32 MPS_SetErrFn(MPS mps, void (*fn)(void *obj, Sint32 code), void *obj);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

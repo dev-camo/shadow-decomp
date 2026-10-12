@@ -8,6 +8,10 @@
 #include "CRI/cri_xpt.h"
 #include "CRI/sj.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
     void *p;  /* 0x00 */
     Sint32 n; /* 0x04 */
@@ -256,5 +260,9 @@ void MPVMC08_OneRef4p_TuneC(MPVMC *mc);
 void DCT_FsriInitScanTbl(Sint8 *seq, Sint8 *scan); /* not yet decompiled */
 
 #define MPV_ERR_INVALID_HN 0xFF030200
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
