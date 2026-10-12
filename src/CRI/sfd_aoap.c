@@ -159,6 +159,8 @@ Sint32 SFD_SetOutVol(SFD sfd, Sint32 vol) {
         aoap = sfd->tr[SFAOAP_TR].hn;
         return aoap->SetOutVol(sfd, vol);
     }
+    /* No return here, as in the original: the caller gets SFSET_GetCond's 0, which is still in the
+     * return register. Adding `return 0;` changes the code (verified). */
 }
 
 /* Channel pan through the audio driver's callback. */
@@ -187,6 +189,8 @@ Sint32 SFD_SetOutPan(SFD sfd, Sint32 ch, Sint32 pan) {
         aoap = sfd->tr[SFAOAP_TR].hn;
         return aoap->SetOutPan(sfd, ch, pan);
     }
+    /* No return here, as in the original: the caller gets SFSET_GetCond's 0, which is still in the
+     * return register. Adding `return 0;` changes the code (verified). */
 }
 
 const SFD_TR_IF SFD_tr_ao_auto_p = {
