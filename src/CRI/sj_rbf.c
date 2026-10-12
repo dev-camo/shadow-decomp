@@ -27,6 +27,7 @@ typedef struct {
     void *errobj;                           /* 0x3C */
 } SJRBF_OBJ;
 
+/* build string: unreferenced, but kept in the original data */
 static const Char8 sj_build[] = "\nSJ/GC Ver.6.31 Build:Feb 28 2005 15:48:28\n";
 
 const SJUUID sjrbf_uuid = {{0x3B, 0x9A, 0x9E, 0x81, 0x0D, 0xBB, 0x11, 0xD2, 0xA6, 0xBF, 0x44, 0x45,

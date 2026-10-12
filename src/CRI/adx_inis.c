@@ -28,6 +28,7 @@ const Char8 adxt_build[] =
     "\nADXT/GC Ver.9.44 Build:Feb 28 2005 15:48:49\n\0Append: MW2407 GC20Apr2004Patch2\n";
 
 Sint32 adxt_init_cnt = 0;
+/* not referenced by the code kept in this game, but part of the original data */
 static Sint32 adxt_svr_id = 0;
 Sint32 adxt_svr_main_id = 0;
 Sint32 adxt_output_mono_flag = 0;

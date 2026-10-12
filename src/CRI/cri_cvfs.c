@@ -10,6 +10,9 @@
  * the out-of-line copies of the static helpers) is stripped by the linker: their bodies are
  * reference-derived and unverified, and only the error literals and storage order they
  * produce are checked.
+ *
+ * Several functions test `dev == 0` after splitting a name into the local array `dev`. The test is
+ * always false, but it is the original source and keeps its error message in .rodata order.
  */
 #include <string.h>
 #include <stdio.h>
