@@ -185,6 +185,9 @@ extern ProcessorState_PPC gTRKCPUState;
 extern ProcessorRestoreFlags_PPC gTRKRestoreFlags;
 extern u8 gTRKInterruptVectorTable[];
 extern TRKState gTRKState;
+
+/* linker-defined top of the debugger stack */
+extern u8 _db_stack_addr[];
 extern TRKEventQueue gTRKEventQueue;
 extern MessageBuffer gTRKMsgBufs[3];
 ////////////////////////////////////
