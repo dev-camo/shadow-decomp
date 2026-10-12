@@ -32,7 +32,7 @@ void EnableMetroTRKInterrupts(void) {
 
 u32 TRKTargetTranslate(u32 val) {
     if (val >= lc_base && val < lc_base + 0x4000) {
-        if (((u32 *)(&gTRKCPUState.Extended1))[36] & 3)
+        if (gTRKCPUState.Extended1.DBAT3U_ & 3)
             return val;
     }
 
