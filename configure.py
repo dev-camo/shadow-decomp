@@ -591,6 +591,12 @@ config.libs = [
         ],
     ),
     DolphinLib(
+        "mix",
+        [
+            Object(Matching, "dolphin/mix.c"),
+        ],
+    ),
+    DolphinLib(
         "dsp",
         [
             Object(Matching, "dolphin/dsp.c"),
