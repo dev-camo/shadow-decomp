@@ -103,6 +103,9 @@ void EXI2_Unreserve(void);
 // ---------------------------------------------------------------------------
 AmcExiError EXI2_GetStatusReg(u16 *pu16StatusReg);
 
+// Returns 1 in the stub library (AmcExi2Stubs.c).
+int AMC_IsStub(void);
+
 #ifdef __cplusplus
 }
 #endif
