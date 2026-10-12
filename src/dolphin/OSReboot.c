@@ -8,7 +8,7 @@ static void *SaveEnd;
 
 void __OSReboot(u32 resetCode, u32 bootDol) {
     OSContext exceptionContext;
-    char *argvToPass;
+    const char *argvToPass;
 
     OSDisableInterrupts();
     OSSetArenaLo((void *)0x81280000);
