@@ -215,8 +215,81 @@ dolphin/arq.c:
 	.sdata      start:0x805EDBF0 end:0x805EDBF8
 	.sbss       start:0x805F1118 end:0x805F1140
 
+dolphin/AX.c:
+	.text       start:0x80383850 end:0x803838F4
+	.data       start:0x805621F8 end:0x80562240
+	.sdata      start:0x805EDBF8 end:0x805EDC00
+
+dolphin/AXAlloc.c:
+	.text       start:0x803838F4 end:0x80383DBC
+	.bss        start:0x80586D00 end:0x80586E00
+	.sbss       start:0x805F1140 end:0x805F1148
+
+dolphin/AXAux.c:
+	.text       start:0x80383DBC end:0x8038425C
+	.bss        start:0x80586E00 end:0x80589B00
+	.sbss       start:0x805F1148 end:0x805F1180
+
+dolphin/AXCL.c:
+	.text       start:0x8038425C end:0x8038498C
+	.bss        start:0x80589B00 end:0x8058A100
+	.sbss       start:0x805F1180 end:0x805F1198
+
+dolphin/AXOut.c:
+	.text       start:0x8038498C end:0x80385198
+	.bss        start:0x8058A100 end:0x8058EBA0
+	.sbss       start:0x805F1198 end:0x805F11D0
+
+dolphin/AXSPB.c:
+	.text       start:0x80385198 end:0x80385660
+	.bss        start:0x8058EBA0 end:0x8058EBE0
+	.sbss       start:0x805F11D0 end:0x805F11F8
+
+dolphin/AXVPB.c:
+	.text       start:0x80385660 end:0x80386948
+	.data       start:0x80562240 end:0x80562320
+	.bss        start:0x8058EBE0 end:0x805A03E0
+	.sbss       start:0x805F11F8 end:0x805F1208
+	.sdata2     start:0x805FA660 end:0x805FA668
+
+dolphin/AXComp.c:
+	.data       start:0x80562320 end:0x80563D60
+
+dolphin/DSPCode.c:
+	.data       start:0x80563D60 end:0x80565C60
+	.sdata      start:0x805EDC00 end:0x805EDC08
+
+dolphin/AXProf.c:
+	.text       start:0x80386948 end:0x80386990
+	.sbss       start:0x805F1208 end:0x805F1218
+
+dolphin/reverb_hi.c:
+	.text       start:0x80386990 end:0x80387898
+	.data       start:0x80565C60 end:0x80565C80
+	.sdata2     start:0x805FA668 end:0x805FA6A8
+
+dolphin/reverb_std.c:
+	.text       start:0x80387898 end:0x803882D4
+	.data       start:0x80565C80 end:0x80565C90
+	.sdata2     start:0x805FA6A8 end:0x805FA6E0
+
+dolphin/chorus.c:
+	.text       start:0x803882D4 end:0x80388D50
+	.data       start:0x80565C90 end:0x80566490
+	.sdata2     start:0x805FA6E0 end:0x805FA6E8
+
 dolphin/delay.c:
 	.text       start:0x80388D50 end:0x803892D0
+
+dolphin/axfx.c:
+	.text       start:0x803892D0 end:0x8038932C
+	.sdata      start:0x805EDC08 end:0x805EDC10
+
+dolphin/mix.c:
+	.text       start:0x8038932C end:0x8038B468
+	.data       start:0x80566490 end:0x80567050
+	.bss        start:0x805A03E0 end:0x805A1BE0
+	.sbss       start:0x805F1218 end:0x805F1228
 
 dolphin/dsp.c:
 	.text       start:0x8038B468 end:0x8038B6F8
