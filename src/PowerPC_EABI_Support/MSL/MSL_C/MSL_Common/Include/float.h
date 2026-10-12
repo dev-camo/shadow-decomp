@@ -38,9 +38,7 @@ extern int __float_huge[];
 extern int __float_max[];
 extern int __float_epsilon[];
 
-#if !PLATFORM_GCN
 extern int __double_huge[];
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -120,8 +118,13 @@ int __fpclassifyl(long double __value);
 #define LDBL_MAX_EXP 1024
 #define LDBL_MAX_10_EXP 308
 
-#define LDBL_MAX 0x1.fffffffffffffP1023L
-#define LDBL_EPSILON 0x1.0000000000000P-52L
-#define LDBL_MIN 0x1.0000000000000P-1022L
+/* the long double limits are float.c objects (long double is double here) */
+extern int __extended_min[];
+extern int __extended_max[];
+extern int __extended_epsilon[];
+
+#define LDBL_MAX (*(long double *)__extended_max)
+#define LDBL_EPSILON (*(long double *)__extended_epsilon)
+#define LDBL_MIN (*(long double *)__extended_min)
 
 #endif /* _MSL_COMMON_FLOAT_H */
