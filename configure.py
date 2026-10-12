@@ -568,6 +568,7 @@ config.libs = [
     DolphinLib(
         "ax",
         [
+            Object(Matching, "dolphin/AX.c"),
         ],
     ),
     DolphinLib(
