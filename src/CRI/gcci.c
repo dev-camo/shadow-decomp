@@ -125,7 +125,7 @@ static inline Sint32 gcci_IsIdle(GCCI gcci) {
     return idle;
 }
 
-/* The last DVD command finished (done or canceled). */
+/* The last DVD command finished (done or cancelled). */
 static inline Sint32 gcci_IsCmdDone(GCCI gcci) {
     Sint32 done = 0;
 
