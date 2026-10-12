@@ -41,7 +41,7 @@ typedef struct {
     SFUO_CH ch[3]; /* 0x04 */
 } SFUO;
 
-/* audio output (auto-play) driver work (sfd_aoap.c), at SFD_OBJ + 0x3474: user callbacks */
+/* audio output (auto-play) driver work (sfd_aoap.c), at SFD_OBJ + 0x34FC: user callbacks */
 typedef struct {
     Sint32 x00;                                          /* 0x00 */
     Sint32 (*SetOutPan)(SFD sfd, Sint32 ch, Sint32 pan); /* 0x04 */
@@ -150,7 +150,7 @@ typedef struct {
     Sint32 ext_wrap;      /* 0x2E4 (-1) */
     void *ext_obj;        /* 0x2E8 */
     Sint32 x2ec;          /* 0x2EC */
-    Uint8 tst[0x1C0];     /* 0x2F0 (SFD_OBJ + 0x1018) */
+    Uint8 tst[0x1C0];     /* 0x2F0 (SFD_OBJ + 0x1020) */
     struct {
         Sint16 rpt; /* repeat_first_field count of the picture */
         Sint16 acc; /* accumulated repeated fields */
@@ -191,7 +191,7 @@ typedef struct {
     Sint32 raw[0x20]; /* 0x00 */
 } SFD_VFRM_INF;
 
-/* video frame slot (0x88 bytes), SFD_OBJ + 0x16A8 + n * 0x88; slot n pairs with SFMPV frame n */
+/* video frame slot (0x88 bytes), SFD_OBJ + 0x16B0 + n * 0x88; slot n pairs with SFMPV frame n */
 typedef struct {
     void *frm;        /* 0x00 */
     Sint32 x04;       /* 0x04 */
@@ -226,7 +226,7 @@ typedef struct {
 #define SFBUF_MODE_NONE 4
 #define SFBUF_MODE_RING 5
 
-/* SFBUF work (0x74 bytes): buffer n links transfer driver in_tr -> out_tr; SFD_OBJ + 0x1308 + n *
+/* SFBUF work (0x74 bytes): buffer n links transfer driver in_tr -> out_tr; SFD_OBJ + 0x1310 + n *
  * 0x74 */
 typedef struct {
     Sint32 mode;    /* 0x00 SFBUF_MODE_* */
@@ -277,7 +277,7 @@ typedef struct {
 
 typedef Sint32 (*SFD_TR_FUNC)();
 
-/* per-transfer-driver slot (0x44 bytes), SFD_OBJ + 0x1F28 + n * 0x44 */
+/* per-transfer-driver slot (0x44 bytes), SFD_OBJ + 0x1F30 + n * 0x44 */
 typedef struct {
     Sint32 prepflg;           /* 0x00 */
     Sint32 termflg;           /* 0x04 */
@@ -409,7 +409,7 @@ typedef struct {
 
 #define SFMPV_FRM_NUM 16
 
-/* video driver work (tr[2].hn, SFD_OBJ + 0x23A0, 0x1020 bytes) */
+/* video driver work (tr[2].hn, SFD_OBJ + 0x23A8, 0x10A0 bytes) */
 typedef struct {
     struct MPV_OBJ *mpv;          /* 0x000 */
     SFMPV_PARA para;              /* 0x004 */
@@ -479,7 +479,7 @@ typedef struct {
     SFD_TR_IF *tbl[15]; /* 0x00 */
 } SFTRN_TRIF_TBL;
 
-/* error callback state (sfd_lib.c), per handle at SFD_OBJ + 0x9F0 and library-wide */
+/* error callback state (sfd_lib.c), per handle at SFD_OBJ + 0x9F8 and library-wide */
 typedef struct {
     void (*fn)(void *obj, Sint32 code); /* 0x00 */
     void *obj;                          /* 0x04 */
@@ -619,7 +619,7 @@ typedef struct {
     void *work;      /* 0x18 ADXT work (32-byte aligned) */
 } SFADXT_PARA;
 
-/* ADX audio driver work (sfd_adxt.c, tr[3].hn), SFD_OBJ + 0x33C0 */
+/* ADX audio driver work (sfd_adxt.c, tr[3].hn), SFD_OBJ + 0x3448 */
 typedef struct {
     void *adxt;       /* 0x00 ADXT handle */
     SJ sj;            /* 0x04 ring buffer stream joint fed by the transfer */
@@ -638,7 +638,7 @@ typedef struct {
     Sint32 x4c;                  /* 0x4C */
 } SFADXT_WORK;
 
-/* seek request state, SFD_OBJ + 0x34C8 */
+/* seek request state, SFD_OBJ + 0x3550 */
 typedef struct {
     SFSEE_WORK *wk; /* 0x00 */
     SFSEE_REQ req;  /* 0x04 */
@@ -657,10 +657,10 @@ typedef struct {
     Sint32 x34;     /* 0x34 */
     Sint32 x38;     /* 0x38 */
     void *hnwork;   /* 0x3C handle work (SFD_OBJ, aligned to 32) */
-    Sint32 hnwksiz; /* 0x40 its size (>= 0x35B8) */
+    Sint32 hnwksiz; /* 0x40 its size (>= 0x3660, SFD_HNWORK_MIN) */
 } SFD_CREPRM;
 
-/* video PTS manager entry kept across a player reset (sfd_ply.c), SFD_OBJ + 0x12D8 */
+/* video PTS manager entry kept across a player reset (sfd_ply.c), SFD_OBJ + 0x12E0 */
 typedef struct {
     void *x00;  /* 0x00 */
     Sint32 x04; /* 0x04 */
@@ -684,7 +684,7 @@ typedef struct {
     Float32 rate; /* 0x1C nfrm * tunit / (t1 - t0) */
 } SFPLY_FRMSTAT;
 
-/* system stream (MPS) driver work (sfd_mps.c), SFD_OBJ + 0x2190, tr[1].hn */
+/* system stream (MPS) driver work (sfd_mps.c), SFD_OBJ + 0x2198, tr[1].hn */
 #define SFMPS_STMID_MIN 0xBC
 #define SFMPS_STMID_MAX 0xFF
 #define SFMPS_OUTSJ_NUM (SFMPS_STMID_MAX - SFMPS_STMID_MIN + 1)
@@ -781,7 +781,6 @@ typedef struct {
 } SFBUF_HN;
 
 #define SFBUF_GET_HN(sfd, n) ((SFBUF_HN *)((SFBUF_WORK *)(sfd) + (n)))
-/* 0x3640 */
 
 /* 64-bit stream counters inside plyinf seen through a separate view: SFD_PLYINF itself has to stay
  * 4-byte aligned (SFD_GetPlyInf copies it with a lwz/stw loop). Offsets are RE4's + 8 (from the

@@ -87,7 +87,7 @@ typedef struct SYNSYNTH {
     /* 0x0040 */ WTINST *inst[16];
     /* 0x0080 */ s32 masterVolume;
     /* 0x0084 */ u8 controller[16][128];
-    /* 0x0844 */ u8 rpn[16];
+    /* 0x0884 */ u8 rpn[16];
     /* 0x0894 */ s16 dataEntry[16];
     /* 0x08B4 */ s32 pwMaxCents[16];
     /* 0x08F4 */ s32 pwCents[16];

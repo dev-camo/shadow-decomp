@@ -28,7 +28,7 @@ typedef int UARTError;
 // Size of message buffer.
 #define TRKMSGBUF_SIZE (0x800 + 0x80)
 
-// Struct for sending and receiving messages (size 0x88C).
+// Struct for sending and receiving messages (size 0x890).
 typedef struct MessageBuffer {
     u32 _00;                 // _00, unknown
     BOOL isInUse;            // _04
@@ -105,7 +105,7 @@ typedef struct TRKEventQueue {
     NubEventID eventID; // _24, ID to assign next event, min 0x100
 } TRKEventQueue;
 
-// Struct for state information (size 0xB0).
+// Struct for state information (size 0xA4).
 typedef struct TRKState {
     u32 gpr[32];           // _00
     u32 lr;                // _80
