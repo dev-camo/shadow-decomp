@@ -2,9 +2,9 @@
  *
  * Source from the RE4 GameCube decompilation, unchanged.
  */
-#include "CRI/cri_xpt.h"
+#include <string.h>
 
-extern void *memcpy(void *destination, const void *source, unsigned int size);
+#include "CRI/cri_xpt.h"
 
 /* Copies nbytes from src to dst. */
 void MEM_Copy(void *dst, const void *src, Uint32 nbytes) {

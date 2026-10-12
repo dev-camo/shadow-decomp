@@ -5,9 +5,9 @@
  * Names and layout follow the RE4 and Mortal Kombat: Deception decompilations (Ver.7.18 and
  * 7.17). Ver.7.30 stores the build string's address in ADXF_Init.
  */
-#include "CRI/adx_f.h"
+#include <string.h>
 
-extern void *memset(void *destination, int value, unsigned int size);
+#include "CRI/adx_f.h"
 
 /* Build string followed by the compiler patch line. */
 const Char8 adxf_build[] =

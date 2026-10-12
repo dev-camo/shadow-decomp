@@ -3,9 +3,9 @@
  * ADXB_DecodeHeader / ADXB_ExecHndl for type 4.
  * Body from the RE4 GameCube decompilation of the same file.
  */
-#include "CRI/adx_b.h"
+#include <string.h>
 
-extern int memcmp(const void *left, const void *right, unsigned int count);
+#include "CRI/adx_b.h"
 
 #define LE16(p) (((Uint16)(p)[1] << 8) | (p)[0])
 #define LE32(p)                                                                                    \

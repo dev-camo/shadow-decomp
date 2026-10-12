@@ -6,12 +6,9 @@
  * GameCube decompilations (same error codes and function order). Ver.1.58 adds a name to
  * each server callback and validates the server type in the registration functions.
  */
-#include "msl_string.h"
-#include "mwcc_varargs.h"
-
-extern void *memset(void *destination, int value, unsigned int size);
-extern unsigned int strlen(const char *text);
-extern char *strncat(char *destination, const char *source, unsigned int count);
+#include <string.h>
+#include <stdarg.h>
+#include <stdio.h>
 
 #include "CRI/svm.h"
 
@@ -394,11 +391,12 @@ void SVM_CallErr1(Char8 *msg) {
 
 /* printf-style error: formats into svmerr_msg and calls the error callback. */
 void SVM_CallErr(Char8 *fmt, ...) {
-    MwccVaList ap;
+    va_list ap;
 
     memset(svmerr_msg, 0, sizeof(svmerr_msg));
-    __builtin_va_info(ap);
+    va_start(ap, fmt);
     vsprintf(svmerr_msg, fmt, ap);
+    va_end(ap);
     if (svm_err_func.func != 0) {
         svm_err_func.func(svm_err_func.obj, svmerr_msg);
     }

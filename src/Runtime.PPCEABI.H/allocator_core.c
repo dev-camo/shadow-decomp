@@ -1,4 +1,5 @@
 /* MSL runtime pool resize (alloc.c __pool_realloc); nonmatching research. */
+#include <string.h>
 
 #define BLOCK_SIZE_MASK 0xFFFFFFF8
 #define BLOCK_FLAG_2 0x2
@@ -36,7 +37,6 @@ struct AllocatorArea {
 };
 extern void *__pool_alloc(void *pool, unsigned int size);
 extern void __pool_free(void *pool, void *ptr);
-extern void *memcpy(void *destination, const void *source, unsigned int size);
 inline static unsigned int BlockSize(AllocatorBlock *block) {
     return block->size_flags & BLOCK_SIZE_MASK;
 }

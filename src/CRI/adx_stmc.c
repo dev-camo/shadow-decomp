@@ -11,14 +11,14 @@
  * TWEWY retry rule, a pause switch, SetSj/SetReqRdSize/Start2/BindFile, and the retry counter as
  * a word at 0x4C. The file is compiled with -inline noauto: only the `inline` helpers are expanded.
  */
+#include <string.h>
+
 #include "CRI/adx.h"
 #include "CRI/adx_stm.h"
 #include "CRI/adx_t.h"
 #include "CRI/cvfs.h"
 #include "CRI/sj.h"
 #include "CRI/svm.h"
-
-extern void *memset(void *destination, int value, unsigned int size);
 
 #define ADXSTM_MAX_OBJ 40
 #define ADXSTM_SCT_SHIFT 11

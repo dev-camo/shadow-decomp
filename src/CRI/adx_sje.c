@@ -9,14 +9,12 @@
  * count around ADXSJE_Init/ADXSJE_Finish; RE4's version/build-string functions and the data words
  * pointing at them have no counterpart here and are left out.
  */
+#include <string.h>
+
 #include "CRI/adx.h"
 #include "CRI/adx_dcd.h"
 #include "CRI/adx_sje.h"
 #include "CRI/sj.h"
-
-extern void *memset(void *destination, int value, unsigned int size);
-extern void *memcpy(void *destination, const void *source, unsigned int size);
-extern unsigned int strlen(const char *text);
 
 #define ADXSJE_MAX_OBJ 8
 #define ADXSJE_MAX_FLT 16

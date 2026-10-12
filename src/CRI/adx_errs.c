@@ -5,11 +5,7 @@
  */
 #include "CRI/adx.h"
 #include "CRI/svm.h"
-#include "msl_string.h"
-
-extern void *memset(void *destination, int value, unsigned int size);
-extern unsigned int strlen(const char *text);
-extern char *strncat(char *destination, const char *source, unsigned int count);
+#include <string.h>
 
 static void (*adxerr_func)(void *obj, Char8 *msg) = 0;
 static void *adxerr_obj = 0;

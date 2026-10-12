@@ -5,10 +5,7 @@
  * Names, types and layout follow the same CRI library version in the RE4 GameCube
  * decompilation (same build string version, error codes, function order and table).
  */
-#include "msl_string.h"
-
-extern void *memset(void *destination, int value, unsigned int size);
-extern unsigned int strlen(const char *text);
+#include <string.h>
 
 #include "CRI/cri_xpt.h"
 

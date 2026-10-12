@@ -11,6 +11,8 @@
  * the string literals follow codegen order and .bss is in reverse declaration order. Functions whose
  * public entry is unreferenced in this game are kept for their messages.
  */
+#include <string.h>
+
 #include "CRI/adx.h"
 #include "CRI/adx_amp.h"
 #include "CRI/adx_dcd.h"
@@ -20,7 +22,6 @@
 #include "CRI/lsc.h"
 #include "CRI/sj.h"
 
-extern void *memset(void *destination, int value, unsigned int size);
 extern Uint32 __cvt_fp2unsigned(Float32 value);
 /* Called only by unreferenced (linker-stripped) functions kept from the reference. */
 extern void ADXSJD_SetKeyString(ADXSJD sjd, Char8 *str);

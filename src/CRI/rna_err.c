@@ -3,7 +3,7 @@
  * Bodies from the RE4 GameCube decompilation of the same file.
  */
 #include "CRI/cri_xpt.h"
-#include "msl_string.h"
+#include <string.h>
 
 static void (*rnaerr_func)(void *obj, Char8 *msg) = 0;
 static void *rnaerr_obj = 0;

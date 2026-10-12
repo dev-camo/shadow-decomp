@@ -3,9 +3,9 @@
  * does no ADPCM decoding). Selected by ADXB_DecodeHeader / ADXB_ExecHndl for type 1.
  * Body from the RE4 GameCube decompilation of the same file.
  */
-#include "CRI/adx_b.h"
+#include <string.h>
 
-extern int memcmp(const void *left, const void *right, unsigned int count);
+#include "CRI/adx_b.h"
 
 #define SWAP16(x) ((((x) >> 8) & 0xFF) | (((x) & 0xFF) << 8))
 #define SWAP32(x)                                                                                  \

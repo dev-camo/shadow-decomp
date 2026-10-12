@@ -3,9 +3,9 @@
  * ADXB_ExecHndl for type 2; the ADXSJD keeps a copy of the header for SPSD streams.
  * Body from the RE4 GameCube decompilation of the same file.
  */
-#include "CRI/adx_b.h"
+#include <string.h>
 
-extern int memcmp(const void *left, const void *right, unsigned int count);
+#include "CRI/adx_b.h"
 
 /* "SPSD" magic test. */
 Sint32 ADXB_CheckSpsd(void *buf) {

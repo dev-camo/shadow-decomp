@@ -4,7 +4,8 @@
  */
 
 #include "CRI/lsc.h"
-#include "mwcc_varargs.h"
+#include <stdarg.h>
+#include <stdio.h>
 
 static void (*lsc_err_func)(void *obj, Char8 *msg) = 0;
 static void *lsc_err_obj = 0;
@@ -12,10 +13,11 @@ static Char8 lsc_err_msg[256];
 
 /* Formats and reports a scheduler error. */
 void LSC_CallErrFunc(Char8 *fmt, ...) {
-    MwccVaList ap;
+    va_list ap;
 
-    __builtin_va_info(ap);
+    va_start(ap, fmt);
     vsprintf(lsc_err_msg, fmt, ap);
+    va_end(ap);
     if (lsc_err_func != 0) {
         lsc_err_func(lsc_err_obj, lsc_err_msg);
     }

@@ -1,4 +1,6 @@
 /* CRI stream-joint utilities (sj_utl.c). Signatures from the CRI SJ header (sj.h). */
+#include <string.h>
+
 #include "CRI/sj.h"
 
 /* Inferred word lookup backing; original C type identity is unknown.
@@ -125,9 +127,6 @@ unsigned int sj_hexstr_to_val_tbl[112] = {
     0,
     0,
 };
-
-/* MSL strncmp; see msl_string.h. */
-extern int strncmp(const char *left, const char *right, unsigned int count);
 
 /* The original uses signed byte indices without a range check. */
 static inline unsigned int read_length(const signed char *record) {

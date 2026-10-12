@@ -11,15 +11,10 @@
  * reference-derived and unverified, and only the error literals and storage order they
  * produce are checked.
  */
-#include "CRI/cvfs.h"
+#include <string.h>
+#include <stdio.h>
 
-extern unsigned int strlen(const char *text);
-extern char *strcpy(char *destination, const char *source);
-extern int strcmp(const char *left, const char *right);
-extern int strncmp(const char *left, const char *right, unsigned int count);
-extern int sprintf(char *buffer, const char *format, ...);
-extern void *memset(void *destination, int value, unsigned int size);
-extern void *memcpy(void *destination, const void *source, unsigned int size);
+#include "CRI/cvfs.h"
 
 typedef void (*CVFS_ERRFUNC)(void *obj, const Char8 *msg, void *hn);
 

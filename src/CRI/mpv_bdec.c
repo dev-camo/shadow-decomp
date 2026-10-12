@@ -2,6 +2,8 @@
  * VLC table pointers) set up in the decoder object
  * Bodies from the RE4 GameCube decompilation of the same file.
  */
+#include <string.h>
+
 #include "CRI/cri_xpt.h"
 #include "CRI/mpv.h"
 #include "CRI/uty.h"
@@ -15,7 +17,6 @@ extern Uint32 *mpvvlc_run_level_0b;
 extern Uint32 *mpvvlc_run_level_0c;
 
 void DCT_FsriInitScanTbl(Sint8 *seq, Sint8 *scan);
-void *memcpy(void *dst, const void *src, Uint32 n);
 
 static const Uint16 mpvbdec_bitmsk[16] = {
     0xFFFF, 0x7FFF, 0x3FFF, 0x1FFF, 0x0FFF, 0x07FF, 0x03FF, 0x01FF,

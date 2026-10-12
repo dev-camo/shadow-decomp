@@ -7,6 +7,8 @@
  * callbacks (with their names), runs the load scheduler through ADXT_ExecLscSvr and also finishes
  * the critical section; the no-thread main callback and the vsync switch are gone.
  */
+#include <string.h>
+
 #include "CRI/adx.h"
 #include "CRI/adx_f.h"
 #include "CRI/adx_rna.h"
@@ -15,8 +17,6 @@
 #include "CRI/lsc.h"
 #include "CRI/sj.h"
 #include "CRI/svm.h"
-
-extern void *memset(void *destination, int value, unsigned int size);
 
 Sint32 adxt_exec_fssvr(void *obj);
 Sint32 adxt_exec_tsvr(void *obj);
