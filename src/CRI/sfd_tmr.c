@@ -2,14 +2,7 @@
  * kept per handle for the server steps (SFD_OBJ.tsum[]).
  * Bodies from the RE4 GameCube decompilation of the same file.
  */
-#include "CRI/cri_xpt.h"
-
-typedef struct {
-    Sint64 sum; /* 0x00 */
-    Sint64 min; /* 0x08 */
-    Sint64 max; /* 0x10 */
-    Sint32 cnt; /* 0x18 */
-} SFTMR_TSUM;
+#include "CRI/sfd.h"
 
 #define SFTMR_MAX(a, b) ((a) > (b) ? (a) : (b))
 
