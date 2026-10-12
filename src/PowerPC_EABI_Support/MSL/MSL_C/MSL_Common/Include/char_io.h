@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 int fputs(const char *str, FILE *stream);
+int puts(const char *str);
 int __put_char(int c, FILE *stream);
 
 #ifdef __cplusplus
