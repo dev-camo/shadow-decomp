@@ -60,8 +60,8 @@ static Sint32 sfhds_SearchStmId(SFH sfh, Sint32 first, Sint32 last, Sint32 *exis
     return 0;
 }
 
-/* The video results go through their own locals (v_*) rather than `?:` expressions: only then do
- * `id`, fhd and sfh get the original registers (id r29, fhd r31, sfh r30). */
+/* Matching constraint: the video results go through their own locals (v_*) rather than `?:`
+ * expressions; only then do `id`, fhd and sfh get the original registers. */
 void sfhds_DoProcessHdr(SFH sfh, SFHDS_FHD *fhd) {
     Sint32 ver;
     Sint32 is_sfd;

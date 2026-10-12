@@ -9,12 +9,12 @@
 typedef struct SJ_OBJ *SJ;
 
 typedef struct {
-    Uint8 *data;
-    Sint32 len;
+    Uint8 *data; /* 0x00 */
+    Sint32 len;  /* 0x04 */
 } SJCK;
 
 typedef struct {
-    Uint8 data[16];
+    Uint8 data[16]; /* 0x00 */
 } SJUUID;
 
 /* chunk ids */
@@ -25,22 +25,22 @@ typedef struct {
 #define SJ_ERR_PRM ((Char8 *)-3)
 
 typedef struct {
-    void *QueryInterface;
-    void *AddRef;
-    void *Release;
-    void (*Destroy)(SJ sj);
-    const SJUUID *(*GetUuid)(SJ sj);
-    void (*Reset)(SJ sj);
-    void (*GetChunk)(SJ sj, Sint32 id, Sint32 nbyte, SJCK *ck);
-    void (*UngetChunk)(SJ sj, Sint32 id, SJCK *ck);
-    void (*PutChunk)(SJ sj, Sint32 id, SJCK *ck);
-    Sint32 (*GetNumData)(SJ sj, Sint32 id);
-    Sint32 (*IsGetChunk)(SJ sj, Sint32 id, Sint32 nbyte, Sint32 *rbyte);
-    void (*EntryErrFunc)(SJ sj, void (*func)(void *obj, Char8 *msg), void *obj);
+    void *QueryInterface;                                                        /* 0x00 */
+    void *AddRef;                                                                /* 0x04 */
+    void *Release;                                                               /* 0x08 */
+    void (*Destroy)(SJ sj);                                                      /* 0x0C */
+    const SJUUID *(*GetUuid)(SJ sj);                                             /* 0x10 */
+    void (*Reset)(SJ sj);                                                        /* 0x14 */
+    void (*GetChunk)(SJ sj, Sint32 id, Sint32 nbyte, SJCK *ck);                  /* 0x18 */
+    void (*UngetChunk)(SJ sj, Sint32 id, SJCK *ck);                              /* 0x1C */
+    void (*PutChunk)(SJ sj, Sint32 id, SJCK *ck);                                /* 0x20 */
+    Sint32 (*GetNumData)(SJ sj, Sint32 id);                                      /* 0x24 */
+    Sint32 (*IsGetChunk)(SJ sj, Sint32 id, Sint32 nbyte, Sint32 *rbyte);         /* 0x28 */
+    void (*EntryErrFunc)(SJ sj, void (*func)(void *obj, Char8 *msg), void *obj); /* 0x2C */
 } SJ_IF;
 
 struct SJ_OBJ {
-    SJ_IF *vtbl;
+    SJ_IF *vtbl; /* 0x00 */
 };
 
 #define SJ_Destroy(sj) (*(sj)->vtbl->Destroy)(sj)

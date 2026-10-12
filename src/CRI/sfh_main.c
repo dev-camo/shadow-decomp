@@ -57,29 +57,29 @@ const Char8 SFH_sbver_str[] = "\nCRI SFH/GC Ver.1.19 Build:Feb 28 2005 19:36:31\
 #define SFH_VER_210 210
 
 typedef struct SFH_OBJ {
-    Sint32 stat;
-    Uint8 *hdr;
-    Sint32 size;
-    Sint32 ver;
+    Sint32 stat; /* 0x00 */
+    Uint8 *hdr;  /* 0x04 */
+    Sint32 size; /* 0x08 */
+    Sint32 ver;  /* 0x0C */
 } SFH_OBJ;
 
 /* one stream element record (0x40 bytes) */
 typedef struct {
-    Uint8 pad0[0x18];
-    Uint8 id;
-    Uint8 codec;
-    Uint8 aud_layer; /* video: bitrate (Sint16, big endian) */
-    Uint8 aud_chnum;
-    Uint8 aud_smphz[4]; /* video: picsz[3], picrate */
-    Uint8 ftr_flag;
-    Uint8 ftr_coltype;
-    Uint8 ftr_pictype;
-    Uint8 ftr_fixflg;
-    Uint8 ftr_expand;
-    Uint8 ftr_gopn;
-    Uint8 ftr_gopm;
-    Uint8 ftr_fxtype;
-    Uint8 pad28[0x18];
+    Uint8 pad0[0x18];   /* 0x00 */
+    Uint8 id;           /* 0x18 */
+    Uint8 codec;        /* 0x19 */
+    Uint8 aud_layer;    /* 0x1A video: bitrate (Sint16, big endian) */
+    Uint8 aud_chnum;    /* 0x1B */
+    Uint8 aud_smphz[4]; /* 0x1C video: picsz[3], picrate */
+    Uint8 ftr_flag;     /* 0x20 */
+    Uint8 ftr_coltype;  /* 0x21 */
+    Uint8 ftr_pictype;  /* 0x22 */
+    Uint8 ftr_fixflg;   /* 0x23 */
+    Uint8 ftr_expand;   /* 0x24 */
+    Uint8 ftr_gopn;     /* 0x25 */
+    Uint8 ftr_gopm;     /* 0x26 */
+    Uint8 ftr_fxtype;   /* 0x27 */
+    Uint8 pad28[0x18];  /* 0x28 */
 } SFH_ELEM;
 
 #define SFH_ELEM_BITRATE(e) (*(Uint16 *)&(e)->aud_layer)
@@ -88,9 +88,9 @@ typedef struct {
 #define SFH_ELEM_SMPHZ(e) (*(Uint32 *)(e)->aud_smphz)
 
 typedef struct {
-    Sint32 num;
-    Sint32 used;
-    SFH_OBJ *hn;
+    Sint32 num;  /* 0x00 */
+    Sint32 used; /* 0x04 */
+    SFH_OBJ *hn; /* 0x08 */
 } SFH_OBJINF;
 
 static Sint32 sfh_init_cont = 0;

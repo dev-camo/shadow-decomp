@@ -25,26 +25,26 @@ typedef struct SFD_OBJ *SFD;
 
 /* user-output (usr sj) channel */
 typedef struct {
-    void *sj;
-    void *prm;
-    Sint32 rsv1;
-    Sint32 rsv2;
+    void *sj;    /* 0x00 */
+    void *prm;   /* 0x04 */
+    Sint32 rsv1; /* 0x08 */
+    Sint32 rsv2; /* 0x0C */
 } SFUO_CH;
 
 typedef struct {
-    Sint32 nch;
-    SFUO_CH ch[3];
+    Sint32 nch;    /* 0x00 */
+    SFUO_CH ch[3]; /* 0x04 */
 } SFUO;
 
 /* audio output (auto-play) driver work (sfd_aoap.c), at SFD_OBJ + 0x3474: user callbacks */
 typedef struct {
-    Sint32 x00;
+    Sint32 x00;                                          /* 0x00 */
     Sint32 (*SetOutPan)(SFD sfd, Sint32 ch, Sint32 pan); /* 0x04 */
     Sint32 (*GetOutPan)(SFD sfd, Sint32 ch);             /* 0x08 */
     Sint32 (*SetOutVol)(SFD sfd, Sint32 vol);            /* 0x0C */
     Sint32 (*GetOutVol)(SFD sfd);                        /* 0x10 */
     void (*SetSpeed)(SFD sfd, Sint32 speed);             /* 0x14 */
-    Sint32 x18;
+    Sint32 x18;                                          /* 0x18 */
 } SFAOAP;
 
 /* clock source (sfd_tim.c) */
@@ -52,34 +52,34 @@ typedef Sint32 (*SFTIM_FN)(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 
 /* concatenated-play work (sfd_con.c), at SFD_OBJ + 0xD30 */
 typedef struct {
-    SFTIM_FN timefn[6]; /* 0x00 clock sources (the SFTIM_WORK view of this memory) */
-    Uint8 pad18[0xB8 - 0x18];
-    Sint32 tottime; /* 0xB8 total time of the concatenated files */
-    Sint32 tunit;   /* 0xBC */
-    Uint8 padc0[0x150 - 0xC0];
-    Sint64 scr_base;      /* 0x150 first SCR of the file (sfd_mps.c, kept in the seek work) */
-    Sint64 scr_ofst;      /* 0x158 audio PTS minimum - seek work SCR (sfd_mps.c) */
-    Sint32 pad160;        /* 0x160 */
-    Sint32 ctime;         /* 0x164 accumulated concat time */
-    Sint32 ctime_idx;     /* 0x168 */
-    Sint32 ctime_que[32]; /* 0x16C */
-    Sint32 tot_last;      /* 0x1EC */
-    Sint32 pad1F0;
-    Sint32 que_wr;      /* 0x1F4 */
-    Sint32 que_rd;      /* 0x1F8 */
-    Sint32 tot_que[32]; /* 0x1FC */
+    SFTIM_FN timefn[6];        /* 0x00 clock sources (the SFTIM_WORK view of this memory) */
+    Uint8 pad18[0xB8 - 0x18];  /* 0x018 */
+    Sint32 tottime;            /* 0xB8 total time of the concatenated files */
+    Sint32 tunit;              /* 0xBC */
+    Uint8 padc0[0x150 - 0xC0]; /* 0x0C0 */
+    Sint64 scr_base;           /* 0x150 first SCR of the file (sfd_mps.c, kept in the seek work) */
+    Sint64 scr_ofst;           /* 0x158 audio PTS minimum - seek work SCR (sfd_mps.c) */
+    Sint32 pad160;             /* 0x160 */
+    Sint32 ctime;              /* 0x164 accumulated concat time */
+    Sint32 ctime_idx;          /* 0x168 */
+    Sint32 ctime_que[32];      /* 0x16C */
+    Sint32 tot_last;           /* 0x1EC */
+    Sint32 pad1F0;             /* 0x1F0 */
+    Sint32 que_wr;             /* 0x1F4 */
+    Sint32 que_rd;             /* 0x1F8 */
+    Sint32 tot_que[32];        /* 0x1FC */
 } SFCON;
 
 /* timecode as the user passes it to SFD_Tc2Time (0x20 bytes) */
 typedef struct {
-    Sint32 type; /* 0x00 frame rate (index into SFTIM_prate) */
-    Sint32 drop; /* 0x04 drop frame */
-    Sint32 hour; /* 0x08 */
-    Sint32 min;  /* 0x0C */
-    Sint32 sec;  /* 0x10 */
-    Sint32 frm;  /* 0x14 */
-    Sint32 frm2; /* 0x18 added to frm */
-    Sint16 x1c;
+    Sint32 type;  /* 0x00 frame rate (index into SFTIM_prate) */
+    Sint32 drop;  /* 0x04 drop frame */
+    Sint32 hour;  /* 0x08 */
+    Sint32 min;   /* 0x0C */
+    Sint32 sec;   /* 0x10 */
+    Sint32 frm;   /* 0x14 */
+    Sint32 frm2;  /* 0x18 added to frm */
+    Sint16 x1c;   /* 0x1C */
     Sint16 field; /* 0x1E half frame */
 } SFTIM_TC;
 
@@ -93,74 +93,74 @@ typedef struct {
 
 /* timing work (sfd_tim.c), the same memory as SFCON at SFD_OBJ + 0xD30 (SFD_TIM(sfd)) */
 typedef struct {
-    SFTIM_FN timefn[6];  /* 0x000 clock sources (SFTIM_SetTimeFn / cond 0xF) */
-    Bool (*isskipfn)();  /* 0x018 SFD_SetUsrIsSkipFn */
-    SFTIM_TC tc;         /* 0x01C */
-    SFTIM_TTU ttu0;      /* 0x03C (INT_MAX) */
-    SFTIM_TTU ttu1;      /* 0x068 (-1) */
-    SFTIM_TTU tot;       /* 0x094 (-1) total time (SFCON.tottime/tunit) */
-    SFTIM_TTU ttu3;      /* 0x0C0 (0) */
-    SFTIM_TTU vstart;    /* 0x0EC (-1) video start time */
-    SFTIM_TTU vofst;     /* 0x118 (INT_MAX) video start offset (SFTIM_GetVideoStartSample) */
-    Sint32 astart_smpl;  /* 0x144 SFTIM_SetStartTime */
-    Sint32 astart_sfreq; /* 0x148 */
-    Sint32 x14c;
-    Sint64 x150;   /* 0x150 (-1) */
-    Sint64 as_pts; /* 0x158 (-1) audio start PTS (90 kHz) */
-    Sint32 x160;
+    SFTIM_FN timefn[6];   /* 0x000 clock sources (SFTIM_SetTimeFn / cond 0xF) */
+    Bool (*isskipfn)();   /* 0x018 SFD_SetUsrIsSkipFn */
+    SFTIM_TC tc;          /* 0x01C */
+    SFTIM_TTU ttu0;       /* 0x03C (INT_MAX) */
+    SFTIM_TTU ttu1;       /* 0x068 (-1) */
+    SFTIM_TTU tot;        /* 0x094 (-1) total time (SFCON.tottime/tunit) */
+    SFTIM_TTU ttu3;       /* 0x0C0 (0) */
+    SFTIM_TTU vstart;     /* 0x0EC (-1) video start time */
+    SFTIM_TTU vofst;      /* 0x118 (INT_MAX) video start offset (SFTIM_GetVideoStartSample) */
+    Sint32 astart_smpl;   /* 0x144 SFTIM_SetStartTime */
+    Sint32 astart_sfreq;  /* 0x148 */
+    Sint32 x14c;          /* 0x14C */
+    Sint64 x150;          /* 0x150 (-1) */
+    Sint64 as_pts;        /* 0x158 (-1) audio start PTS (90 kHz) */
+    Sint32 x160;          /* 0x160 */
     Sint32 ctime;         /* 0x164 (SFCON) */
     Sint32 ctime_idx;     /* 0x168 */
     Sint32 ctime_que[32]; /* 0x16C */
     Sint32 tot_last;      /* 0x1EC (1) */
-    Sint32 x1f0;
-    Sint32 que_wr;      /* 0x1F4 */
-    Sint32 que_rd;      /* 0x1F8 */
-    Sint32 tot_que[32]; /* 0x1FC */
-    Sint32 vterm;       /* 0x27C (-5) video end time */
-    Sint32 vterm_unit;  /* 0x280 (1) */
-    Sint32 x284;        /* 0x284 (-5) */
-    Sint32 x288;        /* 0x288 (1) */
-    Sint32 cur;         /* 0x28C (-1) current time (SFTIM_GetTime) */
-    Sint32 cur_unit;    /* 0x290 (1) */
-    Sint32 itime;       /* 0x294 (-5) */
-    Sint32 itime_min;   /* 0x298 (INT_MAX) */
-    Sint32 itime_max;   /* 0x29C (0) */
-    Sint32 x2a0;        /* 0x2A0 (INT_MAX) */
-    Sint32 x2a4;
-    Sint32 vsync; /* 0x2A8 vsync clock count */
-    Sint32 speed; /* 0x2AC (1000) */
-    Sint32 x2b0;
-    Sint32 x2b4;
-    Sint32 x2b8;     /* 0x2B8 (1) */
-    Sint32 x2bc;     /* 0x2BC (100) frame decision count */
-    Float32 x2c0;    /* 0x2C0 (-1.0) frame time (ft) of the last decision count */
-    Sint32 x2c4;     /* 0x2C4 last frame decision */
-    Float32 x2c8;    /* 0x2C8 (-1.0) frame time (ft) of the last decided frame */
-    Sint32 vcnt;     /* 0x2CC (-1) vsync count while requested */
-    Sint32 chg_base; /* 0x2D0 clock at the last time change */
-    SFTIM_FN extfn;  /* 0x2D4 external clock (SFD_SetExtClockFn) */
-    Sint32 ext_last; /* 0x2D8 (-5) last external clock count */
-    Sint32 ext_cnt;  /* 0x2DC */
-    Sint32 ext_unit; /* 0x2E0 (1) */
-    Sint32 ext_wrap; /* 0x2E4 (-1) */
-    void *ext_obj;   /* 0x2E8 */
-    Sint32 x2ec;
-    Uint8 tst[0x1C0]; /* 0x2F0 (SFD_OBJ + 0x1018) */
+    Sint32 x1f0;          /* 0x1F0 */
+    Sint32 que_wr;        /* 0x1F4 */
+    Sint32 que_rd;        /* 0x1F8 */
+    Sint32 tot_que[32];   /* 0x1FC */
+    Sint32 vterm;         /* 0x27C (-5) video end time */
+    Sint32 vterm_unit;    /* 0x280 (1) */
+    Sint32 x284;          /* 0x284 (-5) */
+    Sint32 x288;          /* 0x288 (1) */
+    Sint32 cur;           /* 0x28C (-1) current time (SFTIM_GetTime) */
+    Sint32 cur_unit;      /* 0x290 (1) */
+    Sint32 itime;         /* 0x294 (-5) */
+    Sint32 itime_min;     /* 0x298 (INT_MAX) */
+    Sint32 itime_max;     /* 0x29C (0) */
+    Sint32 x2a0;          /* 0x2A0 (INT_MAX) */
+    Sint32 x2a4;          /* 0x2A4 */
+    Sint32 vsync;         /* 0x2A8 vsync clock count */
+    Sint32 speed;         /* 0x2AC (1000) */
+    Sint32 x2b0;          /* 0x2B0 */
+    Sint32 x2b4;          /* 0x2B4 */
+    Sint32 x2b8;          /* 0x2B8 (1) */
+    Sint32 x2bc;          /* 0x2BC (100) frame decision count */
+    Float32 x2c0;         /* 0x2C0 (-1.0) frame time (ft) of the last decision count */
+    Sint32 x2c4;          /* 0x2C4 last frame decision */
+    Float32 x2c8;         /* 0x2C8 (-1.0) frame time (ft) of the last decided frame */
+    Sint32 vcnt;          /* 0x2CC (-1) vsync count while requested */
+    Sint32 chg_base;      /* 0x2D0 clock at the last time change */
+    SFTIM_FN extfn;       /* 0x2D4 external clock (SFD_SetExtClockFn) */
+    Sint32 ext_last;      /* 0x2D8 (-5) last external clock count */
+    Sint32 ext_cnt;       /* 0x2DC */
+    Sint32 ext_unit;      /* 0x2E0 (1) */
+    Sint32 ext_wrap;      /* 0x2E4 (-1) */
+    void *ext_obj;        /* 0x2E8 */
+    Sint32 x2ec;          /* 0x2EC */
+    Uint8 tst[0x1C0];     /* 0x2F0 (SFD_OBJ + 0x1018) */
     struct {
         Sint16 rpt; /* repeat_first_field count of the picture */
         Sint16 acc; /* accumulated repeated fields */
     } rfld[64];     /* 0x4B0 per temporal reference (sfd_mpv.c) */
-    Sint32 x5b0;
-    Sint32 x5b4;
-    Sint32 x5b8;
+    Sint32 x5b0;    /* 0x5B0 */
+    Sint32 x5b4;    /* 0x5B4 */
+    Sint32 x5b8;    /* 0x5B8 */
 } SFTIM_WORK;
 
 typedef SFTIM_WORK *SFTIM;
 
 /* library-wide timing work (SFLIB_WORK.tim) */
 typedef struct {
-    Sint32 vcnt; /* 0x00 vsync count (SFTIM_VbIn) */
-    Sint32 x04;
+    Sint32 vcnt;  /* 0x00 vsync count (SFTIM_VbIn) */
+    Sint32 x04;   /* 0x04 */
     Sint32 vrate; /* 0x08 vsyncs per second (59940 = 59.94 Hz) */
 } SFTIM_LIB;
 
@@ -168,9 +168,9 @@ extern const Sint32 SFTIM_prate[9];
 
 /* PTS queue entry (16 bytes, 8-byte aligned) */
 typedef struct {
-    Sint64 pts;
-    Uint32 pos;
-    Uint32 len;
+    Sint64 pts; /* 0x00 */
+    Uint32 pos; /* 0x08 */
+    Uint32 len; /* 0x0C */
 } SFPTS_ENT;
 
 typedef struct {
@@ -183,13 +183,13 @@ typedef struct {
 
 /* per-frame picture information handed to the user (0x80 bytes) */
 typedef struct {
-    Sint32 raw[0x20];
+    Sint32 raw[0x20]; /* 0x00 */
 } SFD_VFRM_INF;
 
 /* video frame slot (0x88 bytes), SFD_OBJ + 0x16A8 + n * 0x88; slot n pairs with SFMPV frame n */
 typedef struct {
-    void *frm; /* 0x00 */
-    Sint32 x04;
+    void *frm;        /* 0x00 */
+    Sint32 x04;       /* 0x04 */
     SFD_VFRM_INF inf; /* 0x08 */
 } SFD_VFRM;
 
@@ -200,7 +200,7 @@ typedef struct {
     Uint32 ofst;  /* 0x08 ring buffer start */
     Sint32 size;  /* 0x0C ring buffer size */
     Sint32 xsize; /* 0x10 extra (wrap) size */
-    Sint32 x14;
+    Sint32 x14;   /* 0x14 */
 } SFBUF_SUP;
 
 /* ring buffer state (SFBUF_WORK.u.ring) */
@@ -229,10 +229,10 @@ typedef struct {
     union {
         SFBUF_RING ring; /* 0x10 */
         struct {
-            Uint32 adr;  /* 0x10 */
-            Sint32 size; /* 0x14 */
-            Sint32 x18;
-            Sint32 x1c;
+            Uint32 adr;     /* 0x10 */
+            Sint32 size;    /* 0x14 */
+            Sint32 x18;     /* 0x18 */
+            Sint32 x1c;     /* 0x1C */
             SFD_VFRM *vfrm; /* 0x20 */
         } vfrm;
         struct {
@@ -252,36 +252,36 @@ typedef struct {
 
 /* transfer/stream driver interface (SFD_tr_in_mem, SFD_tr_vo_manu, ...) */
 typedef struct {
-    Sint32 (*Init)();
-    Sint32 (*Finish)();
-    Sint32 (*ExecServer)();
-    Sint32 (*Create)();
-    Sint32 (*Destroy)();
-    Sint32 (*Standby)();
-    Sint32 (*Start)();
-    Sint32 (*Stop)();
-    Sint32 (*Pause)();
-    Sint32 (*GetWrite)();
-    Sint32 (*AddWrite)();
-    Sint32 (*GetRead)();
-    Sint32 (*AddRead)();
-    Sint32 (*Seek)();
+    Sint32 (*Init)();       /* 0x00 */
+    Sint32 (*Finish)();     /* 0x04 */
+    Sint32 (*ExecServer)(); /* 0x08 */
+    Sint32 (*Create)();     /* 0x0C */
+    Sint32 (*Destroy)();    /* 0x10 */
+    Sint32 (*Standby)();    /* 0x14 */
+    Sint32 (*Start)();      /* 0x18 */
+    Sint32 (*Stop)();       /* 0x1C */
+    Sint32 (*Pause)();      /* 0x20 */
+    Sint32 (*GetWrite)();   /* 0x24 */
+    Sint32 (*AddWrite)();   /* 0x28 */
+    Sint32 (*GetRead)();    /* 0x2C */
+    Sint32 (*AddRead)();    /* 0x30 */
+    Sint32 (*Seek)();       /* 0x34 */
 } SFD_TR_IF;
 
 typedef Sint32 (*SFD_TR_FUNC)();
 
 /* per-transfer-driver slot (0x44 bytes), SFD_OBJ + 0x1F28 + n * 0x44 */
 typedef struct {
-    Sint32 prepflg;    /* 0x00 */
-    Sint32 termflg;    /* 0x04 */
-    void *hn;          /* 0x08 driver handle (tr[8]: SFUO *) */
-    SFD_TR_FUNC *trif; /* 0x0C driver function table */
-    Sint32 bufin;      /* 0x10 SFBUF id read by this driver */
-    Sint32 bufout;     /* 0x14 SFBUF id written by this driver */
-    Sint32 bufout2;    /* 0x18 */
-    Sint32 bufout3;    /* 0x1C */
-    Sint32 x20;        /* 0x20 (-1) */
-    Uint8 pad24[0x44 - 0x24];
+    Sint32 prepflg;           /* 0x00 */
+    Sint32 termflg;           /* 0x04 */
+    void *hn;                 /* 0x08 driver handle (tr[8]: SFUO *) */
+    SFD_TR_FUNC *trif;        /* 0x0C driver function table */
+    Sint32 bufin;             /* 0x10 SFBUF id read by this driver */
+    Sint32 bufout;            /* 0x14 SFBUF id written by this driver */
+    Sint32 bufout2;           /* 0x18 */
+    Sint32 bufout3;           /* 0x1C */
+    Sint32 x20;               /* 0x20 (-1) */
+    Uint8 pad24[0x44 - 0x24]; /* 0x24 */
 } SFD_TR;
 
 #define SFD_TR_NUM 9
@@ -306,8 +306,8 @@ typedef struct {
 
 /* picture user data slot of a decoded frame */
 typedef struct {
-    void *buf;
-    Sint32 len;
+    void *buf;  /* 0x00 */
+    Sint32 len; /* 0x04 */
 } SFMPV_PICUSR;
 
 /* decoded frame object of the video driver (0xE8 bytes; RE4's is 0xE0) */
@@ -326,118 +326,118 @@ typedef struct {
     SFMPV_PICUSR *picusr; /* 0x54 */
     Sint32 x58;           /* 0x58 this game only (-1 when the frame is released for drawing) */
     /* 0x5C: the MPV_PICATR of the picture (mpv.h), 0x80 bytes */
-    Sint32 pa_width;      /* 0x5C */
-    Sint32 pa_height;     /* 0x60 */
-    Sint32 pa_mb_width;   /* 0x64 */
-    Sint32 pa_mb_height;  /* 0x68 */
-    Sint32 pa_frame_rate; /* 0x6C */
-    Sint32 tmpref;        /* 0x70 temporal reference (10-bit) */
-    Sint32 pa_pic_type;   /* 0x74 */
-    Sint32 pa_tc_drop;    /* 0x78 */
-    Sint32 pa_tc_hour;    /* 0x7C */
-    Sint32 pa_tc_min;     /* 0x80 */
-    Sint32 pa_tc_sec;     /* 0x84 */
-    Sint32 pa_tc_pic;     /* 0x88 */
-    Sint32 x88;           /* 0x8C GOP headers seen */
-    Sint32 x8c;           /* 0x90 sequence headers seen */
-    Sint32 pa_x90[3];     /* 0x94 */
-    Sint32 pa_x9c[3];     /* 0xA0 */
-    Sint16 pa_xa8;        /* 0xAC */
-    Sint16 pa_xaa;        /* 0xAE */
-    Sint8 pa_xac;         /* 0xB0 */
-    Sint8 pa_xad;         /* 0xB1 */
-    Sint8 pa_xae;         /* 0xB2 */
-    Sint8 pa_xaf;         /* 0xB3 */
-    Sint8 pa_xb0;         /* 0xB4 */
-    Sint8 pa_xb1;         /* 0xB5 */
-    Sint8 pa_xb2;         /* 0xB6 */
-    Sint8 pa_xb3;         /* 0xB7 */
-    Sint8 pa_xb4;         /* 0xB8 */
-    Sint8 pa_xb5;         /* 0xB9 */
-    Sint8 pa_xb6;         /* 0xBA */
-    Sint8 pa_xb7;         /* 0xBB */
-    Sint8 pa_xb8;         /* 0xBC */
-    Sint8 pa_xb9;         /* 0xBD */
-    Sint8 pa_xba;         /* 0xBE */
-    Sint8 pa_xbb;         /* 0xBF */
-    Sint8 pa_xbc;         /* 0xC0 */
-    Uint8 padc1[0xC4 - 0xC1];
-    Sint32 xc4; /* 0xC4 last key compared by SFMPVF_HoldFrm (this game only) */
-    Uint8 padc8[0xE0 - 0xC8];
-    Sint64 pts; /* 0xE0 */
+    Sint32 pa_width;          /* 0x5C */
+    Sint32 pa_height;         /* 0x60 */
+    Sint32 pa_mb_width;       /* 0x64 */
+    Sint32 pa_mb_height;      /* 0x68 */
+    Sint32 pa_frame_rate;     /* 0x6C */
+    Sint32 tmpref;            /* 0x70 temporal reference (10-bit) */
+    Sint32 pa_pic_type;       /* 0x74 */
+    Sint32 pa_tc_drop;        /* 0x78 */
+    Sint32 pa_tc_hour;        /* 0x7C */
+    Sint32 pa_tc_min;         /* 0x80 */
+    Sint32 pa_tc_sec;         /* 0x84 */
+    Sint32 pa_tc_pic;         /* 0x88 */
+    Sint32 x88;               /* 0x8C GOP headers seen */
+    Sint32 x8c;               /* 0x90 sequence headers seen */
+    Sint32 pa_x90[3];         /* 0x94 */
+    Sint32 pa_x9c[3];         /* 0xA0 */
+    Sint16 pa_xa8;            /* 0xAC */
+    Sint16 pa_xaa;            /* 0xAE */
+    Sint8 pa_xac;             /* 0xB0 */
+    Sint8 pa_xad;             /* 0xB1 */
+    Sint8 pa_xae;             /* 0xB2 */
+    Sint8 pa_xaf;             /* 0xB3 */
+    Sint8 pa_xb0;             /* 0xB4 */
+    Sint8 pa_xb1;             /* 0xB5 */
+    Sint8 pa_xb2;             /* 0xB6 */
+    Sint8 pa_xb3;             /* 0xB7 */
+    Sint8 pa_xb4;             /* 0xB8 */
+    Sint8 pa_xb5;             /* 0xB9 */
+    Sint8 pa_xb6;             /* 0xBA */
+    Sint8 pa_xb7;             /* 0xBB */
+    Sint8 pa_xb8;             /* 0xBC */
+    Sint8 pa_xb9;             /* 0xBD */
+    Sint8 pa_xba;             /* 0xBE */
+    Sint8 pa_xbb;             /* 0xBF */
+    Sint8 pa_xbc;             /* 0xC0 */
+    Uint8 padc1[0xC4 - 0xC1]; /* 0xC1 */
+    Sint32 xc4;               /* 0xC4 last key compared by SFMPVF_HoldFrm (this game only) */
+    Uint8 padc8[0xE0 - 0xC8]; /* 0xC8 */
+    Sint64 pts;               /* 0xE0 */
 } SFMPV_FRM;
 
 /* MPEG video decoder parameters (mwsfd_mpvpara, SFD_SetMpvParaTbl; 0x24 bytes) */
 typedef struct {
-    Sint32 cwidth;  /* 0x00 chroma plane width (32-byte rounded half width) */
-    Sint32 cheight; /* 0x04 */
-    Sint32 width;   /* 0x08 */
-    Sint32 height;  /* 0x0C */
-    Sint32 x10;
+    Sint32 cwidth;     /* 0x00 chroma plane width (32-byte rounded half width) */
+    Sint32 cheight;    /* 0x04 */
+    Sint32 width;      /* 0x08 */
+    Sint32 height;     /* 0x0C */
+    Sint32 x10;        /* 0x10 */
     Sint32 max_width;  /* 0x14 */
     Sint32 max_height; /* 0x18 */
     Sint32 nfrm;       /* 0x1C decoded frame buffers */
-    Sint32 x20;
+    Sint32 x20;        /* 0x20 */
 } SFMPV_PARA;
 
 #define SFMPV_FRM_NUM 16
 
 /* video driver work (tr[2].hn, SFD_OBJ + 0x23A0, 0x1020 bytes) */
 typedef struct {
-    struct MPV_OBJ *mpv;         /* 0x000 */
-    SFMPV_PARA para;             /* 0x004 */
-    void *rfb_adr[2];            /* 0x028 reference frame buffers */
-    void *ta_adr[SFMPV_FRM_NUM]; /* 0x030 decoded frame buffers */
-    SFMPV_FRM *curfrm;           /* 0x070 frame handed out by SFMPV_GetRead */
-    Sint32 picstat;              /* 0x074 decode state (2, 3, 5) */
-    Sint32 dlmmask;              /* 0x078 start codes accepted by the decoder (0xC0, 0xC8, 0xCC) */
-    Sint32 termflg;              /* 0x07C decoder terminated */
-    Sint32 gopstat;              /* 0x080 */
-    Sint32 nskip;                /* 0x084 frames skipped in a row */
-    Sint32 nconcat;              /* 0x088 sequence end codes passed */
-    Uint8 picatr[0x80];          /* 0x08C MPV_PICATR of the picture being decoded */
-    Sint32 last_ngop;            /* 0x10C */
-    Sint32 newgop;               /* 0x110 the picture starts a new GOP */
-    Sint32 vbvsiz;               /* 0x114 */
-    Sint32 pts_tmpref;           /* 0x118 temporal reference of the picture carrying the PTS */
-    Sint32 pts_ofst;             /* 0x11C pictures since the PTS */
-    Sint32 pts_max;              /* 0x120 */
-    Sint32 pad124;
-    SFPTS_ENT ptsent;     /* 0x128 last PTS queue entry seen */
-    Sint32 refidx[2];     /* 0x138 reference frame buffer indices (forward, backward) */
-    SFMPV_PLANE rfbuf[2]; /* 0x140 */
-    SFMPV_FRM *ref[2];    /* 0x160 reference frames (forward, backward) */
-    SFMPV_FRM *pendfrm;   /* 0x168 B picture decoded into a standby frame */
-    Sint32 skipret;       /* 0x16C */
-    Sint32 dlmwait;       /* 0x170 */
-    Sint32 tmpref_adj;    /* 0x174 */
-    Sint32 nfrm;          /* 0x178 */
-    Sint32 pad17c;
-    SFMPV_FRM frm[SFMPV_FRM_NUM];       /* 0x180 */
-    void *picusr_buf;                   /* 0x1000 */
-    Sint32 picusr_num;                  /* 0x1004 */
-    Sint32 picusr_siz;                  /* 0x1008 */
-    Uint8 *picusr_dat;                  /* 0x100C user data of the picture being decoded */
-    Sint32 picusr_len;                  /* 0x1010 */
+    struct MPV_OBJ *mpv;          /* 0x000 */
+    SFMPV_PARA para;              /* 0x004 */
+    void *rfb_adr[2];             /* 0x028 reference frame buffers */
+    void *ta_adr[SFMPV_FRM_NUM];  /* 0x030 decoded frame buffers */
+    SFMPV_FRM *curfrm;            /* 0x070 frame handed out by SFMPV_GetRead */
+    Sint32 picstat;               /* 0x074 decode state (2, 3, 5) */
+    Sint32 dlmmask;               /* 0x078 start codes accepted by the decoder (0xC0, 0xC8, 0xCC) */
+    Sint32 termflg;               /* 0x07C decoder terminated */
+    Sint32 gopstat;               /* 0x080 */
+    Sint32 nskip;                 /* 0x084 frames skipped in a row */
+    Sint32 nconcat;               /* 0x088 sequence end codes passed */
+    Uint8 picatr[0x80];           /* 0x08C MPV_PICATR of the picture being decoded */
+    Sint32 last_ngop;             /* 0x10C */
+    Sint32 newgop;                /* 0x110 the picture starts a new GOP */
+    Sint32 vbvsiz;                /* 0x114 */
+    Sint32 pts_tmpref;            /* 0x118 temporal reference of the picture carrying the PTS */
+    Sint32 pts_ofst;              /* 0x11C pictures since the PTS */
+    Sint32 pts_max;               /* 0x120 */
+    Sint32 pad124;                /* 0x0124 */
+    SFPTS_ENT ptsent;             /* 0x128 last PTS queue entry seen */
+    Sint32 refidx[2];             /* 0x138 reference frame buffer indices (forward, backward) */
+    SFMPV_PLANE rfbuf[2];         /* 0x140 */
+    SFMPV_FRM *ref[2];            /* 0x160 reference frames (forward, backward) */
+    SFMPV_FRM *pendfrm;           /* 0x168 B picture decoded into a standby frame */
+    Sint32 skipret;               /* 0x16C */
+    Sint32 dlmwait;               /* 0x170 */
+    Sint32 tmpref_adj;            /* 0x174 */
+    Sint32 nfrm;                  /* 0x178 */
+    Sint32 pad17c;                /* 0x017C */
+    SFMPV_FRM frm[SFMPV_FRM_NUM]; /* 0x180 */
+    void *picusr_buf;             /* 0x1000 */
+    Sint32 picusr_num;            /* 0x1004 */
+    Sint32 picusr_siz;            /* 0x1008 */
+    Uint8 *picusr_dat;            /* 0x100C user data of the picture being decoded */
+    Sint32 picusr_len;            /* 0x1010 */
     SFMPV_PICUSR picusr[SFMPV_FRM_NUM]; /* 0x1014 */
-    Sint32 pad1094;
-    Sint64 pts; /* 0x1098 PTS of the picture being decoded */
+    Sint32 pad1094;                     /* 0x1094 */
+    Sint64 pts;                         /* 0x1098 PTS of the picture being decoded */
 } SFMPV_WORK;
 
 /* 0xA8-byte player information block returned by SFD_GetPlyInf; this game's block is 8 bytes longer
  * than RE4's: a frame counter is added at +0x18 (so RE4's fields from +0x18 sit 4 bytes later) and the
  * 64-bit counters from +0x30 are realigned 8 bytes later (sfd_ply.c SFPLY_PLYINF is the field view) */
 typedef struct {
-    Sint32 raw[0x2A];
+    Sint32 raw[0x2A]; /* 0x00 */
 } SFD_PLYINF;
 
 /* creation parameters of SFBUF_InitHn: the first 0x2C bytes of SFD_CREPRM */
 typedef struct {
-    Sint32 x00;
+    Sint32 x00;     /* 0x00 */
     Uint32 adr;     /* 0x04 work base */
     Sint32 size[7]; /* 0x08 sizes of buffers 0..6 */
-    Sint32 x24;
-    Sint32 unit; /* 0x28 ring buffer 0 alignment */
+    Sint32 x24;     /* 0x24 */
+    Sint32 unit;    /* 0x28 ring buffer 0 alignment */
 } SFBUF_PRM;
 
 /* creation parameters passed to SFTRN_InitHn: trif_tbl[n] is driver n's function table
@@ -448,7 +448,7 @@ typedef struct {
 
 /* the 15 driver interfaces known to the library (SFTRN_Init) */
 typedef struct {
-    SFD_TR_IF *tbl[15];
+    SFD_TR_IF *tbl[15]; /* 0x00 */
 } SFTRN_TRIF_TBL;
 
 /* error callback state (sfd_lib.c), per handle at SFD_OBJ + 0x9F0 and library-wide */
@@ -456,34 +456,34 @@ typedef struct {
     void (*fn)(void *obj, Sint32 code); /* 0x00 */
     void *obj;                          /* 0x04 */
     Sint32 code;                        /* 0x08 first error code */
-    Sint32 x0c;
-    Sint32 x10;
+    Sint32 x0c;                         /* 0x0C */
+    Sint32 x10;                         /* 0x10 */
 } SFLIB_ERRINF;
 
 /* Sofdec file header analysis results (sfd_hds.c, 0x894 bytes): SFD_OBJ + 0x78, SFSEE_WORK + 0xC */
 #define SFHDS_RAW_SIZE 0x800
 
 typedef struct {
-    Sint32 codec; /* 0x4C */
-    Sint32 layer; /* 0x50 */
-    Sint32 chnum; /* 0x54 */
-    Sint32 smphz; /* 0x58 */
+    Sint32 codec; /* 0x00 */
+    Sint32 layer; /* 0x04 */
+    Sint32 chnum; /* 0x08 */
+    Sint32 smphz; /* 0x0C */
 } SFHDS_AUD;
 
 typedef struct {
-    Sint32 codec;         /* 0x5C */
-    Sint32 bitrate;       /* 0x60 */
-    Sint32 picw;          /* 0x64 */
-    Sint32 pich;          /* 0x68 */
-    Sint32 picrate;       /* 0x6C */
-    Sint32 ftr_eff;       /* 0x70 feature information present */
-    Sint32 ftr_coltype;   /* 0x74 */
-    Sint32 ftr_pictype;   /* 0x78 */
-    Sint32 ftr_fixflg;    /* 0x7C */
-    Sint32 ftr_shcfixflg; /* 0x80 */
-    Sint32 ftr_expand;    /* 0x84 */
-    Sint32 ftr_gopn;      /* 0x88 */
-    Sint32 ftr_gopm;      /* 0x8C */
+    Sint32 codec;         /* 0x00 */
+    Sint32 bitrate;       /* 0x04 */
+    Sint32 picw;          /* 0x08 */
+    Sint32 pich;          /* 0x0C */
+    Sint32 picrate;       /* 0x10 */
+    Sint32 ftr_eff;       /* 0x14 feature information present */
+    Sint32 ftr_coltype;   /* 0x18 */
+    Sint32 ftr_pictype;   /* 0x1C */
+    Sint32 ftr_fixflg;    /* 0x20 */
+    Sint32 ftr_shcfixflg; /* 0x24 */
+    Sint32 ftr_expand;    /* 0x28 */
+    Sint32 ftr_gopn;      /* 0x2C */
+    Sint32 ftr_gopm;      /* 0x30 */
 } SFHDS_VID;
 
 typedef struct {
@@ -520,12 +520,12 @@ typedef struct {
 
 /* system stream analysis kept in the seek work (sfd_mps.c), SFSEE_WORK + 0x8A0 */
 typedef struct {
-    Sint32 analyzed; /* 0x00 (sfd_see.c: vhdr) */
-    Sint32 ncount;   /* 0x04 picrate * 50 (sfd_see.c: vncount) */
-    Sint32 tscale;   /* 0x08 (sfd_see.c: vtscale) */
-    Sint32 nvid;     /* 0x0C video streams of the system header */
-    Sint32 naud;     /* 0x10 audio streams */
-    Sint32 pad14;
+    Sint32 analyzed;   /* 0x00 (sfd_see.c: vhdr) */
+    Sint32 ncount;     /* 0x04 picrate * 50 (sfd_see.c: vncount) */
+    Sint32 tscale;     /* 0x08 (sfd_see.c: vtscale) */
+    Sint32 nvid;       /* 0x0C video streams of the system header */
+    Sint32 naud;       /* 0x10 audio streams */
+    Sint32 pad14;      /* 0x14 */
     Sint64 scr_base;   /* 0x18 */
     Sint64 pts_min;    /* 0x20 */
     Sint32 stmid_vid;  /* 0x28 first video stream id */
@@ -536,32 +536,32 @@ typedef struct {
 /* seek support work supplied by the user through SFD_EntrySeek (sfd_see.c); the header analysis
  * results of the video / audio streams are kept here, followed by the user-set totals */
 typedef struct {
-    Sint32 analyzed; /* 0x000 total time known */
-    Sint32 ncount;   /* 0x004 total time */
-    Sint32 tscale;   /* 0x008 */
-    SFHDS_FHD fhd;   /* 0x00C system header analysis */
-    SFSEE_SHDR shdr; /* 0x8A0 system stream analysis (sfd_mps.c), 0x198 bytes */
-    Uint8 pada38[0xAD0 - 0xA38];
-    Sint32 a1hdr;    /* 0xAD0 audio 1 header analysed */
-    Sint32 a1ncount; /* 0xAD4 */
-    Sint32 a1tscale; /* 0xAD8 */
-    Uint8 padadc[0xD0C - 0xADC];
-    Sint32 a2hdr;    /* 0xD0C audio 2 header analysed */
-    Sint32 a2ncount; /* 0xD10 */
-    Sint32 a2tscale; /* 0xD14 */
-    Uint8 padd18[0xDA8 - 0xD18];
-    Sint32 rate;      /* 0xDA8 estimated byte rate */
-    Sint32 fsize_est; /* 0xDAC file size seen by the input driver */
-    Sint32 tot_est;   /* 0xDB0 total time from the concatenation work */
-    Sint32 tunit_est; /* 0xDB4 */
-    Sint32 av_a;      /* 0xDB8 */
-    Sint32 av_b;      /* 0xDBC */
-    Sint32 paddc0;
-    Sint32 fsize;    /* 0xDC4 SFD_SetFileSize */
-    Sint32 tottime;  /* 0xDC8 SFD_SetTotTime */
-    Sint32 tunit;    /* 0xDCC */
-    Sint32 byterate; /* 0xDD0 SFD_SetByteRate */
-    Sint32 seekpos;  /* 0xDD4 SFD_SetSeekPos */
+    Sint32 analyzed;             /* 0x000 total time known */
+    Sint32 ncount;               /* 0x004 total time */
+    Sint32 tscale;               /* 0x008 */
+    SFHDS_FHD fhd;               /* 0x00C system header analysis */
+    SFSEE_SHDR shdr;             /* 0x8A0 system stream analysis (sfd_mps.c), 0x198 bytes */
+    Uint8 pada38[0xAD0 - 0xA38]; /* 0xA38 */
+    Sint32 a1hdr;                /* 0xAD0 audio 1 header analysed */
+    Sint32 a1ncount;             /* 0xAD4 */
+    Sint32 a1tscale;             /* 0xAD8 */
+    Uint8 padadc[0xD0C - 0xADC]; /* 0xADC */
+    Sint32 a2hdr;                /* 0xD0C audio 2 header analysed */
+    Sint32 a2ncount;             /* 0xD10 */
+    Sint32 a2tscale;             /* 0xD14 */
+    Uint8 padd18[0xDA8 - 0xD18]; /* 0xD18 */
+    Sint32 rate;                 /* 0xDA8 estimated byte rate */
+    Sint32 fsize_est;            /* 0xDAC file size seen by the input driver */
+    Sint32 tot_est;              /* 0xDB0 total time from the concatenation work */
+    Sint32 tunit_est;            /* 0xDB4 */
+    Sint32 av_a;                 /* 0xDB8 */
+    Sint32 av_b;                 /* 0xDBC */
+    Sint32 paddc0;               /* 0xDC0 */
+    Sint32 fsize;                /* 0xDC4 SFD_SetFileSize */
+    Sint32 tottime;              /* 0xDC8 SFD_SetTotTime */
+    Sint32 tunit;                /* 0xDCC */
+    Sint32 byterate;             /* 0xDD0 SFD_SetByteRate */
+    Sint32 seekpos;              /* 0xDD4 SFD_SetSeekPos */
 } SFSEE_WORK;
 
 /* audio stream header analysis kept in the seek work (a1hdr / a2hdr and the words after them) */
@@ -575,18 +575,18 @@ typedef struct {
 } SFSEE_AHDR;
 
 typedef struct {
-    Sint32 x00;
+    Sint32 x00; /* 0x00 */
     Sint32 pos; /* 0x04 requested seek position (-3: none) */
-    Sint32 x08;
+    Sint32 x08; /* 0x08 */
 } SFSEE_REQ;
 
 /* ADX audio driver creation parameters (SFD_SetAdxtPara, 0x1C bytes) */
 typedef struct {
-    Sint32 bsize;  /* 0x00 ring buffer size */
-    Sint32 xsize;  /* 0x04 ring buffer extra size */
-    void *buf;     /* 0x08 ring buffer (32-byte aligned) */
-    Sint32 maxnch; /* 0x0C */
-    Sint32 x10;
+    Sint32 bsize;    /* 0x00 ring buffer size */
+    Sint32 xsize;    /* 0x04 ring buffer extra size */
+    void *buf;       /* 0x08 ring buffer (32-byte aligned) */
+    Sint32 maxnch;   /* 0x0C */
+    Sint32 x10;      /* 0x10 */
     Sint32 worksize; /* 0x14 */
     void *work;      /* 0x18 ADXT work (32-byte aligned) */
 } SFADXT_PARA;
@@ -604,46 +604,47 @@ typedef struct {
     Sint32 smplofst;  /* 0x38 samples skipped before the audio start */
     void (*func)(SFD sfd, Uint8 *data, Sint32 len,
                  Sint32 *nbyte); /* 0x3C transfer state function */
-    Sint32 x40;
-    Sint32 svrfreq; /* 0x44 (-1) */
-    Sint32 totbyte; /* 0x48 bytes copied into the stream joint */
-    Sint32 x4c;
+    Sint32 x40;                  /* 0x40 */
+    Sint32 svrfreq;              /* 0x44 (-1) */
+    Sint32 totbyte;              /* 0x48 bytes copied into the stream joint */
+    Sint32 x4c;                  /* 0x4C */
 } SFADXT_WORK;
 
+/* seek request state, SFD_OBJ + 0x34C8 */
 typedef struct {
-    SFSEE_WORK *wk; /* 0x34C8 */
-    SFSEE_REQ req;  /* 0x34CC */
+    SFSEE_WORK *wk; /* 0x00 */
+    SFSEE_REQ req;  /* 0x04 */
 } SFSEE_HN;
 
 /* creation parameters (SFD_Create, 0x44 bytes); the handle starts with a copy of them (sfd_ply.c).
  * The first 0x2C bytes are what sfd_buf.c reads as SFBUF_PRM. */
 typedef struct {
-    Sint32 x00;
+    Sint32 x00;     /* 0x00 */
     Uint32 adr;     /* 0x04 buffer work base (aligned to 32 in place by sfply_InitHn) */
     Sint32 size[7]; /* 0x08 sizes of buffers 0..6 */
-    Sint32 x24;
-    Sint32 unit; /* 0x28 ring buffer 0 alignment */
-    Sint32 x2c;
-    Sint32 x30;
-    Sint32 x34;
-    Sint32 x38;
+    Sint32 x24;     /* 0x24 */
+    Sint32 unit;    /* 0x28 ring buffer 0 alignment */
+    Sint32 x2c;     /* 0x2C */
+    Sint32 x30;     /* 0x30 */
+    Sint32 x34;     /* 0x34 */
+    Sint32 x38;     /* 0x38 */
     void *hnwork;   /* 0x3C handle work (SFD_OBJ, aligned to 32) */
     Sint32 hnwksiz; /* 0x40 its size (>= 0x35B8) */
 } SFD_CREPRM;
 
 /* video PTS manager entry kept across a player reset (sfd_ply.c), SFD_OBJ + 0x12D8 */
 typedef struct {
-    void *x00;
-    Sint32 x04;
-    Sint32 x08;
+    void *x00;  /* 0x00 */
+    Sint32 x04; /* 0x04 */
+    Sint32 x08; /* 0x08 */
 } SFPLY_PTSM;
 
 /* server time statistics (sfd_tmr.c, 0x20 bytes) */
 typedef struct {
-    Sint64 sum;
-    Sint64 min;
-    Sint64 max;
-    Sint32 cnt;
+    Sint64 sum; /* 0x00 */
+    Sint64 min; /* 0x08 */
+    Sint64 max; /* 0x10 */
+    Sint32 cnt; /* 0x18 */
 } SFTMR_TSUM;
 
 /* this game only: frame statistics of one play (sfd_ply.c; field meanings inferred from use) */
@@ -661,10 +662,10 @@ typedef struct {
 #define SFMPS_OUTSJ_NUM (SFMPS_STMID_MAX - SFMPS_STMID_MIN + 1)
 
 typedef struct {
-    struct MPS_OBJ *mps; /* 0x000 */
-    Sint32 nvid;         /* 0x004 video_bound of the system headers */
-    Sint32 naud;         /* 0x008 audio_bound */
-    Sint32 x0c;
+    struct MPS_OBJ *mps;          /* 0x000 */
+    Sint32 nvid;                  /* 0x004 video_bound of the system headers */
+    Sint32 naud;                  /* 0x008 audio_bound */
+    Sint32 x0c;                   /* 0x00C */
     Sint64 pts_min;               /* 0x010 minimum audio PTS */
     Sint64 pts_min2;              /* 0x018 */
     Sint32 concat_cnt;            /* 0x020 end codes passed in concatenated play */
@@ -679,10 +680,10 @@ typedef struct {
     void (*outfn)(void *obj, Sint32 stmid); /* 0x150 */
     void *outobj;                           /* 0x154 */
     Sint32 skip;                            /* 0x158 bytes of the pack still to skip (-1: none) */
-    Sint32 x15c;
-    Sint32 x160;
-    Sint32 x164;
-} SFMPS_WORK; /* 0x168 */
+    Sint32 x15c;                            /* 0x15C */
+    Sint32 x160;                            /* 0x160 */
+    Sint32 x164;                            /* 0x164 */
+} SFMPS_WORK;                               /* 0x168 */
 
 typedef struct SFD_OBJ {
     SFD_CREPRM prm;   /* 0x00 */
@@ -693,61 +694,61 @@ typedef struct SFD_OBJ {
     Sint32 pause_cnt; /* 0x54 */
     Sint32 x58;       /* 0x58 frame access claimed by SFD_GetFrm/SFD_RelFrm (this game only) */
     Sint32 x5c;       /* 0x5C (this game only) */
-    Uint8 pad60[0x74 - 0x60];
-    Sint32 pad74;
-    SFHDS_FHD fhd; /* 0x78 file header analysis */
-    Sint32 x90c;   /* 0x90C stream information (16 words cleared by sfply_InitHn) */
-    Sint32 x910;
-    Sint32 x914;
-    Sint32 x918;
-    Sint32 x91c;
-    Sint32 picrate; /* 0x920 frame rate type (index into SFTIM_prate, 0: unknown) */
-    Sint32 x924;
-    Sint32 x928; /* 0x928 (1) */
-    Sint32 x92c;
-    Sint32 numelem_aud; /* 0x930 copied from fhd after (re)processing */
-    Sint32 numelem_vid; /* 0x934 */
-    Sint32 numelem_prv; /* 0x938 */
-    Sint32 x93c;
-    Sint32 x940;
-    Sint32 x944;
-    Sint32 x948;
-    Sint32 x94c;
+    Uint8 pad60[0x74 - 0x60];      /* 0x0060 */
+    Sint32 pad74;                  /* 0x0074 */
+    SFHDS_FHD fhd;                 /* 0x78 file header analysis */
+    Sint32 x90c;                   /* 0x90C stream information (16 words cleared by sfply_InitHn) */
+    Sint32 x910;                   /* 0x0910 */
+    Sint32 x914;                   /* 0x0914 */
+    Sint32 x918;                   /* 0x0918 */
+    Sint32 x91c;                   /* 0x091C */
+    Sint32 picrate;                /* 0x920 frame rate type (index into SFTIM_prate, 0: unknown) */
+    Sint32 x924;                   /* 0x0924 */
+    Sint32 x928;                   /* 0x928 (1) */
+    Sint32 x92c;                   /* 0x092C */
+    Sint32 numelem_aud;            /* 0x930 copied from fhd after (re)processing */
+    Sint32 numelem_vid;            /* 0x934 */
+    Sint32 numelem_prv;            /* 0x938 */
+    Sint32 x93c;                   /* 0x093C */
+    Sint32 x940;                   /* 0x0940 */
+    Sint32 x944;                   /* 0x0944 */
+    Sint32 x948;                   /* 0x0948 */
+    Sint32 x94c;                   /* 0x094C */
     SFD_PLYINF plyinf;             /* 0x950 */
     SFLIB_ERRINF err;              /* 0x9F8 */
     Sint32 cond[SFD_COND_NUM];     /* 0xA0C (SFSET_GetCond) */
     Sint32 cond_def[SFD_COND_NUM]; /* 0xB9C */
-    Uint8 padD2C[4];
-    SFCON con; /* 0xD30 (also the SFTIM handle: &sfd->con; sfd_con.c) */
-    Uint8 padFAC[0x1020 - 0xD30 - sizeof(SFCON)];
-    Uint8 tst[0x1C0]; /* 0x1020 time stabiliser work (sfd_tst.c SFTST_WORK) */
-    Uint8 pad11E0[0x12E0 - 0x11E0];
-    SFPLY_PTSM ptsm; /* 0x12E0 */
-    Uint8 pad12EC[0x1310 - 0x12EC];
-    SFBUF_WORK buf[SFD_BUF_NUM]; /* 0x1310 */
-    SFD_VFRM vfrm[SFD_VFRM_NUM]; /* 0x16B0 */
+    Uint8 padD2C[4];               /* 0x0D2C */
+    SFCON con;                     /* 0xD30 (also the SFTIM handle: &sfd->con; sfd_con.c) */
+    Uint8 padFAC[0x1020 - 0xD30 - sizeof(SFCON)]; /* 0x0FB0 */
+    Uint8 tst[0x1C0];               /* 0x1020 time stabiliser work (sfd_tst.c SFTST_WORK) */
+    Uint8 pad11E0[0x12E0 - 0x11E0]; /* 0x11E0 */
+    SFPLY_PTSM ptsm;                /* 0x12E0 */
+    Uint8 pad12EC[0x1310 - 0x12EC]; /* 0x12EC */
+    SFBUF_WORK buf[SFD_BUF_NUM];    /* 0x1310 */
+    SFD_VFRM vfrm[SFD_VFRM_NUM];    /* 0x16B0 */
     SFD_TR tr
         [SFD_TR_NUM]; /* 0x1F30 (tr[2].hn = SFMPV_WORK *, tr[3].hn = SFADXT_WORK *, tr[8].hn = SFUO *, tr[8].bufin = user-output SFBUF id) */
-    Sint32 pad2194;
-    SFMPS_WORK mps; /* 0x2198 system stream driver work (tr[1].hn) */
-    Uint8 pad2300[0x23A8 - 0x2300];
-    SFMPV_WORK mpv;   /* 0x23A8 video driver work (tr[2].hn) */
-    SFADXT_WORK adxt; /* 0x3448 */
-    Uint8 pad3498[0x34FC - 0x3498];
-    SFAOAP aoap; /* 0x34FC (tr[7].hn) */
-    SFUO uo_tbl; /* 0x3518 */
-    Sint32 pad354c;
-    SFSEE_HN see;          /* 0x3550 (SFD_EntrySeek) */
-    SFTMR_TSUM tsum[6];    /* 0x3560 server time statistics (tsum[5]: sfply_ExecOne) */
-    SFPLY_FRMSTAT frmstat; /* 0x3620 (this game only) */
+    Sint32 pad2194;   /* 0x2194 */
+    SFMPS_WORK mps;   /* 0x2198 system stream driver work (tr[1].hn) */
+    Uint8 pad2300[0x23A8 - 0x2300]; /* 0x2300 */
+    SFMPV_WORK mpv;                 /* 0x23A8 video driver work (tr[2].hn) */
+    SFADXT_WORK adxt;               /* 0x3448 */
+    Uint8 pad3498[0x34FC - 0x3498]; /* 0x3498 */
+    SFAOAP aoap;                    /* 0x34FC (tr[7].hn) */
+    SFUO uo_tbl;                    /* 0x3518 */
+    Sint32 pad354c;                 /* 0x354C */
+    SFSEE_HN see;                   /* 0x3550 (SFD_EntrySeek) */
+    SFTMR_TSUM tsum[6];             /* 0x3560 server time statistics (tsum[5]: sfply_ExecOne) */
+    SFPLY_FRMSTAT frmstat;          /* 0x3620 (this game only) */
 } SFD_OBJ;
 /* Buffer n seen as the SFD object shifted by n buffers: the code adds n * sizeof(SFBUF_WORK) to the
  * handle and keeps buf[0]'s offset (0x1310) in each load/store displacement. Matching constraint
  * (typed access view): writing &sfd->buf[n] adds 0x1310 to the base register instead, and the
  * sfd_buf.c, sfd_pts.c and sfd_mps.c functions stop matching. */
 typedef struct {
-    Uint8 pad[0x1310];
-    SFBUF_WORK w; /* sfd->buf[n] */
+    Uint8 pad[0x1310]; /* 0x0000 */
+    SFBUF_WORK w;      /* 0x1310 sfd->buf[n] */
 } SFBUF_HN;
 
 #define SFBUF_GET_HN(sfd, n) ((SFBUF_HN *)((SFBUF_WORK *)(sfd) + (n)))
@@ -757,18 +758,18 @@ typedef struct {
  * 4-byte aligned (SFD_GetPlyInf copies it with a lwz/stw loop). Offsets are RE4's + 8 (from the
  * RE4 sfd_mps/sfd_mpv accesses); not yet confirmed against this game's code. */
 typedef struct {
-    Uint8 pad0[0x988];
-    Sint64 s_flow;    /* 0x988 system stream ring: flow count (sfd_mps.c) */
-    Sint64 s_byte;    /* 0x990 system stream bytes demultiplexed */
-    Sint64 s_skip;    /* 0x998 system stream bytes skipped */
-    Sint64 v_flow;    /* 0x9A0 video input ring: flow count (sfd_mpv.c) */
-    Sint64 v_byte;    /* 0x9A8 video bytes handed to the decoder */
-    Sint64 v_skip;    /* 0x9B0 video bytes skipped up to a start code */
-    Sint64 a_in_wcnt; /* 0x9B8 audio input ring: written */
-    Sint64 a_in_rcnt; /* 0x9C0 audio input ring: read */
-    Sint64 a_byte;    /* 0x9C8 audio bytes handed to the decoder */
-    Sint64 a_sj_wcnt; /* 0x9D0 decoder stream joint: written */
-    Sint64 a_sj_rcnt; /* 0x9D8 decoder stream joint: read */
+    Uint8 pad0[0x988]; /* 0x000 */
+    Sint64 s_flow;     /* 0x988 system stream ring: flow count (sfd_mps.c) */
+    Sint64 s_byte;     /* 0x990 system stream bytes demultiplexed */
+    Sint64 s_skip;     /* 0x998 system stream bytes skipped */
+    Sint64 v_flow;     /* 0x9A0 video input ring: flow count (sfd_mpv.c) */
+    Sint64 v_byte;     /* 0x9A8 video bytes handed to the decoder */
+    Sint64 v_skip;     /* 0x9B0 video bytes skipped up to a start code */
+    Sint64 a_in_wcnt;  /* 0x9B8 audio input ring: written */
+    Sint64 a_in_rcnt;  /* 0x9C0 audio input ring: read */
+    Sint64 a_byte;     /* 0x9C8 audio bytes handed to the decoder */
+    Sint64 a_sj_wcnt;  /* 0x9D0 decoder stream joint: written */
+    Sint64 a_sj_rcnt;  /* 0x9D8 decoder stream joint: read */
 } SFD_CNT64;
 
 #define SFD_CNT(sfd) ((SFD_CNT64 *)(sfd))
@@ -780,15 +781,15 @@ typedef struct {
     Sint32 cond[SFD_COND_NUM]; /* 0x000 default conditions */
     SFTRN_TRIF_TBL *trif_tbl;  /* 0x190 from the init parameters */
     Sint32 prm1;               /* 0x194 */
-    Sint32 x198;
-    SFLIB_ERRINF err;    /* 0x19C */
-    Uint8 tim[0xC];      /* 0x1B0 SFTIM work */
-    Sint32 buf;          /* 0x1BC SFBUF work */
-    SFTRN_TRIF_TBL trif; /* 0x1C0 */
-    Sint32 x1fc;
-    Sint32 x200;
-    SFD hn[8]; /* 0x204 created handles */
-    Sint32 x224;
+    Sint32 x198;               /* 0x198 */
+    SFLIB_ERRINF err;          /* 0x19C */
+    Uint8 tim[0xC];            /* 0x1B0 SFTIM work */
+    Sint32 buf;                /* 0x1BC SFBUF work */
+    SFTRN_TRIF_TBL trif;       /* 0x1C0 */
+    Sint32 x1fc;               /* 0x1FC */
+    Sint32 x200;               /* 0x200 */
+    SFD hn[8];                 /* 0x204 created handles */
+    Sint32 x224;               /* 0x224 */
 } SFLIB_WORK;
 
 /* SFD_Init parameters */

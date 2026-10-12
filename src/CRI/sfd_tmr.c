@@ -5,10 +5,10 @@
 #include "CRI/cri_xpt.h"
 
 typedef struct {
-    Sint64 sum;
-    Sint64 min;
-    Sint64 max;
-    Sint32 cnt;
+    Sint64 sum; /* 0x00 */
+    Sint64 min; /* 0x08 */
+    Sint64 max; /* 0x10 */
+    Sint32 cnt; /* 0x18 */
 } SFTMR_TSUM;
 
 #define SFTMR_MAX(a, b) ((a) > (b) ? (a) : (b))

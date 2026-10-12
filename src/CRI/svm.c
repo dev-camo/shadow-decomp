@@ -22,19 +22,19 @@
 #define SVM_SVTYPE_MWIDLE 6
 
 typedef struct {
-    Sint32 (*func)(void *obj);
-    void *obj;
-    const Char8 *name;
+    Sint32 (*func)(void *obj); /* 0x00 */
+    void *obj;                 /* 0x04 */
+    const Char8 *name;         /* 0x08 */
 } SvmSvrFunc;
 
 typedef struct {
-    void (*func)(void *obj);
-    void *obj;
+    void (*func)(void *obj); /* 0x00 */
+    void *obj;               /* 0x04 */
 } SvmVoidFunc;
 
 typedef struct {
-    void (*func)(void *obj, Char8 *msg);
-    void *obj;
+    void (*func)(void *obj, Char8 *msg); /* 0x00 */
+    void *obj;                           /* 0x04 */
 } SvmErrFunc;
 
 /* Version string, kept by its pointer in .rodata. */

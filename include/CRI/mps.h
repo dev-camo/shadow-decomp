@@ -11,21 +11,21 @@ typedef struct MPS_OBJ *MPS;
 
 /* pack header (16 bytes, 8-byte aligned: holds the 64-bit SCR) */
 typedef struct {
-    Sint64 scr;
-    Sint32 rsv;
+    Sint64 scr;      /* 0x00 */
+    Sint32 rsv;      /* 0x08 */
     Sint32 mux_rate; /* 0x0C (sfd_cre reads it) */
 } MPS_PACKHD;
 
 /* system header (32 bytes) */
 typedef struct {
-    Sint32 raw[8];
+    Sint32 raw[8]; /* 0x00 */
 } MPS_SYSHD;
 
 /* packet header (40 bytes, 8-byte aligned: holds the 64-bit PTS/DTS) */
 typedef struct {
-    Sint64 pts;
-    Sint64 dts;
-    Sint32 raw[6];
+    Sint64 pts;    /* 0x00 */
+    Sint64 dts;    /* 0x08 */
+    Sint32 raw[6]; /* 0x10 */
 } MPS_PKETHD;
 
 /* MPS_OBJ.used */
@@ -54,7 +54,7 @@ typedef struct MPS_OBJ {
     void *psmapobj;           /* 0xF0 */
     void *pesfn;              /* 0xF4 PES header callback (MPS_SetPesFn) */
     void *pesobj;             /* 0xF8 */
-    Sint32 xfc;
+    Sint32 xfc;               /* 0xFC */
 } MPS_OBJ;
 
 /* MPS_PKETHD.raw */

@@ -42,7 +42,7 @@ typedef struct ADXPD_OBJ {
     Sint16 ext1;      /* 0x34 */
     Sint16 ext2;      /* 0x36 */
     Sint16 ext3;      /* 0x38 */
-    Sint16 pad3a;
+    Sint16 pad3a;     /* 0x3A */
 } ADXPD_OBJ;
 
 /* ADXB_OBJ.stat */
@@ -67,19 +67,19 @@ typedef struct ADXPD_OBJ {
 #define ADXB_FMT_SPSD 4
 
 typedef struct {
-    Sint16 used;        /* 0x00 */
-    Sint16 x02;         /* 0x02 */
-    Sint32 stat;        /* 0x04 */
-    ADXPD pd;           /* 0x08 */
-    Sint8 x0c;          /* 0x0C */
-    Sint8 bps;          /* 0x0D bits per sample */
-    Sint8 nch;          /* 0x0E */
-    Sint8 x0f;          /* 0x0F */
-    Sint32 fmt;         /* 0x10 */
-    Sint32 sfreq;       /* 0x14 */
-    Sint32 total_nsmpl; /* 0x18 */
-    Sint16 x1c;         /* 0x1C */
-    Uint8 pad1e[2];
+    Sint16 used;                                               /* 0x00 */
+    Sint16 x02;                                                /* 0x02 */
+    Sint32 stat;                                               /* 0x04 */
+    ADXPD pd;                                                  /* 0x08 */
+    Sint8 x0c;                                                 /* 0x0C */
+    Sint8 bps;                                                 /* 0x0D bits per sample */
+    Sint8 nch;                                                 /* 0x0E */
+    Sint8 x0f;                                                 /* 0x0F */
+    Sint32 fmt;                                                /* 0x10 */
+    Sint32 sfreq;                                              /* 0x14 */
+    Sint32 total_nsmpl;                                        /* 0x18 */
+    Sint16 x1c;                                                /* 0x1C */
+    Uint8 pad1e[2];                                            /* 0x1E */
     Sint32 x20;                                                /* 0x20 */
     Sint16 x24;                                                /* 0x24 */
     Sint16 x26;                                                /* 0x26 */
@@ -114,7 +114,7 @@ typedef struct {
     Sint16 x98;                                                /* 0x98 */
     Sint16 x9a;                                                /* 0x9A */
     Sint16 x9c;                                                /* 0x9C */
-    Uint8 pad9e[2];
+    Uint8 pad9e[2];                                            /* 0x9E */
     Sint16 key[3];     /* 0xA0 encryption keys (k0, km, ka) */
     Sint16 extprm[3];  /* 0xA6 decoder extension parameters */
     Sint16 dly[2][2];  /* 0xAC decoder history (snapshot) */
@@ -125,11 +125,11 @@ typedef struct {
     Uint8 ainf[16];    /* 0xC4 */
     Sint16 def_outvol; /* 0xD4 */
     Sint16 def_pan[2]; /* 0xD6 */
-    Uint8 padda[2];
-    void *xdc; /* 0xDC (adx_sjd: pl2setsfreqfunc called when set) */
-    Uint8 pade0[8];
-    Sint32 cb_nbyte; /* 0xE8 dec_nbyte at the last callback */
-    Sint32 xec;      /* 0xEC */
+    Uint8 padda[2];    /* 0xDA */
+    void *xdc;         /* 0xDC (adx_sjd: pl2setsfreqfunc called when set) */
+    Uint8 pade0[8];    /* 0xE0 */
+    Sint32 cb_nbyte;   /* 0xE8 dec_nbyte at the last callback */
+    Sint32 xec;        /* 0xEC */
     void (*cb_func)(void *obj, Sint32 nbyte, Sint32 nsmpl); /* 0xF0 decode callback */
     void *cb_obj;                                           /* 0xF4 */
 } ADXB_OBJ;

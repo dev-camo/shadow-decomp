@@ -25,25 +25,25 @@
 /* decoder model: the two-tap IIR the decoder runs on the dequantised residual */
 typedef struct {
     Sint8 used; /* 0x00 */
-    Sint8 x01;
-    Sint16 x02;
-    Sint16 c1; /* 0x04 */
-    Sint16 c2; /* 0x06 */
-    Sint16 h1; /* 0x08 */
-    Sint16 h2; /* 0x0A */
+    Sint8 x01;  /* 0x01 */
+    Sint16 x02; /* 0x02 */
+    Sint16 c1;  /* 0x04 */
+    Sint16 c2;  /* 0x06 */
+    Sint16 h1;  /* 0x08 */
+    Sint16 h2;  /* 0x0A */
 } ADXSJE_IIRFLT;
 
 /* prediction filter of one channel */
 typedef struct {
-    Sint8 used; /* 0x00 */
-    Sint8 x01;
-    Sint16 x02;
-    Sint16 c1; /* 0x04 */
-    Sint16 c2; /* 0x06 */
-    Sint16 h1; /* 0x08 */
-    Sint16 h2; /* 0x0A */
-    Sint32 x0c;
-    Sint32 x10;
+    Sint8 used;                   /* 0x00 */
+    Sint8 x01;                    /* 0x01 */
+    Sint16 x02;                   /* 0x02 */
+    Sint16 c1;                    /* 0x04 */
+    Sint16 c2;                    /* 0x06 */
+    Sint16 h1;                    /* 0x08 */
+    Sint16 h2;                    /* 0x0A */
+    Sint32 x0c;                   /* 0x0C */
+    Sint32 x10;                   /* 0x10 */
     Sint32 nsmpl;                 /* 0x14 */
     Sint16 buf[ADXSJE_BLK_NSMPL]; /* 0x18 prediction residuals */
     Sint8 q[ADXSJE_BLK_NSMPL];    /* 0x58 quantised residuals */
@@ -51,34 +51,34 @@ typedef struct {
     Sint16 scale;                 /* 0x7C */
     Float64 invscale;             /* 0x80 */
     ADXSJE_IIRFLT *iir;           /* 0x88 */
-    Sint32 x8c;
+    Sint32 x8c;                   /* 0x8C */
 } ADXSJE_PRDFLT;
 
 struct ADXSJE_OBJ {
-    Sint8 used;             /* 0x00 */
-    Sint8 stat;             /* 0x01 1: header, 2: encoding, 3: done */
-    Sint8 nch;              /* 0x02 */
-    Sint8 stopflg;          /* 0x03 */
-    SJ sji[ADXSJE_MAX_NCH]; /* 0x04 PCM inputs */
-    SJ sjo;                 /* 0x0C encoded output */
-    Sint32 x10[6];
-    Sint32 x28;
-    Sint32 nbyte; /* 0x2C bytes written */
-    Sint32 nsmpl; /* 0x30 samples encoded */
-    Sint32 x34;
-    Sint32 x38;
-    Sint32 total; /* 0x3C samples to encode */
-    Sint32 x40;
-    Sint32 blksmpl; /* 0x44 samples per block */
-    Sint32 hdrlen;  /* 0x48 */
-    Sint32 fmt;     /* 0x4C */
-    Sint32 blksz;   /* 0x50 */
-    Sint32 bps;     /* 0x54 */
-    Sint32 nch32;   /* 0x58 */
-    Sint32 sfreq;   /* 0x5C */
-    Sint32 x60;
-    Sint32 cutoff; /* 0x64 */
-    Sint32 x68;
+    Sint8 used;                                   /* 0x00 */
+    Sint8 stat;                                   /* 0x01 1: header, 2: encoding, 3: done */
+    Sint8 nch;                                    /* 0x02 */
+    Sint8 stopflg;                                /* 0x03 */
+    SJ sji[ADXSJE_MAX_NCH];                       /* 0x04 PCM inputs */
+    SJ sjo;                                       /* 0x0C encoded output */
+    Sint32 x10[6];                                /* 0x010 */
+    Sint32 x28;                                   /* 0x028 */
+    Sint32 nbyte;                                 /* 0x2C bytes written */
+    Sint32 nsmpl;                                 /* 0x30 samples encoded */
+    Sint32 x34;                                   /* 0x034 */
+    Sint32 x38;                                   /* 0x038 */
+    Sint32 total;                                 /* 0x3C samples to encode */
+    Sint32 x40;                                   /* 0x040 */
+    Sint32 blksmpl;                               /* 0x44 samples per block */
+    Sint32 hdrlen;                                /* 0x48 */
+    Sint32 fmt;                                   /* 0x4C */
+    Sint32 blksz;                                 /* 0x50 */
+    Sint32 bps;                                   /* 0x54 */
+    Sint32 nch32;                                 /* 0x58 */
+    Sint32 sfreq;                                 /* 0x5C */
+    Sint32 x60;                                   /* 0x060 */
+    Sint32 cutoff;                                /* 0x64 */
+    Sint32 x68;                                   /* 0x068 */
     Sint32 nloop;                                 /* 0x6C */
     Sint32 lptype;                                /* 0x70 */
     Sint32 lpstart;                               /* 0x74 */
@@ -92,23 +92,23 @@ struct ADXSJE_OBJ {
     Sint16 scl[ADXSJE_MAX_NCH][ADXSJE_BLK_NSMPL]; /* 0x190 scaled residuals */
     Sint16 deq[ADXSJE_MAX_NCH][ADXSJE_BLK_NSMPL]; /* 0x210 dequantised */
     Sint16 scale[ADXSJE_MAX_NCH];                 /* 0x290 */
-    Sint16 pad294[2];
-    Float64 invscale[ADXSJE_MAX_NCH]; /* 0x298 */
-    Uint8 data[ADXSJE_MAX_NCH][16];   /* 0x2A8 encoded block bodies */
-    Sint16 first[ADXSJE_MAX_NCH];     /* 0x2C8 first samples (decoder history seed) */
-    Sint16 first2[ADXSJE_MAX_NCH];    /* 0x2CC */
-    Sint16 key;                       /* 0x2D0 scale scrambling sequence */
-    Sint16 keymul;                    /* 0x2D2 */
-    Sint16 keyadd;                    /* 0x2D4 */
-    Sint8 ainf_flg;                   /* 0x2D6 */
-    Uint8 ainf_id[16];                /* 0x2D7 */
-    Sint8 pad2e7;
-    Sint16 ainf_vol;    /* 0x2E8 */
-    Sint16 ainf_pan[2]; /* 0x2EA */
-    Sint8 cinf_flg;     /* 0x2EE */
-    Sint8 pad2ef;
-    void *cinf;      /* 0x2F0 */
-    Sint32 cinf_len; /* 0x2F4 */
+    Sint16 pad294[2];                             /* 0x294 */
+    Float64 invscale[ADXSJE_MAX_NCH];             /* 0x298 */
+    Uint8 data[ADXSJE_MAX_NCH][16];               /* 0x2A8 encoded block bodies */
+    Sint16 first[ADXSJE_MAX_NCH];                 /* 0x2C8 first samples (decoder history seed) */
+    Sint16 first2[ADXSJE_MAX_NCH];                /* 0x2CC */
+    Sint16 key;                                   /* 0x2D0 scale scrambling sequence */
+    Sint16 keymul;                                /* 0x2D2 */
+    Sint16 keyadd;                                /* 0x2D4 */
+    Sint8 ainf_flg;                               /* 0x2D6 */
+    Uint8 ainf_id[16];                            /* 0x2D7 */
+    Sint8 pad2e7;                                 /* 0x2E7 */
+    Sint16 ainf_vol;                              /* 0x2E8 */
+    Sint16 ainf_pan[2];                           /* 0x2EA */
+    Sint8 cinf_flg;                               /* 0x2EE */
+    Sint8 pad2ef;                                 /* 0x2EF */
+    void *cinf;                                   /* 0x2F0 */
+    Sint32 cinf_len;                              /* 0x2F4 */
 };
 typedef struct ADXSJE_OBJ ADXSJE_OBJ;
 
@@ -198,7 +198,7 @@ void ADXSJE_ExecServer(void) {
  * loops' stepping pointers (own locals rank below the strength-reduction temporaries).
  * Matching constraint (COMPILER-DIFF): the per-channel fields are reached through `Uint8 *` copies
  * of the handle stepped by 4/2 plus the member offset (the adx_tsvr ExecHndl idiom: `mr rIV, sje` +
- * offset loads), declared in the order that colours ch r30, sjo r29, p r28, i r28, p2/p3 r27.
+ * offset loads), declared in the order that gives the original register assignment.
  * Indexing sje->sji[ch], sje->first[ch] and sje->prd[i] directly gives a different loop shape
  * (verified: 95% in any declaration order). */
 static inline void adxsje_header_exec(ADXSJE sje) {
@@ -251,8 +251,8 @@ static inline void adxsje_header_exec(ADXSJE sje) {
     sje->stat = 2;
 }
 
-/* server callback signature: the typed copy of the `void *` object is the kept parameter copy
- * (sje r31 above every local) */
+/* server callback signature: the object arrives as `void *` and is copied into a typed local, which
+ * the original also keeps (matching constraint: a typed parameter changes the register order) */
 void ADXSJE_ExecHndl(void *obj) {
     ADXSJE sje = obj;
 
@@ -487,8 +487,9 @@ static void adxsje_put16(SJ sj, void *src) {
     if (ck.len < 2) {
         SJ_UngetChunk(sj, SJ_CK_FREE, &ck);
     } else {
-        /* write cursor: `dp` kept as a variable puts the ck.data load before the value load in
-         * the pre-RA schedule input (a substituted single-use pointer evaluates the value first) */
+        /* Matching constraint: the write cursor `dp` and its (unused) post-increment keep the
+         * ck.data load ahead of the value load; storing through ck.data directly, or without the
+         * increment, evaluates the value first (verified: 94%). */
         Sint16 *dp = (Sint16 *)ck.data;
         *dp++ = *(Sint16 *)src;
         SJ_PutChunk(sj, SJ_CK_DATA, &ck);
@@ -667,7 +668,7 @@ Sint32 adxsje_write_end_code(ADXSJE sje) {
 
 /* read n samples per channel into the block buffers; 0 when an input has less than n */
 static Sint32 adxsje_read_pcm(ADXSJE sje, Sint16 **bufs, Sint32 n) {
-    SJ *sji = sje->sji; /* helper local declared first: colours r24 below cnt like the original */
+    SJ *sji = sje->sji; /* declared first for the original register order (matching constraint) */
     Sint32 cnt = 0;
     Sint32 ch;
     SJCK ck;
@@ -738,8 +739,7 @@ Sint32 adxsje_encode_data(ADXSJE sje) {
         }
         bufs[0] = sje->pcm[0];
         bufs[1] = sje->pcm[1];
-        /* `?:` (not if/else): n's second definition is then a frontend temp created after the bufs
-         * stores and colours r20 below the loop temporaries like the original */
+        /* matching constraint: `?:` rather than if/else gives the original register order */
         n = (sje->blksmpl < sje->total - sje->nsmpl) ? sje->blksmpl : sje->total - sje->nsmpl;
         cnt = adxsje_read_pcm(sje, bufs, n);
         if (cnt == 0) {

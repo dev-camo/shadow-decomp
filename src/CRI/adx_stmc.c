@@ -56,12 +56,12 @@ typedef struct ADXSTM_OBJ {
     Sint8 start_req;             /* 0x47 */
     Sint8 stop_req;              /* 0x48 */
     Sint8 bound;                 /* 0x49 */
-    Uint8 pad4a[2];
-    Sint32 rtry_cnt;    /* 0x4C */
-    const Char8 *fname; /* 0x50 */
-    void *dir;          /* 0x54 */
-    Sint32 pos;         /* 0x58 */
-    Uint32 lim_nsct;    /* 0x5C */
+    Uint8 pad4a[2];              /* 0x4A */
+    Sint32 rtry_cnt;             /* 0x4C */
+    const Char8 *fname;          /* 0x50 */
+    void *dir;                   /* 0x54 */
+    Sint32 pos;                  /* 0x58 */
+    Uint32 lim_nsct;             /* 0x5C */
 } ADXSTM_OBJ;
 
 static Sint32 adxstm_init_cnt = 0; /* name inferred */
