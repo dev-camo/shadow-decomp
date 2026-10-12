@@ -13,11 +13,9 @@
     ((((p0) << 22) & 0xFF000000) | (((p1) << 14) & 0x00FF0000) | (((p2) << 6) & 0x0000FF00) |      \
      (((p3) >> 2) & 0x000000FF))
 
-/* byte-wise average of two packed words */
-#define MPVMC16_AVG2(w, a, x) (((w) & (a)) + (((x) & 0xFEFEFEFE) >> 1) + ((x) & 0x01010101))
-/* the same through mask variables, which keeps the original association `(w & a) + (sh + (x & m2))` */
-#define MPVMC16_AVG2V(w, a, x, m1, m2) (((w) & (a)) + (((x) & (m1)) >> 1) + ((x) & (m2)))
-/* the same with the xor computed inside the macro (one shared temporary per pair, as in the original) */
+/* byte-wise rounded average of two packed words through the mask variables m1 (0xFEFEFEFE) and m2
+ * (0x01010101); the xor is computed inside the macro (one shared temporary per pair, as in the
+ * original) */
 #define MPVMC16_AVG2X(w, a, m1, m2)                                                                \
     (((w) & (a)) + ((((w) ^ (a)) & (m1)) >> 1) + (((w) ^ (a)) & (m2)))
 
