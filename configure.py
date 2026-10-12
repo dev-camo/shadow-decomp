@@ -357,6 +357,7 @@ config.libs = [
         "progress_category": "sdk",
         "objects": [
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/mainloop.c"),
+            Object(Matching, "PowerPC_EABI_Support/MetroTRK/nubevent.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/target_options.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/mslsupp.c"),
         ],
