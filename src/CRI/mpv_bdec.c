@@ -47,7 +47,6 @@ void MPVBDEC_Init(MPV mpv) {
     Sint8 seq[64];
     Sint8 scan[64];
     Sint32 i;
-    Uint8 *iqm;
     Sint8 *zigzag;
     Uint16 *bitmsk;
 

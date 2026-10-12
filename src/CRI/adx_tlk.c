@@ -207,8 +207,6 @@ static inline void adxt_StopWithoutLsc(ADXT adxt) {
  * transfer and voices and the decoder, destroys a memory-source stream joint (mode 2) and returns the
  * handle to ADXT_ISTAT_STOP. */
 static inline void adxt_Stop(ADXT adxt) {
-    SJ sj;
-
     if (adxt == 0) {
         ADXERR_CallErrFunc1("E02080813 adxt_Stop: parameter error");
         return;

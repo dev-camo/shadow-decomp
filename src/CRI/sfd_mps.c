@@ -965,7 +965,6 @@ static Sint32 sfmps_AddRead(SFD sfd, Sint32 nbyte) {
 static Sint32 sfmps_ExecServerLoop(SFD sfd, Sint32 *len) {
     Sint32 wcnt, rcnt;
     Sint32 nbyte, nskip;
-    Sint32 r;
     Sint32 limit;
     Sint32 ret;
     Uint8 *data;
