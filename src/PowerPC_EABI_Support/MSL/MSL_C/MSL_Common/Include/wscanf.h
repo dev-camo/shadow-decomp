@@ -3,16 +3,11 @@
 
 #include <wstring.h>
 #include <cstddef>
+#include "scanf.h" /* __wOutStrCtrl and the other string-control types */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef struct {
-    wchar_t *WCharStr;
-    size_t MaxCharCount;
-    size_t CharsWritten;
-} __OutStrCtrl;
 
 wchar_t __wStringRead(wString *src, wchar_t param_1, wchar_t param_2);
 
