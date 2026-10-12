@@ -390,6 +390,7 @@ config.libs = [
             ),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/CircleBuffer.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/MWTrace.c"),
+            Object(Matching, "PowerPC_EABI_Support/MetroTRK/MWCriticalSection_gc.cpp"),
         ],
     },
     {
