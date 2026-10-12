@@ -178,6 +178,11 @@ PowerPC_EABI_Support/MetroTRK/nubevent.c:
 	.text       start:0x8039AF98 end:0x8039B1C0
 	.bss        start:0x805A3510 end:0x805A3538
 
+PowerPC_EABI_Support/MetroTRK/nubinit.c:
+	.text       start:0x8039B1C0 end:0x8039B358
+	.rodata     start:0x80514448 end:0x80514478
+	.bss        start:0x805A3538 end:0x805A3540
+
 PowerPC_EABI_Support/MetroTRK/msg.c:
 	.text       start:0x8039B358 end:0x8039B39C
 	.rodata     start:0x80514478 end:0x805144A0
@@ -187,8 +192,29 @@ PowerPC_EABI_Support/MetroTRK/msgbuf.c:
 	.rodata     start:0x805144A0 end:0x805144C0
 	.bss        start:0x805A3540 end:0x805A4EF0
 
+PowerPC_EABI_Support/MetroTRK/serpoll.c:
+	.text       start:0x8039BBD8 end:0x8039BE90
+	.rodata     start:0x805144C0 end:0x80514650
+	.bss        start:0x805A4EF0 end:0x805A4F08
+	.sbss       start:0x805F2358 end:0x805F2360
+
 PowerPC_EABI_Support/MetroTRK/usr_put.c:
 	.text       start:0x8039BE90 end:0x8039BF1C
+
+PowerPC_EABI_Support/MetroTRK/dispatch.c:
+	.text       start:0x8039BF1C end:0x8039C094
+	.rodata     start:0x80514650 end:0x80514690
+	.data       start:0x80568C88 end:0x80568CF8
+
+PowerPC_EABI_Support/MetroTRK/msghndlr.c:
+	.text       start:0x8039C094 end:0x8039D104
+	.rodata     start:0x80514690 end:0x80514878
+	.data       start:0x80568CF8 end:0x80568D30
+	.bss        start:0x805A4F08 end:0x805A4F10
+
+PowerPC_EABI_Support/MetroTRK/support.c:
+	.text       start:0x8039D104 end:0x8039D818
+	.rodata     start:0x80514878 end:0x80514920
 
 PowerPC_EABI_Support/MetroTRK/mutex_TRK.c:
 	.text       start:0x8039D818 end:0x8039D830
@@ -212,6 +238,12 @@ PowerPC_EABI_Support/MetroTRK/targimpl.c:
 PowerPC_EABI_Support/MetroTRK/mpc_7xx_603e.c:
 	.text       start:0x8039F570 end:0x8039F8E0
 
+PowerPC_EABI_Support/MetroTRK/dolphin_trk_glue.c:
+	.text       start:0x8039FF74 end:0x803A04CC
+	.rodata     start:0x805149C8 end:0x80514AD0
+	.data       start:0x80568DA0 end:0x80568DC8
+	.bss        start:0x805A54A0 end:0x805A54A8
+
 PowerPC_EABI_Support/MetroTRK/targcont.c:
 	.text       start:0x803A04CC end:0x803A0500
 
@@ -224,6 +256,12 @@ PowerPC_EABI_Support/MetroTRK/mslsupp.c:
 
 PowerPC_EABI_Support/MetroTRK/UDP_Stubs.c:
 	.text       start:0x803A0718 end:0x803A0760
+
+PowerPC_EABI_Support/MetroTRK/ddh/main.c:
+	.text       start:0x803A0760 end:0x803A0AA4
+	.rodata     start:0x80514AD0 end:0x80514BB0
+	.bss        start:0x805A54B0 end:0x805A5CD0
+	.sbss       start:0x805F2360 end:0x805F2368
 
 PowerPC_EABI_Support/MetroTRK/CircleBuffer.c:
 	.text       start:0x803A0AA4 end:0x803A0D0C
