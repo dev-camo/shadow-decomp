@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "CRI/cri_xpt.h"
+#include "CRI/cvfs.h"
 #include "CRI/svm.h"
 
 #define MFCI_MAX_OBJ 40
@@ -20,33 +21,6 @@
 #define MFCI_STAT_STOP 0
 #define MFCI_STAT_COMPLETE 1
 #define MFCI_STAT_READING 2
-
-#define CVFS_SEEK_SET 0
-#define CVFS_SEEK_CUR 1
-#define CVFS_SEEK_END 2
-
-typedef void (*CVFS_ERRFUNC)(void *obj, const Char8 *msg, void *hn);
-
-typedef struct {
-    /* 0x00 */ void (*ExecServer)(void);
-    /* 0x04 */ void (*EntryErrFunc)(CVFS_ERRFUNC func, void *obj);
-    /* 0x08 */ Sint32 (*GetFileSize)(const Char8 *fname);
-    /* 0x0C */ void *x0c;
-    /* 0x10 */ void *(*Open)(const Char8 *fname, void *dir, Sint32 rw);
-    /* 0x14 */ void (*Close)(void *hn);
-    /* 0x18 */ Sint32 (*Seek)(void *hn, Sint32 pos, Sint32 type);
-    /* 0x1C */ Sint32 (*Tell)(void *hn);
-    /* 0x20 */ Sint32 (*ReqRd)(void *hn, Sint32 nsct, void *buf);
-    /* 0x24 */ void *x24;
-    /* 0x28 */ void (*StopTr)(void *hn);
-    /* 0x2C */ Sint32 (*GetStat)(void *hn);
-    /* 0x30 */ Sint32 (*GetSctLen)(void *hn);
-    /* 0x34 */ void (*SetSctLen)(void *hn, Sint32 sctlen);
-    /* 0x38 */ Sint32 (*GetNumTr)(void *hn);
-    /* 0x3C */ void *x3c[9];
-    /* 0x60 */ Sint32 (*OptFn)(void *hn, Sint32 fnid, Sint32 a, Sint32 b);
-    /* 0x64 */ void *x64;
-} CVFS_IF;
 
 typedef struct {
     /* 0x00 */ Sint8 used;
@@ -68,14 +42,14 @@ typedef MFCI_OBJ *MFCI;
 /* volatile: mfCiGetInterface reads the build string pointer without using it. */
 const Char8 *const volatile mfci_build = "\nMFCI/GC Ver.1.10 Build:Feb 28 2005 15:49:14\n";
 
-CVFS_ERRFUNC mfci_err_func;
+CVFS_USRERRFN mfci_err_func;
 void *mfci_err_obj;
 Char8 mfci_err_str[300];
 MFCI_OBJ mfci_obj[MFCI_MAX_OBJ];
 Sint32 mfci_init_flag;
 
 void mfCiExecServer(void);
-void mfCiEntryErrFunc(CVFS_ERRFUNC func, void *obj);
+void mfCiEntryErrFunc(CVFS_USRERRFN func, void *obj);
 Sint32 mfCiGetFileSize(const Char8 *fname);
 MFCI mfCiOpen(const Char8 *fname, void *dir, Sint32 rw);
 void mfCiClose(MFCI mfci);
@@ -436,7 +410,7 @@ Sint32 mfCiGetFileSize(const Char8 *fname) {
 }
 
 /* Installs the device error callback. */
-void mfCiEntryErrFunc(CVFS_ERRFUNC func, void *obj) {
+void mfCiEntryErrFunc(CVFS_USRERRFN func, void *obj) {
     mfci_err_func = func;
     mfci_err_obj = obj;
 }

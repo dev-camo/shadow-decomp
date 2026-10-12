@@ -2,13 +2,14 @@
  * Body from the RE4 GameCube decompilation of the same file.
  */
 #include "CRI/cri_xpt.h"
+#include "CRI/uty.h"
 
 /* Fills `ndw` 32-bit words at dst with val (filling from the end). */
-void UTY_MemsetDword(Uint32 *dst, Uint32 val, Uint32 ndw) {
+void UTY_MemsetDword(void *dst, Uint32 val, Uint32 ndw) {
     Uint32 *p;
     Uint32 cnt;
 
-    p = dst + ndw;
+    p = (Uint32 *)dst + ndw;
     cnt = (ndw & 15) + 1;
     while (--cnt) {
         *--p = val;

@@ -16,43 +16,19 @@
 
 #include "CRI/cvfs.h"
 
-typedef void (*CVFS_ERRFUNC)(void *obj, const Char8 *msg, void *hn);
-
 #define CVFS_MAX_DEV 32
 #define CVFS_MAX_HN 40
 #define CVFS_NAME_LEN 0x129
 #define CVFS_DEVNAME_LEN 12
 
-/* device interface table (CVFS_IF) with its option function slot */
 typedef struct {
-    void (*ExecServer)(void);                           /* 0x00 */
-    void (*EntryErrFunc)(CVFS_ERRFUNC func, void *obj); /* 0x04 */
-    Sint32 (*GetFileSize)(const Char8 *fname);          /* 0x08 */
-    void *x0c;
-    void *(*Open)(const Char8 *fname, void *dir, Sint32 rw); /* 0x10 */
-    void (*Close)(void *hn);                                 /* 0x14 */
-    Sint32 (*Seek)(void *hn, Sint32 pos, Sint32 type);       /* 0x18 */
-    Sint32 (*Tell)(void *hn);                                /* 0x1C */
-    Sint32 (*ReqRd)(void *hn, Sint32 nsct, void *buf);       /* 0x20 */
-    void *x24;
-    void (*StopTr)(void *hn);                                   /* 0x28 */
-    Sint32 (*GetStat)(void *hn);                                /* 0x2C */
-    Sint32 (*GetSctLen)(void *hn);                              /* 0x30 */
-    void (*SetSctLen)(void *hn, Sint32 sctlen);                 /* 0x34 */
-    Sint32 (*GetNumTr)(void *hn);                               /* 0x38 */
-    void *x3c[9];                                               /* 0x3C */
-    Sint32 (*OptFn)(void *hn, Sint32 fnid, Sint32 a, Sint32 b); /* 0x60 */
-    void *x64;
-} CVFS_DEVIF;
-
-typedef struct {
-    CVFS_DEVIF *vtbl;             /* 0x00 */
+    CVFS_IF *vtbl;                /* 0x00 */
     Char8 name[CVFS_DEVNAME_LEN]; /* 0x04 */
 } CVFS_DEV;
 
 struct CVFS_OBJ {
-    CVFS_DEVIF *vtbl; /* 0x00 */
-    void *hn;         /* 0x04 the device's handle */
+    CVFS_IF *vtbl; /* 0x00 */
+    void *hn;      /* 0x04 the device's handle */
 };
 
 CVFS_USRERRFN cvfs_errfn;
@@ -124,7 +100,7 @@ static Sint32 cvfs_IsExistDev(const Char8 *name, Sint32 len) {
 }
 
 /* the device of a name (0: the default device) */
-static CVFS_DEVIF *cvFsGetDevIf(CVFS_DEV *tbl, const Char8 *name) {
+static CVFS_IF *cvFsGetDevIf(CVFS_DEV *tbl, const Char8 *name) {
     Uint32 i;
     Sint32 len;
     CVFS_DEV *dev;
@@ -145,7 +121,7 @@ static CVFS_DEVIF *cvFsGetDevIf(CVFS_DEV *tbl, const Char8 *name) {
 
 /* Device search by table index. cvfs_ResolveDev's second and third searches must be index loops:
  * a pointer local (`dev = tbl`) gives the stepping pointer a different register than the original. */
-static CVFS_DEVIF *cvfs_SearchDev(CVFS_DEV *tbl, const Char8 *name) {
+static CVFS_IF *cvfs_SearchDev(CVFS_DEV *tbl, const Char8 *name) {
     Uint32 i;
     Sint32 len;
 
@@ -159,7 +135,7 @@ static CVFS_DEVIF *cvfs_SearchDev(CVFS_DEV *tbl, const Char8 *name) {
 }
 
 /* the device's option function (fnid 100: the device wants the "DEV:path" form) */
-static Sint32 cvfs_OptFn(CVFS_DEVIF *vtbl, void *hn, Sint32 fnid, Sint32 a, Sint32 b) {
+static Sint32 cvfs_OptFn(CVFS_IF *vtbl, void *hn, Sint32 fnid, Sint32 a, Sint32 b) {
     Sint32 ret;
 
     if (vtbl == 0) {
@@ -226,7 +202,7 @@ static void cvfs_GetDefDev(Char8 *dev) {
 /* The search loop of cvFsGetDevIf with the length computed by the caller. The original loads the
  * table base after the first strlen, so the name check and strlen stay in cvfs_ResolveDev and
  * `tbl = cvfs_tbl` follows them. */
-static CVFS_DEVIF *cvfs_FindDev(CVFS_DEV *tbl, const Char8 *name, Sint32 len) {
+static CVFS_IF *cvfs_FindDev(CVFS_DEV *tbl, const Char8 *name, Sint32 len) {
     CVFS_DEV *dev;
     Uint32 i;
 
@@ -250,8 +226,8 @@ static Sint32 cvfs_WantsDevForm(CVFS_DEV *tbl, const Char8 *name, Sint32 len) {
 /* Finds the device table for a split file name: an empty device part takes the default device; a */
 /* device that asked for it (option 100) gets the "DEV:path" form back in `path`; an unknown device */
 /* name falls back to the default device with the whole original name as the path. */
-static CVFS_DEVIF *cvfs_ResolveDev(const Char8 *fname, Char8 *dev, Char8 *path) {
-    CVFS_DEVIF *vtbl;
+static CVFS_IF *cvfs_ResolveDev(const Char8 *fname, Char8 *dev, Char8 *path) {
+    CVFS_IF *vtbl;
     CVFS_DEV *tbl;
     const Char8 *name;
     Sint32 len;
@@ -288,7 +264,7 @@ static CVFS_DEVIF *cvfs_ResolveDev(const Char8 *fname, Char8 *dev, Char8 *path) 
 
 /* dead */
 void cvFsSetDefVol(const Char8 *devname, const Char8 *volname) {
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
 
     if (devname == 0) {
         cvfs_Error("cvFsSetDefVol #1:illegal device name");
@@ -308,7 +284,7 @@ void cvFsSetDefVol(const Char8 *devname, const Char8 *volname) {
 
 /* dead */
 Sint32 cvFsGetVolumeInfo(const Char8 *devname, const Char8 *volname, void *inf) {
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
 
     if (devname == 0) {
         cvfs_Error("cvFsGetVolumeInfo #1:illegal device name");
@@ -328,7 +304,7 @@ Sint32 cvFsGetVolumeInfo(const Char8 *devname, const Char8 *volname, void *inf) 
 
 /* dead */
 void cvFsDelVolume(const Char8 *devname, const Char8 *volname) {
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
 
     if (devname == 0) {
         cvfs_Error("cvFsDelVolume #1:illegal device name");
@@ -348,7 +324,7 @@ void cvFsDelVolume(const Char8 *devname, const Char8 *volname) {
 
 /* dead */
 void cvFsAddVolumeEx(const Char8 *devname, const Char8 *volname, void *img) {
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
 
     if (devname == 0) {
         cvfs_Error("cvFsAddVolumeEx #1:illegal device name");
@@ -372,7 +348,7 @@ void cvFsAddVolumeEx(const Char8 *devname, const Char8 *volname, void *img) {
 
 /* dead */
 void cvFsSetCurVolume(const Char8 *devname, void *img) {
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
 
     if (devname == 0) {
         cvfs_Error("cvFsSetCurVolume #1:illegal device name");
@@ -436,7 +412,7 @@ const Char8 *cvFsGetDevName(CVFS_OBJ *obj) {
 Sint32 cvFsDeleteFile(const Char8 *fname) {
     Char8 dev[CVFS_NAME_LEN];
     Char8 path[CVFS_NAME_LEN];
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
 
     if (fname == 0) {
         cvfs_Error("cvFsDeleteFile #1:illegal file name");
@@ -463,7 +439,7 @@ Sint32 cvFsDeleteFile(const Char8 *fname) {
 Sint32 cvFsRemoveDir(const Char8 *dname) {
     Char8 dev[CVFS_NAME_LEN];
     Char8 path[CVFS_NAME_LEN];
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
 
     if (dname == 0) {
         cvfs_Error("cvFsRemoveDir #1:illegal directory name");
@@ -490,7 +466,7 @@ Sint32 cvFsRemoveDir(const Char8 *dname) {
 Sint32 cvFsMakeDir(const Char8 *dname) {
     Char8 dev[CVFS_NAME_LEN];
     Char8 path[CVFS_NAME_LEN];
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
 
     if (dname == 0) {
         cvfs_Error("cvFsMakeDir #1:illegal directory name");
@@ -530,7 +506,7 @@ Sint32 cvFsGetMaxByteRate(CVFS_OBJ *obj) {
 Sint32 cvFsIsExistFile(const Char8 *fname) {
     Char8 dev[CVFS_NAME_LEN];
     Char8 path[CVFS_NAME_LEN];
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
 
     cvfs_SplitFname(fname, dev, path);
     if (dev == 0) {
@@ -557,7 +533,7 @@ Sint32 cvFsIsExistFile(const Char8 *fname) {
 Sint32 cvFsChangeDir(const Char8 *dname) {
     Char8 dev[CVFS_NAME_LEN];
     Char8 path[CVFS_NAME_LEN];
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
 
     if (dname == 0) {
         cvfs_Error("cvFsChangeDir #1:illegal directory name");
@@ -621,7 +597,7 @@ Sint32 cvFsGetSctLen(CVFS_OBJ *obj) {
 
 /* dead */
 Sint32 cvFsGetFreeSize(const Char8 *devname) {
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
 
     vtbl = cvFsGetDevIf(cvfs_tbl, devname);
     if (vtbl == 0) {
@@ -648,7 +624,7 @@ Sint32 cvFsGetFileSizeByHndl(CVFS_OBJ *obj) {
 Sint32 cvFsGetFileSizeEx(const Char8 *fname, Sint32 *size) {
     Char8 dev[CVFS_NAME_LEN];
     Char8 path[CVFS_NAME_LEN];
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
 
     if (fname == 0) {
         cvfs_Error("cvFsGetFileSizeEx #1:illegal file name");
@@ -688,7 +664,7 @@ Sint32 cvFsGetFileSize(const Char8 *fname) {
     Char8 dev[CVFS_NAME_LEN];
     Char8 path[CVFS_NAME_LEN];
     register Char8 *pdev;
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
 
     if (fname == 0) {
         cvfs_Error("cvFsGetFileSize #1:illegal file name");
@@ -868,7 +844,7 @@ CVFS_OBJ *cvFsOpen(const Char8 *fname, void *dir, Sint32 rw) {
     Char8 path[CVFS_NAME_LEN];
     Char8 *pdev;
     CVFS_OBJ *obj;
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
     void *hn;
 
     if (fname == 0) {
@@ -961,10 +937,10 @@ void cvFsDelDev(const Char8 *devname) {
 /* Registers the device in the table unless its name is already there; 0 when the table is full.
  * The interface arrives as `void *` and is converted once: the original keeps that copy of getif's
  * result (`mr r28, r3`). */
-static CVFS_DEVIF *cvfs_AddDevTbl(Char8 *devname, void *vt) {
+static CVFS_IF *cvfs_AddDevTbl(Char8 *devname, void *vt) {
     CVFS_DEV *dev;
     Sint32 i;
-    CVFS_DEVIF *vtbl = vt;
+    CVFS_IF *vtbl = vt;
 
     if (cvfs_SearchDev(cvfs_tbl, devname) != 0) {
         return vtbl;
@@ -990,7 +966,7 @@ static CVFS_DEVIF *cvfs_AddDevTbl(Char8 *devname, void *vt) {
 /* which passes 0 for the device parameter prm (unused here). */
 void cvFsAddDev(Char8 *devname, CVFS_GETIFFN getif, void *prm) {
     Char8 *name;
-    CVFS_DEVIF *vtbl;
+    CVFS_IF *vtbl;
     CVFS_GETIFFN fn;
 
     cvfs_build;

@@ -4,6 +4,7 @@
 
 #include "CRI/cri_xpt.h"
 #include "CRI/sj.h"
+#include "CRI/uty.h"
 
 typedef struct SFD_OBJ *SFD;
 
@@ -415,6 +416,15 @@ typedef struct {
     Sint32 raw[0x2A];
 } SFD_PLYINF;
 
+/* creation parameters of SFBUF_InitHn: the first 0x2C bytes of SFD_CREPRM */
+typedef struct {
+    Sint32 x00;
+    Uint32 adr;     /* 0x04 work base */
+    Sint32 size[7]; /* 0x08 sizes of buffers 0..6 */
+    Sint32 x24;
+    Sint32 unit; /* 0x28 ring buffer 0 alignment */
+} SFBUF_PRM;
+
 /* creation parameters passed to SFTRN_InitHn: trif_tbl[n] is driver n's function table
  * (0 input, 1 system, 2 video, 3 audio, 4 video out, 5 audio out, 6/7 output, 8 user) */
 typedef struct {
@@ -812,7 +822,6 @@ Sint32 SFBUF_RingAddWrite(SFD sfd, Sint32 buf, Sint32 nbyte,
 Sint32 SFBUF_RingGetWrite(SFD sfd, Sint32 buf, SFBUF_RINF *inf);
 Sint32 SFBUF_VfrmAddRead(SFD sfd, Sint32 buf, void *frm, Sint32 arg);
 Sint32 SFBUF_VfrmGetRead(SFD sfd, Sint32 buf, void **frm, Sint32 arg);
-Sint32 UTY_MulDiv(Sint32 a, Sint32 b, Sint32 c);
 Sint32 SFCON_IsEndcodeSkip(SFD sfd);
 Sint32 SFHDS_GetMuxVerNum(SFD sfd);
 Sint32 SFHDS_GetColType(SFD sfd);
@@ -836,5 +845,74 @@ Sint32 SFD_SetSpeed(SFD sfd, Sint32 speed);
 Bool SFTIM_IsGetFrmTime(SFD sfd, SFD_VFRM *frm);
 Bool SFTIM_IsGetFrmTimeTunit(SFD sfd, Sint32 ftime, Sint32 tunit);
 Bool SFTIM_IsVideoTerm(SFD sfd);
+
+/* sfd_lib.c */
+Sint32 SFD_SetErrFn(SFD sfd, void (*fn)(void *obj, Sint32 code), void *obj);
+void SFLIB_InitErrInf(SFLIB_ERRINF *err);
+
+/* sfd_ply.c */
+void SFPLY_Init(void);
+Sint32 SFD_Destroy(SFD sfd);
+
+/* sfd_trn.c */
+Sint32 SFTRN_Init(SFTRN_TRIF_TBL *dst, SFTRN_TRIF_TBL *src);
+Sint32 SFTRN_Finish(SFTRN_TRIF_TBL *tbl);
+Sint32 SFTRN_InitHn(SFD sfd, SFD_TR *tr, SFTRN_PRM *prm, Sint32 x);
+Sint32 SFTRN_CallTrSetup(SFD sfd, Sint32 fn);
+
+/* sfd_buf.c */
+void SFBUF_Init(void *work);
+Sint32 SFBUF_InitHn(SFD sfd, SFBUF_WORK *wk, SFBUF_PRM *prm);
+Sint32 SFBUF_GetWTot(SFD sfd, Sint32 n);
+Sint32 SFBUF_RingGetDataSiz(SFD sfd, Sint32 n);
+void fn_803F052C(void *work);
+Sint32 SFBUF_SetSupplySj(SFD sfd, SFBUF_SUP *sup);
+void SFBUF_DestroySj(SFD sfd);
+void SFBUF_SetTermFlg(SFD sfd, Sint32 n, Sint32 flg);
+Sint32 SFBUF_GetRTot(SFD sfd, Sint32 n);
+Sint32 SFBUF_RingGetRead(SFD sfd, Sint32 n, SFBUF_RINF *inf);
+Sint32 SFBUF_RingAddRead(SFD sfd, Sint32 n, Sint32 nbyte);
+void SFBUF_GetFlowCnt(SJ sj, Sint32 *wcnt, Sint32 *rcnt);
+Sint64 SFBUF_UpdateFlowCnt(Sint64 cnt, Uint32 pos);
+void SFBUF_GetUoch(SFD sfd, Sint32 n, Sint32 chno, SFUO_CH *ch);
+
+/* sfd_hds.c */
+void fn_803F12EC(void);
+
+/* sfd_pts.c */
+void SFPTS_InitPtsQue(SFPTS_QUE *que);
+Sint32 SFPTS_IsPtsQueFull(SFD sfd, Sint32 strm);
+Sint32 SFPTS_WritePtsQue(SFD sfd, Sint32 strm, SFPTS_ENT *in, Sint32 *full);
+Sint32 SFD_SetVideoPts(SFD sfd, void *buf, Sint32 size);
+
+/* sfd_con.c */
+Sint32 SFCON_IsSystemEndcodeSkip(SFD sfd);
+
+/* sfd_see.c */
+Sint32 SFD_SetByteRate(SFD sfd, Sint32 rate);
+Sint32 SFD_SetFileSize(SFD sfd, Sint32 fsize);
+Sint32 SFD_SetTotTime(SFD sfd, Sint32 tottime, Sint32 tunit);
+Sint32 SFD_SetSeekPos(SFD sfd, Sint32 pos);
+
+/* sfd_tmr.c */
+void SFTMR_InitTsum(SFTMR_TSUM *ts);
+void SFTMR_AddTsum(SFTMR_TSUM *ts, Sint64 t);
+
+/* sfd_pl2.c */
+Sint32 SFPL2_Standby(SFD sfd);
+Sint32 SFPL2_Pause(SFD sfd, Sint32 sw);
+
+/* Not yet decompiled; signatures inferred from their callers. */
+void SFTIM_Init(void *work);
+void SFTIM_InitHn(SFD sfd, SFTIM tim);
+void SFTIM_VbIn(void);
+Sint32 SFMPV_SaveCond(SFD sfd, void *buf, Sint32 size);
+void SFMPV_RestoreCond(SFD sfd, void *buf, Sint32 n);
+Sint32 SFD_SetUsrTimeFn(SFD sfd, SFTIM_FN fn);
+Sint32 SFD_SetExtClockFn(SFD sfd, SFTIM_FN fn, Sint32 wrap, void *obj);
+Sint32 SFD_SetUsrIsSkipFn(SFD sfd, Bool (*fn)());
+Sint32 SFTIM_GetTimeSub(SFD sfd, Sint32 *ncount, Sint32 *tscale);
+Bool SFTIM_IsStagnant(SFD sfd);
+Sint32 SFD_CmpTime(Sint32 a, Sint32 aunit, Sint32 b, Sint32 bunit);
 
 #endif

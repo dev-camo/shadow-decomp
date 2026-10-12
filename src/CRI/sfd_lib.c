@@ -4,27 +4,13 @@
  * (0xFF00xxxx codes, first code kept, handle state negated, callback to the MW player). */
 #include "CRI/cri_xpt.h"
 #include "CRI/sfd.h"
+#include "CRI/svm.h"
 
 #define SFD_VERSION 0x3640
 
-extern void SVM_Lock(void);
-extern void SVM_Unlock(void);
-extern void SJRBF_Init(void);
-extern void UTY_MemsetDword(Uint32 *dst, Uint32 val, Uint32 ndw);
-extern void MEM_Copy(void *dst, const void *src, Uint32 nbytes);
 extern const Sint32 SFPLY_cond_dfl[SFD_COND_NUM];
-extern void SFTIM_Init(void *work);
-extern void SFBUF_Init(void *work);
-extern Sint32 SFTRN_Init(SFTRN_TRIF_TBL *dst, SFTRN_TRIF_TBL *src);
-extern void SFPLY_Init(void);
-extern void SFHDS_Init(void);
-extern Sint32 SFD_Destroy(SFD sfd);
-extern Sint32 SFTRN_Finish(SFTRN_TRIF_TBL *tbl);
-extern void SJRBF_Finish(void);
 /* this game only: module finish entries (inferred; the time and buffer ones are empty) */
 extern void fn_803FDCD0(void *work);
-extern void fn_803F052C(void *work);
-extern void fn_803F12EC(void);
 
 const Char8 SFLIB_version_str[] =
     "\nCRI SFD/GC Ver.1.958 Build:Feb 28 2005 19:36:28\n\0Append: MW2407 GC20Apr2004Patch2\n";
@@ -164,7 +150,7 @@ Sint32 SFD_Init(register SFD_INIT_PRM *prm) {
     sflib_sizeof_sfdhn = SFD_VERSION;
     cri_verstr_ptr = SFLIB_version_str;
     SJRBF_Init();
-    UTY_MemsetDword((Uint32 *)&SFLIB_libwork, 0, sizeof(SFLIB_libwork) / 4 - 1);
+    UTY_MemsetDword(&SFLIB_libwork, 0, sizeof(SFLIB_libwork) / 4 - 1);
     MEM_Copy(&SFLIB_libwork, SFPLY_cond_dfl, sizeof(SFLIB_libwork.cond));
     /* Matching constraint (COMPILER-DIFF): the original loads prm1 before trif_tbl into r4/r5 and
 	 * stores trif_tbl first; the `+ 0` copy of tbl gives that register order (it generates no code). */

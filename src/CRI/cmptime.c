@@ -2,6 +2,7 @@
  * Body from the RE4 GameCube decompilation of the same file.
  */
 #include "CRI/cri_xpt.h"
+#include "CRI/uty.h"
 
 /* TRUE when time cnt1/tscl1 <= cnt2/tscl2 (cross-multiplied in 64 bits). */
 Bool UTY_CmpTime(Sint32 cnt1, Sint32 tscl1, Sint32 cnt2, Sint32 tscl2) {

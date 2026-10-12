@@ -49,47 +49,12 @@ typedef struct {
 #define SFPLY_IS_PLAYING(sfd)                                                                      \
     ((sfd)->stat == SFD_STAT_PLAYING && (sfd)->pause_sw != 1 && PLYINF(sfd)->bpa != 1)
 
-extern void UTY_MemsetDword(void *dst, Uint32 val, Uint32 ndw);
-extern void MEM_Copy(void *dst, const void *src, Uint32 nbytes);
 /* this game's Sofdec clock (sfd_ply time base; not RE4's UTY_GetTmr) */
 extern Sint64 fn_803FEA5C(void);
 /* this game only: clock units per second for fn_803FEA5C (inferred) */
 extern Sint64 fn_803FE96C(void);
 /* the timer is unusable (RE4 calls UTY_IsTmrVoid here; this game's version differs) */
 extern Bool fn_80402510(void);
-extern Sint32 UTY_CmpTime(Sint32 cnt1, Sint32 tscl1, Sint32 cnt2, Sint32 tscl2);
-extern Sint32 SFBUF_SetSupplySj(SFD sfd, SFBUF_SUP *sup);
-extern void SFBUF_DestroySj(SFD sfd);
-extern void SFBUF_SetTermFlg(SFD sfd, Sint32 buf, Sint32 flg);
-extern Sint32 SFBUF_RingGetDataSiz(SFD sfd, Sint32 buf);
-extern Sint32 SFBUF_GetWTot(SFD sfd, Sint32 buf);
-extern Sint32 SFBUF_GetRTot(SFD sfd, Sint32 buf);
-extern Sint32 SFBUF_InitHn(SFD sfd, SFBUF_WORK *wk, SFD_CREPRM *prm);
-extern Sint32 SFTRN_InitHn(SFD sfd, SFD_TR *tr, SFD_CREPRM *prm, Sint32 x);
-extern Sint32 SFTRN_CallTrSetup(SFD sfd, Sint32 fn);
-extern Sint32 SFMPV_SaveCond(SFD sfd, void *buf, Sint32 size);
-extern void SFMPV_RestoreCond(SFD sfd, void *buf, Sint32 n);
-extern void SFTIM_InitHn(SFD sfd, SFTIM tim);
-extern Sint32 SFTIM_GetTimeSub(SFD sfd, Sint32 *ncount, Sint32 *tscale);
-extern Bool SFTIM_IsStagnant(SFD sfd);
-extern void SFTIM_VbIn(void);
-extern Sint32 SFD_CmpTime(Sint32 a, Sint32 aunit, Sint32 b, Sint32 bunit);
-extern Sint32 SFD_SetErrFn(SFD sfd, void (*fn)(void *obj, Sint32 code), void *obj);
-extern Sint32 SFD_SetUsrTimeFn(SFD sfd, SFTIM_FN fn);
-extern Sint32 SFD_SetExtClockFn(SFD sfd, SFTIM_FN fn, Sint32 wrap, void *obj);
-extern Sint32 SFD_SetUsrIsSkipFn(SFD sfd, Bool (*fn)());
-extern Sint32 SFD_EntrySeek(SFD sfd, SFSEE_WORK *wk);
-extern Sint32 SFD_SetByteRate(SFD sfd, Sint32 rate);
-extern Sint32 SFD_SetFileSize(SFD sfd, Sint32 fsize);
-extern Sint32 SFD_SetTotTime(SFD sfd, Sint32 tottime, Sint32 tunit);
-extern Sint32 SFD_SetSeekPos(SFD sfd, Sint32 pos);
-extern Sint32 SFD_SetVideoPts(SFD sfd, void *buf, Sint32 size);
-extern void SFLIB_InitErrInf(SFLIB_ERRINF *err);
-extern void SFTMR_InitTsum(SFTMR_TSUM *ts);
-extern void SFTMR_AddTsum(SFTMR_TSUM *ts, Sint64 t);
-extern Sint32 SFPL2_Standby(SFD sfd);
-extern Sint32 SFPL2_Pause(SFD sfd, Sint32 sw);
-extern Sint32 SFTRN_GetPrepFlg(SFD sfd, Sint32 id);
 
 void (*SFPLY_recordgetfrm)(SFD sfd, void *frm);
 Sint32 sfply_last_hnctrl_wksiz;
@@ -563,10 +528,10 @@ static SFD sfply_InitHn(SFD_CREPRM *prm, Sint32 x) {
     MEM_Copy(hn->cond, SFLIB_libwork.cond, sizeof(hn->cond));
     MEM_Copy(hn->cond_def, SFLIB_libwork.cond, sizeof(hn->cond_def));
     SFTIM_InitHn(hn, SFD_TIM(hn));
-    if (SFBUF_InitHn(hn, hn->buf, prm) != 0) {
+    if (SFBUF_InitHn(hn, hn->buf, (SFBUF_PRM *)prm) != 0) {
         return 0;
     }
-    SFTRN_InitHn(hn, hn->tr, prm, x);
+    SFTRN_InitHn(hn, hn->tr, (SFTRN_PRM *)prm, x);
     SFSEE_InitHn(&hn->see);
     if (SFTRN_CallTrSetup(hn, 3) != 0) {
         return 0;

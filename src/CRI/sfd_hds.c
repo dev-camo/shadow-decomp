@@ -3,8 +3,6 @@
 #include "CRI/sfd.h"
 #include "CRI/sfh.h"
 
-extern void MEM_Copy(void *dst, const void *src, Uint32 nbytes);
-
 #define SFHDS_SFH_NUM 0x20
 #define SFHDS_SFH_WORK_SIZE 0x204
 

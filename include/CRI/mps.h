@@ -92,5 +92,13 @@ Sint32 MPS_GetPackHd(MPS mps, MPS_PACKHD *hd);
 Sint32 MPS_GetSysHd(MPS mps, MPS_SYSHD *hd, Sint32 no);
 Sint32 MPS_GetLastSysHd(MPS mps, MPS_SYSHD *hd);
 Sint32 MPS_GetPketHd(MPS mps, MPS_PKETHD *hd);
+void MPS_SetPesFn(MPS mps, void *fn, void *obj);
+void MPS_SetPsMapFn(MPS mps, void *fn, void *obj);
+void MPS_SetSystemFn(MPS mps, void *fn, void *obj);
+
+/* Not yet decompiled; signatures inferred from their callers. */
+Sint32 MPS_Init(Sint32 num_hn, void *work);
+void MPS_Finish(void);
+Sint32 MPS_SetErrFn(MPS mps, void (*fn)(void *obj, Sint32 code), void *obj);
 
 #endif

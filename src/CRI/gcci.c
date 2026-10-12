@@ -5,9 +5,12 @@
  * Names, types and layout follow the same CRI library version in the RE4 GameCube
  * decompilation (same build string version, error codes, function order and table).
  */
+#include <dolphin/dvd.h>
+#include <dolphin/os.h>
 #include <string.h>
 
 #include "CRI/cri_xpt.h"
+#include "CRI/cvfs.h"
 
 #define GCCI_MAX_OBJ 40
 #define GCCI_DEF_SCTLEN 0x800
@@ -19,85 +22,6 @@
 #define GCCI_STAT_COMPLETE 1
 #define GCCI_STAT_READING 2
 #define GCCI_STAT_ERROR 3
-
-/* DVDCommandBlock states used by the device. */
-#define DVD_STATE_FATAL_ERROR -1
-#define DVD_STATE_END 0
-#define DVD_STATE_CANCELED 10
-
-#define CVFS_SEEK_SET 0
-#define CVFS_SEEK_CUR 1
-#define CVFS_SEEK_END 2
-
-/* Dolphin SDK DVD types (only the layout this device touches). */
-typedef struct DVDCommandBlock DVDCommandBlock;
-typedef void (*DVDCBCallback)(Sint32 result, DVDCommandBlock *block);
-
-struct DVDCommandBlock {
-    /* 0x00 */ DVDCommandBlock *next;
-    /* 0x04 */ DVDCommandBlock *prev;
-    /* 0x08 */ Uint32 command;
-    /* 0x0C */ Sint32 state;
-    /* 0x10 */ Uint32 offset;
-    /* 0x14 */ Uint32 length;
-    /* 0x18 */ void *addr;
-    /* 0x1C */ Uint32 currTransferSize;
-    /* 0x20 */ Uint32 transferredSize;
-    /* 0x24 */ void *id;
-    /* 0x28 */ DVDCBCallback callback;
-    /* 0x2C */ void *userData;
-};
-
-typedef struct DVDFileInfo DVDFileInfo;
-typedef void (*DVDCallback)(Sint32 result, DVDFileInfo *fileInfo);
-
-struct DVDFileInfo {
-    /* 0x00 */ DVDCommandBlock cb;
-    /* 0x30 */ Uint32 startAddr;
-    /* 0x34 */ Uint32 length;
-    /* 0x38 */ DVDCallback callback;
-};
-
-/* Bus clock in the OS globals, used by OSTicksToMilliseconds. */
-#define OS_BUS_CLOCK (*(Uint32 *)0x800000F8)
-#define OS_TIMER_CLOCK (OS_BUS_CLOCK / 4)
-#define OSTicksToMilliseconds(ticks) ((ticks) / (OS_TIMER_CLOCK / 1000))
-
-/* Dolphin SDK functions used by the device. */
-extern Sint32 DVDGetCommandBlockStatus(DVDCommandBlock *block);
-extern Sint32 DVDCancel(DVDCommandBlock *block);
-extern Sint32 DVDGetTransferredSize(DVDFileInfo *fileInfo);
-extern Sint32 DVDReadAsyncPrio(DVDFileInfo *fileInfo, void *addr, Sint32 length, Sint32 offset,
-                               DVDCallback callback, Sint32 prio);
-extern Sint32 DVDReadPrio(DVDFileInfo *fileInfo, void *addr, Sint32 length, Sint32 offset,
-                          Sint32 prio);
-extern Sint32 DVDOpen(const Char8 *fileName, DVDFileInfo *fileInfo);
-extern Sint32 DVDClose(DVDFileInfo *fileInfo);
-extern void DCStoreRange(void *addr, Uint32 nBytes);
-extern Sint32 DVDGetDriveStatus(void);
-extern void DCInvalidateRange(void *addr, Uint32 nBytes);
-extern Uint32 OSGetTick(void);
-
-typedef void (*CVFS_ERRFUNC)(void *obj, const Char8 *msg, void *hn);
-
-typedef struct {
-    /* 0x00 */ void (*ExecServer)(void);
-    /* 0x04 */ void (*EntryErrFunc)(CVFS_ERRFUNC func, void *obj);
-    /* 0x08 */ Sint32 (*GetFileSize)(const Char8 *fname);
-    /* 0x0C */ void *x0c;
-    /* 0x10 */ void *(*Open)(const Char8 *fname, void *dir, Sint32 rw);
-    /* 0x14 */ void (*Close)(void *hn);
-    /* 0x18 */ Sint32 (*Seek)(void *hn, Sint32 pos, Sint32 type);
-    /* 0x1C */ Sint32 (*Tell)(void *hn);
-    /* 0x20 */ Sint32 (*ReqRd)(void *hn, Sint32 nsct, void *buf);
-    /* 0x24 */ void *x24;
-    /* 0x28 */ void (*StopTr)(void *hn);
-    /* 0x2C */ Sint32 (*GetStat)(void *hn);
-    /* 0x30 */ Sint32 (*GetSctLen)(void *hn);
-    /* 0x34 */ void (*SetSctLen)(void *hn, Sint32 sctlen);
-    /* 0x38 */ Sint32 (*GetNumTr)(void *hn);
-    /* 0x3C */ void *x3c[11];
-} CVFS_IF;
 
 typedef struct {
     /* 0x00 */ Sint8 used;
@@ -134,7 +58,7 @@ const Char8 gcg_ci_build_str[] = "\nGCCI Ver.1.09 Build:Feb 28 2005 15:48:31\n";
 
 GCCI_DEBUG gcg_ci_debug;
 void *gcg_ci_err_obj;
-CVFS_ERRFUNC gcg_ci_err_func;
+CVFS_USRERRFN gcg_ci_err_func;
 GCCI_OBJ gcg_ci_obj[GCCI_MAX_OBJ];
 /* volatile: gcCiGetInterface reloads and stores this pointer, which a plain
  * self-assignment would not emit.
@@ -142,7 +66,7 @@ GCCI_OBJ gcg_ci_obj[GCCI_MAX_OBJ];
 const Char8 *volatile gcg_ci_build_ptr;
 
 void gcCiExecServer(void);
-void gcCiEntryErrFunc(CVFS_ERRFUNC func, void *obj);
+void gcCiEntryErrFunc(CVFS_USRERRFN func, void *obj);
 Sint32 gcCiGetFileSize(const Char8 *fname);
 GCCI gcCiOpen(const Char8 *fname, void *dir, Sint32 rw);
 void gcCiClose(void *hn);
@@ -582,7 +506,7 @@ Sint32 gcCiGetFileSize(const Char8 *fname) {
 }
 
 /* Installs the device error callback. */
-void gcCiEntryErrFunc(CVFS_ERRFUNC func, void *obj) {
+void gcCiEntryErrFunc(CVFS_USRERRFN func, void *obj) {
     gcg_ci_err_func = func;
     gcg_ci_err_obj = obj;
 }

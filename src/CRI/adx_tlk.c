@@ -22,13 +22,6 @@
 #include "CRI/lsc.h"
 #include "CRI/sj.h"
 
-extern Uint32 __cvt_fp2unsigned(Float32 value);
-/* Called only by unreferenced (linker-stripped) functions kept from the reference. */
-extern void ADXSJD_SetKeyString(ADXSJD sjd, Char8 *str);
-extern Sint32 ADXSJD_GetFmtBps(ADXSJD sjd);
-extern Sint32 ADXSJD_GetHdrLen(ADXSJD sjd);
-extern Sint32 ADXSTM_GetNumSctIbuf(ADXSTM stm);
-
 /* work layout of one handle: the decoder output rings (0x3060 16-bit samples per channel), the
  * renderer work (0x40C0 bytes per channel) and the file stream ring (the rest, in sectors) */
 #define ADXT_OBUF_NSMPL 0x3060
@@ -43,7 +36,7 @@ extern Sint32 ADXSTM_GetNumSctIbuf(ADXSTM stm);
 
 /* the vsync-based time position in adxt_time_unit units from the current sample time */
 #define ADXT_SET_TIME_POS(adxt, nc, ts)                                                            \
-    (adxt)->x9c = __cvt_fp2unsigned((Float32)adxt_time_unit * ((Float32)(nc) / (Float32)(ts)))
+    (adxt)->x9c = (Uint32)((Float32)adxt_time_unit * ((Float32)(nc) / (Float32)(ts)))
 
 /* (.bss is the reverse of this order) */
 static Float32 adxt_mviop_f;
