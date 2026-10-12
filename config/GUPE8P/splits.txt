@@ -190,6 +190,31 @@ dolphin/fstload.c:
 	.sdata      start:0x805EDBA0 end:0x805EDBB0
 	.sbss       start:0x805F1010 end:0x805F1020
 
+dolphin/Pad.c:
+	.text       start:0x8037F610 end:0x80381024
+	.data       start:0x805620C8 end:0x80562120
+	.bss        start:0x80586CB0 end:0x80586D00
+	.sdata      start:0x805EDBC0 end:0x805EDBE0
+	.sbss       start:0x805F1088 end:0x805F10B8
+
+dolphin/ai.c:
+	.text       start:0x80381024 end:0x80381908
+	.data       start:0x80562120 end:0x80562168
+	.sdata      start:0x805EDBE0 end:0x805EDBE8
+	.sbss       start:0x805F10B8 end:0x805F10F8
+
+dolphin/ar.c:
+	.text       start:0x80381908 end:0x803834B4
+	.data       start:0x80562168 end:0x805621B0
+	.sdata      start:0x805EDBE8 end:0x805EDBF0
+	.sbss       start:0x805F10F8 end:0x805F1118
+
+dolphin/arq.c:
+	.text       start:0x803834B4 end:0x80383850
+	.data       start:0x805621B0 end:0x805621F8
+	.sdata      start:0x805EDBF0 end:0x805EDBF8
+	.sbss       start:0x805F1118 end:0x805F1140
+
 dolphin/delay.c:
 	.text       start:0x80388D50 end:0x803892D0
 
