@@ -228,6 +228,11 @@ PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/signal.c:
 	.text       start:0x803AD650 end:0x803AD710
 	.bss        start:0x805A6638 end:0x805A6650
 
+PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/string.c:
+	.text       start:0x803AD710 end:0x803ADC24
+	.rodata     start:0x80514F90 end:0x80515320
+	.sdata      start:0x805EED70 end:0x805EED78
+
 PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_acos.c:
 	.text       start:0x803AF678 end:0x803AF8B4
 	.sdata2     start:0x805FB8A0 end:0x805FB928
