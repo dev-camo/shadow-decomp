@@ -1,7 +1,5 @@
 #include "Game/fn_8040_vector_types.h"
 
-extern float lbl_805FAD80;
-
 void fn_8040D02C(void) {
     float initial_value = lbl_805FAD80;
     Fn8040Vector3 *vector = &lbl_805E07A0;

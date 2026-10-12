@@ -8,6 +8,8 @@ void fn_8040D044(Fn8040Vector3 *result, const Fn8040Vector3 *vector, float angle
     float cosine;
     fn_80031568(&sine, &cosine, angle);
 
+    /* Copying the results into locals before use keeps this nonmatching unit closest to the target
+     * (70% vs 47% when sine/cosine are used directly). */
     float sine_value = sine;
     float cosine_value = cosine;
     float x = vector->x;

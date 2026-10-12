@@ -13,13 +13,10 @@ void fn_8040AC3C(void) {}
 unsigned int fn_8040AC40(Fn8040AC40List *list) {
     unsigned int sum = 0;
     Fn8040AC40Node *node = list->sentinel->next;
-    goto check;
-loop:
-    sum += node->value;
-    node = node->next;
-check:
-    if (node != 0) {
-        goto loop;
+
+    while (node != 0) {
+        sum += node->value;
+        node = node->next;
     }
     return sum;
 }

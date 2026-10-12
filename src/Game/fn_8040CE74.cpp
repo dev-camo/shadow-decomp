@@ -1,7 +1,6 @@
 #include "Game/fn_8040_vector_types.h"
 
 extern "C" {
-extern float lbl_805FAD80;
 extern float lbl_805FAD84;
 
 float fn_8040CE74(Fn8040Vector3 *vector) {

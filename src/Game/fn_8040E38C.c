@@ -1,12 +1,12 @@
-typedef struct Fn8040E38CArgs {
-    /* 0x00 */ short first;
-    /* 0x02 */ short padding;
-    /* 0x04 */ int second;
-    /* 0x08 */ int third;
-} Fn8040E38CArgs;
+typedef struct Fn8040E38CObject {
+    /* 0x00 */ short field_00;
+    /* 0x02 */ short pad_02;
+    /* 0x04 */ int field_04;
+    /* 0x08 */ int field_08;
+} Fn8040E38CObject;
 
-void fn_8040E38C(Fn8040E38CArgs *object) {
-    object->second = 0;
-    object->first = 0;
-    object->third = 0;
+void fn_8040E38C(Fn8040E38CObject *object) {
+    object->field_04 = 0;
+    object->field_00 = 0;
+    object->field_08 = 0;
 }
