@@ -367,6 +367,7 @@ config.libs = [
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/mem_TRK.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/targimpl.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/mpc_7xx_603e.c"),
+            Object(Matching, "PowerPC_EABI_Support/MetroTRK/targcont.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/target_options.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/mslsupp.c"),
         ],
