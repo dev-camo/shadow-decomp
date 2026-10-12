@@ -34,8 +34,8 @@ typedef struct FragmentInfo {
 typedef struct FragmentSearchInfo {
     /* 0x00 */ ExceptionIndex *index_begin;
     /* 0x04 */ ExceptionIndex *index_end;
-    /* USA uses paired words at sp+0x10/14 and sp+0x18/1c; consumers use 32-bit values. */
-    /* These accesses do not prove the original semantic type was unsigned long long. */
+    /* USA uses paired words at sp+0x10/14 and sp+0x18/1c; consumers use 32-bit values.
+     * These accesses do not prove the original semantic type was unsigned long long. */
     /* 0x08 */ unsigned long long address_base;
     /* 0x10 */ unsigned long long relative_base;
     /* 0x18 */ char *toc;

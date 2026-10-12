@@ -9,8 +9,8 @@
 
 #define SFCON_QUE_NUM 32
 
-/* Pops the next total-sample entry of the concatenation queue (the audio driver reads the sample */
-/* count of each concatenated file); *val = -1 and 0 when empty. */
+/* Pops the next total-sample entry of the concatenation queue (the audio driver reads the sample
+ * count of each concatenated file); *val = -1 and 0 when empty. */
 Sint32 SFCON_ReadTotSmplQue(SFD sfd, Sint32 *val, Sint32 *last) {
     SFCON *con = &sfd->con;
     Sint32 cs;
@@ -30,8 +30,8 @@ Sint32 SFCON_ReadTotSmplQue(SFD sfd, Sint32 *val, Sint32 *last) {
     return ret;
 }
 
-/* Pushes a file's total sample count onto the 32-entry queue (from the demuxer at each concatenated */
-/* file); 0 when full. */
+/* Pushes a file's total sample count onto the 32-entry queue (from the demuxer at each concatenated
+ * file); 0 when full. */
 Sint32 SFCON_WriteTotSmplQue(SFD sfd, Sint32 val, Sint32 last) {
     SFCON *con = &sfd->con;
     Sint32 cs;
@@ -50,8 +50,8 @@ Sint32 SFCON_WriteTotSmplQue(SFD sfd, Sint32 val, Sint32 last) {
     return ret;
 }
 
-/* Adds a finished file's duration to the accumulated concatenation time and records it in the */
-/* per-file ring (the clock adds it to the next file's timestamps). */
+/* Adds a finished file's duration to the accumulated concatenation time and records it in the
+ * per-file ring (the clock adds it to the next file's timestamps). */
 void SFCON_UpdateConcatTime(SFD sfd, Sint32 t) {
     SFCON *con = &sfd->con;
     Sint32 cs;
@@ -66,8 +66,8 @@ void SFCON_UpdateConcatTime(SFD sfd, Sint32 t) {
     SFLIB_UnlockCs(&cs);
 }
 
-/* Concatenated play (cond 0x31) or video end-code skip (0x39): a sequence end code does not end */
-/* the video. */
+/* Concatenated play (cond 0x31) or video end-code skip (0x39): a sequence end code does not end
+ * the video. */
 Sint32 SFCON_IsVideoEndcodeSkip(SFD sfd) {
     if (SFSET_GetCond(sfd, 0x31) != 0 || SFSET_GetCond(sfd, 0x39) != 0) {
         return 1;
@@ -88,8 +88,8 @@ Sint32 SFCON_IsEndcodeSkip(SFD sfd) {
     return SFSET_GetCond(sfd, 0x31) != 0;
 }
 
-/* Enables concatenated play: the streams continue across end codes (linked file playback, */
-/* mwPlyLinkStm). */
+/* Enables concatenated play: the streams continue across end codes (linked file playback,
+ * mwPlyLinkStm). */
 Sint32 SFD_SetConcatPlay(SFD sfd) {
     if (SFLIB_CheckHn(sfd) != 0) {
         return SFLIB_SetErr(0, 0xFF000161);

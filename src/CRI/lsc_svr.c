@@ -21,8 +21,8 @@ static inline Uint32 lsc_CalcSum(Char8 *fname) {
     return sum;
 }
 
-/* Retires the finished head entry: pops it, calls the status callback and goes PREP when the queue */
-/* is empty; with loop_flag the same range is re-queued at the tail. */
+/* Retires the finished head entry: pops it, calls the status callback and goes PREP when the queue
+ * is empty; with loop_flag the same range is re-queued at the tail. */
 static inline void lsc_NextEntry(LSC_OBJ *lsc) {
     LSC_ENTRY *ent;
     Char8 *fname = 0;
@@ -50,10 +50,10 @@ static inline void lsc_NextEntry(LSC_OBJ *lsc) {
     }
 }
 
-/* Per-scheduler step: tracks the loading entry through the stream controller (EXEC -> pos, END -> */
-/* done, ERROR -> LSC_STAT_ERROR), retires a done entry, and starts the next waiting entry by */
-/* re-binding the controller to its file range (no-wait), arming the end-of-stream at its length and */
-/* starting it with this scheduler's refill policy. */
+/* Per-scheduler step: tracks the loading entry through the stream controller (EXEC -> pos, END ->
+ * done, ERROR -> LSC_STAT_ERROR), retires a done entry, and starts the next waiting entry by
+ * re-binding the controller to its file range (no-wait), arming the end-of-stream at its length and
+ * starting it with this scheduler's refill policy. */
 void lsc_ExecHndl(LSC_OBJ *lsc) {
     LSC_ENTRY *ent;
     Uint32 sum;

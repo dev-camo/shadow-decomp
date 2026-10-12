@@ -326,8 +326,8 @@ static inline Sint32 sjmem_SearchFreeObj(void) {
     return i;
 }
 
-/* Creates a read-only joint presenting the `bsize` bytes at `buf` as data (used for memory-resident */
-/* ADX data, e.g. the SFA header insertion's dummy inputs). */
+/* Creates a read-only joint presenting the `bsize` bytes at `buf` as data (used for memory-resident
+ * ADX data, e.g. the SFA header insertion's dummy inputs). */
 SJ SJMEM_Create(void *buf, Sint32 bsize) {
     SJMEM_OBJ *sj;
     Sint32 i;

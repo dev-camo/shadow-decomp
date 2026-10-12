@@ -76,8 +76,8 @@ static SJRBF_OBJ sjrbf_obj[SJRBF_MAX_OBJ];
         (sj)->errfunc((sj)->errobj, SJ_ERR_PRM);                                                   \
     }
 
-/* Byte counters of one side: flow[id][0] = bytes taken with GetChunk, [1] = bytes returned with */
-/* PutChunk (debug/statistics). */
+/* Byte counters of one side: flow[id][0] = bytes taken with GetChunk, [1] = bytes returned with
+ * PutChunk (debug/statistics). */
 Sint32 SJRBF_GetFlowCnt(SJ handle, Sint32 id, Sint32 dir) {
     SJRBF_OBJ *sj = (SJRBF_OBJ *)handle;
     Sint32 ret;
@@ -174,8 +174,8 @@ void *SJRBF_GetBufPtr(SJ handle) {
     return ret;
 }
 
-/* Whether a GetChunk of `nbyte` on side `id` would return the full amount; *rbyte gets the amount */
-/* actually available contiguously (bounded by the wrap point + mirror). */
+/* Whether a GetChunk of `nbyte` on side `id` would return the full amount; *rbyte gets the amount
+ * actually available contiguously (bounded by the wrap point + mirror). */
 Sint32 SJRBF_IsGetChunk(SJRBF_OBJ *sj, Sint32 id, Sint32 nbyte, Sint32 *rbyte) {
     Sint32 ret;
     Sint32 n;
@@ -221,8 +221,8 @@ Sint32 SJRBF_IsGetChunk(SJRBF_OBJ *sj, Sint32 id, Sint32 nbyte, Sint32 *rbyte) {
     return ret;
 }
 
-/* Gives back the tail of the last GetChunk on side `id` (only the most recent chunk can be */
-/* ungotten: the chunk must end where the side's cursor now stands); rewinds the cursor and the count. */
+/* Gives back the tail of the last GetChunk on side `id` (only the most recent chunk can be
+ * ungotten: the chunk must end where the side's cursor now stands); rewinds the cursor and the count. */
 void sjrbf_UngetChunk(SJRBF_OBJ *sj, Sint32 id, SJCK *ck) {
     Sint32 ofs;
     Sint32 pos;
@@ -278,9 +278,9 @@ void SJRBF_UngetChunk(SJRBF_OBJ *sj, Sint32 id, SJCK *ck) {
     SJCRS_Unlock();
 }
 
-/* Hands a chunk to the other side: a DATA put makes the bytes readable (mirroring the bytes that */
-/* lie in the first xsize bytes to the tail copy, and bytes written past bsize back to the start), a */
-/* FREE put releases consumed bytes for writing. */
+/* Hands a chunk to the other side: a DATA put makes the bytes readable (mirroring the bytes that
+ * lie in the first xsize bytes to the tail copy, and bytes written past bsize back to the start), a
+ * FREE put releases consumed bytes for writing. */
 void sjrbf_PutChunk(SJRBF_OBJ *sj, Sint32 id, SJCK *ck) {
     Sint32 ofs;
     Sint32 n;
@@ -339,9 +339,9 @@ void SJRBF_PutChunk(SJRBF_OBJ *sj, Sint32 id, SJCK *ck) {
     SJCRS_Unlock();
 }
 
-/* Takes up to `nbyte` contiguous bytes from side `id` (FREE = writable space at wrofs, DATA = */
-/* readable bytes at rdofs); contiguous means up to the ring end plus the mirror area. Advances the */
-/* side's cursor and count; ck->len may be less than asked. */
+/* Takes up to `nbyte` contiguous bytes from side `id` (FREE = writable space at wrofs, DATA =
+ * readable bytes at rdofs); contiguous means up to the ring end plus the mirror area. Advances the
+ * side's cursor and count; ck->len may be less than asked. */
 void sjrbf_GetChunk(SJRBF_OBJ *sj, Sint32 id, Sint32 nbyte, SJCK *ck) {
     Sint32 n;
 
@@ -513,8 +513,8 @@ static inline Sint32 sjrbf_SearchFreeObj(void) {
     return i;
 }
 
-/* Creates a ring-buffer joint over the caller's `buf` (`bsize` bytes + `xsize` mirror bytes after it), */
-/* empty. Every ADX/Sofdec buffer (file ring, decoder output, ARAM ring, MPEG input) is one of these. */
+/* Creates a ring-buffer joint over the caller's `buf` (`bsize` bytes + `xsize` mirror bytes after it),
+ * empty. Every ADX/Sofdec buffer (file ring, decoder output, ARAM ring, MPEG input) is one of these. */
 SJ SJRBF_Create(void *buf, Sint32 bsize, Sint32 xsize) {
     SJRBF_OBJ *sj;
     Sint32 i;

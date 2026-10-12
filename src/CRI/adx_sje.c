@@ -264,8 +264,8 @@ void ADXSJE_ExecHndl(void *obj) {
     }
 }
 
-/* Encoding stage (stat 2): encodes blocks while input is available and the sample total is not */
-/* reached, then writes the end code and finishes (stat 3). */
+/* Encoding stage (stat 2): encodes blocks while input is available and the sample total is not
+ * reached, then writes the end code and finishes (stat 3). */
 static void adxsje_encode_exec(ADXSJE sje) {
     Sint32 n;
 
@@ -394,8 +394,8 @@ void ADXSJE_Destroy(ADXSJE sje) {
     ADXCRS_Unlock();
 }
 
-/* Takes an encoder slot reading `nch` PCM stream joints and writing ADX to `sjo`: defaults 44.1 kHz, */
-/* 4-bit 18-byte blocks (32 samples), 500 Hz cut-off, no loop, no AINF, unbounded length. */
+/* Takes an encoder slot reading `nch` PCM stream joints and writing ADX to `sjo`: defaults 44.1 kHz,
+ * 4-bit 18-byte blocks (32 samples), 500 Hz cut-off, no loop, no AINF, unbounded length. */
 ADXSJE ADXSJE_Create(Sint32 nch, SJ *sji, SJ sjo) {
     ADXSJE sje;
     Sint32 i;
