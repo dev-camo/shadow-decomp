@@ -1,25 +1,24 @@
 /* MSL runtime pool release (alloc.c __pool_free). */
+#include "alloc_internal.h"
 
-extern void deallocate_from_fixed_pools(void *pool, void *ptr, unsigned int size);
-extern void deallocate_from_var_pools(void *pool, void *ptr);
+/* Not yet decompiled (static in MSL alloc.c). */
+extern void deallocate_from_fixed_pools(__mem_pool_obj *pool_obj, void *ptr, unsigned long size);
+extern void deallocate_from_var_pools(__mem_pool_obj *pool_obj, void *ptr);
 
-void __pool_free(void *pool, void *ptr) {
-    void *block_header;
-    unsigned int block_size;
+void __pool_free(__mem_pool *pool, void *ptr) {
+    __mem_pool_obj *pool_obj;
+    unsigned long size;
 
-    if (ptr != 0) {
-        block_header = *(void **)((unsigned char *)ptr - 4);
-        if (((unsigned int)block_header & 1) == 0) {
-            block_size = *(unsigned int *)((unsigned char *)block_header + 8);
-        } else {
-            block_size = *(unsigned int *)((unsigned char *)ptr - 8) & ~7;
-            block_size = block_size - 8;
-        }
+    if (ptr == 0) {
+        return;
+    }
 
-        if (block_size <= 0x44) {
-            deallocate_from_fixed_pools(pool, ptr, block_size);
-        } else {
-            deallocate_from_var_pools(pool, ptr);
-        }
+    pool_obj = (__mem_pool_obj *)pool;
+    size = __msize_inline(ptr);
+
+    if (size <= 68) {
+        deallocate_from_fixed_pools(pool_obj, ptr, size);
+    } else {
+        deallocate_from_var_pools(pool_obj, ptr);
     }
 }

@@ -218,7 +218,6 @@ cflags_base = [
     "-str reuse",
     "-multibyte",  # For Wii compilers, replace with `-enc SJIS`
     "-i include",
-    "-i include/libc",
     f"-i {build_include}",
     f"-DBUILD_VERSION={version_num}",
     f"-DVERSION_{config.version}",
@@ -239,9 +238,20 @@ elif args.warn == "off":
 elif args.warn == "error":
     cflags_base.append("-W error")
 
-# Metrowerks library flags
+# Game and CRI middleware flags: the base flags plus the C library headers in include/libc.
+cflags_game = [
+    *cflags_base,
+    "-i include/libc",
+]
+
+# Metrowerks library flags (the runtime units include the MSL and runtime headers)
 cflags_runtime = [
     *cflags_base,
+    "-i src/PowerPC_EABI_Support",
+    "-i src/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Include",
+    "-i src/PowerPC_EABI_Support/MSL/MSL_C/PPC_EABI/Include",
+    "-i src/PowerPC_EABI_Support/Runtime/Inc",
+    "-i include/libc",
     "-use_lmw_stmw on",
     "-str reuse,pool,readonly",
     "-gccinc",
@@ -361,8 +371,7 @@ config.libs = [
             Object(Matching, "Runtime.PPCEABI.H/calloc.c"),
             Object(NonMatching, "Runtime.PPCEABI.H/allocator_core.c"),
             Object(Matching, "Runtime.PPCEABI.H/allocator_release.c"),
-            Object(Matching, "Runtime.PPCEABI.H/exit.c"),
-            Object(Matching, "Runtime.PPCEABI.H/abort.c"),
+            Object(Matching, "Runtime.PPCEABI.H/abort_exit.c"),
             Object(Matching, "Runtime.PPCEABI.H/global_destructor_chain.c"),
             Object(Matching, "Runtime.PPCEABI.H/__init_cpp_exceptions.cpp"),
         ],
@@ -370,7 +379,7 @@ config.libs = [
     {
         "lib": "Game",
         "mw_version": config.linker_version,
-        "cflags": cflags_base,
+        "cflags": cflags_game,
         "progress_category": "game",
         "objects": (
             [
@@ -602,7 +611,7 @@ config.libs = [
         # CRI middleware units that are identical and split in every region.
         "lib": "CRI",
         "mw_version": config.linker_version,
-        "cflags": cflags_base,
+        "cflags": cflags_game,
         "progress_category": "game",
         "objects": [
             Object(

@@ -1,12 +1,9 @@
+#include "NMWException.h"
+
 struct __eti_init_info;
 
 extern "C" {
 extern __eti_init_info _eti_init_info[];
-
-// The original init relocations pass this table and r2's TOC to the fragment API.
-int __register_fragment(__eti_init_info *init_info, char *toc);
-void __unregister_fragment(int fragment_id);
-void __destroy_global_chain(void);
 
 static int fragmentID = -2;
 

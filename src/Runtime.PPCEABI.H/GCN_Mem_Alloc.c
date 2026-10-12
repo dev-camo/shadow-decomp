@@ -1,12 +1,6 @@
 /* MSL runtime default-heap allocator (GCN_mem_alloc.c). */
+#include <dolphin/os.h>
 
-/* Heap handle and parameter types are projected as int; the SDK spells them OSHeapHandle. */
-extern int __OSCurrHeap;
-extern void *OSInitAlloc(void *arena_lo, void *arena_hi, int max_heaps);
-extern int OSCreateHeap(void *start, void *end);
-extern int OSSetCurrentHeap(int heap);
-extern void OSFreeToHeap(int heap, void *ptr);
-extern void *OSAllocFromHeap(int heap, unsigned int size);
 void __sys_free(void *ptr);
 void *__sys_alloc(unsigned int size);
 
@@ -28,17 +22,12 @@ const char lbl_80513CB0[] = "GCN_Mem_Alloc.c : InitDefaultHeap. No Heap Availabl
 const char lbl_80513CE8[] = "Metrowerks CW runtime library initializing default heap\n";
 #endif
 
-extern void OSReport(const char *message, ...);
-extern void *OSGetArenaLo(void);
-extern void *OSGetArenaHi(void);
-extern void OSSetArenaLo(void *arena_lo);
-
 /* Name from the original diagnostic string above. */
 static inline void InitDefaultHeap(void) {
     if (__OSCurrHeap == -1) {
         void *arena_lo;
         void *arena_hi;
-        int heap;
+        OSHeapHandle heap;
         OSReport(INIT_ERROR_MESSAGE);
         OSReport(INIT_HEAP_MESSAGE);
         arena_lo = OSGetArenaLo();

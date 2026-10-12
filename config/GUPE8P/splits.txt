@@ -219,11 +219,8 @@ Runtime.PPCEABI.H/GCN_Mem_Alloc.c:
 	.text       start:0x803A2944 end:0x803A2AB4
 	.rodata     start:0x80513CB0 end:0x80513D24
 
-Runtime.PPCEABI.H/exit.c:
-	.text       start:0x803A2AB4 end:0x803A2BA4
-
-Runtime.PPCEABI.H/abort.c:
-	.text       start:0x803A2BA4 end:0x803A2C40
+Runtime.PPCEABI.H/abort_exit.c:
+	.text       start:0x803A2AB4 end:0x803A2C40
 
 Runtime.PPCEABI.H/calloc.c:
 	.text       start:0x803A2C40 end:0x803A2E8C
