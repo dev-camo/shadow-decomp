@@ -620,6 +620,8 @@ config.libs = [
     DolphinLib(
         "exi",
         [
+            # Built without instruction scheduling (code stays in source order)
+            Object(Matching, "dolphin/EXIBios.c", extra_cflags=["-schedule off"]),
             Object(Matching, "dolphin/EXIUart.c"),
         ],
     ),
