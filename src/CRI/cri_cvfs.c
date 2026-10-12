@@ -823,7 +823,7 @@ void cvFsClose(CVFS_OBJ *obj) {
 
 /* a free handle slot */
 static CVFS_OBJ *cvfs_AllocObj(void) {
-    /* Declared before i: the later-declared local gets the higher register (i r3, obj r4). */
+    /* declared before i for the original register order (matching constraint) */
     CVFS_OBJ *obj;
     Sint32 i;
 

@@ -81,9 +81,9 @@ static void sfbuf_RingGetCk(SJ sj, Sint32 id, SJCK *ck1, SJCK *ck2) {
     SJ_UngetChunk(sj, id, ck1);
 }
 
-/* the body is a static helper: its len1/len2 are inlined-helper temporaries, so the backend CSE turns
- * len2's `li 0` into the target's `mr r5, r4` copy of len1 (it never rewrites a named variable's
- * `li`); len1 is assigned first (copy direction) and declared last (register r4) */
+/* Matching constraint: the body is a static helper so that len1/len2 become inlined temporaries
+ * (the target copies len1 into len2 rather than loading 0); len1 is assigned first and declared
+ * last for the original register order. */
 static Sint32 sfbuf_RingGetDataSizHn(SFBUF_HN *hn) {
     SJ sj;
     SJCK ck1;

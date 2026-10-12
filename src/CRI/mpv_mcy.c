@@ -517,9 +517,8 @@ void MPVMC16_OneRef1p_TuneC(MPVMC *mc) {
         /* Unaligned rows (2/6, 1/5, 3/7) are a sliding window shifted in place: the words are
 		 * loaded in address order, the source pointer is stepped BEFORE the packs (so the first
 		 * word's single-use load cannot be substituted into its use and stays a variable), and
-		 * each word is redefined with its packed value (so the pack webs cannot be sunk into the
-		 * stores: they are frontend temporaries numbered in load order, coloured r0/r3/r4 before
-		 * the loop's own locals). The pitch is the frontend-hoisted invariant, not a local. */
+		 * each word is redefined with its packed value (so the packs are not sunk into the stores
+		 * and keep the original register order). The pitch is a hoisted invariant, not a local. */
         for (i = 0; i < 16; i++) {
             h0 = *(Uint16 *)p;
             w0 = *(Uint32 *)(p + 2);
