@@ -542,6 +542,7 @@ config.libs = [
             Object(Matching, "dolphin/OSFatal.c"),
             Object(Matching, "dolphin/OSFont.c"),
             Object(Matching, "dolphin/OSLink.c"),
+            Object(Matching, "dolphin/OSMutex.c"),
         ],
     ),
     DolphinLib(
