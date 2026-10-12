@@ -146,6 +146,19 @@ dolphin/GXInit.c:
 	.sbss       start:0x805F22F8 end:0x805F2320
 	.sdata2     start:0x805FB758 end:0x805FB780
 
+dolphin/GXFifo.c:
+	.text       start:0x803949C0 end:0x8039530C
+	.sbss       start:0x805F2320 end:0x805F2340
+
+dolphin/GXAttr.c:
+	.text       start:0x8039530C end:0x80396004
+	.data       start:0x80568760 end:0x805688C0
+	.sdata      start:0x805EECE8 end:0x805EECF8
+
+dolphin/GXMisc.c:
+	.text       start:0x80396004 end:0x803968B4
+	.sbss       start:0x805F2340 end:0x805F2358
+
 dolphin/GXGeometry.c:
 	.text       start:0x803968B4 end:0x80396BD4
 
@@ -153,6 +166,12 @@ dolphin/GXLight.c:
 	.text       start:0x80397770 end:0x80397D6C
 	.data       start:0x805689B0 end:0x805689D0
 	.sdata2     start:0x805FB790 end:0x805FB7C0
+
+dolphin/GXTexture.c:
+	.text       start:0x80397D6C end:0x80398E14
+	.data       start:0x805689D0 end:0x80568B00
+	.sdata      start:0x805EECF8 end:0x805EED38
+	.sdata2     start:0x805FB7C0 end:0x805FB7F8
 
 dolphin/GXBump.c:
 	.text       start:0x80398E14 end:0x803992EC
@@ -167,9 +186,16 @@ dolphin/GXPixel.c:
 	.data       start:0x80568B78 end:0x80568B98
 	.sdata2     start:0x805FB800 end:0x805FB838
 
+dolphin/GXDisplayList.c:
+	.text       start:0x8039A044 end:0x8039A0B4
+
 dolphin/GXTransform.c:
 	.text       start:0x8039A0B4 end:0x8039A648
 	.sdata2     start:0x805FB838 end:0x805FB848
+
+dolphin/GXPerf.c:
+	.text       start:0x8039A648 end:0x8039AEA0
+	.data       start:0x80568B98 end:0x80568C88
 
 PowerPC_EABI_Support/MetroTRK/mainloop.c:
 	.text       start:0x8039AEA0 end:0x8039AF98
