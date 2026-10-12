@@ -360,6 +360,7 @@ config.libs = [
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/nubevent.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/msg.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/msgbuf.c"),
+            Object(Matching, "PowerPC_EABI_Support/MetroTRK/usr_put.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/target_options.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/mslsupp.c"),
         ],
