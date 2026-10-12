@@ -51,6 +51,10 @@ typedef struct __mem_pool {
 /* Every allocation is preceded by a header word: a fixed-size block stores its FixBlock pointer
  * (bit 0 clear), a variable-size block its size with flag bits (bit 0 set). */
 #define SubBlock_size(ths) ((ths)->size & 0xFFFFFFF8)
+#define SubBlock_block(ths) ((Block *)((unsigned long)((ths)->block) & ~0x1))
+#define Block_size(ths) ((ths)->size & 0xFFFFFFF8)
+/* Offset of a Block's free-list head, the last word of the block (MSL's Block_start reads it). */
+#define Block_start_offset(ths) (Block_size(ths) - sizeof(unsigned long))
 #define SubBlock_from_pointer(ptr) ((SubBlock *)((char *)(ptr) - 8))
 #define FixSubBlock_from_pointer(ptr) ((FixSubBlock *)((char *)(ptr) - 4))
 #define FixBlock_client_size(ths) ((ths)->client_size_)

@@ -201,21 +201,20 @@ void SJMEM_GetChunk(SJMEM_OBJ *sj, Sint32 id, Sint32 nbyte, SJCK *ck) {
         SJMEM_ERR("E2004090241", " : NULL pointer is specified.");
     } else if (sj->used == 0) {
         SJMEM_ERR("E2004090242", " : Specified handle is invalid.");
+    } else if (id == SJ_CK_FREE) {
+        ck->len = 0;
+        ck->data = 0;
+    } else if (id == SJ_CK_DATA) {
+        ck->len = (sj->ndata < nbyte) ? sj->ndata : nbyte;
+        ck->data = sj->buf + sj->rdofs;
+        sj->rdofs += ck->len;
+        sj->ndata -= ck->len;
     } else {
-        if (id == SJ_CK_FREE) {
-            ck->len = 0;
-            ck->data = 0;
-        } else if (id == SJ_CK_DATA) {
-            ck->len = (sj->ndata < nbyte) ? sj->ndata : nbyte;
-            ck->data = sj->buf + sj->rdofs;
-            sj->rdofs += ck->len;
-            sj->ndata -= ck->len;
-        } else {
-            ck->len = 0;
-            ck->data = 0;
-            SJMEM_CALL_ERR(sj);
-        }
+        ck->len = 0;
+        ck->data = 0;
+        SJMEM_CALL_ERR(sj);
     }
+
     SJCRS_Unlock();
 }
 

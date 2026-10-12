@@ -225,6 +225,14 @@ typedef struct MPV_OBJ {
 } MPV_OBJ;
 
 Sint8 *MPV_SearchDelim(Sint8 *p, Sint32 n, Sint32 mask);
+/* mpv_vlc.c: run/level decode tables used by the block decoder (mpv_bdec.c) */
+extern Uint32 *mpvvlc_run_level_0a;
+extern Uint32 *mpvvlc_run_level_0b;
+extern Uint32 *mpvvlc_run_level_0c;
+extern Uint32 *mpvvlc_run_level_1;
+extern Uint32 *mpvvlc_run_level_2;
+extern Uint32 *mpvvlc_run_level_4;
+
 Sint32 MPV_CheckDelim(void *ptr);
 Sint32 MPV_IsEmptyPpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb);
 Sint32 MPV_IsEmptyBpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb);

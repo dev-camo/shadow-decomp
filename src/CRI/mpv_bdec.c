@@ -9,12 +9,6 @@
 #include "CRI/uty.h"
 
 /* run/level VLC table entry pointers (mpv_vlc.c) */
-extern Uint32 *mpvvlc_run_level_4;
-extern Uint32 *mpvvlc_run_level_2;
-extern Uint32 *mpvvlc_run_level_1;
-extern Uint32 *mpvvlc_run_level_0a;
-extern Uint32 *mpvvlc_run_level_0b;
-extern Uint32 *mpvvlc_run_level_0c;
 
 static const Uint16 mpvbdec_bitmsk[16] = {
     0xFFFF, 0x7FFF, 0x3FFF, 0x1FFF, 0x0FFF, 0x07FF, 0x03FF, 0x01FF,

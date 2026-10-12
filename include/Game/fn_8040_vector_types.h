@@ -19,6 +19,8 @@ extern "C" {
 /* Vectors cleared by the static initialisers fn_8040CD60 and fn_8040D02C; used as fallbacks
  * when a vector is too short to normalise. lbl_805E07A0 occupies 0x10 bytes. */
 extern Fn8040Vector2 lbl_805F1358;
+/* 0.0f in .sdata2, shared by the 2D vector clear functions */
+extern float lbl_805FAD78;
 extern Fn8040Vector3 lbl_805E07A0;
 
 float fn_8040CCEC(const Fn8040Vector2 *vector);

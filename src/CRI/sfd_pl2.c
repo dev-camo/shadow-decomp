@@ -91,12 +91,10 @@ Sint32 SFD_Pause(SFD sfd, Sint32 sw) {
             return 0;
         }
         mode = 0;
+    } else if (psw == 0) {
+        mode = 1;
     } else {
-        if (psw == 0) {
-            mode = 1;
-        } else {
-            mode = 2;
-        }
+        mode = 2;
     }
     sfd->pause_sw = sw;
     ret = SFPL2_Pause(sfd, mode);

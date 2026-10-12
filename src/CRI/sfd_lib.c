@@ -8,7 +8,6 @@
 
 #define SFD_VERSION 0x3640
 
-extern const Sint32 SFPLY_cond_dfl[SFD_COND_NUM];
 /* this game only: module finish entries (inferred; the time and buffer ones are empty) */
 extern void fn_803FDCD0(void *work);
 

@@ -846,11 +846,9 @@ Sint32 sfply_StatPlay(SFD sfd) {
             PLYINF(sfd)->nbpa++;
             ret = SFPL2_Pause(sfd, 1);
         }
-    } else {
-        if (sfply_IsBpaOff(sfd)) {
-            PLYINF(sfd)->bpa = 0;
-            ret = SFPL2_Pause(sfd, 0);
-        }
+    } else if (sfply_IsBpaOff(sfd)) {
+        PLYINF(sfd)->bpa = 0;
+        ret = SFPL2_Pause(sfd, 0);
     }
     SFLIB_UnlockCs(&cs);
     if (ret != 0) {

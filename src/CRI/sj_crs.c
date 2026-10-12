@@ -8,6 +8,8 @@
 /* volatile: the nesting level is reloaded after each update. */
 volatile Sint32 sjcrs_lvl;
 Sint32 sjcrs_msk;
+/* volatile like the other CRI init counts (svm_init_level): SJCRS_Init/Finish reload it after each
+ * update (verified: without it the unit drops to 61%). */
 static volatile Sint32 sj_init_count;
 
 void SJCRS_Unlock(void) {
