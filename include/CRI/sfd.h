@@ -667,6 +667,14 @@ typedef struct {
     Sint32 x08; /* 0x08 */
 } SFPLY_PTSM;
 
+/* Optional PTS manager hooks (sfd_ply.c, set by SFPLY_SetPtsmFn). The system stream driver passes
+ * each video PTS entry to the info hook and drops the packet when it returns -1. */
+typedef Sint32 (*SFPLY_PTSINFO_FN)(SFPLY_PTSM *ptsm, SFPTS_ENT *ent);
+typedef void (*SFPLY_PTSRESET_FN)(SFPLY_PTSM *ptsm);
+extern SFPLY_PTSINFO_FN SFPLY_SetPtsInfo;
+extern SFPLY_PTSRESET_FN SFPLY_ResetPtsm;
+void SFPLY_SetPtsmFn(SFPLY_PTSINFO_FN setfn, SFPLY_PTSRESET_FN resetfn);
+
 /* server time statistics (sfd_tmr.c, 0x20 bytes) */
 typedef struct {
     Sint64 sum; /* 0x00 */

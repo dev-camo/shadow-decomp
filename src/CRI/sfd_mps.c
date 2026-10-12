@@ -9,8 +9,6 @@
 #include "CRI/mps.h"
 #include "CRI/sj.h"
 
-extern Sint32 (*SFPLY_SetPtsInfo)(SFPLY_PTSM *ptsm, SFPTS_ENT *ent);
-
 #define SFMPS_TR 1
 #define SFMPS_NUM_HN 8
 #define SFMPS_WORK_MAX 0x200

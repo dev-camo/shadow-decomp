@@ -45,8 +45,8 @@ extern Bool fn_80402510(void);
 
 void (*SFPLY_recordgetfrm)(SFD sfd, void *frm);
 Sint32 sfply_last_hnctrl_wksiz;
-void (*SFPLY_SetPtsInfo)(SFPLY_PTSM *ptsm);
-void (*SFPLY_ResetPtsm)(SFPLY_PTSM *ptsm);
+SFPLY_PTSINFO_FN SFPLY_SetPtsInfo;
+SFPLY_PTSRESET_FN SFPLY_ResetPtsm;
 
 /* default conditions (100) + the guard word checked by SFPLY_Init */
 const Sint32 SFPLY_cond_dfl[101] = {
@@ -159,7 +159,7 @@ Sint32 SFPLY_GetLastHnCtrlWkSiz(void) {
 }
 
 /* dead: PTS manager hooks */
-void SFPLY_SetPtsmFn(void (*setfn)(SFPLY_PTSM *ptsm), void (*resetfn)(SFPLY_PTSM *ptsm)) {
+void SFPLY_SetPtsmFn(SFPLY_PTSINFO_FN setfn, SFPLY_PTSRESET_FN resetfn) {
     SFPLY_SetPtsInfo = setfn;
     SFPLY_ResetPtsm = resetfn;
 }
