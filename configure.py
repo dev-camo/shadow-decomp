@@ -585,6 +585,7 @@ config.libs = [
         [
             Object(Matching, "dolphin/reverb_hi.c"),
             Object(Matching, "dolphin/reverb_std.c"),
+            Object(Matching, "dolphin/chorus.c"),
             Object(Matching, "dolphin/delay.c"),
         ],
     ),
