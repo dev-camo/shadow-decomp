@@ -27,7 +27,7 @@ typedef struct {
 } DEMOWinPadInfo;
 
 typedef struct STRUCT_DEMOWIN DEMOWindow;
-typedef struct STRUCT_DEMOWIN {
+struct STRUCT_DEMOWIN {
     /* 0x00 */ s32 x1;
     /* 0x04 */ s32 y1;
     /* 0x08 */ s32 x2;
@@ -56,7 +56,7 @@ typedef struct STRUCT_DEMOWIN {
     /* 0x4C */ DEMOWindow *prev;
     /* 0x50 */ void *parent;
     /* 0x54 */ DEMOWinPadInfo pad;
-} DEMOWindow;
+};
 
 typedef struct STRUCT_MENU DEMOWinMenu;
 typedef struct STRUCT_MENU_ITEM {
@@ -66,7 +66,7 @@ typedef struct STRUCT_MENU_ITEM {
     /* 0x0C */ DEMOWinMenu *link;
 } DEMOWinMenuItem;
 
-typedef struct STRUCT_MENU {
+struct STRUCT_MENU {
     /* 0x00 */ char *title;
     /* 0x04 */ DEMOWindow *handle;
     /* 0x08 */ DEMOWinMenuItem *items;
@@ -81,7 +81,7 @@ typedef struct STRUCT_MENU {
     /* 0x2C */ u32 max_str_len;
     /* 0x30 */ s32 curr_pos;
     /* 0x34 */ s32 display_pos;
-} DEMOWinMenu;
+};
 
 typedef struct STRUCT_LISTBOX_ITEM {
     /* 0x00 */ char *name; // offset 0x0, size 0x4
