@@ -178,6 +178,9 @@ Runtime.PPCEABI.H/global_destructor_chain.c:
 	.text       start:0x803A11C8 end:0x803A1228
 	.sbss       start:0x805F2370 end:0x805F2374
 
+PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/errno.c:
+	.sbss       start:0x805F2398 end:0x805F23A0
+
 Runtime.PPCEABI.H/__init_cpp_exceptions.cpp:
 	.text       start:0x803A24EC end:0x803A255C
 	.ctors      start:0x804AAC60 end:0x804AAC64 rename:.ctors$10
@@ -234,6 +237,10 @@ PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/ctype.c:
 	.text       start:0x803A9074 end:0x803A9098
 	.data       start:0x80569178 end:0x80569478
 
+PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/locale.c:
+	.rodata     start:0x80514F38 end:0x80514F40
+	.data       start:0x80569478 end:0x805694B0
+
 PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/direct_io.c:
 	.text       start:0x803A9098 end:0x803A9420
 
@@ -261,6 +268,9 @@ PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/string.c:
 	.text       start:0x803AD710 end:0x803ADC24
 	.rodata     start:0x80514F90 end:0x80515320
 	.sdata      start:0x805EED70 end:0x805EED78
+
+PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/float.c:
+	.sdata      start:0x805EED78 end:0x805EEDA8
 
 PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/strtold.c:
 	.text       start:0x803ADC24 end:0x803AEC30
