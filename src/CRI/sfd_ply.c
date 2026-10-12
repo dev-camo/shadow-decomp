@@ -3,20 +3,6 @@
  * handle in place while keeping the user's settings. */
 #include "CRI/sfd.h"
 
-#define SFD_STAT_NONE 0
-#define SFD_STAT_STOP 1
-#define SFD_STAT_PREP 2
-#define SFD_STAT_STBY 3
-#define SFD_STAT_PLAYING 4
-#define SFD_STAT_PLAYEND 6
-
-#define SFD_REQ_STOP 1
-#define SFD_REQ_PREP 2
-#define SFD_REQ_STBY 3
-#define SFD_REQ_START 4
-#define SFD_REQ_STARTEND 6
-#define SFD_REQ_END 6
-
 #define SFD_HN_MAX 8
 /* stat is one of STOP..PLAYING */
 #define SFD_STAT_IS_ACTIVE(stat)                                                                   \

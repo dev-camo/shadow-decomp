@@ -7,12 +7,6 @@
 
 #include "CRI/adx_b.h"
 
-#define LE16(p) (((Uint16)(p)[1] << 8) | (p)[0])
-#define LE32(p)                                                                                    \
-    ((Uint32)(p)[0] | ((Uint32)(p)[1] << 8) | ((Uint32)(p)[2] << 16) | ((Uint32)(p)[3] << 24))
-#define SWAP32(x)                                                                                  \
-    ((((x) >> 24) & 0xFF) | (((x) >> 8) & 0xFF00) | (((x) << 8) & 0xFF0000) | ((x) << 24))
-
 #define AU_MAGIC1 0x0064732E /* ".sd" read little-endian */
 #define AU_MAGIC2 0x646E732E /* ".snd" */
 

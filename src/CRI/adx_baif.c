@@ -7,13 +7,6 @@
 
 #include "CRI/adx_b.h"
 
-#define LE16(p) (((Uint16)(p)[1] << 8) | (p)[0])
-#define LE32(p)                                                                                    \
-    ((Uint32)(p)[0] | ((Uint32)(p)[1] << 8) | ((Uint32)(p)[2] << 16) | ((Uint32)(p)[3] << 24))
-#define SWAP16(x) ((((x) >> 8) & 0xFF) | (((x) & 0xFF) << 8))
-#define SWAP32(x)                                                                                  \
-    ((((x) >> 24) & 0xFF) | (((x) >> 8) & 0xFF00) | (((x) << 8) & 0xFF0000) | ((x) << 24))
-
 #define AIFF_FORM 0x4D524F46 /* "FORM" read little-endian */
 #define AIFF_AIFF 0x46464941 /* "AIFF" */
 #define AIFF_COMM 0x4D4D4F43 /* "COMM" */
