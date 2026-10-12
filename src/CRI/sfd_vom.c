@@ -4,18 +4,18 @@
  * returns it to the video decoder's pool. */
 #include "CRI/sfd.h"
 
-// No seek (0).
+/* No seek (0). */
 Sint32 SFVOM_Seek(void) {
     return 0;
 }
 
-// SFD_RelFrm: gives the frame back to the video decoder through the frame table buffer.
+/* SFD_RelFrm: gives the frame back to the video decoder through the frame table buffer. */
 Sint32 SFVOM_AddRead(SFD sfd, void *frm, Sint32 arg) {
     return SFBUF_VfrmAddRead(sfd, sfd->tr[6].bufin, frm, arg);
 }
 
-// SFD_GetFrm: in STBY/PLAYING asks the frame table for the oldest decoded frame (this game does not
-// apply RE4's SFTIM_IsGetFrmTime check here).
+/* SFD_GetFrm: in STBY/PLAYING asks the frame table for the oldest decoded frame (this game does not
+ * apply RE4's SFTIM_IsGetFrmTime check here). */
 Sint32 SFVOM_GetRead(SFD sfd, void **frm, Sint32 arg) {
     Sint32 ret;
     Sint32 err;
@@ -32,48 +32,48 @@ Sint32 SFVOM_GetRead(SFD sfd, void **frm, Sint32 arg) {
     return err;
 }
 
-// Not supported: error 0xFF000701.
+/* Not supported: error 0xFF000701. */
 Sint32 SFVOM_AddWrite(SFD sfd) {
     return SFLIB_SetErr(sfd, 0xFF000701);
 }
 
-// Not supported: error 0xFF000701.
+/* Not supported: error 0xFF000701. */
 Sint32 SFVOM_GetWrite(SFD sfd) {
     return SFLIB_SetErr(sfd, 0xFF000701);
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFVOM_Pause(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFVOM_Stop(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFVOM_Start(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFVOM_Standby(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFVOM_Destroy(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFVOM_Create(void) {
     return 0;
 }
 
-// With video enabled: terminates the driver when the frame buffer terminated and the clock has passed
-// the video end (or no clock is used), and mirrors the prepared flag.
+/* With video enabled: terminates the driver when the frame buffer terminated and the clock has passed
+ * the video end (or no clock is used), and mirrors the prepared flag. */
 Sint32 SFVOM_ExecServer(SFD sfd) {
     Sint32 term;
 
@@ -102,12 +102,12 @@ Sint32 SFVOM_ExecServer(SFD sfd) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFVOM_Finish(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFVOM_Init(void) {
     return 0;
 }

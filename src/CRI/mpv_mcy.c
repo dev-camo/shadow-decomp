@@ -21,7 +21,7 @@
 #define MPVMC16_AVG2X(w, a, m1, m2)                                                                \
     (((w) & (a)) + ((((w) ^ (a)) & (m1)) >> 1) + (((w) ^ (a)) & (m2)))
 
-// 16x16 luma block, half-pel in both directions: rounded 2x2 averages into the four 8x8 output blocks.
+/* 16x16 luma block, half-pel in both directions: rounded 2x2 averages into the four 8x8 output blocks. */
 void MPVMC16_OneRef4p_TuneC(MPVMC *mc) {
     /* Three rotating pixel pairs (pixel k lives in pair k % 3) and the sums p0..p7 reused for both
 	 * halves. Matching constraints (COMPILER-DIFF): the pixel words are declared before the sums and
@@ -106,7 +106,7 @@ void MPVMC16_OneRef4p_TuneC(MPVMC *mc) {
     }
 }
 
-// 16x16 luma block, horizontal half-pel average.
+/* 16x16 luma block, horizontal half-pel average. */
 void MPVMC16_OneRefH2_TuneC(MPVMC *mc) {
     /* Matching constraints: the xor of each AVG is a shared temporary (macro form); case 0 loads into
 	 * w0..w3 and packs into a0..a3 (`a3` declared first); cases 1/2 load into their own v0..v4 and write
@@ -227,7 +227,7 @@ void MPVMC16_OneRefH2_TuneC(MPVMC *mc) {
     }
 }
 
-// 16x16 luma block, vertical half-pel average.
+/* 16x16 luma block, vertical half-pel average. */
 void MPVMC16_OneRefV2_TuneC(MPVMC *mc) {
     /* Case 0 uses the xor-inside macro. Cases 1-3 load every word into the case-0 variable of its pair
 	 * and pack into the same variable (the offset-0 pair included, with the pointer step right after
@@ -379,7 +379,7 @@ void MPVMC16_OneRefV2_TuneC(MPVMC *mc) {
     }
 }
 
-// 16x16 luma block, full-pel: straight copy of 16 rows into the four output blocks (alignment cases).
+/* 16x16 luma block, full-pel: straight copy of 16 rows into the four output blocks (alignment cases). */
 void MPVMC16_OneRef1p_TuneC(MPVMC *mc) {
     Uint8 *s = mc->src;
 
@@ -617,7 +617,7 @@ void MPVMC16_OneRef1p_TuneC(MPVMC *mc) {
 /* the generic (non-tuned) versions were dead-stripped; the table keeps their slots */
 void (*const mpvmc16_oneref1p_func_table[4])(MPVMC *mc) = {0, 0, 0, 0};
 
-// Fills the handle's 16x16 kernel slots (generic table, stripped to NULLs).
+/* Fills the handle's 16x16 kernel slots (generic table, stripped to NULLs). */
 void MPVMC16_Init(MPVMC *mc) {
     mc->oneref16[0] = mpvmc16_oneref1p_func_table[0];
     mc->oneref16[1] = mpvmc16_oneref1p_func_table[1];

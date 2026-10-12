@@ -9,7 +9,7 @@
 
 #define PQ(sfd, strm) ((sfd)->buf[strm].u.ring.ptsque)
 
-// Ring index wrap (n - num when n >= num).
+/* Ring index wrap (n - num when n >= num). */
 static Sint32 sfpts_Wrap(Sint32 n, Sint32 num) {
     Sint32 r;
 
@@ -20,7 +20,7 @@ static Sint32 sfpts_Wrap(Sint32 n, Sint32 num) {
     return r;
 }
 
-// Whether the PTS queue of ring `strm` is full (0 without a queue).
+/* Whether the PTS queue of ring `strm` is full (0 without a queue). */
 Sint32 SFPTS_IsPtsQueFull(SFD sfd, Sint32 strm) {
     if (PQ(sfd, strm).ent == 0) {
         return 0;
@@ -66,13 +66,13 @@ Sint32 SFPTS_ReadPtsQue(SFD sfd, Sint32 strm, Uint32 pos, SFPTS_ENT *out) {
             if (e->pos + e->len <= end) {
                 if (e->pos <= pos && pos < e->pos + e->len) {
                     asm { mr i, i
-                    } // COMPILER-DIFF: M1 (codeless arm: keeps the found block as `b found`)
+                    } /* COMPILER-DIFF: M1 (codeless arm: keeps the found block as `b found`) */
                     goto found;
                 }
             } else {
                 if ((e->pos <= pos && pos < end) || (ofst <= pos && pos < e->pos + e->len - size)) {
                     asm { mr i, i
-                    } // COMPILER-DIFF: M1 (codeless arm: keeps the found block as `b found`)
+                    } /* COMPILER-DIFF: M1 (codeless arm: keeps the found block as `b found`) */
                     goto found;
                 }
             }
@@ -94,8 +94,8 @@ Sint32 SFPTS_ReadPtsQue(SFD sfd, Sint32 strm, Uint32 pos, SFPTS_ENT *out) {
     return 0;
 }
 
-// Queues a (PTS, ring position, length) entry for ring `strm` (the demuxer records the PTS of each
-// video packet); *full set when the queue is full; error 0xFF000421 when it was already full.
+/* Queues a (PTS, ring position, length) entry for ring `strm` (the demuxer records the PTS of each
+ * video packet); *full set when the queue is full; error 0xFF000421 when it was already full. */
 Sint32 SFPTS_WritePtsQue(SFD sfd, Sint32 strm, SFPTS_ENT *in, Sint32 *full) {
     Sint32 wr;
     SFPTS_ENT *ent;
@@ -131,7 +131,7 @@ Sint32 SFPTS_WritePtsQue(SFD sfd, Sint32 strm, SFPTS_ENT *in, Sint32 *full) {
     return 0;
 }
 
-// Gives the video ring (1) a PTS queue in the caller's buffer (8-byte aligned, 16 bytes per entry).
+/* Gives the video ring (1) a PTS queue in the caller's buffer (8-byte aligned, 16 bytes per entry). */
 Sint32 SFD_SetVideoPts(SFD sfd, void *buf, Sint32 size) {
     Uint8 *p;
 
@@ -152,7 +152,7 @@ Sint32 SFD_SetVideoPts(SFD sfd, void *buf, Sint32 size) {
     return 0;
 }
 
-// Empty queue, no storage.
+/* Empty queue, no storage. */
 void SFPTS_InitPtsQue(SFPTS_QUE *que) {
     que->ent = 0;
     que->num = 0;

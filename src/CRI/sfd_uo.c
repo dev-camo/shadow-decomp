@@ -3,52 +3,52 @@
  * SFD_SetUsrSj; the MW player registers its additional-info ring as channel 2. */
 #include "CRI/sfd.h"
 
-// No seek (0).
+/* No seek (0). */
 Sint32 SFUO_Seek(void) {
     return 0;
 }
 
-// Not supported: error 0xFF000601.
+/* Not supported: error 0xFF000601. */
 Sint32 SFUO_AddRead(SFD sfd) {
     return SFLIB_SetErr(sfd, 0xFF000601);
 }
 
-// Not supported: error 0xFF000601.
+/* Not supported: error 0xFF000601. */
 Sint32 SFUO_GetRead(SFD sfd) {
     return SFLIB_SetErr(sfd, 0xFF000601);
 }
 
-// Not supported: error 0xFF000601.
+/* Not supported: error 0xFF000601. */
 Sint32 SFUO_AddWrite(SFD sfd) {
     return SFLIB_SetErr(sfd, 0xFF000601);
 }
 
-// Not supported: error 0xFF000601.
+/* Not supported: error 0xFF000601. */
 Sint32 SFUO_GetWrite(SFD sfd) {
     return SFLIB_SetErr(sfd, 0xFF000601);
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFUO_Pause(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFUO_Stop(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFUO_Start(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFUO_Standby(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFUO_Destroy(void) {
     return 0;
 }
@@ -69,7 +69,7 @@ static void sfuo_InitCh(SFD sfd, SFUO *uo, Sint32 uobuf) {
     }
 }
 
-// Attaches the handle's SFUO channel table to slot 8 and clears its 3 channels into buffer 7.
+/* Attaches the handle's SFUO channel table to slot 8 and clears its 3 channels into buffer 7. */
 Sint32 SFUO_Create(SFD sfd) {
     Sint32 uobuf;
 
@@ -80,7 +80,7 @@ Sint32 SFUO_Create(SFD sfd) {
     return 0;
 }
 
-// Mirrors buffer 7's prepared/terminated flags onto the driver.
+/* Mirrors buffer 7's prepared/terminated flags onto the driver. */
 Sint32 SFUO_ExecServer(SFD sfd) {
     if (SFTRN_GetTermFlg(sfd, 8) != 1) {
         if (SFBUF_GetTermFlg(sfd, sfd->tr[8].bufin) == 1) {
@@ -95,18 +95,18 @@ Sint32 SFUO_ExecServer(SFD sfd) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFUO_Finish(void) {
     return 0;
 }
 
-// Nothing to do.
+/* Nothing to do. */
 Sint32 SFUO_Init(void) {
     return 0;
 }
 
-// Registers stream joint `sj` (+ parameter) as user-output channel `chno`; the demuxer then copies
-// the matching private stream into it. Error 0xFF000602 when the handle has no user output buffer.
+/* Registers stream joint `sj` (+ parameter) as user-output channel `chno`; the demuxer then copies
+ * the matching private stream into it. Error 0xFF000602 when the handle has no user output buffer. */
 Sint32 SFD_SetUsrSj(SFD sfd, Sint32 chno, void *sj, void *prm) {
     SFUO *uo;
     Sint32 uobuf;

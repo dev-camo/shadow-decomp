@@ -70,8 +70,8 @@ static void sfmpvf_SearchStbyFrm(SFD sfd, SFMPV_FRM **frm1, SFMPV_FRM **frm2) {
     }
 }
 
-// While playing: the earliest standby frame after the one being shown, only if its display time has
-// come (unless no clock is used); 0 otherwise.
+/* While playing: the earliest standby frame after the one being shown, only if its display time has
+ * come (unless no clock is used); 0 otherwise. */
 SFMPV_FRM *sfmpvf_ReferNextFrmReady(SFD sfd) {
     SFMPV_FRM *frm1;
     SFMPV_FRM *frm;
@@ -96,7 +96,7 @@ SFMPV_FRM *sfmpvf_ReferNextFrmReady(SFD sfd) {
 
 /* the original did not inline sfmpvf_ReferNextFrmReady here */
 #pragma dont_inline on
-// Whether another decoded frame is already due (mwPlyGetCurFrm uses it to skip late frames).
+/* Whether another decoded frame is already due (mwPlyGetCurFrm uses it to skip late frames). */
 Bool SFD_IsNextFrmReady(SFD sfd) {
     if (SFLIB_CheckHn(sfd) != 0) {
         SFLIB_SetErr(0, 0xFF000183);
@@ -137,7 +137,7 @@ SFMPV_FRM *SFMPVF_HoldFrm(SFD sfd) {
     return hold;
 }
 
-// A frame stops being a reference: REF -> STBY (still to display), anything else -> FREE.
+/* A frame stops being a reference: REF -> STBY (still to display), anything else -> FREE. */
 void SFMPVF_EndRefFrm(SFMPV_FRM *frm) {
     if (frm == 0) {
         return;
@@ -149,7 +149,7 @@ void SFMPVF_EndRefFrm(SFMPV_FRM *frm) {
     }
 }
 
-// The application released a displayed frame: REF -> DRAWN (still a reference), else FREE.
+/* The application released a displayed frame: REF -> DRAWN (still a reference), else FREE. */
 void SFMPVF_EndDrawFrm(SFMPV_FRM *frm) {
     if (frm == 0) {
         return;
@@ -162,7 +162,7 @@ void SFMPVF_EndDrawFrm(SFMPV_FRM *frm) {
     frm->x58 = -1;
 }
 
-// Marks a decoded I/P frame as reference + waiting for display (REF).
+/* Marks a decoded I/P frame as reference + waiting for display (REF). */
 void SFMPVF_RefStbyFrm(SFMPV_FRM *frm) {
     if (frm == 0) {
         return;
@@ -170,7 +170,7 @@ void SFMPVF_RefStbyFrm(SFMPV_FRM *frm) {
     frm->stat = SFMPV_FRM_REF;
 }
 
-// Marks a decoded frame as waiting for display (STBY).
+/* Marks a decoded frame as waiting for display (STBY). */
 void SFMPVF_StbyFrm(SFMPV_FRM *frm) {
     if (frm == 0) {
         return;
@@ -178,7 +178,7 @@ void SFMPVF_StbyFrm(SFMPV_FRM *frm) {
     frm->stat = SFMPV_FRM_STBY;
 }
 
-// Returns a frame buffer to the pool.
+/* Returns a frame buffer to the pool. */
 void SFMPVF_FreeFrm(SFMPV_FRM *frm) {
     if (frm == 0) {
         return;
@@ -186,8 +186,8 @@ void SFMPVF_FreeFrm(SFMPV_FRM *frm) {
     frm->stat = SFMPV_FRM_FREE;
 }
 
-// Takes the first FREE, unlocked frame of the pool (state ALLOC) for the picture about to be decoded;
-// 0 when the pool (nfrm_pool + 2 frames) is exhausted.
+/* Takes the first FREE, unlocked frame of the pool (state ALLOC) for the picture about to be decoded;
+ * 0 when the pool (nfrm_pool + 2 frames) is exhausted. */
 SFMPV_FRM *SFMPVF_AllocFrm(SFD sfd) {
     SFMPV_FRM *frm;
     Sint32 i;
@@ -213,7 +213,7 @@ SFMPV_FRM *SFMPVF_AllocFrm(SFD sfd) {
     return frm;
 }
 
-// Decoded frames waiting for display (STBY or REF); -1 when the decoder terminated and none are left.
+/* Decoded frames waiting for display (STBY or REF); -1 when the decoder terminated and none are left. */
 Sint32 SFMPVF_GetNumFrm(SFD sfd) {
     SFMPV_WORK *mpv;
     SFMPV_FRM *frm;
@@ -237,22 +237,22 @@ Sint32 SFMPVF_GetNumFrm(SFD sfd) {
     return n;
 }
 
-// GOP state flag (0 after a decode; nonzero while a GOP boundary holds back the last frame).
+/* GOP state flag (0 after a decode; nonzero while a GOP boundary holds back the last frame). */
 void SFMPVF_SetGopStat(SFD sfd, Sint32 stat) {
     SFMPVF_MPV(sfd)->gopstat = stat;
 }
 
-// The video decoder reached the end of the stream.
+/* The video decoder reached the end of the stream. */
 Sint32 SFMPVF_IsTermDec(SFD sfd) {
     return SFMPVF_MPV(sfd)->termflg;
 }
 
-// Marks the decoder terminated.
+/* Marks the decoder terminated. */
 void SFMPVF_TermDec(SFD sfd) {
     SFMPVF_MPV(sfd)->termflg = 1;
 }
 
-// The SFD_VFRM slot paired with frame object `frm` (same index).
+/* The SFD_VFRM slot paired with frame object `frm` (same index). */
 SFD_VFRM *SFMPVF_SearchVfrmData(SFD sfd, SFMPV_FRM *frm) {
     Sint32 i;
     SFMPV_WORK *mpv;
@@ -268,7 +268,7 @@ SFD_VFRM *SFMPVF_SearchVfrmData(SFD sfd, SFMPV_FRM *frm) {
     return 0;
 }
 
-// The frame object paired with the user-visible information block `inf`.
+/* The frame object paired with the user-visible information block `inf`. */
 /* This game only: returns the frame whose x58 equals key (inferred). */
 SFMPV_FRM *fn_803F8FC0(SFD sfd, Sint32 key) {
     Sint32 i;

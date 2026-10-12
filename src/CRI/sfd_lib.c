@@ -20,17 +20,17 @@ SFD sfd_hn_last = 0;
 static const Char8 *cri_verstr_ptr = 0;
 SFLIB_WORK SFLIB_libwork;
 
-// Leaves the SFD critical section (SVM_Unlock, a no-op in this game).
+/* Leaves the SFD critical section (SVM_Unlock, a no-op in this game). */
 void SFLIB_UnlockCs(Sint32 *cs) {
     SVM_Unlock();
 }
 
-// Enters the SFD critical section.
+/* Enters the SFD critical section. */
 void SFLIB_LockCs(Sint32 *cs) {
     SVM_Lock();
 }
 
-// -1 for a 0 or destroyed handle (stat 0); records the handle in sfd_hn_last for debugging.
+/* -1 for a 0 or destroyed handle (stat 0); records the handle in sfd_hn_last for debugging. */
 Sint32 SFLIB_CheckHn(SFD sfd) {
     if (sfd == 0) {
         return -1;
@@ -42,8 +42,8 @@ Sint32 SFLIB_CheckHn(SFD sfd) {
     return 0;
 }
 
-// Records the first error code (per handle or library-wide), calls the error callback, and makes the
-// handle's state negative so the player sees an error.
+/* Records the first error code (per handle or library-wide), calls the error callback, and makes the
+ * handle's state negative so the player sees an error. */
 static Sint32 sflib_SetErr(SFD sfd, Sint32 code) {
     if (sfd == 0) {
         if (SFLIB_libwork.err.code == 0) {
@@ -66,8 +66,8 @@ static Sint32 sflib_SetErr(SFD sfd, Sint32 code) {
     return code;
 }
 
-// Installs the error callback (fn(obj, code)) library-wide (sfd 0) or per handle; the MW player
-// installs MWSFLIB_SfdErrFunc.
+/* Installs the error callback (fn(obj, code)) library-wide (sfd 0) or per handle; the MW player
+ * installs MWSFLIB_SfdErrFunc. */
 Sint32 SFD_SetErrFn(SFD sfd, void (*fn)(void *obj, Sint32 code), void *obj) {
     if (sfd == 0) {
         SFLIB_libwork.err.fn = fn;
@@ -82,8 +82,8 @@ Sint32 SFD_SetErrFn(SFD sfd, void (*fn)(void *obj, Sint32 code), void *obj) {
     return 0;
 }
 
-// Error return helper used by every SFD_* API: reports `code` (0xFF00xxxx) unless it is 0 and
-// returns it.
+/* Error return helper used by every SFD_* API: reports `code` (0xFF00xxxx) unless it is 0 and
+ * returns it. */
 Sint32 SFLIB_SetErr(SFD sfd, Sint32 code) {
     if (code == 0) {
         return 0;
@@ -91,7 +91,7 @@ Sint32 SFLIB_SetErr(SFD sfd, Sint32 code) {
     return sflib_SetErr(sfd, code);
 }
 
-// Clears an error record.
+/* Clears an error record. */
 void SFLIB_InitErrInf(SFLIB_ERRINF *err) {
     err->fn = 0;
     err->obj = 0;
@@ -100,7 +100,7 @@ void SFLIB_InitErrInf(SFLIB_ERRINF *err) {
     err->x10 = 0;
 }
 
-// Passes a driver init result through (nonzero = error).
+/* Passes a driver init result through (nonzero = error). */
 static Sint32 sflib_ChkRet(Sint32 r) {
     Sint32 ret;
 
@@ -137,9 +137,9 @@ Sint32 fn_803F1570(void) {
     return sflib_ChkRet(ret);
 }
 
-// Library init (from mwPlySfdInit): clears the library work, copies the default conditions, stores
-// the driver table and the refresh rate (prm1, 1/1000 Hz), initialises timing, buffers, the drivers
-// (each driver's Init), the player and the header analyser.
+/* Library init (from mwPlySfdInit): clears the library work, copies the default conditions, stores
+ * the driver table and the refresh rate (prm1, 1/1000 Hz), initialises timing, buffers, the drivers
+ * (each driver's Init), the player and the header analyser. */
 Sint32 SFD_Init(register SFD_INIT_PRM *prm) {
     register Sint32 p1;
     register SFTRN_TRIF_TBL *tbl;
@@ -176,7 +176,7 @@ Sint32 SFD_Init(register SFD_INIT_PRM *prm) {
     return 0;
 }
 
-// Header/library version check: the caller's structure size must be this build's 0x3598.
+/* Header/library version check: the caller's structure size must be this build's 0x3598. */
 Sint32 SFD_IsVersionCompatible(Sint32 a, Sint32 ver) {
     return ver == SFD_VERSION;
 }
