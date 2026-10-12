@@ -26,7 +26,7 @@ typedef f32 Mtx44[4][4];
 typedef f32 (*Mtx44Ptr)[4];
 
 typedef f32 ROMtx[4][3];
-typedef f32 (*ROMtxPtr)[4];
+typedef f32 (*ROMtxPtr)[3];
 
 typedef struct {
     u32 numMtx;
@@ -84,7 +84,7 @@ void PSMTXReflect(Mtx m, const Vec *p, const Vec *n);
 #define MTXInvXpose C_MTXInvXpose
 #define MTXRotRad C_MTXRotRad
 #define MTXRotTrig C_MTXRotTrig
-#define MTXRotAxisRad C_MTXRotRad
+#define MTXRotAxisRad C_MTXRotAxisRad
 #define MTXTrans C_MTXTrans
 #define MTXTransApply C_MTXTransApply
 #define MTXScale C_MTXScale
@@ -101,7 +101,7 @@ void PSMTXReflect(Mtx m, const Vec *p, const Vec *n);
 #define MTXInvXpose PSMTXInvXpose
 #define MTXRotRad PSMTXRotRad
 #define MTXRotTrig PSMTXRotTrig
-#define MTXRotAxisRad PSMTXRotRad
+#define MTXRotAxisRad PSMTXRotAxisRad
 #define MTXTrans PSMTXTrans
 #define MTXTransApply PSMTXTransApply
 #define MTXScale PSMTXScale
