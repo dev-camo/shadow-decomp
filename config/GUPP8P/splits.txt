@@ -665,6 +665,21 @@ PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_sqrt.
 	.text       start:0x803B2D2C end:0x803B2F50
 	.sdata2     start:0x805FBDA8 end:0x805FBDB0
 
+dolphin/AmcExi2Stubs.c:
+	.text       start:0x803B2FFC end:0x803B302C
+
+dolphin/DebuggerDriver.c:
+	.text       start:0x803B3034 end:0x803B3AB4
+	.sdata      start:0x805EEDA8 end:0x805EEDB0
+	.sbss       start:0x805F23B8 end:0x805F23D0
+
+dolphin/EXIBios.c:
+	.text       start:0x803B3AB4 end:0x803B5490
+	.data       start:0x80569838 end:0x80569948
+	.bss        start:0x805A6650 end:0x805A6710
+	.sdata      start:0x805EEDB0 end:0x805EEDB8
+	.sbss       start:0x805F23D0 end:0x805F23D8
+
 dolphin/EXIUart.c:
 	.text       start:0x803B5490 end:0x803B5A48
 	.sbss       start:0x805F23D8 end:0x805F23E8
