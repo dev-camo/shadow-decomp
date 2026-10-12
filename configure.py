@@ -595,6 +595,7 @@ config.libs = [
             Object(Matching, "dolphin/dvdlow.c"),
             # These three were built with signed char (the code sign-extends char values)
             Object(Matching, "dolphin/dvdfs.c", extra_cflags=["-char signed"]),
+            Object(Matching, "dolphin/dvd.c"),
         ],
     ),
     DolphinLib(
