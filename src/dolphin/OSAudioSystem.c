@@ -78,11 +78,11 @@ void __OSInitAudioSystem(void) {
         reg16 = __DSPRegs[2];
     }
 
-    if (((u32)((reg16 << 16) | __DSPRegs[3]) + 0x7FAC0000U) != 0x4348) {
+    // Retail builds keep only the register reads of this check (the assertion compiles away).
+    if (((reg16 << 16) | __DSPRegs[3]) != 0x80544348) {
         ASSERTMSGLINE(193, 0, "__OSInitAudioSystem(): DSP returns invalid message");
     }
 
-    reg16 != 0x81800; // fake but fixes reg alloc on retail
     __DSPRegs[5] |= 4;
     __DSPRegs[5] = 0x8AC;
     __DSPRegs[5] |= 1;
