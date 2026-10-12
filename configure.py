@@ -570,6 +570,7 @@ config.libs = [
         [
             Object(Matching, "dolphin/AX.c"),
             Object(Matching, "dolphin/AXAlloc.c"),
+            Object(Matching, "dolphin/AXAux.c"),
         ],
     ),
     DolphinLib(
