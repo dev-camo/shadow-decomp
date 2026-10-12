@@ -48,8 +48,8 @@ Sint32 ADXB_CheckWav(Uint8 *buf) {
 }
 
 /* Copy step for 4-bit WAV (x9c 2): no ADPCM decoding; each output sample is a little-endian 16-bit
- * value assembled from two input bytes (stereo: bytes 0/2 for the left and 1/3 for the right channel
- * of each 4-byte group). Reports the bytes consumed and samples written. */
+ * value assembled from two input bytes (stereo: bytes 0/2 for the left and 1/3 for the right
+ * channel of each 4-byte group). Reports the bytes consumed and samples written. */
 void ADXB_ExecOneWav4(ADXB adxb) {
     Uint8 *inbuf;
     Sint16 *out0;
@@ -130,7 +130,8 @@ void ADXB_ExecOneWav8(ADXB adxb) {
     }
 }
 
-/* Decode step for 16-bit little-endian PCM: byte-swaps into the PCM ring (deinterleaving stereo). */
+/* Decode step for 16-bit little-endian PCM: byte-swaps into the PCM ring (deinterleaving
+ * stereo). */
 void ADXB_ExecOneWav16(ADXB adxb) {
     Uint16 *inbuf;
     Uint16 *out0;
@@ -201,7 +202,8 @@ Sint32 ADXB_DecodeHeaderWav(ADXB adxb, void *buf, Sint32 bsize) {
 }
 
 /* Finds the "fmt " and "data" chunks (4-byte aligned) in the header bytes: PCM only, rate, channels
- * (1..2), bits (16/8, or 4-bit ADPCM as x9c 2), block align and the sample count from the data size. */
+ * (1..2), bits (16/8, or 4-bit ADPCM as x9c 2), block align and the sample count from the data
+ * size. */
 Sint32 ADX_DecodeInfoWav(Uint8 *buf, Sint32 bsize, Sint16 *hdrlen, Sint8 *x0c, Sint8 *bps,
                          Sint8 *x0f, Sint8 *nch, Sint32 *sfreq, Sint32 *nsmpl, Sint32 *fmt,
                          Sint16 *x9c) {

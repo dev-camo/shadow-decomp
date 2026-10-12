@@ -1,6 +1,6 @@
 /* CRI Sofdec: player front end (sfd_ply.c). Handle creation / destruction, the state machine run by
- * SFD_ExecOne (stop -> prep -> standby -> play), the buffering pause and the reset that re-creates a
- * handle in place while keeping the user's settings. */
+ * SFD_ExecOne (stop -> prep -> standby -> play), the buffering pause and the reset that re-creates
+ * a handle in place while keeping the user's settings. */
 #include "CRI/sfd.h"
 
 #define SFD_HN_MAX 8
@@ -183,7 +183,8 @@ Sint32 SFD_TermSupply(SFD sfd) {
 
 static SFD sfply_InitHn(SFD_CREPRM *prm, Sint32 x);
 
-/* re-create the handle in place, keeping the user settings (callbacks, speed, seek work, PTS work) */
+/* re-create the handle in place, keeping the user settings (callbacks, speed, seek work, PTS
+ * work) */
 Sint32 sfply_ResetHn(SFD sfd) {
     Sint32 nmpv;
     SFD_CREPRM prm;
@@ -427,10 +428,10 @@ void SFPLY_AddDecPic(SFD sfd, Sint32 n, void *arg) {
 }
 
 /* Builds a handle in the caller's 32-byte-aligned work: copies the creation parameters, resets the
- * header analysis, stream info, player information, timers and error info, copies the library default
- * conditions, initialises the timing work, the 8 buffers (SFBUF_InitHn), the 9 transfer-driver slots
- * and the seek work, then runs every driver's Create (fn 3). State STOP. 0 on a bad work size
- * (all handles must use the same size). */
+ * header analysis, stream info, player information, timers and error info, copies the library
+ * default conditions, initialises the timing work, the 8 buffers (SFBUF_InitHn), the 9
+ * transfer-driver slots and the seek work, then runs every driver's Create (fn 3). State STOP. 0 on
+ * a bad work size (all handles must use the same size). */
 static SFD sfply_InitHn(SFD_CREPRM *prm, Sint32 x) {
     SFD hn;
     Sint32 i;
@@ -823,9 +824,9 @@ static Sint32 sfply_StopPlay(SFD sfd) {
     return 0;
 }
 
-/* PLAYING state step: ends the play at the user end time, when all selected streams terminated, on a
- * stagnant clock or past the stop time; toggles the buffering pause (bpa) when the input runs dry /
- * refills (pausing audio and clock through SFPL2_Pause); req END -> PLAYEND. */
+/* PLAYING state step: ends the play at the user end time, when all selected streams terminated, on
+ * a stagnant clock or past the stop time; toggles the buffering pause (bpa) when the input runs dry
+ * /refills (pausing audio and clock through SFPL2_Pause); req END -> PLAYEND. */
 Sint32 sfply_StatPlay(SFD sfd) {
     Sint32 cs;
     Sint32 ret;
@@ -895,9 +896,9 @@ static Bool sfply_IsPrepared(SFD sfd) {
 }
 
 /* PREP state step: once both selected streams are prepared, drops a stream that produced no data at
- * all (cond 5 video / 6 audio), fixes the clock source (cond 15: 1 video, 2 audio) and the termination
- * mode (cond 0x19) from what is present, then STBY or, if startable, starts the output drivers (fn 6)
- * and goes PLAYING. */
+ * all (cond 5 video / 6 audio), fixes the clock source (cond 15: 1 video, 2 audio) and the
+ * termination mode (cond 0x19) from what is present, then STBY or, if startable, starts the output
+ * drivers (fn 6) and goes PLAYING. */
 static Sint32 sfply_StatPrep(SFD sfd) {
     Sint32 req;
     Sint32 stat;

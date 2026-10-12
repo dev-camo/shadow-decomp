@@ -3,8 +3,8 @@
  * word-packed destination (four 8x8 blocks: rows 0-7 into blocks 0/1 at d[0]/d[1] and d[16]/d[17],
  * rows 8-15 into blocks 2/3 after the +0x40 step); the source alignment selects the load strategy.
  * Bodies from the RE4 GameCube decompilation. The row words/bytes are read into variables before
- * the stores (each byte is loaded once) and the 16-row loops keep the `i == 7` block step; the forms
- * noted below reproduce the original's register assignment. */
+ * the stores (each byte is loaded once) and the 16-row loops keep the `i == 7` block step; the
+ * forms noted below reproduce the original's register assignment. */
 #include "CRI/cri_xpt.h"
 #include "CRI/mpv.h"
 
@@ -19,14 +19,15 @@
 #define MPVMC16_AVG2X(w, a, m1, m2)                                                                \
     (((w) & (a)) + ((((w) ^ (a)) & (m1)) >> 1) + (((w) ^ (a)) & (m2)))
 
-/* 16x16 luma block, half-pel in both directions: rounded 2x2 averages into the four 8x8 output blocks. */
+/* 16x16 luma block, half-pel in both directions: rounded 2x2 averages into the four 8x8 output
+ * blocks. */
 void MPVMC16_OneRef4p_TuneC(MPVMC *mc) {
     /* Three rotating pixel pairs (pixel k lives in pair k % 3) and the sums p0..p7 reused for both
-     * halves. Matching constraints (COMPILER-DIFF): the pixel words are declared before the sums and
-     * loop variables, their never-used `= 0` initialisers and the pixel-9 loads placed before the
-     * d[0]/d[1] stores give the original's register assignment and schedule. The (Uint32) casts on
-     * the already-Uint32 pixel words are kept on purpose: MWCC builds a different add tree without
-     * them (verified: removing them drops this unit to 88% matched code). */
+     * halves. Matching constraints (COMPILER-DIFF): the pixel words are declared before the sums
+     * and loop variables, their never-used `= 0` initialisers and the pixel-9 loads placed before
+     * the d[0]/d[1] stores give the original's register assignment and schedule. The (Uint32) casts
+     * on the already-Uint32 pixel words are kept on purpose: MWCC builds a different add tree
+     * without them (verified: removing them drops this unit to 88% matched code). */
     Uint32 a0 = 0, b0 = 0, a1 = 0, b1 = 0, a2 = 0, b2 = 0;
     Uint32 p0, p1, p2, p3, p4, p5, p6, p7;
     Sint32 i;
@@ -106,10 +107,10 @@ void MPVMC16_OneRef4p_TuneC(MPVMC *mc) {
 
 /* 16x16 luma block, horizontal half-pel average. */
 void MPVMC16_OneRefH2_TuneC(MPVMC *mc) {
-    /* Matching constraints: the xor of each AVG is a shared temporary (macro form); case 0 loads into
-     * w0..w3 and packs into a0..a3 (`a3` declared first); cases 1/2 load into their own v0..v4 and write
-     * pair k into w/a[(k+2)&3]; case 3 loads the aligned neighbours into a0..a3 and packs into w0..w3;
-     * case 1 loads v3 before v2. These orders reproduce the original's registers. */
+    /* Matching constraints: the xor of each AVG is a shared temporary (macro form); case 0 loads
+     * into w0..w3 and packs into a0..a3 (`a3` declared first); cases 1/2 load into their own v0..v4
+     * and write pair k into w/a[(k+2)&3]; case 3 loads the aligned neighbours into a0..a3 and packs
+     * into w0..w3; case 1 loads v3 before v2. These orders reproduce the original's registers. */
     Sint32 i;
     Uint8 *s = mc->src;
     Sint32 stride = mc->stride;
@@ -227,10 +228,10 @@ void MPVMC16_OneRefH2_TuneC(MPVMC *mc) {
 
 /* 16x16 luma block, vertical half-pel average. */
 void MPVMC16_OneRefV2_TuneC(MPVMC *mc) {
-    /* Case 0 uses the xor-inside macro. Cases 1-3 load every word into the case-0 variable of its pair
-     * and pack into the same variable (the offset-0 pair included, with the pointer step right after
-     * its load); the fifth pair is packed in place, p4 loaded before q4. These orders reproduce the
-     * original's registers. */
+    /* Case 0 uses the xor-inside macro. Cases 1-3 load every word into the case-0 variable of its
+     * pair and pack into the same variable (the offset-0 pair included, with the pointer step right
+     * after its load); the fifth pair is packed in place, p4 loaded before q4. These orders
+     * reproduce the original's registers. */
     Uint32 *d;
     Uint8 *s0;
     Uint8 *s1;
@@ -377,7 +378,8 @@ void MPVMC16_OneRefV2_TuneC(MPVMC *mc) {
     }
 }
 
-/* 16x16 luma block, full-pel: straight copy of 16 rows into the four output blocks (alignment cases). */
+/* 16x16 luma block, full-pel: straight copy of 16 rows into the four output blocks (alignment
+ * cases). */
 void MPVMC16_OneRef1p_TuneC(MPVMC *mc) {
     Uint8 *s = mc->src;
 

@@ -1,7 +1,8 @@
 #ifndef CRI_ADX_AMP_H
 #define CRI_ADX_AMP_H
 
-/* CRI ADXAMP amplitude stage (adx_amp.c) entries used by the ADXT layer; the handle stays opaque. */
+/* CRI ADXAMP amplitude stage (adx_amp.c) entries used by the ADXT layer; the handle stays
+ * opaque. */
 #include "CRI/cri_xpt.h"
 
 typedef struct ADXAMP_OBJ *ADXAMP;

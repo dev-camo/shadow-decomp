@@ -395,7 +395,8 @@ Bool SFH_AnlyFtrPicType(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-/* Video feature: colour type (3 = colour-space conversion needed; drives the SFX colour adjustment). */
+/* Video feature: colour type (3 = colour-space conversion needed; drives the SFX colour
+ * adjustment). */
 Bool SFH_AnlyFtrColType(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
 
@@ -493,8 +494,8 @@ Bool SFH_AnlyElemCodecVid(SFH sfh, Uint8 id, Sint32 *val) {
 
 /* Audio element: sampling rate (big-endian 32-bit). */
 /* Matching constraint (COMPILER-DIFF M4): the original stores the swapped word with `stw` after a
- * `rlwinm`/`rlwimi` chain; our compiler folds a same-block swap+store into `stwbrx`, so the never-taken
- * `if (z != 0)` puts the store in another basic block. */
+ * `rlwinm`/`rlwimi` chain; our compiler folds a same-block swap+store into `stwbrx`, so the
+ * never-taken `if (z != 0)` puts the store in another basic block. */
 Bool SFH_AnlyElemSmpHz(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
     Uint32 w;
@@ -570,7 +571,8 @@ Bool SFH_AnlyElemCodecAud(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-/* Big-endian 32-bit header field after the handle checks (same store constraint as SFH_AnlyElemSmpHz). */
+/* Big-endian 32-bit header field after the handle checks (same store constraint as
+ * SFH_AnlyElemSmpHz). */
 static Bool sfh_GetHdrU32(SFH sfh, Sint32 ofs, Sint32 *val) {
     Uint8 *hdr = sfh->hdr;
     Uint32 w;
@@ -788,7 +790,8 @@ Bool SFH_IsExistStmId(SFH sfh, Uint8 id, Sint32 *flag) {
     return TRUE;
 }
 
-/* Validates the header: >= 0x800 bytes and the "SofdecStream" id at 0x20; records the tool version. */
+/* Validates the header: >= 0x800 bytes and the "SofdecStream" id at 0x20; records the tool
+ * version. */
 Bool SFH_IsSfdHeader(SFH sfh, Sint32 *flag) {
     Uint8 *idstr;
     Sint32 major, minor;

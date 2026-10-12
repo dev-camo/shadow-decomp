@@ -159,9 +159,9 @@ Sint32 ADX_DecodeInfoAinf(Uint8 *data, Sint32 len, Sint32 *ainfsiz, void *ainf, 
     if (*(Sint16 *)(p + 2) != 0) {
         ofs += 0x14;
     }
-    /* Matching constraint: the AINF address is the expression `&data[ofs]`, not a local; the compiler
-     * folds its repeated uses into one add, as in the original. A `q` local gets a different
-     * register order. */
+    /* Matching constraint: the AINF address is the expression `&data[ofs]`, not a local; the
+     * compiler folds its repeated uses into one add, as in the original. A `q` local gets a
+     * different register order. */
     if (ADX_LD32(&data[ofs]) != ADX_AINF) {
         return -2;
     }
@@ -306,8 +306,8 @@ Sint32 ADX_DecodeInfo(Uint8 *data, Sint32 len, Sint16 *hdrlen, Sint8 *fmt, Sint8
     return 0;
 }
 
-/* Finds the first 0x8000 header word at an even offset in data (compared unsigned): stores its offset
- * in *ofst and returns 0, or stores 0 and returns -1 when there is none. */
+/* Finds the first 0x8000 header word at an even offset in data (compared unsigned): stores its
+ * offset in *ofst and returns 0, or stores 0 and returns -1 when there is none. */
 Sint32 ADX_ScanInfoCode(Uint8 *data, Sint32 len, Sint16 *ofst) {
     Sint32 i;
     Sint32 pos;

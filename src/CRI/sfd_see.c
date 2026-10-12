@@ -251,7 +251,8 @@ void SFSEE_ExecServer(SFD sfd) {
     sfsee_ExecEstimate(sfd, see);
 }
 
-/* Records which of video/audio actually play (set once from sfply_StatPrep) for the seek estimate. */
+/* Records which of video/audio actually play (set once from sfply_StatPrep) for the seek
+ * estimate. */
 void SFSEE_FixAvPlay(SFD sfd, Sint32 a, Sint32 b) {
     SFSEE_WORK *wk;
 

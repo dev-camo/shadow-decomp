@@ -1,11 +1,10 @@
-/* CRI ADXPD (adx_xpnd.c): the ADX block expander, the object between the container decoder ADXB
- * and the raw 4-bit ADPCM routines (adx_dcd5.c). A handle holds one queued decode job (input blocks,
+/* CRI ADXPD (adx_xpnd.c): the ADX block expander, the object between the container decoder ADXB and
+ * the raw 4-bit ADPCM routines (adx_dcd5.c). A handle holds one queued decode job (input blocks,
  * output pointers, mono/stereo), the two-sample prediction history per channel, the prediction
  * coefficients derived from the encoder cut-off and the scale-descrambling key. ADXB enters a job,
  * ADXPD_ExecHndl runs it, ADXB collects the result. 16 handles, one per ADXB.
  *
- * Body from the RE4 GameCube decompilation of the same file.
- */
+ * Body from the RE4 GameCube decompilation of the same file. */
 #include <string.h>
 
 #include "CRI/adx_b.h"
@@ -16,9 +15,10 @@
 Sint32 adxpd_internal_error;
 ADXPD_OBJ adxpd_obj[ADXPD_MAX_OBJ];
 
-/* Runs the queued decode (START -> EXEC -> DONE): ADX_DecodeMono4 or ADX_DecodeSte4 over the entered
- * input blocks into out0/out1 with the handle's history (dly), coefficients (k1, k2) and scale key
- * (ext1..3). nblk receives the blocks actually decoded; an odd stereo count flags an internal error. */
+/* Runs the queued decode (START -> EXEC -> DONE): ADX_DecodeMono4 or ADX_DecodeSte4 over the
+ * entered input blocks into out0/out1 with the handle's history (dly), coefficients (k1, k2) and
+ * scale key (ext1..3). nblk receives the blocks actually decoded; an odd stereo count flags an
+ * internal error. */
 void ADXPD_ExecHndl(ADXPD pd) {
     if (pd->stat == ADXPD_STAT_START) {
         pd->stat = ADXPD_STAT_EXEC;
@@ -77,7 +77,8 @@ Sint32 ADXPD_EntryPl2(ADXPD pd, void *in, Sint32 nblk, Sint16 *out0, Sint16 *out
     return 0;
 }
 
-/* Queues `nblk` interleaved L/R blocks from `in` into out0 (L) / out1 (R); rejected (0) unless idle. */
+/* Queues `nblk` interleaved L/R blocks from `in` into out0 (L) / out1 (R); rejected (0) unless
+ * idle. */
 Sint32 ADXPD_EntrySte(ADXPD pd, void *in, Sint32 nblk, Sint16 *out0, Sint16 *out1) {
     if (pd->stat == ADXPD_STAT_STOP) {
         pd->mode = ADXPD_MODE_STE;
@@ -146,7 +147,8 @@ void ADXPD_SetDly(ADXPD pd, Sint16 *d0, Sint16 *d1) {
     pd->dly[1][1] = d1[1];
 }
 
-/* Derives the prediction coefficients k1/k2 from the encoder cut-off frequency and sampling rate. */
+/* Derives the prediction coefficients k1/k2 from the encoder cut-off frequency and sampling
+ * rate. */
 void ADXPD_SetCoef(ADXPD pd, Sint32 sfreq, Sint32 cutoff) {
     ADX_GetCoefficient(cutoff, sfreq, &pd->k1, &pd->k2);
 }

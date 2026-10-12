@@ -222,7 +222,8 @@ Sint32 SJRBF_IsGetChunk(SJRBF_OBJ *sj, Sint32 id, Sint32 nbyte, Sint32 *rbyte) {
 }
 
 /* Gives back the tail of the last GetChunk on side `id` (only the most recent chunk can be
- * ungotten: the chunk must end where the side's cursor now stands); rewinds the cursor and the count. */
+ * ungotten: the chunk must end where the side's cursor now stands); rewinds the cursor and the
+ * count. */
 void sjrbf_UngetChunk(SJRBF_OBJ *sj, Sint32 id, SJCK *ck) {
     Sint32 ofs;
     Sint32 pos;
@@ -392,7 +393,8 @@ void sjrbf_GetChunk(SJRBF_OBJ *sj, Sint32 id, Sint32 nbyte, SJCK *ck) {
     }
 }
 
-/* Locked wrapper of sjrbf_GetChunk; the main primitive every producer/consumer in the pipeline uses. */
+/* Locked wrapper of sjrbf_GetChunk; the main primitive every producer/consumer in the pipeline
+ * uses. */
 void SJRBF_GetChunk(SJRBF_OBJ *sj, Sint32 id, Sint32 nbyte, SJCK *ck) {
     SJCRS_Lock();
     sjrbf_GetChunk(sj, id, nbyte, ck);
@@ -513,8 +515,9 @@ static inline Sint32 sjrbf_SearchFreeObj(void) {
     return i;
 }
 
-/* Creates a ring-buffer joint over the caller's `buf` (`bsize` bytes + `xsize` mirror bytes after it),
- * empty. Every ADX/Sofdec buffer (file ring, decoder output, ARAM ring, MPEG input) is one of these. */
+/* Creates a ring-buffer joint over the caller's `buf` (`bsize` bytes + `xsize` mirror bytes after
+ * it), empty. Every ADX/Sofdec buffer (file ring, decoder output, ARAM ring, MPEG input) is one of
+ * these. */
 SJ SJRBF_Create(void *buf, Sint32 bsize, Sint32 xsize) {
     SJRBF_OBJ *sj;
     Sint32 i;

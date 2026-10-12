@@ -30,7 +30,8 @@
 #define MBAI_ERROR 36
 
 #define RL(len, level, run) (((len) << 16) | ((level) << 8) | (run))
-/* packed table entries; DCSIZ fills Sint8 tables and CBP Sint16 tables, so both narrow explicitly */
+/* packed table entries; DCSIZ fills Sint8 tables and CBP Sint16 tables, so both narrow
+ * explicitly */
 #define DCSIZ(size, len) ((Sint8)(((size) << 4) | (len)))
 #define CBP(cbp, len) ((Sint16)((((cbp) & 3) << 14) | ((cbp) << 8) | (len)))
 #define MV(len, code) (((len) << 8) | (Uint8)(code))
@@ -248,7 +249,8 @@ void MPVVLC_Init(Uint8 *vlc, void *ixa) {
         }                                                                                          \
     }
 
-/* macroblock_address_increment table for I pictures (type fixed to intra): 12-bit and 8-bit halves. */
+/* macroblock_address_increment table for I pictures (type fixed to intra): 12-bit and 8-bit
+ * halves. */
 static void mpvvlc_InitMbaiIpic(void) {
     Sint16 *p;
     Sint32 i;

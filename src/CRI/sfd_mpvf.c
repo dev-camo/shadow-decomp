@@ -186,8 +186,8 @@ void SFMPVF_FreeFrm(SFMPV_FRM *frm) {
     frm->stat = SFMPV_FRM_FREE;
 }
 
-/* Takes the first FREE, unlocked frame of the pool (state ALLOC) for the picture about to be decoded;
- * 0 when the pool (nfrm_pool + 2 frames) is exhausted. */
+/* Takes the first FREE, unlocked frame of the pool (state ALLOC) for the picture about to be
+ * decoded; 0 when the pool (nfrm_pool + 2 frames) is exhausted. */
 SFMPV_FRM *SFMPVF_AllocFrm(SFD sfd) {
     SFMPV_FRM *frm;
     Sint32 i;
@@ -213,7 +213,8 @@ SFMPV_FRM *SFMPVF_AllocFrm(SFD sfd) {
     return frm;
 }
 
-/* Decoded frames waiting for display (STBY or REF); -1 when the decoder terminated and none are left. */
+/* Decoded frames waiting for display (STBY or REF); -1 when the decoder terminated and none are
+ * left. */
 Sint32 SFMPVF_GetNumFrm(SFD sfd) {
     SFMPV_WORK *mpv;
     SFMPV_FRM *frm;

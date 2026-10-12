@@ -275,9 +275,10 @@ void SFHDS_ReprocessHdr(SFD sfd) {
 }
 
 #pragma dont_inline on
-/* A Sofdec header packet arrived from the demuxer: calls the header callback (cond 0x4B/0x4C: the
- * MW player's mwsffrm_AnalySofdecHeader), and on the first header copies up to 0x800 bytes into the
- * handle, parses it, publishes the element counts and mirrors it into the seek work. 1 = consumed. */
+/* A Sofdec header packet arrived from the demuxer: calls the header callback (cond 0x4B/0x4C:
+ * the MW player's mwsffrm_AnalySofdecHeader), and on the first header copies up to 0x800 bytes
+ * into the handle, parses it, publishes the element counts and mirrors it into the seek work. 1
+ * = consumed. */
 Sint32 sfhds_SetHdrRaw(SFD sfd, Uint8 *data, Sint32 size) {
     SFHDS_HDRCB cbfn;
     void *cbobj;

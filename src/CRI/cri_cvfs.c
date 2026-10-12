@@ -122,8 +122,8 @@ static CVFS_IF *cvFsGetDevIf(CVFS_DEV *tbl, const Char8 *name) {
     return 0;
 }
 
-/* Device search by table index. cvfs_ResolveDev's second and third searches must be index loops:
- * a pointer local (`dev = tbl`) gives the stepping pointer a different register than the original. */
+/* Device search by table index. cvfs_ResolveDev's second and third searches must be index loops: a
+ * pointer local (`dev = tbl`) gives the stepping pointer a different register than the original. */
 static CVFS_IF *cvfs_SearchDev(CVFS_DEV *tbl, const Char8 *name) {
     Uint32 i;
     Sint32 len;
@@ -650,7 +650,8 @@ Sint32 cvFsGetFileSizeEx(const Char8 *fname, Sint32 *size) {
     return cvfs_OptFn(vtbl, 0, 18, (Sint32)path, (Sint32)size);
 }
 
-/* Installs the user error callback (func(obj, msg, hn)); ADXGC_SetupDvdFs installs adxgc_err_dvd. */
+/* Installs the user error callback (func(obj, msg, hn)); ADXGC_SetupDvdFs installs
+ * adxgc_err_dvd. */
 void cvFsEntryErrFunc(CVFS_USRERRFN func, void *obj) {
     if (func == 0) {
         cvfs_errfn = 0;
@@ -662,7 +663,8 @@ void cvFsEntryErrFunc(CVFS_USRERRFN func, void *obj) {
 }
 
 /* Matching constraint: the original allocates `pdev` before the device table; the codeless move
- * through r11 keeps pdev live long enough to get that register order (COMPILER-DIFF M1; no code). */
+ * through r11 keeps pdev live long enough to get that register order (COMPILER-DIFF M1; no
+ * code). */
 Sint32 cvFsGetFileSize(const Char8 *fname) {
     Char8 dev[CVFS_NAME_LEN];
     Char8 path[CVFS_NAME_LEN];
@@ -755,7 +757,8 @@ Sint32 cvFsReqWr(CVFS_OBJ *obj, Sint32 nsct, void *buf) {
     return ret;
 }
 
-/* Requests `nsct` sectors into `buf` from the device; returns the sectors accepted (0 = busy/refused). */
+/* Requests `nsct` sectors into `buf` from the device; returns the sectors accepted (0 =
+ * busy/refused). */
 Sint32 cvFsReqRd(CVFS_OBJ *obj, Sint32 nsct, void *buf) {
     Sint32 ret;
 
@@ -974,7 +977,8 @@ void cvFsAddDev(Char8 *devname, CVFS_GETIFFN getif, void *prm) {
 
     cvfs_build;
     /* the original keeps copies of both parameters (devname above the table entry in register
-     * order; the getif copy fixes the order of the two pool loads); the casts make them kept copies */
+     * order; the getif copy fixes the order of the two pool loads); the casts make them kept
+     * copies */
     name = (Char8 *)(void *)devname;
     fn = (CVFS_GETIFFN)(void *)getif;
     if (name == 0) {

@@ -1,5 +1,5 @@
-/* CRI Sofdec: stream buffers between the transfer drivers (sfd_buf.c). Buffers 0..2 are ring buffers
- * (stream joints), 3/5 video frame tables, 4/6 audio output, 7 the user output channels. */
+/* CRI Sofdec: stream buffers between the transfer drivers (sfd_buf.c). Buffers 0..2 are ring
+ * buffers (stream joints), 3/5 video frame tables, 4/6 audio output, 7 the user output channels. */
 #include "CRI/sj.h"
 #include "CRI/sfd.h"
 
@@ -43,8 +43,8 @@ Sint64 SFBUF_UpdateFlowCnt(Sint64 cnt, Uint32 pos) {
     return hi;
 }
 
-/* Bytes ever written / read through a supply joint (ring: SJRBF put counters; memory joint: size and
- * size minus what is left). */
+/* Bytes ever written / read through a supply joint (ring: SJRBF put counters; memory joint: size
+ * and size minus what is left). */
 void SFBUF_GetFlowCnt(SJ sj, Sint32 *wcnt, Sint32 *rcnt) {
     if (sfbuf_IsSjrbf(sj)) {
         *wcnt = SJRBF_GetFlowCnt(sj, 1, 1);
@@ -140,7 +140,8 @@ Sint32 SFBUF_VfrmAddRead(SFD sfd, Sint32 n, void *frm, Sint32 arg) {
     return ret;
 }
 
-/* Frame table buffer: asks the writer driver (the MPV video driver) for the next displayable frame. */
+/* Frame table buffer: asks the writer driver (the MPV video driver) for the next displayable
+ * frame. */
 Sint32 SFBUF_VfrmGetRead(SFD sfd, Sint32 n, void **frm, Sint32 arg) {
     SFBUF_HN *hn = SFBUF_GET_HN(sfd, n);
 
@@ -277,15 +278,15 @@ static inline Sint32 sfbuf_RingAddReadSub(SFD sfd, Sint32 n, Sint32 nbyte) {
     return ret;
 }
 
-/* Consumes `nbyte` bytes of ring n (DATA -> FREE, in up to two chunks around the wrap); on the video
- * ring (1) forgets the delimiter if it was consumed; adds to rtot and flags a change. Error
+/* Consumes `nbyte` bytes of ring n (DATA -> FREE, in up to two chunks around the wrap); on the
+ * video ring (1) forgets the delimiter if it was consumed; adds to rtot and flags a change. Error
  * 0xFF00040B on underflow. */
 Sint32 SFBUF_RingAddRead(SFD sfd, Sint32 n, Sint32 nbyte) {
     return sfbuf_RingAddReadSub(sfd, n, nbyte);
 }
 
-/* Commits `nbyte` bytes written into ring n (FREE -> DATA, two chunks around the wrap), adds to wtot
- * and flags a change; error 0xFF00040B on overflow. */
+/* Commits `nbyte` bytes written into ring n (FREE -> DATA, two chunks around the wrap), adds to
+ * wtot and flags a change; error 0xFF00040B on overflow. */
 static inline Sint32 sfbuf_RingAddWriteSub(SFD sfd, Sint32 n, Sint32 nbyte) {
     Sint32 rest;
     Sint32 ret = 0;
@@ -578,9 +579,10 @@ static void sfbuf_InitAout(SFBUF_WORK *wk, Uint32 *adr, Sint32 *size) {
     wk->u.aout.rsv2[2] = 0;
 }
 
-/* adr[] stays a stack array (9 elements: with 8 the backend's array-register transform turns it into
- * registers) and the running address is one variable stored through a stepping pointer: the chain is
- * then a single register and the first InitRing reloads adr[0] from the frame like the target */
+/* adr[] stays a stack array (9 elements: with 8 the backend's array-register transform turns it
+ * into registers) and the running address is one variable stored through a stepping pointer: the
+ * chain is then a single register and the first InitRing reloads adr[0] from the frame like the
+ * target */
 Sint32 SFBUF_InitHn(SFD sfd, SFBUF_WORK *wk, SFBUF_PRM *prm) {
     Uint32 adr[9];
     Sint32 xsize;

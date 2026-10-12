@@ -198,7 +198,8 @@ typedef struct {
     SFD_VFRM_INF inf; /* 0x08 */
 } SFD_VFRM;
 
-/* ring-buffer supply of an SFBUF (sfd_buf.c): kind 0 = a memory range (ofst/size), else a stream joint */
+/* ring-buffer supply of an SFBUF (sfd_buf.c): kind 0 = a memory range (ofst/size), else a stream
+ * joint */
 typedef struct {
     Sint32 kind;  /* 0x00 */
     SJ sj;        /* 0x04 */
@@ -225,7 +226,8 @@ typedef struct {
 #define SFBUF_MODE_NONE 4
 #define SFBUF_MODE_RING 5
 
-/* SFBUF work (0x74 bytes): buffer n links transfer driver in_tr -> out_tr; SFD_OBJ + 0x1308 + n * 0x74 */
+/* SFBUF work (0x74 bytes): buffer n links transfer driver in_tr -> out_tr; SFD_OBJ + 0x1308 + n *
+ * 0x74 */
 typedef struct {
     Sint32 mode;    /* 0x00 SFBUF_MODE_* */
     Sint32 used;    /* 0x04 supplied */
@@ -430,8 +432,9 @@ typedef struct {
 } SFMPV_WORK;
 
 /* 0xA8-byte player information block returned by SFD_GetPlyInf; this game's block is 8 bytes longer
- * than RE4's: a frame counter is added at +0x18 (so RE4's fields from +0x18 sit 4 bytes later) and the
- * 64-bit counters from +0x30 are realigned 8 bytes later (sfd_ply.c SFPLY_PLYINF is the field view) */
+ * than RE4's: a frame counter is added at +0x18 (so RE4's fields from +0x18 sit 4 bytes later) and
+ * the 64-bit counters from +0x30 are realigned 8 bytes later (sfd_ply.c SFPLY_PLYINF is the field
+ * view) */
 typedef struct {
     Sint32 raw[0x2A]; /* 0x00 */
 } SFD_PLYINF;

@@ -1,12 +1,11 @@
-/* CRI ADXT library init / finish (adx_inis.c, ADXT/GC Ver.9.44): ADXT_Init brings up every ADX module
- * (stream joints, error, ADXSTM, ADXSJD, ADXF, renderer, LSC, SVM) and registers the server
+/* CRI ADXT library init / finish (adx_inis.c, ADXT/GC Ver.9.44): ADXT_Init brings up every ADX
+ * module (stream joints, error, ADXSTM, ADXSJD, ADXF, renderer, LSC, SVM) and registers the server
  * callbacks with the SVM; ADXT_Finish undoes it. Holds the handle table adxt_obj, the build string
  * and the server ids.
  *
  * Bodies from the RE4 GameCube decompilation (Ver.9.31). Ver.9.44 always registers the threaded
  * callbacks (with their names), runs the load scheduler through ADXT_ExecLscSvr and also finishes
- * the critical section; the no-thread main callback and the vsync switch are gone.
- */
+ * the critical section; the no-thread main callback and the vsync switch are gone. */
 #include <string.h>
 
 #include "CRI/adx.h"

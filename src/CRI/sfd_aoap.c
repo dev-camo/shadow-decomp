@@ -3,9 +3,8 @@
  * start/stop/pause/standby to it and exposes volume/pan (SFD_SetOutVol / SFD_SetOutPan) through the
  * callback block the ADXT driver fills in (SFAOAP).
  *
- * Source from the RE4 GameCube decompilation with this game's SFD_OBJ layout; RE4's SFD_GetOutPan and
- * SFD_SetOutPan are unreferenced here (the linker strips them).
- */
+ * Source from the RE4 GameCube decompilation with this game's SFD_OBJ layout; RE4's SFD_GetOutPan
+ * and SFD_SetOutPan are unreferenced here (the linker strips them). */
 #include "CRI/sfd.h"
 
 #define SFAOAP_TR 7
@@ -84,7 +83,8 @@ Sint32 SFAOAP_Destroy(void) {
     return 0;
 }
 
-/* With audio on: attaches the handle's SFAOAP callback block (filled by the ADXT driver) to slot 7. */
+/* With audio on: attaches the handle's SFAOAP callback block (filled by the ADXT driver) to slot
+ * 7. */
 Sint32 SFAOAP_Create(SFD sfd) {
     if (SFSET_GetCond(sfd, SFAOAP_COND) == 0) {
         return 0;

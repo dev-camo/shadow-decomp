@@ -194,7 +194,8 @@ void SJMEM_PutChunk(SJMEM_OBJ *sj, Sint32 id, SJCK *ck) {
     SJCRS_Unlock();
 }
 
-/* DATA: the next `nbyte` unread bytes of the buffer, advancing the read cursor. FREE: empty chunk. */
+/* DATA: the next `nbyte` unread bytes of the buffer, advancing the read cursor. FREE: empty
+ * chunk. */
 void SJMEM_GetChunk(SJMEM_OBJ *sj, Sint32 id, Sint32 nbyte, SJCK *ck) {
     SJCRS_Lock();
     if (sj == 0) {

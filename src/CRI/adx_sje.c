@@ -119,7 +119,8 @@ static Sint32 skg_init_count = 0;
 /* the SKG error callback; unreferenced in this game but part of the original data */
 static void (*skg_err_func)(void *obj, const Char8 *msg) = 0;
 static void *skg_err_obj = 0;
-/* volatile like the other CRI reference counts (adx_crs.c); the count is reloaded after each update. */
+/* volatile like the other CRI reference counts (adx_crs.c); the count is reloaded after each
+ * update. */
 static volatile Sint32 adxsje_init_cnt = 0;
 static ADXSJE_PRDFLT adxsje_prdflt_obj[ADXSJE_MAX_FLT];
 static ADXSJE_IIRFLT adxsje_iirflt_obj[ADXSJE_MAX_FLT];
@@ -394,8 +395,8 @@ void ADXSJE_Destroy(ADXSJE sje) {
     ADXCRS_Unlock();
 }
 
-/* Takes an encoder slot reading `nch` PCM stream joints and writing ADX to `sjo`: defaults 44.1 kHz,
- * 4-bit 18-byte blocks (32 samples), 500 Hz cut-off, no loop, no AINF, unbounded length. */
+/* Takes an encoder slot reading `nch` PCM stream joints and writing ADX to `sjo`: defaults 44.1
+ * kHz, 4-bit 18-byte blocks (32 samples), 500 Hz cut-off, no loop, no AINF, unbounded length. */
 ADXSJE ADXSJE_Create(Sint32 nch, SJ *sji, SJ sjo) {
     ADXSJE sje;
     Sint32 i;
@@ -792,10 +793,10 @@ Sint32 adxsje_output_sdata(ADXSJE sje) {
     return nbyte;
 }
 
-/* pack the block of channel ch: the residuals scaled, quantised to bps bits and written as
- * nibbles into the block body. The body bytes are indexed (`dst[++n]`, n from -1): the strength
- * reducer's pointer is then a temporary initialised `addi p, dst, -1` off the dying `dst`, and the
- * shift amount is an expression (a variable `sft` ranks as an own local below the tail temporaries) */
+/* pack the block of channel ch: the residuals scaled, quantised to bps bits and written as nibbles
+ * into the block body. The body bytes are indexed (`dst[++n]`, n from -1): the strength reducer's
+ * pointer is then a temporary initialised `addi p, dst, -1` off the dying `dst`, and the shift
+ * amount is an expression (a variable `sft` ranks as an own local below the tail temporaries) */
 void adxsje_set_rsig(ADXSJE sje, Sint32 ch) {
     Sint16 *res;
     Sint16 *scl;

@@ -11,8 +11,8 @@
 
 #define SFTRN_TRIF_NUM 15
 
-/* Whether driver slot `strm` has a driver (0 input, 1 system, 2 video, 3 audio, 6 video out, 7 audio
- * out, 8 user output). */
+/* Whether driver slot `strm` has a driver (0 input, 1 system, 2 video, 3 audio, 6 video out, 7
+ * audio out, 8 user output). */
 Sint32 SFTRN_IsSetup(SFD sfd, Sint32 strm) {
     return sfd->tr[strm].trif != 0;
 }
@@ -69,10 +69,10 @@ Sint32 SFTRN_CallTrSetup(SFD sfd, Sint32 fn) {
     return ret;
 }
 
-/* Wires the buffers of a program-stream layout: input -> buf 0 -> MPS demux (tr 1) -> buf 1 -> video
- * decoder (tr 2) -> buf 3 -> [video filter tr 4 -> buf 5 ->] video out (tr 6); tr 1 -> buf 2 -> audio
- * decoder (tr 3) -> buf 4 -> [audio filter tr 5 -> buf 6 ->] audio out (tr 7); tr 1 -> buf 7 -> user
- * output (tr 8). Disables video/audio (cond 5/6) when the decoder is absent. */
+/* Wires the buffers of a program-stream layout: input -> buf 0 -> MPS demux (tr 1) -> buf 1 ->
+ * video decoder (tr 2) -> buf 3 -> [video filter tr 4 -> buf 5 ->] video out (tr 6); tr 1 -> buf 2
+ * -> audio decoder (tr 3) -> buf 4 -> [audio filter tr 5 -> buf 6 ->] audio out (tr 7); tr 1 -> buf
+ * 7 -> user output (tr 8). Disables video/audio (cond 5/6) when the decoder is absent. */
 void sftrn_BuildSystem(SFD sfd, SFD_TR_FUNC **tbl) {
     sfd->buf[0].out_tr = 1;
     sfd->tr[1].bufin = 0;

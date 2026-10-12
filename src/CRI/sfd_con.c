@@ -1,10 +1,9 @@
 /* CRI Sofdec concatenated playback (sfd_con.c, SFCON): when several files are streamed back to back
- * (cond 0x31, SFD_SetConcatPlay) the end codes are skipped and the clock is offset by the accumulated
- * duration of the finished files; a 32-entry queue passes each file's total sample count from the
- * demuxer to the audio driver. Unused by this game (single-file movies).
+ * (cond 0x31, SFD_SetConcatPlay) the end codes are skipped and the clock is offset by the
+ * accumulated duration of the finished files; a 32-entry queue passes each file's total sample
+ * count from the demuxer to the audio driver. Unused by this game (single-file movies).
  *
- * Source from the RE4 GameCube decompilation; this game's SFD_OBJ holds the work at 0xD30.
- */
+ * Source from the RE4 GameCube decompilation; this game's SFD_OBJ holds the work at 0xD30. */
 #include "CRI/sfd.h"
 
 #define SFCON_QUE_NUM 32

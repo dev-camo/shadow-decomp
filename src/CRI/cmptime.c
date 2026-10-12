@@ -1,6 +1,5 @@
-/* CRI UTY_CmpTime (cmptime.c): the count/scale time comparison used by every Sofdec timing decision.
- * Body from the RE4 GameCube decompilation of the same file.
- */
+/* CRI UTY_CmpTime (cmptime.c): the count/scale time comparison used by every Sofdec timing
+ * decision. Body from the RE4 GameCube decompilation of the same file. */
 #include "CRI/cri_xpt.h"
 #include "CRI/uty.h"
 
