@@ -1,13 +1,14 @@
+#include "Game/fn_8040_vector_types.h"
+
 extern float lbl_805FAD80;
-extern float lbl_805E07A0[4];
 
 void fn_8040D02C(void) {
     float initial_value = lbl_805FAD80;
-    float *vector = lbl_805E07A0;
+    Fn8040Vector3 *vector = &lbl_805E07A0;
 
-    vector[0] = initial_value;
-    vector[1] = initial_value;
-    vector[2] = initial_value;
+    vector->x = initial_value;
+    vector->y = initial_value;
+    vector->z = initial_value;
 }
 
 #pragma force_active on
