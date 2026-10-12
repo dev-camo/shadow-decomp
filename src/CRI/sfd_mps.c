@@ -63,14 +63,6 @@ typedef void (*SFMPS_UOCB)(void *obj, Sint32 chno);
 static Sint32 copy_sj_error;
 static Uint8 sfmps_libwork[0x10 + SFMPS_NUM_HN * sizeof(MPS_OBJ)];
 
-/* buffer n addressed as SFD + n * sizeof(SFBUF_WORK) (sfd_buf.c's SFBUF_HN view) */
-typedef struct {
-    Uint8 pad[0x1310];
-    SFBUF_WORK w;
-} SFMPS_BUFHN;
-
-#define SFMPS_BUF_HN(sfd, n) ((SFMPS_BUFHN *)((Uint8 *)(sfd) + (n) * sizeof(SFBUF_WORK)))
-
 #define SFMPS_WK(sfd) ((SFMPS_WORK *)(sfd)->tr[SFMPS_TR].hn)
 #define SFMPS_MPS(sfd) (SFMPS_WK(sfd)->mps)
 
@@ -301,7 +293,7 @@ static void sfmps_ProcPrep(SFD sfd) {
     MPS_SYSHD syshd;
     MPS_PACKHD packhd;
     Sint32 prep1, prep2, prep3;
-    SFMPS_BUFHN *hn;
+    SFBUF_HN *hn;
     Sint32 size;
     Sint32 need;
 
@@ -313,7 +305,7 @@ static void sfmps_ProcPrep(SFD sfd) {
         if (SFBUF_GetPrepFlg(sfd, sfd->tr[SFMPS_TR].bufin) == 1) {
             size = sfd->prm.size[0];
             need = sfd->cond[SFD_COND_PREPSIZE];
-            hn = SFMPS_BUF_HN(sfd, sfd->tr[SFMPS_TR].bufin);
+            hn = SFBUF_GET_HN(sfd, sfd->tr[SFMPS_TR].bufin);
             if (size <= 0) {
                 size = hn->w.u.ring.sup.size;
             }
@@ -778,7 +770,7 @@ Sint32 sfmps_DecodeOneUnit(SFD sfd, Uint8 *data, Sint32 len, Sint32 *nbyte, Sint
     Uint8 *dst;
     Sint32 n;
     Sint32 cnt;
-    SFMPS_BUFHN *hn;
+    SFBUF_HN *hn;
     Bool go;
     Bool ok;
 
@@ -836,14 +828,17 @@ Sint32 sfmps_DecodeOneUnit(SFD sfd, Uint8 *data, Sint32 len, Sint32 *nbyte, Sint
     if (flags & MPS_DECHD_SYSHD) {
         shdr = sfmps_GetSeeShdr(sfd);
         if (shdr != 0 && shdr->analyzed == 0) {
-            dst = (Uint8 *)shdr + 0x30;
+            /* dst walks the raw system-header copies; the lengths are stored through it (dst is
+             * &shdr->syshd at that point). Matching constraint: storing to shdr->syshd.len[] uses a
+             * different base register (verified: the unit drops to 78%). */
+            dst = shdr->syshd.data[0];
             MPS_GetLastSysHd(mps, &syshd);
             n = (len < 0xB0) ? len : 0xB0;
             if (syshd.raw[3] > 0) {
-                *(Sint32 *)(dst + 0x160) = n;
+                ((SFSEE_SYSHD *)dst)->len[0] = n;
             } else if (syshd.raw[2] > 0) {
-                *(Sint32 *)(dst + 0x164) = n;
-                dst += 0xB0;
+                ((SFSEE_SYSHD *)dst)->len[1] = n;
+                dst += sizeof(shdr->syshd.data[0]);
             } else {
                 goto no_syshd;
             }
@@ -878,7 +873,7 @@ no_syshd:
                 len--;
             }
             if (len > 0 && len < 4) {
-                hn = SFMPS_BUF_HN(sfd, sfd->tr[SFMPS_TR].bufin);
+                hn = SFBUF_GET_HN(sfd, sfd->tr[SFMPS_TR].bufin);
                 if (hn->w.u.ring.sup.kind == 0 &&
                     (hn->w.u.ring.sup.xsize != 0 || hn->w.u.ring.sup.x14 != 0)) {
                     ok = FALSE;

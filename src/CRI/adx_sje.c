@@ -9,6 +9,7 @@
  * count around ADXSJE_Init/ADXSJE_Finish; RE4's version/build-string functions and the data words
  * pointing at them have no counterpart here and are left out.
  */
+#include <stddef.h>
 #include <string.h>
 
 #include "CRI/adx.h"
@@ -194,9 +195,12 @@ void ADXSJE_ExecServer(void) {
 
 /* header stage: wait for the first sample of every input (the decoder history seed), write the
  * header and program the filter coefficients. An inlined helper so that its counters rank above the
- * loops' stepping pointers (own locals rank below the strength-reduction temporaries); the pointers
- * are explicit `Uint8 *` copies of the handle stepped by 4/2 (the adx_tsvr ExecHndl idiom: `mr rIV,
- * sje` + offset loads), declared in the order that colours ch r30, sjo r29, p r28, i r28, p2/p3 r27 */
+ * loops' stepping pointers (own locals rank below the strength-reduction temporaries).
+ * Matching constraint (COMPILER-DIFF): the per-channel fields are reached through `Uint8 *` copies
+ * of the handle stepped by 4/2 plus the member offset (the adx_tsvr ExecHndl idiom: `mr rIV, sje` +
+ * offset loads), declared in the order that colours ch r30, sjo r29, p r28, i r28, p2/p3 r27.
+ * Indexing sje->sji[ch], sje->first[ch] and sje->prd[i] directly gives a different loop shape
+ * (verified: 95% in any declaration order). */
 static inline void adxsje_header_exec(ADXSJE sje) {
     Sint32 n;
     Sint16 c1;
@@ -214,12 +218,13 @@ static inline void adxsje_header_exec(ADXSJE sje) {
     p = (Uint8 *)sje;
     p2 = (Uint8 *)sje;
     for (ch = 0; ch < sje->nch32; ch++) {
-        SJ_GetChunk(*(SJ *)(p + 0x4), SJ_CK_DATA, 2, &ck);
+        SJ_GetChunk(*(SJ *)(p + offsetof(ADXSJE_OBJ, sji)), SJ_CK_DATA, 2, &ck);
         if (ck.len == 0) {
             break;
         }
-        *(Sint16 *)(p2 + 0x2c8) = *(Sint16 *)(p2 + 0x2cc) = *(Sint16 *)ck.data;
-        SJ_UngetChunk(*(SJ *)(p + 0x4), SJ_CK_DATA, &ck);
+        *(Sint16 *)(p2 + offsetof(ADXSJE_OBJ, first)) =
+            *(Sint16 *)(p2 + offsetof(ADXSJE_OBJ, first2)) = *(Sint16 *)ck.data;
+        SJ_UngetChunk(*(SJ *)(p + offsetof(ADXSJE_OBJ, sji)), SJ_CK_DATA, &ck);
         p += 4;
         p2 += 2;
     }
@@ -237,7 +242,7 @@ static inline void adxsje_header_exec(ADXSJE sje) {
     sje->nbyte += n;
     p3 = (Uint8 *)sje;
     for (i = 0; i < sje->nch32; i++) {
-        prd = *(ADXSJE_PRDFLT **)(p3 + 0x80);
+        prd = *(ADXSJE_PRDFLT **)(p3 + offsetof(ADXSJE_OBJ, prd));
         ADX_GetCoefficient((Sint16)sje->cutoff, sje->sfreq, &c1, &c2);
         adxsje_prdflt_set_coef(prd, c1, c2);
         adxsje_iirflt_set_coef(prd->iir, c1, c2);

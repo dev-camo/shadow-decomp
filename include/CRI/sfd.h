@@ -725,7 +725,18 @@ typedef struct SFD_OBJ {
     SFSEE_HN see;          /* 0x3550 (SFD_EntrySeek) */
     SFTMR_TSUM tsum[6];    /* 0x3560 server time statistics (tsum[5]: sfply_ExecOne) */
     SFPLY_FRMSTAT frmstat; /* 0x3620 (this game only) */
-} SFD_OBJ;                 /* 0x3640 */
+} SFD_OBJ;
+/* Buffer n seen as the SFD object shifted by n buffers: the code adds n * sizeof(SFBUF_WORK) to the
+ * handle and keeps buf[0]'s offset (0x1310) in each load/store displacement. Matching constraint
+ * (typed access view): writing &sfd->buf[n] adds 0x1310 to the base register instead, and the
+ * sfd_buf.c, sfd_pts.c and sfd_mps.c functions stop matching. */
+typedef struct {
+    Uint8 pad[0x1310];
+    SFBUF_WORK w; /* sfd->buf[n] */
+} SFBUF_HN;
+
+#define SFBUF_GET_HN(sfd, n) ((SFBUF_HN *)((SFBUF_WORK *)(sfd) + (n)))
+/* 0x3640 */
 
 /* 64-bit stream counters inside plyinf seen through a separate view: SFD_PLYINF itself has to stay
  * 4-byte aligned (SFD_GetPlyInf copies it with a lwz/stw loop). Offsets are RE4's + 8 (from the

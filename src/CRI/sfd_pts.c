@@ -9,13 +9,6 @@
 
 #define PQ(sfd, strm) ((sfd)->buf[strm].u.ring.ptsque)
 
-typedef struct {
-    Uint8 pad[0x1310];
-    SFBUF_WORK w;
-} SFBUF_HN;
-
-#define SFBUF_GET_HN(sfd, n) ((SFBUF_HN *)((Uint8 *)(sfd) + (n) * sizeof(SFBUF_WORK)))
-
 // Ring index wrap (n - num when n >= num).
 static Sint32 sfpts_Wrap(Sint32 n, Sint32 num) {
     Sint32 r;
