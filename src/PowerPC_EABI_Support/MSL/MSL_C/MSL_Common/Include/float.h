@@ -38,6 +38,7 @@ extern int __float_huge[];
 extern int __float_max[];
 extern int __float_epsilon[];
 
+extern int __double_max[];
 extern int __double_huge[];
 
 #ifdef __cplusplus
