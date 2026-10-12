@@ -16,6 +16,11 @@ typedef struct Fn8040Vector3 {
 extern "C" {
 #endif
 
+/* Vectors cleared by the static initialisers fn_8040CD60 and fn_8040D02C; used as fallbacks
+ * when a vector is too short to normalise. lbl_805E07A0 occupies 0x10 bytes. */
+extern Fn8040Vector2 lbl_805F1358;
+extern Fn8040Vector3 lbl_805E07A0;
+
 float fn_8040CCEC(const Fn8040Vector2 *vector);
 float fn_8040CF50(const Fn8040Vector3 *vector);
 void fn_800091D0(Fn8040Vector3 *destination, const Fn8040Vector3 *source);

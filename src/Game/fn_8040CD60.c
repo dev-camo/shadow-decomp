@@ -1,12 +1,13 @@
+#include "Game/fn_8040_vector_types.h"
+
 extern float lbl_805FAD78;
-extern float lbl_805F1358[2];
 
 void fn_8040CD60(void) {
     float initial_value = lbl_805FAD78;
-    float *vector = lbl_805F1358;
+    Fn8040Vector2 *vector = &lbl_805F1358;
 
-    vector[0] = initial_value;
-    vector[1] = initial_value;
+    vector->x = initial_value;
+    vector->y = initial_value;
 }
 
 // Keep this entry in the regular constructor-order band.

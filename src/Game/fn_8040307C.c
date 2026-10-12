@@ -1,11 +1,6 @@
-#include "CRI/lsc.h"
+#include "Game/fn_8040_stream_object.h"
 
-typedef struct Fn8040307CObject {
-    /* 0x00 */ unsigned char padding[0x48];
-    /* 0x48 */ LSC lsc;
-} Fn8040307CObject;
-
-void fn_8040307C(Fn8040307CObject *object, Sint32 min_val) {
+void fn_8040307C(Fn8040StreamObject *object, Sint32 min_val) {
     LSC lsc = object->lsc;
 
     if (lsc != 0) {
