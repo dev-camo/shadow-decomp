@@ -155,6 +155,10 @@ typedef struct CARDStat {
 #define CARD_STAT_SPEED_SLOW 3
 #define CARD_STAT_SPEED_MASK 3
 
+#define CARD_STAT_ANIM_LOOP 0
+#define CARD_STAT_ANIM_BOUNCE 4
+#define CARD_STAT_ANIM_MASK 4
+
 #define CARD_RESULT_UNLOCKED 1
 #define CARD_RESULT_READY 0
 #define CARD_RESULT_BUSY -1
@@ -229,7 +233,7 @@ void CARDInit(void);
 s32 CARDGetResultCode(s32 chan);
 s32 CARDCheckAsync(s32 chan, CARDCallback callback);
 s32 CARDFreeBlocks(s32 chan, s32 *byteNotUsed, s32 *filesNotUsed);
-s32 CARDRenameAsync(s32 chan, const char *old, const char *new, CARDCallback callback);
+s32 CARDRenameAsync(s32 chan, const char *oldName, const char *newName, CARDCallback callback);
 
 // CARDBios
 void CARDInit(void);
@@ -304,7 +308,7 @@ s32 CARDRead(CARDFileInfo *fileInfo, void *buf, s32 length, s32 offset);
 s32 CARDCancel(CARDFileInfo *fileInfo);
 
 // CARDRename
-s32 CARDRename(s32 chan, const char *old, const char *new);
+s32 CARDRename(s32 chan, const char *oldName, const char *newName);
 
 // CARDStat
 s32 CARDGetStatus(s32 chan, s32 fileNo, CARDStat *stat);
