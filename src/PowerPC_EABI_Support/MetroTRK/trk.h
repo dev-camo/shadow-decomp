@@ -27,6 +27,7 @@ DSError TRKDoStop(MessageBuffer *);
 
 void SetBufferPosition(MessageBuffer *, u32);
 void SetTRKConnected(int);
+void TRKUARTInterruptHandler(void);
 int GetTRKConnected(void);
 
 DSError TRKGetFreeBuffer(int *, MessageBuffer **);
@@ -50,7 +51,7 @@ void TRK_board_display(char *);
 ////////////////////////////////////
 
 ////////// GDEV FUNCTIONS //////////
-int gdev_cc_initialize(void *flagOut, __OSInterruptHandler handler);
+int gdev_cc_initialize(void *inputPendingPtrRef, __OSInterruptHandler monitorCallback);
 int gdev_cc_shutdown();
 int gdev_cc_open();
 int gdev_cc_close();
@@ -80,7 +81,7 @@ int udp_cc_initinterrupts();
 #define DDH_ERR_ALREADY_INITIALIZED -0x2715
 #define DDH_ERR_READ_ERROR -0x2719
 
-int ddh_cc_initialize(void *flagOut, __OSInterruptHandler handler);
+int ddh_cc_initialize(void *inputPendingPtrRef, __OSInterruptHandler monitorCallback);
 int ddh_cc_shutdown();
 int ddh_cc_open();
 int ddh_cc_close();
