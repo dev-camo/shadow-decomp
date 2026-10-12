@@ -245,7 +245,7 @@ Sint32 sfply_ResetHn(SFD sfd) {
     ptsent = sfd->buf[1].u.ring.ptsque.ent;
     nmpv = SFMPV_SaveCond(sfd, mpvcond, sizeof(mpvcond));
     sfd->stat = SFD_STAT_NONE;
-    sfd->req = 0;
+    sfd->req = SFD_REQ_NONE;
     ret = SFTRN_CallTrSetup(sfd, 4);
     if (ret != 0) {
         return ret;
@@ -334,7 +334,7 @@ static Sint32 sfply_StopHn(SFD sfd) {
     if (ret != 0) {
         return ret;
     }
-    sfd->req = 0;
+    sfd->req = SFD_REQ_NONE;
     sfd->stat = SFD_STAT_NONE;
     SFLIB_libwork.x1fc = 1;
     ret = sfply_ResetHn(sfd);
@@ -390,7 +390,7 @@ Sint32 SFD_Destroy(SFD sfd) {
     SFHDS_FinishFhd(&sfd->fhd);
     SFBUF_DestroySj(sfd);
     sfd->stat = SFD_STAT_NONE;
-    sfd->req = 0;
+    sfd->req = SFD_REQ_NONE;
     ret = SFTRN_CallTrSetup(sfd, 4);
     tbl = SFLIB_libwork.hn;
     for (i = 0; i < SFD_HN_MAX; i++, tbl++) {
@@ -453,7 +453,7 @@ static SFD sfply_InitHn(SFD_CREPRM *prm, Sint32 x) {
     sfply_last_hnctrl_wksiz = wksiz;
     UTY_MemsetDword(work, 0, ndw);
     hn = (SFD)(((Uint32)work + 31) & ~31);
-    hn->stat = hn->req = 0;
+    hn->stat = hn->req = SFD_STAT_NONE; /* SFD_REQ_NONE is also 0 */
     prm->adr = (prm->adr + 31) & ~31;
     hn->prm = *prm;
     hn->chg_flg = 1;

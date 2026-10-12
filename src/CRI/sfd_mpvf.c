@@ -78,7 +78,7 @@ SFMPV_FRM *sfmpvf_ReferNextFrmReady(SFD sfd) {
     Sint32 cs;
 
     SFLIB_LockCs(&cs);
-    if (sfd->stat != 4) {
+    if (sfd->stat != SFD_STAT_PLAYING) {
         frm = 0;
     } else {
         sfmpvf_SearchStbyFrm(sfd, &frm1, &frm);
