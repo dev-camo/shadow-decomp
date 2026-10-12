@@ -266,6 +266,13 @@ PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/mem.c:
 PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/mem_funcs.c:
 	.text       start:0x803A9F68 end:0x803AA238
 
+PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/printf.c:
+	.text       start:0x803AA248 end:0x803AC49C
+	.rodata     start:0x80514F40 end:0x80514F68
+	.data       start:0x805694B0 end:0x805696DC
+	.sdata      start:0x805EED68 end:0x805EED70
+	.sdata2     start:0x805FB880 end:0x805FB888
+
 PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/signal.c:
 	.text       start:0x803AD650 end:0x803AD710
 	.bss        start:0x805A6638 end:0x805A6650
