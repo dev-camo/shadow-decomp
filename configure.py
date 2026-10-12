@@ -592,6 +592,7 @@ config.libs = [
         "dvd",
         [
             Object(Matching, "dolphin/dvderror.c"),
+            Object(Matching, "dolphin/dvdlow.c"),
         ],
     ),
     DolphinLib(
