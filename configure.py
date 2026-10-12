@@ -625,6 +625,12 @@ config.libs = [
             Object(Matching, "dolphin/EXIUart.c"),
         ],
     ),
+    DolphinLib(
+        "amcstubs",
+        [
+            Object(Matching, "dolphin/AmcExi2Stubs.c"),
+        ],
+    ),
     {
         "lib": "PowerPC_EABI_Support",
         "mw_version": config.linker_version,
