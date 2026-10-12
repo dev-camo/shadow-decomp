@@ -147,12 +147,13 @@ Sint32 ADX_DecodeInfoAinf(Uint8 *data, Sint32 len, Sint32 *ainfsiz, void *ainf, 
     if (*(Sint16 *)(data + 2) < need - 4) {
         return -1;
     }
-    /* default + conditional store defines ofs in its callee-saved register (`li r28`); the ternary
-     * computes a temporary and lets `ofs += 4` define the variable. */
+    /* matching constraint: a default plus a conditional store (not `?:`) keeps ofs in its own
+     * register, as in the original */
     ofs = 0x14;
     if (ver == 4) {
         ofs = 0x20;
     }
+    /* matching constraint: the add is done on integers; `data + ofs` reorders the operands (83%) */
     p = (Uint8 *)((Uint32)ofs + (Uint32)data);
     ofs += 4;
     if (*(Sint16 *)(p + 2) != 0) {

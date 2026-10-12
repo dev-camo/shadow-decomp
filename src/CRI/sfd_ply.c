@@ -10,23 +10,24 @@
 #define SFD_HNWORK_MIN 0x3660
 #define SFD_HNCTRL_WKSIZ_MAX 0x6CC0
 
-/* player information block as sfply_InitHn clears it: 12 counters, 12 64-bit counters, reserve */
+/* player information block as sfply_InitHn clears it (SFD_OBJ + 0x950): 12 counters, 12 64-bit
+ * counters, reserve */
 typedef struct {
-    Sint32 ndecpic;  /* 0x950 decoded pictures (SFPLY_AddDecPic) */
-    Sint32 nskippic; /* 0x954 skipped pictures (SFPLY_AddSkipPic) */
-    Sint32 x08;
-    Sint32 x0c;
-    Sint32 x10;
-    Sint32 x14;
-    Sint32 getcnt; /* 0x968 frames taken by SFD_GetFrm (this game only) */
-    Sint32 relcnt; /* 0x96C frames returned by SFD_RelFrm (RE4: a "frame held" flag) */
-    Sint32 bpa;    /* 0x970 buffering pause active */
-    Sint32 nbpa;   /* 0x974 buffering pauses so far */
-    Sint32 x28;    /* 0x978 */
-    Sint32 x2c;
-    Sint32 x30;
-    Sint64 cnt64[12]; /* 0x988 */
-    Sint32 rsv[4];    /* 0x9E8 */
+    Sint32 ndecpic;   /* 0x00 decoded pictures (SFPLY_AddDecPic) */
+    Sint32 nskippic;  /* 0x04 skipped pictures (SFPLY_AddSkipPic) */
+    Sint32 x08;       /* 0x08 */
+    Sint32 x0c;       /* 0x0C */
+    Sint32 x10;       /* 0x10 */
+    Sint32 x14;       /* 0x14 */
+    Sint32 getcnt;    /* 0x18 frames taken by SFD_GetFrm (this game only) */
+    Sint32 relcnt;    /* 0x1C frames returned by SFD_RelFrm (RE4: a "frame held" flag) */
+    Sint32 bpa;       /* 0x20 buffering pause active */
+    Sint32 nbpa;      /* 0x24 buffering pauses so far */
+    Sint32 x28;       /* 0x28 */
+    Sint32 x2c;       /* 0x2C */
+    Sint32 x30;       /* 0x30 */
+    Sint64 cnt64[12]; /* 0x38 */
+    Sint32 rsv[4];    /* 0x98 */
 } SFPLY_PLYINF;
 
 #define PLYINF(sfd) ((SFPLY_PLYINF *)&(sfd)->plyinf)
@@ -375,8 +376,8 @@ Sint32 SFD_Start(SFD sfd) {
     return ret;
 }
 
-/* returns SFTRN_CallTrSetup's result (mwsfdcre checks it): keeping r3 live across the table clear is
- * what gives the loop r4/r5 and sfd r31 / the SFLIB_libwork base r30 */
+/* Returns SFTRN_CallTrSetup's result (mwsfdcre checks it). Keeping that result live across the
+ * table clear also gives the loop its original registers. */
 Sint32 SFD_Destroy(SFD sfd) {
     SFD *tbl;
     Sint32 i;

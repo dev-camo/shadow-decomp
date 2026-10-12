@@ -79,9 +79,9 @@ static void sfset_SetCondDef(SFD sfd, Sint32 id, Sint32 val) {
 }
 
 /* Matching constraint (COMPILER-DIFF): the library condition is written through a byte offset
- * `ofs = id << 2`, an own local declared last (it takes the dead sfd register r28, and the inlined
- * SFSET_SetCond reuses it for its index). `SFLIB_libwork.cond[id] = val`, an index local and a
- * `Sint32 *` slot all give a different register assignment (verified: the unit drops to 53%). */
+ * `ofs = id << 2`, an own local declared last that the inlined SFSET_SetCond reuses for its index.
+ * `SFLIB_libwork.cond[id] = val`, an index local and a `Sint32 *` slot all give a different register
+ * assignment (verified: the unit drops to 53%). */
 Sint32 SFD_SetCond(SFD sfd, Sint32 id, Sint32 val) {
     SFD hn;
     Sint32 i;

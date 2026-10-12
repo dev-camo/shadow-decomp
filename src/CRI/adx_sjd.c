@@ -274,8 +274,8 @@ void adxsjd_decode_prep(ADXSJD sjd) {
 
 /* ADXB write callback: where and how much PCM may be written. */
 Sint16 *adxsjd_get_wr(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *trap) {
-    /* the typed copy of the `void *` handle is a kept user copy (`mr r31, r3`) that ranks s r31 above
-     * trap r30 / nsmpl r29; a typed parameter gets r29 below them */
+    /* the `void *` handle is copied into a typed local, which the original keeps (matching
+     * constraint: a typed parameter changes the register order) */
     ADXSJD s = obj;
     SJ sjo0;
     Sint32 i;

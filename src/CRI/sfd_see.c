@@ -237,10 +237,9 @@ static void sfsee_ExecEstimate(SFD sfd, SFSEE_HN *see) {
     }
 }
 
-/* sfd r31 / req r30 / wk r29: wk and req are locals of the inlined sfsee_ExecEstimate (their
- * vids sit above the helper's upd/pos and GetInputEndPos's temporaries, so wk drops to level 1 and
- * req, declared after wk, is coloured first); `see` with three uses keeps the req addi as a
- * two-step address. */
+/* Matching constraint: wk and req are locals of the inlined sfsee_ExecEstimate (req declared after
+ * wk), and `see` is a local with three uses; together they give the original register order and
+ * the two-step address of req. */
 void SFSEE_ExecServer(SFD sfd) {
     SFSEE_HN *see;
 

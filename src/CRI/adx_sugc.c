@@ -6,7 +6,7 @@
 #include "CRI/cvfs.h"
 
 typedef struct {
-    Sint32 rdmode;
+    Sint32 rdmode; /* 0x00 */
 } ADXGC_DVDFS_PRM;
 
 /* volatile: ADXGC_SetupDvdFs reads the build string pointer without using it. */

@@ -328,9 +328,8 @@ Sint32 SFBUF_RingAddWrite(SFD sfd, Sint32 n, Sint32 nbyte, Sint32 rsv) {
     return sfbuf_RingAddWriteSub(sfd, n, nbyte);
 }
 
-/* the handle address is computed AFTER the inf clear (in both Get functions): the n*0x74 product is
- * then the younger temporary and takes r0 while the zero takes the dying r5, and inf lives in r31
- * from the top */
+/* Matching constraint (both Get functions): the handle address is computed after inf is cleared,
+ * as in the original instruction order. */
 Sint32 SFBUF_RingGetRead(SFD sfd, Sint32 n, SFBUF_RINF *inf) {
     SFBUF_HN *hn;
     SJ sj;
@@ -429,8 +428,8 @@ static void sfbuf_SetSup(SFBUF_WORK *wk, SFBUF_RING *ring, SFBUF_SUP *sup, Sint3
     SFLIB_UnlockCs(&cs);
 }
 
-/* ring computed before the mode test through wk (two-step address, see AddRead); declared before
- * hn so it colours first (ring r29, hn r28) */
+/* Matching constraint: ring is computed through wk before the mode test (two-step address, see
+ * AddRead) and declared before hn, for the original register order. */
 Sint32 SFBUF_SetSupplySj(SFD sfd, SFBUF_SUP *sup) {
     Sint32 n;
     SFBUF_RING *ring;

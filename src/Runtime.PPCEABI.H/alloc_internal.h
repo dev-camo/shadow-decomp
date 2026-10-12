@@ -6,46 +6,46 @@
  * Twilight Princess decompilation. */
 
 typedef struct Block {
-    struct Block *prev;
-    struct Block *next;
-    unsigned long max_size;
-    unsigned long size;
+    struct Block *prev;     /* 0x00 */
+    struct Block *next;     /* 0x04 */
+    unsigned long max_size; /* 0x08 */
+    unsigned long size;     /* 0x0C */
 } Block;
 
 typedef struct SubBlock {
-    unsigned long size;
-    Block *block;
-    struct SubBlock *prev;
-    struct SubBlock *next;
+    unsigned long size;    /* 0x00 */
+    Block *block;          /* 0x04 */
+    struct SubBlock *prev; /* 0x08 */
+    struct SubBlock *next; /* 0x0C */
 } SubBlock;
 
 struct FixSubBlock;
 
 typedef struct FixBlock {
-    struct FixBlock *prev_;
-    struct FixBlock *next_;
-    unsigned long client_size_;
-    struct FixSubBlock *start_;
-    unsigned long n_allocated_;
+    struct FixBlock *prev_;     /* 0x00 */
+    struct FixBlock *next_;     /* 0x04 */
+    unsigned long client_size_; /* 0x08 */
+    struct FixSubBlock *start_; /* 0x0C */
+    unsigned long n_allocated_; /* 0x10 */
 } FixBlock;
 
 typedef struct FixSubBlock {
-    FixBlock *block_;
-    struct FixSubBlock *next_;
+    FixBlock *block_;          /* 0x00 */
+    struct FixSubBlock *next_; /* 0x04 */
 } FixSubBlock;
 
 typedef struct FixStart {
-    FixBlock *tail_;
-    FixBlock *head_;
+    FixBlock *tail_; /* 0x00 */
+    FixBlock *head_; /* 0x04 */
 } FixStart;
 
 typedef struct __mem_pool_obj {
-    Block *start_;
-    FixStart fix_start[6];
+    Block *start_;         /* 0x00 */
+    FixStart fix_start[6]; /* 0x04 */
 } __mem_pool_obj;
 
 typedef struct __mem_pool {
-    void *reserved[14];
+    void *reserved[14]; /* 0x00 */
 } __mem_pool;
 
 /* Every allocation is preceded by a header word: a fixed-size block stores its FixBlock pointer

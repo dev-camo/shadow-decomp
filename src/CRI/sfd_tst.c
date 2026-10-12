@@ -10,8 +10,8 @@ extern Sint32 sfadxt_stat;
 
 /* 64-bit time: count / unit */
 typedef struct {
-    Sint64 cnt;
-    Sint64 unit;
+    Sint64 cnt;  /* 0x00 */
+    Sint64 unit; /* 0x08 */
 } SFTST_TIME;
 
 #define SFTST_HIST_NUM 60
@@ -104,7 +104,7 @@ static void sftst_SubHist(SFTST tst, Sint32 sub) {
 static const Char8 sftst_msg_hdr[] =
     "tst, help_time_sec, help_time_msec, help_time_64, help_time, mt_max, master_time, out_time,  mt_ot, mtmax_ot,  diff_l_max, diff_l_min, diff_a_max, tst->diff_a_min, pastat, adjmode, resethist, excesserr, adj_limit, adj_front, adj_rear,  movave_1st, movave_2nd,  adxt_stat \n\n";
 typedef struct {
-    Char8 s[sizeof(sftst_msg_hdr)];
+    Char8 s[sizeof(sftst_msg_hdr)]; /* 0x00 */
 } SFTST_HDRSTR;
 static const Char8 sftst_msg_fmt[] =
     "%p, %ld, %ld, %08lX%08lX, %ld, %ld, %ld, %ld,   %ld, %ld,   %ld, %ld, %ld, %ld,   %ld, %ld,   %ld, %ld, %ld, %ld, %ld,   %ld, %ld,   %ld \n";
