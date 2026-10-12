@@ -10,7 +10,7 @@ extern "C" {
 typedef void (*DSPCallback)(void *task);
 typedef struct STRUCT_DSP_TASK DSPTaskInfo;
 
-typedef struct STRUCT_DSP_TASK {
+struct STRUCT_DSP_TASK {
     /* 0x00 */ volatile u32 state;
     /* 0x04 */ volatile u32 priority;
     /* 0x08 */ volatile u32 flags;
@@ -30,7 +30,7 @@ typedef struct STRUCT_DSP_TASK {
     /* 0x3C */ DSPTaskInfo *prev;
     /* 0x40 */ OSTime t_context;
     /* 0x48 */ OSTime t_task;
-} DSPTaskInfo;
+};
 
 u32 DSPCheckMailToDSP(void);
 u32 DSPCheckMailFromDSP(void);
