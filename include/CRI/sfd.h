@@ -897,6 +897,7 @@ Sint32 SFD_TermSupply(SFD sfd);
 Sint32 SFD_SetCond(SFD sfd, Sint32 id, Sint32 val);
 Sint32 SFD_GetHnStat(SFD sfd);
 Sint32 SFD_GetTime(SFD sfd, Sint32 *ncount, Sint32 *tscale);
+Sint32 SFD_EntrySeek(SFD sfd, SFSEE_WORK *wk);
 Sint32 SFD_SetSpeed(SFD sfd, Sint32 speed);
 Bool SFTIM_IsGetFrmTime(SFD sfd, SFD_VFRM *frm);
 Bool SFTIM_IsGetFrmTimeTunit(SFD sfd, Sint32 ftime, Sint32 tunit);
@@ -969,6 +970,8 @@ void SFMPV_RestoreCond(SFD sfd, void *buf, Sint32 n);
 Sint32 SFD_SetUsrTimeFn(SFD sfd, SFTIM_FN fn);
 Sint32 SFD_SetExtClockFn(SFD sfd, SFTIM_FN fn, Sint32 wrap, void *obj);
 Sint32 SFD_SetUsrIsSkipFn(SFD sfd, Bool (*fn)());
+/* Signature from the RE4 decompilation of sfd_tim.c (same 0x18-byte function). */
+Sint32 SFTIM_GetTime(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 Sint32 SFTIM_GetTimeSub(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 Bool SFTIM_IsStagnant(SFD sfd);
 Sint32 SFD_CmpTime(Sint32 a, Sint32 aunit, Sint32 b, Sint32 bunit);
