@@ -1,12 +1,12 @@
 #include "CRI/lsc.h"
 #include "CRI/svm.h"
 
-/* Chosen predicate projection; original name and return type unknown. */
+/* Returns whether the scheduler is in the error state. Name and return type unknown. */
 int fn_804030A8(LSC lsc) {
     return LSC_GetStat(lsc) == LSC_STAT_ERROR;
 }
 
-/* Chosen side-effect projection; original name unknown. Server type 6 is the MW idle server. */
+/* Moves the server manager to server type 6 (the MW idle server). Name unknown. */
 void fn_804030D4(void) {
     SVM_GotoSvrBorder(6);
 }

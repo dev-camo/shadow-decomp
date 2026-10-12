@@ -19,10 +19,14 @@ extern "C" {
 /* Vectors cleared by the static initialisers fn_8040CD60 and fn_8040D02C; used as fallbacks
  * when a vector is too short to normalise. lbl_805E07A0 occupies 0x10 bytes. */
 extern Fn8040Vector2 lbl_805F1358;
-/* 0.0f in .sdata2, shared by the 2D vector clear functions */
+/* float constants in .sdata2: lbl_805FAD78 (2D clear value), lbl_805FAD80 (3D clear value, also
+ * the length fn_8040CE74 returns for a too-short vector) */
 extern float lbl_805FAD78;
+extern float lbl_805FAD80;
 extern Fn8040Vector3 lbl_805E07A0;
 
+float fn_8000FEE4(
+    float value); /* not yet decompiled; returns the square root (inferred from use) */
 float fn_8040CCEC(const Fn8040Vector2 *vector);
 float fn_8040CF50(const Fn8040Vector3 *vector);
 void fn_800091D0(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
