@@ -699,6 +699,7 @@ config.libs = [
         "ar",
         [
             Object(Matching, "dolphin/ar.c"),
+            Object(Matching, "dolphin/arq.c"),
         ],
     ),
     DolphinLib(
