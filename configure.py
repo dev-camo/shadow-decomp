@@ -389,6 +389,7 @@ config.libs = [
                 extra_cflags=["-sdata 8"],
             ),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/CircleBuffer.c"),
+            Object(Matching, "PowerPC_EABI_Support/MetroTRK/MWTrace.c"),
         ],
     },
     {
