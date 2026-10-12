@@ -668,6 +668,7 @@ config.libs = [
         "gx",
         [
             Object(Matching, "dolphin/GXInit.c", cflags=cflags_sdk_rev2),
+            Object(Matching, "dolphin/GXFifo.c", cflags=cflags_sdk_rev2),
             Object(Matching, "dolphin/GXGeometry.c"),
             Object(Matching, "dolphin/GXLight.c"),
             Object(Matching, "dolphin/GXBump.c"),
