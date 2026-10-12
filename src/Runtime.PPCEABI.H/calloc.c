@@ -1,5 +1,8 @@
 /* MSL runtime malloc-pool entry points (alloc.c). */
-#include <string.h>
+#include <cstring>
+
+#include "alloc_internal.h"
+#include "critical_regions.h"
 
 #if defined(VERSION_GUPJ8P)
 #define ALLOCATOR_STATE lbl_805A5860
@@ -12,71 +15,65 @@
 #define ALLOCATOR_INITIALIZED lbl_805F12E8
 #endif
 
-/* The original BSS object is 0x38 bytes; its lazy initializer clears 0x34. */
-extern unsigned int ALLOCATOR_STATE[14];
+/* The malloc pool and its "initialised" flag (MSL get_malloc_pool's protopool and init). Their
+ * storage is not split out yet; the lazy initialiser clears the __mem_pool_obj part. */
+extern __mem_pool ALLOCATOR_STATE;
 extern unsigned char ALLOCATOR_INITIALIZED;
 
-extern void __begin_critical_region(int region);
-extern void __end_critical_region(int region);
-extern void *__pool_alloc_clear(void *pool, unsigned int size);
-extern void *__pool_realloc(void *pool, void *ptr, unsigned int size);
-extern void __pool_free(void *pool, void *ptr);
-extern void *__pool_alloc(void *pool, unsigned int size);
-
-void *calloc(unsigned int count, unsigned int size) {
+void *calloc(unsigned long count, unsigned long size) {
     void *ptr;
 
-    __begin_critical_region(1);
+    __begin_critical_region(malloc_pool_access);
     if (ALLOCATOR_INITIALIZED == 0) {
-        memset(ALLOCATOR_STATE, 0, 0x34);
+        memset(&ALLOCATOR_STATE, 0, sizeof(__mem_pool_obj));
         ALLOCATOR_INITIALIZED = 1;
     }
 
-    ptr = __pool_alloc_clear(ALLOCATOR_STATE, size * count);
-    __end_critical_region(1);
+    ptr = __pool_alloc_clear(&ALLOCATOR_STATE, size * count);
+    __end_critical_region(malloc_pool_access);
     return ptr;
 }
 
-void *realloc(void *ptr, unsigned int size) {
+void *realloc(void *ptr, unsigned long size) {
     void *result;
 
-    __begin_critical_region(1);
+    __begin_critical_region(malloc_pool_access);
     if (ALLOCATOR_INITIALIZED == 0) {
-        memset(ALLOCATOR_STATE, 0, 0x34);
+        memset(&ALLOCATOR_STATE, 0, sizeof(__mem_pool_obj));
         ALLOCATOR_INITIALIZED = 1;
     }
 
-    result = __pool_realloc(ALLOCATOR_STATE, ptr, size);
-    __end_critical_region(1);
+    result = __pool_realloc(&ALLOCATOR_STATE, ptr, size);
+    __end_critical_region(malloc_pool_access);
     return result;
 }
 
 void free(void *ptr) {
-    __begin_critical_region(1);
+    __begin_critical_region(malloc_pool_access);
     if (ALLOCATOR_INITIALIZED == 0) {
-        memset(ALLOCATOR_STATE, 0, 0x34);
+        memset(&ALLOCATOR_STATE, 0, sizeof(__mem_pool_obj));
         ALLOCATOR_INITIALIZED = 1;
     }
 
-    __pool_free(ALLOCATOR_STATE, ptr);
-    __end_critical_region(1);
+    __pool_free(&ALLOCATOR_STATE, ptr);
+    __end_critical_region(malloc_pool_access);
 }
 
-void *malloc(unsigned int size) {
+void *malloc(unsigned long size) {
     void *ptr;
 
-    __begin_critical_region(1);
+    __begin_critical_region(malloc_pool_access);
     if (ALLOCATOR_INITIALIZED == 0) {
-        memset(ALLOCATOR_STATE, 0, 0x34);
+        memset(&ALLOCATOR_STATE, 0, sizeof(__mem_pool_obj));
         ALLOCATOR_INITIALIZED = 1;
     }
 
-    ptr = __pool_alloc(ALLOCATOR_STATE, size);
-    __end_critical_region(1);
+    ptr = __pool_alloc(&ALLOCATOR_STATE, size);
+    __end_critical_region(malloc_pool_access);
     return ptr;
 }
 
-void *__pool_alloc_clear(void *pool, unsigned int size) {
+void *__pool_alloc_clear(__mem_pool *pool, unsigned long size) {
     void *ptr;
 
     ptr = __pool_alloc(pool, size);

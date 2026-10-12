@@ -1,5 +1,7 @@
 /* MSL runtime pool resize (alloc.c __pool_realloc); nonmatching research. */
-#include <string.h>
+#include <cstring>
+
+#include "alloc_internal.h"
 
 #define BLOCK_SIZE_MASK 0xFFFFFFF8
 #define BLOCK_FLAG_2 0x2
@@ -35,8 +37,6 @@ struct AllocatorArea {
     /* 0x0C */ unsigned int free_list_offset;
     /* 0x10 */ unsigned int active_block_count;
 };
-extern void *__pool_alloc(void *pool, unsigned int size);
-extern void __pool_free(void *pool, void *ptr);
 inline static unsigned int BlockSize(AllocatorBlock *block) {
     return block->size_flags & BLOCK_SIZE_MASK;
 }
@@ -74,7 +74,7 @@ inline static void UnlinkFreeBlock(AllocatorArea *area, unsigned int offset,
  * the unit is still NonMatching, so whether the repeated split/reinsert blocks reflect required
  * original source expansion or merely the current matching reconstruction remains provisional.
  */
-void *__pool_realloc(void *pool, void *ptr, unsigned int size) {
+void *__pool_realloc(__mem_pool *pool, void *ptr, unsigned long size) {
     AllocatorBlock *block;
     AllocatorBlock *following;
     unsigned int free_head_offset;
