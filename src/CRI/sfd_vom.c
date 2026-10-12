@@ -77,7 +77,7 @@ Sint32 SFVOM_Create(void) {
 Sint32 SFVOM_ExecServer(SFD sfd) {
     Sint32 term;
 
-    if (SFSET_GetCond(sfd, 5) == 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 0) {
         return 0;
     }
     if (SFTRN_GetTermFlg(sfd, 6) != 1) {
