@@ -194,6 +194,8 @@ static asm void RealMode(register u32 addr) {
 
 void __OSInitMemoryProtection(void) {
 #ifndef DEBUG
+    /* Matching constraint: stands in for stack space the original reserves for locals that are not
+     * known; without it the frame is smaller (verified: the unit drops to 62%). */
     u32 padding[9];
     u32 temp;
 #endif
