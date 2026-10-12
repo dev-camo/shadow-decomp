@@ -1,3 +1,5 @@
+/* CodeWarrior runtime exception-table fragments (MSL Gecko_ExceptionPPC.cp): registration of the
+ * executable's exception index and the lookup of a PC's exception record. Nonmatching research. */
 typedef struct ExceptionIndex {
     /* 0x00 */ unsigned int start;
     /* 0x04 */ unsigned int size_and_flags;

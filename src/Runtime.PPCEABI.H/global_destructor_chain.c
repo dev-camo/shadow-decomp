@@ -1,3 +1,5 @@
+/* CodeWarrior runtime global destructor chain (global_destructor_chain.c): objects registered by
+ * static constructors are destroyed in reverse order at exit. */
 typedef struct GlobalDestructorChain {
     /* 0x00 */ struct GlobalDestructorChain *next;
     /* 0x04 */ void (*destructor)(void *, int);
