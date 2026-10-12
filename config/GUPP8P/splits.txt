@@ -273,6 +273,14 @@ PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/printf.c:
 	.sdata      start:0x805EED68 end:0x805EED70
 	.sdata2     start:0x805FB880 end:0x805FB888
 
+PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/qsort.c:
+	.text       start:0x803AC49C end:0x803AC608
+
+PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/scanf.c:
+	.text       start:0x803AC608 end:0x803AD650
+	.rodata     start:0x80514F68 end:0x80514F90
+	.data       start:0x805696E0 end:0x805697B0
+
 PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/signal.c:
 	.text       start:0x803AD650 end:0x803AD710
 	.bss        start:0x805A6638 end:0x805A6650
