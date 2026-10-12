@@ -10,7 +10,7 @@ const char *__ARVersion = "<< Dolphin SDK - AR\tdebug build: Apr  5 2004 03:56:1
 const char *__ARVersion = "<< Dolphin SDK - AR\trelease build: Apr  5 2004 04:15:03 (0x2301) >>";
 #endif
 
-static void (*__AR_Callback)();
+static ARCallback __AR_Callback;
 static u32 __AR_Size;
 static u32 __AR_InternalSize;
 static u32 __AR_ExpansionSize;
@@ -27,8 +27,8 @@ static void __ARReadDMA(u32 mmem_addr, u32 aram_addr, u32 length);
 static void __ARChecksize(void);
 static void __ARClearArea(u32 start_addr, u32 length);
 
-ARQCallback ARRegisterDMACallback(ARQCallback callback) {
-    ARQCallback old_callback;
+ARCallback ARRegisterDMACallback(ARCallback callback) {
+    ARCallback old_callback;
     BOOL old;
 
     old_callback = __AR_Callback;
