@@ -4,6 +4,18 @@
 #include <abort_exit.h>
 #include <arith.h>
 #include <strtoul.h>
+#include <cstddef>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void* bsearch(const void* key, const void* base, size_t num, size_t size,
+              int (*compare)(const void*, const void*));
+
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,6 +27,7 @@ namespace std {
     using ::abort;
     using ::atoi;
     using ::atof;
+    using ::bsearch;
 }
 };
 #endif
