@@ -708,8 +708,8 @@ Bool SFH_AnlyHdrSiz(SFH sfh, Sint32 *val) {
     return sfh_GetHdrU32(sfh, SFH_HDR_SIZ_OFS, val);
 }
 
-/* Muxer tool version: the larger of the binary version bytes (0x38/0x39) and the "Ver.M.m" parsed */
-/* from the tool string. */
+/* Muxer tool version: the larger of the binary version bytes (0x38/0x39) and the "Ver.M.m" parsed
+ * from the tool string. */
 Bool SFH_AnlyHdrToolVer(SFH sfh, Sint32 *major, Sint32 *minor) {
     Char8 buf[SFH_HDR_TOOLSTR_LEN + 1];
     Uint8 *hdr;
