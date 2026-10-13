@@ -59,7 +59,7 @@ Sint32 SFMEM_Create(void) {
     return 0;
 }
 
-/* Each pass: the input buffer counts as prepared (the stream joint fills it asynchronously). */
+/* Each pass marks the input buffer as prepared; the caller-supplied stream joint provides the data. */
 Sint32 SFMEM_ExecServer(SFD sfd) {
     SFBUF_SetPrepFlg(sfd, sfd->tr[0].bufout, 1);
     return 0;
