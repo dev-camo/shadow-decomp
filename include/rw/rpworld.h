@@ -230,13 +230,14 @@ void fn_80462F94(RpGameCubeVertexFormat *format, RwInt32 index, RwUInt8 type, Rw
 void fn_80463104(RpGeometry *geometry, RpGameCubeVertexFormat *format); /* attach */
 void fn_804630C0(RpGameCubeVertexFormat *format);                       /* release */
 
-/* GameCube: a vertex descriptor of instanced data: the buffer of one GX vertex attribute and its
- * attribute, stride and component type */
+/* GameCube: a vertex descriptor of instanced data: the buffer of one GX vertex attribute, the
+ * attribute, its stride, and how it is sent (the GXSetVtxDesc mode); the component format comes
+ * from the geometry's RpGameCubeVertexFormat */
 typedef struct RpGameCubeVertexDescriptor {
     /* 0x0 */ void *data;
     /* 0x4 */ RwUInt8 attribute; /* GX_VA_* */
     /* 0x5 */ RwUInt8 stride;
-    /* 0x6 */ RwUInt8 type;
+    /* 0x6 */ RwUInt8 type; /* GXAttrType: the descriptor mode, e.g. GX_INDEX8 or GX_INDEX16 */
     /* 0x7 */ RwUInt8 field_0x7;
 } RpGameCubeVertexDescriptor;
 
