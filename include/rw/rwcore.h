@@ -81,6 +81,20 @@ typedef struct RwLine {
     RwV3d end;
 } RwLine;
 
+/* A matrix: three axes and a position (0x40 bytes) */
+typedef struct RwMatrix {
+    /* 0x00 */ RwV3d right;
+    /* 0x0C */ RwUInt32 flags;
+    /* 0x10 */ RwV3d up;
+    /* 0x1C */ RwUInt32 pad1;
+    /* 0x20 */ RwV3d at;
+    /* 0x2C */ RwUInt32 pad2;
+    /* 0x30 */ RwV3d pos;
+    /* 0x3C */ RwUInt32 pad3;
+} RwMatrix;
+
+#define rwMATRIXTYPEORTHONORMAL 0x3
+
 typedef struct RwSphere {
     RwV3d center;
     RwReal radius;
@@ -105,6 +119,7 @@ RwStream *fn_80480ED0(RwStream *stream, const void *buffer, RwUInt32 length);
 RwStream *fn_804810FC(RwStream *stream, RwUInt32 offset);
 
 /* maths and intersection tests (inferred from their use) */
+RwReal fn_80482340(RwReal x); /* sqrt(x) */
 RwReal fn_80482394(RwReal x); /* 1 / sqrt(x) */
 
 /* whether a triangle meets a box */
