@@ -49,10 +49,10 @@ typedef struct RpCollisionTriangle {
     /* 0x1C */ RwV3d *vertices[3];
 } RpCollisionTriangle;
 
-/* the plugin's registration with the engine, worlds, world sectors and geometries */
+/* the plugin's registration with the engine, atomics, world sectors and geometries */
 extern RwInt32 lbl_805F1410; /* open count */
 extern RwInt32 lbl_805F1414; /* engine plugin offset */
-extern RwInt32 lbl_805F1418; /* world plugin offset */
+extern RwInt32 lbl_805F1418; /* atomic plugin offset */
 extern RwInt32 lbl_805F141C; /* geometry plugin offset */
 extern RwInt32 lbl_805F1420; /* world sector plugin offset (the intersection tests read it there) */
 
