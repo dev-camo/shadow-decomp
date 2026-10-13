@@ -7,8 +7,9 @@
 extern "C" {
 #endif
 
-/* From <dolphin/os.h>, which cannot be included next to the MSL headers: dolphin/types.h pulls in
- * the game's libc headers, whose FILE clashes with MSL's. */
+/* From <dolphin/os.h>, which cannot be included with the MSL include paths: dolphin/types.h pulls
+ * in the game's libc facade headers, which need <stdarg.h>, <stddef.h> and cmath.h from
+ * include/libc. */
 #define OS_CONSOLE_TDEV 0x20000000
 unsigned long OSGetConsoleType(void);
 
