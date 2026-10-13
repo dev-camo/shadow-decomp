@@ -19,7 +19,7 @@ typedef struct RtQuat {
 
 /* An animation: its frames and their interpolation scheme */
 typedef struct RtAnimAnimation {
-    /* 0x00 */ void *interpInfo;
+    /* 0x00 */ struct RtAnimInterpolatorInfo *interpInfo;
     /* 0x04 */ RwInt32 numFrames;
     /* 0x08 */ RwInt32 flags;
     /* 0x0C */ RwReal duration;
@@ -81,11 +81,22 @@ typedef struct RtAnimInterpolatorInfo {
     /* 0x2C */ RwInt32 customDataSize;
 } RtAnimInterpolatorInfo;
 
-/* An animation interpolator; only the member used here is mapped */
+/* An animation interpolator (0x4C bytes), followed by one interpolated frame per node; only the
+ * members used so far are mapped */
 typedef struct RtAnimInterpolator {
-    /* 0x00 */ RwUInt8 field_0x0[0x20];
+    /* 0x00 */ RtAnimAnimation *pCurrentAnim;
+    /* 0x04 */ RwUInt8 field_0x4[0x1C];
     /* 0x20 */ RwInt32 maxInterpKeyFrameSize;
+    /* 0x24 */ RwInt32 currentInterpKeyFrameSize;
+    /* 0x28 */ RwInt32 field_0x28;
+    /* 0x2C */ RwInt32 numNodes;
+    /* 0x30 */ RwUInt8 field_0x30[0xC];
+    /* 0x3C */ RtAnimKeyFrameApplyCallBack keyFrameApplyCB; /* of the current animation's scheme */
+    /* 0x40 */ RwUInt8 field_0x40[0xC];
 } RtAnimInterpolator;
+
+/* the interpolated frames of an interpolator's nodes */
+#define RTANIMINTERPOLATORFRAMES(interpolator) ((RwUInt8 *)((interpolator) + 1))
 
 /* A node of a hierarchy (0x10 bytes) */
 typedef struct RpHAnimNodeInfo {
@@ -115,9 +126,22 @@ typedef struct RpHAnimFrameExtension {
 } RpHAnimFrameExtension;
 
 /* animation toolkit (inferred) */
-RwBool fn_80477344(RtAnimInterpolatorInfo *interpolatorInfo);
+RwBool fn_80477344(RtAnimInterpolatorInfo *interpolatorInfo); /* registers a keyframe scheme */
+/* creates an animation of a registered scheme */
+RtAnimAnimation *fn_80477468(RwInt32 typeID, RwInt32 numFrames, RwInt32 flags, RwReal duration);
+RwBool fn_8047759C(RtAnimAnimation *animation);  /* destroy */
+RwInt32 fn_804779A8(RtAnimAnimation *animation); /* the number of nodes it animates */
 RtAnimInterpolator *fn_804779DC(RwInt32 numNodes, RwInt32 maxInterpKeyFrameSize);
 void fn_80477A8C(RtAnimInterpolator *interpolator);
+RwBool fn_80477AB8(RtAnimInterpolator *interpolator, RtAnimAnimation *animation); /* set current */
+/* copies the interpolated frames of one interpolator to another */
+RwBool fn_80477BF0(RtAnimInterpolator *dst, RtAnimInterpolator *src);
+RwBool fn_80477ED4(RtAnimInterpolator *interpolator, RwReal time); /* set the current time */
+RwBool fn_804782E8(RtAnimInterpolator *interpolator, RwReal time); /* advance the current time */
+/* the animation stream: size, read and write */
+RwUInt32 fn_80477978(RtAnimAnimation *animation);
+RtAnimAnimation *fn_804775CC(RwStream *stream);
+RwBool fn_80477860(RtAnimAnimation *animation, RwStream *stream);
 
 /* hierarchies */
 RpHAnimHierarchy *fn_804472AC(RwInt32 numNodes, RwUInt32 *nodeFlags, RwInt32 *nodeIDs,
