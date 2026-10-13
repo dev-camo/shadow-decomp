@@ -305,9 +305,11 @@ RwUInt32 fn_8046B094(RpGameCubeVertexDescBuilder *builder, RwInt32 numPrimitives
 RwUInt32 fn_8046EEA0(RpGameCubeVertexDescBuilder *builder, RpGameCubeVertexSource *source);
 void fn_8046B0E0(void *displayListRecord, RwInt32 meshIndex, RwUInt32 size, void *data);
 RwInt32 fn_8046ACBC(RpGameCubeVertexDescBuilder *builder);
+/* triStrip: the geometry's tristrip flag, selecting strip handling; flag: forwarded to the winding
+ * and degenerate triangle handling (meaning not established) */
 void fn_8046E594(RpGameCubeVertexDescBuilder *builder, void *displayListRecord,
-                 RpGameCubeIndexSource *indices, RwUInt32 numIndices, RwInt32 firstIndex,
-                 RwInt32 vertexFormat, RwInt32 numPrimitives, RwInt32 primitive, RwInt32 flags);
+                 RpGameCubeIndexSource *indices, RwUInt32 numIndices, RwInt32 triStrip,
+                 RwInt32 vertexFormat, RwInt32 flag, RwInt32 primitive, RwInt32 flags);
 void fn_8046F208(RpGameCubeVertexDescBuilder *builder, RpGameCubeInstanceData *instance,
                  RpGameCubeVertexSource *source, void *vertexData);
 void fn_8046F6CC(RpGameCubeVertexDescBuilder *builder, RpGameCubeInstanceData *instance,
