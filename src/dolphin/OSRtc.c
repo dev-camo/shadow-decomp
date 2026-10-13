@@ -220,7 +220,6 @@ int __OSCheckSram(void) {
     u16 checkSum;
     u16 checkSumInv;
     OSSram *sram;
-    int unused;
 
     ASSERTLINE(466, Scb.locked);
 
@@ -305,7 +304,7 @@ u32 OSGetSoundMode(void) {
 
 void OSSetSoundMode(u32 mode) {
     OSSram *sram;
-    int unused;
+    int unused; // keeps the 0x20-byte stack frame (0x18 without it)
 
     ASSERTLINE(617, mode == OS_SOUND_MODE_MONO || mode == OS_SOUND_MODE_STEREO);
     mode *= 4;
@@ -332,7 +331,7 @@ u32 OSGetProgressiveMode(void) {
 
 void OSSetProgressiveMode(u32 on) {
 #ifndef DEBUG
-    u32 padding[1];
+    u32 padding[1]; // keeps the 0x20-byte stack frame (0x18 without it)
 #endif
     OSSram *sram;
 
@@ -367,7 +366,7 @@ u32 OSGetVideoMode(void) {
 
 void OSSetVideoMode(u32 mode) {
     OSSram *sram;
-    int unused;
+    int unused; // keeps the 0x20-byte stack frame (0x18 without it)
 
     ASSERTLINE(731, OS_VIDEO_MODE_NTSC <= mode && mode <= OS_VIDEO_MODE_MPAL);
 
@@ -396,7 +395,7 @@ u8 OSGetLanguage(void) {
 
 void OSSetLanguage(u8 language) {
     OSSram *sram = __OSLockSram();
-    int unused;
+    int unused; // keeps the 0x20-byte stack frame (0x18 without it)
 
     if (language == sram->language) {
         __OSUnlockSram(0);
@@ -415,7 +414,7 @@ u8 __OSGetBootMode(void) {
 
 void __OSSetBootMode(u8 ntd) {
     OSSram *sram;
-    int unused;
+    int unused; // keeps the 0x20-byte stack frame (0x18 without it)
 
     ntd &= 0x80;
     sram = __OSLockSram();
@@ -440,7 +439,7 @@ u32 OSGetEuRgb60Mode(void) {
 
 void OSSetEuRgb60Mode(u32 on) {
 #ifndef DEBUG
-    u32 padding[1];
+    u32 padding[1]; // keeps the 0x20-byte stack frame (0x18 without it)
 #endif
     OSSram *sram;
 
@@ -493,7 +492,7 @@ u16 OSGetGbsMode(void) {
 
 void OSSetGbsMode(u16 mode) {
 #ifndef DEBUG
-    u32 padding[1];
+    u32 padding[1]; // keeps the 0x20-byte stack frame (0x18 without it)
 #endif
     OSSramEx *sram;
 
