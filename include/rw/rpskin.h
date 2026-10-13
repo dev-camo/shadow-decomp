@@ -52,9 +52,9 @@ typedef struct RpSkin {
     /* 0x18 */ RwMatrixWeights *vertexBoneWeights;
     /* 0x1C */ void *field_0x1C; /* GameCube instance data */
     /* 0x20 */ void *field_0x20;
-    /* 0x24 */ RwUInt8 *field_0x24; /* GameCube: an allocated stream buffer */
-    /* 0x28 */ RwUInt8 *field_0x28; /* GameCube: an aligned buffer inside field_0x24 */
-    /* 0x2C */ RwUInt32 field_0x2C;
+    /* 0x24 */ RwUInt8 *field_0x24;  /* GameCube: an allocated stream buffer */
+    /* 0x28 */ RwUInt8 *field_0x28;  /* GameCube: an aligned buffer inside field_0x24 */
+    /* 0x2C */ RwInt32 pipelineType; /* which skin pipeline renders it (inferred) */
     /* 0x30 */ SkinSplitData skinSplitData;
     /* 0x48 */ void *unaligned; /* the allocation of the bone ids, matrices, indices and weights */
 } RpSkin;
@@ -77,7 +77,8 @@ typedef struct SkinGlobals {
     /* 0x18 */ RwFreeList *freeList; /* RpSkin entries */
     /* 0x1C */ RwUInt32 field_0x1C;
     /* 0x20 */ RwInt32 numInstances; /* engine plugin constructions */
-    /* 0x24 */ RwUInt8 field_0x24[0x1C];
+    /* 0x24 */ void *pipelines[3];   /* by skin pipeline type (inferred) */
+    /* 0x30 */ RwUInt8 field_0x30[0x10];
 } SkinGlobals;
 
 extern SkinGlobals lbl_8056D708;
@@ -103,6 +104,13 @@ RpSkin *fn_8044CD4C(RpSkin *skin);
 RwUInt32 *fn_8044CDBC(RpSkin *skin);
 
 /* GameCube (inferred from their use) */
+RpAtomic *fn_8044D924(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh); /* instance */
+RpAtomic *fn_8044DA3C(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh); /* reinstance */
+RpAtomic *fn_8044DE74(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh); /* render */
+/* loads a bone matrix into the GX position (and normal) matrix at index */
+void fn_8044DC4C(RwMatrix *matrix, RwUInt32 index, RwBool normals);
+/* loads the bone matrices of a split mesh */
+void fn_8044DD1C(RpSkin *skin, RwInt32 meshIndex, RwBool normals);
 RpGeometry *fn_8044E6BC(RpGeometry *geometry);                 /* instances a skinned geometry */
 RpGeometry *fn_8044E758(RpGeometry *geometry);                 /* releases a skin's instance data */
 RwInt32 fn_8044E7D0(RpGeometry *geometry);                     /* native stream size */

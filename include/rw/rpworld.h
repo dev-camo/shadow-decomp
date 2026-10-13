@@ -99,7 +99,8 @@ RpAtomic *fn_80455EB4(RpAtomic *atomic);
 
 /* An atomic (0x70 bytes) */
 struct RpAtomic {
-    /* 0x00 */ RwUInt8 field_0x0[0x18];
+    /* 0x00 */ RwObject object; /* the parent is the atomic's frame */
+    /* 0x08 */ RwUInt8 field_0x8[0x10];
     /* 0x18 */ RpGeometry *geometry;
     /* 0x1C */ RwUInt8 field_0x1C[0x2C];
     /* 0x48 */ RpAtomicCallBackRender renderCallBack;
@@ -229,9 +230,27 @@ void fn_80462F94(RpGameCubeVertexFormat *format, RwInt32 index, RwUInt8 type, Rw
 void fn_80463104(RpGeometry *geometry, RpGameCubeVertexFormat *format); /* attach */
 void fn_804630C0(RpGameCubeVertexFormat *format);                       /* release */
 
+/* GameCube: one batch of instanced data (inferred) */
+typedef struct RpGameCubeBatch {
+    /* 0x0 */ RwUInt32 field_0x0;
+    /* 0x4 */ RwUInt32 field_0x4;
+} RpGameCubeBatch;
+
+/* GameCube: the instanced data of a geometry that follows its resource entry; only the mapped
+ * members are used (inferred) */
+typedef struct RpGameCubeInstanceData {
+    /* 0x00 */ RwUInt16 syncToken; /* GX draw sync token of the last draw */
+    /* 0x02 */ RwUInt8 field_0x2[0x6];
+    /* 0x08 */ RwInt32 numBatches;
+    /* 0x0C */ RwUInt8 field_0xC[0x8];
+    /* 0x14 */ RpGameCubeBatch batches[1]; /* numBatches entries */
+} RpGameCubeInstanceData;
+
+extern RwUInt16 lbl_805EDF40; /* the next GX draw sync token */
+
 /* GameCube: what the all-in-one pipeline's lighting callback leaves for its render callback */
 typedef struct RpGameCubeRenderMesh {
-    /* 0x00 */ RwUInt32 field_0x0;
+    /* 0x00 */ RwResEntry *repEntry;
     /* 0x04 */ RpMeshHeader *meshHeader; /* of the geometry; its meshes follow it */
     /* 0x08 */ RwInt32 geometryFlags;
     /* 0x0C */ RwRGBAReal ambientColor; /* (inferred) */
@@ -240,19 +259,37 @@ typedef struct RpGameCubeRenderMesh {
     /* 0x24 */ RwInt32 numLights;
 } RpGameCubeRenderMesh;
 
+typedef RpAtomic *(*RpGameCubeInstanceCallBack)(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
 typedef RpAtomic *(*RpGameCubeLightingCallBack)(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
 typedef RpAtomic *(*RpGameCubeRenderCallBack)(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
 
 /* creates an atomic all-in-one pipeline with the plugin's callbacks, which receive the atomic
  * being rendered (inferred) */
-void *fn_8046335C(RwUInt32 pluginID, RwUInt32 pluginData, void *instanceCallBack,
-                  void *reinstanceCallBack, RpGameCubeLightingCallBack lightingCallBack,
+void *fn_8046335C(RwUInt32 pluginID, RwUInt32 pluginData,
+                  RpGameCubeInstanceCallBack instanceCallBack,
+                  RpGameCubeInstanceCallBack reinstanceCallBack,
+                  RpGameCubeLightingCallBack lightingCallBack,
                   RpGameCubeRenderCallBack renderCallBack);
 RpAtomic *fn_80463428(RpAtomic *atomic,
                       RpGameCubeRenderMesh *renderMesh); /* the default lighting */
 void fn_8049B800(void *pipeline);                        /* destroys a pipeline */
 
 /* GameCube render helpers (inferred from their use) */
+/* sets the vertex descriptors and formats for a vertex format and render mesh */
+void fn_80462C30(RpGameCubeVertexFormat *format, RpGameCubeRenderMesh *renderMesh);
+RwInt32 fn_80462C28(void);                            /* a GameCube render mode (lbl_805EDDD8) */
+void fn_80462C20(RwInt32 mode);                       /* sets it */
+void fn_804A2F08(void);                               /* resets the material effects render state */
+RwBool fn_804A8478(RpGameCubeRenderMesh *renderMesh); /* whether a mesh uses material effects */
+/* builds the material effects data of a skinned geometry with binormals and tangents */
+void fn_804A8120(RpGameCubeRenderMesh *renderMesh, RpGameCubeVertexFormat *format,
+                 RwInt32 numVertices);
+/* renders a mesh with material effects */
+void fn_804A457C(RpMesh *mesh, RpGameCubeBatch *batch, RpAtomic *atomic, RwMatrix *ltm,
+                 RpGameCubeRenderMesh *renderMesh);
+RwBool fn_804A2064(RpAtomic *atomic);        /* whether an atomic has material effects */
+extern RpGameCubeVertexFormat *lbl_805F16B8; /* the vertex format of material effects geometries */
+
 void fn_804950AC(RwMatrix *matrix, RwBool normals);  /* loads the position (and normal) matrix */
 void fn_80499C38(RwTexture *texture, RwInt32 stage); /* sets a texture */
 void fn_80497778(RwBool opaque);                     /* sets alpha compare for opaque textures */
