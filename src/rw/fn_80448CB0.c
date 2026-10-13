@@ -72,7 +72,7 @@ RpAtomic *fn_80448D04(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
     RwUInt32 platFlags;
     RpPTankAtomicExtPrv *ptank;
     RwRGBA ambient;
-    RpGameCubeMeshInstance *instance;
+    RpMeshHeader *meshHeader;
     RwTexture *texture;
 
     ptank = PTANKEXT(atomic);
@@ -153,9 +153,9 @@ RpAtomic *fn_80448D04(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
         GXSetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
     }
 
-    instance = renderMesh->meshInstance;
+    meshHeader = renderMesh->meshHeader;
     if (renderMesh->geometryFlags & (rpGEOMETRYTEXTURED | rpGEOMETRYTEXTURED2)) {
-        texture = instance->material->texture;
+        texture = ((RpMesh *)(meshHeader + 1))->material->texture;
         fn_80499C38(texture, 0);
         if (texture != NULL && texture->raster != NULL) {
             fn_80497778(
