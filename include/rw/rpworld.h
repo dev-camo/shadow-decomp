@@ -196,8 +196,8 @@ RwInt32 fn_8045F338(RwUInt32 pluginID, RwPluginDataChunkReadCallBack read,
                     RwPluginDataChunkWriteCallBack write, RwPluginDataChunkGetSizeCallBack getSize);
 
 /* GameCube: the vertex format of a geometry (0x18 bytes, reference counted), kept in the geometry
- * plugin data at lbl_805F1520. The types and fractional bits are GX component types and shifts
- * (inferred). */
+ * plugin data at lbl_805F1520. The types are GX component types and the position and texture
+ * coordinate fractions are GX fractional bits (inferred). */
 typedef struct RpGameCubeVertexFormat {
     /* 0x00 */ RwUInt8 posType;
     /* 0x01 */ RwUInt8 normalType;
@@ -205,7 +205,7 @@ typedef struct RpGameCubeVertexFormat {
     /* 0x0A */ RwUInt8 colorType;
     /* 0x0B */ RwUInt8 field_0xB;
     /* 0x0C */ RwUInt8 posFrac;
-    /* 0x0D */ RwUInt8 normalFrac;
+    /* 0x0D */ RwUInt8 normalNbt; /* nonzero: normals, binormals and tangents (inferred) */
     /* 0x0E */ RwUInt8 texCoordFrac[8];
     /* 0x16 */ RwUInt16 refCount;
 } RpGameCubeVertexFormat;
@@ -218,7 +218,7 @@ extern RwInt32 lbl_805F1520; /* geometry plugin offset of the vertex format */
 /* vertex formats (inferred from their use) */
 RpGameCubeVertexFormat *fn_8046301C(void);                                    /* create */
 void fn_80462F7C(RpGameCubeVertexFormat *format, RwUInt8 type, RwUInt8 frac); /* positions */
-void fn_80462F88(RpGameCubeVertexFormat *format, RwUInt8 type, RwUInt8 frac); /* normals */
+void fn_80462F88(RpGameCubeVertexFormat *format, RwUInt8 type, RwUInt8 nbt);  /* normals */
 void fn_80462FA4(RpGameCubeVertexFormat *format, RwUInt8 type);               /* colors */
 /* texture coordinates of the 1-based set index */
 void fn_80462F94(RpGameCubeVertexFormat *format, RwInt32 index, RwUInt8 type, RwUInt8 frac);
