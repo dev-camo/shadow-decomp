@@ -81,8 +81,9 @@ static inline void SkinWaitDrawSync(RwUInt16 *syncToken) {
     }
 }
 
-/* Destroys the instanced data of a skinned geometry, keeping its vertex buffers for the next
- * instancing */
+/* Destroy callback of a skinned geometry's instance data, run before its resource entry is freed:
+ * frees the separate entry the skinned vertices are computed into, restores the borrowed bind-pose
+ * buffers to the vertex descriptors and clears the skin's or atomic's pointers to them */
 void fn_8044CDC4(RwResEntry *repEntry) {
     RpGameCubeInstanceData *instance = (RpGameCubeInstanceData *)(repEntry + 1);
     void *owner;
