@@ -174,6 +174,13 @@ dolphin/fstload.c:
 	.sdata      start:0x805EE1B0 end:0x805EE1C0
 	.sbss       start:0x805F1620 end:0x805F1630
 
+dolphin/vi.c:
+	.text       start:0x8037DA68 end:0x8037FC44
+	.data       start:0x80562368 end:0x80562750
+	.bss        start:0x80587188 end:0x805872D0
+	.sdata      start:0x805EE1C0 end:0x805EE1D0
+	.sbss       start:0x805F1630 end:0x805F1698
+
 dolphin/Pad.c:
 	.text       start:0x8037FC44 end:0x80381658
 	.data       start:0x80562750 end:0x805627A8
