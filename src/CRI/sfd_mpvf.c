@@ -106,7 +106,8 @@ Bool SFD_IsNextFrmReady(SFD sfd) {
 }
 #pragma dont_inline off
 
-/* the earliest standby frame; *lastflg is set when it is the last one of a terminated stream */
+/* Returns the earliest standby or reference frame not yet handed out (x58 == -1), or 0 when it is
+ * the only one while the stream is not terminated and gopstat is 0. */
 SFMPV_FRM *SFMPVF_HoldFrm(SFD sfd) {
     Sint32 nfrm;
     Sint32 n;

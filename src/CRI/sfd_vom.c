@@ -1,7 +1,7 @@
 /* CRI Sofdec manual video output driver (sfd_vom.c, SFD_tr_vo_manu, driver slot 6): the
- * application pulls frames itself (SFD_GetFrm / SFD_RelFrm). GetRead hands out the next decoded
- * frame from the frame table buffer only when the clock says its display time has come, AddRead
- * returns it to the video decoder's pool. */
+ * application pulls frames itself (SFD_GetFrm / SFD_RelFrm). GetRead forwards to the frame table
+ * buffer for the next decoded frame (in STBY/PLAYING only; no time check here), AddRead returns it
+ * to the video decoder's pool. */
 #include "CRI/sfd.h"
 
 /* No seek (0). */

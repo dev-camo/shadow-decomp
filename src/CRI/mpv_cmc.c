@@ -76,8 +76,8 @@ void MPVCMC_InitObj(MPV_OBJ *mpv) {
     }
 }
 
-/* Library table of the 8x8 one-reference kernels by half-pel case (1p, H2, V2, 4p; repeated for
- * the second reference).
+/* Library table of the 8x8 one-reference kernels by half-pel case: 1p, H2, V2, 4p, then 1p, H2,
+ * V2 and V2 again (entry 7 repeats V2 rather than 4p).
  */
 void MPVCMC_Init(void) {
     mpvcmc_oneref[0] = MPVMC08_OneRef1p_TuneC;
