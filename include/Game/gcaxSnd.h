@@ -274,7 +274,7 @@ typedef struct GcaxWork {
     /* 0x10120 */ f32 field_0x10120[6];
     /* 0x10138 */ u8 field_0x10138[0x3900];
     /* 0x13A38 */ u8 field_0x13A38;
-    /* 0x13A3C */ u8 field_0x13A3C[0x8];
+    /* 0x13A39 */ u8 field_0x13A39[0xB];
     /* 0x13A44 */ f32 field_0x13A44;
 } GcaxWork;
 
