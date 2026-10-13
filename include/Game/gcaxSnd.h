@@ -442,7 +442,7 @@ s32 fn_8043EBFC(void);
 s32 fn_8043EC3C(GcaxPlayer *player);
 s32 fn_8043ECDC(GcaxPlayer *player);
 s32 fn_8043ED7C(GcaxPlayer *player, s8 volume, s32 time);
-s32 fn_8043EE74(GcaxPlayer *player, s16 semitones, s32 time);
+s32 fn_8043EE74(GcaxPlayer *player, s16 steps, s32 time);
 s32 fn_8043EF48(void);
 s32 fn_8043EF50(GcaxPlayer *player);
 s32 fn_8043EFF0(GcaxPlayer *player, s8 bank, s8 song, s8 priority);
