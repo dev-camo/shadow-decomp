@@ -1270,8 +1270,9 @@ void fn_8043B794(GcaxList *notes) {
     }
 }
 
-/* Moves every voice of the player's notes into its release phase, stopping voices still in
- * their attack or decay. */
+/* For every voice of the player's notes: a voice in envelope state 4 or later is silenced (level
+ * 0, -96 dB, state 5); a voice in an earlier state is stopped by fn_8043BE04, which stops its AX
+ * voice and releases its MIX channel. */
 void fn_8043B6D0(GcaxList *notes) {
     GcaxNode *ref;
 
@@ -1298,8 +1299,8 @@ void fn_8043B6D0(GcaxList *notes) {
     }
 }
 
-/* Releases the player's notes whose voices have all finished (stopped by AX, or released and
- * faded below 0.2 dB). */
+/* Releases the player's notes whose voices have all finished: stopped by AX, or in envelope
+ * state 5 with a normalized level (0 to 1; fn_8043BE6C gives (level - 1) * 96 dB) below 0.2. */
 void fn_8043B5FC(GcaxList *notes) {
     int playing;
     GcaxNode *ref;

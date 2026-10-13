@@ -146,7 +146,7 @@ typedef struct GcaxVoice {
     /* 0x07E */ AXPBADPCMLOOP adpcmLoop;
     /* 0x084 */ AXPBMIX mix;
     /* 0x0A8 */ f32 time;
-    /* 0x0AC */ f32 envLevel; /* dB */
+    /* 0x0AC */ f32 envLevel; /* normalized 0 to 1 */
     /* 0x0B0 */ f32 envGain;
     /* 0x0B4 */ f32 attackTime;
     /* 0x0B8 */ f32 decayTime;
