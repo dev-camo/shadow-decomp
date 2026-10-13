@@ -185,7 +185,9 @@ Sint32 gcCiGetStat(GCCI gcci) {
     return gcci->stat;
 }
 
-/* Cancels a read in flight and waits (up to 2 s) for the command block to finish. */
+/* Cancels a read in flight: DVDCancel is synchronous (it may sleep until the drive reports a final
+ * state, with no timeout of its own); the polling loop that follows waits up to 2 s for the
+ * command block to finish. */
 void gcCiStopTr(void *hn) {
     GCCI gcci;
     Sint32 ret;
