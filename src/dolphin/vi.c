@@ -358,7 +358,7 @@ void __VIInit(VITVMode mode) {
     tm = getTiming(mode);
     __VIRegs[1] = 2;
 
-    // why?
+    // Hold the reset bit for a short busy-wait before clearing it.
     for (a = 0; a < 1000; a++) {
     }
 
@@ -573,8 +573,6 @@ static void setInterruptRegs(VITiming *tm) {
     MARK_CHANGED(25);
     regs[24] = vct | 0x1000;
     MARK_CHANGED(24);
-
-    vct; // fixes regalloc
 }
 
 static void setPicConfig(u16 fbSizeX, VIXFBMode xfbMode, u16 panPosX, u16 panSizeX, u8 *wordPerLine,
