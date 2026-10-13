@@ -24,8 +24,7 @@ static void DLsetdelay(AXFX_REVSTD_DELAYLINE *dl, s32 lag) {
     }
 }
 
-/* `<< 2` (not `* 4`) in the two inlined size expressions: with `* 4` MWCC allocates `rv` to r23 instead of
- * r31 in ReverbSTDCreate (the temporaries' virtual-register order changes). */
+/* The size expressions use `<< 2`; `* 4` changes ReverbSTDCreate's code. */
 static int DLcreate(AXFX_REVSTD_DELAYLINE *dl, s32 max_length) {
     dl->length = (max_length * 4);
     dl->inputs = __AXFXAlloc(max_length << 2);
@@ -191,7 +190,7 @@ asm static void HandleReverb(register s32* sptr, register AXFX_REVSTD_WORK* rv) 
 	lfs f8, AXFX_REVSTD_WORK.level(rv)
 	fmuls f3, f8, f9
 	fsubs f4, f9, f3
-	lis r30, 0x4330 // 176.0f (0x43300000)
+	lis r30, 0x4330 // high word of the int-to-double conversion constant
 	stw r30, 80(r1)
 	li r5, 0
 L_00000638:
@@ -209,7 +208,7 @@ L_00000638:
 	slwi r22, r22, 2
 	add r22, r22, r27
 	cmpwi cr7, r31, 0
-	mulli r31, r5, 0x28 // sizeof(AXFX_REVSTD_DELAYLINE * 2)
+	mulli r31, r5, 0x28 // 2 * sizeof(AXFX_REVSTD_DELAYLINE)
 	addi r29, rv, AXFX_REVSTD_WORK.C
 	add r29, r29, r31
 	addi r30, rv, AXFX_REVSTD_WORK.AP
@@ -374,7 +373,7 @@ L_000008B0:
 L_000008B8:
 	fmuls f14, f14, f6
 	fmadds f14, f11, f7, f14
-	mulli r31, r5, 0x28 // sizeof(AXFX_REVSTD_DELAYLINE * 2)
+	mulli r31, r5, 0x28 // 2 * sizeof(AXFX_REVSTD_DELAYLINE)
 	fmadds f9, f2, f18, f14
 	fmr f7, f14
 	addi r29, rv, AXFX_REVSTD_WORK.C
