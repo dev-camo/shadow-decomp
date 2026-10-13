@@ -182,6 +182,17 @@ RpMaterial *fn_8045B13C(void);                                     /* create */
 RwBool fn_8045B1F4(RpMaterial *material);                          /* destroy */
 RpMaterial *fn_8045B270(RpMaterial *material, RwTexture *texture); /* set texture */
 
+/* plugin registration with lights (inferred from RenderWare's attach order) and materials (the
+ * registry is the one the material constructor fn_8045B13C uses) */
+RwInt32 fn_8045AAA0(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructor,
+                    RwPluginObjectDestructor destructor, RwPluginObjectCopy copy);
+RwInt32 fn_8045AAE0(RwUInt32 pluginID, RwPluginDataChunkReadCallBack read,
+                    RwPluginDataChunkWriteCallBack write, RwPluginDataChunkGetSizeCallBack getSize);
+RwInt32 fn_8045B2CC(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructor,
+                    RwPluginObjectDestructor destructor, RwPluginObjectCopy copy);
+RwInt32 fn_8045B30C(RwUInt32 pluginID, RwPluginDataChunkReadCallBack read,
+                    RwPluginDataChunkWriteCallBack write, RwPluginDataChunkGetSizeCallBack getSize);
+
 /* The mesh module's globals in the engine; only the mapped members are used */
 typedef struct RpMeshGlobals {
     /* 0x00 */ RwInt16 nextSerialNum;

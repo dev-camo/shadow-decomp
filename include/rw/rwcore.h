@@ -36,14 +36,16 @@ typedef struct RwCamera RwCamera;
 #define rwRENDERSTATEDESTBLEND 11
 #define rwRENDERSTATEVERTEXALPHAENABLE 12
 
-/* The engine globals; only the current camera, the render state, string length, memory and free
+/* The engine globals; only the current camera, the render state, string copy and length, memory and free
  * list functions are mapped. */
 typedef struct RwGlobals {
     /* 0x000 */ RwCamera *curCamera;
     /* 0x004 */ RwUInt8 field_0x4[0x1C];
     /* 0x020 */ RwBool (*renderStateSet)(RwInt32 state, void *value);
     /* 0x024 */ RwBool (*renderStateGet)(RwInt32 state, void *value);
-    /* 0x028 */ RwUInt8 field_0x28[0xCC];
+    /* 0x028 */ RwUInt8 field_0x28[0xA4];
+    /* 0x0CC */ RwChar *(*rwstrcpy)(RwChar *dst, const RwChar *src);
+    /* 0x0D0 */ RwUInt8 field_0xD0[0x24];
     /* 0x0F4 */ RwUInt32 (*rwstrlen)(const RwChar *string);
     /* 0x0F8 */ RwUInt8 field_0xF8[0x10];
     /* 0x108 */ void *(*rwmalloc)(RwUInt32 size, RwUInt32 hint);
@@ -60,6 +62,7 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
 #define RwFreeListAlloc(freeList, hint) (lbl_805F15B4->rwfreelistalloc((freeList), (hint)))
 #define RwFreeListFree(freeList, mem) (lbl_805F15B4->rwfreelistfree((freeList), (mem)))
 #define rwstrlen(string) (lbl_805F15B4->rwstrlen(string))
+#define rwstrcpy(dst, src) (lbl_805F15B4->rwstrcpy((dst), (src)))
 #define RwRenderStateSet(state, value) (lbl_805F15B4->renderStateSet((state), (value)))
 #define RwRenderStateGet(state, value) (lbl_805F15B4->renderStateGet((state), (value)))
 
@@ -290,6 +293,19 @@ RwInt32 fn_804878D4(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor c
                     RwPluginObjectDestructor destructCB, RwPluginObjectCopy copyCB);
 RwFrame *fn_8048722C(RwFrame *frame);
 RwFrame *fn_8048752C(RwFrame *frame, RwFrameCallBack callBack, void *data);
+
+/* plugin registration with cameras and textures (inferred: the user data plugin registers with
+ * them in RenderWare's attach order, between frames and lights and after materials) */
+RwInt32 fn_804859B8(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructCB,
+                    RwPluginObjectDestructor destructCB, RwPluginObjectCopy copyCB);
+RwInt32 fn_80483554(RwUInt32 pluginID, RwPluginDataChunkReadCallBack readCB,
+                    RwPluginDataChunkWriteCallBack writeCB,
+                    RwPluginDataChunkGetSizeCallBack getSizeCB);
+RwInt32 fn_8048D280(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructCB,
+                    RwPluginObjectDestructor destructCB, RwPluginObjectCopy copyCB);
+RwInt32 fn_80483AFC(RwUInt32 pluginID, RwPluginDataChunkReadCallBack readCB,
+                    RwPluginDataChunkWriteCallBack writeCB,
+                    RwPluginDataChunkGetSizeCallBack getSizeCB);
 
 /* errors */
 RwError *fn_8047DB84(const RwError *error);
