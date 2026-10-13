@@ -1451,3 +1451,21 @@ rw/fn_80451A6C.c:
 rw/fn_80451F48.c:
 	.text       start:0x80451F48 end:0x80453018
 	.sbss       start:0x805F1458 end:0x805F1498
+
+rw/fn_80453018.c:
+	.text       start:0x80453018 end:0x804535C8
+	.sdata2     start:0x805FB0D8 end:0x805FB0E0
+
+rw/fn_804535C8.c:
+	.text       start:0x804535C8 end:0x80453980
+	.rodata     start:0x8051BD28 end:0x8051BD40
+	.sdata2     start:0x805FB0E0 end:0x805FB0F8
+
+rw/fn_80453980.c:
+	.text       start:0x80453980 end:0x80454AA4
+	.rodata     start:0x8051BD40 end:0x8051BD68
+	.data       start:0x8056D748 end:0x8056D7E0
+	.sdata      start:0x805EDD88 end:0x805EDDA0
+	.sbss       start:0x805F1498 end:0x805F14A0
+	.sdata2     start:0x805FB0F8 end:0x805FB108
+	.sbss2      start:0x805FB558 end:0x805FB560
