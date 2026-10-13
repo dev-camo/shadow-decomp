@@ -451,6 +451,7 @@ config.libs = [
         "objects": (
             [
                 Object(Matching, "Game/gcaxSndMemory.c", cflags=cflags_game_gcax),
+                Object(Matching, "Game/fn_8043D7B4.c", cflags=cflags_game_gcax),
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/fn_80008D48.c"),
