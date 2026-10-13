@@ -1,0 +1,81 @@
+#ifndef RW_RPDMORPH_H
+#define RW_RPDMORPH_H
+
+#include "rw/rpworld.h"
+
+/* RenderWare delta morph animations (plugin ID 0x122, chunk 0x1E). The type and field names are
+ * inferred from the stream format and the code that uses them. */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define rpID_DMORPHPLUGIN 0x122
+#define rwID_DMORPHANIMATION 0x1E
+
+/* RpDMorphTarget flags: the vertex streams a target has (the geometry flag bits) */
+#define rpDMORPHTARGETPOSITIONS 0x2
+#define rpDMORPHTARGETTEXCOORDS 0x4
+#define rpDMORPHTARGETPRELIT 0x8
+#define rpDMORPHTARGETNORMALS 0x10
+
+/* A delta morph target of a geometry (0x40 bytes) */
+typedef struct RpDMorphTarget {
+    /* 0x00 */ RpGeometry *geometry;
+    /* 0x04 */ RwChar *name;
+    /* 0x08 */ RwUInt32 flags; /* rpDMORPHTARGET* */
+    /* 0x0C */ RwUInt32 field_0xC;
+    /* 0x10 */ RwUInt8 *field_0x10; /* field_0x14 bytes, streamed as they are */
+    /* 0x14 */ RwUInt32 field_0x14;
+    /* 0x18 */ RwUInt32 numVertices;
+    /* 0x1C */ RwUInt8 *vertexData; /* one allocation for the vertex streams below */
+    /* 0x20 */ RwV3d *positions;
+    /* 0x24 */ RwV3d *normals;
+    /* 0x28 */ RwRGBA *preLitLum;
+    /* 0x2C */ RwTexCoords *texCoords;
+    /* 0x30 */ RwSphere boundingSphere;
+} RpDMorphTarget;
+
+/* The delta morph data of a geometry (0x1C bytes) */
+typedef struct RpDMorphGeometry {
+    /* 0x00 */ RwUInt32 numDMorphTargets;
+    /* 0x04 */ RpDMorphTarget *dmorphTargets;
+    /* 0x08 */ RwReal *values; /* one per target, allocated after the targets */
+    /* 0x0C */ RwUInt8 field_0xC[0x10];
+} RpDMorphGeometry;
+
+extern RwInt32 lbl_805F1428; /* geometry plugin offset */
+
+/* A key frame (0x14 bytes) */
+typedef struct RpDMorphFrame {
+    /* 0x00 */ RwReal values[4];
+    /* 0x10 */ RwInt32 nextFrame; /* index of the next frame, -1 for none */
+} RpDMorphFrame;
+
+/* The frames of one delta morph target */
+typedef struct RpDMorphFrameList {
+    /* 0x0 */ RwUInt32 numFrames;
+    /* 0x4 */ RpDMorphFrame *frames;
+} RpDMorphFrameList;
+
+/* An animation: a frame list per delta morph target, allocated after it */
+typedef struct RpDMorphAnimation {
+    /* 0x0 */ RwUInt32 numDMorphTargets;
+    /* 0x4 */ RpDMorphFrameList *frameLists;
+} RpDMorphAnimation;
+
+/* geometries */
+RpGeometry *fn_8044382C(RpGeometry *geometry, RwUInt32 numDMorphTargets);
+RpGeometry *fn_80443908(RpGeometry *geometry);
+RpGeometry *fn_804439A8(RpGeometry *geometry, RwUInt32 index);
+RwUInt32 fn_80443A54(const RpGeometry *geometry);
+
+/* animations */
+RpDMorphAnimation *fn_80442B98(RpDMorphAnimation *animation);
+RpDMorphAnimation *fn_80442C24(RwStream *stream);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

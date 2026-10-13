@@ -19,6 +19,7 @@ typedef unsigned short RwUInt16;
 typedef unsigned char RwUInt8;
 typedef float RwReal;
 typedef RwInt32 RwBool;
+typedef char RwChar;
 
 #define RW_STREAM_VERSION 0x37002
 #define RW_STREAM_BUILD 0x37
@@ -26,9 +27,11 @@ typedef RwInt32 RwBool;
 /* chunk IDs */
 #define rwID_STRUCT 0x1
 
-/* The engine globals; only the memory functions are mapped. */
+/* The engine globals; only the string length and memory functions are mapped. */
 typedef struct RwGlobals {
-    /* 0x000 */ RwUInt8 field_0x0[0x108];
+    /* 0x000 */ RwUInt8 field_0x0[0xF4];
+    /* 0x0F4 */ RwUInt32 (*rwstrlen)(const RwChar *string);
+    /* 0x0F8 */ RwUInt8 field_0xF8[0x10];
     /* 0x108 */ void *(*rwmalloc)(RwUInt32 size, RwUInt32 hint);
     /* 0x10C */ void (*rwfree)(void *mem);
 } RwGlobals;
@@ -37,6 +40,7 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
 
 #define RwMalloc(size, hint) (lbl_805F15B4->rwmalloc((size), (hint)))
 #define RwFree(mem) (lbl_805F15B4->rwfree(mem))
+#define rwstrlen(string) (lbl_805F15B4->rwstrlen(string))
 
 /* plugin data at offset in an object (offsets are assigned at plugin registration) */
 #define RWPLUGINOFFSET(type, base, offset) ((type *)((RwUInt8 *)(base) + (offset)))
@@ -60,6 +64,18 @@ typedef struct RwBBox {
     RwV3d inf;
 } RwBBox;
 
+typedef struct RwRGBA {
+    RwUInt8 red;
+    RwUInt8 green;
+    RwUInt8 blue;
+    RwUInt8 alpha;
+} RwRGBA;
+
+typedef struct RwTexCoords {
+    RwReal u;
+    RwReal v;
+} RwTexCoords;
+
 typedef struct RwLine {
     RwV3d start;
     RwV3d end;
@@ -78,6 +94,7 @@ void *fn_8047D158(void *mem, RwUInt32 size);
 void *fn_8047D1C8(void *mem, RwUInt32 size);
 void *fn_8047D254(void *mem, RwUInt32 size);
 void *fn_8047D2C4(void *mem, RwUInt32 size);
+RwStream *fn_8047D350(RwStream *stream, const RwReal *reals, RwUInt32 size);
 RwStream *fn_8047D458(RwStream *stream, const RwInt32 *ints, RwUInt32 size);
 RwStream *fn_8047D560(RwStream *stream, const RwInt16 *ints, RwUInt32 size);
 RwStream *fn_8047D684(RwStream *stream, RwInt16 *ints, RwUInt32 size);
