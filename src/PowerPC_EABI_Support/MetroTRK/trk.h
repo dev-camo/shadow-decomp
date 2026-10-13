@@ -4,6 +4,7 @@
 #include <dolphin/types.h>
 #include "MetroTRK/trktypes.h"
 #include "MetroTRK/ppc_reg.h"
+#include "MetroTRK/msghndlr.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,9 +27,7 @@ DSError TRKDoStep(MessageBuffer *);
 DSError TRKDoStop(MessageBuffer *);
 
 void SetBufferPosition(MessageBuffer *, u32);
-void SetTRKConnected(int);
 void TRKUARTInterruptHandler(void);
-int GetTRKConnected(void);
 
 DSError TRKGetFreeBuffer(int *, MessageBuffer **);
 void OutputData(void *data, int length);

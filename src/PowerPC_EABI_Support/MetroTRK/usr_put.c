@@ -1,7 +1,8 @@
 #include <dolphin/types.h>
+#include "MetroTRK/msghndlr.h"
 
-// No OS or TRK header is included: the original OSReport call has no crclr, so OSReport's variadic
-// prototype was not in scope, and GetTRKConnected/SetTRKConnected are called undeclared too.
+// No OS header is included: the original OSReport call has no crclr, so OSReport's variadic
+// prototype was not in scope here.
 
 BOOL usr_puts_serial(const char *msg) {
     BOOL connect_ = FALSE;
