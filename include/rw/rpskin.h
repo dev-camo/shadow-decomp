@@ -84,6 +84,15 @@ typedef struct SkinGlobals {
 
 extern SkinGlobals lbl_8056D708;
 
+/* The header of an instanced vertex buffer: the GX draw sync token of its last use, then the
+ * buffer's resource entry just before the 32-byte aligned vertices (inferred) */
+typedef struct SkinVertexBuffer {
+    /* 0x0 */ RwUInt16 syncToken;
+} SkinVertexBuffer;
+
+#define SKINVERTEXBUFFERENTRY(vertices) (((RwResEntry **)(vertices))[-1])
+#define SKINVERTEXBUFFER(vertices) ((SkinVertexBuffer *)(SKINVERTEXBUFFERENTRY(vertices) + 1))
+
 #define RPSKINATOMICGETDATA(atomic)                                                                \
     RWPLUGINOFFSET(SkinAtomicData, atomic, lbl_8056D708.atomicOffset)
 #define RPSKINGEOMETRYGETDATA(geometry)                                                            \
@@ -105,6 +114,8 @@ RpSkin *fn_8044CD4C(RpSkin *skin);
 RwUInt32 *fn_8044CDBC(RpSkin *skin);
 
 /* GameCube (inferred from their use) */
+/* sorts the weights heaviest first and makes the byte weights and indices for the kernels */
+RpSkin *fn_8044E408(RpSkin *skin, RwUInt32 numVertices);
 RpAtomic *fn_8044D924(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh); /* instance */
 RpAtomic *fn_8044DA3C(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh); /* reinstance */
 RpAtomic *fn_8044DE74(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh); /* render */

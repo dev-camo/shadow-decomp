@@ -16,15 +16,6 @@
 /* GameCube skin pipeline types (inferred) */
 #define SKINPIPELINETOON 3
 
-/* The header of an instanced vertex buffer: the GX draw sync token of its last use, then the
- * buffer's resource entry just before the 32-byte aligned vertices (inferred) */
-typedef struct SkinVertexBuffer {
-    /* 0x0 */ RwUInt16 syncToken;
-} SkinVertexBuffer;
-
-#define SKINVERTEXBUFFERENTRY(vertices) (((RwResEntry **)(vertices))[-1])
-#define SKINVERTEXBUFFER(vertices) ((SkinVertexBuffer *)(SKINVERTEXBUFFERENTRY(vertices) + 1))
-
 /* The parameters of the skinning kernels */
 typedef struct SkinKernelParams {
     /* 0x00 */ void *dstPositions;
@@ -68,7 +59,6 @@ RwBool fn_8049A78C(RwUInt16 token); /* whether the GPU has passed the token */
 typedef void (*SkinMaterialColorCallBack)(RwRGBAReal *ambient, RwRGBA *color, RwReal ambientCoef);
 SkinMaterialColorCallBack fn_804655D4(RwInt32 geometryFlags, RwUInt32 lightMask, RwBool hasAmbient,
                                       RwBool prelit);
-void fn_80462E1C(void);
 
 /* Waits until the GPU is done with the draw that used a sync token, first issuing the token if it
  * is the current one */
