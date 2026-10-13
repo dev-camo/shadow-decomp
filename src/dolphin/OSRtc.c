@@ -12,7 +12,7 @@ static void WriteSramCallback(s32, OSContext *);
 static int WriteSram(void *buffer, u32 offset, u32 size);
 static void *LockSram(u32 offset);
 static int UnlockSram(int commit, u32 offset);
-static void __OSReadROMCallback(s32 chan);
+static void __OSReadROMCallback(s32 chan, OSContext *context);
 
 static int GetRTC(u32 *rtc) {
     int err;
@@ -204,11 +204,11 @@ static int UnlockSram(int commit, u32 offset) {
 }
 
 int __OSUnlockSram(int commit) {
-    UnlockSram(commit, 0);
+    return UnlockSram(commit, 0);
 }
 
 int __OSUnlockSramEx(int commit) {
-    UnlockSram(commit, sizeof(OSSram));
+    return UnlockSram(commit, sizeof(OSSram));
 }
 
 int __OSSyncSram(void) {
@@ -260,7 +260,7 @@ int __OSReadROM(void *buffer, s32 length, s32 offset) {
     return !err;
 }
 
-static void __OSReadROMCallback(s32 chan) {
+static void __OSReadROMCallback(s32 chan, OSContext *context) {
     void (*callback)();
 
     EXIDeselect(chan);
@@ -291,7 +291,7 @@ int __OSReadROMAsync(void *buffer, s32 length, s32 offset, void (*callback)()) {
     err = 0;
     err |= !EXIImm(0, &cmd, 4, 1, 0);
     err |= !EXISync(0);
-    err |= !EXIDma(0, buffer, length, 0, (void *)__OSReadROMCallback);
+    err |= !EXIDma(0, buffer, length, 0, __OSReadROMCallback);
     return !err;
 }
 

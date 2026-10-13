@@ -129,14 +129,7 @@ static VITiming *timingExtra;
 
 // prototypes
 static u32 getCurrentFieldEvenOdd(void);
-VITiming *__VISetExtraTiming(VITiming *t);
-void __VIEnableRawPositionInterrupt(s16 x, s16 y, void (*callback)(s16, s16));
-void (*__VIDisableRawPositionInterrupt())(s16, s16);
-void __VIDisplayPositionToXY(u32 hct, u32 vct, s16 *x, s16 *y);
-void __VISetLatchMode(u32 mode);
-int __VIGetLatch0Position(s16 *px, s16 *py);
-int __VIGetLatch1Position(s16 *px, s16 *py);
-int __VIGetLatchPosition(u32 port, s16 *px, s16 *py);
+VITiming *__VISetExtraTiming(VITiming *t); // VITiming is private to this file
 
 static u32 getEncoderType(void) {
     return 1;
@@ -981,11 +974,11 @@ void VISetNextFrameBuffer(void *fb) {
 }
 
 void *VIGetNextFrameBuffer(void) {
-    return *(void **)(&NextBufAddr);
+    return (void *)NextBufAddr;
 }
 
 void *VIGetCurrentFrameBuffer(void) {
-    return *(void **)(&CurrBufAddr);
+    return (void *)CurrBufAddr;
 }
 
 void VISetNextRightFrameBuffer(void *fb) {
@@ -1059,9 +1052,6 @@ static u32 getCurrentFieldEvenOdd(void) {
 u32 VIGetNextField(void) {
     s32 nextField;
     BOOL enabled;
-#if !DEBUG
-    u8 unused[4];
-#endif
 
     enabled = OSDisableInterrupts();
     nextField = getCurrentFieldEvenOdd() ^ 1;
