@@ -35,7 +35,21 @@ typedef union RwRealShape {
         (d) = sf_u.value;                                                                          \
     } while (0)
 
-/* acos(x), as computed by the single precision acos of the C library (fdlibm) */
+/* acos(x): the single precision acos of fdlibm, adapted from newlib's ef_acos.c, which carries
+ * these notices:
+ *
+ * ef_acos.c -- float version of e_acos.c.
+ * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
+ *
+ * ====================================================
+ * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+ *
+ * Developed at SunPro, a Sun Microsystems, Inc. business.
+ * Permission to use, copy, modify, and distribute this
+ * software is freely granted, provided that this notice
+ * is preserved.
+ * ====================================================
+ */
 static inline RwReal RwACos(RwReal x) {
     RwInt32 hx;
     RwInt32 ix;
@@ -140,7 +154,7 @@ static inline RwReal RwSin(RwReal x) {
                                                                                                    \
         scale1 = 1.0f - (weight);                                                                  \
         scale2 = (weight);                                                                         \
-        if (cosOmega < 0.999f) {                                                                   \
+        if (!(cosOmega >= 0.999f)) { /* NaN takes this path too */                                 \
             RwReal omega = RwACos(cosOmega);                                                       \
             RwReal recipSinOmega;                                                                  \
                                                                                                    \
