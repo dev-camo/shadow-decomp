@@ -3,7 +3,9 @@
 
 #define M_PI 3.14159265358979323846f
 
-#define NAN (0.0f / 0.0f)
+/* Quiet NaN bit pattern defined by MSL (float.c); NAN reads it as a float, as MSL does. */
+extern int __float_nan[];
+#define NAN (*(float *)__float_nan)
 #define HUGE_VALF (1.0f / 0.0f)
 #define INFINITY (1.0f / 0.0f)
 
