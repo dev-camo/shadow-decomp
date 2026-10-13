@@ -1607,9 +1607,11 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
 
 # Optional extra categories for progress tracking
 # Adjust as desired for your project
+# Categories cover only the configured source units; original code without a configured unit
+# belongs to no category, so the labels say so.
 config.progress_categories = [
-    ProgressCategory("game", "Game Code"),
-    ProgressCategory("sdk", "SDK Code"),
+    ProgressCategory("game", "Game Code (configured units)"),
+    ProgressCategory("sdk", "SDK Code (configured units)"),
 ]
 config.progress_each_module = args.verbose
 # Optional extra arguments to `objdiff-cli report generate`
