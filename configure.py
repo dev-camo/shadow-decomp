@@ -440,6 +440,7 @@ config.libs = [
         "progress_category": "game",
         "objects": (
             [
+                Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/fn_80008D48.c"),
                 Object(Matching, "Game/fn_80008DA4.c"),

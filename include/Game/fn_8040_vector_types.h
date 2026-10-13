@@ -43,6 +43,8 @@ void fn_80008E1C(Fn8040Vector3 *vector, float x, float y, float z);
 void fn_8040C148(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 void fn_8040B59C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *offset);
 void fn_8040B848(Fn8040Matrix34 *matrix, float angle);
+/* identity matrix, set up at startup by fn_8040C190 */
+extern Fn8040Matrix34 lbl_805E0720;
 
 #ifdef __cplusplus
 }
