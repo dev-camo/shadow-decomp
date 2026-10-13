@@ -179,7 +179,7 @@ asm static void DoCrossTalk(register s32* l, register s32* r, register f32 cross
 	stfd f14, 40(r1)
 	lis r5, i2fMagic@ha
 	lfd f0, i2fMagic@l(r5)
-	lis r5, 0x4330 // 176.0f (0x43300000)
+	lis r5, 0x4330 // high word of the int-to-double conversion constant
 	stw r5, 8(r1)
 	stw r5, 16(r1)
 	stw r5, 24(r1)
@@ -358,7 +358,6 @@ asm static void HandleReverb(register s32* sptr, register AXFX_REVHI_WORK* rv, r
 	lfs f21, AXFX_REVHI_DELAYLINE.lastOutput + 0x28(r27) // AP[2]
 	lwz r15, AXFX_REVHI_DELAYLINE.length     + 0x00(r27) // AP[0]
 	lwz r14, AXFX_REVHI_DELAYLINE.length     + 0x14(r27) // AP[1]
-    //? missing load for length of AP[3]? Maybe intentional?
 	lwz r30, 0(r3)
 	xoris r30, r30, 0x8000
 	stw r30, 0x5c(r1)

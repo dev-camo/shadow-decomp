@@ -231,8 +231,8 @@ typedef void (*AXCallback)();
 #define AX_SYNC_FLAG_UNK6 (1 << 25)  // reserved, unused?
 #define AX_SYNC_FLAG_UNK7 (1 << 24)  // reserved, unused?
 #define AX_SYNC_FLAG_UNK8 (1 << 23)  // reserved, unused?
-#define AX_SYNC_FLAG_UNK9 (1 << 22)  // reserved, unused?
-#define AX_SYNC_FLAG_UNK10 (1 << 21) // reserved, unused?
+#define AX_SYNC_FLAG_UNK9 (1 << 22)  // LPF coefficients changed (AXSetVoiceLpfCoefs)
+#define AX_SYNC_FLAG_UNK10 (1 << 21) // whole LPF block changed (AXSetVoiceLpf)
 #define AX_SYNC_FLAG_COPYADPCMLOOP (1 << 20)
 #define AX_SYNC_FLAG_COPYRATIO (1 << 19)
 #define AX_SYNC_FLAG_COPYSRC (1 << 18)
