@@ -97,7 +97,7 @@ static void DisableWriteGatherPipe(void) {
     PPCMthid2(hid2);
 }
 
-static GXTexRegion *__GXDefaultTexRegionCallback(const GXTexObj *t_obj, GXTexMapID id) {
+static GXTexRegion *__GXDefaultTexRegionCallback(GXTexObj *t_obj, GXTexMapID id) {
     GXTexFmt fmt;
     u8 mm;
 
@@ -490,7 +490,7 @@ void __GXInitGX(void) {
     GXSetChanAmbColor(GX_COLOR1A1, black);
     GXSetChanMatColor(GX_COLOR1A1, white);
     GXInvalidateTexAll();
-    GXSetTexRegionCallback((GXTexRegionCallback)__GXDefaultTexRegionCallback);
+    GXSetTexRegionCallback(__GXDefaultTexRegionCallback);
     GXSetTlutRegionCallback(__GXDefaultTlutRegionCallback);
 
     GXInitTexObj(&tex_obj, DefaultTexData, 4, 4, GX_TF_IA8, GX_CLAMP, GX_CLAMP, 0);

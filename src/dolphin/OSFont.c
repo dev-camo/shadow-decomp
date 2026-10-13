@@ -3,7 +3,7 @@
 
 #include "__os.h"
 
-typedef char *(*ParseStringCallback)(u16, char *, OSFontHeader **, int *);
+typedef char *(*ParseStringCallback)(u16, const char *, OSFontHeader **, int *);
 
 static OSFontHeader *FontDataAnsi;
 static OSFontHeader *FontDataSjis;
@@ -267,7 +267,7 @@ u16 OSGetFontEncode(void) {
         FontEncode = OS_FONT_ENCODE_ANSI;
     }
 
-    ParseString = (ParseStringCallback)ParseStringS;
+    ParseString = ParseStringS;
     return FontEncode;
 }
 
@@ -280,7 +280,7 @@ u16 OSSetFontEncode(u16 encode) {
     if (encode <= OS_FONT_ENCODE_MAX) {
         FontEncode = encode;
         if (encode >= 3 && encode <= OS_FONT_ENCODE_MAX) {
-            ParseString = (ParseStringCallback)ParseStringW;
+            ParseString = ParseStringW;
         }
     }
 
@@ -500,7 +500,7 @@ char *OSGetFontTexel(const char *string, void *image, s32 pos, s32 stride, s32 *
     u8 *imageSrc;
 
     encode = OSGetFontEncode();
-    string = ParseString(encode, (char *)string, &font, &fontCode);
+    string = ParseString(encode, string, &font, &fontCode);
     colorIndex = &font->c0;
     ASSERTLINE(828, font->sheetFormat == GX_TF_I4);
 
@@ -641,7 +641,7 @@ char *OSGetFontTexture(const char *string, void **image, s32 *x, s32 *y, s32 *wi
     int column;
 
     encode = OSGetFontEncode();
-    string = ParseString(encode, (char *)string, &font, &fontCode);
+    string = ParseString(encode, string, &font, &fontCode);
     sheet = fontCode / (font->sheetColumn * font->sheetRow);
     ((u32 *)image)[0] = (u32)font + font->sheetImage + (font->sheetSize * sheet);
     numChars = fontCode - (sheet * (font->sheetColumn * font->sheetRow));
@@ -664,7 +664,7 @@ char *OSGetFontWidth(const char *string, s32 *width) {
     int fontCode;
 
     encode = OSGetFontEncode();
-    string = ParseString(encode, (char *)string, &font, &fontCode);
+    string = ParseString(encode, string, &font, &fontCode);
 
     if (width != 0) {
         *width = ((u8 *)font + font->widthTable)[fontCode];
