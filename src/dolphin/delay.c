@@ -115,7 +115,7 @@ int AXFXDelayInit(AXFX_DELAY *delay) {
     delay->right = NULL;
     delay->sur = NULL;
     OSRestoreInterrupts(old);
-    AXFXDelaySettings(delay);
+    return AXFXDelaySettings(delay);
 }
 
 int AXFXDelayShutdown(AXFX_DELAY *delay) {
