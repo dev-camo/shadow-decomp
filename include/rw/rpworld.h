@@ -69,8 +69,11 @@ typedef RwStream *(*RwPluginDataChunkWriteCallBack)(RwStream *stream, RwInt32 le
 typedef RwInt32 (*RwPluginDataChunkGetSizeCallBack)(const void *object, RwInt32 offset,
                                                     RwInt32 size);
 
-/* plugin registration (inferred: fn_8045F2F8 and fn_8045F338 register with world sectors, whose
- * plugin data the intersection tests read; fn_8045994C and fn_8045998C with geometries) */
+/* plugin registration (inferred): fn_80458B6C registers with the registry used by the object code
+ * around fn_804566D0, which the intersection tests call on an atomic (the registry's 0x70-byte
+ * object size alone does not identify it); fn_8045994C and fn_8045998C register with geometries
+ * (0x60 bytes); fn_8045F2F8 and fn_8045F338 with world sectors (0x88), whose plugin data the
+ * intersection tests read */
 RwInt32 fn_80458B6C(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructor,
                     RwPluginObjectDestructor destructor, RwPluginObjectCopy copy);
 RwInt32 fn_8045994C(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructor,
