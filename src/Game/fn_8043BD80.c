@@ -293,7 +293,8 @@ f32 fn_8043D318(s32 steps) {
 }
 
 /* Applies a pitch bend in 1/8191 semitones to a sample-rate ratio; returns the ratio as AX's
- * 16.16 source ratio, clamped to [0x200, 0x3FFFF]. */
+ * 16.16 source ratio: below 0x200 becomes 0x200 and above 0x40000 becomes 0x3FFFF (0x40000 itself is
+ * kept). */
 u32 fn_8043D20C(s32 cents, f32 base) {
     f32 ratio = 1.0f;
     int semitones;
