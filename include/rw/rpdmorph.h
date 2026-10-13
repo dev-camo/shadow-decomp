@@ -106,7 +106,7 @@ RpAtomic *fn_80445CE0(RpAtomic *atomic, RwInt32 pipelineIndex); /* inferred: set
 RwBool fn_804437B0(void);
 RwBool fn_8044420C(void);
 RwBool fn_80445C38(RwInt32 arg); /* inferred: creates the plugin's pipelines */
-void fn_80445C9C(void);          /* inferred: destroys them */
+RwBool fn_80445C9C(void);        /* inferred: destroys them */
 
 /* animations */
 RpDMorphAnimation *fn_80442B98(RpDMorphAnimation *animation);
