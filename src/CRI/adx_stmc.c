@@ -206,8 +206,9 @@ void ADXSTMF_ExecHndl(ADXSTM stm) {
     }
 }
 
-/* A failed CVFS read: counts a retry up to adxstmf_num_rtry (0 here, so the first failure goes to
- * ADXSTM_STAT_ERROR). */
+/* A failed CVFS read: counts a retry until the count exceeds adxstmf_num_rtry. With the default 0,
+ * the first failure only raises the count to 1 and the second consecutive failure goes to
+ * ADXSTM_STAT_ERROR (a successful read resets the count). */
 static inline void adxstmf_retry(ADXSTM stm) {
     if (0 <= adxstmf_num_rtry && stm->rtry_cnt > adxstmf_num_rtry) {
         stm->stat = ADXSTM_STAT_ERROR;

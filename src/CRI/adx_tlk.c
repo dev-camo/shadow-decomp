@@ -21,8 +21,10 @@
 #include "CRI/lsc.h"
 #include "CRI/sj.h"
 
-/* work layout of one handle: the decoder output rings (0x3060 16-bit samples per channel), the
- * renderer work (0x40C0 bytes per channel) and the file stream ring (the rest, in sectors) */
+/* work layout of one handle: per channel, an output ring joint of 0x2000 usable 16-bit samples plus
+ * 0x60 extra (0x2060 samples, 0x40C0 bytes); 0x3060 samples per channel are reserved in total, the
+ * remaining 0x1000 samples per channel being the legacy renderer allowance that starts at byte offset
+ * maxnch * 0x40C0; then the file stream ring (the rest, in sectors) */
 #define ADXT_OBUF_NSMPL 0x3060
 #define ADXT_OBUF_BSIZE 0x2000
 #define ADXT_OBUF_STRIDE 0x2060
@@ -791,8 +793,9 @@ ADXT ADXT_Create(Sint32 maxnch, void *work, Sint32 worksize) {
 }
 
 /* Allocates a stream playback handle for up to `maxnch` channels inside the caller's `work` buffer
- * (64-byte aligned): the decoder output rings (0x3060 samples per channel), the AX renderer work
- * and the file stream ring (the rest, in 2 KiB sectors; reload threshold 85% of it). Builds the
+ * (64-byte aligned): the decoder output rings (0x2060 samples each, 0x3060 reserved per channel
+ * with the legacy renderer allowance; the AX renderer ignores its work pointer) and the file stream
+ * ring (the rest, in 2 KiB sectors; reload threshold 85% of it). Builds the
  * stream joints, the ADXSTM stream controller, the ADXSJD decoder, the ADXRNA renderer and an LSC
  * scheduler. Returns 0 (with an error message) if no slot is free or the parameters are bad. */
 ADXT adxt_Create(Sint32 maxnch, void *work, Sint32 worksize) {
