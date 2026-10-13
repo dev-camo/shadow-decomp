@@ -21,14 +21,14 @@ extern "C" {
 
 // 4 bits of padding
 #define SI_COMCSR_OUTLNGTH_MASK                                                                    \
-    (1 << 22) | (1 << 21) | (1 << 20) | (1 << 19) | (1 << 18) | (1 << 17) | (1 << 16)
+    ((1 << 22) | (1 << 21) | (1 << 20) | (1 << 19) | (1 << 18) | (1 << 17) | (1 << 16))
 
 // 1 bit of padding
 #define SI_COMCSR_INLNGTH_MASK                                                                     \
-    (1 << 14) | (1 << 13) | (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8)
+    ((1 << 14) | (1 << 13) | (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8))
 
 // 5 bits of padding
-#define SI_COMCSR_CHANNEL_MASK (1 << 2) | (1 << 1)
+#define SI_COMCSR_CHANNEL_MASK ((1 << 2) | (1 << 1))
 
 #define SI_COMCSR_TSTART_MASK (1 << 0)
 
