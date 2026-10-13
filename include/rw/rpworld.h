@@ -229,16 +229,10 @@ void fn_80462F94(RpGameCubeVertexFormat *format, RwInt32 index, RwUInt8 type, Rw
 void fn_80463104(RpGeometry *geometry, RpGameCubeVertexFormat *format); /* attach */
 void fn_804630C0(RpGameCubeVertexFormat *format);                       /* release */
 
-/* GameCube: the instanced data of a mesh; only its material is mapped */
-typedef struct RpGameCubeMeshInstance {
-    /* 0x00 */ RwUInt8 field_0x0[0x18];
-    /* 0x18 */ RpMaterial *material;
-} RpGameCubeMeshInstance;
-
 /* GameCube: what the all-in-one pipeline's lighting callback leaves for its render callback */
 typedef struct RpGameCubeRenderMesh {
     /* 0x00 */ RwUInt32 field_0x0;
-    /* 0x04 */ RpGameCubeMeshInstance *meshInstance;
+    /* 0x04 */ RpMeshHeader *meshHeader; /* of the geometry; its meshes follow it */
     /* 0x08 */ RwInt32 geometryFlags;
     /* 0x0C */ RwRGBAReal ambientColor; /* (inferred) */
     /* 0x1C */ RwBool hasAmbient;       /* (inferred) */
