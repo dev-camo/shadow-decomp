@@ -157,7 +157,7 @@ static void adxsje_prdflt_set_coef(ADXSJE_PRDFLT *prd, Sint16 c1, Sint16 c2) {
     prd->c2 = c2;
 }
 
-/* Per-channel prediction history of the handle (seeded from the first two samples). */
+/* Per-channel prediction history of the handle (copied from the decoder-model IIR). */
 static void adxsje_set_hist(ADXSJE sje, Sint32 ch, Sint16 h1, Sint16 h2) {
     sje->hist1[ch] = h1;
     sje->hist2[ch] = h2;
@@ -344,7 +344,8 @@ static ADXSJE_IIRFLT *adxsje_iirflt_create(void) {
     return (i < ADXSJE_MAX_FLT) ? iir : 0;
 }
 
-/* Takes a predictor object with its own IIR model and a block of `nsmpl` residuals. */
+/* Takes a free predictor object, a decoder-model IIR (adxsje_iirflt_create never marks one used, so
+ * predictors can share it) and a block of `nsmpl` residuals. */
 static ADXSJE_PRDFLT *adxsje_prdflt_create(Sint32 nsmpl) {
     ADXSJE_PRDFLT *prd;
     ADXSJE_IIRFLT *iir;
@@ -468,7 +469,7 @@ void ADXSJE_Init(void) {
     adxsje_init_cnt++;
 }
 
-/* write len bytes at src (a short stored directly) into the output stream joint */
+/* Copies len bytes from src into the output stream joint if there is room. */
 static void adxsje_put(SJ sj, void *src, Sint32 len) {
     SJCK ck;
 
