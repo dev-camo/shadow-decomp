@@ -1,5 +1,6 @@
 #include <dolphin.h>
 #include <dolphin/ax.h>
+#include <dolphin/axfx.h>
 
 static void *__AXFXAllocFunction(u32 bytes) {
     return OSAlloc(bytes);

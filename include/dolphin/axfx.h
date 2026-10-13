@@ -170,8 +170,10 @@ int AXFXDelaySettings(AXFX_DELAY *delay);
 int AXFXDelayInit(AXFX_DELAY *delay);
 int AXFXDelayShutdown(AXFX_DELAY *delay);
 
+// axfx
+void AXFXSetHooks(void *(*alloc)(u32), void (*free)(void *));
+
 // reverb_hi
-void DoCrossTalk(s32 *l, s32 *r, f32 cross, f32 invcross);
 int AXFXReverbHiInit(AXFX_REVERBHI *rev);
 int AXFXReverbHiShutdown(AXFX_REVERBHI *rev);
 int AXFXReverbHiSettings(AXFX_REVERBHI *rev);
