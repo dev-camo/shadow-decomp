@@ -252,6 +252,7 @@ RwInt32 fn_8047DC28(RwInt32 code, ...);
 RwInt32 fn_80485D6C(void);
 RwInt32 fn_80485D78(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructor,
                     RwPluginObjectDestructor destructor);
+RwInt32 fn_80485DB8(RwUInt32 pluginID); /* the engine plugin offset of a plugin, or -1 */
 
 #ifdef __cplusplus
 }
