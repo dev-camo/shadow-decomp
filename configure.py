@@ -257,6 +257,16 @@ cflags_game_cpp = [
     "-inline noauto,deferred",
 ]
 
+# Sega's GameCube AX sound library (gcax*.c): optimized for size with stmw/lmw, read-only strings,
+# and deferred inlining of only the functions marked inline.
+cflags_game_gcax = [
+    *cflags_game,
+    "-O4,s",
+    "-use_lmw_stmw on",
+    "-str reuse,readonly",
+    "-inline noauto,deferred",
+]
+
 # Metrowerks library flags (the runtime units include the MSL and runtime headers)
 cflags_runtime = [
     *cflags_base,
@@ -440,6 +450,7 @@ config.libs = [
         "progress_category": "game",
         "objects": (
             [
+                Object(Matching, "Game/gcaxSndMemory.c", cflags=cflags_game_gcax),
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/fn_80008D48.c"),
