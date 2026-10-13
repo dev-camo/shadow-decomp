@@ -24,4 +24,11 @@ class Task {
     /* 0x24 */ u32 field_0x24;
 };
 
+/* fn_8001C4F8 returns the task manager; fn_801EB304 returns its parent task for new tasks of the
+ * given layer (behaviour inferred). */
+extern "C" {
+void *fn_8001C4F8(void);
+Task *fn_801EB304(void *manager, int index);
+}
+
 #endif
