@@ -9,9 +9,15 @@ namespace detail {
 
 class sp_counted_base;
 
-/* The reference count owned by a shared_ptr. */
+/* The reference count owned by a shared_ptr. Copying retains and destruction releases the count,
+ * so the special members are declared (compiled elsewhere) rather than left to the compiler. */
 class shared_count {
   public:
+    shared_count();
+    shared_count(const shared_count &r);
+    ~shared_count();
+    shared_count &operator=(const shared_count &r);
+
     sp_counted_base *pi_;
 };
 
