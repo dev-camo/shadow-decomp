@@ -1,5 +1,5 @@
-#ifndef _DOLPHIN_AX_INTERNAL_H_
-#define _DOLPHIN_AX_INTERNAL_H_
+#ifndef _DOLPHIN_AXFX_INTERNAL_H_
+#define _DOLPHIN_AXFX_INTERNAL_H_
 
 #include <dolphin/axfx.h>
 
