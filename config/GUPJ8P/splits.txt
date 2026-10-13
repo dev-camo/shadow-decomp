@@ -108,6 +108,10 @@ dolphin/OSResetSW.c:
 	.text       start:0x803769DC end:0x80376D68
 	.sbss       start:0x805F1528 end:0x805F1548
 
+dolphin/OSRtc.c:
+	.text       start:0x80376D68 end:0x80377A88
+	.bss        start:0x80586540 end:0x80586598
+
 dolphin/OSSync.c:
 	.text       start:0x80377A88 end:0x80377B0C
 

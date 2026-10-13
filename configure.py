@@ -534,6 +534,7 @@ config.libs = [
             Object(Matching, "dolphin/OSMemory.c"),
             Object(Matching, "dolphin/OSReboot.c"),
             Object(Matching, "dolphin/OSResetSW.c"),
+            Object(Matching, "dolphin/OSRtc.c"),
             Object(Matching, "dolphin/OSReset.c"),
             Object(Matching, "dolphin/db.c"),
             Object(Matching, "dolphin/OS.c", cflags=cflags_sdk_rev2),
