@@ -1011,6 +1011,11 @@ CRI/mps_del.c:
 CRI/mps_get.c:
 	.text       start:0x803D48F0 end:0x803D4B24
 
+CRI/mps_lib.c:
+	.text       start:0x803D4B24 end:0x803D50D4
+	.rodata     start:0x80518270 end:0x805182C8
+	.bss        start:0x805C8C98 end:0x805C8CA8
+
 CRI/mpv_bdec.c:
 	.text       start:0x803D50D4 end:0x803D53D8
 	.rodata     start:0x805182C8 end:0x80518388
