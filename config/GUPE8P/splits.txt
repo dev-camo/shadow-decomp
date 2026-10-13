@@ -1362,6 +1362,12 @@ Game/fn_8043B25C.c:
 	.data       start:0x8056B090 end:0x8056D098
 	.sdata2     start:0x805FAE48 end:0x805FAE70
 
+Game/fn_8043BD80.c:
+	.text       start:0x8043BD80 end:0x8043D7B4
+	.rodata     start:0x8051BC08 end:0x8051BC40
+	.data       start:0x8056D098 end:0x8056D6F8
+	.sdata2     start:0x805FAE70 end:0x805FAF28
+
 Game/fn_8043D7B4.c:
 	.text       start:0x8043D7B4 end:0x8043E2B4
 	.sdata2     start:0x805FAF28 end:0x805FAF40

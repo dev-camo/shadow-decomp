@@ -452,6 +452,7 @@ config.libs = [
             [
                 Object(Matching, "Game/gcaxSndMemory.c", cflags=cflags_game_gcax),
                 Object(Matching, "Game/fn_8043B25C.c", cflags=cflags_game_gcax),
+                Object(NonMatching, "Game/fn_8043BD80.c", cflags=cflags_game_gcax),
                 Object(Matching, "Game/fn_8043D7B4.c", cflags=cflags_game_gcax),
                 Object(NonMatching, "Game/fn_8043E2B4.c", cflags=cflags_game_gcax),
                 Object(Matching, "Game/fn_8043FB58.c", cflags=cflags_game_gcax),
