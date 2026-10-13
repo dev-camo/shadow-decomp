@@ -230,21 +230,39 @@ void fn_80462F94(RpGameCubeVertexFormat *format, RwInt32 index, RwUInt8 type, Rw
 void fn_80463104(RpGeometry *geometry, RpGameCubeVertexFormat *format); /* attach */
 void fn_804630C0(RpGameCubeVertexFormat *format);                       /* release */
 
-/* GameCube: one batch of instanced data (inferred) */
-typedef struct RpGameCubeBatch {
-    /* 0x0 */ RwUInt32 field_0x0;
-    /* 0x4 */ RwUInt32 field_0x4;
-} RpGameCubeBatch;
+/* GameCube: a vertex descriptor of instanced data: the buffer of one GX vertex attribute and its
+ * attribute, stride and component type */
+typedef struct RpGameCubeVertexDescriptor {
+    /* 0x0 */ void *data;
+    /* 0x4 */ RwUInt8 attribute; /* GX_VA_* */
+    /* 0x5 */ RwUInt8 stride;
+    /* 0x6 */ RwUInt8 type;
+    /* 0x7 */ RwUInt8 field_0x7;
+} RpGameCubeVertexDescriptor;
 
-/* GameCube: the instanced data of a geometry that follows its resource entry; only the mapped
- * members are used (inferred) */
+/* GameCube: a mesh's display list (inferred) */
+typedef struct RpGameCubeDisplayList {
+    /* 0x0 */ void *data;
+    /* 0x4 */ RwUInt32 size;
+} RpGameCubeDisplayList;
+
+/* GameCube: the instanced data of a geometry that follows its resource entry: its vertex
+ * descriptors, then a display list record per mesh after the variable descriptor table; only the
+ * mapped members are used (inferred) */
 typedef struct RpGameCubeInstanceData {
     /* 0x00 */ RwUInt16 syncToken; /* GX draw sync token of the last draw */
-    /* 0x02 */ RwUInt8 field_0x2[0x6];
-    /* 0x08 */ RwInt32 numBatches;
-    /* 0x0C */ RwUInt8 field_0xC[0x8];
-    /* 0x14 */ RpGameCubeBatch batches[1]; /* numBatches entries */
+    /* 0x02 */ RwUInt8 field_0x2[0x2];
+    /* 0x04 */ RwUInt32 flags;
+    /* 0x08 */ RwInt32 numVertexDescriptors;
+    /* 0x0C */ RpGameCubeVertexDescriptor vertexDescriptors[1]; /* numVertexDescriptors entries */
 } RpGameCubeInstanceData;
+
+/* The display list records of the meshes, which follow the instance's vertex descriptors. Written
+ * as the second descriptor's address plus the remaining descriptors, which is how the original
+ * computes it. */
+#define RPGAMECUBEINSTANCEDISPLAYLISTS(instance)                                                   \
+    ((RpGameCubeDisplayList *)&(instance)->vertexDescriptors[1] +                                  \
+     ((instance)->numVertexDescriptors - 1))
 
 extern RwUInt16 lbl_805EDF40; /* the next GX draw sync token */
 
@@ -285,7 +303,7 @@ RwBool fn_804A8478(RpGameCubeRenderMesh *renderMesh); /* whether a mesh uses mat
 void fn_804A8120(RpGameCubeRenderMesh *renderMesh, RpGameCubeVertexFormat *format,
                  RwInt32 numVertices);
 /* renders a mesh with material effects */
-void fn_804A457C(RpMesh *mesh, RpGameCubeBatch *batch, RpAtomic *atomic, RwMatrix *ltm,
+void fn_804A457C(RpMesh *mesh, RpGameCubeDisplayList *displayList, RpAtomic *atomic, RwMatrix *ltm,
                  RpGameCubeRenderMesh *renderMesh);
 RwBool fn_804A2064(RpAtomic *atomic);        /* whether an atomic has material effects */
 extern RpGameCubeVertexFormat *lbl_805F16B8; /* the vertex format of material effects geometries */

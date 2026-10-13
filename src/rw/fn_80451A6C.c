@@ -53,7 +53,7 @@ RpAtomic *fn_80451B20(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
 /* Renders a skinned atomic with material effects */
 RpAtomic *fn_80451BCC(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
     RpGameCubeInstanceData *instance = (RpGameCubeInstanceData *)(renderMesh->repEntry + 1);
-    RpGameCubeBatch *batch;
+    RpGameCubeDisplayList *displayList;
     RpMeshHeader *meshHeader;
     RpSkin *skin;
     RwMatrix *ltm;
@@ -62,7 +62,7 @@ RpAtomic *fn_80451BCC(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
     RwUInt32 index;
     RwUInt32 i;
 
-    batch = &instance->batches[instance->numBatches - 1];
+    displayList = RPGAMECUBEINSTANCEDISPLAYLISTS(instance);
     instance->syncToken = lbl_805EDF40;
     meshHeader = atomic->geometry->mesh;
     ltm = RwFrameGetLTM(atomic->object.parent);
@@ -91,8 +91,8 @@ RpAtomic *fn_80451BCC(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
             fn_8044DD1C(skin, renderMesh->meshHeader->numMeshes - (numMeshes + 1),
                         (renderMesh->geometryFlags >> 4) & 1);
         }
-        fn_804A457C(mesh, batch, atomic, ltm, renderMesh);
-        batch++;
+        fn_804A457C(mesh, displayList, atomic, ltm, renderMesh);
+        displayList++;
         mesh++;
     }
     return atomic;
