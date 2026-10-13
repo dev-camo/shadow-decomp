@@ -56,6 +56,10 @@ typedef struct GcaxFileHeader {
     /* 0xC */ u32 size;
 } GcaxFileHeader;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern GcaxWork *lbl_805F1404;
 
 #define GCAX_MAGIC 0x67636178     /* 'gcax' */
@@ -86,7 +90,7 @@ static inline void gcaxSndResetHeap(void) {
     head->next = tail;
     tail->magic = GCAX_MEM_USED;
     tail->field_0x2 = 0;
-    tail->next = NULL;
+    tail->next = 0;
     OSRestoreInterrupts(enabled);
 }
 
@@ -97,16 +101,20 @@ static inline GcaxMemBlock *gcaxSndNextBlock(GcaxMemBlock *block) {
 
 /* The heap block before block, or NULL when block is the first one or not in the heap. */
 static inline GcaxMemBlock *gcaxSndFindPrevBlock(GcaxMemBlock *block) {
-    GcaxMemBlock *prev = NULL;
+    GcaxMemBlock *prev = 0;
     GcaxMemBlock *cur;
 
-    for (cur = lbl_805F1404->heapHead; cur->next != NULL; cur = cur->next) {
+    for (cur = lbl_805F1404->heapHead; cur->next != 0; cur = cur->next) {
         if (cur == block) {
             return prev;
         }
         prev = cur;
     }
-    return NULL;
+    return 0;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
