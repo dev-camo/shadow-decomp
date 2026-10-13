@@ -4,6 +4,7 @@
 #include <dolphin/exi.h>
 #include <dolphin/hw_regs.h>
 #include <dolphin/os.h>
+#include <dolphin/db/DBInterface.h>
 
 typedef void (*MTRCallbackType)(int);
 
