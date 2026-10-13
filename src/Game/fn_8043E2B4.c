@@ -298,7 +298,8 @@ s32 fn_8043F35C(GcaxPlayer *player, u8 *msg, u8 priority) {
     return 0;
 }
 
-/* Runs a frame update outside the AX callback */
+/* Attempts a frame update under the library lock. The update runs only at lock count 1, so with
+ * this extra lock it counts a locked frame and skips player processing (original behavior). */
 s32 fn_8043F2F0(void) {
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
@@ -309,7 +310,7 @@ s32 fn_8043F2F0(void) {
     return 0;
 }
 
-/* Runs a frame update outside the AX callback */
+/* The same locked update attempt as fn_8043F2F0: player processing is skipped */
 s32 fn_8043F284(void) {
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
@@ -409,8 +410,9 @@ s32 fn_8043EF48(void) {
     return 0;
 }
 
-/* Fades the player's pitch to a number of semitones over time milliseconds */
-s32 fn_8043EE74(GcaxPlayer *player, s16 semitones, s32 time) {
+/* Fades the player's pitch over time milliseconds to a shift of steps (256 per semitone; fn_8043D318
+ * converts it in pairs of steps, rounding odd remainders up) */
+s32 fn_8043EE74(GcaxPlayer *player, s16 steps, s32 time) {
     s32 result;
 
     if (lbl_805F1404 == NULL) {
@@ -420,7 +422,7 @@ s32 fn_8043EE74(GcaxPlayer *player, s16 semitones, s32 time) {
     if (result != 0) {
         return result;
     }
-    fn_8043D7B4(player, fn_8043D318(semitones), time);
+    fn_8043D7B4(player, fn_8043D318(steps), time);
     return 0;
 }
 
