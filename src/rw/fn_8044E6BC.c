@@ -5,8 +5,11 @@
 #include <dolphin/gx.h>
 #include <string.h>
 
+#define rwMEMHINTDUR_FUNCTION 0x10000
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINT_SKIN (rwMEMHINTDUR_EVENT | rpID_SKINPLUGIN)
+/* for memory freed before the allocating function returns */
+#define rwMEMHINT_SKINTEMP (rwMEMHINTDUR_FUNCTION | rpID_SKINPLUGIN)
 
 /* RpGeometry lock flags */
 #define rpGEOMETRYLOCKVERTICES 0x2
@@ -106,7 +109,7 @@ RwStream *fn_8044E89C(RwStream *stream, RpGeometry *geometry) {
 
     numVertices = geometry->numVertices;
     skin = RPSKINGEOMETRYGETDATA(geometry);
-    counts = ((skin->numBoneIds & 0xFF) << 8) | ((skin->maxNumWeightsForVertex & 0xFF) << 16) |
+    counts = ((skin->maxNumWeightsForVertex & 0xFF) << 16) | ((skin->numBoneIds & 0xFF) << 8) |
              (skin->numBones & 0xFF);
     if (fn_8047D458(stream, (RwInt32 *)&counts, sizeof(RwUInt32)) == NULL) {
         return NULL;
@@ -126,10 +129,10 @@ RwStream *fn_8044E89C(RwStream *stream, RpGeometry *geometry) {
     if (fn_80480ED0(stream, skin->skinToBoneMatrices, skin->numBones * sizeof(RwMatrix)) == NULL) {
         return NULL;
     }
-    if (fn_8044BB18(stream, skin) == NULL) {
-        return NULL;
+    if (fn_8044BB18(stream, skin) != NULL) {
+        return stream;
     }
-    return stream;
+    return NULL;
 }
 
 /* Reads a native skin; its byte weights and indices, matrices and used bones share one block */
@@ -255,7 +258,7 @@ RwBool fn_8044EEAC(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
     RwInt32 numMeshes;
     RwInt32 numSkinned;
     RwInt32 i;
-    RwInt32 j;
+    RwUInt32 j; /* compared unsigned */
 
     if (GAMECUBEVERTEXFORMAT(geometry) == NULL) {
         fn_80462E1C();
@@ -363,7 +366,7 @@ RwBool fn_8044EEAC(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
     /* each mesh's indices, once per stream that is not skinned */
     numMeshes = geometry->mesh->numMeshes;
     numSkinned = numStreams - 2;
-    meshIndices = RwMalloc(numSkinned * (numMeshes * sizeof(RxVertexIndex *)), rwMEMHINT_SKIN);
+    meshIndices = RwMalloc(numSkinned * (numMeshes * sizeof(RxVertexIndex *)), rwMEMHINT_SKINTEMP);
     if (meshIndices == NULL) {
         RwFree(*builtStreams);
         RwFree(builder);
@@ -735,7 +738,7 @@ RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
  * (or normals, binormals and tangents), prelit colors and texture coordinates indexed by vertex */
 RpGameCubeVertexDescBuilder *fn_80450448(RpGeometry *geometry) {
     RpGameCubeVertexFormat *format = GAMECUBEVERTEXFORMAT(geometry);
-    RwInt32 numVertices = geometry->numVertices;
+    RwUInt32 numVertices = geometry->numVertices; /* compared unsigned */
     RwInt32 numAttributes;
     RwInt32 i;
 
