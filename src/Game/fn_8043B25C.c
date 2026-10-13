@@ -1454,12 +1454,12 @@ void fn_8043B25C(void) {
     lbl_805F1404->config[13] = 0x80;
     lbl_805F1404->config[14] = 0x80;
     lbl_805F1404->config[15] = 0x80;
-    lbl_805F1404->field_0x10120[2] = 1.0f;
-    lbl_805F1404->field_0x10120[4] = 0.01f;
-    lbl_805F1404->field_0x10120[3] = 0.8f;
-    lbl_805F1404->field_0x10120[0] = 0.5f;
-    lbl_805F1404->field_0x10120[5] = 0.3f;
-    lbl_805F1404->field_0x10120[1] = 1.0f;
+    lbl_805F1404->reverbHi.time = 1.0f;
+    lbl_805F1404->reverbHi.preDelay = 0.01f;
+    lbl_805F1404->reverbHi.damping = 0.8f;
+    lbl_805F1404->reverbHi.coloration = 0.5f;
+    lbl_805F1404->reverbHi.crosstalk = 0.3f;
+    lbl_805F1404->reverbHi.mix = 1.0f;
     lbl_805F1404->field_0x13A44 = 1.004184f;
-    lbl_805F1404->field_0x13A38 = 0;
+    lbl_805F1404->inCallback = 0;
 }
