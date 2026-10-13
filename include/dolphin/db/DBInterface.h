@@ -17,7 +17,9 @@ typedef struct DBInterface {
 extern DBInterface *__DBInterface;
 
 void DBInit(void);
-void DBInitComm(int *inputFlagPtr, int *mtrCallback);
+/* Stores the address of the driver's input-pending flag in *inputFlagPtr and installs mtrCallback
+ * (called with an int when input arrives); implemented in DebuggerDriver.c. */
+void DBInitComm(u8 **inputFlagPtr, void (*mtrCallback)(int));
 void __DBExceptionDestination(void);
 void __DBExceptionDestinationAux(void);
 BOOL __DBIsExceptionMarked(__OSException exception);
