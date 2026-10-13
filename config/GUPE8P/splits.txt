@@ -1429,3 +1429,9 @@ rw/fn_804485BC.c:
 rw/fn_80448CB0.c:
 	.text       start:0x80448CB0 end:0x8044920C
 	.sdata2     start:0x805FB078 end:0x805FB098
+
+rw/fn_8044BAB4.c:
+	.text       start:0x8044BAB4 end:0x8044CDC4
+	.data       start:0x8056D708 end:0x8056D748
+	.bss        start:0x805E1538 end:0x805E1560
+	.sdata      start:0x805EDD80 end:0x805EDD88
