@@ -37,28 +37,29 @@ typedef struct {
 #define MPS_HN_USED 2
 
 typedef struct MPS_OBJ {
-    Sint32 used;            /* 0x00 */
-    void (*errfn)();        /* 0x04 unprototyped: called with (obj, code) or (obj) */
-    void *errobj;           /* 0x08 */
-    Sint32 errcode;         /* 0x0C */
-    Sint32 x10;             /* 0x10 (2) */
-    Sint32 x14;             /* 0x14 */
-    MPS_PACKHD packhd;      /* 0x18 */
-    MPS_SYSHD last_syshd;   /* 0x28 */
-    MPS_SYSHD syshd[3];     /* 0x48 */
-    MPS_PKETHD pkethd;      /* 0xA8 */
-    Sint32 xd0;             /* 0xD0 */
-    Sint32 (*dechd_func)(); /* 0xD4 */
-    Sint32 xd8;             /* 0xD8 */
-    Sint32 xdc;             /* 0xDC */
-    Sint32 xe0;             /* 0xE0 */
-    void *sysfn;            /* 0xE4 system header callback (MPS_SetSystemFn) */
-    void *sysobj;           /* 0xE8 */
-    void *psmapfn;          /* 0xEC (MPS_SetPsMapFn) */
-    void *psmapobj;         /* 0xF0 */
-    void *pesfn;            /* 0xF4 PES header callback (MPS_SetPesFn) */
-    void *pesobj;           /* 0xF8 */
-    Sint32 xfc;             /* 0xFC */
+    Sint32 used;                           /* 0x00 */
+    void (*errfn)(void *obj, Sint32 code); /* 0x04 */
+    void *errobj;                          /* 0x08 */
+    Sint32 errcode;                        /* 0x0C */
+    Sint32 x10;                            /* 0x10 (2) */
+    Sint32 x14;                            /* 0x14 */
+    MPS_PACKHD packhd;                     /* 0x18 */
+    MPS_SYSHD last_syshd;                  /* 0x28 */
+    MPS_SYSHD syshd[3];                    /* 0x48 */
+    MPS_PKETHD pkethd;                     /* 0xA8 */
+    Sint32 xd0;                            /* 0xD0 */
+    /* 0xD4 header decoder (MPSDEC_DecHdMpeg1) */
+    Sint32 (*dechd_func)(struct MPS_OBJ *mps, Uint8 *adr, Sint32 len, Sint32 *used, Sint32 *flags);
+    Sint32 xd8;     /* 0xD8 */
+    Sint32 xdc;     /* 0xDC */
+    Sint32 xe0;     /* 0xE0 */
+    void *sysfn;    /* 0xE4 system header callback (MPS_SetSystemFn) */
+    void *sysobj;   /* 0xE8 */
+    void *psmapfn;  /* 0xEC (MPS_SetPsMapFn) */
+    void *psmapobj; /* 0xF0 */
+    void *pesfn;    /* 0xF4 PES header callback (MPS_SetPesFn) */
+    void *pesobj;   /* 0xF8 */
+    Sint32 xfc;     /* 0xFC */
 } MPS_OBJ;
 
 /* MPS_PKETHD.raw */
@@ -77,11 +78,11 @@ typedef struct MPS_OBJ {
 
 /* library work (mps_lib.c): header + num_hn handles */
 typedef struct {
-    void (*errfn)(); /* 0x00 unprototyped: called with (obj, code) or (obj) */
-    void *errobj;    /* 0x04 */
-    Sint32 errcode;  /* 0x08 */
-    Sint32 num_hn;   /* 0x0C */
-    MPS_OBJ hn[1];   /* 0x10 */
+    void (*errfn)(void *obj, Sint32 code); /* 0x00 */
+    void *errobj;                          /* 0x04 */
+    Sint32 errcode;                        /* 0x08 */
+    Sint32 num_hn;                         /* 0x0C */
+    MPS_OBJ hn[1];                         /* 0x10 */
 } MPSLIB_WORK;
 
 extern MPSLIB_WORK *MPSLIB_libwork;

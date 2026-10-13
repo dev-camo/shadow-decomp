@@ -32,9 +32,6 @@ const Char8 *MPS_GetVerStr(void) {
     return MPSLIB_version_str;
 }
 
-/* Library-level error: the callback gets the code as a second argument here, while
- * mpslib_SetErr passes the object only (errfn is unprototyped in mps.h). */
-
 // Library-level error: records the code and calls the library error callback with it.
 static Sint32 mpslib_SetLibErr(Sint32 code) {
     MPSLIB_WORK *lw;
@@ -56,12 +53,12 @@ static Sint32 mpslib_SetErr(MPS mps, Sint32 code) {
         lw = MPSLIB_libwork;
         lw->errcode = code;
         if (code != 0 && lw->errfn != 0) {
-            lw->errfn(lw->errobj);
+            lw->errfn(lw->errobj, code);
         }
     } else {
         mps->errcode = code;
         if (code != 0 && mps->errfn != 0) {
-            mps->errfn(mps->errobj);
+            mps->errfn(mps->errobj, code);
         }
     }
     return code;
