@@ -404,13 +404,13 @@ RwStream *fn_80440E80(RwStream *stream, RwInt32 length, void *object, RwInt32 of
     return NULL;
 }
 
-/* world plugin constructor */
+/* atomic plugin constructor */
 void *fn_80441018(void *object, RwInt32 offset, RwInt32 size) {
     *RWPLUGINOFFSET(void *, object, lbl_805F1418) = NULL;
     return object;
 }
 
-/* Registers the plugin with the engine, worlds, world sectors and geometries */
+/* Registers the plugin with the engine, atomics, world sectors and geometries */
 RwInt32 fn_80441028(void) {
     RwInt32 result;
     RwInt32 ok;
