@@ -3,6 +3,7 @@
 
 #include <dolphin/ar.h>
 #include <dolphin/ax.h>
+#include <dolphin/axfx.h>
 #include <dolphin/os.h>
 #include <dolphin/types.h>
 
@@ -207,6 +208,18 @@ typedef struct GcaxChannel {
 } GcaxChannel;
 
 #define GCAX_PLAYERS 8
+#define GCAX_LOADS 64
+
+/* A bank file load request (0x14 bytes). */
+typedef struct GcaxLoad {
+    /* 0x00 */ u8 used;
+    /* 0x01 */ s8 request; /* ARAM request slot to wait for, or -1 */
+    /* 0x04 */ u8 *file;
+    /* 0x08 */ u32 field_0x8;
+    /* 0x0C */ GcaxCallback callback;
+    /* 0x10 */ void *arg;
+} GcaxLoad;
+
 #define GCAX_EVENTS 1024
 
 /* A linear fade of a player value from start to target; the times count down in 5 ms ticks. */
@@ -217,10 +230,34 @@ typedef struct GcaxFade {
     /* 0xC */ f32 remaining; /* negative when no fade runs */
 } GcaxFade;
 
+/* A Standard MIDI File track being played (0x58 bytes). Times are in ticks. */
+typedef struct GcaxSequence {
+    /* 0x00 */ u16 field_0x0;
+    /* 0x04 */ s32 division; /* ticks per quarter note */
+    /* 0x08 */ f32 time;     /* of the next event */
+    /* 0x0C */ f32 prevTime;
+    /* 0x10 */ f32 now;
+    /* 0x14 */ f32 prevNow;
+    /* 0x18 */ f32 tempo; /* quarter notes per minute */
+    /* 0x1C */ f32 loopTempo;
+    /* 0x20 */ OSTime startTime;
+    /* 0x28 */ OSTime lastTime;
+    /* 0x30 */ u8 runningStatus;
+    /* 0x34 */ f32 beatTime; /* seconds per quarter note */
+    /* 0x38 */ f32 delta;
+    /* 0x3C */ s32 priority;
+    /* 0x40 */ u8 *start;
+    /* 0x44 */ u8 *cursor; /* NULL when the track has ended */
+    /* 0x48 */ u8 *loopStart;
+    /* 0x4C */ f32 loopTime;
+    /* 0x50 */ f32 loopNow;
+    /* 0x54 */ s32 loopCount;
+} GcaxSequence;
+
 /* A MIDI sequence player; only the members used so far are mapped. */
 typedef struct GcaxPlayer {
-    /* 0x0000 */ u32 flags; /* bit 31: in use */
-    /* 0x0004 */ u8 field_0x4[0x4];
+    /* 0x0000 */ s32 flags; /* bit 31: in use */
+    /* 0x0004 */ u32 state; /* bit 0: paused, bit 1: playing a sequence */
     /* 0x0008 */ f32 volume;
     /* 0x000C */ f32 field_0xC;
     /* 0x0010 */ f32 field_0x10;
@@ -229,7 +266,8 @@ typedef struct GcaxPlayer {
     /* 0x0028 */ f32 field_0x28;
     /* 0x002C */ GcaxFade pitchFade;
     /* 0x003C */ f32 field_0x3C;
-    /* 0x0040 */ u8 field_0x40[0x60];
+    /* 0x0040 */ OSTime pauseTime;
+    /* 0x0048 */ GcaxSequence seq;
     /* 0x00A0 */ GcaxList notes; /* nodes whose data is a GcaxNote */
     /* 0x00A4 */ GcaxChannel channels[GCAX_CHANNELS];
     /* 0x0524 */ u32 events[GCAX_EVENTS]; /* queued MIDI: status, data 1, data 2, priority */
@@ -239,12 +277,22 @@ typedef struct GcaxPlayer {
 } GcaxPlayer;
 
 typedef struct GcaxWork {
-    /* 0x00000 */ u8 field_0x0[0x2C];
+    /* 0x00000 */ s32 active; /* set once the library is set up */
+    /* 0x00004 */ u32 size;   /* sizeof(GcaxWork) */
+    /* 0x00008 */ s32 lock;   /* nesting count; the frame update runs only at 1 */
+    /* 0x0000C */ s32 numVoices;
+    /* 0x00010 */ s32 numNotes;
+    /* 0x00014 */ u8 field_0x14[0x4];
+    /* 0x00018 */ OSTime time; /* of the current frame update */
+    /* 0x00020 */ OSTime prevTime;
+    /* 0x00028 */ s32 elapsed; /* low word of time - the sequence's last time */
     /* 0x0002C */ f32 field_0x2C;
     /* 0x00030 */ u8 field_0x30[0x8];
     /* 0x00038 */ s32 maxVoices;
     /* 0x0003C */ s32 acquiredVoices;
-    /* 0x00040 */ u8 field_0x40[0xC];
+    /* 0x00040 */ s32 frames; /* frame updates run from the AX callback */
+    /* 0x00044 */ s32 field_0x44;
+    /* 0x00048 */ u8 field_0x48[0x4];
     /* 0x0004C */ s32 noteCursor;
     /* 0x00050 */ s32 voiceCursor;
     /* 0x00054 */ GcaxVoice voices[GCAX_VOICES];
@@ -256,12 +304,13 @@ typedef struct GcaxWork {
     /* 0x0509C */ u32 arqOwner;
     /* 0x050A0 */ GcaxCallback requestCallback[GCAX_ARQ_REQUESTS];
     /* 0x051A0 */ void *requestCallbackArg[GCAX_ARQ_REQUESTS];
-    /* 0x052A0 */ u8 field_0x52A0[0x8];
+    /* 0x052A0 */ u8 field_0x52A0[0x4];
+    /* 0x052A4 */ u32 aramSize;
     /* 0x052A8 */ s32 aramRest;
     /* 0x052AC */ u32 aramNext;
-    /* 0x052B0 */ u8 field_0x52B0[0x4];
+    /* 0x052B0 */ u32 aramBase;
     /* 0x052B4 */ u32 silenceAddr; /* ARAM sample used when a region has no loop (inferred) */
-    /* 0x052B8 */ u32 config[16];  /* default sizes set by fn_8043B25C */
+    /* 0x052B8 */ u32 config[16];  /* ARAM bank sizes */
     /* 0x052F8 */ GcaxRange aramBank[GCAX_BANKS];
     /* 0x05378 */ GcaxRange bankData[GCAX_BANKS];
     /* 0x053F8 */ GcaxRange soundData[GCAX_BANKS];
@@ -270,12 +319,22 @@ typedef struct GcaxWork {
     /* 0x0FDFA */ u8 monoMix;
     /* 0x0FDFB */ u8 auxMix;
     /* 0x0FDFC */ struct GcaxNote *searchNote; /* the note fn_8043B810 looks for */
-    /* 0x0FE00 */ u8 field_0xFE00[0x320];
-    /* 0x10120 */ f32 field_0x10120[6];
-    /* 0x10138 */ u8 field_0x10138[0x3900];
-    /* 0x13A38 */ u8 field_0x13A38;
-    /* 0x13A39 */ u8 field_0x13A39[0xB];
+    /* 0x0FE00 */ u8 field_0xFE00[0x4];
+    /* 0x0FE04 */ AXFX_REVERBSTD reverbStd;
+    /* 0x0FF58 */ AXFX_REVERBHI reverbHi;
+    /* 0x10138 */ AXFX_CHORUS chorus;
+    /* 0x101D4 */ AXFX_DELAY delay;
+    /* 0x10234 */ u8 field_0x10234[0x3804];
+    /* 0x13A38 */ u8 inCallback; /* frame updates run from the AX callback with interrupts on */
+    /* 0x13A39 */ u8 callbackCount;
+    /* 0x13A3A */ u8 field_0x13A3A;
+    /* 0x13A3B */ u8 lockedFrames; /* frame updates skipped while locked */
+    /* 0x13A3C */ u8 field_0x13A3C[0x8];
     /* 0x13A44 */ f32 field_0x13A44;
+    /* 0x13A48 */ u8 field_0x13A48[0x4];
+    /* 0x13A4C */ u8 silence[0x520]; /* 0x500 zero bytes at the first 32-byte boundary */
+    /* 0x13F6C */ GcaxLoad loads[GCAX_LOADS];
+    /* 0x1446C */ u8 loadAsync;
 } GcaxWork;
 
 /* Header of a bank file section: two magic words, then the size of the data that follows. */
@@ -296,6 +355,9 @@ extern GcaxWork *lbl_805F1404;
 #define GCAX_KIND_MSB 0x4D534220  /* 'MSB ' */
 #define GCAX_KIND_MPBW 0x4D504257 /* 'MPBW' */
 #define GCAX_KIND_MPBP 0x4D504250 /* 'MPBP' */
+#define GCAX_KIND_MLT 0x4D4C5420  /* 'MLT ' */
+#define GCAX_KIND_MLTM 0x4D4C544D /* 'MLTM' */
+#define GCAX_KIND_MSBM 0x4D53424D /* 'MSBM' */
 
 #define GCAX_PANIC(message)                                                                        \
     do {                                                                                           \
@@ -365,6 +427,64 @@ void fn_8043E004(GcaxPlayer *player, u32 event);
 void fn_8043E088(GcaxPlayer *player);
 GcaxPlayer *fn_8043E0E8(void);
 void fn_8043E228(GcaxPlayer *player, int channel);
+
+/* setup, frame update and API entry points (Game/fn_8043E2B4.c) */
+void fn_8043E2B4(s32 bus, s32 effect);
+void fn_8043E394(void);
+void fn_8043E430(s32 surround);
+void fn_8043E47C(s32 mono);
+void fn_8043E494(void);
+void fn_8043E624(void);
+s32 fn_8043E6F4(void *buffer, s32 maxVoices, u32 size, u32 aramSize);
+void fn_8043E950(void);
+void fn_8043E9C4(void *buffer, u32 size);
+s32 fn_8043EBFC(void);
+s32 fn_8043EC3C(GcaxPlayer *player);
+s32 fn_8043ECDC(GcaxPlayer *player);
+s32 fn_8043ED7C(GcaxPlayer *player, s8 volume, s32 time);
+s32 fn_8043EE74(GcaxPlayer *player, s16 semitones, s32 time);
+s32 fn_8043EF48(void);
+s32 fn_8043EF50(GcaxPlayer *player);
+s32 fn_8043EFF0(GcaxPlayer *player, s8 bank, s8 song, s8 priority);
+s32 fn_8043F0D4(void);
+s32 fn_8043F13C(GcaxPlayer *player);
+s32 fn_8043F1FC(void);
+s32 fn_8043F240(void);
+s32 fn_8043F284(void);
+s32 fn_8043F2F0(void);
+s32 fn_8043F35C(GcaxPlayer *player, u8 *msg, u8 priority);
+s32 fn_8043F41C(GcaxPlayer *player, u8 *msg, u8 status, ...);
+s32 fn_8043F5AC(void);
+s32 fn_8043F60C(GcaxPlayer *player);
+s32 fn_8043F6AC(GcaxPlayer **out);
+s32 fn_8043F70C(GcaxLoad *load);
+s32 fn_8043F8C4(GcaxLoad *load);
+s32 fn_8043F980(GcaxLoad *load, u8 *file, u32 arg2, GcaxCallback callback, void *arg);
+s32 fn_8043FA20(GcaxLoad **out);
+s32 fn_8043FAB0(s32 mode);
+s32 fn_8043FB24(void *buffer);
+
+/* sequence playback (Game/fn_8043FB58.c) */
+void fn_8043FB58(GcaxPlayer *player);
+void fn_8043FC98(GcaxPlayer *player);
+s32 fn_8043FD70(GcaxPlayer *player);
+s32 fn_8043FDF8(GcaxPlayer *player, s32 bank, s32 song, s32 priority);
+void fn_8043FF5C(GcaxPlayer *player);
+
+/* Holds off the frame update while the caller changes shared state */
+static inline void gcaxSndLock(void) {
+    BOOL enabled = OSDisableInterrupts();
+
+    lbl_805F1404->lock++;
+    OSRestoreInterrupts(enabled);
+}
+
+static inline void gcaxSndUnlock(void) {
+    BOOL enabled = OSDisableInterrupts();
+
+    lbl_805F1404->lock--;
+    OSRestoreInterrupts(enabled);
+}
 
 /* Makes the whole heap one free block, ending in a used sentinel block. */
 static inline void gcaxSndResetHeap(void) {
