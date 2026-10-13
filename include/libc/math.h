@@ -10,6 +10,8 @@ extern int __float_nan[];
 #define INFINITY (1.0f / 0.0f)
 
 double fabs(double x);
+double pow(double x, double y);
+double log10(double x);
 double sin(double x);
 double cos(double x);
 
