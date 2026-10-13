@@ -47,7 +47,9 @@ typedef struct RpSkin {
     /* 0x00 */ RwUInt32 numBones;
     /* 0x04 */ RwUInt32 numBoneIds; /* the bones that some vertex uses */
     /* 0x08 */ RwUInt8 *boneIds;
-    /* 0x0C */ RwMatrix *skinToBoneMatrices; /* 16-byte aligned */
+    /* 16-byte aligned when the core allocates the skin; 4-byte aligned in the native stream
+     * reader's single block */
+    /* 0x0C */ RwMatrix *skinToBoneMatrices;
     /* 0x10 */ RwUInt32 maxNumWeightsForVertex;
     /* 0x14 */ RwUInt32 *vertexBoneIndices; /* four byte-sized bone indices per vertex */
     /* 0x18 */ RwMatrixWeights *vertexBoneWeights;
