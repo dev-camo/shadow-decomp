@@ -234,7 +234,7 @@ typedef struct GcaxFade {
 typedef struct GcaxSequence {
     /* 0x00 */ u16 field_0x0;
     /* 0x04 */ s32 division; /* ticks per quarter note */
-    /* 0x08 */ f32 time;     /* of the next event */
+    /* 0x08 */ f32 time;     /* of the last event read; the next is due delta ticks later */
     /* 0x0C */ f32 prevTime;
     /* 0x10 */ f32 now;
     /* 0x14 */ f32 prevNow;
