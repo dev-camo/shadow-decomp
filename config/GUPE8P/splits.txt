@@ -1366,6 +1366,12 @@ Game/fn_8043D7B4.c:
 	.text       start:0x8043D7B4 end:0x8043E2B4
 	.sdata2     start:0x805FAF28 end:0x805FAF40
 
+Game/fn_8043E2B4.c:
+	.text       start:0x8043E2B4 end:0x8043FB58
+	.rodata     start:0x8051BC40 end:0x8051BCA8
+	.sbss       start:0x805F1400 end:0x805F1410
+	.sdata2     start:0x805FAF40 end:0x805FAF68
+
 Game/fn_8043FB58.c:
 	.text       start:0x8043FB58 end:0x80440410
 	.sdata2     start:0x805FAF68 end:0x805FAF88
