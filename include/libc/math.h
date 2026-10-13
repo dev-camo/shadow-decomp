@@ -14,6 +14,7 @@ double pow(double x, double y);
 double log10(double x);
 double sin(double x);
 double cos(double x);
+double atan2(double y, double x);
 
 float sinf(float x);
 float cosf(float x);
