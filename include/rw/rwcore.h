@@ -27,25 +27,38 @@ typedef char RwChar;
 /* chunk IDs */
 #define rwID_STRUCT 0x1
 
-/* The engine globals; only the string length and memory functions are mapped. */
+/* The engine globals; only the string length, memory and free list functions are mapped. */
 typedef struct RwGlobals {
     /* 0x000 */ RwUInt8 field_0x0[0xF4];
     /* 0x0F4 */ RwUInt32 (*rwstrlen)(const RwChar *string);
     /* 0x0F8 */ RwUInt8 field_0xF8[0x10];
     /* 0x108 */ void *(*rwmalloc)(RwUInt32 size, RwUInt32 hint);
     /* 0x10C */ void (*rwfree)(void *mem);
+    /* 0x110 */ RwUInt8 field_0x110[0x8];
+    /* 0x118 */ void *(*rwfreelistalloc)(struct RwFreeList *freeList, RwUInt32 hint);
+    /* 0x11C */ void (*rwfreelistfree)(struct RwFreeList *freeList, void *mem);
 } RwGlobals;
 
 extern RwGlobals *lbl_805F15B4; /* the engine instance */
 
 #define RwMalloc(size, hint) (lbl_805F15B4->rwmalloc((size), (hint)))
 #define RwFree(mem) (lbl_805F15B4->rwfree(mem))
+#define RwFreeListAlloc(freeList, hint) (lbl_805F15B4->rwfreelistalloc((freeList), (hint)))
+#define RwFreeListFree(freeList, mem) (lbl_805F15B4->rwfreelistfree((freeList), (mem)))
 #define rwstrlen(string) (lbl_805F15B4->rwstrlen(string))
 
 /* plugin data at offset in an object (offsets are assigned at plugin registration) */
 #define RWPLUGINOFFSET(type, base, offset) ((type *)((RwUInt8 *)(base) + (offset)))
 
 typedef struct RwStream RwStream;
+
+/* A free list: fixed size entries allocated in blocks (0x28 bytes) */
+typedef struct RwFreeList {
+    /* 0x00 */ RwUInt8 field_0x0[0x28];
+} RwFreeList;
+
+typedef struct RwFrame RwFrame;
+typedef RwFrame *(*RwFrameCallBack)(RwFrame *frame, void *data);
 
 /* An error reported with fn_8047DB84: the reporting plugin and its error code. */
 typedef struct RwError {
@@ -129,6 +142,18 @@ RwBool fn_8047BDD0(const RwBBox *box, const RwV3d *v0, const RwV3d *v1, const Rw
  * center from its plane */
 RwBool fn_8047B720(const RwSphere *sphere, const RwV3d *v0, const RwV3d *v1, const RwV3d *v2,
                    RwV3d *normal, RwReal *distance);
+
+/* free lists (inferred) */
+RwFreeList *fn_8047FC04(RwInt32 entrySize, RwInt32 entriesPerBlock, RwInt32 alignment,
+                        RwInt32 numBlocksToPreallocate, RwFreeList *freeList, RwUInt32 hint);
+RwBool fn_8047FCDC(RwFreeList *freeList);
+
+/* frames (inferred) */
+RwInt32 fn_804836EC(RwUInt32 pluginID, void *readCB, void *writeCB, void *getSizeCB);
+RwInt32 fn_804878D4(RwInt32 size, RwUInt32 pluginID, void *constructCB, void *destructCB,
+                    void *copyCB);
+RwFrame *fn_8048722C(RwFrame *frame);
+RwFrame *fn_8048752C(RwFrame *frame, RwFrameCallBack callBack, void *data);
 
 /* errors */
 RwError *fn_8047DB84(const RwError *error);
