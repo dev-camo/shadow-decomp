@@ -529,6 +529,9 @@ Runtime.PPCEABI.H/global_destructor_chain.c:
 PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/errno.c:
 	.sbss       start:0x805F1900 end:0x805F1908
 
+PowerPC_EABI_Support/Runtime/Src/ptmf.c:
+	.text       start:0x803A106C end:0x803A10C4
+
 Runtime.PPCEABI.H/__init_cpp_exceptions.cpp:
 	.text       start:0x803A1ADC end:0x803A1B4C
 	.ctors      start:0x804AA240 end:0x804AA244 rename:.ctors$10
