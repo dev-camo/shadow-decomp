@@ -179,6 +179,9 @@ void GXSetFogRangeAdj(GXBool enable, u16 center, const GXFogAdjTable *table) {
 void GXSetBlendMode(GXBlendMode type, GXBlendFactor src_factor, GXBlendFactor dst_factor,
                     GXLogicOp op) {
     u32 reg;
+#if DEBUG
+    u32 blend_en;
+#endif
 
     CHECK_GXBEGIN(375, "GXSetBlendMode");
 
