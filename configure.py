@@ -727,6 +727,12 @@ config.libs = [
         ],
     },
     DolphinLib(
+        "vi",
+        [
+            Object(Matching, "dolphin/vi.c"),
+        ],
+    ),
+    DolphinLib(
         "pad",
         [
             Object(Matching, "dolphin/Pad.c"),
