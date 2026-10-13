@@ -14,6 +14,7 @@ extern "C" {
 typedef struct RpGeometry RpGeometry;
 
 /* RpGeometry flags */
+#define rpGEOMETRYTRISTRIP 0x1
 #define rpGEOMETRYPOSITIONS 0x2
 #define rpGEOMETRYTEXTURED 0x4
 #define rpGEOMETRYPRELIT 0x8
@@ -78,8 +79,7 @@ struct RpGeometry {
     /* 0x20 */ RpMaterial **materials; /* the material list's materials */
     /* 0x24 */ RwUInt8 field_0x24[0xC];
     /* 0x30 */ RwRGBA *preLitLum;
-    /* 0x34 */ RwTexCoords *texCoords;
-    /* 0x38 */ RwUInt8 field_0x38[0x1C];
+    /* 0x34 */ RwTexCoords *texCoords[8]; /* numTexCoordSets sets */
     /* 0x54 */ RpMeshHeader *mesh;
     /* 0x58 */ RwResEntry *repEntry;
     /* 0x5C */ RpMorphTarget *morphTarget;
@@ -245,6 +245,75 @@ typedef struct RpGameCubeVertexDescriptor {
     /* 0x7 */ RwUInt8 field_0x7;
 } RpGameCubeVertexDescriptor;
 
+typedef struct RpGameCubeInstanceData RpGameCubeInstanceData;
+
+/* GameCube: a built stream: its distinct values and their number (inferred) */
+typedef struct RpGameCubeBuiltStream {
+    /* 0x0 */ void *data;
+    /* 0x4 */ RwUInt32 count;
+} RpGameCubeBuiltStream;
+
+/* GameCube: a source vertex stream for building instanced data: its data, its kind, and the
+ * other streams whose indices go with it (-1 ends the list) (inferred) */
+typedef struct RpGameCubeStreamSource {
+    /* 0x00 */ void *data;
+    /* 0x04 */ RwInt32 kind;
+    /* 0x08 */ RwInt8 dependencies[4];
+    /* 0x0C */ RwUInt8 field_0xC[0xC];
+} RpGameCubeStreamSource;
+
+/* building instanced data from source streams (inferred) */
+void *fn_80466194(RpGameCubeStreamSource *streams, RwInt32 numStreams, RwInt32 numVertices);
+RpGameCubeBuiltStream *fn_80465ED4(void *builder, RpGameCubeStreamSource *streams,
+                                   RwInt32 numStreams, RwInt32 numVertices);
+/* each stream's indices into its built values for a mesh */
+RxVertexIndex **fn_80465CDC(void *builder, RxVertexIndex **indices, RwInt32 numStreams,
+                            RwUInt32 numIndices);
+/* the triangle strips of a mesh's indices */
+void fn_8046D8C8(RxVertexIndex *indices, RwUInt32 numIndices, RwInt32 *numStrips,
+                 RwUInt32 *numStripIndices, RwInt32 flags);
+RpGameCubeVertexFormat *fn_80462E1C(void); /* the default vertex format */
+
+/* GameCube: a builder of GX vertex descriptors and formats (0x20 bytes, inferred) */
+typedef struct RpGameCubeVertexDescBuilder {
+    /* 0x00 */ RwUInt8 field_0x0[0x20];
+} RpGameCubeVertexDescBuilder;
+
+void fn_8046FC1C(RpGameCubeVertexDescBuilder *builder);                       /* initializes */
+void fn_8046FC48(RpGameCubeVertexDescBuilder *builder, RwInt32 vertexFormat); /* starts */
+void fn_8046FC50(RpGameCubeVertexDescBuilder *builder, RwInt32 attribute, RwInt32 count,
+                 RwInt32 type, RwUInt8 frac); /* sets an attribute's format */
+void fn_8046FF34(RpGameCubeVertexDescBuilder *builder, RwInt32 attribute,
+                 RwInt32 mode); /* sets an attribute's descriptor mode */
+void fn_8047046C(RpGameCubeVertexDescBuilder *builder, RwUInt8 numAttributes); /* finishes */
+
+/* GameCube: the source of a geometry's vertex attributes, indexed by GX attribute (inferred) */
+typedef struct RpGameCubeVertexSource {
+    /* 0x00 */ RwUInt32 numElements[26];
+    /* 0x68 */ void *data[26];
+} RpGameCubeVertexSource;
+
+/* GameCube: the indices of a mesh's vertex attributes, indexed by GX attribute (inferred) */
+typedef struct RpGameCubeIndexSource {
+    /* 0x00 */ void *indices[26];
+} RpGameCubeIndexSource;
+
+/* building GameCube instanced data and display lists (inferred) */
+RwUInt32 fn_8046EE8C(RpGameCubeVertexDescBuilder *builder); /* the vertex data header size */
+RwUInt32 fn_8046B094(RpGameCubeVertexDescBuilder *builder, RwInt32 numPrimitives,
+                     RwUInt32 numIndices); /* a display list's size */
+RwUInt32 fn_8046EEA0(RpGameCubeVertexDescBuilder *builder, RpGameCubeVertexSource *source);
+void fn_8046B0E0(void *displayListRecord, RwInt32 meshIndex, RwUInt32 size, void *data);
+RwInt32 fn_8046ACBC(RpGameCubeVertexDescBuilder *builder);
+void fn_8046E594(RpGameCubeVertexDescBuilder *builder, void *displayListRecord,
+                 RpGameCubeIndexSource *indices, RwUInt32 numIndices, RwInt32 firstIndex,
+                 RwInt32 vertexFormat, RwInt32 numPrimitives, RwInt32 primitive, RwInt32 flags);
+void fn_8046F208(RpGameCubeVertexDescBuilder *builder, RpGameCubeInstanceData *instance,
+                 RpGameCubeVertexSource *source, void *vertexData);
+void fn_8046F6CC(RpGameCubeVertexDescBuilder *builder, RpGameCubeInstanceData *instance,
+                 RpGameCubeVertexSource *source, RwInt32 firstVertex, RwInt32 flags);
+extern RwUInt16 lbl_805F1678; /* a GameCube instance stamp (inferred) */
+
 /* GameCube: a mesh's display list (inferred) */
 typedef struct RpGameCubeDisplayList {
     /* 0x0 */ void *data;
@@ -254,13 +323,13 @@ typedef struct RpGameCubeDisplayList {
 /* GameCube: the instanced data of a geometry that follows its resource entry: its vertex
  * descriptors, then a display list record per mesh after the variable descriptor table; only the
  * mapped members are used (inferred) */
-typedef struct RpGameCubeInstanceData {
+struct RpGameCubeInstanceData {
     /* 0x00 */ RwUInt16 syncToken; /* GX draw sync token of the last draw */
-    /* 0x02 */ RwUInt8 field_0x2[0x2];
+    /* 0x02 */ RwUInt16 serialNum; /* of the geometry's mesh header */
     /* 0x04 */ RwUInt32 flags;
     /* 0x08 */ RwInt32 numVertexDescriptors;
     /* 0x0C */ RpGameCubeVertexDescriptor vertexDescriptors[1]; /* numVertexDescriptors entries */
-} RpGameCubeInstanceData;
+};
 
 /* The display list records of the meshes, which follow the instance's vertex descriptors. Written
  * as the second descriptor's address plus the remaining descriptors, which is how the original

@@ -47,7 +47,7 @@ RpAtomic *fn_80443A74(RpAtomic *atomic) {
         verts = geometry->morphTarget->verts;
         normals = geometry->morphTarget->normals;
         preLitLum = geometry->preLitLum;
-        texCoords = geometry->texCoords;
+        texCoords = geometry->texCoords[0];
 
         for (i = 0; i < dmorphGeometry->numDMorphTargets; i++) {
             if (dmorphAtomic->values[i] != dmorphGeometry->values[i]) {
