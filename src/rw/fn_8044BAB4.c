@@ -76,7 +76,7 @@ static inline RpSkin *SkinSplitDataCreate(RpSkin *skin, RwUInt32 boneLimit, RwUI
     splitData->boneLimit = boneLimit;
     splitData->numMeshes = numMeshes;
     splitData->numRLE = numRLE;
-    splitData->meshRLECount = (RwUInt16 *)(splitData->matrixRemapIndices + numMatrices);
+    splitData->meshRLECount = (SkinRLE *)(splitData->matrixRemapIndices + numMatrices);
     splitData->meshRLE = splitData->meshRLECount + numMeshes;
     return skin;
 }
@@ -293,7 +293,9 @@ void *fn_8044C324(void *object, RwInt32 offset, RwInt32 size) {
 }
 
 /* Geometry plugin copy: skins are not copied */
-void *fn_8044C38C(void *dstObject, const void *srcObject, RwInt32 offset, RwInt32 size) {}
+void *fn_8044C38C(void *dstObject, const void *srcObject, RwInt32 offset, RwInt32 size) {
+    return dstObject;
+}
 
 /* Atomic plugin constructor */
 void *fn_8044C390(void *object, RwInt32 offset, RwInt32 size) {
@@ -306,11 +308,13 @@ void *fn_8044C3D8(void *object, RwInt32 offset, RwInt32 size) {
     if (RPSKINATOMICGETDATA(object)->hierarchy != NULL) {
         RPSKINATOMICGETDATA(object)->hierarchy = NULL;
     }
+    return object;
 }
 
 /* Atomic plugin copy: shares the hierarchy */
 void *fn_8044C3FC(void *dstObject, const void *srcObject, RwInt32 offset, RwInt32 size) {
     RPSKINATOMICGETDATA(dstObject)->hierarchy = RPSKINATOMICGETDATA(srcObject)->hierarchy;
+    return dstObject;
 }
 
 /* Puts a loaded skinned atomic in the skin pipeline that suits its other plugins */
@@ -542,7 +546,9 @@ RwStream *fn_8044C8C0(RwStream *stream, RwInt32 length, void *object, RwInt32 of
 
 /* Writes an atomic's skin chunk: skins are written with their geometry */
 RwStream *fn_8044CB6C(RwStream *stream, RwInt32 length, const void *object, RwInt32 offset,
-                      RwInt32 size) {}
+                      RwInt32 size) {
+    return stream;
+}
 
 /* The size of an atomic's skin chunk */
 RwInt32 fn_8044CB70(const void *object, RwInt32 offset, RwInt32 size) {
@@ -566,6 +572,7 @@ RwBool fn_8044CB90(void) {
 /* Sets the hierarchy that animates a skinned atomic */
 RpAtomic *fn_8044CC98(RpAtomic *atomic, void *hierarchy) {
     RPSKINATOMICGETDATA(atomic)->hierarchy = hierarchy;
+    return atomic;
 }
 
 /* The skin of a geometry */
