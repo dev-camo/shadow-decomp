@@ -259,10 +259,10 @@ static BOOL CheckCancel(u32 resume) {
         finished = executing;
         executing = &DummyCommandBlock;
 
-        finished->state = 10;
+        finished->state = DVD_STATE_CANCELED;
 
         if (finished->callback)
-            (*finished->callback)(-3, finished);
+            (*finished->callback)(DVD_RESULT_CANCELED, finished);
 
         if (CancelCallback)
             (CancelCallback)(0, finished);
@@ -1424,7 +1424,7 @@ s32 DVDChangeDisk(DVDCommandBlock *block, DVDDiskID *id) {
             retVal = -1;
             break;
         } else if (state == DVD_STATE_CANCELED) {
-            retVal = -3;
+            retVal = DVD_RESULT_CANCELED;
             break;
         }
         OSSleepThread(&__DVDThreadQueue);
@@ -1472,7 +1472,7 @@ s32 DVDStopMotor(DVDCommandBlock *block) {
             retVal = -1;
             break;
         } else if (state == DVD_STATE_CANCELED) {
-            retVal = -3;
+            retVal = DVD_RESULT_CANCELED;
             break;
         }
         OSSleepThread(&__DVDThreadQueue);
@@ -1524,7 +1524,7 @@ s32 DVDInquiry(DVDCommandBlock *block, DVDDriveInfo *info) {
             retVal = -1;
             break;
         } else if (state == DVD_STATE_CANCELED) {
-            retVal = -3;
+            retVal = DVD_RESULT_CANCELED;
             break;
         }
         OSSleepThread(&__DVDThreadQueue);
@@ -1654,7 +1654,7 @@ int DVDCancelAsync(DVDCommandBlock *block, DVDCBCallback callback) {
         block->state = DVD_STATE_CANCELED;
 
         if (block->callback)
-            (block->callback)(-3, block);
+            (block->callback)(DVD_RESULT_CANCELED, block);
 
         if (callback)
             (*callback)(0, block);
@@ -1708,7 +1708,7 @@ int DVDCancelAsync(DVDCommandBlock *block, DVDCBCallback callback) {
 
         block->state = DVD_STATE_CANCELED;
         if (block->callback) {
-            (block->callback)(-3, block);
+            (block->callback)(DVD_RESULT_CANCELED, block);
         }
 
         if (callback) {
