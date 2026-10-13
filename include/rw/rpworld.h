@@ -250,8 +250,9 @@ typedef RpAtomic *(*RpGameCubeRenderCallBack)(RpAtomic *atomic, RpGameCubeRender
 void *fn_8046335C(RwUInt32 pluginID, RwUInt32 pluginData, void *instanceCallBack,
                   void *reinstanceCallBack, RpGameCubeLightingCallBack lightingCallBack,
                   RpGameCubeRenderCallBack renderCallBack);
-void fn_80463428(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh); /* the default lighting */
-void fn_8049B800(void *pipeline);                                     /* destroys a pipeline */
+RpAtomic *fn_80463428(RpAtomic *atomic,
+                      RpGameCubeRenderMesh *renderMesh); /* the default lighting */
+void fn_8049B800(void *pipeline);                        /* destroys a pipeline */
 
 /* GameCube render helpers (inferred from their use) */
 void fn_804950AC(RwMatrix *matrix, RwBool normals);  /* loads the position (and normal) matrix */
