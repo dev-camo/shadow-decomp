@@ -97,6 +97,7 @@ RwStream *fn_8044E89C(RwStream *stream, RpGeometry *geometry) {
     RwUInt32 counts;
     RpSkin *skin;
     RwInt32 numVertices;
+    RwUInt32 maxNumWeights;
     RwUInt32 size;
 
     if (fn_8047CEF0(stream, rwID_STRUCT, fn_8044E7D0(geometry) - 12, RW_STREAM_VERSION,
@@ -109,8 +110,10 @@ RwStream *fn_8044E89C(RwStream *stream, RpGeometry *geometry) {
 
     numVertices = geometry->numVertices;
     skin = RPSKINGEOMETRYGETDATA(geometry);
-    counts = ((skin->maxNumWeightsForVertex & 0xFF) << 16) | ((skin->numBoneIds & 0xFF) << 8) |
-             (skin->numBones & 0xFF);
+    /* the byte lengths below use this count, read with the packed counts */
+    maxNumWeights = skin->maxNumWeightsForVertex;
+    counts =
+        ((maxNumWeights & 0xFF) << 16) | ((skin->numBoneIds & 0xFF) << 8) | (skin->numBones & 0xFF);
     if (fn_8047D458(stream, (RwInt32 *)&counts, sizeof(RwUInt32)) == NULL) {
         return NULL;
     }
@@ -118,7 +121,7 @@ RwStream *fn_8044E89C(RwStream *stream, RpGeometry *geometry) {
         return NULL;
     }
     if (skin->maxNumWeightsForVertex > 1) {
-        size = skin->maxNumWeightsForVertex * numVertices;
+        size = maxNumWeights * numVertices;
         if (fn_80480ED0(stream, skin->indices, size) == NULL) {
             return NULL;
         }
