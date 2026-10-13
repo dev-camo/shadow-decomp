@@ -227,7 +227,7 @@ Sint32 LSC_GetStmId(LSC lsc, Sint32 no) {
         return -1;
     }
     if (no < 0 || no >= lsc->num_stm) {
-        LSC_CallErrFunc("E2005012812: Illigal parameter no=%d\n", no);
+        LSC_CallErrFunc("E2005012812: Illigal parameter no=%d\n", (int)no);
         return -1;
     }
     return lsc->tbl[(lsc->rd_idx + no) % LSC_MAX_ENTRY].id;
@@ -246,7 +246,7 @@ Char8 *LSC_GetStmFname(LSC lsc, Sint32 stm_id) {
         }
     }
     if (i == LSC_MAX_ENTRY) {
-        LSC_CallErrFunc("E2005012814: Can not find stream ID =%d\n", stm_id);
+        LSC_CallErrFunc("E2005012814: Can not find stream ID =%d\n", (int)stm_id);
         return 0;
     }
     return lsc->tbl[i].fname;
@@ -265,7 +265,7 @@ Sint32 LSC_GetStmStat(LSC lsc, Sint32 stm_id) {
         }
     }
     if (i == LSC_MAX_ENTRY) {
-        LSC_CallErrFunc("E2005012816: Can not find stream ID =%d\n", stm_id);
+        LSC_CallErrFunc("E2005012816: Can not find stream ID =%d\n", (int)stm_id);
         return -1;
     }
     return lsc->tbl[i].stat;
@@ -284,7 +284,7 @@ Sint32 LSC_GetStmRdSct(LSC lsc, Sint32 stm_id) {
         }
     }
     if (i == LSC_MAX_ENTRY) {
-        LSC_CallErrFunc("E2005012818: Can not find stream ID =%d\n", stm_id);
+        LSC_CallErrFunc("E2005012818: Can not find stream ID =%d\n", (int)stm_id);
         return 0;
     }
     return lsc->tbl[i].pos;
@@ -297,7 +297,7 @@ void LSC_SetFlowLimit(LSC lsc, Sint32 min_val) {
         return;
     }
     if (min_val < 0 || min_val > lsc->bufsize) {
-        LSC_CallErrFunc("E2005012820: Illigal parameter min_val=%d\n", min_val);
+        LSC_CallErrFunc("E2005012820: Illigal parameter min_val=%d\n", (int)min_val);
         return;
     }
     lsc->min_val = min_val;

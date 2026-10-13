@@ -125,7 +125,7 @@ static void svm_unlock(void) {
             if (svm_locking_type != 1) {
                 SVM_CallErr(
                     "2103102:SVM:svm_unlock:lock type miss match.(type org=%d, type now=%d)",
-                    svm_locking_type, 1);
+                    (int)svm_locking_type, 1);
             }
             svm_locking_type = 0;
         }
