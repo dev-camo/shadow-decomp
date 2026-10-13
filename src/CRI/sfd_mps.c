@@ -128,22 +128,22 @@ static Sint32 SFMPS_Seek(SFD sfd) {
     return 0;
 }
 
-/* Not supported: error 0xFF000B03. */
+/* Not supported: error SFMPS_ERR_NOTSUPPORTED. */
 Sint32 SFMPS_AddRead(SFD sfd) {
     return SFLIB_SetErr(sfd, SFMPS_ERR_NOTSUPPORTED);
 }
 
-/* Not supported: error 0xFF000B03. */
+/* Not supported: error SFMPS_ERR_NOTSUPPORTED. */
 Sint32 SFMPS_GetRead(SFD sfd) {
     return SFLIB_SetErr(sfd, SFMPS_ERR_NOTSUPPORTED);
 }
 
-/* Not supported: error 0xFF000B03. */
+/* Not supported: error SFMPS_ERR_NOTSUPPORTED. */
 Sint32 SFMPS_AddWrite(SFD sfd) {
     return SFLIB_SetErr(sfd, SFMPS_ERR_NOTSUPPORTED);
 }
 
-/* Not supported: error 0xFF000B03. */
+/* Not supported: error SFMPS_ERR_NOTSUPPORTED. */
 Sint32 SFMPS_GetWrite(SFD sfd) {
     return SFLIB_SetErr(sfd, SFMPS_ERR_NOTSUPPORTED);
 }
@@ -993,8 +993,8 @@ static Sint32 sfmps_ExecServerLoop(SFD sfd, Sint32 *len) {
     return ret;
 }
 
-/* Demux pass: unless all outputs terminated, installs the user system-header callback (cond
- * 0x3B/0x3C) and runs the decode loop over the input ring, updating the 64-bit flow / byte / skip
+/* Demux pass: unless all outputs terminated, installs the user system-header callback (conds
+ * SFD_COND_SYSFN/SYSOBJ) and runs the decode loop over the input ring, updating the 64-bit flow / byte / skip
  * counters and, in PREP, sfmps_ProcPrep. */
 Sint32 sfmps_ExecServerSub(SFD sfd) {
     Sint32 term1, term2, term3;

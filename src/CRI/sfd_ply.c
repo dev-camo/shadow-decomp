@@ -125,8 +125,8 @@ Sint32 SFD_RelFrm(SFD sfd, void *frm) {
     return SFTRN_CallTrtTrif(sfd, 6, 12, (Sint32)frm, 0);
 }
 
-/* Asks the video output driver (tr 6, GetRead) for the next frame whose display time has come;
- * *frm = 0 when none. Counts the frame when none is out (recording the time of the first) and calls
+/* Asks the selected video output driver (tr 6, GetRead) for the next frame; *frm = 0 when it
+ * returns none. Counts the frame when none is out (recording the time of the first) and calls
  * the optional record hook. */
 Sint32 SFD_GetFrm(SFD sfd, void **frm) {
     Sint32 ret;
