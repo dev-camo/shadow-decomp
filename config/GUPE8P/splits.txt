@@ -1393,3 +1393,8 @@ rw/fn_80442B98.c:
 rw/fn_80443044.c:
 	.text       start:0x80443044 end:0x80443A74
 	.sbss       start:0x805F1428 end:0x805F1430
+
+rw/fn_80443A74.c:
+	.text       start:0x80443A74 end:0x804447B0
+	.sbss       start:0x805F1430 end:0x805F1438
+	.sdata2     start:0x805FAFA0 end:0x805FAFB0
