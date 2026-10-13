@@ -74,6 +74,9 @@ typedef struct TRKFramingState {
     u8 fcsType;                 // _10
 } TRKFramingState;
 
+// Size of a command/reply packet header (CommandReply); payloads start after it.
+#define TRKMSG_HEADER_SIZE 0x40
+
 // Command reply information (size 0x40).
 typedef struct CommandReply {
     u32 _00; // _00
@@ -82,9 +85,9 @@ typedef struct CommandReply {
         MessageCommandID m;
     } commandID; // _04, use MessageCommandID enum
     union {
-        u8 b;
-        DSReplyError r;
-    } replyError; // _08, use DSReplyError enum - should be enum type? check size.
+        u8 b; // reply error (DSReplyError) in an ACK
+        u32 w; // packet word: file handle in file replies, program counter in stop notifications
+    } replyError; // _08
     u32 _0C;      // _0C
     u8 _10[0x30]; // _10, unknown
 } CommandReply;

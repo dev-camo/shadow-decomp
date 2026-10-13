@@ -39,7 +39,7 @@ DSError TRKSuppAccessFile(u32 file_handle, u8 *data, size_t *count, DSIOResult *
             reply._00 = length + 0x40;
         }
 
-        reply.replyError.r = file_handle;
+        reply.replyError.w = file_handle;
         *(u16 *)&reply._0C = length;
 
         TRKGetFreeBuffer(&bufferId, &buffer);
@@ -60,7 +60,7 @@ DSError TRKSuppAccessFile(u32 file_handle, u8 *data, size_t *count, DSIOResult *
                 replyIOResult = *(u32 *)(replyBuffer->data + 0x10);
                 replyLength = *(u16 *)(replyBuffer->data + 0x14);
                 if (read && error == DS_NoError && replyLength <= length) {
-                    TRKSetBufferPosition(replyBuffer, 0x40);
+                    TRKSetBufferPosition(replyBuffer, TRKMSG_HEADER_SIZE);
                     error = TRKReadBuffer_ui8(replyBuffer, data + i, replyLength);
                     if (error == DS_MessageBufferReadError) {
                         error = DS_NoError;
@@ -214,7 +214,7 @@ DSError HandleCloseFileSupportRequest(int replyError, DSIOResult *ioResult) {
     memset(&reply, 0, sizeof(CommandReply));
     reply.commandID.b = DSMSG_CloseFile;
     reply._00 = 0x40;
-    reply.replyError.r = replyError;
+    reply.replyError.w = replyError;
     error = TRKGetFreeBuffer(&bufferId, &buffer1);
 
     if (error == DS_NoError) {
@@ -240,7 +240,7 @@ DSError HandleCloseFileSupportRequest(int replyError, DSIOResult *ioResult) {
     return error;
 }
 
-DSError HandlePositionFileSupportRequest(DSReplyError replyErr, u32 *param_2, u8 param_3,
+DSError HandlePositionFileSupportRequest(u32 handle, u32 *param_2, u8 param_3,
                                          DSIOResult *ioResult) {
     DSError error;
     int bufferId2;
@@ -252,7 +252,7 @@ DSError HandlePositionFileSupportRequest(DSReplyError replyErr, u32 *param_2, u8
     memset(&reply, 0, sizeof(CommandReply));
     reply.commandID.b = DSMSG_PositionFile;
     reply._00 = 0x40;
-    reply.replyError.r = replyErr;
+    reply.replyError.w = handle;
     reply._0C = *param_2;
     reply._10[0] = param_3;
     error = TRKGetFreeBuffer(&bufferId1, &buffer1);
