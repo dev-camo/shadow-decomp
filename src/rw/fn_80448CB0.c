@@ -39,7 +39,8 @@ static inline void PTankDrawParticles(RpAtomic *atomic) {
 
     GXBegin(GX_QUADS, GX_VTXFMT0, ptank->actPCount * 4);
 
-    /* the kernels load positions and normals with paired-single quantized loads */
+    /* the kernels write positions and normals to the vertex FIFO with paired-single quantized
+     * stores */
     gqr6 = 0;
     gqr7 = gqr6;
     format = GAMECUBEVERTEXFORMAT(geometry);
