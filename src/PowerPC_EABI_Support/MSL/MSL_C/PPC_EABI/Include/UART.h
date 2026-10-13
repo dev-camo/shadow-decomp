@@ -29,7 +29,7 @@ typedef enum UARTBaudRate {
 } UARTBaudRate;
 
 UARTError InitializeUART(UARTBaudRate baudRate);
-UARTError WriteUARTN(const void *bytes, unsigned long length);
+UARTError WriteUARTN(void *bytes, unsigned long length);
 
 #ifdef __cplusplus
 }
