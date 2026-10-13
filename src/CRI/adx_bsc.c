@@ -7,14 +7,10 @@
 #include "CRI/adx_b.h"
 #include "CRI/adx_dcd.h"
 
-void ADXB_ExecOneAdx(ADXB adxb);
-void ADXB_EvokeDecode(ADXB adxb);
-Sint32 ADXB_DecodeHeaderAdx(ADXB adxb, Uint8 *buf, Sint32 bsize);
-void ADXB_Destroy(ADXB adxb);
 void adxb_DefAddWr(void *obj, Sint32 nbyte, Sint32 nsmpl);
 Sint16 *adxb_DefGetWr(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *x70);
 
-/* ---- SKG: key generation from the sample count (shared with adx_sje.c by inclusion) ---- */
+/* ---- SKG: key generation from the sample count (file-local copy; adx_sje.c has its own) ---- */
 
 static const Char8 skg_version[] = "\nSKG/GC Ver.0.64 Build:Feb 28 2005 15:48:53\n";
 
@@ -152,7 +148,7 @@ static Sint32 SKG_MakeKey(Sint32 nsmpl, Sint16 *k0, Sint16 *km, Sint16 *ka) {
     Sint16 kmv;
     Sint32 i;
 
-    sprintf(str, "%08X", nsmpl);
+    sprintf(str, "%08X", (unsigned int)nsmpl);
     if (skg_init_count == 0) {
         SKG_Init();
     }
