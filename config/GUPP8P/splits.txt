@@ -529,6 +529,12 @@ Runtime.PPCEABI.H/global_destructor_chain.c:
 PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/errno.c:
 	.sbss       start:0x805F2398 end:0x805F23A0
 
+PowerPC_EABI_Support/Runtime/Src/NMWException.cp:
+	extab       start:0x80005660 end:0x800056C8
+	extabindex  start:0x80007550 end:0x800075BC
+	.text       start:0x803A140C end:0x803A1A7C
+	.sdata      start:0x805EED38 end:0x805EED40
+
 PowerPC_EABI_Support/Runtime/Src/ptmf.c:
 	.text       start:0x803A1A7C end:0x803A1AD4
 
