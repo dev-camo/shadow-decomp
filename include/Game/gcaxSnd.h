@@ -453,7 +453,7 @@ s32 fn_8043F240(void);
 s32 fn_8043F284(void);
 s32 fn_8043F2F0(void);
 s32 fn_8043F35C(GcaxPlayer *player, u8 *msg, u8 priority);
-s32 fn_8043F41C(GcaxPlayer *player, u8 *msg, u8 status, ...);
+s32 fn_8043F41C(GcaxPlayer *player, u8 *msg, u16 status, ...);
 s32 fn_8043F5AC(void);
 s32 fn_8043F60C(GcaxPlayer *player);
 s32 fn_8043F6AC(GcaxPlayer **out);
