@@ -156,6 +156,13 @@ typedef struct RwRaster {
     /* 0x0 */ struct RwRaster *parent;
 } RwRaster;
 
+/* A resource entry: instanced data that the engine caches for an object, which follows it */
+typedef struct RwResEntry {
+    /* 0x00 */ RwUInt8 field_0x0[0xC];
+    /* 0x0C */ void *owner;
+    /* 0x10 */ RwUInt8 field_0x10[0x8];
+} RwResEntry;
+
 /* A texture: its raster and reference count (0x58 bytes) */
 typedef struct RwTexture {
     /* 0x00 */ RwRaster *raster;
