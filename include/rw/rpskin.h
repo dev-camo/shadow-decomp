@@ -22,15 +22,23 @@ typedef struct RwMatrixWeights {
     RwReal w3;
 } RwMatrixWeights;
 
+/* A two-byte record of the split data: a mesh's first run (its low seven bits index meshRLE) and
+ * number of runs, or a run's first bone and number of bones (inferred) */
+typedef struct SkinRLE {
+    RwUInt8 start;
+    RwUInt8 length;
+} SkinRLE;
+
 /* How the skin's meshes are split so that each batch uses at most boneLimit bones: the bone
- * remap table, then the bone run counts of each mesh, then the runs */
+ * remap table, then each mesh's runs, then the runs; the records follow numBones bytes, so they are
+ * byte pairs */
 typedef struct SkinSplitData {
     /* 0x00 */ RwUInt32 boneLimit;
     /* 0x04 */ RwUInt32 numMeshes;
     /* 0x08 */ RwUInt32 numRLE;
     /* 0x0C */ RwUInt8 *matrixRemapIndices; /* numBones entries; the block's allocation */
-    /* 0x10 */ RwUInt16 *meshRLECount;      /* numMeshes entries */
-    /* 0x14 */ RwUInt16 *meshRLE;           /* numRLE entries */
+    /* 0x10 */ SkinRLE *meshRLECount;       /* numMeshes entries */
+    /* 0x14 */ SkinRLE *meshRLE;            /* numRLE entries */
 } SkinSplitData;
 
 /* A skin (0x4C bytes) */
@@ -44,8 +52,8 @@ typedef struct RpSkin {
     /* 0x18 */ RwMatrixWeights *vertexBoneWeights;
     /* 0x1C */ void *field_0x1C; /* GameCube instance data */
     /* 0x20 */ void *field_0x20;
-    /* 0x24 */ RwUInt32 field_0x24;
-    /* 0x28 */ RwUInt32 field_0x28;
+    /* 0x24 */ RwUInt8 *field_0x24; /* GameCube: an allocated stream buffer */
+    /* 0x28 */ RwUInt8 *field_0x28; /* GameCube: an aligned buffer inside field_0x24 */
     /* 0x2C */ RwUInt32 field_0x2C;
     /* 0x30 */ SkinSplitData skinSplitData;
     /* 0x48 */ void *unaligned; /* the allocation of the bone ids, matrices, indices and weights */
@@ -101,8 +109,8 @@ RwInt32 fn_8044E7D0(RpGeometry *geometry);                     /* native stream 
 RwStream *fn_8044E89C(RwStream *stream, RpGeometry *geometry); /* native stream write */
 RwStream *fn_8044EAD0(RwStream *stream, RpGeometry *geometry); /* native stream read */
 RwInt32 fn_8044EE3C(const void *object, RwInt32 offset, RwInt32 size); /* atomic stream size */
-void fn_80451D60(RwUInt32 flags);                                      /* opens the pipelines */
-void fn_80451E0C(void);                                                /* closes the pipelines */
+RwBool fn_80451D60(RwUInt32 flags);                                    /* opens the pipelines */
+RwBool fn_80451E0C(void);                                              /* closes the pipelines */
 RpAtomic *fn_80451E6C(RpAtomic *atomic, RwInt32 type);                 /* sets the skin pipeline */
 
 #ifdef __cplusplus
