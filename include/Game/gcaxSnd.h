@@ -292,14 +292,6 @@ extern "C" {
 
 extern GcaxWork *lbl_805F1404;
 
-/* dB to linear gain: the first entry whose threshold exceeds a dB value gives its gain. */
-typedef struct GcaxCurvePoint {
-    f32 value;
-    f32 threshold; /* dB */
-} GcaxCurvePoint;
-
-extern GcaxCurvePoint lbl_8056B090[1025];
-
 #define GCAX_MAGIC 0x67636178     /* 'gcax' */
 #define GCAX_KIND_MSB 0x4D534220  /* 'MSB ' */
 #define GCAX_KIND_MPBW 0x4D504257 /* 'MPBW' */
@@ -333,7 +325,7 @@ void fn_8043B868(GcaxList *notes, GcaxNode *ref);
 void fn_8043B89C(GcaxNode *ref);
 GcaxNode *fn_8043B8F0(GcaxList *notes, GcaxNode *ref);
 GcaxNode *fn_8043B910(GcaxList *notes, GcaxNote *note);
-GcaxNote *fn_8043B954(GcaxPlayer *player, int channel, int key, int velocity, int priority);
+GcaxNote *fn_8043B954(GcaxPlayer *player, int channel, s32 key, int velocity, int priority);
 int fn_8043BB18(void);
 void fn_8043BB54(GcaxNote *note);
 GcaxNote *fn_8043BBC8(int priority, int count);
