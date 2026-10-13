@@ -200,7 +200,7 @@ extern RwInt32 lbl_805F1578; /* engine plugin offset of the resources module */
 /* resources (inferred) */
 RwResEntry *fn_80480878(void *owner, RwResEntry **ownerRef, RwInt32 size,
                         RwResEntryDestroyNotify destroyNotify); /* allocates an entry */
-void fn_8048071C(RwResEntry *entry);                            /* frees an entry */
+RwBool fn_8048071C(RwResEntry *entry);                          /* frees an entry */
 
 /* A texture: its raster and reference count (0x58 bytes) */
 typedef struct RwTexture {
