@@ -1436,5 +1436,10 @@ rw/fn_8044BAB4.c:
 	.bss        start:0x805E1538 end:0x805E1560
 	.sdata      start:0x805EDD80 end:0x805EDD88
 
+rw/fn_8044CDC4.c:
+	.text       start:0x8044CDC4 end:0x8044E6BC
+	.rodata     start:0x8051BD10 end:0x8051BD28
+	.sdata2     start:0x805FB0A8 end:0x805FB0D8
+
 rw/fn_80451A6C.c:
 	.text       start:0x80451A6C end:0x80451F48
