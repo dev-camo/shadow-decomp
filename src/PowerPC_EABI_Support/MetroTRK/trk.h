@@ -193,7 +193,7 @@ u32 TRKCloseFile(u32 command, u32 file_handle);
 DSError TRKSuppAccessFile(u32 file_handle, u8 *data, size_t *count, DSIOResult *io_result,
                           BOOL need_reply, BOOL read);
 DSError HandleCloseFileSupportRequest(int replyError, DSIOResult *ioResult);
-DSError HandlePositionFileSupportRequest(DSReplyError replyErr, u32 *param_2, u8 param_3,
+DSError HandlePositionFileSupportRequest(u32 handle, u32 *param_2, u8 param_3,
                                          DSIOResult *ioResult);
 ////////////////////////////////////
 

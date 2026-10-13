@@ -170,12 +170,12 @@ DSError TRKDoWriteMemory(MessageBuffer *b) {
             length, options);
 
     if (options & DSMSGMEMORY_Extended) {
-        return TRKStandardACK(b, DSMSG_ReplyACK, DSMSG_ReadRegisters);
+        return TRKStandardACK(b, DSMSG_ReplyACK, DSREPLY_UnsupportedOptionError);
     }
 
     tempLength = length;
 
-    TRKSetBufferPosition(b, DSMSGMEMORY_Space_data);
+    TRKSetBufferPosition(b, TRKMSG_HEADER_SIZE);
     if (options & DSMSGMEMORY_Space_data) {
         TRKReadBuffer(b, buf + (start & 0x1f), tempLength);
         result = TRKTargetAccessARAM((u32)buf, start, &tempLength, FALSE);
@@ -319,7 +319,7 @@ DSError TRKDoWriteRegisters(MessageBuffer *b) {
         return TRKStandardACK(b, DSMSG_ReplyACK, DSREPLY_InvalidRegisterRange);
     }
 
-    TRKSetBufferPosition(b, 0x40);
+    TRKSetBufferPosition(b, TRKMSG_HEADER_SIZE);
 
     switch (options) {
     case DSREG_Default:
@@ -468,27 +468,27 @@ DSError TRKDoStep(MessageBuffer *b) {
 }
 
 DSError TRKDoStop(MessageBuffer *b) {
-    MessageCommandID c;
+    DSReplyError replyError;
 
     switch (TRKTargetStop()) {
     case DS_NoError:
-        c = DSMSG_Ping;
+        replyError = DSREPLY_NoError;
         break;
     case DS_InvalidProcessID:
-        c = '!';
+        replyError = DSREPLY_InvalidProcessID;
         break;
     case DS_InvalidThreadID:
-        c = '\"';
+        replyError = DSREPLY_InvalidThreadID;
         break;
     case DS_OSError:
-        c = ' ';
+        replyError = DSREPLY_OSError;
         break;
     default:
-        c = DSMSG_Connect;
+        replyError = DSREPLY_Error;
         break;
     }
 
-    TRKStandardACK(b, DSMSG_ReplyACK, c);
+    TRKStandardACK(b, DSMSG_ReplyACK, replyError);
 
     return DS_NoError;
 }

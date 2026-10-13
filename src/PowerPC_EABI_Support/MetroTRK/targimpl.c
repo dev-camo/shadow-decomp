@@ -436,7 +436,7 @@ DSError TRKTargetAddStopInfo(MessageBuffer *b) {
     memset(&reply, 0, 0x40);
     reply._00 = 0x40;
     reply.commandID.b = 0x90;
-    reply.replyError.r = gTRKCPUState.Default.PC;
+    reply.replyError.w = gTRKCPUState.Default.PC;
     TRKTargetReadInstruction(&t, gTRKCPUState.Default.PC);
 
     reply._0C = t;
@@ -454,7 +454,7 @@ void TRKTargetAddExceptionInfo(MessageBuffer *b) {
 
     reply._00 = 0x40;
     reply.commandID.b = 0x91;
-    reply.replyError.r = gTRKExceptionStatus.exceptionInfo.PC;
+    reply.replyError.w = gTRKExceptionStatus.exceptionInfo.PC;
 
     TRKTargetReadInstruction(&local_54, gTRKExceptionStatus.exceptionInfo.PC);
 

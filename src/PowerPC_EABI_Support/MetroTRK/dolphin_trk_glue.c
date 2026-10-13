@@ -95,12 +95,12 @@ int TRKPollUART(void) {
 
 UARTError TRKReadUARTN(void *bytes, u32 length) {
     int readErr = gDBCommTable.read_func(bytes, length);
-    return ((-readErr | readErr) >> 31);
+    return -(readErr != 0);
 }
 
 UARTError TRKWriteUARTN(const void *bytes, u32 length) {
     int writeErr = gDBCommTable.write_func(bytes, length);
-    return ((-writeErr | writeErr) >> 31);
+    return -(writeErr != 0);
 }
 
 void ReserveEXI2Port(void) {
