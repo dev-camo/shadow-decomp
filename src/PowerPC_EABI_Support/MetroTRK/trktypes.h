@@ -85,8 +85,8 @@ typedef struct CommandReply {
         MessageCommandID m;
     } commandID; // _04, use MessageCommandID enum
     union {
-        u8 b; // reply error (DSReplyError) in an ACK
-        u32 w; // packet word: file handle in file replies, program counter in stop notifications
+        u8 b;     // reply error (DSReplyError) in an ACK
+        u32 w;    // packet word: file handle in file packets, program counter in stop notifications
     } replyError; // _08
     u32 _0C;      // _0C
     u8 _10[0x30]; // _10, unknown
