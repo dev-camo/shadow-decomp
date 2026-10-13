@@ -2,8 +2,17 @@
 #define GAME_GADGET_H
 
 #include "Game/Task.h"
+#include "Game/fn_8040_vector_types.h"
 
 class UnkGadgetOwner_800C9CD0;
+
+/* Copy the owner's position, its rotation converted from degrees to radians, and its byte at
+ * +0x22 (behaviour inferred). */
+extern "C" {
+void fn_800C9F14(UnkGadgetOwner_800C9CD0 *owner, Fn8040Vector3 *position);
+void fn_800C9ED4(UnkGadgetOwner_800C9CD0 *owner, Fn8040Vector3 *rotation);
+void fn_800C9E60(UnkGadgetOwner_800C9CD0 *owner, u8 *value);
+}
 
 /* Gadget (class name from RTTI): a stage object task registered with an owner object. */
 class Gadget : public Task {

@@ -18,15 +18,7 @@ struct RwMatrix;
 extern "C" {
 RwMatrix *RwFrameGetLTM(RwFrame *frame);
 void fn_800635A4(void *dst, RwMatrix *matrix);
-void *fn_8001C4F8(void);
-Task *fn_801EB304(void *manager, int index);
-boost::shared_ptr<GadgetCharInfo> fn_8015CB88(int arg0, int arg1, const char *name);
 void fn_8015BE64(UnkHandleBTarget_8015BE64 *target);
-/* Copy the owner's position, its rotation converted from degrees to radians, and its byte at
- * +0x22 (behaviour inferred). */
-void fn_800C9F14(UnkGadgetOwner_800C9CD0 *owner, Fn8040Vector3 *position);
-void fn_800C9ED4(UnkGadgetOwner_800C9CD0 *owner, Fn8040Vector3 *rotation);
-void fn_800C9E60(UnkGadgetOwner_800C9CD0 *owner, u8 *value);
 }
 
 /* fn_802C7FC0 to fn_802C8068 precede the gadget in this unit. Their owning class and real (C++)
