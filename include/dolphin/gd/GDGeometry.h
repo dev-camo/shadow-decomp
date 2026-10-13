@@ -36,7 +36,7 @@ extern "C" {
                         tx3Frac, tx4Cnt, tx4Type, p11)                                             \
     ((tx1Cnt) << 0 | (tx1Type) << 1 | (tx1Frac) << 4 | (tx2Cnt) << 9 | (tx2Type) << 10 |           \
      (tx2Frac) << 13 | (tx3Cnt) << 18 | (tx3Type) << 19 | (tx3Frac) << 22 | (tx4Cnt) << 27 |       \
-     (tx4Type) << 28 | p11 << 31)
+     (tx4Type) << 28 | (p11) << 31)
 
 #define CP_REG_VAT_GRP2(tx4Frac, tx5Cnt, tx5Type, tx5Frac, tx6Cnt, tx6Type, tx6Frac, tx7Cnt,       \
                         tx7Type, tx7Frac)                                                          \
