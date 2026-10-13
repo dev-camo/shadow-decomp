@@ -380,8 +380,8 @@ s32 DVDReadPrio(DVDFileInfo *fileInfo, void *addr, s32 length, s32 offset, s32 p
         } else if (state == -1) {
             retVal = -1;
             break;
-        } else if (state == 10) {
-            retVal = -3;
+        } else if (state == DVD_STATE_CANCELED) {
+            retVal = DVD_RESULT_CANCELED;
             break;
         }
         OSSleepThread(&__DVDThreadQueue);
@@ -446,8 +446,8 @@ s32 DVDSeekPrio(DVDFileInfo *fileInfo, s32 offset, s32 prio) {
         } else if (state == -1) {
             retVal = -1;
             break;
-        } else if (state == 10) {
-            retVal = -3;
+        } else if (state == DVD_STATE_CANCELED) {
+            retVal = DVD_RESULT_CANCELED;
             break;
         }
         OSSleepThread(&__DVDThreadQueue);
@@ -631,7 +631,7 @@ s32 DVDPrepareStream(DVDFileInfo *fileInfo, u32 length, u32 offset) {
             break;
         }
         if (state == DVD_STATE_CANCELED) {
-            retVal = -3;
+            retVal = DVD_RESULT_CANCELED;
             break;
         }
 
