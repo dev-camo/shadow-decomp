@@ -242,6 +242,19 @@ typedef struct RwMatrix {
         (m)->flags |= rwMATRIXINTERNALIDENTITY | rwMATRIXTYPEORTHONORMAL;                          \
     } while (0)
 
+/* how a matrix operation combines with the matrix (inferred) */
+#define rwCOMBINEREPLACE 0
+#define rwCOMBINEPRECONCAT 1
+#define rwCOMBINEPOSTCONCAT 2
+
+/* matrices (inferred) */
+RwMatrix *fn_8047F994(void);             /* create */
+RwBool fn_8047F958(RwMatrix *matrix);    /* destroy */
+RwMatrix *fn_8047EBA0(RwMatrix *matrix); /* clears the identity and orthonormal flags */
+RwMatrix *fn_8047F59C(RwMatrix *matrix, const RwV3d *translation, RwInt32 combine);
+RwMatrix *fn_8047EFC8(RwMatrix *matrix, const RwV3d *axis, RwReal angle, RwInt32 combine);
+RwMatrix *fn_8047F72C(RwMatrix *matrix, const RwMatrix *transform, RwInt32 combine);
+
 typedef struct RwSphere {
     RwV3d center;
     RwReal radius;
