@@ -1389,3 +1389,7 @@ rw/fn_80440410.c:
 
 rw/fn_80442B98.c:
 	.text       start:0x80442B98 end:0x80443044
+
+rw/fn_80443044.c:
+	.text       start:0x80443044 end:0x80443A74
+	.sbss       start:0x805F1428 end:0x805F1430
