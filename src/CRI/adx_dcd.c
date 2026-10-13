@@ -11,8 +11,6 @@
 
 #include "CRI/adx_dcd.h"
 
-extern float __float_nan;
-
 #define FP_NAN 1
 #define FP_INFINITE 2
 #define FP_ZERO 3
@@ -39,7 +37,7 @@ static inline double adx_sqrt(double x) {
     } else if (x == 0.0) {
         return 0.0;
     } else if (x < 0.0) {
-        return __float_nan;
+        return NAN;
     }
     return x;
 }
@@ -74,9 +72,9 @@ static inline float adx_sqrtf(float x) {
         guess = _half * guess * (_three - guess * guess * x);
         return (float)(x * guess);
     } else if (x < 0.0) {
-        return __float_nan;
+        return NAN;
     } else if (adx_fpclassifyf(x) == FP_NAN) {
-        return __float_nan;
+        return NAN;
     }
     return x;
 }
