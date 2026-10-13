@@ -49,11 +49,12 @@ void *fn_80446AA8(void *instance, RwInt32 offset, RwInt32 size) {
     info.typeID = 1;
     info.interpKeyFrameSize = sizeof(RpHAnimInterpFrame);
     info.animKeyFrameSize = sizeof(RpHAnimKeyFrame);
-    info.keyFrameApplyCB = fn_80445CF4;
-    info.keyFrameBlendCB = fn_8044621C;
-    info.keyFrameInterpolateCB = fn_80445E08;
-    info.keyFrameAddCB = fn_804468D0;
-    info.keyFrameMulRecipCB = fn_80446790;
+    /* the toolkit passes the scheme's frames untyped */
+    info.keyFrameApplyCB = (RtAnimKeyFrameApplyCallBack)fn_80445CF4;
+    info.keyFrameBlendCB = (RtAnimKeyFrameBlendCallBack)fn_8044621C;
+    info.keyFrameInterpolateCB = (RtAnimKeyFrameInterpolateCallBack)fn_80445E08;
+    info.keyFrameAddCB = (RtAnimKeyFrameAddCallBack)fn_804468D0;
+    info.keyFrameMulRecipCB = (RtAnimKeyFrameMulRecipCallBack)fn_80446790;
     info.keyFrameStreamReadCB = fn_80446620;
     info.keyFrameStreamWriteCB = fn_804466DC;
     info.keyFrameStreamGetSizeCB = fn_80446780;

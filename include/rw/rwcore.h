@@ -27,6 +27,8 @@ typedef char RwChar;
 /* chunk IDs */
 #define rwID_STRUCT 0x1
 
+typedef struct RwFreeList RwFreeList;
+
 /* The engine globals; only the string length, memory and free list functions are mapped. */
 typedef struct RwGlobals {
     /* 0x000 */ RwUInt8 field_0x0[0xF4];
@@ -35,8 +37,8 @@ typedef struct RwGlobals {
     /* 0x108 */ void *(*rwmalloc)(RwUInt32 size, RwUInt32 hint);
     /* 0x10C */ void (*rwfree)(void *mem);
     /* 0x110 */ RwUInt8 field_0x110[0x8];
-    /* 0x118 */ void *(*rwfreelistalloc)(struct RwFreeList *freeList, RwUInt32 hint);
-    /* 0x11C */ void (*rwfreelistfree)(struct RwFreeList *freeList, void *mem);
+    /* 0x118 */ void *(*rwfreelistalloc)(RwFreeList *freeList, RwUInt32 hint);
+    /* 0x11C */ void (*rwfreelistfree)(RwFreeList *freeList, void *mem);
 } RwGlobals;
 
 extern RwGlobals *lbl_805F15B4; /* the engine instance */
@@ -52,10 +54,22 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
 
 typedef struct RwStream RwStream;
 
+/* plugin callbacks: object construction, destruction and copying, and the plugin's stream chunk */
+typedef void *(*RwPluginObjectConstructor)(void *object, RwInt32 offset, RwInt32 size);
+typedef void *(*RwPluginObjectDestructor)(void *object, RwInt32 offset, RwInt32 size);
+typedef void *(*RwPluginObjectCopy)(void *dst, const void *src, RwInt32 offset, RwInt32 size);
+typedef RwStream *(*RwPluginDataChunkReadCallBack)(RwStream *stream, RwInt32 length, void *object,
+                                                   RwInt32 offset, RwInt32 size);
+typedef RwStream *(*RwPluginDataChunkWriteCallBack)(RwStream *stream, RwInt32 length,
+                                                    const void *object, RwInt32 offset,
+                                                    RwInt32 size);
+typedef RwInt32 (*RwPluginDataChunkGetSizeCallBack)(const void *object, RwInt32 offset,
+                                                    RwInt32 size);
+
 /* A free list: fixed size entries allocated in blocks (0x28 bytes) */
-typedef struct RwFreeList {
+struct RwFreeList {
     /* 0x00 */ RwUInt8 field_0x0[0x28];
-} RwFreeList;
+};
 
 typedef struct RwFrame RwFrame;
 typedef RwFrame *(*RwFrameCallBack)(RwFrame *frame, void *data);
@@ -149,9 +163,11 @@ RwFreeList *fn_8047FC04(RwInt32 entrySize, RwInt32 entriesPerBlock, RwInt32 alig
 RwBool fn_8047FCDC(RwFreeList *freeList);
 
 /* frames (inferred) */
-RwInt32 fn_804836EC(RwUInt32 pluginID, void *readCB, void *writeCB, void *getSizeCB);
-RwInt32 fn_804878D4(RwInt32 size, RwUInt32 pluginID, void *constructCB, void *destructCB,
-                    void *copyCB);
+RwInt32 fn_804836EC(RwUInt32 pluginID, RwPluginDataChunkReadCallBack readCB,
+                    RwPluginDataChunkWriteCallBack writeCB,
+                    RwPluginDataChunkGetSizeCallBack getSizeCB);
+RwInt32 fn_804878D4(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructCB,
+                    RwPluginObjectDestructor destructCB, RwPluginObjectCopy copyCB);
 RwFrame *fn_8048722C(RwFrame *frame);
 RwFrame *fn_8048752C(RwFrame *frame, RwFrameCallBack callBack, void *data);
 
@@ -161,8 +177,8 @@ RwInt32 fn_8047DC28(RwInt32 code, ...);
 
 /* the engine and its plugins */
 RwInt32 fn_80485D6C(void);
-RwInt32 fn_80485D78(RwInt32 size, RwUInt32 pluginID, void *(*constructor)(void *, RwInt32, RwInt32),
-                    void *(*destructor)(void *, RwInt32, RwInt32));
+RwInt32 fn_80485D78(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructor,
+                    RwPluginObjectDestructor destructor);
 
 #ifdef __cplusplus
 }

@@ -77,17 +77,6 @@ typedef struct RpWorld {
     /* 0x1C */ RpSector *rootSector;
 } RpWorld;
 
-typedef void *(*RwPluginObjectConstructor)(void *object, RwInt32 offset, RwInt32 size);
-typedef void *(*RwPluginObjectDestructor)(void *object, RwInt32 offset, RwInt32 size);
-typedef void *(*RwPluginObjectCopy)(void *dst, const void *src, RwInt32 offset, RwInt32 size);
-typedef RwStream *(*RwPluginDataChunkReadCallBack)(RwStream *stream, RwInt32 length, void *object,
-                                                   RwInt32 offset, RwInt32 size);
-typedef RwStream *(*RwPluginDataChunkWriteCallBack)(RwStream *stream, RwInt32 length,
-                                                    const void *object, RwInt32 offset,
-                                                    RwInt32 size);
-typedef RwInt32 (*RwPluginDataChunkGetSizeCallBack)(const void *object, RwInt32 offset,
-                                                    RwInt32 size);
-
 /* plugin registration (inferred): fn_80458B6C registers with the registry used by the object code
  * around fn_804566D0, which the intersection tests call on an atomic (the registry's 0x70-byte
  * object size alone does not identify it); fn_8045994C and fn_8045998C register with geometries

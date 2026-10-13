@@ -51,19 +51,33 @@ typedef struct RpHAnimInterpFrame {
 #define rpHANIMHIERARCHYSUBHIERARCHY 0x1 /* shares its parent's matrices and node data */
 #define rpHANIMHIERARCHYNOMATRICES 0x2
 
+/* The callbacks of a keyframe scheme. The toolkit is generic over schemes, so the keyframe callbacks
+ * take untyped frames; each scheme's functions use their own frame types. */
+typedef void (*RtAnimKeyFrameApplyCallBack)(void *result, void *voidIFrame);
+typedef void (*RtAnimKeyFrameBlendCallBack)(void *voidOut, void *voidIn1, void *voidIn2,
+                                            RwReal alpha);
+typedef void (*RtAnimKeyFrameInterpolateCallBack)(void *voidOut, void *voidIn1, void *voidIn2,
+                                                  RwReal time, void *customData);
+typedef void (*RtAnimKeyFrameAddCallBack)(void *voidOut, void *voidIn1, void *voidIn2);
+typedef void (*RtAnimKeyFrameMulRecipCallBack)(void *voidFrame, void *voidStart);
+typedef RtAnimAnimation *(*RtAnimKeyFrameStreamReadCallBack)(RwStream *stream,
+                                                             RtAnimAnimation *animation);
+typedef RwBool (*RtAnimKeyFrameStreamWriteCallBack)(RtAnimAnimation *animation, RwStream *stream);
+typedef RwInt32 (*RtAnimKeyFrameStreamGetSizeCallBack)(RtAnimAnimation *animation);
+
 /* The callbacks of a keyframe scheme, as registered with the animation toolkit (0x30 bytes) */
 typedef struct RtAnimInterpolatorInfo {
     /* 0x00 */ RwInt32 typeID;
     /* 0x04 */ RwInt32 interpKeyFrameSize;
     /* 0x08 */ RwInt32 animKeyFrameSize;
-    /* 0x0C */ void *keyFrameApplyCB;
-    /* 0x10 */ void *keyFrameBlendCB;
-    /* 0x14 */ void *keyFrameInterpolateCB;
-    /* 0x18 */ void *keyFrameAddCB;
-    /* 0x1C */ void *keyFrameMulRecipCB;
-    /* 0x20 */ void *keyFrameStreamReadCB;
-    /* 0x24 */ void *keyFrameStreamWriteCB;
-    /* 0x28 */ void *keyFrameStreamGetSizeCB;
+    /* 0x0C */ RtAnimKeyFrameApplyCallBack keyFrameApplyCB;
+    /* 0x10 */ RtAnimKeyFrameBlendCallBack keyFrameBlendCB;
+    /* 0x14 */ RtAnimKeyFrameInterpolateCallBack keyFrameInterpolateCB;
+    /* 0x18 */ RtAnimKeyFrameAddCallBack keyFrameAddCB;
+    /* 0x1C */ RtAnimKeyFrameMulRecipCallBack keyFrameMulRecipCB;
+    /* 0x20 */ RtAnimKeyFrameStreamReadCallBack keyFrameStreamReadCB;
+    /* 0x24 */ RtAnimKeyFrameStreamWriteCallBack keyFrameStreamWriteCB;
+    /* 0x28 */ RtAnimKeyFrameStreamGetSizeCallBack keyFrameStreamGetSizeCB;
     /* 0x2C */ RwInt32 customDataSize;
 } RtAnimInterpolatorInfo;
 
