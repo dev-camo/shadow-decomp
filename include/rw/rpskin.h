@@ -1,6 +1,7 @@
 #ifndef RW_RPSKIN_H
 #define RW_RPSKIN_H
 
+#include "rw/rphanim.h"
 #include "rw/rpworld.h"
 
 /* RenderWare skinning (plugin ID 0x116): the bone weights and indices of a geometry's vertices, the
@@ -50,20 +51,20 @@ typedef struct RpSkin {
     /* 0x10 */ RwUInt32 maxNumWeightsForVertex;
     /* 0x14 */ RwUInt32 *vertexBoneIndices; /* four byte-sized bone indices per vertex */
     /* 0x18 */ RwMatrixWeights *vertexBoneWeights;
-    /* 0x1C */ void *field_0x1C; /* GameCube instance data */
-    /* 0x20 */ void *field_0x20;
-    /* 0x24 */ RwUInt8 *field_0x24;  /* GameCube: an allocated stream buffer */
-    /* 0x28 */ RwUInt8 *field_0x28;  /* GameCube: an aligned buffer inside field_0x24 */
-    /* 0x2C */ RwInt32 pipelineType; /* which skin pipeline renders it (inferred) */
+    /* 0x1C */ void *positions;       /* GameCube: the instanced bind-pose positions (inferred) */
+    /* 0x20 */ void *normals;         /* and normals (inferred) */
+    /* 0x24 */ RwUInt8 *weights;      /* GameCube: the vertex weights as bytes, heaviest first */
+    /* 0x28 */ RwUInt8 *indices;      /* GameCube: the bone indices in the same order */
+    /* 0x2C */ RwUInt32 pipelineType; /* which skin pipeline renders it (inferred) */
     /* 0x30 */ SkinSplitData skinSplitData;
     /* 0x48 */ void *unaligned; /* the allocation of the bone ids, matrices, indices and weights */
 } RpSkin;
 
 /* The skin data of an atomic (0xC bytes) */
 typedef struct SkinAtomicData {
-    /* 0x0 */ void *hierarchy;
-    /* 0x4 */ RwUInt32 field_0x4;
-    /* 0x8 */ RwUInt32 field_0x8;
+    /* 0x0 */ RpHAnimHierarchy *hierarchy;
+    /* 0x4 */ void *positions; /* GameCube: the instanced bind-pose positions (inferred) */
+    /* 0x8 */ void *normals;
 } SkinAtomicData;
 
 /* The plugin's globals (0x40 bytes) */
@@ -97,7 +98,7 @@ RpSkin *fn_8044BDF0(RwUInt32 numVertices, RwUInt32 numBones, RwUInt32 numBoneIds
                     RwUInt32 maxNumWeights, RwMatrixWeights *vertexWeights, RwUInt32 *vertexIndices,
                     RwMatrix *inverseMatrices);
 RwBool fn_8044CB90(void); /* attaches the plugin */
-RpAtomic *fn_8044CC98(RpAtomic *atomic, void *hierarchy);
+RpAtomic *fn_8044CC98(RpAtomic *atomic, RpHAnimHierarchy *hierarchy);
 RpSkin *fn_8044CCAC(RpGeometry *geometry);
 RpGeometry *fn_8044CCC0(RpGeometry *geometry, RpSkin *skin);
 RpSkin *fn_8044CD4C(RpSkin *skin);

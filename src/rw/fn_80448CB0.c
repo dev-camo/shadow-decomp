@@ -4,12 +4,6 @@
 #include "rw/rpptank.h"
 #include <dolphin/gx.h>
 
-/* The GameCube raster plugin data; only the flags are mapped */
-typedef struct RwGameCubeRasterExt {
-    /* 0x00 */ RwUInt8 field_0x0[0x14];
-    /* 0x14 */ RwUInt32 flags;
-} RwGameCubeRasterExt;
-
 static const GXColor lbl_805FB078 = {255, 255, 255, 255}; /* white */
 static const GXColor lbl_805FB07C = {0, 0, 0, 255};       /* black */
 

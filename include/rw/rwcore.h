@@ -156,12 +156,51 @@ typedef struct RwRaster {
     /* 0x0 */ struct RwRaster *parent;
 } RwRaster;
 
+/* A link of a doubly linked list */
+typedef struct RwLLLink {
+    struct RwLLLink *next;
+    struct RwLLLink *prev;
+} RwLLLink;
+
+typedef struct RwResEntry RwResEntry;
+typedef void (*RwResEntryDestroyNotify)(RwResEntry *resEntry);
+
 /* A resource entry: instanced data that the engine caches for an object, which follows it */
-typedef struct RwResEntry {
-    /* 0x00 */ RwUInt8 field_0x0[0xC];
+struct RwResEntry {
+    /* 0x00 */ RwLLLink link; /* in the resources' use order */
+    /* 0x08 */ RwInt32 size;
     /* 0x0C */ void *owner;
-    /* 0x10 */ RwUInt8 field_0x10[0x8];
-} RwResEntry;
+    /* 0x10 */ RwResEntry **ownerRef;
+    /* 0x14 */ RwResEntryDestroyNotify destroyNotify;
+};
+
+/* The resources module's globals in the engine; only the use order is mapped */
+typedef struct RwResourcesGlobals {
+    /* 0x00 */ RwUInt8 field_0x0[0x24];
+    /* 0x24 */ RwLLLink *usedEntries; /* most recently used first */
+} RwResourcesGlobals;
+
+extern RwInt32 lbl_805F1578; /* engine plugin offset of the resources module */
+
+#define RWRESOURCESGLOBAL(var) (RWPLUGINOFFSET(RwResourcesGlobals, lbl_805F15B4, lbl_805F1578)->var)
+
+/* Moves a resource entry to the front of the use order */
+#define RwResourcesUseResEntry(entry)                                                              \
+    do {                                                                                           \
+        if ((entry)->link.next != NULL) {                                                          \
+            (entry)->link.prev->next = (entry)->link.next;                                         \
+            (entry)->link.next->prev = (entry)->link.prev;                                         \
+            (entry)->link.next = RWRESOURCESGLOBAL(usedEntries)->next;                             \
+            (entry)->link.prev = RWRESOURCESGLOBAL(usedEntries);                                   \
+            RWRESOURCESGLOBAL(usedEntries)->next->prev = &(entry)->link;                           \
+            RWRESOURCESGLOBAL(usedEntries)->next = &(entry)->link;                                 \
+        }                                                                                          \
+    } while (0)
+
+/* resources (inferred) */
+RwResEntry *fn_80480878(void *owner, RwResEntry **ownerRef, RwInt32 size,
+                        RwResEntryDestroyNotify destroyNotify); /* allocates an entry */
+void fn_8048071C(RwResEntry *entry);                            /* frees an entry */
 
 /* A texture: its raster and reference count (0x58 bytes) */
 typedef struct RwTexture {
