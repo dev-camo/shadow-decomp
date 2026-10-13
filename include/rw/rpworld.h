@@ -20,6 +20,7 @@ typedef struct RpGeometry RpGeometry;
 #define rpGEOMETRYNORMALS 0x10
 #define rpGEOMETRYLIGHT 0x20
 #define rpGEOMETRYTEXTURED2 0x80
+#define rpGEOMETRYNATIVE 0x01000000 /* instanced in the platform's format */
 
 typedef struct RwSurfaceProperties {
     RwReal ambient;
@@ -147,6 +148,9 @@ typedef struct RpWorld {
  * intersection tests read */
 RwInt32 fn_80458B6C(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructor,
                     RwPluginObjectDestructor destructor, RwPluginObjectCopy copy);
+RwInt32 fn_80458BEC(RwUInt32 pluginID, RwPluginDataChunkReadCallBack read,
+                    RwPluginDataChunkWriteCallBack write, RwPluginDataChunkGetSizeCallBack getSize);
+RwInt32 fn_80458C90(RwUInt32 pluginID); /* the atomic plugin offset of a plugin */
 RwInt32 fn_8045994C(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructor,
                     RwPluginObjectDestructor destructor, RwPluginObjectCopy copy);
 RwInt32 fn_8045998C(RwUInt32 pluginID, RwPluginDataChunkReadCallBack read,
