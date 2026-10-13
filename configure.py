@@ -686,6 +686,7 @@ config.libs = [
         "cflags": cflags_eabi,
         "progress_category": "sdk",
         "objects": [
+            Object(Matching, "PowerPC_EABI_Support/Runtime/Src/ptmf.c"),
             Object(Matching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_acos.c"),
             Object(Matching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_asin.c"),
             Object(Matching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_atan2.c"),
