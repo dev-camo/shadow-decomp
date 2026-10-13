@@ -570,7 +570,7 @@ RwBool fn_8044CB90(void) {
 }
 
 /* Sets the hierarchy that animates a skinned atomic */
-RpAtomic *fn_8044CC98(RpAtomic *atomic, void *hierarchy) {
+RpAtomic *fn_8044CC98(RpAtomic *atomic, RpHAnimHierarchy *hierarchy) {
     RPSKINATOMICGETDATA(atomic)->hierarchy = hierarchy;
     return atomic;
 }

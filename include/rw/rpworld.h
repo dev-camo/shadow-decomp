@@ -69,16 +69,19 @@ struct RpGeometry {
     /* 0x00 */ RwUInt8 type;
     /* 0x01 */ RwUInt8 field_0x1[0x7];
     /* 0x08 */ RwUInt32 flags;
-    /* 0x0C */ RwUInt8 field_0xC[0x8];
+    /* 0x0C */ RwUInt16 lockedSinceLastInst;
+    /* 0x0E */ RwInt16 refCount;
+    /* 0x10 */ RwInt32 numTriangles;
     /* 0x14 */ RwInt32 numVertices;
-    /* 0x18 */ RwUInt8 field_0x18[0x8];
+    /* 0x18 */ RwInt32 numMorphTargets;
+    /* 0x1C */ RwInt32 numTexCoordSets;
     /* 0x20 */ RpMaterial **materials; /* the material list's materials */
     /* 0x24 */ RwUInt8 field_0x24[0xC];
     /* 0x30 */ RwRGBA *preLitLum;
     /* 0x34 */ RwTexCoords *texCoords;
     /* 0x38 */ RwUInt8 field_0x38[0x1C];
     /* 0x54 */ RpMeshHeader *mesh;
-    /* 0x58 */ RwUInt8 field_0x58[0x4];
+    /* 0x58 */ RwResEntry *repEntry;
     /* 0x5C */ RpMorphTarget *morphTarget;
 };
 
@@ -100,7 +103,8 @@ RpAtomic *fn_80455EB4(RpAtomic *atomic);
 /* An atomic (0x70 bytes) */
 struct RpAtomic {
     /* 0x00 */ RwObject object; /* the parent is the atomic's frame */
-    /* 0x08 */ RwUInt8 field_0x8[0x10];
+    /* 0x08 */ RwUInt8 field_0x8[0xC];
+    /* 0x14 */ RwResEntry *repEntry;
     /* 0x18 */ RpGeometry *geometry;
     /* 0x1C */ RwUInt8 field_0x1C[0x2C];
     /* 0x48 */ RpAtomicCallBackRender renderCallBack;
@@ -312,6 +316,12 @@ extern RpGameCubeVertexFormat *lbl_805F16B8; /* the vertex format of material ef
 void fn_804950AC(RwMatrix *matrix, RwBool normals);  /* loads the position (and normal) matrix */
 void fn_80499C38(RwTexture *texture, RwInt32 stage); /* sets a texture */
 void fn_80497778(RwBool opaque);                     /* sets alpha compare for opaque textures */
+
+/* The GameCube raster plugin data; only the flags are mapped */
+typedef struct RwGameCubeRasterExt {
+    /* 0x00 */ RwUInt8 field_0x0[0x14];
+    /* 0x14 */ RwUInt32 flags;
+} RwGameCubeRasterExt;
 
 extern RwInt32 lbl_805F1658; /* raster plugin offset */
 
