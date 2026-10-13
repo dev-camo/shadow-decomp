@@ -52,7 +52,7 @@ static inline RpDMorphAnimation *DMorphAnimationCreateFrames(RpDMorphAnimation *
     }
     memset(frameList->frames, 0, size);
     for (i = 0; i < numFrames; i++) {
-        frameList->frames[i].nextFrame = -1;
+        frameList->frames[i].nextFrame = rpDMORPHNOFRAME;
     }
     frameList->numFrames = numFrames;
     return animation;
@@ -116,8 +116,9 @@ RpDMorphAnimation *fn_80442C24(RwStream *stream) {
         }
         frame = animation->frameLists[i].frames;
         for (j = 0; j < numFrames; frame++, j++) {
-            if (fn_8047D784(stream, frame->values, sizeof(frame->values)) == NULL ||
-                fn_8047D868(stream, &frame->nextFrame, sizeof(frame->nextFrame)) == NULL) {
+            if (fn_8047D784(stream, &frame->startValue, 4 * sizeof(RwReal)) == NULL ||
+                fn_8047D868(stream, (RwInt32 *)&frame->nextFrame, sizeof(frame->nextFrame)) ==
+                    NULL) {
                 return NULL;
             }
         }

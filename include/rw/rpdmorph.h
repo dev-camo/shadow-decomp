@@ -23,9 +23,9 @@ extern "C" {
 typedef struct RpDMorphTarget {
     /* 0x00 */ RpGeometry *geometry;
     /* 0x04 */ RwChar *name;
-    /* 0x08 */ RwUInt32 flags; /* rpDMORPHTARGET* */
-    /* 0x0C */ RwUInt32 field_0xC;
-    /* 0x10 */ RwUInt8 *field_0x10; /* field_0x14 bytes, streamed as they are */
+    /* 0x08 */ RwUInt32 flags;      /* rpDMORPHTARGET* */
+    /* 0x0C */ RwUInt32 field_0xC;  /* passed to fn_8045916C when the target is applied */
+    /* 0x10 */ RwUInt8 *field_0x10; /* field_0x14 vertex runs (see fn_80443A74) */
     /* 0x14 */ RwUInt32 field_0x14;
     /* 0x18 */ RwUInt32 numVertices;
     /* 0x1C */ RwUInt8 *vertexData; /* one allocation for the vertex streams below */
@@ -46,10 +46,15 @@ typedef struct RpDMorphGeometry {
 
 extern RwInt32 lbl_805F1428; /* geometry plugin offset */
 
-/* A key frame (0x14 bytes) */
+#define rpDMORPHNOFRAME 0xFFFFFFFF
+
+/* A key frame (0x14 bytes): the weight goes from startValue to endValue over duration */
 typedef struct RpDMorphFrame {
-    /* 0x00 */ RwReal values[4];
-    /* 0x10 */ RwInt32 nextFrame; /* index of the next frame, -1 for none */
+    /* 0x00 */ RwReal startValue;
+    /* 0x04 */ RwReal endValue;
+    /* 0x08 */ RwReal duration;
+    /* 0x0C */ RwReal recipDuration;
+    /* 0x10 */ RwUInt32 nextFrame; /* index of the next frame, rpDMORPHNOFRAME for none */
 } RpDMorphFrame;
 
 /* The frames of one delta morph target */
@@ -64,11 +69,38 @@ typedef struct RpDMorphAnimation {
     /* 0x4 */ RpDMorphFrameList *frameLists;
 } RpDMorphAnimation;
 
+typedef RpAtomic *(*RpDMorphAtomicCallBack)(RpAtomic *atomic, void *data);
+
+/* The animation state of an atomic (0x18 bytes, followed by its frameTimes and frames arrays) */
+typedef struct RpDMorphInterpolator {
+    /* 0x00 */ RpDMorphAnimation *animation;
+    /* 0x04 */ RwReal time;
+    /* 0x08 */ RpDMorphFrame **frames; /* the current frame of each target, NULL when done */
+    /* 0x0C */ RwReal *frameTimes;     /* the time into it */
+    /* 0x10 */ RpDMorphAtomicCallBack callBack; /* called when a frame list loops */
+    /* 0x14 */ void *callBackData;
+} RpDMorphInterpolator;
+
+/* The delta morph data of an atomic (0xC bytes) */
+typedef struct RpDMorphAtomic {
+    /* 0x0 */ RwReal *values; /* the weight of each target */
+    /* 0x4 */ RpDMorphInterpolator *interpolator;
+    /* 0x8 */ RpAtomicCallBackRender renderCallBack; /* the atomic's own, called after morphing */
+} RpDMorphAtomic;
+
+extern RwInt32 lbl_805F1430; /* atomic plugin offset */
+
 /* geometries */
 RpGeometry *fn_8044382C(RpGeometry *geometry, RwUInt32 numDMorphTargets);
 RpGeometry *fn_80443908(RpGeometry *geometry);
 RpGeometry *fn_804439A8(RpGeometry *geometry, RwUInt32 index);
 RwUInt32 fn_80443A54(const RpGeometry *geometry);
+
+/* atomics */
+RpAtomic *fn_80443A74(RpAtomic *atomic);
+RpAtomic *fn_80444284(RpAtomic *atomic);
+RpAtomic *fn_804442A4(RpAtomic *atomic, RwInt32 pipelineIndex);
+RpAtomic *fn_80445CE0(RpAtomic *atomic, RwInt32 pipelineIndex); /* inferred: sets its pipeline */
 
 /* animations */
 RpDMorphAnimation *fn_80442B98(RpDMorphAnimation *animation);
