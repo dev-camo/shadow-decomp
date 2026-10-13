@@ -295,7 +295,9 @@ void *fn_8046335C(RwUInt32 pluginID, RwUInt32 pluginData,
                   RpGameCubeRenderCallBack renderCallBack);
 RpAtomic *fn_80463428(RpAtomic *atomic,
                       RpGameCubeRenderMesh *renderMesh); /* the default lighting */
-void fn_8049B800(void *pipeline);                        /* destroys a pipeline */
+/* instances an atomic's vertices into its instanced data (inferred) */
+RpAtomic *fn_80463840(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
+void fn_8049B800(void *pipeline); /* destroys a pipeline */
 
 /* GameCube render helpers (inferred from their use) */
 /* sets the vertex descriptors and formats for a vertex format and render mesh */
