@@ -668,7 +668,8 @@ typedef struct {
 } SFPLY_PTSM;
 
 /* Optional PTS manager hooks (sfd_ply.c, set by SFPLY_SetPtsmFn). The system stream driver passes
- * each video PTS entry to the info hook and drops the packet when it returns -1. */
+ * the PTS of each packet for buffer 2 (the audio driver's input) to the info hook; when it returns -1
+ * the packet is not written and stays unconsumed. */
 typedef Sint32 (*SFPLY_PTSINFO_FN)(SFPLY_PTSM *ptsm, SFPTS_ENT *ent);
 typedef void (*SFPLY_PTSRESET_FN)(SFPLY_PTSM *ptsm);
 extern SFPLY_PTSINFO_FN SFPLY_SetPtsInfo;

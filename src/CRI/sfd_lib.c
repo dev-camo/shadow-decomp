@@ -1,4 +1,4 @@
-/* CRI Sofdec decoder core library init and errors (sfd_lib.c, "CRI SFD/GC Ver.1.947", Sep 22 2004):
+/* CRI Sofdec decoder core library init and errors (sfd_lib.c, "CRI SFD/GC Ver.1.958", Feb 28 2005):
  * SFD_Init sets up the library work (default conditions, driver table, timing, buffers),
  * SFLIB_CheckHn validates handles and SFLIB_SetErr is the error path every SFD_* function returns
  * through (0xFF00xxxx codes, first code kept, handle state negated, callback to the MW player). */
@@ -177,7 +177,7 @@ Sint32 SFD_Init(register SFD_INIT_PRM *prm) {
     return 0;
 }
 
-/* Header/library version check: the caller's structure size must be this build's 0x3598. */
+/* Header/library version check: the caller's structure size must be this build's 0x3640. */
 Sint32 SFD_IsVersionCompatible(Sint32 a, Sint32 ver) {
     return ver == SFD_VERSION;
 }

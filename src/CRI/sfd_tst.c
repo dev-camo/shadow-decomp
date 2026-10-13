@@ -272,12 +272,12 @@ void SFTST_SetMovaveRange(SFTST tst, Sint32 range) {
     }
 }
 
-/* Time after which an adjustment is switched off. */
+/* Offset added to the master time to form the new base when a later adjustment starts. */
 void SFTST_SetAdjPoff(SFTST tst, SFTST_TIME *t) {
     tst->adjpoff = *t;
 }
 
-/* Difference from which an adjustment starts. */
+/* Offset added to the master time to form the base when the first adjustment starts. */
 void SFTST_SetAdjStart(SFTST tst, SFTST_TIME *t) {
     tst->adjstart = *t;
 }
@@ -287,7 +287,7 @@ void SFTST_SetExcessErr(SFTST tst, SFTST_TIME *t) {
     tst->excesserr = *t;
 }
 
-/* Step size of an output time base shift. */
+/* Deviation threshold for a correction; a correction shifts the base by a multiple of half of it. */
 void SFTST_SetTolerance(SFTST tst, SFTST_TIME *t) {
     tst->tolerance = *t;
 }
