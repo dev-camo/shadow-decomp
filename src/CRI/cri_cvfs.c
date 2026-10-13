@@ -976,11 +976,8 @@ void cvFsAddDev(Char8 *devname, CVFS_GETIFFN getif, void *prm) {
     CVFS_GETIFFN fn;
 
     cvfs_build;
-    /* the original keeps copies of both parameters (devname above the table entry in register
-     * order; the getif copy fixes the order of the two pool loads); the casts make them kept
-     * copies */
-    name = (Char8 *)(void *)devname;
-    fn = (CVFS_GETIFFN)(void *)getif;
+    name = devname;
+    fn = getif;
     if (name == 0) {
         cvfs_Error("cvFsAddDev #1:illegal device name");
         return;
