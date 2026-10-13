@@ -29,6 +29,15 @@ Game/fn_80068A3C.c:
 	.text       start:0x80068A3C end:0x80068A48
 	.ctors      start:0x804A9C7C end:0x804A9C80
 
+Game/ElecCircuitExit.cpp:
+	.text       start:0x802C7FC0 end:0x802C8308
+	.ctors      start:0x804A9F80 end:0x804A9F84
+	.rodata     start:0x80500198 end:0x805001B8
+	.data       start:0x80557B00 end:0x80557B68
+	.bss        start:0x80584590 end:0x805845A0
+	.sdata      start:0x805EC030 end:0x805EC050
+	.sdata2     start:0x805F8D88 end:0x805F8DA0
+
 dolphin/PPCArch.c:
 	.text       start:0x8036FC94 end:0x8036FDA8
 

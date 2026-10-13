@@ -244,6 +244,19 @@ cflags_game = [
     "-i include/libc",
 ]
 
+# Game C++: the original carries MWCC RTTI type infos for its classes, is optimized for size (saving
+# register pairs with stmw/lmw) and calls small methods out of line rather than auto-inlining them.
+# Inlining is deferred: functions are emitted in reverse definition order, and the RTTI names are
+# pooled before the function literals.
+cflags_game_cpp = [
+    *cflags_game,
+    "-O4,s",
+    "-use_lmw_stmw on",
+    "-str reuse,readonly",
+    "-RTTI on",
+    "-inline noauto,deferred",
+]
+
 # Metrowerks library flags (the runtime units include the MSL and runtime headers)
 cflags_runtime = [
     *cflags_base,
@@ -427,6 +440,7 @@ config.libs = [
         "progress_category": "game",
         "objects": (
             [
+                Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/fn_80008D48.c"),
                 Object(Matching, "Game/fn_80008DA4.c"),
                 Object(Matching, "Game/fn_80008E1C.c"),
