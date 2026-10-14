@@ -1693,3 +1693,7 @@ rw/fn_8047FA28.c:
 	.bss        start:0x805E2A80 end:0x805E2AA8
 	.sdata      start:0x805EDEA0 end:0x805EDEA8
 	.sbss       start:0x805F1568 end:0x805F1578
+
+rw/fn_8048053C.c:
+	.text       start:0x8048053C end:0x80480C6C
+	.sbss       start:0x805F1578 end:0x805F1580
