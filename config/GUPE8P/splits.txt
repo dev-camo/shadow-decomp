@@ -1506,3 +1506,8 @@ rw/fn_8045AF28.c:
 
 rw/fn_8045B6F0.c:
 	.text       start:0x8045B6F0 end:0x8045BF30
+
+rw/fn_8045BF30.c:
+	.text       start:0x8045BF30 end:0x8045CA38
+	.sdata      start:0x805EDDC0 end:0x805EDDC8
+	.sbss       start:0x805F14F0 end:0x805F14F8
