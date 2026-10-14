@@ -1496,3 +1496,10 @@ rw/fn_8045A760.c:
 	.sdata      start:0x805EDDB0 end:0x805EDDB8
 	.sbss       start:0x805F14D8 end:0x805F14E0
 	.sdata2     start:0x805FB120 end:0x805FB170
+
+rw/fn_8045AF28.c:
+	.text       start:0x8045AF28 end:0x8045B6F0
+	.data       start:0x8056D840 end:0x8056D868
+	.bss        start:0x805E15F0 end:0x805E1618
+	.sdata      start:0x805EDDB8 end:0x805EDDC0
+	.sbss       start:0x805F14E0 end:0x805F14F0
