@@ -81,6 +81,22 @@ typedef struct RwCamera RwCamera;
 
 typedef struct RwIm2DVertex RwIm2DVertex;
 
+/* The device the engine renders with (0x38 bytes); only its system function, near screen depth,
+ * render state functions and 2D indexed primitive function are mapped */
+typedef struct RwDevice {
+    /* 0x00 */ RwReal gammaCorrection;
+    /* 0x04 */ RwBool (*fpSystem)(RwInt32 request, void *out, void *inOut, RwInt32 numIn);
+    /* 0x08 */ RwReal zBufferNear; /* the screen depth of 2D immediate mode vertices */
+    /* 0x0C */ RwReal zBufferFar;
+    /* 0x10 */ RwBool (*fpRenderStateSet)(RwInt32 state, void *value);
+    /* 0x14 */ RwBool (*fpRenderStateGet)(RwInt32 state, void *value);
+    /* 0x18 */ RwUInt8 field_0x18[0xC];
+    /* 0x24 */ RwBool (*fpIm2DRenderIndexedPrimitive)(RwInt32 primType, RwIm2DVertex *vertices,
+                                                      RwInt32 numVertices, RwUInt16 *indices,
+                                                      RwInt32 numIndices);
+    /* 0x28 */ RwUInt8 field_0x28[0x10];
+} RwDevice;
+
 /* The string functions the engine uses (0x44 bytes) */
 typedef struct RwStringFunctions {
     /* 0x00 */ RwInt32 (*vecSprintf)(RwChar *buffer, const RwChar *format, ...);
@@ -118,16 +134,8 @@ typedef struct RwGlobals {
     /* 0x004 */ void *curWorld;
     /* 0x008 */ RwUInt16 renderFrame;
     /* 0x00A */ RwUInt16 lightFrame; /* lights are created one frame behind it */
-    /* 0x00C */ RwUInt8 field_0xC[0xC];
-    /* 0x018 */ RwReal zBufferNear; /* the screen depth of 2D immediate mode vertices */
-    /* 0x01C */ RwUInt8 field_0x1C[0x4];
-    /* 0x020 */ RwBool (*renderStateSet)(RwInt32 state, void *value);
-    /* 0x024 */ RwBool (*renderStateGet)(RwInt32 state, void *value);
-    /* 0x028 */ RwUInt8 field_0x28[0xC];
-    /* 0x034 */ RwBool (*im2DRenderIndexedPrimitive)(RwInt32 primType, RwIm2DVertex *vertices,
-                                                     RwInt32 numVertices, RwUInt16 *indices,
-                                                     RwInt32 numIndices);
-    /* 0x038 */ RwUInt8 field_0x38[0x10];
+    /* 0x00C */ RwUInt8 field_0xC[0x4];
+    /* 0x010 */ RwDevice dOpenDevice;
     /* 0x048 */ RwBool (*stdFunc[0x1D])(void *out, void *inOut, RwInt32 numIn); /* RwStandard */
     /* 0x0BC */ RwUInt8 field_0xBC[0x8];
     /* 0x0C4 */ RwStringFunctions stringFuncs;
@@ -155,12 +163,14 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
 #define rwstricmp(string1, string2) (lbl_805F15B4->stringFuncs.vecStricmp((string1), (string2)))
 #define rwsprintf lbl_805F15B4->stringFuncs.vecSprintf
 #define rwsscanf lbl_805F15B4->stringFuncs.vecSscanf
-#define RwRenderStateSet(state, value) (lbl_805F15B4->renderStateSet((state), (value)))
-#define RwRenderStateGet(state, value) (lbl_805F15B4->renderStateGet((state), (value)))
-#define RwIm2DGetNearScreenZ() (lbl_805F15B4->zBufferNear)
+#define RwRenderStateSet(state, value)                                                             \
+    (lbl_805F15B4->dOpenDevice.fpRenderStateSet((state), (value)))
+#define RwRenderStateGet(state, value)                                                             \
+    (lbl_805F15B4->dOpenDevice.fpRenderStateGet((state), (value)))
+#define RwIm2DGetNearScreenZ() (lbl_805F15B4->dOpenDevice.zBufferNear)
 #define RwIm2DRenderIndexedPrimitive(primType, vertices, numVertices, indices, numIndices)         \
-    (lbl_805F15B4->im2DRenderIndexedPrimitive((primType), (vertices), (numVertices), (indices),    \
-                                              (numIndices)))
+    (lbl_805F15B4->dOpenDevice.fpIm2DRenderIndexedPrimitive((primType), (vertices), (numVertices), \
+                                                            (indices), (numIndices)))
 
 /* A module's registration with the engine: where its globals are and how many engines have
  * opened it */
@@ -529,9 +539,14 @@ void fn_804829DC(void *mem);                   /* frees a heap block */
 void *fn_80482A94(void *heap, RwUInt32 size);  /* allocates a heap block */
 
 /* A texture: its raster and reference count (0x58 bytes) */
+/* The characters of a texture name, with its terminator */
+#define rwTEXTUREBASENAMELENGTH 32
+
 typedef struct RwTexture {
     /* 0x00 */ RwRaster *raster;
-    /* 0x04 */ RwUInt8 field_0x4[0x4C];
+    /* 0x04 */ RwUInt8 field_0x4[0xC];
+    /* 0x10 */ RwChar name[rwTEXTUREBASENAMELENGTH];
+    /* 0x30 */ RwChar mask[rwTEXTUREBASENAMELENGTH];
     /* 0x50 */ RwUInt32 filterAddressing; /* the filter mode in the low byte */
     /* 0x54 */ RwInt32 refCount;
 } RwTexture;
@@ -783,6 +798,34 @@ RwTexDictionary *fn_8048CA64(void);                  /* create */
 RwBool fn_8048CB38(RwTexDictionary *dict);           /* destroy */
 RwTexDictionary *fn_8048D0C4(RwTexDictionary *dict); /* sets the current one */
 RwTexDictionary *fn_8048D0D8(void);                  /* the current one */
+RwTexDictionary *fn_8048CBE0(RwTexDictionary *dict,
+                             RwTexture *(*callBack)(RwTexture *texture, void *data),
+                             void *data); /* calls a function for each texture */
+RwTexture *fn_8048CFAC(RwTexDictionary *dict, RwTexture *texture); /* adds a texture */
+extern RwPluginRegistry lbl_8056E030;                              /* the texture plugin registry */
+extern RwPluginRegistry lbl_8056E048; /* the texture dictionary plugin registry */
+
+/* texture mipmapping settings (inferred) */
+RwBool fn_8048C9A8(RwBool enable); /* sets whether new textures are mipmapped */
+RwBool fn_8048C9C0(void);          /* whether new textures are mipmapped */
+RwBool fn_8048C9D4(RwBool enable); /* sets whether their mipmaps are generated */
+RwBool fn_8048C9EC(void);          /* whether their mipmaps are generated */
+
+/* strings in streams (inferred) */
+RwUInt32 fn_80482F64(const RwChar *string);                        /* the chunk size */
+const RwChar *fn_80482FA4(const RwChar *string, RwStream *stream); /* writes a chunk */
+RwChar *fn_80483060(RwChar *string, RwStream *stream);             /* reads a chunk */
+
+/* texture streams (inferred) */
+RwInt32 fn_80483AFC(RwUInt32 pluginID, RwPluginDataChunkReadCallBack readCB,
+                    RwPluginDataChunkWriteCallBack writeCB,
+                    RwPluginDataChunkGetSizeCallBack getSizeCB); /* registers a stream plugin */
+RwUInt32 fn_80483B38(const RwTexture *texture);                  /* the stream size */
+const RwTexture *fn_80483BA0(const RwTexture *texture, RwStream *stream); /* stream write */
+RwTexDictionary *fn_80483FBC(RwStream *stream); /* texture dictionary stream read */
+
+RwBool fn_80485C3C(RwDevice *device, RwInt32 request, void *out, void *inOut,
+                   RwInt32 numIn); /* a device system request (inferred) */
 
 /* An image (inferred) */
 typedef struct RwImage {
