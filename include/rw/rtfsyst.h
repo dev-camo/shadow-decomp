@@ -39,7 +39,7 @@ struct RtFile {
     /* 0x08 */ RwInt64 position; /* -1 when unknown */
     /* 0x10 */ RwInt32 field_0x10;
     /* 0x14 */ RwUInt8 field_0x14[0x4];
-    /* 0x18 */ RwBool field_0x18; /* copied from its file system's field_0x10 */
+    /* 0x18 */ RwBool field_0x18; /* copied from its file system's asyncMode */
     /* 0x1C */ RwUInt8 field_0x1C[0x4];
     /* 0x20 */ RwInt32 status; /* RTFILE_STATUS_* */
     /* 0x24 */ RwUInt8 field_0x24[0x4];
@@ -56,7 +56,7 @@ struct RtFileSystem {
     /* 0x04 */ RwInt32 maxNbOpenFiles;
     /* 0x08 */ RwInt32 field_0x8;
     /* 0x0C */ RwChar *deviceName;
-    /* 0x10 */ RwBool field_0x10;
+    /* 0x10 */ RwBool asyncMode; /* its files open asynchronously, reporting to their callbacks */
     /* 0x14 */ RtFile *(*getFile)(RtFileSystem *fileSystem, RwInt32 index);
     /* 0x18 */ void (*close)(RtFileSystem *fileSystem);
     /* 0x1C */ RwUInt8 field_0x1C[0x4];
@@ -83,8 +83,8 @@ RwBool fn_804797F0(RtFileSystem *fileSystem, const RwChar *name); /* whether a f
 RwBool fn_80479848(RtFile *file);                                 /* whether at its end */
 void fn_80479894(RtFileSystem *fileSystem, RwInt32 notification);
 RwInt32 fn_804798FC(RtFileSystem *fileSystem, const RwChar *deviceName); /* sets the device */
-void fn_804799B8(RtFile *file, RwInt32 value);                           /* sets field_0x10 */
-RwInt32 fn_804799C0(RtFile *file);                                       /* gets field_0x10 */
+void fn_804799B8(RtFileSystem *fileSystem, RwBool asyncMode);            /* sets asyncMode */
+RwBool fn_804799C0(RtFileSystem *fileSystem);                            /* gets asyncMode */
 void fn_804799C8(RtFile *file); /* completes an asynchronous operation */
 
 /* the file system manager (inferred) */

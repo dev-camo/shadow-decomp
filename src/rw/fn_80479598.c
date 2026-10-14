@@ -19,12 +19,12 @@ RwInt32 fn_80479598(RtFileSystem *fileSystem, RwInt32 maxNbOpenFiles, const RwCh
         }
         rwstrcpy(fileSystem->name, name);
         fileSystem->maxNbOpenFiles = maxNbOpenFiles;
-        fileSystem->field_0x10 = FALSE;
+        fileSystem->asyncMode = FALSE;
         for (i = 0; i < maxNbOpenFiles; i++) {
             RtFile *file = fileSystem->getFile(fileSystem, i);
 
             file->status = RTFILE_STATUS_FREE;
-            file->field_0x18 = fileSystem->field_0x10;
+            file->field_0x18 = fileSystem->asyncMode;
         }
     } else {
         return RTFS_ERROR_TOOMANYFS;
@@ -132,12 +132,12 @@ RwInt32 fn_804798FC(RtFileSystem *fileSystem, const RwChar *deviceName) {
     return RTFS_ERROR_NOERROR;
 }
 
-void fn_804799B8(RtFile *file, RwInt32 value) {
-    file->field_0x10 = value;
+void fn_804799B8(RtFileSystem *fileSystem, RwBool asyncMode) {
+    fileSystem->asyncMode = asyncMode;
 }
 
-RwInt32 fn_804799C0(RtFile *file) {
-    return file->field_0x10;
+RwBool fn_804799C0(RtFileSystem *fileSystem) {
+    return fileSystem->asyncMode;
 }
 
 void fn_804799C8(RtFile *file) {
