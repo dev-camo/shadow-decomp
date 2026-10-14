@@ -261,6 +261,18 @@ typedef struct RwObject {
     /* 0x4 */ void *parent;
 } RwObject;
 
+/* A matrix: three axes and a position (0x40 bytes) */
+typedef struct RwMatrix {
+    /* 0x00 */ RwV3d right;
+    /* 0x0C */ RwUInt32 flags;
+    /* 0x10 */ RwV3d up;
+    /* 0x1C */ RwUInt32 pad1;
+    /* 0x20 */ RwV3d at;
+    /* 0x2C */ RwUInt32 pad2;
+    /* 0x30 */ RwV3d pos;
+    /* 0x3C */ RwUInt32 pad3;
+} RwMatrix;
+
 /* A camera; its parent object is its frame */
 
 /* A raster; a sub-raster's parent is the raster that owns its pixels */
@@ -330,7 +342,7 @@ struct RwCamera {
     /* 0x014 */ RwInt32 projectionType;
     /* 0x018 */ RwCameraBeginUpdateFunc beginUpdate;
     /* 0x01C */ RwCameraEndUpdateFunc endUpdate;
-    /* 0x020 */ RwUInt8 field_0x20[0x40];
+    /* 0x020 */ RwMatrix viewMatrix; /* from the world into the camera's view */
     /* 0x060 */ RwRaster *frameBuffer;
     /* 0x064 */ RwRaster *zBuffer;
     /* 0x068 */ RwV2d viewWindow;
@@ -339,9 +351,11 @@ struct RwCamera {
     /* 0x080 */ RwReal nearPlane;
     /* 0x084 */ RwReal farPlane;
     /* 0x088 */ RwReal fogPlane;
-    /* 0x08C */ RwUInt8 field_0x8C[0x8];
+    /* 0x08C */ RwReal zScale; /* maps a reciprocal depth into the device's depth range */
+    /* 0x090 */ RwReal zShift;
     /* 0x094 */ RwFrustumPlane frustumPlanes[6];
     /* 0x10C */ RwBBox frustumBoundBox;
+    /* 0x124 */ RwV3d frustumCorners[8];
 };
 
 /* Makes a list empty */
@@ -555,18 +569,6 @@ typedef struct RwLine {
     RwV3d start;
     RwV3d end;
 } RwLine;
-
-/* A matrix: three axes and a position (0x40 bytes) */
-typedef struct RwMatrix {
-    /* 0x00 */ RwV3d right;
-    /* 0x0C */ RwUInt32 flags;
-    /* 0x10 */ RwV3d up;
-    /* 0x1C */ RwUInt32 pad1;
-    /* 0x20 */ RwV3d at;
-    /* 0x2C */ RwUInt32 pad2;
-    /* 0x30 */ RwV3d pos;
-    /* 0x3C */ RwUInt32 pad3;
-} RwMatrix;
 
 /* A frame (while a hierarchy is being cloned, each frame's root holds its clone) */
 struct RwFrame {
@@ -915,6 +917,20 @@ RwBool fn_8049A95C(RwInt32 primType, RwImVertexIndex *indices, RwInt32 numIndice
 RwReal fn_804823F0(const RwV2d *v); /* the length of a vector */
 
 /* cameras (inferred) */
+void fn_804842C8(RwCamera *camera);      /* perspective frustum */
+RwCamera *fn_80484AAC(RwCamera *camera); /* perspective view matrix */
+void fn_80484C10(RwCamera *camera);      /* parallel frustum */
+RwCamera *fn_80485124(RwCamera *camera); /* parallel view matrix */
+void *fn_8048528C(void *object);         /* frame sync */
+RwCamera *fn_804852F0(RwCamera *camera); /* default end update */
+RwCamera *fn_80485354(RwCamera *camera); /* default begin update */
+RwCamera *fn_804854B4(RwCamera *camera); /* end update */
+RwCamera *fn_804854DC(RwCamera *camera); /* begin update */
+RwCamera *fn_804857BC(RwCamera *camera, RwRGBA *color, RwInt32 clearMode); /* clear */
+RwCamera *fn_80485808(RwCamera *camera, void *device, RwUInt32 flags);     /* show raster */
+void fn_8048B354(void);             /* synchronizes dirty frames */
+void fn_8049B148(RwCamera *camera); /* empty */
+RwRaster *fn_80489D44(RwRaster *raster, void *device, RwUInt32 flags); /* shows a raster */
 extern RwPluginRegistry lbl_8056DF70; /* the camera plugin registry */
 
 /* cameras (inferred) */
