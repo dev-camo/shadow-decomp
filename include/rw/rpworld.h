@@ -723,12 +723,14 @@ void fn_8046D8C8(RxVertexIndex *indices, RwUInt32 numIndices, RwInt32 *numStrips
                  RwUInt32 *numStripIndices, RwInt32 flags);
 RpGameCubeVertexFormat *fn_80462E1C(void); /* the default vertex format */
 
-/* GameCube: a builder of GX vertex descriptors and formats (0x20 bytes, inferred); only the
- * vertex attribute format, in the layout of the GX VAT A, B and C registers, is mapped */
+/* GameCube: a builder of GX vertex descriptors and formats (0x20 bytes, inferred); the vertex
+ * attribute format and descriptor are kept in the layouts of the GX VAT A, B and C registers and
+ * the VCD low and high registers */
 typedef struct RpGameCubeVertexDescBuilder {
     /* 0x00 */ RwUInt8 field_0x0[0x4];
     /* 0x04 */ RwUInt32 vat[3];
-    /* 0x10 */ RwUInt8 field_0x10[0x10];
+    /* 0x10 */ RwUInt32 vcd[2];
+    /* 0x18 */ RwUInt8 field_0x18[0x8];
 } RpGameCubeVertexDescBuilder;
 
 /* the byte sizes of a vertex's attributes in a builder's format */
@@ -759,11 +761,12 @@ typedef struct RpGameCubeIndexSource {
 
 /* building GameCube instanced data and display lists (inferred) */
 RwUInt32 fn_8046EE8C(RpGameCubeVertexDescBuilder *builder); /* the vertex data header size */
-RwUInt32 fn_8046B094(RpGameCubeVertexDescBuilder *builder, RwInt32 numPrimitives,
+RwUInt32 fn_8046B094(const RpGameCubeVertexDescBuilder *builder, RwInt32 numPrimitives,
                      RwUInt32 numIndices); /* a display list's size */
 RwUInt32 fn_8046EEA0(RpGameCubeVertexDescBuilder *builder, RpGameCubeVertexSource *source);
 void fn_8046B0E0(void *displayListRecord, RwInt32 meshIndex, RwUInt32 size, void *data);
-RwInt32 fn_8046ACBC(RpGameCubeVertexDescBuilder *builder);
+/* the bytes of a vertex in a display list */
+RwInt32 fn_8046ACBC(const RpGameCubeVertexDescBuilder *builder);
 /* triStrip: the geometry's tristrip flag, selecting strip handling; flag: forwarded to the winding
  * and degenerate triangle handling (meaning not established) */
 void fn_8046E594(RpGameCubeVertexDescBuilder *builder, void *displayListRecord,
