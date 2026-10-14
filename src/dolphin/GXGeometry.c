@@ -44,7 +44,7 @@ void GXBegin(GXPrimitive type, GXVtxFmt vtxfmt, u16 nverts) {
     __GXinBegin = 1;
 #endif
 
-    if (*(u32 *)&__GXData->vNumNot == 0) { // checks both vNum and bpSentNot
+    if (*(u32 *)&__GXData->vNumNot == 0) { // checks both vNumNot and bpSentNot
         __GXSendFlushPrim();
     }
     GX_WRITE_U8(vtxfmt | type);

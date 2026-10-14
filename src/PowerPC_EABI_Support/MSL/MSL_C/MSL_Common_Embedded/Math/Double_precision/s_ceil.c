@@ -12,7 +12,7 @@
 
 /*
  * ceil(x)
- * Return x rounded toward -inf to integral value
+ * Return x rounded toward +inf to integral value
  * Method:
  *	Bit twiddling.
  * Exception:

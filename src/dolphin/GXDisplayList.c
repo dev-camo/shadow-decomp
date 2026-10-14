@@ -92,7 +92,7 @@ void GXCallDisplayList(void *list, u32 nbytes) {
     __GXShadowDispList(list, nbytes);
 #endif
 
-    if (*(u32 *)&__GXData->vNumNot == 0) { // checks both vNum and bpSent
+    if (*(u32 *)&__GXData->vNumNot == 0) { // checks both vNumNot and bpSentNot
         __GXSendFlushPrim();
     }
 
