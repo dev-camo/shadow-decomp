@@ -593,6 +593,11 @@ RwSList *fn_8047DC90(RwInt32 size, RwUInt32 hint);              /* create */
 void *fn_8047DEA0(RwSList *sList, RwInt32 size, RwUInt32 hint); /* new entries */
 void *fn_8047DFAC(RwSList *sList);                              /* the entries */
 RwBool fn_8047DFC8(RwSList *sList);                             /* destroy */
+void *fn_8047DDBC(RwSList *sList, RwUInt32 hint);               /* a new entry */
+RwInt32 fn_8047E03C(RwSList *sList);                            /* the number of entries */
+void *fn_8047E0CC(RwSList *sList, RwInt32 index);               /* an entry */
+RwSList *fn_8047DDB0(RwSList *sList);                           /* empties */
+void *fn_8047E044(RwSList *sList); /* destroys the list, keeping its entries */
 
 /* An immediate mode 3D vertex (0x24 bytes) */
 typedef struct RwIm3DVertex {
