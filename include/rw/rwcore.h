@@ -20,6 +20,14 @@ typedef unsigned char RwUInt8;
 typedef signed char RwInt8;
 typedef float RwReal;
 typedef RwInt32 RwBool;
+
+/* A real's bits, which compare like the real by sign (RenderWare's volatile members keep each test
+ * reading memory) */
+typedef union RwSplitBits {
+    RwReal nReal;
+    volatile RwInt32 nInt;
+    volatile RwUInt32 nUInt;
+} RwSplitBits;
 typedef char RwChar;
 
 #define RW_STREAM_VERSION 0x37002
@@ -63,7 +71,7 @@ typedef struct RwGlobals {
     /* 0x00C */ RwUInt8 field_0xC[0x14];
     /* 0x020 */ RwBool (*renderStateSet)(RwInt32 state, void *value);
     /* 0x024 */ RwBool (*renderStateGet)(RwInt32 state, void *value);
-    /* 0x028 */ RwUInt8 field_0x28[0xA4];
+    /* 0x028 */ RwBool (*stdFunc[0x29])(void *out, void *inOut, RwInt32 numIn); /* RwStandard */
     /* 0x0CC */ RwChar *(*rwstrcpy)(RwChar *dst, const RwChar *src);
     /* 0x0D0 */ RwUInt8 field_0xD0[0x24];
     /* 0x0F4 */ RwUInt32 (*rwstrlen)(const RwChar *string);
@@ -113,12 +121,6 @@ struct RwFreeList {
 
 typedef struct RwFrame RwFrame;
 
-/* A frame; only the root member is mapped (while a hierarchy is being cloned, each frame's root
- * holds its clone) */
-struct RwFrame {
-    /* 0x00 */ RwUInt8 field_0x0[0xA0];
-    /* 0xA0 */ struct RwFrame *root;
-};
 typedef RwFrame *(*RwFrameCallBack)(RwFrame *frame, void *data);
 
 /* An error reported with fn_8047DB84: the reporting plugin and its error code. */
@@ -181,9 +183,6 @@ typedef struct RwObject {
 } RwObject;
 
 /* A camera; its parent object is its frame */
-struct RwCamera {
-    /* 0x0 */ RwObject object;
-};
 
 /* A raster; a sub-raster's parent is the raster that owns its pixels */
 typedef struct RwRaster {
@@ -212,6 +211,38 @@ typedef struct RwLLLink {
 typedef struct RwLinkList {
     RwLLLink link;
 } RwLinkList;
+
+/* A plane: points p with dot(normal, p) == distance */
+typedef struct RwPlane {
+    /* 0x0 */ RwV3d normal;
+    /* 0xC */ RwReal distance;
+} RwPlane;
+
+/* A plane of a camera's view frustum, with the corner of a box nearest to it (0x14 bytes) */
+typedef struct RwFrustumPlane {
+    /* 0x00 */ RwPlane plane;
+    /* 0x10 */ RwUInt8 closestX; /* each 0 or 1: which of a box's two corners */
+    /* 0x11 */ RwUInt8 closestY;
+    /* 0x12 */ RwUInt8 closestZ;
+    /* 0x13 */ RwUInt8 pad;
+} RwFrustumPlane;
+
+typedef void *(*RwObjectHasFrameSyncFunction)(void *object);
+typedef RwCamera *(*RwCameraBeginUpdateFunc)(RwCamera *camera);
+typedef RwCamera *(*RwCameraEndUpdateFunc)(RwCamera *camera);
+
+/* A camera; only the members in use are mapped */
+struct RwCamera {
+    /* 0x000 */ RwObject object; /* the parent is the camera's frame */
+    /* 0x008 */ RwLLLink lFrame;
+    /* 0x010 */ RwObjectHasFrameSyncFunction sync;
+    /* 0x014 */ RwInt32 projectionType;
+    /* 0x018 */ RwCameraBeginUpdateFunc beginUpdate;
+    /* 0x01C */ RwCameraEndUpdateFunc endUpdate;
+    /* 0x020 */ RwUInt8 field_0x20[0x74];
+    /* 0x094 */ RwFrustumPlane frustumPlanes[6];
+    /* 0x10C */ RwBBox frustumBoundBox;
+};
 
 /* Makes a list empty */
 #define rwLinkListInitialize(list)                                                                 \
@@ -342,6 +373,21 @@ typedef struct RwMatrix {
     /* 0x30 */ RwV3d pos;
     /* 0x3C */ RwUInt32 pad3;
 } RwMatrix;
+
+/* A frame (while a hierarchy is being cloned, each frame's root holds its clone) */
+struct RwFrame {
+    /* 0x00 */ RwObject object;
+    /* 0x08 */ RwLLLink inDirtyListLink;
+    /* 0x10 */ RwMatrix modelling;
+    /* 0x50 */ RwMatrix ltm;
+    /* 0x90 */ RwLinkList objectList;
+    /* 0x98 */ struct RwFrame *child;
+    /* 0x9C */ struct RwFrame *next;
+    /* 0xA0 */ struct RwFrame *root;
+};
+
+/* optimises a matrix's flags, with a tolerance or the default one for NULL (inferred) */
+RwMatrix *fn_8047E990(RwMatrix *matrix, const void *tolerance);
 
 #define rwMATRIXTYPEORTHONORMAL 0x3
 #define rwMATRIXINTERNALIDENTITY 0x20000

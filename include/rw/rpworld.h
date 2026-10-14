@@ -146,7 +146,6 @@ typedef struct RpInterpolator {
 #define rpATOMICSPHEREDIRTY 0x1
 
 /* the sync callback of an object attached to a frame */
-typedef void *(*RwObjectHasFrameSyncFunction)(void *object);
 
 /* An atomic (0x70 bytes) */
 struct RpAtomic {
@@ -290,11 +289,12 @@ typedef struct RpTie {
     /* 0x14 */ RpWorldSector *worldSector;
 } RpTie;
 
-/* A tie between a light and a world sector it lights (0x14 bytes) */
+/* A tie between a light and a world sector it lights (0x18 bytes) */
 typedef struct RpLightTie {
     /* 0x00 */ RwLLLink lightInWorldSector; /* in the sector's light list */
     /* 0x08 */ struct RpLight *light;
     /* 0x0C */ RwLLLink WorldSectorInLight; /* in the light's sector list */
+    /* 0x14 */ RpWorldSector *sect;
 } RpLightTie;
 
 /* world sectors (inferred): destroying a sector tree in a world allocated as one block, or with
@@ -336,6 +336,32 @@ void *fn_8045F2A0(void *instance, RwInt32 offset, RwInt32 size);
 void *fn_8045F2B4(void *instance, RwInt32 offset, RwInt32 size);
 void *fn_80455CF8(void *instance, RwInt32 offset, RwInt32 size);
 void *fn_80455CE4(void *instance, RwInt32 offset, RwInt32 size);
+
+/* plugin data stream callbacks: the clump's, the world's and the material's rights (inferred) */
+RwStream *fn_80455D4C(RwStream *stream, RwInt32 length, void *object, RwInt32 offset, RwInt32 size);
+RwStream *fn_80455DC8(RwStream *stream, RwInt32 length, const void *object, RwInt32 offset,
+                      RwInt32 size);
+RwInt32 fn_80455E44(const void *object, RwInt32 offset, RwInt32 size);
+RwStream *fn_80454AA4(RwStream *stream, RwInt32 length, void *object, RwInt32 offset, RwInt32 size);
+RwStream *fn_80454B20(RwStream *stream, RwInt32 length, const void *object, RwInt32 offset,
+                      RwInt32 size);
+RwInt32 fn_80454B9C(const void *object, RwInt32 offset, RwInt32 size);
+RwStream *fn_80454BC4(RwStream *stream, RwInt32 length, void *object, RwInt32 offset, RwInt32 size);
+RwStream *fn_80454C40(RwStream *stream, RwInt32 length, const void *object, RwInt32 offset,
+                      RwInt32 size);
+RwInt32 fn_80454CBC(const void *object, RwInt32 offset, RwInt32 size);
+RwStream *fn_8045AF28(RwStream *stream, RwInt32 length, void *object, RwInt32 offset, RwInt32 size);
+RwStream *fn_8045AFA4(RwStream *stream, RwInt32 length, const void *object, RwInt32 offset,
+                      RwInt32 size);
+RwInt32 fn_8045B020(const void *object, RwInt32 offset, RwInt32 size);
+
+/* native geometry and world sector data in a stream (inferred) */
+RwInt32 fn_8046510C(const RpGeometry *geometry);
+RwStream *fn_80465138(RwStream *stream, const RpGeometry *geometry);
+RpGeometry *fn_80465180(RwStream *stream, RpGeometry *geometry);
+RwInt32 fn_804651AC(const RpWorldSector *sector);
+RwStream *fn_80465200(RwStream *stream, const RpWorldSector *sector);
+RpWorldSector *fn_80465260(RwStream *stream, RpWorldSector *sector);
 
 /* the other world plugin attachments, each TRUE on success (inferred) */
 RwBool fn_80456B48(void);
@@ -415,6 +441,32 @@ typedef struct RpLight {
     /* 0x3C */ RwUInt16 lightFrame;
     /* 0x3E */ RwUInt16 pad;
 } RpLight;
+
+typedef RpAtomic *(*RpAtomicCallBack)(RpAtomic *atomic, void *data);
+typedef RpLight *(*RpLightCallBack)(RpLight *light, void *data);
+typedef RwCamera *(*RwCameraCallBack)(RwCamera *camera, void *data);
+
+/* calling back for a clump's atomics, cameras and lights until the callback returns NULL */
+RpClump *fn_80456C54(RpClump *clump, RpAtomicCallBack callBack, void *data);
+RpClump *fn_80456CD0(RpClump *clump, RwCameraCallBack callBack, void *data);
+RpClump *fn_80456D54(RpClump *clump, RpLightCallBack callBack, void *data);
+RwInt32 fn_80458BAC(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructor,
+                    RwPluginObjectDestructor destructor, RwPluginObjectCopy copy); /* clumps */
+
+/* world objects (inferred) */
+RpWorld *fn_80462130(RpWorld *world, RwCamera *camera); /* adds a camera */
+RpWorld *fn_80462184(RpWorld *world, RwCamera *camera); /* removes a camera */
+RpWorld *fn_804621C0(RpWorld *world, RpAtomic *atomic); /* adds an atomic */
+RpWorld *fn_8046221C(RpWorld *world, RpAtomic *atomic); /* removes an atomic */
+RpWorld *fn_804622FC(RpWorld *world, RpClump *clump);   /* adds a clump */
+RpWorld *fn_804623EC(RpWorld *world, RpClump *clump);   /* removes a clump */
+RpWorld *fn_80462578(RpWorld *world, RpLight *light);   /* adds a light */
+RpWorld *fn_80462618(RpWorld *world, RpLight *light);   /* removes a light */
+RwBool fn_80462884(void);                               /* (inferred) */
+RpWorld *fn_8045FEA0(RpWorldSector *sector);            /* the world a sector belongs to */
+/* collects the world sectors in a camera's view frustum */
+RpWorld *fn_80461658(RpWorld *world, RwCamera *camera);
+/* clumps */
 
 #define rpLIGHT 3 /* RwObject type of a light */
 
