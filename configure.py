@@ -475,6 +475,7 @@ config.libs = [
                 Object(Matching, "rw/fn_804535C8.c", cflags=[*cflags_game, "-inline noauto"]),
                 Object(NonMatching, "rw/fn_80453980.c", cflags=[*cflags_game, "-inline noauto"]),
                 Object(NonMatching, "rw/fn_80454AA4.c", cflags=[*cflags_game, "-inline noauto"]),
+                Object(NonMatching, "rw/fn_80455D0C.c", cflags=[*cflags_game, "-inline auto", "-pragma \"inline_max_size(1024)\""]),
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/fn_80008D48.c"),
