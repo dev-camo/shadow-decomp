@@ -92,7 +92,7 @@ struct RtFileSystem {
     /* 0x30 */ RwUInt32 (*fileRead)(RtFile *file, void *buffer, RwUInt32 length);
     /* 0x34 */ RwUInt32 (*fileWrite)(RtFile *file, const void *buffer, RwUInt32 length);
     /* 0x38 */ RwInt64 (*fileSetPosition)(RtFile *file, RwInt32 offset,
-                                          RwInt32 origin); /* the new position */
+                                          RwInt32 origin);          /* the new position */
     /* 0x3C */ RwInt32 (*fileUpdate)(RtFile *file, RwInt32 unused); /* polls; its status */
     /* 0x40 */ void (*fileAbort)(RtFile *file);
     /* 0x44 */ RwBool (*fileIsEOF)(RtFile *file);
