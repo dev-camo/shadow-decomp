@@ -57,12 +57,14 @@ typedef struct RwFreeList RwFreeList;
 typedef struct RwCamera RwCamera;
 
 /* render states (RwRenderStateSet/RwRenderStateGet) */
+#define rwRENDERSTATETEXTURERASTER 1
+#define rwRENDERSTATETEXTUREFILTER 9
 #define rwRENDERSTATESRCBLEND 10
 #define rwRENDERSTATEDESTBLEND 11
 #define rwRENDERSTATEVERTEXALPHAENABLE 12
 
 /* The engine globals; only the current camera and world, the frame counters, the render state,
- * string copy and length, memory and free list functions are mapped. */
+ * the string, memory and free list functions are mapped. */
 typedef struct RwGlobals {
     /* 0x000 */ RwCamera *curCamera;
     /* 0x004 */ void *curWorld;
@@ -71,11 +73,18 @@ typedef struct RwGlobals {
     /* 0x00C */ RwUInt8 field_0xC[0x14];
     /* 0x020 */ RwBool (*renderStateSet)(RwInt32 state, void *value);
     /* 0x024 */ RwBool (*renderStateGet)(RwInt32 state, void *value);
-    /* 0x028 */ RwBool (*stdFunc[0x29])(void *out, void *inOut, RwInt32 numIn); /* RwStandard */
+    /* 0x028 */ RwBool (*stdFunc[0x27])(void *out, void *inOut, RwInt32 numIn); /* RwStandard */
+    /* 0x0C4 */ RwInt32 (*rwsprintf)(RwChar *buffer, const RwChar *format, ...);
+    /* 0x0C8 */ RwUInt8 field_0xC8[0x4];
     /* 0x0CC */ RwChar *(*rwstrcpy)(RwChar *dst, const RwChar *src);
-    /* 0x0D0 */ RwUInt8 field_0xD0[0x24];
+    /* 0x0D0 */ RwUInt8 field_0xD0[0x4];
+    /* 0x0D4 */ RwChar *(*rwstrcat)(RwChar *dst, const RwChar *src);
+    /* 0x0D8 */ RwUInt8 field_0xD8[0x10];
+    /* 0x0E8 */ RwInt32 (*rwstrcmp)(const RwChar *string1, const RwChar *string2);
+    /* 0x0EC */ RwUInt8 field_0xEC[0x8];
     /* 0x0F4 */ RwUInt32 (*rwstrlen)(const RwChar *string);
-    /* 0x0F8 */ RwUInt8 field_0xF8[0x10];
+    /* 0x0F8 */ RwUInt8 field_0xF8[0xC];
+    /* 0x104 */ RwInt32 (*rwsscanf)(const RwChar *buffer, const RwChar *format, ...);
     /* 0x108 */ void *(*rwmalloc)(RwUInt32 size, RwUInt32 hint);
     /* 0x10C */ void (*rwfree)(void *mem);
     /* 0x110 */ void *(*rwrealloc)(void *mem, RwUInt32 newSize, RwUInt32 hint);
@@ -93,6 +102,10 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
 #define RwFreeListFree(freeList, mem) (lbl_805F15B4->rwfreelistfree((freeList), (mem)))
 #define rwstrlen(string) (lbl_805F15B4->rwstrlen(string))
 #define rwstrcpy(dst, src) (lbl_805F15B4->rwstrcpy((dst), (src)))
+#define rwstrcat(dst, src) (lbl_805F15B4->rwstrcat((dst), (src)))
+#define rwstrcmp(string1, string2) (lbl_805F15B4->rwstrcmp((string1), (string2)))
+#define rwsprintf lbl_805F15B4->rwsprintf
+#define rwsscanf lbl_805F15B4->rwsscanf
 #define RwRenderStateSet(state, value) (lbl_805F15B4->renderStateSet((state), (value)))
 #define RwRenderStateGet(state, value) (lbl_805F15B4->renderStateGet((state), (value)))
 
@@ -393,7 +406,8 @@ RwBool fn_8048071C(RwResEntry *entry);                          /* frees an entr
 /* A texture: its raster and reference count (0x58 bytes) */
 typedef struct RwTexture {
     /* 0x00 */ RwRaster *raster;
-    /* 0x04 */ RwUInt8 field_0x4[0x50];
+    /* 0x04 */ RwUInt8 field_0x4[0x4C];
+    /* 0x50 */ RwUInt32 filterAddressing; /* the filter mode in the low byte */
     /* 0x54 */ RwInt32 refCount;
 } RwTexture;
 
@@ -530,6 +544,66 @@ void fn_8048D834(void *object);                 /* releases the frame */
 /* textures (inferred) */
 RwTexture *fn_80483D28(RwStream *stream); /* stream read */
 RwBool fn_8048CD8C(RwTexture *texture);   /* destroy (releases a reference) */
+RwTexture *fn_8048D130(const RwChar *name, const RwChar *maskName); /* read */
+
+/* texture dictionaries (inferred) */
+typedef struct RwTexDictionary RwTexDictionary;
+RwTexDictionary *fn_8048CA64(void);                  /* create */
+RwBool fn_8048CB38(RwTexDictionary *dict);           /* destroy */
+RwTexDictionary *fn_8048D0C4(RwTexDictionary *dict); /* sets the current one */
+RwTexDictionary *fn_8048D0D8(void);                  /* the current one */
+
+/* An image (inferred) */
+typedef struct RwImage {
+    /* 0x00 */ RwInt32 flags;
+    /* 0x04 */ RwInt32 width;
+    /* 0x08 */ RwInt32 height;
+    /* 0x0C */ RwInt32 depth;
+    /* 0x10 */ RwInt32 stride;
+    /* 0x14 */ RwUInt8 *cpPixels;
+    /* 0x18 */ RwRGBA *palette;
+} RwImage;
+
+/* images (inferred) */
+RwImage *fn_80487D08(RwInt32 width, RwInt32 height, RwInt32 depth); /* create */
+RwBool fn_80487DB0(RwImage *image);                                 /* destroy */
+RwImage *fn_80487E18(RwImage *image);                               /* allocates the pixels */
+RwImage *fn_804899A8(RwImage *image, RwRaster *raster);             /* reads a raster */
+const RwChar *fn_804885DC(const RwChar *path);                      /* sets the path */
+
+/* files (inferred) */
+void *fn_8047A178(const RwChar *name, const RwChar *access);     /* open */
+RwInt32 fn_8047A388(void *fptr);                                 /* close */
+RwChar *fn_8047A518(RwChar *buffer, RwInt32 maxLen, void *fptr); /* reads a line */
+RwBool fn_8047A67C(const RwChar *name);                          /* whether it exists */
+
+/* lists of fixed-size entries (inferred) */
+typedef struct RwSList RwSList;
+RwSList *fn_8047DC90(RwInt32 size, RwUInt32 hint);              /* create */
+void *fn_8047DEA0(RwSList *sList, RwInt32 size, RwUInt32 hint); /* new entries */
+void *fn_8047DFAC(RwSList *sList);                              /* the entries */
+void fn_8047DFC8(RwSList *sList);                               /* destroy */
+
+/* An immediate mode 3D vertex (0x24 bytes) */
+typedef struct RwIm3DVertex {
+    /* 0x00 */ RwV3d objVertex;
+    /* 0x0C */ RwV3d objNormal;
+    /* 0x18 */ RwRGBA color;
+    /* 0x1C */ RwReal u;
+    /* 0x20 */ RwReal v;
+} RwIm3DVertex;
+
+typedef RwUInt16 RwImVertexIndex;
+
+#define rwIM3D_VERTEXUV 0x1
+#define rwIM3D_NOCLIP 0x4
+
+/* immediate mode 3D (inferred) */
+void *fn_8049A82C(RwIm3DVertex *vertices, RwInt32 numVertices, RwMatrix *ltm, RwUInt32 flags);
+RwBool fn_8049A90C(void); /* end */
+RwBool fn_8049A95C(RwInt32 primType, RwImVertexIndex *indices, RwInt32 numIndices);
+
+RwReal fn_804823F0(const RwV2d *v); /* the length of a vector */
 
 /* cameras (inferred) */
 RwCamera *fn_80483590(RwStream *stream); /* stream read */
