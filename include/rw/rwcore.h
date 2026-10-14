@@ -345,22 +345,45 @@ typedef struct RwPluginRegistry {
     /* 0x04 */ RwInt32 origSizeOfStruct;
     /* 0x08 */ RwInt32 maxSizeOfStruct;
     /* 0x0C */ RwInt32 staticAlloc;
-    /* 0x10 */ void *firstRegEntry;
-    /* 0x14 */ void *lastRegEntry;
+    /* 0x10 */ struct RwPluginRegEntry *firstRegEntry;
+    /* 0x14 */ struct RwPluginRegEntry *lastRegEntry;
 } RwPluginRegistry;
+
+typedef RwBool (*RwPluginDataChunkAlwaysCallBack)(void *object, RwInt32 offset, RwInt32 size);
+typedef RwBool (*RwPluginDataChunkRightsCallBack)(void *object, RwInt32 offset, RwInt32 size,
+                                                  RwUInt32 extraData);
+
+/* A plugin's registration in a registry (0x3C bytes) */
+typedef struct RwPluginRegEntry {
+    /* 0x00 */ RwInt32 offset; /* of the plugin's data in the object */
+    /* 0x04 */ RwInt32 size;
+    /* 0x08 */ RwUInt32 pluginID;
+    /* 0x0C */ RwPluginDataChunkReadCallBack readCB;
+    /* 0x10 */ RwPluginDataChunkWriteCallBack writeCB;
+    /* 0x14 */ RwPluginDataChunkGetSizeCallBack getSizeCB;
+    /* 0x18 */ RwPluginDataChunkAlwaysCallBack alwaysCB;
+    /* 0x1C */ RwPluginDataChunkRightsCallBack rightsCB;
+    /* 0x20 */ RwPluginObjectConstructor constructCB;
+    /* 0x24 */ RwPluginObjectDestructor destructCB;
+    /* 0x28 */ RwPluginObjectCopy copyCB;
+    /* 0x2C */ void *errStrCB;
+    /* 0x30 */ struct RwPluginRegEntry *nextRegEntry;
+    /* 0x34 */ struct RwPluginRegEntry *prevRegEntry;
+    /* 0x38 */ RwPluginRegistry *parentRegistry;
+} RwPluginRegEntry;
 
 /* plugin registries (inferred) */
 /* each returns the registry, or NULL on failure */
 /* constructs the plugins' data */
-RwPluginRegistry *fn_8048209C(RwPluginRegistry *registry, void *object);
+RwPluginRegistry *fn_8048209C(const RwPluginRegistry *registry, void *object);
 /* reads an object's plugin data chunks */
 RwPluginRegistry *fn_804816AC(RwPluginRegistry *registry, RwStream *stream, void *object);
 /* calls the rights callback of the plugin with the ID */
-RwPluginRegistry *fn_80481870(RwPluginRegistry *registry, RwUInt32 pluginID, void *object,
+RwPluginRegistry *fn_80481870(const RwPluginRegistry *registry, RwUInt32 pluginID, void *object,
                               RwUInt32 extraData);
 /* destructs and copies the plugins' data */
-RwPluginRegistry *fn_80482144(RwPluginRegistry *registry, void *object);
-RwPluginRegistry *fn_804821B0(RwPluginRegistry *registry, void *dst, const void *src);
+RwPluginRegistry *fn_80482144(const RwPluginRegistry *registry, void *object);
+RwPluginRegistry *fn_804821B0(const RwPluginRegistry *registry, void *dst, const void *src);
 /* registering plugins: the plugin's offset in the object (or stream), or -1 */
 RwInt32 fn_80481DC8(RwPluginRegistry *registry, RwInt32 size, RwUInt32 pluginID,
                     RwPluginObjectConstructor constructor, RwPluginObjectDestructor destructor,
@@ -369,11 +392,20 @@ RwInt32 fn_804815F0(RwPluginRegistry *registry, RwUInt32 pluginID,
                     RwPluginDataChunkReadCallBack read, RwPluginDataChunkWriteCallBack write,
                     RwPluginDataChunkGetSizeCallBack getSize);
 RwInt32 fn_80481634(RwPluginRegistry *registry, RwUInt32 pluginID,
-                    RwBool (*callBack)(void *object, RwInt32 offset, RwInt32 size));
+                    RwPluginDataChunkAlwaysCallBack callBack);
 RwInt32 fn_80481670(RwPluginRegistry *registry, RwUInt32 pluginID,
-                    RwBool (*callBack)(void *object, RwInt32 offset, RwInt32 size,
-                                       RwUInt32 extraData));
+                    RwPluginDataChunkRightsCallBack callBack);
 RwInt32 fn_80481D98(RwPluginRegistry *registry, RwUInt32 pluginID); /* the plugin's offset */
+/* the size of an object's plugin data chunks */
+RwInt32 fn_804818FC(const RwPluginRegistry *registry, const void *object);
+/* writes and skips an object's plugin data chunks */
+const RwPluginRegistry *fn_80481980(const RwPluginRegistry *registry, RwStream *stream,
+                                    const void *object);
+const RwPluginRegistry *fn_80481AD4(const RwPluginRegistry *registry, RwStream *stream);
+RwBool fn_80481B98(void); /* opens plugin registration */
+RwBool fn_80481C58(void); /* closes plugin registration */
+
+RwUInt32 fn_80485D64(void); /* the number of engine instances (inferred) */
 
 /* A rendering pipeline; only the plugin that owns it is mapped */
 typedef struct RxPipeline {
