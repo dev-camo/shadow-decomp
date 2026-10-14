@@ -733,10 +733,12 @@ RpGameCubeVertexFormat *fn_80462E1C(void); /* the default vertex format */
  * attribute format and descriptor are kept in the layouts of the GX VAT A, B and C registers and
  * the VCD low and high registers */
 typedef struct RpGameCubeVertexDescBuilder {
-    /* 0x00 */ RwUInt8 field_0x0[0x4];
+    /* 0x00 */ RwInt32 vertexFormat; /* GXVtxFmt */
     /* 0x04 */ RwUInt32 vat[3];
     /* 0x10 */ RwUInt32 vcd[2];
-    /* 0x18 */ RwUInt8 field_0x18[0x4];
+    /* the colours, normals and texture coordinates of the GX XF vertex specification
+     * (inferred) */
+    /* 0x18 */ RwUInt32 xfSpecs;
     /* 0x1C */ RwUInt8 numAttributes; /* the vertex descriptors the instanced data takes */
     /* 0x1D */ RwUInt8 field_0x1D[0x3];
 } RpGameCubeVertexDescBuilder;
