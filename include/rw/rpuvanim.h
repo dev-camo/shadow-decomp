@@ -171,8 +171,8 @@ RwBool fn_80453018(RtAnimAnimation *animation, RpUVAnimKeyFrame *keyFrame,
 
 /* materials (inferred) */
 RpMaterial *fn_8045462C(RpMaterial *material); /* applies the animations to the UV matrices */
-RpMaterial *fn_804548EC(RpMaterial *material, RwReal deltaTime);
-RpMaterial *fn_80454964(RpMaterial *material, RwReal time);
+RpMaterial *fn_804548EC(RpMaterial *material, RwReal time);
+RpMaterial *fn_80454964(RpMaterial *material, RwReal deltaTime);
 RwBool fn_804549DC(const RpMaterial *material); /* whether any animation plays on it */
 
 /* material effects: sets the UV transform matrices of a material's UV transform effect and

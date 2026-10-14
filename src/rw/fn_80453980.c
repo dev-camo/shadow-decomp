@@ -514,27 +514,27 @@ RwChar *fn_804548E4(RtAnimAnimation *animation) {
     return customData->name;
 }
 
-/* Advances the animations playing on a material */
-RpMaterial *fn_804548EC(RpMaterial *material, RwReal deltaTime) {
+/* Sets the current time of the animations playing on a material */
+RpMaterial *fn_804548EC(RpMaterial *material, RwReal time) {
     RpUVAnimMaterialExtension *extension = RPUVANIMMATERIALGETEXT(material);
     RwUInt32 i;
 
     for (i = 0; i < rpUVANIMMAXSLOTS; i++) {
         if (extension->interp[i] != NULL) {
-            fn_804782E8(extension->interp[i], deltaTime);
+            fn_804782E8(extension->interp[i], time);
         }
     }
     return material;
 }
 
-/* Sets the current time of the animations playing on a material */
-RpMaterial *fn_80454964(RpMaterial *material, RwReal time) {
+/* Advances the animations playing on a material */
+RpMaterial *fn_80454964(RpMaterial *material, RwReal deltaTime) {
     RpUVAnimMaterialExtension *extension = RPUVANIMMATERIALGETEXT(material);
     RwUInt32 i;
 
     for (i = 0; i < rpUVANIMMAXSLOTS; i++) {
         if (extension->interp[i] != NULL) {
-            fn_80477ED4(extension->interp[i], time);
+            fn_80477ED4(extension->interp[i], deltaTime);
         }
     }
     return material;
