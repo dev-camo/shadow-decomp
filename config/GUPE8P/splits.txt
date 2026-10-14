@@ -1639,3 +1639,10 @@ rw/fn_80477344.c:
 	.bss        start:0x805E2740 end:0x805E2A40
 	.sbss       start:0x805F1540 end:0x805F1548
 	.sdata2     start:0x805FB280 end:0x805FB288
+
+rw/fn_8047832C.c:
+	.text       start:0x8047832C end:0x80479040
+	.rodata     start:0x8051BD68 end:0x8051C2C0
+	.data       start:0x8056DD68 end:0x8056DD80
+	.sdata      start:0x805EDE70 end:0x805EDE78
+	.sdata2     start:0x805FB288 end:0x805FB298
