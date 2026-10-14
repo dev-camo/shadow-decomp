@@ -33,7 +33,7 @@ typedef struct RwSurfaceProperties {
 typedef struct RpMaterial {
     /* 0x00 */ RwTexture *texture;
     /* 0x04 */ RwRGBA color;
-    /* 0x08 */ void *pipeline;
+    /* 0x08 */ RxPipeline *pipeline;
     /* 0x0C */ RwSurfaceProperties surfaceProps;
     /* 0x18 */ RwInt16 refCount;
     /* 0x1A */ RwInt16 pad;

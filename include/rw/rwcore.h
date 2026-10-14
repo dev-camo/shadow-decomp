@@ -415,6 +415,10 @@ RwFrameList *fn_80483728(RwFrameList *frameList);                   /* deinitial
 void fn_8048D7C0(void *object, RwFrame *frame); /* sets the frame */
 void fn_8048D834(void *object);                 /* releases the frame */
 
+/* textures (inferred) */
+RwTexture *fn_80483D28(RwStream *stream); /* stream read */
+RwBool fn_8048CD8C(RwTexture *texture);   /* destroy (releases a reference) */
+
 /* cameras (inferred) */
 RwCamera *fn_80483590(RwStream *stream); /* stream read */
 RwBool fn_804859F8(RwCamera *camera);    /* destroy */
