@@ -156,7 +156,7 @@ RwBool fn_80477860(const RtAnimAnimation *animation, RwStream *stream) {
 
 /* The stream size of an animation: its header (version, type, frame count, flags and duration)
  * and the scheme's keyframe data */
-RwInt32 fn_80477978(const RtAnimAnimation *animation) {
+RwUInt32 fn_80477978(const RtAnimAnimation *animation) {
     return animation->interpInfo->keyFrameStreamGetSizeCB(animation) + sizeof(RwInt32) * 4 +
            sizeof(RwReal);
 }

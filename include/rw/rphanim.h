@@ -1,11 +1,11 @@
 #ifndef RW_RPHANIM_H
 #define RW_RPHANIM_H
 
-#include "rw/rwcore.h"
+#include "rw/rtanim.h"
 
-/* RenderWare hierarchical animation (plugin ID 0x11E): the standard keyframes and the animation
- * objects they live in. The type and field names are inferred from the stream format and the code
- * that uses them. */
+/* RenderWare hierarchical animation (plugin ID 0x11E): the standard keyframes and the hierarchies
+ * they animate; the animations and interpolators come from the animation toolkit. The type and
+ * field names are inferred from the stream format and the code that uses them. */
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,16 +16,6 @@ typedef struct RtQuat {
     /* 0x0 */ RwV3d imag;
     /* 0xC */ RwReal real;
 } RtQuat;
-
-/* An animation: its frames and their interpolation scheme */
-typedef struct RtAnimAnimation {
-    /* 0x00 */ struct RtAnimInterpolatorInfo *interpInfo;
-    /* 0x04 */ RwInt32 numFrames;
-    /* 0x08 */ RwInt32 flags;
-    /* 0x0C */ RwReal duration;
-    /* 0x10 */ void *pFrames;
-    /* 0x14 */ void *customData;
-} RtAnimAnimation;
 
 /* A standard keyframe: a rotation and translation at a time, after the frame it follows on the
  * same node (0x24 bytes) */
@@ -50,53 +40,6 @@ typedef struct RpHAnimInterpFrame {
 /* RpHAnimHierarchy flags */
 #define rpHANIMHIERARCHYSUBHIERARCHY 0x1 /* shares its parent's matrices and node data */
 #define rpHANIMHIERARCHYNOMATRICES 0x2
-
-/* The callbacks of a keyframe scheme. The toolkit is generic over schemes, so the keyframe callbacks
- * take untyped frames; each scheme's functions use their own frame types. */
-typedef void (*RtAnimKeyFrameApplyCallBack)(void *result, void *voidIFrame);
-typedef void (*RtAnimKeyFrameBlendCallBack)(void *voidOut, void *voidIn1, void *voidIn2,
-                                            RwReal alpha);
-typedef void (*RtAnimKeyFrameInterpolateCallBack)(void *voidOut, void *voidIn1, void *voidIn2,
-                                                  RwReal time, void *customData);
-typedef void (*RtAnimKeyFrameAddCallBack)(void *voidOut, void *voidIn1, void *voidIn2);
-typedef void (*RtAnimKeyFrameMulRecipCallBack)(void *voidFrame, void *voidStart);
-typedef RtAnimAnimation *(*RtAnimKeyFrameStreamReadCallBack)(RwStream *stream,
-                                                             RtAnimAnimation *animation);
-typedef RwBool (*RtAnimKeyFrameStreamWriteCallBack)(RtAnimAnimation *animation, RwStream *stream);
-typedef RwInt32 (*RtAnimKeyFrameStreamGetSizeCallBack)(RtAnimAnimation *animation);
-
-/* The callbacks of a keyframe scheme, as registered with the animation toolkit (0x30 bytes) */
-typedef struct RtAnimInterpolatorInfo {
-    /* 0x00 */ RwInt32 typeID;
-    /* 0x04 */ RwInt32 interpKeyFrameSize;
-    /* 0x08 */ RwInt32 animKeyFrameSize;
-    /* 0x0C */ RtAnimKeyFrameApplyCallBack keyFrameApplyCB;
-    /* 0x10 */ RtAnimKeyFrameBlendCallBack keyFrameBlendCB;
-    /* 0x14 */ RtAnimKeyFrameInterpolateCallBack keyFrameInterpolateCB;
-    /* 0x18 */ RtAnimKeyFrameAddCallBack keyFrameAddCB;
-    /* 0x1C */ RtAnimKeyFrameMulRecipCallBack keyFrameMulRecipCB;
-    /* 0x20 */ RtAnimKeyFrameStreamReadCallBack keyFrameStreamReadCB;
-    /* 0x24 */ RtAnimKeyFrameStreamWriteCallBack keyFrameStreamWriteCB;
-    /* 0x28 */ RtAnimKeyFrameStreamGetSizeCallBack keyFrameStreamGetSizeCB;
-    /* 0x2C */ RwInt32 customDataSize;
-} RtAnimInterpolatorInfo;
-
-/* An animation interpolator (0x4C bytes), followed by one interpolated frame per node; only the
- * members used so far are mapped */
-typedef struct RtAnimInterpolator {
-    /* 0x00 */ RtAnimAnimation *pCurrentAnim;
-    /* 0x04 */ RwUInt8 field_0x4[0x1C];
-    /* 0x20 */ RwInt32 maxInterpKeyFrameSize;
-    /* 0x24 */ RwInt32 currentInterpKeyFrameSize;
-    /* 0x28 */ RwInt32 field_0x28;
-    /* 0x2C */ RwInt32 numNodes;
-    /* 0x30 */ RwUInt8 field_0x30[0xC];
-    /* 0x3C */ RtAnimKeyFrameApplyCallBack keyFrameApplyCB; /* of the current animation's scheme */
-    /* 0x40 */ RwUInt8 field_0x40[0xC];
-} RtAnimInterpolator;
-
-/* the interpolated frames of an interpolator's nodes */
-#define RTANIMINTERPOLATORFRAMES(interpolator) ((RwUInt8 *)((interpolator) + 1))
 
 /* A node of a hierarchy (0x10 bytes) */
 typedef struct RpHAnimNodeInfo {
@@ -125,24 +68,6 @@ typedef struct RpHAnimFrameExtension {
     /* 0x4 */ RpHAnimHierarchy *hierarchy;
 } RpHAnimFrameExtension;
 
-/* animation toolkit (inferred) */
-RwBool fn_80477344(RtAnimInterpolatorInfo *interpolatorInfo); /* registers a keyframe scheme */
-/* creates an animation of a registered scheme */
-RtAnimAnimation *fn_80477468(RwInt32 typeID, RwInt32 numFrames, RwInt32 flags, RwReal duration);
-RwBool fn_8047759C(RtAnimAnimation *animation);  /* destroy */
-RwInt32 fn_804779A8(RtAnimAnimation *animation); /* the number of nodes it animates */
-RtAnimInterpolator *fn_804779DC(RwInt32 numNodes, RwInt32 maxInterpKeyFrameSize);
-void fn_80477A8C(RtAnimInterpolator *interpolator);
-RwBool fn_80477AB8(RtAnimInterpolator *interpolator, RtAnimAnimation *animation); /* set current */
-/* copies the interpolated frames of one interpolator to another */
-RwBool fn_80477BF0(RtAnimInterpolator *dst, RtAnimInterpolator *src);
-RwBool fn_80477ED4(RtAnimInterpolator *interpolator, RwReal time); /* set the current time */
-RwBool fn_804782E8(RtAnimInterpolator *interpolator, RwReal time); /* advance the current time */
-/* the animation stream: size, read and write */
-RwUInt32 fn_80477978(RtAnimAnimation *animation);
-RtAnimAnimation *fn_804775CC(RwStream *stream);
-RwBool fn_80477860(RtAnimAnimation *animation, RwStream *stream);
-
 /* hierarchies */
 RpHAnimHierarchy *fn_804472AC(RwInt32 numNodes, RwUInt32 *nodeFlags, RwInt32 *nodeIDs,
                               RwInt32 flags, RwInt32 maxInterpKeyFrameSize);
@@ -156,8 +81,8 @@ void fn_80445E08(RpHAnimInterpFrame *out, RpHAnimKeyFrame *in1, RpHAnimKeyFrame 
 void fn_8044621C(RpHAnimInterpFrame *out, RpHAnimInterpFrame *in1, RpHAnimInterpFrame *in2,
                  RwReal alpha);
 RtAnimAnimation *fn_80446620(RwStream *stream, RtAnimAnimation *animation);
-RwBool fn_804466DC(RtAnimAnimation *animation, RwStream *stream);
-RwInt32 fn_80446780(RtAnimAnimation *animation);
+RwBool fn_804466DC(const RtAnimAnimation *animation, RwStream *stream);
+RwInt32 fn_80446780(const RtAnimAnimation *animation);
 void fn_80446790(RpHAnimKeyFrame *frame, RpHAnimKeyFrame *start);
 void fn_804468D0(RpHAnimKeyFrame *out, RpHAnimKeyFrame *in1, RpHAnimKeyFrame *in2);
 
