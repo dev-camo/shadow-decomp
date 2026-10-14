@@ -409,6 +409,7 @@ RpGeometry *fn_8045905C(RpGeometry *geometry, RpTriangle *triangle, RpMaterial *
 RpMaterial *fn_8045B13C(void);                                     /* create */
 RwBool fn_8045B1F4(RpMaterial *material);                          /* destroy */
 RpMaterial *fn_8045B270(RpMaterial *material, RwTexture *texture); /* set texture */
+RpMaterial *fn_8045B348(RwStream *stream);                         /* stream read */
 
 /* plugin registration with lights (inferred from RenderWare's attach order) and materials (the
  * registry is the one the material constructor fn_8045B13C uses) */
