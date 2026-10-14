@@ -91,12 +91,20 @@ typedef RwStream *(*RwPluginDataChunkWriteCallBack)(RwStream *stream, RwInt32 le
 typedef RwInt32 (*RwPluginDataChunkGetSizeCallBack)(const void *object, RwInt32 offset,
                                                     RwInt32 size);
 
-/* A free list: fixed size entries allocated in blocks (0x28 bytes) */
+/* A free list: fixed size entries allocated in blocks (0x24 bytes; two in one unit's .bss are 0x24
+ * apart) */
 struct RwFreeList {
-    /* 0x00 */ RwUInt8 field_0x0[0x28];
+    /* 0x00 */ RwUInt8 field_0x0[0x24];
 };
 
 typedef struct RwFrame RwFrame;
+
+/* A frame; only the root member is mapped (while a hierarchy is being cloned, each frame's root
+ * holds its clone) */
+struct RwFrame {
+    /* 0x00 */ RwUInt8 field_0x0[0xA0];
+    /* 0xA0 */ struct RwFrame *root;
+};
 typedef RwFrame *(*RwFrameCallBack)(RwFrame *frame, void *data);
 
 /* An error reported with fn_8047DB84: the reporting plugin and its error code. */
@@ -186,6 +194,22 @@ typedef struct RwLinkList {
         (list)->link.prev = &(list)->link;                                                         \
     } while (0)
 
+/* Adds a link at the head of a list */
+#define rwLinkListAddLLLink(list, linkvar)                                                         \
+    do {                                                                                           \
+        (linkvar)->next = (list)->link.next;                                                       \
+        (linkvar)->prev = &(list)->link;                                                           \
+        (list)->link.next->prev = (linkvar);                                                       \
+        (list)->link.next = (linkvar);                                                             \
+    } while (0)
+
+/* Takes a link out of its list */
+#define rwLinkListRemoveLLLink(linkvar)                                                            \
+    do {                                                                                           \
+        (linkvar)->prev->next = (linkvar)->next;                                                   \
+        (linkvar)->next->prev = (linkvar)->prev;                                                   \
+    } while (0)
+
 /* The plugin extensions of an object type (0x18 bytes) */
 typedef struct RwPluginRegistry {
     /* 0x00 */ RwInt32 sizeOfStruct; /* with the plugins' data */
@@ -205,6 +229,22 @@ RwPluginRegistry *fn_804816AC(RwPluginRegistry *registry, RwStream *stream, void
 /* calls the rights callback of the plugin with the ID */
 RwPluginRegistry *fn_80481870(RwPluginRegistry *registry, RwUInt32 pluginID, void *object,
                               RwUInt32 extraData);
+/* destructs and copies the plugins' data */
+RwPluginRegistry *fn_80482144(RwPluginRegistry *registry, void *object);
+RwPluginRegistry *fn_804821B0(RwPluginRegistry *registry, void *dst, const void *src);
+/* registering plugins: the plugin's offset in the object (or stream), or -1 */
+RwInt32 fn_80481DC8(RwPluginRegistry *registry, RwInt32 size, RwUInt32 pluginID,
+                    RwPluginObjectConstructor constructor, RwPluginObjectDestructor destructor,
+                    RwPluginObjectCopy copy);
+RwInt32 fn_804815F0(RwPluginRegistry *registry, RwUInt32 pluginID,
+                    RwPluginDataChunkReadCallBack read, RwPluginDataChunkWriteCallBack write,
+                    RwPluginDataChunkGetSizeCallBack getSize);
+RwInt32 fn_80481634(RwPluginRegistry *registry, RwUInt32 pluginID,
+                    RwBool (*callBack)(void *object, RwInt32 offset, RwInt32 size));
+RwInt32 fn_80481670(RwPluginRegistry *registry, RwUInt32 pluginID,
+                    RwBool (*callBack)(void *object, RwInt32 offset, RwInt32 size,
+                                       RwUInt32 extraData));
+RwInt32 fn_80481D98(RwPluginRegistry *registry, RwUInt32 pluginID); /* the plugin's offset */
 
 /* A rendering pipeline; only the plugin that owns it is mapped */
 typedef struct RxPipeline {
@@ -352,6 +392,36 @@ RwInt32 fn_804836EC(RwUInt32 pluginID, RwPluginDataChunkReadCallBack readCB,
 RwInt32 fn_804878D4(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructCB,
                     RwPluginObjectDestructor destructCB, RwPluginObjectCopy copyCB);
 RwFrame *fn_8048722C(RwFrame *frame);
+RwFrame *fn_80486C5C(RwFrame *root); /* clones a hierarchy */
+RwFrame *fn_80486CA4(RwFrame *root); /* forgets the clones made of a hierarchy */
+RwBool fn_80486CF0(RwFrame *frame);  /* whether the frame's hierarchy is dirty */
+RwBool fn_80487208(RwFrame *frame);  /* destroys a hierarchy */
+
+/* The frames of a stream (8 bytes) */
+typedef struct RwFrameList {
+    /* 0x0 */ RwFrame **frames;
+    /* 0x4 */ RwInt32 numFrames;
+} RwFrameList;
+
+RwFrameList *fn_80483774(RwStream *stream, RwFrameList *frameList); /* stream read */
+RwFrameList *fn_80483728(RwFrameList *frameList);                   /* deinitialise */
+
+/* objects attached to frames (inferred) */
+void *fn_8048D7C0(void *object, RwFrame *frame); /* sets the frame */
+void fn_8048D834(void *object);                  /* releases the frame */
+
+/* cameras (inferred) */
+RwCamera *fn_80483590(RwStream *stream); /* stream read */
+RwBool fn_804859F8(RwCamera *camera);    /* destroy */
+
+/* transforms a point by a matrix (inferred) */
+void fn_80482458(RwV3d *out, const RwV3d *point, const RwMatrix *matrix);
+
+/* calls a function for each entry in use in a free list (inferred) */
+RwFreeList *fn_804800DC(RwFreeList *freeList, void (*callBack)(void *mem, void *data), void *data);
+
+/* executes a pipeline on an object (inferred) */
+RxPipeline *fn_8049B674(RxPipeline *pipeline, void *data, RwBool heapReset);
 RwFrame *fn_8048752C(RwFrame *frame, RwFrameCallBack callBack, void *data);
 
 /* plugin registration with cameras and textures (inferred: the user data plugin registers with
