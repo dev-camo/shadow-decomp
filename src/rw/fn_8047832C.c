@@ -430,7 +430,7 @@ RtCharset *fn_80478C14(RtCharset *charSet, const RwRGBA *foreground, const RwRGB
     return result;
 }
 
-static RwBool CharsetDestroy(RtCharset *charSet) {
+static inline RwBool CharsetDestroy(RtCharset *charSet) {
     if (charSet != NULL) {
         fn_80489BDC(charSet);
         return TRUE;
