@@ -30,13 +30,16 @@ typedef struct RtFileSystem RtFileSystem;
 
 /* A file's states (inferred) */
 #define RTFILE_STATUS_FREE 1    /* not open */
-#define RTFILE_STATUS_PENDING 3 /* while a seek is pending */
+#define RTFILE_STATUS_READY 2   /* open, with nothing pending */
+#define RTFILE_STATUS_PENDING 3 /* while an operation is pending */
+#define RTFILE_STATUS_ERROR 4   /* the last operation failed */
 #define RTFILE_STATUS_OPENING 5 /* taken by an open in progress */
 
 /* A file's asynchronous operation states (inferred) */
 #define RTFILE_ASYNC_IDLE 1
 #define RTFILE_ASYNC_OPEN 2
 #define RTFILE_ASYNC_SETPOSITION 4 /* a seek; reports the new position when it completes */
+#define RTFILE_ASYNC_READ 5        /* a read; reports the bytes read when it completes */
 
 /* The modes a file is opened with (inferred; 4 and 8 are set by the "w", "a" and "+" modes and
  * their meanings are not established) */
@@ -58,15 +61,14 @@ typedef void (*RtFileCallBack)(RtFile *file, RwInt32 result, RwInt32 status, RwI
 /* A file of a file system */
 struct RtFile {
     /* 0x00 */ RwInt64 length;
-    /* 0x08 */ RwInt64 position; /* -1 when unknown */
-    /* 0x10 */ RwInt32 field_0x10;
-    /* 0x14 */ RwUInt8 field_0x14[0x4];
-    /* 0x18 */ RwBool field_0x18;  /* copied from its file system's asyncMode */
-    /* 0x1C */ RwInt32 field_0x1C; /* 2 once opened */
-    /* 0x20 */ RwInt32 status;     /* RTFILE_STATUS_* */
-    /* 0x24 */ RwUInt8 field_0x24[0x4];
+    /* 0x08 */ RwInt64 position;    /* -1 when unknown */
+    /* 0x10 */ RwInt64 readStart;   /* the position a read started at */
+    /* 0x18 */ RwBool field_0x18;   /* copied from its file system's asyncMode */
+    /* 0x1C */ RwInt32 priority;    /* of its device reads; 2 once opened */
+    /* 0x20 */ RwInt32 status;      /* RTFILE_STATUS_* */
+    /* 0x24 */ RwInt32 field_0x24;  /* 1 once opened, 2 after a refused write */
     /* 0x28 */ RwInt32 asyncStatus; /* RTFILE_ASYNC_* */
-    /* 0x2C */ RwInt32 field_0x2C;
+    /* 0x2C */ RwInt32 asyncResult; /* what an operation other than a seek reports */
     /* 0x30 */ RtFileCallBack callBack;
     /* 0x34 */ void *callBackData;
     /* 0x38 */ RtFileSystem *fileSystem;
@@ -81,7 +83,7 @@ struct RtFileSystem {
     /* 0x10 */ RwBool asyncMode; /* its files open asynchronously, reporting to their callbacks */
     /* 0x14 */ RtFile *(*getFile)(RtFileSystem *fileSystem, RwInt32 index);
     /* 0x18 */ void (*close)(RtFileSystem *fileSystem);
-    /* 0x1C */ RwUInt8 field_0x1C[0x4];
+    /* 0x1C */ const RwChar *(*getPathPrefix)(RtFileSystem *fileSystem); /* put before paths */
     /* 0x20 */ void (*registerNotify)(RwChar *name);   /* told the name when registered */
     /* 0x24 */ void (*unregisterNotify)(RwChar *name); /* told the name when unregistered */
     /* 0x28 */ RwInt32 (*fileOpen)(RtFileSystem *fileSystem, RtFile *file, const RwChar *name,
@@ -91,12 +93,15 @@ struct RtFileSystem {
     /* 0x34 */ RwUInt32 (*fileWrite)(RtFile *file, const void *buffer, RwUInt32 length);
     /* 0x38 */ RwInt64 (*fileSetPosition)(RtFile *file, RwInt32 offset,
                                           RwInt32 origin); /* the new position */
-    /* 0x3C */ RwUInt8 field_0x3C[0x8];
+    /* 0x3C */ RwInt32 (*fileUpdate)(RtFile *file, RwInt32 unused); /* polls; its status */
+    /* 0x40 */ void (*fileAbort)(RtFile *file);
     /* 0x44 */ RwBool (*fileIsEOF)(RtFile *file);
-    /* 0x48 */ RwUInt8 field_0x48[0x4];
+    /* 0x48 */ RwInt32 (*fileGetStatus)(RtFile *file);
     /* 0x4C */ RwBool (*fileExists)(RtFileSystem *fileSystem, const RwChar *name);
     /* 0x50 */ RwChar name[8];
-    /* 0x58 */ RwUInt8 field_0x58[0xC];
+    /* 0x58 */ void *files; /* the implementation's array of its files */
+    /* 0x5C */ void (*errorCallBack)(RwInt32 error, void *data); /* told of device errors */
+    /* 0x60 */ void *errorCallBackData;
 };
 
 /* The notifications of a file system (inferred) */

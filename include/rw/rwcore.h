@@ -113,7 +113,7 @@ typedef struct RwGlobals {
     /* 0x108 */ void *(*rwmalloc)(RwUInt32 size, RwUInt32 hint);
     /* 0x10C */ void (*rwfree)(void *mem);
     /* 0x110 */ void *(*rwrealloc)(void *mem, RwUInt32 newSize, RwUInt32 hint);
-    /* 0x114 */ RwUInt8 field_0x114[0x4];
+    /* 0x114 */ void *(*rwcalloc)(RwUInt32 numObj, RwUInt32 sizeObj, RwUInt32 hint);
     /* 0x118 */ void *(*rwfreelistalloc)(RwFreeList *freeList, RwUInt32 hint);
     /* 0x11C */ void (*rwfreelistfree)(RwFreeList *freeList, void *mem);
 } RwGlobals;
@@ -123,6 +123,7 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
 #define RwMalloc(size, hint) (lbl_805F15B4->rwmalloc((size), (hint)))
 #define RwFree(mem) (lbl_805F15B4->rwfree(mem))
 #define RwRealloc(mem, newSize, hint) (lbl_805F15B4->rwrealloc((mem), (newSize), (hint)))
+#define RwCalloc(numObj, sizeObj, hint) (lbl_805F15B4->rwcalloc((numObj), (sizeObj), (hint)))
 #define RwFreeListAlloc(freeList, hint) (lbl_805F15B4->rwfreelistalloc((freeList), (hint)))
 #define RwFreeListFree(freeList, mem) (lbl_805F15B4->rwfreelistfree((freeList), (mem)))
 #define rwstrlen(string) (lbl_805F15B4->rwstrlen(string))
