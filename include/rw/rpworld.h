@@ -372,6 +372,14 @@ RwBool fn_8046318C(void);
 RwBool fn_80462798(void);
 void fn_80462770(void);
 
+/* the platform pipelines (inferred): the open steps, each TRUE on success, and the close steps */
+RwBool fn_804631CC(void);
+RwBool fn_80463298(void);
+RwBool fn_804631D8(void);
+void fn_80463244(void);
+void fn_80463308(void);
+void fn_804631D4(void);
+
 /* ties (inferred): unlink a tie from both its lists and free it */
 RwBool fn_80460D80(RpLightTie *tie);
 RwBool fn_80460DF0(RpTie *tie);
@@ -410,11 +418,18 @@ RpWorld *fn_804622F0(RpAtomic *atomic);  /* the world the atomic is in, or NULL 
 /* RpAtomicSetGeometry flags */
 #define rpATOMICSAMEBOUNDINGSPHERE 0x1
 
-/* The pipeline module's globals in the engine; only the default pipelines are mapped */
+/* The pipeline module's globals in the engine; only the pipelines are mapped */
 typedef struct RpPipelineGlobals {
     /* 0x00 */ RwUInt8 field_0x0[0x3C];
-    /* 0x3C */ RxPipeline *defaultAtomicPipeline;
-    /* 0x40 */ RxPipeline *defaultWorldSectorPipeline; /* (inferred) */
+    /* 0x3C */ RxPipeline *defaultAtomicPipeline; /* the current defaults */
+    /* 0x40 */ RxPipeline *defaultWorldSectorPipeline;
+    /* 0x44 */ RxPipeline *defaultMaterialPipeline;
+    /* 0x48 */ RxPipeline *genericAtomicPipeline;
+    /* 0x4C */ RxPipeline *genericWorldSectorPipeline;
+    /* 0x50 */ RxPipeline *genericMaterialPipeline;
+    /* 0x54 */ RxPipeline *platformAtomicPipeline;
+    /* 0x58 */ RxPipeline *platformWorldSectorPipeline;
+    /* 0x5C */ RxPipeline *platformMaterialPipeline;
 } RpPipelineGlobals;
 
 extern RwInt32 lbl_805F1690; /* engine plugin offset of the pipeline module's globals */
