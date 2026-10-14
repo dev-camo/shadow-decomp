@@ -644,6 +644,7 @@ extern RwInt32 lbl_805F1520; /* geometry plugin offset of the vertex format */
 
 /* vertex formats (inferred from their use) */
 RpGameCubeVertexFormat *fn_8046301C(void);                                    /* create */
+void fn_80462FAC(RpGameCubeVertexFormat *format);                             /* initializes */
 void fn_80462F7C(RpGameCubeVertexFormat *format, RwUInt8 type, RwUInt8 frac); /* positions */
 void fn_80462F88(RpGameCubeVertexFormat *format, RwUInt8 type, RwUInt8 nbt);  /* normals */
 void fn_80462FA4(RpGameCubeVertexFormat *format, RwUInt8 type);               /* colors */
@@ -760,6 +761,15 @@ struct RpGameCubeInstanceData {
 
 extern RwUInt16 lbl_805EDF40; /* the next GX draw sync token */
 
+/* the GX draw sync */
+RwBool fn_8049A78C(RwUInt16 token); /* whether the GPU has passed the token */
+
+/* the material color callback a render state needs (inferred) */
+typedef void (*RpGameCubeMaterialColorCallBack)(RwRGBAReal *ambient, RwRGBA *color,
+                                                RwReal ambientCoef);
+RpGameCubeMaterialColorCallBack fn_804655D4(RwInt32 geometryFlags, RwUInt32 lightMask,
+                                            RwBool hasAmbient, RwBool prelit);
+
 /* GameCube: what the all-in-one pipeline's lighting callback leaves for its render callback */
 typedef struct RpGameCubeRenderMesh {
     /* 0x00 */ RwResEntry *repEntry;
@@ -774,6 +784,42 @@ typedef struct RpGameCubeRenderMesh {
 typedef RpAtomic *(*RpGameCubeInstanceCallBack)(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
 typedef RpAtomic *(*RpGameCubeLightingCallBack)(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
 typedef RpAtomic *(*RpGameCubeRenderCallBack)(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
+
+/* GameCube: a callback of an all-in-one pipeline node, for the atomic or world sector being
+ * rendered (inferred) */
+typedef void *(*RxGameCubeAllInOneCallBack)(void *object, RpGameCubeRenderMesh *renderMesh);
+
+/* GameCube: the private data of an all-in-one pipeline node (inferred) */
+typedef struct RxGameCubeAllInOneData {
+    /* 0x0 */ RxGameCubeAllInOneCallBack instanceCallBack;
+    /* 0x4 */ RxGameCubeAllInOneCallBack reinstanceCallBack;
+    /* 0x8 */ RxGameCubeAllInOneCallBack lightingCallBack;
+    /* 0xC */ RxGameCubeAllInOneCallBack renderCallBack;
+} RxGameCubeAllInOneData;
+
+/* setting an all-in-one node's callbacks */
+void fn_80462BF0(RxPipelineNode *node, RxGameCubeAllInOneCallBack callBack); /* instance */
+void fn_80462BFC(RxPipelineNode *node, RxGameCubeAllInOneCallBack callBack); /* reinstance */
+void fn_80462C08(RxPipelineNode *node, RxGameCubeAllInOneCallBack callBack); /* lighting */
+void fn_80462C14(RxPipelineNode *node, RxGameCubeAllInOneCallBack callBack); /* render */
+
+/* the default render callback of atomics and world sectors */
+void *fn_80462914(void *object, RpGameCubeRenderMesh *renderMesh);
+/* waits until the GPU is done with a resource entry's instanced data */
+void fn_8046288C(RwResEntry *repEntry);
+
+typedef RpWorldSector *(*RpGameCubeSectorCallBack)(RpWorldSector *sector,
+                                                   RpGameCubeRenderMesh *renderMesh);
+
+/* creates a world sector all-in-one pipeline (inferred) */
+void *fn_80463D28(RwUInt32 pluginID, RwUInt32 pluginData, RpGameCubeSectorCallBack instanceCallBack,
+                  RpGameCubeSectorCallBack reinstanceCallBack,
+                  RpGameCubeSectorCallBack lightingCallBack,
+                  RpGameCubeSectorCallBack renderCallBack);
+RpWorldSector *fn_80463DF4(RpWorldSector *sector, RpGameCubeRenderMesh *renderMesh); /* lighting */
+RpWorldSector *fn_80463F10(RpWorldSector *sector, RpGameCubeRenderMesh *renderMesh); /* instance */
+RpAtomic *fn_804639AC(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh); /* atomic instance */
+RwBool fn_804647C8(void); /* the light plugin attachment (inferred) */
 
 /* creates an atomic all-in-one pipeline with the plugin's callbacks, which receive the atomic
  * being rendered (inferred) */

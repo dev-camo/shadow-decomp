@@ -310,6 +310,12 @@ typedef struct RxPipeline {
     /* 0x30 */ RwUInt32 pluginData; /* the owner plugin's data */
 } RxPipeline;
 
+/* A node of a pipeline; only its private data is mapped */
+typedef struct RxPipelineNode {
+    /* 0x00 */ RwUInt8 field_0x0[0x14];
+    /* 0x14 */ void *privateData;
+} RxPipelineNode;
+
 typedef struct RwResEntry RwResEntry;
 typedef void (*RwResEntryDestroyNotify)(RwResEntry *resEntry);
 

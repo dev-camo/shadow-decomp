@@ -51,14 +51,6 @@ RwMatrix *fn_8047EBB8(RwMatrix *out, const RwMatrix *a, const RwMatrix *b); /* o
 RwMatrix *fn_8047F0B0(RwMatrix *out, const RwMatrix *in);                   /* inverts */
 RwV3d *fn_80482504(RwV3d *out, const RwV3d *vector, const RwMatrix *matrix);
 
-/* the GX draw sync */
-RwBool fn_8049A78C(RwUInt16 token); /* whether the GPU has passed the token */
-
-/* the material color callback a render state needs (inferred) */
-typedef void (*SkinMaterialColorCallBack)(RwRGBAReal *ambient, RwRGBA *color, RwReal ambientCoef);
-SkinMaterialColorCallBack fn_804655D4(RwInt32 geometryFlags, RwUInt32 lightMask, RwBool hasAmbient,
-                                      RwBool prelit);
-
 /* Waits until the GPU is done with the draw that used a sync token, first issuing the token if it
  * is the current one */
 static inline void SkinWaitDrawSync(RwUInt16 *syncToken) {
@@ -586,7 +578,7 @@ RpAtomic *fn_8044DE74(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
     RpGameCubeDisplayList *displayList;
     RwMatrix *ltm;
     RpSkin *skin;
-    SkinMaterialColorCallBack setMaterialColor;
+    RpGameCubeMaterialColorCallBack setMaterialColor;
     RwUInt32 numMeshes;
     RpMesh *mesh;
     RwUInt32 i;
