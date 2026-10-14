@@ -5,17 +5,7 @@
 extern "C" {
 #endif
 
-typedef struct __va_list_struct {
-    char gpr;
-    char fpr;
-    char reserved[2];
-    char* input_arg_area;
-    char* reg_save_area;
-} _va_list_struct;
-
-typedef _va_list_struct __va_list[1];
-
-void* __va_arg(_va_list_struct*, int);
+#include <libc/va_list_struct.h>
 
 #ifndef __MWERKS__
 #define __builtin_va_info(...)
@@ -25,6 +15,11 @@ void* __va_arg(_va_list_struct*, int);
 // from defined-string in mwcceppc.exe:
 // __builtin_va_info: initialize the __va_list_struct
 // _var_arg_typeof: convert type to integer for __va_arg
+// the C library facade (stdarg.h) may already define these; MSL's are used
+#undef va_start
+#undef va_arg
+#undef va_end
+
 #define __va_start(list, fmt) __builtin_va_info(&list)
 #define __va_arg(list, type) (*((type*)__va_arg(list, _var_arg_typeof(type))))
 #define va_start __va_start
