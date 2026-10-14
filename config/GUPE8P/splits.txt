@@ -1633,3 +1633,9 @@ rw/fn_80476ABC.c:
 	.bss        start:0x805E26D0 end:0x805E2740
 	.sdata      start:0x805EDE58 end:0x805EDE70
 	.sdata2     start:0x805FB278 end:0x805FB280
+
+rw/fn_80477344.c:
+	.text       start:0x80477344 end:0x8047832C
+	.bss        start:0x805E2740 end:0x805E2A40
+	.sbss       start:0x805F1540 end:0x805F1548
+	.sdata2     start:0x805FB280 end:0x805FB288
