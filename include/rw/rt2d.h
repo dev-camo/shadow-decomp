@@ -113,7 +113,7 @@ typedef struct Rt2dGlobalVars {
     /* 0x15C */ RwTexDictionary *fontTexDict;        /* created when fonts open */
     /* 0x160 */ RwTexDictionary *fontTexDictCurrent; /* font textures are read into it */
     /* 0x164 */ RwUInt8 field_0x164[0x20];
-    /* 0x184 */ RwMatrix baseMatrix; /* applied before the current transformation */
+    /* 0x184 */ RwMatrix baseMatrix; /* applied after the current transformation */
     /* 0x1C4 */ RwMatrix *ctmStack[rt2dCTMSTACKSIZE];
     /* 0x244 */ RwInt32 ctmIndex;
     /* 0x248 */ RwV2d viewWindow;      /* twice the camera's */
@@ -168,9 +168,9 @@ void fn_804743F0(void);                  /* closes the transformations */
 RwBool fn_80474228(RwReal depth);        /* sets the layer depth */
 RwReal fn_80474168(void);                /* the squared pixel size */
 RwBool fn_80473ECC(void);                /* resets the transformation */
-void fn_804772C4(void);
-void fn_80476A58(void);
-void fn_8047721C(void);
+RwBool fn_804772C4(void);
+RwBool fn_80476A58(void);
+RwBool fn_8047721C(void);
 void fn_804771E0(void);
 void fn_80476A0C(void);
 void fn_8047726C(void);
