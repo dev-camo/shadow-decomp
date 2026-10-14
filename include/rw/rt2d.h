@@ -93,12 +93,15 @@ typedef struct rt2dFontDictNode {
     /* 0x8 */ struct rt2dFontDictNode *next;
 } rt2dFontDictNode;
 
+/* The depth of the transformation stack */
+#define rt2dCTMSTACKSIZE 32
+
 /* The vertices and indices of the characters drawn at once */
 #define rt2dFONTMAXQUADS 16
 
 /* The 2D toolkit's globals (0xD58 bytes); only the mapped members are used */
 typedef struct Rt2dGlobalVars {
-    /* 0x000 */ RwUInt8 field_0x0[0x80];
+    /* 0x000 */ RwImVertexIndex indices[64];                       /* 0 to 63 */
     /* 0x080 */ RwImVertexIndex fontIndices[rt2dFONTMAXQUADS * 6]; /* two triangles per quad */
     /* 0x140 */ RwFreeList *brushFreeList;
     /* 0x144 */ RwIm3DVertex *vertexBuffer; /* 0x900 bytes (inferred) */
@@ -109,11 +112,34 @@ typedef struct Rt2dGlobalVars {
     /* 0x158 */ rt2dFontDictNode *fontDict;
     /* 0x15C */ RwTexDictionary *fontTexDict;        /* created when fonts open */
     /* 0x160 */ RwTexDictionary *fontTexDictCurrent; /* font textures are read into it */
-    /* 0x164 */ RwUInt8 field_0x164[0x1BC];
-    /* 0x320 */ RwReal layerDepth; /* the z of the characters drawn (inferred) */
-    /* 0x324 */ RwUInt8 field_0x324[0x51C];
+    /* 0x164 */ RwUInt8 field_0x164[0x20];
+    /* 0x184 */ RwMatrix baseMatrix; /* applied before the current transformation */
+    /* 0x1C4 */ RwMatrix *ctmStack[rt2dCTMSTACKSIZE];
+    /* 0x244 */ RwInt32 ctmIndex;
+    /* 0x248 */ RwV2d viewWindow;      /* twice the camera's */
+    /* 0x250 */ RwV2d rasterSize;      /* of the camera's frame buffer */
+    /* 0x258 */ RwMatrix deviceMatrix; /* from the transformation to the camera's view */
+    /* 0x298 */ RwMatrix inverseDeviceMatrix;
+    /* 0x2D8 */ RwMatrix ltm; /* the device matrix in the camera frame */
+    /* 0x318 */ RwBool deviceMatrixValid;
+    /* 0x31C */ RwInt32 field_0x31C;
+    /* 0x320 */ RwReal layerDepth;
+    /* 0x324 */ RwReal field_0x324;
+    /* 0x328 */ RwReal pixelSizeSq; /* the squared length of a pixel in the transformation */
+    /* 0x32C */ RwBool pixelSizeValid;
+    /* 0x330 */ RwInt32 field_0x330;
+    /* 0x334 */ RwUInt8 field_0x334[0x4];
+    /* 0x338 */ RwV2d field_0x338;
+    /* 0x340 */ RwV2d aspect; /* the view window's larger side over its smaller one */
+    /* 0x348 */ RwUInt8 field_0x348[0x4];
+    /* 0x34C */ RwCamera *camera;
+    /* 0x350 */ RwUInt8 field_0x350[0x48];
+    /* 0x398 */ RwCameraEndUpdateFunc cameraEndUpdate; /* the camera's own, which Rt2d wraps */
+    /* 0x39C */ RwUInt8 field_0x39C[0x4A4];
     /* 0x840 */ Rt2dFontReadCallBack fontReadCB;
-    /* 0x844 */ RwUInt8 field_0x844[0x108];
+    /* 0x844 */ RwUInt8 field_0x844[0x100];
+    /* 0x944 */ void *field_0x944;
+    /* 0x948 */ RwInt32 field_0x948;
     /* 0x94C */ RwChar fontMaskName[0x400]; /* the mask texture name read with a font */
     /* 0xD4C */ RwInt32 *charCodes;         /* the extended codes of the characters read */
     /* 0xD50 */ RwInt32 numCharCodes;
@@ -132,6 +158,22 @@ Rt2dBrush *fn_80470694(Rt2dBrush *brush, RwRGBA *col0, RwRGBA *col1, RwRGBA *col
 Rt2dBrush *fn_80470998(Rt2dBrush *brush, RwV2d *uv0, RwV2d *uv1, RwV2d *uv2,
                        RwV2d *uv3);                           /* set the texture coordinates */
 Rt2dBrush *fn_80470A4C(Rt2dBrush *brush, RwTexture *texture); /* set the texture */
+
+/* opening and closing (inferred) */
+void fn_80474258(RwCamera *camera);      /* open */
+void fn_804743AC(void);                  /* close */
+RwCamera *fn_80473E9C(RwCamera *camera); /* the camera's end update */
+RwBool fn_80474498(void);                /* opens the transformations */
+void fn_804743F0(void);                  /* closes the transformations */
+RwBool fn_80474228(RwReal depth);        /* sets the layer depth */
+RwReal fn_80474168(void);                /* the squared pixel size */
+RwBool fn_80473ECC(void);                /* resets the transformation */
+void fn_804772C4(void);
+void fn_80476A58(void);
+void fn_8047721C(void);
+void fn_804771E0(void);
+void fn_80476A0C(void);
+void fn_8047726C(void);
 
 /* the current transformation (inferred) */
 RwBool fn_804747A0(void);               /* push */
