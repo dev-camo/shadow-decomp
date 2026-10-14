@@ -192,7 +192,7 @@ Sint32 ADXB_DecodeHeaderWav(ADXB adxb, void *buf, Sint32 bsize) {
     adxb->out_nch = adxb->nch;
     adxb->x54 = adxb->x0f;
     adxb->out_fmt = adxb->fmt;
-    adxb->pcmbuf = (Sint16 *)adxb->x3c;
+    adxb->pcmbuf = adxb->x3c;
     adxb->pcmbuf_nsmpl = adxb->x40;
     adxb->pcmbuf_chofst = adxb->x44;
     adxb->x8c = 0;
