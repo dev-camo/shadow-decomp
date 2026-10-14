@@ -58,6 +58,7 @@ typedef struct RwCamera RwCamera;
 
 /* render states (RwRenderStateSet/RwRenderStateGet) */
 #define rwRENDERSTATETEXTURERASTER 1
+#define rwRENDERSTATETEXTUREADDRESS 2
 #define rwRENDERSTATETEXTUREFILTER 9
 #define rwRENDERSTATESRCBLEND 10
 #define rwRENDERSTATEDESTBLEND 11
