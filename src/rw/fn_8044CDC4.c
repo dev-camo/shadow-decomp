@@ -51,17 +51,6 @@ RwMatrix *fn_8047EBB8(RwMatrix *out, const RwMatrix *a, const RwMatrix *b); /* o
 RwMatrix *fn_8047F0B0(RwMatrix *out, const RwMatrix *in);                   /* inverts */
 RwV3d *fn_80482504(RwV3d *out, const RwV3d *vector, const RwMatrix *matrix);
 
-/* Waits until the GPU is done with the draw that used a sync token, first issuing the token if it
- * is the current one */
-static inline void SkinWaitDrawSync(RwUInt16 *syncToken) {
-    if (*syncToken == lbl_805EDF40) {
-        GXSetDrawSync(lbl_805EDF40);
-        lbl_805EDF40 = (lbl_805EDF40 + 1) % 0xE000;
-    }
-    while (!fn_8049A78C(*syncToken)) {
-    }
-}
-
 /* Destroy callback of a skinned geometry's instance data, run before its resource entry is freed:
  * frees the separate entry the skinned vertices are computed into, restores the borrowed bind-pose
  * buffers to the vertex descriptors and clears the skin's or atomic's pointers to them */
@@ -70,7 +59,7 @@ void fn_8044CDC4(RwResEntry *repEntry) {
     void *owner;
     RpGeometry *geometry;
 
-    SkinWaitDrawSync(&instance->syncToken);
+    RPGAMECUBEWAITDRAWSYNC(instance->syncToken);
     if (instance->vertexDescriptors[0].data != NULL) {
         fn_8048071C(SKINVERTEXBUFFERENTRY(instance->vertexDescriptors[0].data));
     }
@@ -102,7 +91,7 @@ void fn_8044CDC4(RwResEntry *repEntry) {
 void fn_8044CEE0(RwResEntry *repEntry) {
     SkinVertexBuffer *buffer = (SkinVertexBuffer *)(repEntry + 1);
 
-    SkinWaitDrawSync(&buffer->syncToken);
+    RPGAMECUBEWAITDRAWSYNC(buffer->syncToken);
 }
 
 /* Prepares the vertex buffers that the skin is computed into: the bind-pose buffers move to the
