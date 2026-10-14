@@ -652,7 +652,13 @@ RwBool fn_8047A650(void *fptr);                                  /* whether at t
 RwInt32 fn_8047A7C0(void *fptr);                                 /* the position */
 
 /* lists of fixed-size entries (inferred) */
-typedef struct RwSList RwSList;
+/* A list of fixed-size entries in one growable array (0x10 bytes) */
+typedef struct RwSList {
+    /* 0x0 */ RwUInt8 *listElements;
+    /* 0x4 */ RwInt32 numElementsFilled;
+    /* 0x8 */ RwInt32 numElementsAlloced;
+    /* 0xC */ RwInt32 entrySize;
+} RwSList;
 RwSList *fn_8047DC90(RwInt32 size, RwUInt32 hint);              /* create */
 void *fn_8047DEA0(RwSList *sList, RwInt32 size, RwUInt32 hint); /* new entries */
 void *fn_8047DFAC(RwSList *sList);                              /* the entries */
