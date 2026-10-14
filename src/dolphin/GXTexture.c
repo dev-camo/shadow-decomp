@@ -954,10 +954,6 @@ void GXInvalidateTexRegion(GXTexRegion *region) {
         GX_WRITE_RAS_REG(reg1);
     }
     __GXFlushTextureState();
-
-    reg0;
-    reg1;
-    r; // needed to match
 }
 
 void GXInvalidateTexAll(void) {
