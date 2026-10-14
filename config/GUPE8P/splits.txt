@@ -1521,3 +1521,10 @@ rw/fn_8045F2A0.c:
 	.text       start:0x8045F2A0 end:0x8045F9E8
 	.data       start:0x8056D880 end:0x8056D898
 	.sbss       start:0x805F14F8 end:0x805F1500
+
+rw/fn_8045F9E8.c:
+	.text       start:0x8045F9E8 end:0x80460974
+	.data       start:0x8056D898 end:0x8056D8B0
+	.bss        start:0x805E1618 end:0x805E1640
+	.sbss       start:0x805F1500 end:0x805F1508
+	.sdata2     start:0x805FB178 end:0x805FB180
