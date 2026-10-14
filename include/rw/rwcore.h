@@ -44,9 +44,10 @@ typedef char RwChar;
 
 /* errors */
 #define E_RW_BADVERSION 0x80000004
-#define E_RW_READ 0x8000001A  /* reading a stream failed */
-#define E_RW_NOMEM 0x80000013 /* reported with the size that could not be allocated */
-#define E_RW_NULLP 0x80000016 /* a required argument is NULL */
+#define E_RW_READ 0x8000001A    /* reading a stream failed */
+#define E_RW_NOMEM 0x80000013   /* reported with the size that could not be allocated */
+#define E_RW_NOERROR 0x80000000 /* no error is pending */
+#define E_RW_NULLP 0x80000016   /* a required argument is NULL */
 
 typedef struct RwFreeList RwFreeList;
 
@@ -140,6 +141,13 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
 #define RwIm2DRenderIndexedPrimitive(primType, vertices, numVertices, indices, numIndices)         \
     (lbl_805F15B4->im2DRenderIndexedPrimitive((primType), (vertices), (numVertices), (indices),    \
                                               (numIndices)))
+
+/* A module's registration with the engine: where its globals are and how many engines have
+ * opened it */
+typedef struct RwModuleInfo {
+    /* 0x0 */ RwInt32 globalsOffset;
+    /* 0x4 */ RwInt32 numInstances;
+} RwModuleInfo;
 
 /* plugin data at offset in an object (offsets are assigned at plugin registration) */
 #define RWPLUGINOFFSET(type, base, offset) ((type *)((RwUInt8 *)(base) + (offset)))
@@ -723,7 +731,12 @@ RwInt32 fn_80483AFC(RwUInt32 pluginID, RwPluginDataChunkReadCallBack readCB,
                     RwPluginDataChunkGetSizeCallBack getSizeCB);
 
 /* errors */
+void *fn_8047DB10(void *instance, RwInt32 offset, RwInt32 size); /* opens a counted module */
+void *fn_8047DB24(void *instance, RwInt32 offset, RwInt32 size); /* closes it */
+void *fn_8047DB38(void *instance, RwInt32 offset, RwInt32 size); /* opens the error module */
+void *fn_8047DB70(void *instance, RwInt32 offset, RwInt32 size); /* closes it */
 RwError *fn_8047DB84(const RwError *error);
+RwError *fn_8047DBE4(RwError *error); /* takes the pending error */
 RwInt32 fn_8047DC28(RwInt32 code, ...);
 
 /* the engine and its plugins */
