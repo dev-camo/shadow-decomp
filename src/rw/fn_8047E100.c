@@ -238,12 +238,15 @@ RwMatrix *fn_8047E990(RwMatrix *matrix, const RwMatrixTolerance *tolerance) {
         RwReal rightX = matrix->right.x - 1.0f;
         RwReal upY = matrix->up.y - 1.0f;
         RwReal atZ = matrix->at.z - 1.0f;
-        RwReal identityError = rightX * rightX + matrix->right.y * matrix->right.y +
-                               matrix->right.z * matrix->right.z + matrix->up.x * matrix->up.x +
-                               upY * upY + matrix->up.z * matrix->up.z +
-                               matrix->at.x * matrix->at.x + matrix->at.y * matrix->at.y +
-                               atZ * atZ + matrix->pos.x * matrix->pos.x +
-                               matrix->pos.y * matrix->pos.y + matrix->pos.z * matrix->pos.z;
+        /* each axis's and the position's squared deviation is summed on its own, then the four
+         * sums are added; the grouping fixes the rounding the identity test sees */
+        RwReal identityError =
+            (rightX * rightX + matrix->right.y * matrix->right.y +
+             matrix->right.z * matrix->right.z) +
+            (matrix->up.x * matrix->up.x + upY * upY + matrix->up.z * matrix->up.z) +
+            (matrix->at.x * matrix->at.x + matrix->at.y * matrix->at.y + atZ * atZ) +
+            (matrix->pos.x * matrix->pos.x + matrix->pos.y * matrix->pos.y +
+             matrix->pos.z * matrix->pos.z);
 
         if (tolerance->Identity >= identityError) {
             isIdentity = TRUE;
