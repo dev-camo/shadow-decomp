@@ -159,7 +159,7 @@ RwBool fn_80448850(RpAtomic *atomic, RpPTankData *ptankGlobal, RwInt32 maxPCount
     meshHeader = fn_8045BF30(sizeof(RpMeshHeader) + sizeof(RpMesh));
     memset(meshHeader, 0, sizeof(RpMeshHeader) + sizeof(RpMesh));
     meshHeader->flags = (meshHeader->flags & ~rpMESHHEADERPRIMMASK) |
-                        RWPLUGINOFFSET(RpMeshGlobals, lbl_805F15B4, lbl_805F14F0)->primType;
+                        RPMESHGLOBAL(primTypeToMeshFlags)[rwPRIMTYPEPOINTLIST];
     mesh = (RpMesh *)(meshHeader + 1);
     /* the mesh has no indices: they would start where it does */
     mesh->indices = (RxVertexIndex *)mesh;
