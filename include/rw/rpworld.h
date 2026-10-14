@@ -133,18 +133,98 @@ typedef struct RpPlaneSector {
     /* 0x14 */ RwReal rightValue;
 } RpPlaneSector;
 
+/* A compressed vertex normal (4 bytes) */
+typedef struct RpVertexNormal {
+    /* 0x0 */ RwInt8 x;
+    /* 0x1 */ RwInt8 y;
+    /* 0x2 */ RwInt8 z;
+    /* 0x3 */ RwUInt8 pad;
+} RpVertexNormal;
+
+/* A list of materials (0xC bytes) */
+typedef struct RpMaterialList {
+    /* 0x0 */ RpMaterial **materials;
+    /* 0x4 */ RwInt32 numMaterials;
+    /* 0x8 */ RwInt32 space;
+} RpMaterialList;
+
+/* A leaf of a world's sector tree: the world's geometry inside its box (0x88 bytes) */
 typedef struct RpWorldSector {
-    /* 0x00 */ RwInt32 type;
+    /* 0x00 */ RwInt32 type; /* rpWORLDSECTORTYPE */
     /* 0x04 */ RpTriangle *triangles;
     /* 0x08 */ RwV3d *vertices;
-    /* 0x0C */ RwUInt8 field_0xC[0x54];
-    /* 0x60 */ RwBBox boundingBox;
+    /* 0x0C */ RpVertexNormal *normals;
+    /* 0x10 */ RwTexCoords *texCoords[8]; /* the world's numTexCoordSets sets */
+    /* 0x30 */ RwRGBA *preLitLum;
+    /* 0x34 */ RwResEntry *repEntry;
+    /* 0x38 */ RwLinkList collAtomicsInWorldSector;
+    /* 0x40 */ RwLinkList lightsInWorldSector;
+    /* 0x48 */ RwBBox field_0x48;
+    /* 0x60 */ RwBBox boundingBox; /* as in the stream */
+    /* 0x78 */ RpMeshHeader *mesh;
+    /* 0x7C */ RxPipeline *pipeline;
+    /* 0x80 */ RwUInt16 matListWindowBase;
+    /* 0x82 */ RwUInt16 numVertices;
+    /* 0x84 */ RwUInt16 numTriangles;
+    /* 0x86 */ RwUInt16 pad;
 } RpWorldSector;
 
+#define rpWORLDSECTORTYPE -1 /* the RpSector type of a world sector */
+
+#define rpWORLD 7 /* RwObject type of a world */
+
+/* RpWorld flags (the stream's format) */
+#define rpWORLDPRELIT 0x8
+#define rpWORLDNORMALS 0x10
+#define rpWORLDTEXTURED 0x4
+#define rpWORLDTEXTURED2 0x80
+#define rpWORLDNATIVE 0x1000000
+#define rpWORLDSECTORSOVERLAP 0x40000000 /* plane sectors keep separate left and right values */
+#define rpWORLDTEXCOORDSETS(flags) (((flags) & 0xFF0000) >> 16)
+
+/* RpWorld private flags */
+#define rpWORLDSINGLEMALLOC 0x1 /* the world and its sectors are one allocation */
+
+/* A world: a tree of plane sectors over world sectors, and the clumps and lights in it (0x70
+ * bytes) */
 typedef struct RpWorld {
-    /* 0x00 */ RwUInt8 field_0x0[0x1C];
+    /* 0x00 */ RwObject object;
+    /* 0x08 */ RwUInt32 flags; /* rpWORLD* */
+    /* 0x0C */ RwInt32 renderOrder;
+    /* 0x10 */ RpMaterialList matList;
     /* 0x1C */ RpSector *rootSector;
+    /* 0x20 */ RwInt32 numTexCoordSets;
+    /* 0x24 */ RwInt32 numClumpsInWorld;
+    /* 0x28 */ RwLLLink *currentClumpLink;
+    /* 0x2C */ RwLinkList clumpList;
+    /* 0x34 */ RwLinkList lightList;
+    /* 0x3C */ RwLinkList directionalLightList;
+    /* 0x44 */ RwV3d worldOrigin;
+    /* 0x50 */ RwBBox boundingBox;
+    /* 0x68 */ void *renderCallBack; /* for each world sector (fn_80460120) */
+    /* 0x6C */ RxPipeline *pipeline;
 } RpWorld;
+
+extern RwPluginRegistry lbl_8056D880; /* world sector plugins */
+extern RwPluginRegistry lbl_8056D898; /* world plugins */
+
+/* worlds (inferred) */
+RpWorld *fn_804556F4(RwStream *stream); /* stream read */
+RwBool fn_8045FFA0(RpWorld *world);     /* destroy */
+/* finishes a world read from a stream; the world, or NULL on failure */
+RpWorld *fn_8045FDB0(RpWorld *world);
+void fn_8045FBA4(RpWorld *world);
+void fn_8045FCFC(RpWorld *world, RwUInt32 size); /* takes the world's allocation size */
+/* sets the world sector render callback, or the default one for NULL */
+RpWorld *fn_80460120(RpWorld *world, void *callBack);
+
+/* world sectors (inferred): destroying a sector tree in a world allocated as one block, or with
+ * separate allocations */
+RwBool fn_8045F6E0(RpSector *sector);
+RwBool fn_8045F7D0(RpSector *sector);
+
+/* material lists (inferred) */
+RpMaterialList *fn_8045B924(RwStream *stream, RpMaterialList *matList); /* stream read */
 
 /* plugin registration (inferred): fn_80458B6C registers with the registry used by the object code
  * around fn_804566D0, which the intersection tests call on an atomic (the registry's 0x70-byte

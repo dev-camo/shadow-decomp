@@ -27,6 +27,14 @@ typedef char RwChar;
 
 /* chunk IDs */
 #define rwID_STRUCT 0x1
+#define rwID_MATLIST 0x8
+#define rwID_ATOMICSECT 0x9
+#define rwID_PLANESECT 0xA
+#define rwID_WORLD 0xB
+
+/* errors */
+#define E_RW_BADVERSION 0x80000004
+#define E_RW_NOMEM 0x80000013 /* reported with the size that could not be allocated */
 
 typedef struct RwFreeList RwFreeList;
 typedef struct RwCamera RwCamera;
@@ -165,6 +173,42 @@ typedef struct RwLLLink {
     struct RwLLLink *next;
     struct RwLLLink *prev;
 } RwLLLink;
+
+/* A doubly linked list: its link is the head and the tail sentinel */
+typedef struct RwLinkList {
+    RwLLLink link;
+} RwLinkList;
+
+/* Makes a list empty */
+#define rwLinkListInitialize(list)                                                                 \
+    do {                                                                                           \
+        (list)->link.next = &(list)->link;                                                         \
+        (list)->link.prev = &(list)->link;                                                         \
+    } while (0)
+
+/* The plugin extensions of an object type (0x18 bytes) */
+typedef struct RwPluginRegistry {
+    /* 0x00 */ RwInt32 sizeOfStruct; /* with the plugins' data */
+    /* 0x04 */ RwInt32 origSizeOfStruct;
+    /* 0x08 */ RwInt32 maxSizeOfStruct;
+    /* 0x0C */ RwInt32 staticAlloc;
+    /* 0x10 */ void *firstRegEntry;
+    /* 0x14 */ void *lastRegEntry;
+} RwPluginRegistry;
+
+/* plugin registries (inferred) */
+RwBool fn_8048209C(RwPluginRegistry *registry, void *object); /* constructs the plugins' data */
+/* reads an object's plugin data chunks */
+RwStream *fn_804816AC(RwPluginRegistry *registry, RwStream *stream, void *object);
+/* calls the rights callback of the plugin with the ID */
+RwBool fn_80481870(RwPluginRegistry *registry, RwUInt32 pluginID, void *object, RwUInt32 extraData);
+
+/* A rendering pipeline; only the plugin that owns it is mapped */
+typedef struct RxPipeline {
+    /* 0x00 */ RwUInt8 field_0x0[0x2C];
+    /* 0x2C */ RwUInt32 pluginId;   /* 0 for none */
+    /* 0x30 */ RwUInt32 pluginData; /* the owner plugin's data */
+} RxPipeline;
 
 typedef struct RwResEntry RwResEntry;
 typedef void (*RwResEntryDestroyNotify)(RwResEntry *resEntry);

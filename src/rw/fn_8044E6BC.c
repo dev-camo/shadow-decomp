@@ -18,9 +18,6 @@
 /* the platform of a native skin in the stream */
 #define rwPLATFORMGAMECUBE 6
 
-/* errors */
-#define E_RW_BADVERSION 0x80000004
-
 /* the destroy callback of generic GameCube instanced data (inferred) */
 void fn_8046288C(RwResEntry *repEntry);
 
