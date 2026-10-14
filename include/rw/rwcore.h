@@ -484,8 +484,15 @@ struct RwFrame {
     /* 0xA0 */ struct RwFrame *root;
 };
 
+/* The squared errors a matrix may have and still count as normal, orthogonal or the identity */
+typedef struct RwMatrixTolerance {
+    /* 0x0 */ RwReal Normal;
+    /* 0x4 */ RwReal Orthogonal;
+    /* 0x8 */ RwReal Identity;
+} RwMatrixTolerance;
+
 /* optimises a matrix's flags, with a tolerance or the default one for NULL (inferred) */
-RwMatrix *fn_8047E990(RwMatrix *matrix, const void *tolerance);
+RwMatrix *fn_8047E990(RwMatrix *matrix, const RwMatrixTolerance *tolerance);
 
 #define rwMATRIXTYPEORTHONORMAL 0x3
 #define rwMATRIXINTERNALIDENTITY 0x20000
@@ -517,6 +524,17 @@ RwMatrix *fn_8047EBB8(RwMatrix *dst, const RwMatrix *matrixA,
 RwMatrix *fn_8047F0B0(RwMatrix *dst, const RwMatrix *matrix); /* invert */
 RwMatrix *fn_8047EFC8(RwMatrix *matrix, const RwV3d *axis, RwReal angle, RwInt32 combine);
 RwMatrix *fn_8047F72C(RwMatrix *matrix, const RwMatrix *transform, RwInt32 combine);
+void fn_8047E100(RwMatrix *dst, const RwMatrix *matrixA, const RwMatrix *matrixB); /* multiply */
+RwMatrix *fn_8047E298(RwMatrix *dst, const RwMatrix *matrix);    /* orthonormalizes */
+RwReal fn_8047E704(const RwMatrix *matrix);                      /* the determinant */
+RwReal fn_8047E750(const RwMatrix *matrix);                      /* the orthogonal error */
+RwReal fn_8047E7A8(const RwMatrix *matrix);                      /* the normal error */
+void *fn_8047E828(void *instance, RwInt32 offset, RwInt32 size); /* closes the module */
+void *fn_8047E88C(void *instance, RwInt32 offset, RwInt32 size); /* opens the module */
+RwBool fn_8047E960(const RwMatrixTolerance *tolerance);          /* sets the default tolerance */
+RwMatrix *fn_8047ECB4(RwMatrix *dst, const RwMatrix *matrix);    /* orthonormalizes */
+RwMatrix *fn_8047ECD4(RwMatrix *matrix, const RwV3d *unitAxis, RwInt32 combine,
+                      RwReal oneMinusCosine, RwReal sine); /* rotates */
 
 typedef struct RwSphere {
     RwV3d center;
