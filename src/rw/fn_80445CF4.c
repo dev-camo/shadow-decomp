@@ -137,7 +137,7 @@ RtAnimAnimation *fn_80446620(RwStream *stream, RtAnimAnimation *animation) {
 }
 
 /* Writes the keyframes of an animation */
-RwBool fn_804466DC(RtAnimAnimation *animation, RwStream *stream) {
+RwBool fn_804466DC(const RtAnimAnimation *animation, RwStream *stream) {
     RwInt32 numFrames;
     RpHAnimKeyFrame *frame;
     RwInt32 i;
@@ -161,7 +161,7 @@ RwBool fn_804466DC(RtAnimAnimation *animation, RwStream *stream) {
 }
 
 /* The stream size of the keyframes of an animation */
-RwInt32 fn_80446780(RtAnimAnimation *animation) {
+RwInt32 fn_80446780(const RtAnimAnimation *animation) {
     RwUInt32 size = sizeof(RpHAnimKeyFrame);
 
     size *= animation->numFrames;

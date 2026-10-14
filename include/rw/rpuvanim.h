@@ -92,8 +92,8 @@ extern const RwV3d lbl_8051BD4C; /* (0.5, 0.5, 0) */
 
 /* keyframes common to both schemes: the stream callbacks (inferred) */
 RtAnimAnimation *fn_804530CC(RwStream *stream, RtAnimAnimation *animation);
-RwBool fn_804531B0(RtAnimAnimation *animation, RwStream *stream);
-RwInt32 fn_804532A4(RtAnimAnimation *animation);
+RwBool fn_804531B0(const RtAnimAnimation *animation, RwStream *stream);
+RwInt32 fn_804532A4(const RtAnimAnimation *animation);
 
 /* linear keyframe callbacks (inferred) */
 void fn_804532E4(void *result, void *voidIFrame); /* apply */

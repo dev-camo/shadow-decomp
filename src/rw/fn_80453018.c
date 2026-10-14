@@ -57,7 +57,7 @@ RtAnimAnimation *fn_804530CC(RwStream *stream, RtAnimAnimation *animation) {
 }
 
 /* Writes an animation's keyframes */
-RwBool fn_804531B0(RtAnimAnimation *animation, RwStream *stream) {
+RwBool fn_804531B0(const RtAnimAnimation *animation, RwStream *stream) {
     RwInt32 flags = 0;
     RwInt32 prevIndex;
     RwInt32 numFrames;
@@ -89,7 +89,7 @@ RwBool fn_804531B0(RtAnimAnimation *animation, RwStream *stream) {
 }
 
 /* The stream size of an animation's keyframes */
-RwInt32 fn_804532A4(RtAnimAnimation *animation) {
+RwInt32 fn_804532A4(const RtAnimAnimation *animation) {
     RwInt32 size;
 
     size = fn_80454494(animation->customData) + sizeof(RwInt32);

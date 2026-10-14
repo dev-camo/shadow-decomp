@@ -5,7 +5,8 @@
 
 /* RenderWare animation toolkit: interpolation schemes, keyframe animations and the interpolators
  * that play them. The type and field names follow the RenderWare 3 RtAnim toolkit, whose layout
- * and behaviour the code matches (inferred). */
+ * and behaviour the code matches (inferred). The hierarchical and UV animation plugins register
+ * their keyframe schemes with it. */
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,6 +15,8 @@ extern "C" {
 typedef struct RtAnimAnimation RtAnimAnimation;
 typedef struct RtAnimInterpolator RtAnimInterpolator;
 
+/* The callbacks of a keyframe scheme. The toolkit is generic over schemes, so the keyframe callbacks
+ * take untyped frames; each scheme's functions use their own frame types. */
 typedef void (*RtAnimKeyFrameApplyCallBack)(void *result, void *voidIFrame);
 typedef void (*RtAnimKeyFrameBlendCallBack)(void *voidOut, void *voidIn1, void *voidIn2,
                                             RwReal alpha);
@@ -91,9 +94,12 @@ struct RtAnimInterpolator {
     /* 0x48 */ RtAnimKeyFrameAddCallBack keyFrameAddCB;
 };
 
+/* the interpolated frames of an interpolator's nodes */
+#define RTANIMINTERPOLATORFRAMES(interpolator) ((RwUInt8 *)((interpolator) + 1))
+
 /* An interpolator's interpolated frame of a node */
 #define rtANIMGETINTERPFRAME(anim, nodeIndex)                                                      \
-    ((void *)((RwUInt8 *)&(anim)[1] + (nodeIndex) * (anim)->currentInterpKeyFrameSize))
+    ((void *)(RTANIMINTERPOLATORFRAMES(anim) + (nodeIndex) * (anim)->currentInterpKeyFrameSize))
 
 /* The schemes that can be registered */
 #define rtANIMMAXINTERPOLATORS 16
@@ -109,8 +115,8 @@ RtAnimAnimation *fn_80477468(RwInt32 typeID, RwInt32 numFrames, RwInt32 flags,
 RwBool fn_8047759C(RtAnimAnimation *animation);                         /* destroys an animation */
 RtAnimAnimation *fn_804775CC(RwStream *stream);                         /* reads an animation */
 RwBool fn_80477860(const RtAnimAnimation *animation, RwStream *stream); /* writes an animation */
-RwInt32 fn_80477978(const RtAnimAnimation *animation); /* an animation's stream size */
-RwInt32 fn_804779A8(const RtAnimAnimation *animation); /* an animation's nodes */
+RwUInt32 fn_80477978(const RtAnimAnimation *animation); /* an animation's stream size */
+RwInt32 fn_804779A8(const RtAnimAnimation *animation);  /* an animation's nodes */
 RtAnimInterpolator *fn_804779DC(RwInt32 numNodes,
                                 RwInt32 maxInterpKeyFrameSize); /* creates an interpolator */
 void fn_80477A8C(RtAnimInterpolator *anim);                     /* destroys an interpolator */
