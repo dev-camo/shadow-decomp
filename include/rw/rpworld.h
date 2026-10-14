@@ -241,6 +241,8 @@ typedef struct RpWorldSector {
 #define rpWORLDTEXTURED 0x4
 #define rpWORLDTEXTURED2 0x80
 #define rpWORLDNATIVE 0x1000000
+#define rpWORLDNATIVEINSTANCE 0x2000000
+#define rpWORLDLIGHT 0x20
 #define rpWORLDSECTORSOVERLAP 0x40000000 /* plane sectors keep separate left and right values */
 #define rpWORLDTEXCOORDSETS(flags) (((flags) & 0xFF0000) >> 16)
 
@@ -824,6 +826,10 @@ typedef struct RxGameCubeAllInOneData {
     /* 0xC */ RxGameCubeAllInOneCallBack renderCallBack;
 } RxGameCubeAllInOneData;
 
+/* Calls one of an all-in-one node's callbacks if it is set: FALSE when it fails */
+#define RXGAMECUBEALLINONECALL(callBack, object, renderMesh)                                       \
+    ((callBack) == NULL || (callBack)((object), (renderMesh)) == (object))
+
 /* setting an all-in-one node's callbacks */
 void fn_80462BF0(RxPipelineNode *node, RxGameCubeAllInOneCallBack callBack); /* instance */
 void fn_80462BFC(RxPipelineNode *node, RxGameCubeAllInOneCallBack callBack); /* reinstance */
@@ -839,12 +845,17 @@ typedef RpWorldSector *(*RpGameCubeSectorCallBack)(RpWorldSector *sector,
                                                    RpGameCubeRenderMesh *renderMesh);
 
 /* creates a world sector all-in-one pipeline (inferred) */
-void *fn_80463D28(RwUInt32 pluginID, RwUInt32 pluginData, RpGameCubeSectorCallBack instanceCallBack,
-                  RpGameCubeSectorCallBack reinstanceCallBack,
-                  RpGameCubeSectorCallBack lightingCallBack,
-                  RpGameCubeSectorCallBack renderCallBack);
+RxPipeline *fn_80463D28(RwUInt32 pluginID, RwUInt32 pluginData,
+                        RpGameCubeSectorCallBack instanceCallBack,
+                        RpGameCubeSectorCallBack reinstanceCallBack,
+                        RpGameCubeSectorCallBack lightingCallBack,
+                        RpGameCubeSectorCallBack renderCallBack);
 RpWorldSector *fn_80463DF4(RpWorldSector *sector, RpGameCubeRenderMesh *renderMesh); /* lighting */
 RpWorldSector *fn_80463F10(RpWorldSector *sector, RpGameCubeRenderMesh *renderMesh); /* instance */
+RxNodeDefinition *fn_804641C0(void); /* the world sector all-in-one node definition */
+/* create the instanced data of a world sector for its owner (inferred) */
+RwResEntry *fn_8046CB94(RpWorld *world, RpWorldSector *sector, void *owner, RwResEntry **ownerRef);
+RwResEntry *fn_8046D4C8(RpWorld *world, RpWorldSector *sector, void *owner, RwResEntry **ownerRef);
 RpAtomic *fn_804639AC(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh); /* atomic instance */
 RwBool fn_804647C8(void); /* the light plugin attachment (inferred) */
 

@@ -242,10 +242,6 @@ RpAtomic *fn_804639AC(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
     return atomic;
 }
 
-/* Calls one of the node's callbacks: FALSE when it fails */
-#define ALLINONECALLBACK(callBack, atomic, renderMesh)                                             \
-    ((callBack) == NULL || (callBack)((atomic), (renderMesh)) == (atomic))
-
 /* The atomic all-in-one node body: instances the atomic's geometry, or reinstances and reuses its
  * existing instanced data, then lights and renders it */
 RwBool fn_80463A5C(RxPipelineNode *self, const RxPipelineNodeParam *params) {
@@ -284,15 +280,15 @@ RwBool fn_80463A5C(RxPipelineNode *self, const RxPipelineNodeParam *params) {
         }
 
         if (renderMesh.repEntry != NULL) {
-            if (!ALLINONECALLBACK(nodeData->reinstanceCallBack, atomic, &renderMesh)) {
+            if (!RXGAMECUBEALLINONECALL(nodeData->reinstanceCallBack, atomic, &renderMesh)) {
                 return FALSE;
             }
             RwResourcesUseResEntry(renderMesh.repEntry);
         } else {
-            if (!ALLINONECALLBACK(nodeData->instanceCallBack, atomic, &renderMesh)) {
+            if (!RXGAMECUBEALLINONECALL(nodeData->instanceCallBack, atomic, &renderMesh)) {
                 return FALSE;
             }
-            if (!ALLINONECALLBACK(nodeData->reinstanceCallBack, atomic, &renderMesh)) {
+            if (!RXGAMECUBEALLINONECALL(nodeData->reinstanceCallBack, atomic, &renderMesh)) {
                 return FALSE;
             }
         }
@@ -300,15 +296,15 @@ RwBool fn_80463A5C(RxPipelineNode *self, const RxPipelineNodeParam *params) {
         renderMesh.repEntry = geometry->repEntry;
         renderMesh.meshHeader = geometry->mesh;
         renderMesh.geometryFlags = geometry->flags;
-        if (!ALLINONECALLBACK(nodeData->reinstanceCallBack, atomic, &renderMesh)) {
+        if (!RXGAMECUBEALLINONECALL(nodeData->reinstanceCallBack, atomic, &renderMesh)) {
             return FALSE;
         }
     }
 
-    if (!ALLINONECALLBACK(nodeData->lightingCallBack, atomic, &renderMesh)) {
+    if (!RXGAMECUBEALLINONECALL(nodeData->lightingCallBack, atomic, &renderMesh)) {
         return FALSE;
     }
-    if (!ALLINONECALLBACK(nodeData->renderCallBack, atomic, &renderMesh)) {
+    if (!RXGAMECUBEALLINONECALL(nodeData->renderCallBack, atomic, &renderMesh)) {
         return FALSE;
     }
     return TRUE;
