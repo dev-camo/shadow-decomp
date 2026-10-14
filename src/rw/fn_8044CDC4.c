@@ -42,12 +42,9 @@ void fn_804517C8(RwMatrix *matrices, RpSkin *skin, SkinKernelParams *params);
 RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef);
 RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef);
 
-extern RwMatrix lbl_805E31CC; /* the identity matrix */
-
 /* matrices and vectors */
 RwMatrix *fn_8047EBB8(RwMatrix *out, const RwMatrix *a, const RwMatrix *b); /* out = a * b */
 RwMatrix *fn_8047F0B0(RwMatrix *out, const RwMatrix *in);                   /* inverts */
-RwV3d *fn_80482504(RwV3d *out, const RwV3d *vector, const RwMatrix *matrix);
 
 /* Destroy callback of a skinned geometry's instance data, run before its resource entry is freed:
  * frees the separate entry the skinned vertices are computed into, restores the borrowed bind-pose

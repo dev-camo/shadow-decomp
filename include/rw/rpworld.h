@@ -493,15 +493,28 @@ RpWorld *fn_80461658(RpWorld *world, RwCamera *camera);
 
 #define rpLIGHT 3 /* RwObject type of a light */
 
+/* RpLightType: a light's object subtype */
+typedef enum RpLightType {
+    rpNALIGHTTYPE = 0,
+    rpLIGHTDIRECTIONAL = 1,
+    rpLIGHTAMBIENT = 2,
+    rpLIGHTPOINT = 0x80,
+    rpLIGHTSPOT = 0x81,
+    rpLIGHTSPOTSOFT = 0x82
+} RpLightType;
+
+#define RpLightGetType(light) ((RpLightType)(light)->object.subType)
+
 /* RpLight flags */
 #define rpLIGHTLIGHTATOMICS 0x1
 #define rpLIGHTLIGHTWORLD 0x2
 
 #define rpLIGHTPRIVATENOCHROMA 0x1 /* the colour is white or grey */
 
-RpLight *fn_8045AD34(RwInt32 type);     /* create */
-RpLight *fn_8045AB1C(RwStream *stream); /* stream read */
-RwBool fn_8045ACD4(RpLight *light);     /* destroy */
+RpLight *fn_8045AD34(RwInt32 type);       /* create */
+RwReal fn_8045A818(const RpLight *light); /* the cone angle of a spot light, in radians */
+RpLight *fn_8045AB1C(RwStream *stream);   /* stream read */
+RwBool fn_8045ACD4(RpLight *light);       /* destroy */
 
 /* The geometries of a clump stream (8 bytes) */
 typedef struct RpGeometryList {
