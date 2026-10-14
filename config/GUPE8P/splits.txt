@@ -1598,3 +1598,7 @@ rw/fn_8046EE8C.c:
 	.text       start:0x8046EE8C end:0x8046FC1C
 	.data       start:0x8056DBA8 end:0x8056DC38
 	.sdata2     start:0x805FB218 end:0x805FB220
+
+rw/fn_8046FC1C.c:
+	.text       start:0x8046FC1C end:0x80470474
+	.data       start:0x8056DC38 end:0x8056DCE8
