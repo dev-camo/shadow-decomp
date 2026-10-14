@@ -41,10 +41,8 @@ void fn_804517C8(RwMatrix *matrices, RpSkin *skin, SkinKernelParams *params);
 /* the instancing of the skin's geometry (inferred) */
 RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef);
 RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef);
-RwResEntry *fn_8046C0D4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef);
 
 extern RwMatrix lbl_805E31CC; /* the identity matrix */
-extern RwInt32 lbl_805EDDD8;  /* a GameCube render mode */
 
 /* matrices and vectors */
 RwMatrix *fn_8047EBB8(RwMatrix *out, const RwMatrix *a, const RwMatrix *b); /* out = a * b */

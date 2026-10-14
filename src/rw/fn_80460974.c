@@ -115,9 +115,7 @@ typedef struct WorldObjModule {
 #define CLUMPEXT(clump) RWPLUGINOFFSET(ClumpExt, clump, lbl_805F1510)
 #define LIGHTEXT(light) RWPLUGINOFFSET(LightExt, light, lbl_805F1514)
 
-/* The tie of a link in an atomic's or light's sector list */
-#define TIEFROMATOMICLINK(link)                                                                    \
-    ((RpTie *)((RwUInt8 *)(link) - offsetof(RpTie, lWorldSectorInAtomic)))
+/* The tie of a link in a light's sector list */
 #define LIGHTTIEFROMLINK(link)                                                                     \
     ((RpLightTie *)((RwUInt8 *)(link) - offsetof(RpLightTie, WorldSectorInLight)))
 

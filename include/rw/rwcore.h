@@ -316,6 +316,40 @@ typedef struct RxPipelineNode {
     /* 0x14 */ void *privateData;
 } RxPipelineNode;
 
+/* The parameters a node body receives; only the object being rendered is mapped */
+typedef struct RxPipelineNodeParam {
+    /* 0x0 */ void *dataParam;
+} RxPipelineNodeParam;
+
+typedef RwBool (*RxNodeBodyFn)(RxPipelineNode *self, const RxPipelineNodeParam *params);
+typedef RwBool (*RxPipelineNodeInitFn)(RxPipelineNode *self);
+
+/* The definition of a pipeline node (0x44 bytes); only the name, the node body, the pipeline node
+ * initialisation and the private data size are mapped */
+typedef struct RxNodeDefinition {
+    /* 0x00 */ RwChar *name;
+    /* 0x04 */ RxNodeBodyFn nodeBody;
+    /* 0x08 */ void *nodeInit;
+    /* 0x0C */ void *nodeTerm;
+    /* 0x10 */ RxPipelineNodeInitFn pipelineNodeInit;
+    /* 0x14 */ void *pipelineNodeTerm;
+    /* 0x18 */ void *pipelineNodeConfig;
+    /* 0x1C */ void *configMsgHandler;
+    /* 0x20 */ RwUInt8 io[0x14];
+    /* 0x34 */ RwUInt32 pipelineNodePrivateDataSize;
+    /* 0x38 */ RwUInt8 field_0x38[0xC];
+} RxNodeDefinition;
+
+/* building pipelines (inferred from their use) */
+RxPipeline *fn_8049B76C(void);                 /* creates a pipeline */
+RxPipeline *fn_8049CCB8(RxPipeline *pipeline); /* locks a pipeline for editing */
+RxPipeline *fn_8049C1E0(RxPipeline *pipeline); /* unlocks it */
+/* adds a fragment of the NULL-terminated node definitions to a locked pipeline */
+RxPipeline *fn_8049D0D0(RxPipeline *pipeline, RwUInt32 *firstIndex, RxNodeDefinition *nodeDef, ...);
+/* finds a pipeline node by name */
+RxPipelineNode *fn_8049CFCC(RxPipeline *pipeline, const RwChar *name, RxPipelineNode *start,
+                            RwInt32 *nodeIndex);
+
 typedef struct RwResEntry RwResEntry;
 typedef void (*RwResEntryDestroyNotify)(RwResEntry *resEntry);
 
