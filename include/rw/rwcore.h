@@ -688,8 +688,10 @@ RwStream *fn_80481368(RwInt32 type, RwInt32 accessType, const void *data); /* op
 RwMatrix *RwFrameGetLTM(RwFrame *frame);
 
 /* maths and intersection tests (inferred from their use) */
-RwReal fn_80482340(RwReal x); /* sqrt(x) */
-RwReal fn_80482394(RwReal x); /* 1 / sqrt(x) */
+RwReal fn_80482340(RwReal x);                    /* sqrt(x) */
+RwReal fn_80482394(RwReal x);                    /* 1 / sqrt(x) */
+RwReal fn_8048222C(RwV3d *out, const RwV3d *in); /* normalizes, returning the length */
+RwReal fn_80482300(const RwV3d *in);             /* the length of a vector */
 
 /* whether a triangle meets a box */
 RwBool fn_8047BDD0(const RwBBox *box, const RwV3d *v0, const RwV3d *v1, const RwV3d *v2);
@@ -850,6 +852,8 @@ RwBool fn_804859F8(RwCamera *camera);    /* destroy */
 
 /* transforms a point by a matrix and returns out (inferred) */
 RwV3d *fn_80482458(RwV3d *out, const RwV3d *point, const RwMatrix *matrix);
+RwV3d *fn_804824A4(RwV3d *pointsOut, const RwV3d *pointsIn, RwInt32 numPoints,
+                   const RwMatrix *matrix);
 RwV3d *fn_80482504(RwV3d *out, const RwV3d *vector, const RwMatrix *matrix);
 
 /* The current camera's view transform (inferred): the inverse of the camera frame's LTM combined
