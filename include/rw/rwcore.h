@@ -43,6 +43,7 @@ typedef char RwChar;
 /* errors */
 #define E_RW_BADVERSION 0x80000004
 #define E_RW_NOMEM 0x80000013 /* reported with the size that could not be allocated */
+#define E_RW_NULLP 0x80000016 /* a required argument is NULL */
 
 typedef struct RwFreeList RwFreeList;
 
@@ -59,22 +60,42 @@ typedef struct RwCamera RwCamera;
 /* render states (RwRenderStateSet/RwRenderStateGet) */
 #define rwRENDERSTATETEXTURERASTER 1
 #define rwRENDERSTATETEXTUREADDRESS 2
+#define rwRENDERSTATEZTESTENABLE 6
+#define rwRENDERSTATEZWRITEENABLE 8
 #define rwRENDERSTATETEXTUREFILTER 9
 #define rwRENDERSTATESRCBLEND 10
 #define rwRENDERSTATEDESTBLEND 11
 #define rwRENDERSTATEVERTEXALPHAENABLE 12
+#define rwRENDERSTATECULLMODE 20
 
-/* The engine globals; only the current camera and world, the frame counters, the render state,
+/* render state values */
+#define rwFILTERNEAREST 1
+#define rwBLENDSRCALPHA 5
+#define rwBLENDINVSRCALPHA 6
+#define rwCULLMODECULLNONE 1
+
+typedef struct RwIm2DVertex RwIm2DVertex;
+
+/* The engine globals; only the current camera and world, the frame counters, the open device's
+ * near screen depth, render state and 2D indexed primitive functions, the standard functions and
  * the string, memory and free list functions are mapped. */
 typedef struct RwGlobals {
     /* 0x000 */ RwCamera *curCamera;
     /* 0x004 */ void *curWorld;
     /* 0x008 */ RwUInt16 renderFrame;
     /* 0x00A */ RwUInt16 lightFrame; /* lights are created one frame behind it */
-    /* 0x00C */ RwUInt8 field_0xC[0x14];
+    /* 0x00C */ RwUInt8 field_0xC[0xC];
+    /* 0x018 */ RwReal zBufferNear; /* the screen depth of 2D immediate mode vertices */
+    /* 0x01C */ RwUInt8 field_0x1C[0x4];
     /* 0x020 */ RwBool (*renderStateSet)(RwInt32 state, void *value);
     /* 0x024 */ RwBool (*renderStateGet)(RwInt32 state, void *value);
-    /* 0x028 */ RwBool (*stdFunc[0x27])(void *out, void *inOut, RwInt32 numIn); /* RwStandard */
+    /* 0x028 */ RwUInt8 field_0x28[0xC];
+    /* 0x034 */ RwBool (*im2DRenderIndexedPrimitive)(RwInt32 primType, RwIm2DVertex *vertices,
+                                                     RwInt32 numVertices, RwUInt16 *indices,
+                                                     RwInt32 numIndices);
+    /* 0x038 */ RwUInt8 field_0x38[0x10];
+    /* 0x048 */ RwBool (*stdFunc[0x1D])(void *out, void *inOut, RwInt32 numIn); /* RwStandard */
+    /* 0x0BC */ RwUInt8 field_0xBC[0x8];
     /* 0x0C4 */ RwInt32 (*rwsprintf)(RwChar *buffer, const RwChar *format, ...);
     /* 0x0C8 */ RwUInt8 field_0xC8[0x4];
     /* 0x0CC */ RwChar *(*rwstrcpy)(RwChar *dst, const RwChar *src);
@@ -109,6 +130,10 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
 #define rwsscanf lbl_805F15B4->rwsscanf
 #define RwRenderStateSet(state, value) (lbl_805F15B4->renderStateSet((state), (value)))
 #define RwRenderStateGet(state, value) (lbl_805F15B4->renderStateGet((state), (value)))
+#define RwIm2DGetNearScreenZ() (lbl_805F15B4->zBufferNear)
+#define RwIm2DRenderIndexedPrimitive(primType, vertices, numVertices, indices, numIndices)         \
+    (lbl_805F15B4->im2DRenderIndexedPrimitive((primType), (vertices), (numVertices), (indices),    \
+                                              (numIndices)))
 
 /* plugin data at offset in an object (offsets are assigned at plugin registration) */
 #define RWPLUGINOFFSET(type, base, offset) ((type *)((RwUInt8 *)(base) + (offset)))
@@ -580,7 +605,13 @@ RwImage *fn_80487D08(RwInt32 width, RwInt32 height, RwInt32 depth); /* create */
 RwBool fn_80487DB0(RwImage *image);                                 /* destroy */
 RwImage *fn_80487E18(RwImage *image);                               /* allocates the pixels */
 RwImage *fn_804899A8(RwImage *image, RwRaster *raster);             /* reads a raster */
-const RwChar *fn_804885DC(const RwChar *path);                      /* sets the path */
+
+/* rasters (inferred) */
+#define rwRASTERTYPETEXTURE 0x4
+RwRaster *fn_80489E74(RwInt32 width, RwInt32 height, RwInt32 depth, RwInt32 flags); /* create */
+RwBool fn_80489BDC(RwRaster *raster);                                               /* destroy */
+RwRaster *fn_80489A1C(RwRaster *raster, RwImage *image); /* sets the pixels from an image */
+const RwChar *fn_804885DC(const RwChar *path);           /* sets the path */
 
 /* files (inferred) */
 void *fn_8047A178(const RwChar *name, const RwChar *access);     /* open */
@@ -610,6 +641,16 @@ typedef struct RwIm3DVertex {
 } RwIm3DVertex;
 
 typedef RwUInt16 RwImVertexIndex;
+
+/* An immediate mode 2D vertex (0x18 bytes) */
+struct RwIm2DVertex {
+    /* 0x00 */ RwReal x;
+    /* 0x04 */ RwReal y;
+    /* 0x08 */ RwReal z;
+    /* 0x0C */ RwRGBA emissiveColor;
+    /* 0x10 */ RwReal u;
+    /* 0x14 */ RwReal v;
+};
 
 #define rwIM3D_VERTEXUV 0x1
 #define rwIM3D_NOCLIP 0x4
