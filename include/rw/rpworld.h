@@ -736,7 +736,9 @@ typedef struct RpGameCubeVertexDescBuilder {
     /* 0x00 */ RwUInt8 field_0x0[0x4];
     /* 0x04 */ RwUInt32 vat[3];
     /* 0x10 */ RwUInt32 vcd[2];
-    /* 0x18 */ RwUInt8 field_0x18[0x8];
+    /* 0x18 */ RwUInt8 field_0x18[0x4];
+    /* 0x1C */ RwUInt8 numAttributes; /* the vertex descriptors the instanced data takes */
+    /* 0x1D */ RwUInt8 field_0x1D[0x3];
 } RpGameCubeVertexDescBuilder;
 
 /* the byte sizes of a vertex's attributes in a builder's format */
@@ -780,8 +782,9 @@ void fn_8046E594(RpGameCubeVertexDescBuilder *builder, void *displayListRecord,
                  RwInt32 vertexFormat, RwInt32 flag, RwInt32 primitive, const RwV3d *origin);
 void fn_8046F208(RpGameCubeVertexDescBuilder *builder, RpGameCubeInstanceData *instance,
                  RpGameCubeVertexSource *source, void *vertexData);
+/* compressedNormals: the normals are RpVertexNormal rather than RwV3d (inferred) */
 void fn_8046F6CC(RpGameCubeVertexDescBuilder *builder, RpGameCubeInstanceData *instance,
-                 RpGameCubeVertexSource *source, RwInt32 firstVertex, const RwV3d *origin);
+                 RpGameCubeVertexSource *source, RwBool compressedNormals, const RwV3d *origin);
 extern RwUInt16 lbl_805F1678; /* a GameCube instance stamp (inferred) */
 
 /* GameCube: a mesh's display list (inferred) */
