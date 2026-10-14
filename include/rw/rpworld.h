@@ -100,17 +100,71 @@ RpAtomic *fn_80455EB4(RpAtomic *atomic);
         }                                                                                          \
     } while (0)
 
+typedef struct RpClump RpClump;
+
+/* The morph target interpolation of an atomic (0x14 bytes) */
+typedef struct RpInterpolator {
+    /* 0x00 */ RwInt32 flags; /* rpINTERPOLATOR* */
+    /* 0x04 */ RwInt16 startMorphTarget;
+    /* 0x06 */ RwInt16 endMorphTarget;
+    /* 0x08 */ RwReal time;
+    /* 0x0C */ RwReal recipTime;
+    /* 0x10 */ RwReal position;
+} RpInterpolator;
+
+/* RpInterpolator flags */
+#define rpINTERPOLATORDIRTYINSTANCE 0x1
+#define rpINTERPOLATORDIRTYSPHERE 0x2
+
+/* RpAtomic flags (the object flags) */
+#define rpATOMICCOLLISIONTEST 0x1
+#define rpATOMICRENDER 0x4
+
+#define rpATOMIC 1 /* RwObject type of an atomic */
+#define rpCLUMP 2  /* RwObject type of a clump */
+
+/* the private flag of a frame-attached object whose world bounding sphere is out of date */
+#define rpATOMICSPHEREDIRTY 0x1
+
+/* the sync callback of an object attached to a frame */
+typedef void *(*RwObjectHasFrameSyncFunction)(void *object);
+
 /* An atomic (0x70 bytes) */
 struct RpAtomic {
     /* 0x00 */ RwObject object; /* the parent is the atomic's frame */
-    /* 0x08 */ RwUInt8 field_0x8[0xC];
+    /* 0x08 */ RwLLLink lFrame; /* in the frame's object list */
+    /* 0x10 */ RwObjectHasFrameSyncFunction sync;
     /* 0x14 */ RwResEntry *repEntry;
     /* 0x18 */ RpGeometry *geometry;
-    /* 0x1C */ RwUInt8 field_0x1C[0x2C];
+    /* 0x1C */ RwSphere boundingSphere;
+    /* 0x2C */ RwSphere worldBoundingSphere;
+    /* 0x3C */ RpClump *clump;
+    /* 0x40 */ RwLLLink inClumpLink;
     /* 0x48 */ RpAtomicCallBackRender renderCallBack;
-    /* 0x4C */ RwUInt8 field_0x4C[0x20];
-    /* 0x6C */ void *pipeline;
+    /* 0x4C */ RpInterpolator interpolator;
+    /* 0x60 */ RwUInt16 renderFrame;
+    /* 0x62 */ RwUInt16 pad;
+    /* 0x64 */ RwLinkList llWorldSectorsInAtomic;
+    /* 0x6C */ RxPipeline *pipeline;
 };
+
+typedef RpClump *(*RpClumpCallBack)(RpClump *clump, void *data);
+
+/* A clump: atomics, lights and cameras under one frame (0x2C bytes) */
+struct RpClump {
+    /* 0x00 */ RwObject object; /* the parent is the clump's frame */
+    /* 0x08 */ RwLinkList atomicList;
+    /* 0x10 */ RwLinkList lightList;
+    /* 0x18 */ RwLinkList cameraList;
+    /* 0x20 */ RwLLLink inWorldLink;
+    /* 0x28 */ RpClumpCallBack callback;
+};
+
+/* The clump plugin data of a light or camera (0xC bytes) */
+typedef struct RpClumpObjectExtension {
+    /* 0x0 */ RpClump *clump;
+    /* 0x4 */ RwLLLink inClumpLink;
+} RpClumpObjectExtension;
 
 /* A triangle of a world sector (8 bytes). */
 typedef struct RpTriangle {
@@ -253,6 +307,42 @@ RwInt32 fn_80458C5C(RwUInt32 pluginID, RwBool (*callBack)(void *object, RwInt32 
 RpAtomic *fn_80456DD8(void);                                                   /* create */
 RwBool fn_80456FD8(RpAtomic *atomic);                                          /* destroy */
 RpAtomic *fn_80456F0C(RpAtomic *atomic, RpGeometry *geometry, RwUInt32 flags); /* set geometry */
+RpAtomic *fn_80458CBC(RpAtomic *atomic, RwFrame *frame);                       /* set frame */
+RwSphere *fn_804566D0(RpAtomic *atomic); /* the world bounding sphere, updated */
+RpWorld *fn_804622F0(RpAtomic *atomic);  /* the world the atomic is in, or NULL */
+
+/* RpAtomicSetGeometry flags */
+#define rpATOMICSAMEBOUNDINGSPHERE 0x1
+
+/* The pipeline module's globals in the engine; only the default atomic pipeline is mapped */
+typedef struct RpPipelineGlobals {
+    /* 0x00 */ RwUInt8 field_0x0[0x3C];
+    /* 0x3C */ RxPipeline *defaultAtomicPipeline;
+} RpPipelineGlobals;
+
+extern RwInt32 lbl_805F1690; /* engine plugin offset of the pipeline module's globals */
+
+/* clumps (inferred) */
+RpClump *fn_804573A8(void);                             /* create */
+RwBool fn_80457468(RpClump *clump);                     /* destroy */
+RpClump *fn_80457090(RpClump *clump);                   /* clone */
+RpClump *fn_80457608(RpClump *clump, RpAtomic *atomic); /* add an atomic */
+RpClump *fn_80457698(RwStream *stream);                 /* stream read */
+
+/* lights (inferred) */
+typedef struct RpLight RpLight;
+RpLight *fn_8045AB1C(RwStream *stream); /* stream read */
+RwBool fn_8045ACD4(RpLight *light);     /* destroy */
+
+/* The geometries of a clump stream (8 bytes) */
+typedef struct RpGeometryList {
+    /* 0x0 */ RpGeometry **geometries;
+    /* 0x4 */ RwInt32 numGeoms;
+} RpGeometryList;
+
+RpGeometryList *fn_80455F18(RwStream *stream, RpGeometryList *geomList); /* stream read */
+RpGeometry *fn_804599C8(RwStream *stream);                               /* geometry stream read */
+RpGeometry *fn_8045984C(RpGeometry *geometry);                           /* add a reference */
 
 /* geometries (inferred from their use) */
 RpGeometry *fn_80458D24(RwReal radius);   /* an empty geometry with a bounding sphere of radius */
