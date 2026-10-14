@@ -56,7 +56,7 @@ RwPluginRegistry lbl_8056D828 = {sizeof(RpLight), sizeof(RpLight), 0, 0, NULL, N
 RwFreeList lbl_805E15C8; /* the light free list */
 
 RwInt32 lbl_805EDDB0 = 32; /* light free list entries per block */
-RwInt32 lbl_805EDDB4 = 1;   /* light free list blocks to preallocate */
+RwInt32 lbl_805EDDB4 = 1;  /* light free list blocks to preallocate */
 
 LightModule lbl_805F14D8;
 
