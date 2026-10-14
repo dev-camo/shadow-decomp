@@ -372,7 +372,7 @@ RwStream *fn_80440E80(RwStream *stream, RwInt32 length, void *object, RwInt32 of
         if (fn_8047D868(stream, &numTriangles, sizeof(numTriangles)) == NULL) {
             return NULL;
         }
-        if (((RpGeometry *)object)->type == rpGEOMETRY) {
+        if (((RpGeometry *)object)->object.type == rpGEOMETRY) {
             RwSphere *sphere = &((RpGeometry *)object)->morphTarget->boundingSphere;
 
             bbox.inf.x = sphere->center.x - sphere->radius;

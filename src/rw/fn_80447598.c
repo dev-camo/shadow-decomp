@@ -28,7 +28,7 @@ void *fn_804475A8(void *object, RwInt32 offset, RwInt32 size) {
     RpAtomic *atomic = object;
 
     if (PTANKEXT(atomic) != NULL) {
-        fn_8045B270(atomic->geometry->materials[0], NULL);
+        fn_8045B270(atomic->geometry->matList.materials[0], NULL);
         if (PTANKEXT(atomic)->rawdata != NULL) {
             RwFree(PTANKEXT(atomic)->rawdata);
         }
@@ -425,7 +425,7 @@ RpAtomic *fn_804480C8(RwInt32 maxPCount, RwUInt32 dataFlags, RwUInt32 platFlags,
                     RwRGBA color = {0, 0, 0, 255};
                     RwTexCoords uv[4] = {{0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f}};
 
-                    fn_8045B270(atomic->geometry->materials[0], NULL);
+                    fn_8045B270(atomic->geometry->matList.materials[0], NULL);
 
                     ptank->cSize = size;
                     ptank->cRotate = 0.0f;
