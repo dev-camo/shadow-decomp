@@ -49,7 +49,6 @@ extern RwInt32 lbl_805EDDD8;  /* a GameCube render mode */
 /* matrices and vectors */
 RwMatrix *fn_8047EBB8(RwMatrix *out, const RwMatrix *a, const RwMatrix *b); /* out = a * b */
 RwMatrix *fn_8047F0B0(RwMatrix *out, const RwMatrix *in);                   /* inverts */
-RwV3d *fn_80482458(RwV3d *out, const RwV3d *point, const RwMatrix *matrix);
 RwV3d *fn_80482504(RwV3d *out, const RwV3d *vector, const RwMatrix *matrix);
 
 /* the GX draw sync */
