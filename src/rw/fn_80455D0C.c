@@ -99,10 +99,6 @@ RwInt32 lbl_805F14B8;  /* camera plugin offset of the clump data */
 #define CLUMPATOMICFROMLINK(link)                                                                  \
     ((RpAtomic *)((RwUInt8 *)(link) - offsetof(RpAtomic, inClumpLink)))
 
-typedef RpAtomic *(*RpAtomicCallBack)(RpAtomic *atomic, void *data);
-typedef RpLight *(*RpLightCallBack)(RpLight *light, void *data);
-typedef RwCamera *(*RwCameraCallBack)(RwCamera *camera, void *data);
-
 RpClump *fn_80456230(RpClump *clump, void *data);
 RpClump *fn_80457630(RpClump *clump, RpLight *light);
 RpClump *fn_80457664(RpClump *clump, RwCamera *camera);
