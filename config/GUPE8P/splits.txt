@@ -1482,3 +1482,9 @@ rw/fn_80455D0C.c:
 	.sdata      start:0x805EDDA0 end:0x805EDDB0
 	.sbss       start:0x805F14B8 end:0x805F14D0
 	.sdata2     start:0x805FB110 end:0x805FB118
+
+rw/fn_80458CF8.c:
+	.text       start:0x80458CF8 end:0x8045A760
+	.data       start:0x8056D810 end:0x8056D828
+	.sbss       start:0x805F14D0 end:0x805F14D8
+	.sdata2     start:0x805FB118 end:0x805FB120
