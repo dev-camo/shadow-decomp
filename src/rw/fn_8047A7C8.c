@@ -234,7 +234,8 @@ RwUInt32 fn_8047AC10(RtFile *file, void *buffer, RwUInt32 length) {
             OSReport("Buffer offset not multiple of 32 %p\n", out);
         }
         if (positionMisalign != 0) {
-            OSReport("File pointer offset not multiple of 32 %d\n", file->position);
+            OSReport("File pointer offset not multiple of 32 %d\n",
+                     *(const RtGCNFileOffset *)&file->position);
         }
         if (lengthMisalign != 0) {
             OSReport("Num bytes to read not multiple of 32 %d\n", remaining);
