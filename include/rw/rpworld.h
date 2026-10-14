@@ -220,8 +220,8 @@ RpWorld *fn_80460120(RpWorld *world, void *callBack);
 
 /* world sectors (inferred): destroying a sector tree in a world allocated as one block, or with
  * separate allocations */
-RwBool fn_8045F6E0(RpSector *sector);
-RwBool fn_8045F7D0(RpSector *sector);
+void fn_8045F6E0(RpSector *sector);
+void fn_8045F7D0(RpSector *sector);
 
 /* material lists (inferred) */
 RpMaterialList *fn_8045B924(RwStream *stream, RpMaterialList *matList); /* stream read */
