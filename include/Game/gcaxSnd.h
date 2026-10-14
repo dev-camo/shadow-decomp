@@ -366,8 +366,13 @@ extern GcaxWork *lbl_805F1404;
         }                                                                                          \
     } while (0)
 
+int gcaxNewAramBank(int bank, u32 size);
+int fn_8043B05C(int bank, u8 *file, GcaxCallback callback, void *arg, int async);
+int fn_8043AF64(int bank, GcaxFileHeader *file, GcaxCallback callback, void *arg, int notify);
+void fn_8043AEBC(u8 *base, u32 size);
 void *gcaxSndMalloc(u32 size);
 void fn_8043ACE8(void *ptr);
+void fn_8043AB6C(u32 source, u32 dest, u32 length, GcaxCallback callback, void *arg);
 int fn_8043AA7C(u32 source, u32 dest, u32 length, GcaxCallback callback, void *arg, int async);
 
 /* fn_8043B25C.c: voices, notes and instruments */
