@@ -138,7 +138,7 @@ RtFile *fn_80479DCC(RtFileSystem *fileSystem, const RwChar *name, RwUInt32 mode,
             file = NULL;
         }
         if (file != NULL) {
-            file->field_0x1C = 2;
+            file->priority = 2;
         }
         return file;
     }
