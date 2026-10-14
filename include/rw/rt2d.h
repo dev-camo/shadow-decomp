@@ -140,7 +140,11 @@ typedef struct Rt2dGlobalVars {
     /* 0x160 */ RwTexDictionary *fontTexDictCurrent; /* font textures are read into it */
     /* 0x164 */ RwFreeList *pathFreeList;
     /* 0x168 */ Rt2dPath *scratchPath;
-    /* 0x16C */ RwUInt8 field_0x16C[0x18];
+    /* 0x16C */ RwFreeList *field_0x16C; /* of 0x100-byte objects (inferred) */
+    /* 0x170 */ RwUInt8 field_0x170[0x4];
+    /* 0x174 */ RwFreeList *field_0x174; /* of 8-byte objects (inferred) */
+    /* 0x178 */ RwFreeList *field_0x178; /* of 0x14-byte objects (inferred) */
+    /* 0x17C */ RwUInt8 field_0x17C[0x8];
     /* 0x184 */ RwMatrix baseMatrix; /* applied after the current transformation */
     /* 0x1C4 */ RwMatrix *ctmStack[rt2dCTMSTACKSIZE];
     /* 0x244 */ RwInt32 ctmIndex;
@@ -150,7 +154,7 @@ typedef struct Rt2dGlobalVars {
     /* 0x298 */ RwMatrix inverseDeviceMatrix;
     /* 0x2D8 */ RwMatrix ltm; /* the device matrix in the camera frame */
     /* 0x318 */ RwBool deviceMatrixValid;
-    /* 0x31C */ RwInt32 field_0x31C;
+    /* 0x31C */ RwUInt32 field_0x31C; /* immediate mode flags for strokes */
     /* 0x320 */ RwReal layerDepth;
     /* 0x324 */ RwReal field_0x324;
     /* 0x328 */ RwReal pixelSizeSq; /* the squared length of a pixel in the transformation */
@@ -231,8 +235,19 @@ Rt2dPath *fn_80475260(Rt2dPath *path); /* closepath */
 /* drops the subpaths that hold a single segment, freeing them, and returns the rest, which may
  * be NULL (inferred) */
 Rt2dPath *fn_80475B4C(Rt2dPath *path);
-Rt2dPath *fn_80476C4C(RwStream *stream);                 /* stream read */
-Rt2dPath *fn_804771C0(Rt2dPath *path, Rt2dBrush *brush); /* fill */
+Rt2dPath *fn_80476C4C(RwStream *stream); /* stream read */
+
+/* A path in a stream (0x10 bytes): its kind, points, flags and inset (inferred) */
+typedef struct rt2dStreamPath {
+    /* 0x0 */ RwInt32 type; /* 1 for points */
+    /* 0x4 */ RwInt32 numPoints;
+    /* 0x8 */ RwInt32 flags; /* closed, flat, another subpath follows */
+    /* 0xC */ RwReal inset;
+} rt2dStreamPath;
+
+Rt2dPath *fn_80476ABC(Rt2dPath *path, rt2dStreamPath *header, RwStream *stream);
+Rt2dPath *fn_804771C0(Rt2dPath *path, Rt2dBrush *brush); /* stroke */
+Rt2dPath *fn_80476CF8(Rt2dPath *path, Rt2dBrush *brush); /* strokes each subpath */
 
 /* fonts (inferred) */
 Rt2dFont *fn_80470AC4(Rt2dFont *font, const RwChar *string, RwReal height, RwV2d *anchor,
