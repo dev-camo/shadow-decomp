@@ -3,111 +3,7 @@
  * rotations, linear of their translations), streams them and offsets them. The original file name
  * is unknown. */
 #include "rw/rphanim.h"
-
-/* The bits of a float, as the C library (fdlibm) reads and writes them */
-typedef union RwRealShape {
-    RwReal value;
-    RwInt32 word;
-} RwRealShape;
-
-#define GET_FLOAT_WORD(i, d)                                                                       \
-    do {                                                                                           \
-        RwRealShape gf_u;                                                                          \
-                                                                                                   \
-        gf_u.value = (d);                                                                          \
-        (i) = gf_u.word;                                                                           \
-    } while (0)
-
-#define SET_FLOAT_WORD(d, i)                                                                       \
-    do {                                                                                           \
-        RwRealShape sf_u;                                                                          \
-                                                                                                   \
-        sf_u.word = (i);                                                                           \
-        (d) = sf_u.value;                                                                          \
-    } while (0)
-
-/* acos(x): the single precision acos of fdlibm, adapted from newlib's ef_acos.c, which carries
- * these notices:
- *
- * ef_acos.c -- float version of e_acos.c.
- * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
- *
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
-static inline RwReal RwACos(RwReal x) {
-    RwInt32 hx;
-    RwInt32 ix;
-    RwReal z;
-    RwReal p;
-    RwReal q;
-    RwReal r;
-    RwReal s;
-    RwReal w;
-
-    GET_FLOAT_WORD(hx, x);
-    ix = hx & 0x7FFFFFFF;
-    if (ix >= 0x3F800000) {
-        /* |x| >= 1 */
-        if (hx > 0) {
-            return 0.0f;
-        }
-        return 3.1415927f;
-    }
-    if (ix < 0x3F000000) {
-        /* |x| < 0.5 */
-        if (ix <= 0x23000000) {
-            return 1.5707964f;
-        }
-        z = x * x;
-        p = z * (0.16666667f +
-                 z * (-0.32556581f +
-                      z * (0.20121253f +
-                           z * (-0.040055536f + z * (0.000791535f + z * 0.00003479331f)))));
-        q = 1.0f + z * (-2.403395f + z * (2.0209458f + z * (-0.688284f + z * 0.077038154f)));
-        r = p / q;
-        return 1.5707963f - (x - (0.000000075497894f - x * r));
-    }
-    if (hx < 0) {
-        /* x < -0.5 */
-        z = (1.0f + x) * 0.5f;
-        s = fn_80482340(z);
-        p = z * (0.16666667f +
-                 z * (-0.32556581f +
-                      z * (0.20121253f +
-                           z * (-0.040055536f + z * (0.000791535f + z * 0.00003479331f)))));
-        q = 1.0f + z * (-2.403395f + z * (2.0209458f + z * (-0.688284f + z * 0.077038154f)));
-        r = p / q;
-        w = r * s - 0.000000075497894f;
-        return 3.1415925f - 2.0f * (s + w);
-    } else {
-        /* x > 0.5 */
-        RwReal df;
-        RwReal c;
-        RwInt32 idf;
-
-        z = (1.0f - x) * 0.5f;
-        s = fn_80482340(z);
-        df = s;
-        GET_FLOAT_WORD(idf, df);
-        SET_FLOAT_WORD(df, idf & 0xFFFFF000);
-        c = (z - df * df) / (s + df);
-        p = z * (0.16666667f +
-                 z * (-0.32556581f +
-                      z * (0.20121253f +
-                           z * (-0.040055536f + z * (0.000791535f + z * 0.00003479331f)))));
-        q = 1.0f + z * (-2.403395f + z * (2.0209458f + z * (-0.688284f + z * 0.077038154f)));
-        r = p / q;
-        w = r * s + c;
-        return 2.0f * (df + w);
-    }
-}
+#include "rw/rwmath.h"
 
 /* sin(x) by its Taylor series to x^13 */
 static inline RwReal RwSin(RwReal x) {
@@ -146,9 +42,10 @@ static inline RwReal RwSin(RwReal x) {
         scale1 = 1.0f - (weight);                                                                  \
         scale2 = (weight);                                                                         \
         if (!(cosOmega >= 0.999f)) { /* NaN takes this path too */                                 \
-            RwReal omega = RwACos(cosOmega);                                                       \
+            RwReal omega;                                                                          \
             RwReal recipSinOmega;                                                                  \
                                                                                                    \
+            RwACosMacro(omega, cosOmega);                                                          \
             scale1 *= omega;                                                                       \
             scale2 *= omega;                                                                       \
             recipSinOmega = 1.0f / RwSin(omega);                                                   \
