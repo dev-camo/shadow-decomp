@@ -1528,3 +1528,9 @@ rw/fn_8045F9E8.c:
 	.bss        start:0x805E1618 end:0x805E1640
 	.sbss       start:0x805F1500 end:0x805F1508
 	.sdata2     start:0x805FB178 end:0x805FB180
+
+rw/fn_80460974.c:
+	.text       start:0x80460974 end:0x804626F8
+	.bss        start:0x805E1640 end:0x805E1688
+	.sdata      start:0x805EDDC8 end:0x805EDDD8
+	.sbss       start:0x805F1508 end:0x805F1520
