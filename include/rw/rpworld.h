@@ -330,7 +330,30 @@ RpClump *fn_80457608(RpClump *clump, RpAtomic *atomic); /* add an atomic */
 RpClump *fn_80457698(RwStream *stream);                 /* stream read */
 
 /* lights (inferred) */
-typedef struct RpLight RpLight;
+/* A light (0x40 bytes): its object subtype is the light type and its private flag says whether its
+ * colour is white */
+typedef struct RpLight {
+    /* 0x00 */ RwObject object; /* the parent is the light's frame */
+    /* 0x08 */ RwLLLink lFrame;
+    /* 0x10 */ RwObjectHasFrameSyncFunction sync;
+    /* 0x14 */ RwReal radius;
+    /* 0x18 */ RwRGBAReal color;
+    /* 0x28 */ RwReal minusCosAngle;
+    /* 0x2C */ RwLinkList WorldSectorsInLight;
+    /* 0x34 */ RwLLLink inWorld;
+    /* 0x3C */ RwUInt16 lightFrame;
+    /* 0x3E */ RwUInt16 pad;
+} RpLight;
+
+#define rpLIGHT 3 /* RwObject type of a light */
+
+/* RpLight flags */
+#define rpLIGHTLIGHTATOMICS 0x1
+#define rpLIGHTLIGHTWORLD 0x2
+
+#define rpLIGHTPRIVATENOCHROMA 0x1 /* the colour is white or grey */
+
+RpLight *fn_8045AD34(RwInt32 type);     /* create */
 RpLight *fn_8045AB1C(RwStream *stream); /* stream read */
 RwBool fn_8045ACD4(RpLight *light);     /* destroy */
 
