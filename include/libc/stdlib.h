@@ -6,6 +6,10 @@
 
 #define RAND_MAX 32767
 
+void *malloc(size_t size);
+void free(void *ptr);
+void *realloc(void *ptr, size_t size);
+void *calloc(size_t num, size_t size);
 void srand(unsigned int seed);
 int rand(void);
 void abort(void);
