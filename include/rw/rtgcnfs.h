@@ -12,6 +12,13 @@
 extern "C" {
 #endif
 
+/* A 64-bit file offset as an 8-byte aggregate. The read reports the file position to OSReport in
+ * this form: MWCC copies such an argument to memory and passes its address, as the original does.
+ * Whether the file's position member itself has this type is not established. */
+typedef struct RtGCNFileOffset {
+    RwInt64 value;
+} RtGCNFileOffset;
+
 /* A file of the disc file system (0x90 bytes) */
 typedef struct RtGCNFile {
     /* 0x00 */ RtFile file;          /* 0x40 bytes with its alignment */
