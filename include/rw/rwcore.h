@@ -44,6 +44,7 @@ typedef char RwChar;
 
 /* errors */
 #define E_RW_BADVERSION 0x80000004
+#define E_RW_READ 0x8000001A  /* reading a stream failed */
 #define E_RW_NOMEM 0x80000013 /* reported with the size that could not be allocated */
 #define E_RW_NULLP 0x80000016 /* a required argument is NULL */
 
@@ -514,7 +515,19 @@ typedef struct RwSphere {
     RwReal radius;
 } RwSphere;
 
+/* A stream chunk's header, decoded (0x14 bytes) */
+typedef struct RwChunkHeaderInfo {
+    /* 0x00 */ RwUInt32 type;
+    /* 0x04 */ RwUInt32 length;
+    /* 0x08 */ RwUInt32 version;
+    /* 0x0C */ RwUInt32 buildNum;
+    /* 0x10 */ RwBool isComplex; /* whether the chunk holds other chunks */
+} RwChunkHeaderInfo;
+
 /* streams */
+RwBool fn_8047CCF8(const RwChunkHeaderInfo *chunkHeaderInfo); /* whether a chunk is complex */
+RwBool fn_8047CDB4(RwStream *stream, RwUInt32 *type, RwUInt32 *length, RwUInt32 *version,
+                   RwUInt32 *buildNum); /* reads a chunk header */
 RwStream *fn_8047CEF0(RwStream *stream, RwInt32 type, RwInt32 size, RwUInt32 version,
                       RwUInt32 build);
 RwInt32 fn_8047CF50(RwStream *stream, RwUInt32 type, RwUInt32 *lengthOut, RwUInt32 *versionOut);
@@ -528,6 +541,7 @@ RwStream *fn_8047D560(RwStream *stream, const RwInt16 *ints, RwUInt32 size);
 RwStream *fn_8047D684(RwStream *stream, RwInt16 *ints, RwUInt32 size);
 RwStream *fn_8047D784(RwStream *stream, RwReal *reals, RwUInt32 size);
 RwStream *fn_8047D868(RwStream *stream, RwInt32 *ints, RwUInt32 size);
+RwStream *fn_8047D94C(RwStream *stream, RwChunkHeaderInfo *chunkHeaderInfo);
 RwUInt32 fn_80480D4C(RwStream *stream, void *buffer, RwUInt32 length);
 RwStream *fn_80480ED0(RwStream *stream, const void *buffer, RwUInt32 length);
 RwStream *fn_804810FC(RwStream *stream, RwUInt32 offset);

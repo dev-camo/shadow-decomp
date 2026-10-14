@@ -18,7 +18,6 @@
 #define rwID_GEOMETRYLIST 0x1A
 
 /* errors */
-#define E_RW_READ 0x8000001A
 #define E_RW_ATOMICNOFRAME 0x5 /* cloning an atomic without a frame (inferred) */
 
 /* the plugin ID the world module reports errors with (inferred) */
