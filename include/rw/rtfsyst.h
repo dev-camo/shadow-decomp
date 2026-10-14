@@ -89,7 +89,8 @@ struct RtFileSystem {
     /* 0x2C */ void (*fileClose)(RtFile *file);
     /* 0x30 */ RwUInt32 (*fileRead)(RtFile *file, void *buffer, RwUInt32 length);
     /* 0x34 */ RwUInt32 (*fileWrite)(RtFile *file, const void *buffer, RwUInt32 length);
-    /* 0x38 */ void (*fileSetPosition)(RtFile *file, RwInt32 offset, RwInt32 origin);
+    /* 0x38 */ RwInt64 (*fileSetPosition)(RtFile *file, RwInt32 offset,
+                                          RwInt32 origin); /* the new position */
     /* 0x3C */ RwUInt8 field_0x3C[0x8];
     /* 0x44 */ RwBool (*fileIsEOF)(RtFile *file);
     /* 0x48 */ RwUInt8 field_0x48[0x4];
