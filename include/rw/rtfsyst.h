@@ -27,7 +27,7 @@ typedef struct RtFileSystem RtFileSystem;
 
 /* A file's asynchronous operation states (inferred) */
 #define RTFILE_ASYNC_IDLE 1
-#define RTFILE_ASYNC_READ 4 /* reports the position when it completes */
+#define RTFILE_ASYNC_SETPOSITION 4 /* a seek; reports the new position when it completes */
 
 /* Called when a file's asynchronous operation completes */
 typedef void (*RtFileCallBack)(RtFile *file, RwInt32 result, RwInt32 status, RwInt32 asyncStatus,

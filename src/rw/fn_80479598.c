@@ -148,7 +148,7 @@ void fn_804799C8(RtFile *file) {
         if (value != RTFILE_ASYNC_IDLE && file->callBack != NULL) {
             RwInt32 asyncStatus = value;
 
-            if (asyncStatus == RTFILE_ASYNC_READ) {
+            if (asyncStatus == RTFILE_ASYNC_SETPOSITION) {
                 value = (RwInt32)file->position;
             } else {
                 value = file->field_0x2C;
