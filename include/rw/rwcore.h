@@ -407,8 +407,8 @@ RwFrameList *fn_80483774(RwStream *stream, RwFrameList *frameList); /* stream re
 RwFrameList *fn_80483728(RwFrameList *frameList);                   /* deinitialise */
 
 /* objects attached to frames (inferred) */
-void *fn_8048D7C0(void *object, RwFrame *frame); /* sets the frame */
-void fn_8048D834(void *object);                  /* releases the frame */
+void fn_8048D7C0(void *object, RwFrame *frame); /* sets the frame */
+void fn_8048D834(void *object);                 /* releases the frame */
 
 /* cameras (inferred) */
 RwCamera *fn_80483590(RwStream *stream); /* stream read */
