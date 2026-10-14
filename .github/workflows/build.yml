@@ -56,15 +56,17 @@ jobs:
             --binutils /binutils --compilers /compilers
         ninja all_source progress build/${{ matrix.version }}/report.json
 
-    # Upload map files
+    # Upload map files (merged code on main only)
     - name: Upload map
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.version }}_maps
         path: build/${{ matrix.version }}/**/*.MAP
 
-    # Upload progress report
+    # Upload progress report (merged code on main only)
     - name: Upload report
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.version }}_report
