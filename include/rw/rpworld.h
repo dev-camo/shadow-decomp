@@ -185,6 +185,9 @@ typedef struct RpWorldSector {
 /* RpWorld private flags */
 #define rpWORLDSINGLEMALLOC 0x1 /* the world and its sectors are one allocation */
 
+/* renders a world sector (inferred) */
+typedef RpWorldSector *(*RpWorldSectorCallBackRender)(RpWorldSector *sector);
+
 /* A world: a tree of plane sectors over world sectors, and the clumps and lights in it (0x70
  * bytes) */
 typedef struct RpWorld {
@@ -201,7 +204,7 @@ typedef struct RpWorld {
     /* 0x3C */ RwLinkList directionalLightList;
     /* 0x44 */ RwV3d worldOrigin;
     /* 0x50 */ RwBBox boundingBox;
-    /* 0x68 */ void *renderCallBack; /* for each world sector (fn_80460120) */
+    /* 0x68 */ RpWorldSectorCallBackRender renderCallBack; /* for each sector (fn_80460120) */
     /* 0x6C */ RxPipeline *pipeline;
 } RpWorld;
 
@@ -216,7 +219,7 @@ RpWorld *fn_8045FDB0(RpWorld *world);
 void fn_8045FBA4(RpWorld *world);
 void fn_8045FCFC(RpWorld *world, RwUInt32 size); /* takes the world's allocation size */
 /* sets the world sector render callback, or the default one for NULL */
-RpWorld *fn_80460120(RpWorld *world, void *callBack);
+RpWorld *fn_80460120(RpWorld *world, RpWorldSectorCallBackRender callBack);
 
 /* world sectors (inferred): destroying a sector tree in a world allocated as one block, or with
  * separate allocations */
