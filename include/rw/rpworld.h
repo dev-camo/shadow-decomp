@@ -302,6 +302,50 @@ typedef struct RpLightTie {
 void fn_8045F6E0(RpSector *sector);
 void fn_8045F7D0(RpSector *sector);
 
+/* world sectors (inferred) */
+RpWorldSector *fn_8045F390(RpWorldSector *sector); /* renders a sector and its atomics */
+
+/* A search of a world for one of its sectors (inferred) */
+typedef struct RpWorldSectorSearch {
+    /* 0x0 */ RpWorldSector *sector;
+    /* 0x4 */ RwBool found;
+} RpWorldSectorSearch;
+
+RpWorldSector *fn_8045F374(RpWorldSector *sector, void *data); /* the search callback */
+
+typedef RpWorldSector *(*RpWorldSectorCallBack)(RpWorldSector *sector, void *data);
+
+/* calls back for each world sector until the callback returns NULL */
+RpWorld *fn_804606F0(RpWorld *world, RpWorldSectorCallBack callBack, void *data);
+/* calls back for each world sector in a camera's view frustum (inferred) */
+RwCamera *fn_804624E8(RwCamera *camera, RpWorldSectorCallBack callBack, void *data);
+
+/* engine plugin constructors and destructors of the world modules (inferred from their
+ * registration in fn_8046080C) */
+void *fn_8045B048(void *instance, RwInt32 offset, RwInt32 size);
+void *fn_8045B0D8(void *instance, RwInt32 offset, RwInt32 size);
+void *fn_8045BFBC(void *instance, RwInt32 offset, RwInt32 size);
+void *fn_8045BF64(void *instance, RwInt32 offset, RwInt32 size);
+void *fn_80458CF8(void *instance, RwInt32 offset, RwInt32 size);
+void *fn_80458D10(void *instance, RwInt32 offset, RwInt32 size);
+void *fn_80456A50(void *instance, RwInt32 offset, RwInt32 size);
+void *fn_80456994(void *instance, RwInt32 offset, RwInt32 size);
+void *fn_8045AE98(void *instance, RwInt32 offset, RwInt32 size);
+void *fn_8045AE20(void *instance, RwInt32 offset, RwInt32 size);
+void *fn_8045F2A0(void *instance, RwInt32 offset, RwInt32 size);
+void *fn_8045F2B4(void *instance, RwInt32 offset, RwInt32 size);
+void *fn_80455CF8(void *instance, RwInt32 offset, RwInt32 size);
+void *fn_80455CE4(void *instance, RwInt32 offset, RwInt32 size);
+
+/* the other world plugin attachments, each TRUE on success (inferred) */
+RwBool fn_80456B48(void);
+RwBool fn_80461E20(void);
+RwBool fn_8046318C(void);
+
+/* the pipeline module's open and close (inferred) */
+RwBool fn_80462798(void);
+void fn_80462770(void);
+
 /* ties (inferred): unlink a tie from both its lists and free it */
 RwBool fn_80460D80(RpLightTie *tie);
 RwBool fn_80460DF0(RpTie *tie);
@@ -340,10 +384,11 @@ RpWorld *fn_804622F0(RpAtomic *atomic);  /* the world the atomic is in, or NULL 
 /* RpAtomicSetGeometry flags */
 #define rpATOMICSAMEBOUNDINGSPHERE 0x1
 
-/* The pipeline module's globals in the engine; only the default atomic pipeline is mapped */
+/* The pipeline module's globals in the engine; only the default pipelines are mapped */
 typedef struct RpPipelineGlobals {
     /* 0x00 */ RwUInt8 field_0x0[0x3C];
     /* 0x3C */ RxPipeline *defaultAtomicPipeline;
+    /* 0x40 */ RxPipeline *defaultWorldSectorPipeline; /* (inferred) */
 } RpPipelineGlobals;
 
 extern RwInt32 lbl_805F1690; /* engine plugin offset of the pipeline module's globals */
@@ -435,6 +480,10 @@ RpBuildMesh *fn_8045C340(RpBuildMesh *buildMesh, RpMaterial *material, RwUInt16 
 /* the mesh header of a built mesh, as triangle strips (flags rpGEOMETRYTRISTRIP) or a triangle
  * list; it destroys the build mesh */
 RpMeshHeader *fn_8045F1FC(RpBuildMesh *buildMesh, RwUInt32 flags);
+
+/* builds a world sector's mesh (inferred) */
+RpWorld *fn_8045F458(RpWorld *world, RpBuildMesh *buildMesh, RpWorldSector *sector,
+                     RpMaterial **materials);
 
 typedef RpMaterial *(*RpMaterialCallBack)(RpMaterial *material, void *data);
 
