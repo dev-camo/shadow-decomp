@@ -414,8 +414,8 @@ void fn_8048D834(void *object);                  /* releases the frame */
 RwCamera *fn_80483590(RwStream *stream); /* stream read */
 RwBool fn_804859F8(RwCamera *camera);    /* destroy */
 
-/* transforms a point by a matrix (inferred) */
-void fn_80482458(RwV3d *out, const RwV3d *point, const RwMatrix *matrix);
+/* transforms a point by a matrix and returns out (inferred) */
+RwV3d *fn_80482458(RwV3d *out, const RwV3d *point, const RwMatrix *matrix);
 
 /* calls a function for each entry in use in a free list (inferred) */
 RwFreeList *fn_804800DC(RwFreeList *freeList, void (*callBack)(void *mem, void *data), void *data);

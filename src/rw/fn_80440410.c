@@ -43,8 +43,6 @@ RwInt32 lbl_805F1418;
 RwInt32 lbl_805F141C;
 RwInt32 lbl_805F1420;
 
-RwSphere *fn_804566D0(void *atomic);
-
 /* Reports an error of this plugin; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \
