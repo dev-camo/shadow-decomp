@@ -80,6 +80,14 @@ typedef struct RwCamera RwCamera;
 
 typedef struct RwIm2DVertex RwIm2DVertex;
 
+/* The memory functions the engine allocates with */
+typedef struct RwMemoryFunctions {
+    /* 0x0 */ void *(*rwmalloc)(RwUInt32 size, RwUInt32 hint);
+    /* 0x4 */ void (*rwfree)(void *mem);
+    /* 0x8 */ void *(*rwrealloc)(void *mem, RwUInt32 newSize, RwUInt32 hint);
+    /* 0xC */ void *(*rwcalloc)(RwUInt32 numObj, RwUInt32 sizeObj, RwUInt32 hint);
+} RwMemoryFunctions;
+
 /* The engine globals; only the current camera and world, the frame counters, the open device's
  * near screen depth, render state and 2D indexed primitive functions, the standard functions and
  * the string, memory and free list functions are mapped. */
@@ -112,20 +120,19 @@ typedef struct RwGlobals {
     /* 0x0F4 */ RwUInt32 (*rwstrlen)(const RwChar *string);
     /* 0x0F8 */ RwUInt8 field_0xF8[0xC];
     /* 0x104 */ RwInt32 (*rwsscanf)(const RwChar *buffer, const RwChar *format, ...);
-    /* 0x108 */ void *(*rwmalloc)(RwUInt32 size, RwUInt32 hint);
-    /* 0x10C */ void (*rwfree)(void *mem);
-    /* 0x110 */ void *(*rwrealloc)(void *mem, RwUInt32 newSize, RwUInt32 hint);
-    /* 0x114 */ void *(*rwcalloc)(RwUInt32 numObj, RwUInt32 sizeObj, RwUInt32 hint);
+    /* 0x108 */ RwMemoryFunctions memoryFuncs;
     /* 0x118 */ void *(*rwfreelistalloc)(RwFreeList *freeList, RwUInt32 hint);
     /* 0x11C */ void (*rwfreelistfree)(RwFreeList *freeList, void *mem);
 } RwGlobals;
 
 extern RwGlobals *lbl_805F15B4; /* the engine instance */
 
-#define RwMalloc(size, hint) (lbl_805F15B4->rwmalloc((size), (hint)))
-#define RwFree(mem) (lbl_805F15B4->rwfree(mem))
-#define RwRealloc(mem, newSize, hint) (lbl_805F15B4->rwrealloc((mem), (newSize), (hint)))
-#define RwCalloc(numObj, sizeObj, hint) (lbl_805F15B4->rwcalloc((numObj), (sizeObj), (hint)))
+#define RwMalloc(size, hint) (lbl_805F15B4->memoryFuncs.rwmalloc((size), (hint)))
+#define RwFree(mem) (lbl_805F15B4->memoryFuncs.rwfree(mem))
+#define RwRealloc(mem, newSize, hint)                                                              \
+    (lbl_805F15B4->memoryFuncs.rwrealloc((mem), (newSize), (hint)))
+#define RwCalloc(numObj, sizeObj, hint)                                                            \
+    (lbl_805F15B4->memoryFuncs.rwcalloc((numObj), (sizeObj), (hint)))
 #define RwFreeListAlloc(freeList, hint) (lbl_805F15B4->rwfreelistalloc((freeList), (hint)))
 #define RwFreeListFree(freeList, mem) (lbl_805F15B4->rwfreelistfree((freeList), (mem)))
 #define rwstrlen(string) (lbl_805F15B4->rwstrlen(string))
@@ -165,12 +172,6 @@ typedef RwStream *(*RwPluginDataChunkWriteCallBack)(RwStream *stream, RwInt32 le
                                                     RwInt32 size);
 typedef RwInt32 (*RwPluginDataChunkGetSizeCallBack)(const void *object, RwInt32 offset,
                                                     RwInt32 size);
-
-/* A free list: fixed size entries allocated in blocks (0x24 bytes; two in one unit's .bss are 0x24
- * apart) */
-struct RwFreeList {
-    /* 0x00 */ RwUInt8 field_0x0[0x24];
-};
 
 typedef struct RwFrame RwFrame;
 
@@ -264,6 +265,18 @@ typedef struct RwLLLink {
 typedef struct RwLinkList {
     RwLLLink link;
 } RwLinkList;
+
+/* A free list: fixed size entries allocated in blocks. Each block is a link in blockList, then a
+ * bitmap with a bit per entry, set while the entry is in use, then the entries at the alignment. */
+struct RwFreeList {
+    /* 0x00 */ RwUInt32 entrySize; /* rounded up to the alignment */
+    /* 0x04 */ RwUInt32 entriesPerBlock;
+    /* 0x08 */ RwUInt32 heapSize; /* the bytes of each block's bitmap */
+    /* 0x0C */ RwUInt32 alignment;
+    /* 0x10 */ RwLinkList blockList;
+    /* 0x18 */ RwUInt32 flags;
+    /* 0x1C */ RwLLLink link; /* in the list of all free lists */
+};
 
 /* A plane: points p with dot(normal, p) == distance */
 typedef struct RwPlane {
@@ -591,11 +604,22 @@ RwBool fn_8047B720(const RwSphere *sphere, const RwV3d *v0, const RwV3d *v1, con
 RwInt32 fn_804856C8(const RwCamera *camera, const RwSphere *sphere);
 
 /* free lists (inferred) */
+void fn_8047FA28(RwBool preallocate); /* whether free lists may preallocate blocks */
+RwFreeList *fn_8047FA30(RwUInt32 entrySize, RwUInt32 entriesPerBlock, RwUInt32 alignment,
+                        RwUInt32 numBlocksToPreallocate, RwFreeList *freeList, RwUInt32 hint);
 RwFreeList *fn_8047FBD8(RwInt32 entrySize, RwInt32 entriesPerBlock, RwInt32 alignment,
                         RwUInt32 hint); /* create */
 RwFreeList *fn_8047FC04(RwInt32 entrySize, RwInt32 entriesPerBlock, RwInt32 alignment,
                         RwInt32 numBlocksToPreallocate, RwFreeList *freeList, RwUInt32 hint);
+void fn_8047FC24(RwFreeList *freeList); /* frees the blocks, and the free list unless static */
 RwBool fn_8047FCDC(RwFreeList *freeList);
+void *fn_8047FDB0(RwFreeList *freeList, RwUInt32 hint);   /* allocates an entry */
+RwFreeList *fn_8047FF50(RwFreeList *freeList, void *mem); /* frees an entry */
+
+/* memory (inferred) */
+RwBool fn_80480274(const RwMemoryFunctions *memFuncs); /* open; NULL uses the C library */
+void fn_8048038C(void);                                /* close */
+RwMemoryFunctions *fn_80480530(void);                  /* the engine's memory functions */
 
 /* frames (inferred) */
 RwInt32 fn_804836EC(RwUInt32 pluginID, RwPluginDataChunkReadCallBack readCB,
