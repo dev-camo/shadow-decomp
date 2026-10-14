@@ -1717,3 +1717,10 @@ rw/fn_8048222C.c:
 
 rw/fn_80482984.c:
 	.text       start:0x80482984 end:0x80482BC4
+
+rw/fn_80482BC4.c:
+	.text       start:0x80482BC4 end:0x80483444
+	.bss        start:0x805E2AF8 end:0x805E2B20
+	.sdata      start:0x805EDEC8 end:0x805EDED0
+	.sbss       start:0x805F15A0 end:0x805F15A8
+	.sdata2     start:0x805FB2D0 end:0x805FB2D8
