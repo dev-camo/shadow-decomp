@@ -21,6 +21,7 @@ typedef struct RpGeometry RpGeometry;
 #define rpGEOMETRYPRELIT 0x8
 #define rpGEOMETRYNORMALS 0x10
 #define rpGEOMETRYLIGHT 0x20
+#define rpGEOMETRYMODULATEMATERIALCOLOR 0x40
 #define rpGEOMETRYTEXTURED2 0x80
 #define rpGEOMETRYNATIVE 0x01000000 /* instanced in the platform's format */
 #define rpGEOMETRYNATIVEINSTANCE 0x02000000

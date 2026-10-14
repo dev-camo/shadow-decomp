@@ -11,8 +11,6 @@
 #define rpGEOMETRYLOCKPRELIGHT 0x8
 #define rpGEOMETRYLOCKTEXCOORDS1 0x10
 
-#define rpGEOMETRYTEXTURED2 0x80
-
 /* RpInterpolator flags */
 #define rpINTERPOLATORDIRTY 0x1
 
