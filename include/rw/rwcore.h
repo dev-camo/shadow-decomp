@@ -582,7 +582,7 @@ typedef struct RwSList RwSList;
 RwSList *fn_8047DC90(RwInt32 size, RwUInt32 hint);              /* create */
 void *fn_8047DEA0(RwSList *sList, RwInt32 size, RwUInt32 hint); /* new entries */
 void *fn_8047DFAC(RwSList *sList);                              /* the entries */
-void fn_8047DFC8(RwSList *sList);                               /* destroy */
+RwBool fn_8047DFC8(RwSList *sList);                             /* destroy */
 
 /* An immediate mode 3D vertex (0x24 bytes) */
 typedef struct RwIm3DVertex {
