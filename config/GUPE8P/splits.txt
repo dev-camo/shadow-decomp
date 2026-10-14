@@ -1671,3 +1671,7 @@ rw/fn_8047B720.c:
 rw/fn_8047CCF8.c:
 	.text       start:0x8047CCF8 end:0x8047DB10
 	.data       start:0x8056DEE0 end:0x8056DF50
+
+rw/fn_8047DB10.c:
+	.text       start:0x8047DB10 end:0x8047DC90
+	.sbss       start:0x805F1550 end:0x805F1560
