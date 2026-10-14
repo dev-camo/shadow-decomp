@@ -412,8 +412,9 @@ RwBool fn_8045C26C(RpBuildMesh *buildMesh);      /* destroy */
 RpBuildMesh *fn_8045C340(RpBuildMesh *buildMesh, RpMaterial *material, RwUInt16 vert0,
                          RwUInt16 vert1, RwUInt16 vert2, RwUInt16 matIndex, RwUInt16 textureIndex,
                          RwUInt16 rasterIndex, RwUInt16 pipelineIndex);
-/* the mesh header of a built mesh, as triangle strips or a triangle list */
-RpMeshHeader *fn_8045F1FC(RpBuildMesh *buildMesh, RwBool triStrip);
+/* the mesh header of a built mesh, as triangle strips (flags rpGEOMETRYTRISTRIP) or a triangle
+ * list; it destroys the build mesh */
+RpMeshHeader *fn_8045F1FC(RpBuildMesh *buildMesh, RwUInt32 flags);
 
 typedef RpMaterial *(*RpMaterialCallBack)(RpMaterial *material, void *data);
 

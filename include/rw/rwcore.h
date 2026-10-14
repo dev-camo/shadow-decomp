@@ -187,7 +187,19 @@ struct RwCamera {
 
 /* A raster; a sub-raster's parent is the raster that owns its pixels */
 typedef struct RwRaster {
-    /* 0x0 */ struct RwRaster *parent;
+    /* 0x00 */ struct RwRaster *parent;
+    /* 0x04 */ RwUInt8 *cpPixels;
+    /* 0x08 */ RwUInt8 *palette;
+    /* 0x0C */ RwInt32 width;
+    /* 0x10 */ RwInt32 height;
+    /* 0x14 */ RwInt32 depth;
+    /* 0x18 */ RwInt32 stride;
+    /* 0x1C */ RwInt16 nOffsetX;
+    /* 0x1E */ RwInt16 nOffsetY;
+    /* 0x20 */ RwUInt8 cType;
+    /* 0x21 */ RwUInt8 cFlags;
+    /* 0x22 */ RwUInt8 privateFlags;
+    /* 0x23 */ RwUInt8 cFormat; /* the rwRASTERFORMAT* bits above the low byte */
 } RwRaster;
 
 /* A link of a doubly linked list */
