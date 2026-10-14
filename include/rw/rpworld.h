@@ -234,6 +234,7 @@ typedef struct RpWorldSector {
 #define rpWORLD 7 /* RwObject type of a world */
 
 /* RpWorld flags (the stream's format) */
+#define rpWORLDTRISTRIP 0x1
 #define rpWORLDPRELIT 0x8
 #define rpWORLDNORMALS 0x10
 #define rpWORLDTEXTURED 0x4
@@ -281,10 +282,29 @@ void fn_8045FCFC(RpWorld *world, RwUInt32 size); /* takes the world's allocation
 /* sets the world sector render callback, or the default one for NULL */
 RpWorld *fn_80460120(RpWorld *world, RpWorldSectorCallBackRender callBack);
 
+/* A tie between an atomic and a world sector it is in (0x18 bytes) */
+typedef struct RpTie {
+    /* 0x00 */ RwLLLink lAtomicInWorldSector; /* in the sector's atomic list */
+    /* 0x08 */ RpAtomic *apAtom;
+    /* 0x0C */ RwLLLink lWorldSectorInAtomic; /* in the atomic's sector list */
+    /* 0x14 */ RpWorldSector *worldSector;
+} RpTie;
+
+/* A tie between a light and a world sector it lights (0x14 bytes) */
+typedef struct RpLightTie {
+    /* 0x00 */ RwLLLink lightInWorldSector; /* in the sector's light list */
+    /* 0x08 */ struct RpLight *light;
+    /* 0x0C */ RwLLLink WorldSectorInLight; /* in the light's sector list */
+} RpLightTie;
+
 /* world sectors (inferred): destroying a sector tree in a world allocated as one block, or with
  * separate allocations */
 void fn_8045F6E0(RpSector *sector);
 void fn_8045F7D0(RpSector *sector);
+
+/* ties (inferred): unlink a tie from both its lists and free it */
+RwBool fn_80460D80(RpLightTie *tie);
+RwBool fn_80460DF0(RpTie *tie);
 
 /* material lists (inferred) */
 RpMaterialList *fn_8045B924(RwStream *stream, RpMaterialList *matList); /* stream read */
