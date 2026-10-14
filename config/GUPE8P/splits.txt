@@ -1584,3 +1584,7 @@ rw/fn_80466B58.c:
 rw/fn_8046ACBC.c:
 	.text       start:0x8046ACBC end:0x8046B110
 	.data       start:0x8056DAF8 end:0x8056DB50
+
+rw/fn_8046B110.c:
+	.text       start:0x8046B110 end:0x8046D8C8
+	.bss        start:0x805E18A0 end:0x805E18E0
