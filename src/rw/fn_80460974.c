@@ -47,18 +47,6 @@
 /* the engine standard function that sorts the frustum sectors (inferred) */
 #define rwSTANDARDSECTORORDER 30
 
-/* RpLightType: a light's object subtype */
-typedef enum RpLightType {
-    rpNALIGHTTYPE = 0,
-    rpLIGHTDIRECTIONAL = 1,
-    rpLIGHTAMBIENT = 2,
-    rpLIGHTPOINT = 0x80,
-    rpLIGHTSPOT = 0x81,
-    rpLIGHTSPOTSOFT = 0x82
-} RpLightType;
-
-#define RpLightGetType(light) ((RpLightType)(light)->object.subType)
-
 /* light types with a position (rpLIGHTPOINT and up) */
 #define rpLIGHTPOSITIONINGSTART 0x80
 

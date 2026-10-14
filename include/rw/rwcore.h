@@ -537,6 +537,12 @@ RwBool fn_804859F8(RwCamera *camera);    /* destroy */
 
 /* transforms a point by a matrix and returns out (inferred) */
 RwV3d *fn_80482458(RwV3d *out, const RwV3d *point, const RwMatrix *matrix);
+RwV3d *fn_80482504(RwV3d *out, const RwV3d *vector, const RwMatrix *matrix);
+
+/* The current camera's view transform (inferred): the inverse of the camera frame's LTM combined
+ * with a transform from the camera's view offset, set when a camera begins its update
+ * (fn_804946A4) */
+extern RwMatrix lbl_805E31CC;
 
 /* calls a function for each entry in use in a free list (inferred) */
 RwFreeList *fn_804800DC(RwFreeList *freeList, void (*callBack)(void *mem, void *data), void *data);
