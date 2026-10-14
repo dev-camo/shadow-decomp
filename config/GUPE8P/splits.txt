@@ -1709,3 +1709,8 @@ rw/fn_804815F0.c:
 	.bss        start:0x805E2AD0 end:0x805E2AF8
 	.sdata      start:0x805EDEC0 end:0x805EDEC8
 	.sbss       start:0x805F1588 end:0x805F1598
+
+rw/fn_8048222C.c:
+	.text       start:0x8048222C end:0x80482984
+	.sbss       start:0x805F1598 end:0x805F15A0
+	.sdata2     start:0x805FB2B0 end:0x805FB2D0
