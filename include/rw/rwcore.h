@@ -122,7 +122,7 @@ typedef struct RwGlobals {
     /* 0x104 */ RwInt32 (*rwsscanf)(const RwChar *buffer, const RwChar *format, ...);
     /* 0x108 */ RwMemoryFunctions memoryFuncs;
     /* 0x118 */ void *(*rwfreelistalloc)(RwFreeList *freeList, RwUInt32 hint);
-    /* 0x11C */ void (*rwfreelistfree)(RwFreeList *freeList, void *mem);
+    /* 0x11C */ RwFreeList *(*rwfreelistfree)(RwFreeList *freeList, void *mem);
 } RwGlobals;
 
 extern RwGlobals *lbl_805F15B4; /* the engine instance */
