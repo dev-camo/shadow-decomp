@@ -40,6 +40,32 @@ typedef struct Rt2dBrush {
 } Rt2dBrush;
 
 typedef struct Rt2dPath Rt2dPath;
+
+/* The kinds of path segment */
+#define rt2dMOVETO 0
+#define rt2dLINETO 1
+#define rt2dCURVETO 2
+
+/* A point of a path (0x18 bytes): its kind, position, the averaged normal of its segments and the
+ * path length up to it (inferred) */
+typedef struct rt2dPathNode {
+    /* 0x00 */ RwInt32 type;
+    /* 0x04 */ RwV2d pos;
+    /* 0x0C */ RwV2d normal;
+    /* 0x14 */ RwReal dist;
+} rt2dPathNode;
+
+/* A path (0x1C bytes): a chain of subpaths. While locked, the points are a list and numPoints is
+ * -1; unlocked, they are an array of numPoints (inferred) */
+struct Rt2dPath {
+    /* 0x00 */ void *points;
+    /* 0x04 */ RwInt32 numPoints;
+    /* 0x08 */ RwBool closed;
+    /* 0x0C */ RwBool flat; /* no curves */
+    /* 0x10 */ RwReal field_0x10;
+    /* 0x14 */ Rt2dPath *next;
+    /* 0x18 */ Rt2dPath *curr; /* the subpath being added to */
+};
 typedef struct Rt2dFont Rt2dFont;
 
 /* Shows a string in a font at a height, from an anchor that it advances, with a brush */
@@ -112,7 +138,9 @@ typedef struct Rt2dGlobalVars {
     /* 0x158 */ rt2dFontDictNode *fontDict;
     /* 0x15C */ RwTexDictionary *fontTexDict;        /* created when fonts open */
     /* 0x160 */ RwTexDictionary *fontTexDictCurrent; /* font textures are read into it */
-    /* 0x164 */ RwUInt8 field_0x164[0x20];
+    /* 0x164 */ RwFreeList *pathFreeList;
+    /* 0x168 */ Rt2dPath *scratchPath;
+    /* 0x16C */ RwUInt8 field_0x16C[0x18];
     /* 0x184 */ RwMatrix baseMatrix; /* applied after the current transformation */
     /* 0x1C4 */ RwMatrix *ctmStack[rt2dCTMSTACKSIZE];
     /* 0x244 */ RwInt32 ctmIndex;
@@ -169,10 +197,8 @@ RwBool fn_80474228(RwReal depth);        /* sets the layer depth */
 RwReal fn_80474168(void);                /* the squared pixel size */
 RwBool fn_80473ECC(void);                /* resets the transformation */
 RwBool fn_804772C4(void);
-RwBool fn_80476A58(void);
 RwBool fn_8047721C(void);
 void fn_804771E0(void);
-void fn_80476A0C(void);
 void fn_8047726C(void);
 
 /* the current transformation (inferred) */
@@ -191,7 +217,14 @@ RwBool fn_80475E2C(Rt2dPath *path);                        /* destroy */
 Rt2dPath *fn_80476510(Rt2dPath *path);                     /* lock */
 Rt2dPath *fn_80476830(Rt2dPath *path);                     /* unlock */
 Rt2dPath *fn_80474C7C(Rt2dPath *path, RwReal x, RwReal y); /* moveto */
-Rt2dPath *fn_80474EA0(Rt2dPath *path, RwReal x, RwReal y); /* lineto */
+Rt2dPath *fn_80474BEC(Rt2dPath *path); /* destroys one subpath and returns the next */
+Rt2dPath *fn_8047548C(void);           /* the emptied scratch path */
+void fn_804754F4(Rt2dPath *path, RwV2d *bezier, RwInt32 depth); /* flattens a curve */
+Rt2dPath *fn_804758C8(Rt2dPath *flat, Rt2dPath *path);          /* adds a flattened subpath */
+void fn_804760C8(Rt2dPath *path);                               /* frees the points */
+void fn_80476A0C(void);                                         /* closes the paths */
+RwBool fn_80476A58(void);                                       /* opens the paths */
+Rt2dPath *fn_80474EA0(Rt2dPath *path, RwReal x, RwReal y);      /* lineto */
 Rt2dPath *fn_80474FF8(Rt2dPath *path, RwReal x1, RwReal y1, RwReal x2, RwReal y2, RwReal x3,
                       RwReal y3);      /* curveto */
 Rt2dPath *fn_80475260(Rt2dPath *path); /* closepath */
