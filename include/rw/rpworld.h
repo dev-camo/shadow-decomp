@@ -2,6 +2,7 @@
 #define RW_RPWORLD_H
 
 #include "rw/rwcore.h"
+#include <stddef.h>
 
 /* RenderWare world objects; only the members used by recovered code are mapped. */
 
@@ -22,6 +23,7 @@ typedef struct RpGeometry RpGeometry;
 #define rpGEOMETRYLIGHT 0x20
 #define rpGEOMETRYTEXTURED2 0x80
 #define rpGEOMETRYNATIVE 0x01000000 /* instanced in the platform's format */
+#define rpGEOMETRYNATIVEINSTANCE 0x02000000
 
 typedef struct RwSurfaceProperties {
     RwReal ambient;
@@ -288,6 +290,10 @@ typedef struct RpTie {
     /* 0x0C */ RwLLLink lWorldSectorInAtomic; /* in the atomic's sector list */
     /* 0x14 */ RpWorldSector *worldSector;
 } RpTie;
+
+/* The tie of a link in an atomic's sector list */
+#define TIEFROMATOMICLINK(link)                                                                    \
+    ((RpTie *)((RwUInt8 *)(link) - offsetof(RpTie, lWorldSectorInAtomic)))
 
 /* A tie between a light and a world sector it lights (0x18 bytes) */
 typedef struct RpLightTie {
@@ -787,7 +793,10 @@ typedef void (*RpGameCubeMaterialColorCallBack)(RwRGBAReal *ambient, RwRGBA *col
 RpGameCubeMaterialColorCallBack fn_804655D4(RwInt32 geometryFlags, RwUInt32 lightMask,
                                             RwBool hasAmbient, RwBool prelit);
 
-/* GameCube: what the all-in-one pipeline's lighting callback leaves for its render callback */
+struct RxGameCubeAllInOneData;
+
+/* GameCube: what an all-in-one node passes to its callbacks: the instanced data, and what the
+ * lighting callback leaves for the render callback */
 typedef struct RpGameCubeRenderMesh {
     /* 0x00 */ RwResEntry *repEntry;
     /* 0x04 */ RpMeshHeader *meshHeader; /* of the geometry; its meshes follow it */
@@ -796,6 +805,7 @@ typedef struct RpGameCubeRenderMesh {
     /* 0x1C */ RwBool hasAmbient;       /* (inferred) */
     /* 0x20 */ RwUInt32 lightMask;
     /* 0x24 */ RwInt32 numLights;
+    /* 0x28 */ struct RxGameCubeAllInOneData *nodeData; /* the node's callbacks */
 } RpGameCubeRenderMesh;
 
 typedef RpAtomic *(*RpGameCubeInstanceCallBack)(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
@@ -840,23 +850,50 @@ RwBool fn_804647C8(void); /* the light plugin attachment (inferred) */
 
 /* creates an atomic all-in-one pipeline with the plugin's callbacks, which receive the atomic
  * being rendered (inferred) */
-void *fn_8046335C(RwUInt32 pluginID, RwUInt32 pluginData,
-                  RpGameCubeInstanceCallBack instanceCallBack,
-                  RpGameCubeInstanceCallBack reinstanceCallBack,
-                  RpGameCubeLightingCallBack lightingCallBack,
-                  RpGameCubeRenderCallBack renderCallBack);
+RxPipeline *fn_8046335C(RwUInt32 pluginID, RwUInt32 pluginData,
+                        RpGameCubeInstanceCallBack instanceCallBack,
+                        RpGameCubeInstanceCallBack reinstanceCallBack,
+                        RpGameCubeLightingCallBack lightingCallBack,
+                        RpGameCubeRenderCallBack renderCallBack);
 RpAtomic *fn_80463428(RpAtomic *atomic,
                       RpGameCubeRenderMesh *renderMesh); /* the default lighting */
 /* instances an atomic's vertices into its instanced data (inferred) */
 RpAtomic *fn_80463840(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
+RxNodeDefinition *fn_80463D1C(void); /* the atomic all-in-one node definition */
+
+/* GameCube lights (inferred from their use) */
+/* loads the world's directional lights with the light flags into the mesh's hardware lights and
+ * adds its ambient lights to the mesh's ambient colour */
+void fn_804641CC(RwUInt8 lightFlags, RpGameCubeRenderMesh *renderMesh);
+void fn_804643E8(RpLight *light, RpGameCubeRenderMesh *renderMesh); /* adds a light */
+
+/* GameCube instanced data (inferred from their use) */
+/* creates the instanced data of a geometry for its owner, the atomic or the geometry itself */
+RwResEntry *fn_8046B79C(RpGeometry *geometry, void *owner, RwResEntry **ownerRef);
+RwResEntry *fn_8046C0D4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef);
+/* writes an atomic's interpolated morph targets into its instanced data */
+void fn_80464814(RpGeometry *geometry, RpGameCubeInstanceData *instance,
+                 RpInterpolator *interpolator);
+/* write a stream into instanced data in a GX component type and return the size written;
+ * positions are made relative to origin - fmod(origin, 1 / scale), the origin truncated toward
+ * zero to a multiple of the fixed point step */
+RwUInt32 fn_80466B58(void *data, const RwV3d *positions, RwUInt8 type, RwInt32 numVertices,
+                     RwUInt8 stride, const RwV3d *origin, RwReal scale);
+RwUInt32 fn_80467BC8(void *data, const RwV3d *normals, RwUInt8 type, RwInt32 numVertices,
+                     RwUInt8 stride);
+RwUInt32 fn_804699F0(void *data, const RwRGBA *colors, RwUInt8 type, RwInt32 numVertices,
+                     RwUInt8 stride);
+RwUInt32 fn_8046A270(void *data, const RwTexCoords *texCoords, RwUInt8 type, RwInt32 numVertices,
+                     RwUInt8 stride, RwReal scale);
 void fn_8049B800(void *pipeline); /* destroys a pipeline */
 
 /* GameCube render helpers (inferred from their use) */
 /* sets the vertex descriptors and formats for a vertex format and render mesh */
 void fn_80462C30(RpGameCubeVertexFormat *format, RpGameCubeRenderMesh *renderMesh);
-RwInt32 fn_80462C28(void);                            /* a GameCube render mode (lbl_805EDDD8) */
-void fn_80462C20(RwInt32 mode);                       /* sets it */
-void fn_804A2F08(void);                               /* resets the material effects render state */
+extern RwInt32 lbl_805EDDD8;    /* the instancing optimisation mode (inferred) */
+RwInt32 fn_80462C28(void);      /* a GameCube render mode (lbl_805EDDD8) */
+void fn_80462C20(RwInt32 mode); /* sets it */
+void fn_804A2F08(void);         /* resets the material effects render state */
 RwBool fn_804A8478(RpGameCubeRenderMesh *renderMesh); /* whether a mesh uses material effects */
 /* builds the material effects data of a skinned geometry with binormals and tangents */
 void fn_804A8120(RpGameCubeRenderMesh *renderMesh, RpGameCubeVertexFormat *format,
