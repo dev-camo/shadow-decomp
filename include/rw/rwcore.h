@@ -44,11 +44,14 @@ typedef struct RwCamera RwCamera;
 #define rwRENDERSTATEDESTBLEND 11
 #define rwRENDERSTATEVERTEXALPHAENABLE 12
 
-/* The engine globals; only the current camera, the render state, string copy and length, memory and free
- * list functions are mapped. */
+/* The engine globals; only the current camera and world, the frame counters, the render state,
+ * string copy and length, memory and free list functions are mapped. */
 typedef struct RwGlobals {
     /* 0x000 */ RwCamera *curCamera;
-    /* 0x004 */ RwUInt8 field_0x4[0x1C];
+    /* 0x004 */ void *curWorld;
+    /* 0x008 */ RwUInt16 renderFrame;
+    /* 0x00A */ RwUInt16 lightFrame; /* lights are created one frame behind it */
+    /* 0x00C */ RwUInt8 field_0xC[0x14];
     /* 0x020 */ RwBool (*renderStateSet)(RwInt32 state, void *value);
     /* 0x024 */ RwBool (*renderStateGet)(RwInt32 state, void *value);
     /* 0x028 */ RwUInt8 field_0x28[0xA4];
