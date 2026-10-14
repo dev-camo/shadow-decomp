@@ -8,7 +8,6 @@
 
 /* chunk IDs */
 #define rwID_MATERIAL 0x7
-#define rwID_MATLIST 0x8
 #define rwID_MATERIALMODULE 0x501 /* the material module, which owns the stream read index buffer */
 
 /* the plugin ID the world module reports errors with (inferred) */
