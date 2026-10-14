@@ -1,18 +1,17 @@
 Shadow the Hedgehog  
 [![Build Status]][actions] [![Code Progress]][progress] [![Data Progress]][progress]
 =============
-[<img src="https://decomp.dev/dev-camo/shadow-decomp.svg?w=512&h=256" width="512" height="256">][Progress]
+[<img src="docs/progress/chart.svg" width="512" height="256" alt="Map of the USA version's units, sized by code and shaded by how much matches">][progress]
 =============
 
 [Build Status]: https://github.com/dev-camo/shadow-decomp/actions/workflows/build.yml/badge.svg
 [actions]: https://github.com/dev-camo/shadow-decomp/actions/workflows/build.yml
 <!--
-decomp.dev progress badges
-See https://decomp.dev/api for an API overview.
+Progress badges and chart: generated from the USA build report by tools/progress_svg.py
 -->
-[Code Progress]: https://decomp.dev/dev-camo/shadow-decomp.svg?mode=shield&measure=code&label=Code
-[Data Progress]: https://decomp.dev/dev-camo/shadow-decomp.svg?mode=shield&measure=data&label=Data
-[progress]: https://decomp.dev/dev-camo/shadow-decomp
+[Code Progress]: docs/progress/code.svg
+[Data Progress]: docs/progress/data.svg
+[progress]: docs/progress/chart.svg
 
 A work-in-progress decompilation of Shadow the Hedgehog.
 
