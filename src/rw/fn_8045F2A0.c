@@ -18,12 +18,6 @@ typedef struct WorldSectorModule {
     /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
 } WorldSectorModule;
 
-/* A search of a list for one object (inferred) */
-typedef struct ObjectSearch {
-    /* 0x0 */ void *object;
-    /* 0x4 */ RwBool found;
-} ObjectSearch;
-
 RwPluginRegistry lbl_8056D880 = {sizeof(RpWorldSector), sizeof(RpWorldSector), 0, 0, NULL, NULL};
 
 WorldSectorModule lbl_805F14F8;
@@ -59,15 +53,15 @@ RwInt32 fn_8045F338(RwUInt32 pluginID, RwPluginDataChunkReadCallBack read,
     return fn_804815F0(&lbl_8056D880, pluginID, read, write, getSize);
 }
 
-/* A search callback: stops at the object searched for */
-void *fn_8045F374(void *object, void *data) {
-    ObjectSearch *search = data;
+/* A world sector callback that stops at the sector searched for */
+RpWorldSector *fn_8045F374(RpWorldSector *sector, void *data) {
+    RpWorldSectorSearch *search = data;
 
-    if (search->object == object) {
+    if (search->sector == sector) {
         search->found = TRUE;
         return NULL;
     }
-    return object;
+    return sector;
 }
 
 /* Renders a world sector, then each of its atomics that is visible and not yet rendered this
