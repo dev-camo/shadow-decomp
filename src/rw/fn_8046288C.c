@@ -15,9 +15,6 @@
 /* the plugin ID the platform pipelines report (inferred) */
 #define rwPLATFORMPIPELINEPLUGIN 2
 
-/* GX draw sync tokens wrap below this */
-#define rwGAMECUBEMAXSYNCTOKEN 0xE000
-
 /* RwMatrix flags */
 #define rwMATRIXTYPEORTHONORMAL 0x3
 #define rwMATRIXINTERNALIDENTITY 0x20000
@@ -46,12 +43,7 @@ RwInt32 lbl_805F1520; /* geometry plugin offset of the vertex format */
 void fn_8046288C(RwResEntry *repEntry) {
     RpGameCubeInstanceData *instance = (RpGameCubeInstanceData *)(repEntry + 1);
 
-    if (instance->syncToken == lbl_805EDF40) {
-        GXSetDrawSync(lbl_805EDF40);
-        lbl_805EDF40 = (lbl_805EDF40 + 1) % rwGAMECUBEMAXSYNCTOKEN;
-    }
-    while (!fn_8049A78C(instance->syncToken)) {
-    }
+    RPGAMECUBEWAITDRAWSYNC(instance->syncToken);
 }
 
 /* Renders an atomic's or world sector's meshes from their display lists. A world sector whose

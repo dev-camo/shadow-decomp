@@ -759,10 +759,27 @@ struct RpGameCubeInstanceData {
     ((RpGameCubeDisplayList *)&(instance)->vertexDescriptors[1] +                                  \
      ((instance)->numVertexDescriptors - 1))
 
-extern RwUInt16 lbl_805EDF40; /* the next GX draw sync token */
+/* the next GX draw sync token. Volatile: every function that issues a token rereads it after
+ * comparing it, which only a volatile object explains */
+extern volatile RwUInt16 lbl_805EDF40;
+
+/* GX draw sync tokens wrap below this */
+#define rwGAMECUBEMAXSYNCTOKEN 0xE000
 
 /* the GX draw sync */
 RwBool fn_8049A78C(RwUInt16 token); /* whether the GPU has passed the token */
+
+/* Waits until the GPU is done with the draw that used a sync token, first issuing the token if it
+ * is the current one */
+#define RPGAMECUBEWAITDRAWSYNC(syncToken)                                                          \
+    do {                                                                                           \
+        if ((syncToken) == lbl_805EDF40) {                                                         \
+            GXSetDrawSync(lbl_805EDF40);                                                           \
+            lbl_805EDF40 = (lbl_805EDF40 + 1) % rwGAMECUBEMAXSYNCTOKEN;                            \
+        }                                                                                          \
+        while (!fn_8049A78C(syncToken)) {                                                          \
+        }                                                                                          \
+    } while (0)
 
 /* the material color callback a render state needs (inferred) */
 typedef void (*RpGameCubeMaterialColorCallBack)(RwRGBAReal *ambient, RwRGBA *color,
