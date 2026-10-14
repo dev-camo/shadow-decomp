@@ -44,8 +44,8 @@
 #define rpWORLDRENDERFRONT2BACK 1
 #define rpWORLDRENDERBACK2FRONT 2
 
-/* the engine standard function that sorts the frustum sectors (inferred) */
-#define rwSTANDARDSECTORORDER 30
+/* the engine standard function that hints the world sector render order */
+#define rwSTANDARDHINTRENDERF2B 22
 
 /* light types with a position (rpLIGHTPOINT and up) */
 #define rpLIGHTPOSITIONINGSTART 0x80
@@ -201,7 +201,7 @@ RwCamera *fn_80460BA4(RwCamera *camera) {
 
         if (world != NULL) {
             RwBool (*sortSectors)(void *out, void *inOut, RwInt32 numIn) =
-                lbl_805F15B4->stdFunc[rwSTANDARDSECTORORDER];
+                lbl_805F15B4->stdFunc[rwSTANDARDHINTRENDERF2B];
 
             fn_80461658(world, camera);
             sortSectors(NULL, NULL, world->renderOrder == rpWORLDRENDERFRONT2BACK);
