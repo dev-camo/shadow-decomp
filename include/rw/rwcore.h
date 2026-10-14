@@ -123,6 +123,8 @@ typedef struct RwGlobals {
     /* 0x108 */ RwMemoryFunctions memoryFuncs;
     /* 0x118 */ void *(*rwfreelistalloc)(RwFreeList *freeList, RwUInt32 hint);
     /* 0x11C */ RwFreeList *(*rwfreelistfree)(RwFreeList *freeList, void *mem);
+    /* 0x120 */ RwUInt8 field_0x120[0x8];
+    /* 0x128 */ RwUInt32 resArenaInitSize; /* the bytes of the resources heap (inferred) */
 } RwGlobals;
 
 extern RwGlobals *lbl_805F15B4; /* the engine instance */
@@ -432,15 +434,23 @@ struct RwResEntry {
     /* 0x14 */ RwResEntryDestroyNotify destroyNotify;
 };
 
-/* The resources module's globals in the engine; only the use order is mapped */
+/* The resources module's globals in the engine. Entries are in one of two lists, used this frame
+ * or before it; the lists swap roles each frame. */
 typedef struct RwResourcesGlobals {
-    /* 0x00 */ RwUInt8 field_0x0[0x24];
-    /* 0x24 */ RwLLLink *usedEntries; /* most recently used first */
+    /* 0x00 */ RwUInt32 maxSize;     /* the bytes of the heap */
+    /* 0x04 */ RwUInt32 currentSize; /* the bytes of the entries in the heap */
+    /* 0x08 */ RwUInt32 reusageSize; /* the bytes of entries used this frame that were freed */
+    /* 0x0C */ void *memHeap;        /* NULL when the heap size is 0 */
+    /* 0x10 */ RwLinkList entriesA;
+    /* 0x18 */ RwLinkList entriesB;
+    /* 0x20 */ RwLLLink *freeEntries; /* the head of the list of entries used before this frame */
+    /* 0x24 */ RwLLLink *usedEntries; /* the head of the list used this frame, newest first */
 } RwResourcesGlobals;
 
-extern RwInt32 lbl_805F1578; /* engine plugin offset of the resources module */
+extern RwModuleInfo lbl_805F1578; /* the resources module */
 
-#define RWRESOURCESGLOBAL(var) (RWPLUGINOFFSET(RwResourcesGlobals, lbl_805F15B4, lbl_805F1578)->var)
+#define RWRESOURCESGLOBAL(var)                                                                     \
+    (RWPLUGINOFFSET(RwResourcesGlobals, lbl_805F15B4, lbl_805F1578.globalsOffset)->var)
 
 /* Moves a resource entry to the front of the use order */
 #define RwResourcesUseResEntry(entry)                                                              \
@@ -459,6 +469,14 @@ extern RwInt32 lbl_805F1578; /* engine plugin offset of the resources module */
 RwResEntry *fn_80480878(void *owner, RwResEntry **ownerRef, RwInt32 size,
                         RwResEntryDestroyNotify destroyNotify); /* allocates an entry */
 RwBool fn_8048071C(RwResEntry *entry);                          /* frees an entry */
+void fn_804807CC(void);                                         /* starts a frame */
+RwBool fn_80480B08(void);                                       /* frees all entries */
+
+/* the resources heap (inferred) */
+RwBool fn_80482984(void *heap, RwUInt32 size); /* initializes a heap in size bytes at heap */
+RwBool fn_804829D4(void *heap);                /* destroys a heap */
+void fn_804829DC(void *mem);                   /* frees a heap block */
+void *fn_80482A94(void *heap, RwUInt32 size);  /* allocates a heap block */
 
 /* A texture: its raster and reference count (0x58 bytes) */
 typedef struct RwTexture {
