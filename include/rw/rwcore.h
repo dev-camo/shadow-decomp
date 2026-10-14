@@ -599,9 +599,58 @@ RwStream *fn_8047D684(RwStream *stream, RwInt16 *ints, RwUInt32 size);
 RwStream *fn_8047D784(RwStream *stream, RwReal *reals, RwUInt32 size);
 RwStream *fn_8047D868(RwStream *stream, RwInt32 *ints, RwUInt32 size);
 RwStream *fn_8047D94C(RwStream *stream, RwChunkHeaderInfo *chunkHeaderInfo);
+
+/* RwStreamType */
+#define rwSTREAMFILE 1     /* an open file */
+#define rwSTREAMFILENAME 2 /* a file the stream opens by name */
+#define rwSTREAMMEMORY 3
+#define rwSTREAMCUSTOM 4
+
+/* RwStreamAccessType */
+#define rwSTREAMREAD 1
+#define rwSTREAMWRITE 2
+#define rwSTREAMAPPEND 3
+
+/* A block of memory a memory stream reads, or receives what one wrote */
+typedef struct RwMemory {
+    /* 0x0 */ RwUInt8 *start;
+    /* 0x4 */ RwUInt32 length;
+} RwMemory;
+
+/* A memory stream's state */
+typedef struct RwStreamMemory {
+    /* 0x0 */ RwUInt32 position;
+    /* 0x4 */ RwUInt32 nSize; /* the bytes of memBlock */
+    /* 0x8 */ RwUInt8 *memBlock;
+} RwStreamMemory;
+
+/* A custom stream's functions and their data (0x14 bytes) */
+typedef struct RwStreamCustom {
+    /* 0x00 */ RwBool (*sfnclose)(void *data);
+    /* 0x04 */ RwUInt32 (*sfnread)(void *data, void *buffer, RwUInt32 length);
+    /* 0x08 */ RwBool (*sfnwrite)(void *data, const void *buffer, RwUInt32 length);
+    /* 0x0C */ RwBool (*sfnskip)(void *data, RwUInt32 offset);
+    /* 0x10 */ void *data;
+} RwStreamCustom;
+
+/* A stream (0x24 bytes) */
+struct RwStream {
+    /* 0x00 */ RwInt32 type;       /* RwStreamType */
+    /* 0x04 */ RwInt32 accessType; /* RwStreamAccessType */
+    /* 0x08 */ RwInt32 position;
+    /* 0x0C */ union {
+        RwStreamMemory memory;
+        void *fpFile; /* a file or file name stream's file */
+        RwStreamCustom custom;
+    } Type;
+    /* 0x20 */ RwBool rwOwned; /* whether the stream is from the stream free list */
+};
+
 RwUInt32 fn_80480D4C(RwStream *stream, void *buffer, RwUInt32 length);
 RwStream *fn_80480ED0(RwStream *stream, const void *buffer, RwUInt32 length);
 RwStream *fn_804810FC(RwStream *stream, RwUInt32 offset);
+RwBool fn_8048124C(RwStream *stream, void *data); /* close; data receives a written memory block */
+RwStream *fn_80481368(RwInt32 type, RwInt32 accessType, const void *data); /* open */
 
 /* frames */
 RwMatrix *RwFrameGetLTM(RwFrame *frame);
