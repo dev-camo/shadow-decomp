@@ -207,6 +207,8 @@ typedef struct RwBBox {
     RwV3d inf;
 } RwBBox;
 
+RwBBox *fn_8048349C(RwBBox *boundBox, const RwV3d *verts, RwInt32 numVerts); /* calculates */
+
 typedef struct RwRGBA {
     RwUInt8 red;
     RwUInt8 green;
@@ -732,6 +734,8 @@ RwFreeList *fn_8047FF50(RwFreeList *freeList, void *mem); /* frees an entry */
 RwBool fn_80480274(const RwMemoryFunctions *memFuncs); /* open; NULL uses the C library */
 void fn_8048038C(void);                                /* close */
 RwMemoryFunctions *fn_80480530(void);                  /* the engine's memory functions */
+
+RwBool fn_80483444(const RwChar *path); /* whether a file path is absolute (inferred) */
 
 /* frames (inferred) */
 RwInt32 fn_804836EC(RwUInt32 pluginID, RwPluginDataChunkReadCallBack readCB,
