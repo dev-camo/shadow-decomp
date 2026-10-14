@@ -2,6 +2,7 @@
 #define RW_RWCORE_H
 
 #include <dolphin/types.h>
+#include <stdarg.h>
 
 /* RenderWare Graphics 3.7 (stream chunk version 0x37002), linked into the game. Only what the
  * recovered RenderWare code uses is declared. The functions keep placeholder names; their roles
@@ -80,6 +81,27 @@ typedef struct RwCamera RwCamera;
 
 typedef struct RwIm2DVertex RwIm2DVertex;
 
+/* The string functions the engine uses (0x44 bytes) */
+typedef struct RwStringFunctions {
+    /* 0x00 */ RwInt32 (*vecSprintf)(RwChar *buffer, const RwChar *format, ...);
+    /* 0x04 */ RwInt32 (*vecVsprintf)(RwChar *buffer, const RwChar *format, va_list argptr);
+    /* 0x08 */ RwChar *(*vecStrcpy)(RwChar *dst, const RwChar *src);
+    /* 0x0C */ RwChar *(*vecStrncpy)(RwChar *dst, const RwChar *src, size_t n);
+    /* 0x10 */ RwChar *(*vecStrcat)(RwChar *dst, const RwChar *src);
+    /* 0x14 */ RwChar *(*vecStrncat)(RwChar *dst, const RwChar *src, size_t n);
+    /* 0x18 */ RwChar *(*vecStrrchr)(const RwChar *string, RwInt32 findThis);
+    /* 0x1C */ RwChar *(*vecStrchr)(const RwChar *string, RwInt32 findThis);
+    /* 0x20 */ RwChar *(*vecStrstr)(const RwChar *string, const RwChar *findThis);
+    /* 0x24 */ RwInt32 (*vecStrcmp)(const RwChar *string1, const RwChar *string2);
+    /* 0x28 */ RwInt32 (*vecStrncmp)(const RwChar *string1, const RwChar *string2, size_t n);
+    /* 0x2C */ RwInt32 (*vecStricmp)(const RwChar *string1, const RwChar *string2);
+    /* 0x30 */ size_t (*vecStrlen)(const RwChar *string);
+    /* 0x34 */ RwChar *(*vecStrupr)(RwChar *string);
+    /* 0x38 */ RwChar *(*vecStrlwr)(RwChar *string);
+    /* 0x3C */ RwChar *(*vecStrtok)(RwChar *string, const RwChar *delimit);
+    /* 0x40 */ RwInt32 (*vecSscanf)(const RwChar *buffer, const RwChar *format, ...);
+} RwStringFunctions;
+
 /* The memory functions the engine allocates with */
 typedef struct RwMemoryFunctions {
     /* 0x0 */ void *(*rwmalloc)(RwUInt32 size, RwUInt32 hint);
@@ -108,18 +130,7 @@ typedef struct RwGlobals {
     /* 0x038 */ RwUInt8 field_0x38[0x10];
     /* 0x048 */ RwBool (*stdFunc[0x1D])(void *out, void *inOut, RwInt32 numIn); /* RwStandard */
     /* 0x0BC */ RwUInt8 field_0xBC[0x8];
-    /* 0x0C4 */ RwInt32 (*rwsprintf)(RwChar *buffer, const RwChar *format, ...);
-    /* 0x0C8 */ RwUInt8 field_0xC8[0x4];
-    /* 0x0CC */ RwChar *(*rwstrcpy)(RwChar *dst, const RwChar *src);
-    /* 0x0D0 */ RwUInt8 field_0xD0[0x4];
-    /* 0x0D4 */ RwChar *(*rwstrcat)(RwChar *dst, const RwChar *src);
-    /* 0x0D8 */ RwUInt8 field_0xD8[0x10];
-    /* 0x0E8 */ RwInt32 (*rwstrcmp)(const RwChar *string1, const RwChar *string2);
-    /* 0x0EC */ RwUInt8 field_0xEC[0x4];
-    /* 0x0F0 */ RwInt32 (*rwstricmp)(const RwChar *string1, const RwChar *string2);
-    /* 0x0F4 */ RwUInt32 (*rwstrlen)(const RwChar *string);
-    /* 0x0F8 */ RwUInt8 field_0xF8[0xC];
-    /* 0x104 */ RwInt32 (*rwsscanf)(const RwChar *buffer, const RwChar *format, ...);
+    /* 0x0C4 */ RwStringFunctions stringFuncs;
     /* 0x108 */ RwMemoryFunctions memoryFuncs;
     /* 0x118 */ void *(*rwfreelistalloc)(RwFreeList *freeList, RwUInt32 hint);
     /* 0x11C */ RwFreeList *(*rwfreelistfree)(RwFreeList *freeList, void *mem);
@@ -137,13 +148,13 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
     (lbl_805F15B4->memoryFuncs.rwcalloc((numObj), (sizeObj), (hint)))
 #define RwFreeListAlloc(freeList, hint) (lbl_805F15B4->rwfreelistalloc((freeList), (hint)))
 #define RwFreeListFree(freeList, mem) (lbl_805F15B4->rwfreelistfree((freeList), (mem)))
-#define rwstrlen(string) (lbl_805F15B4->rwstrlen(string))
-#define rwstrcpy(dst, src) (lbl_805F15B4->rwstrcpy((dst), (src)))
-#define rwstrcat(dst, src) (lbl_805F15B4->rwstrcat((dst), (src)))
-#define rwstrcmp(string1, string2) (lbl_805F15B4->rwstrcmp((string1), (string2)))
-#define rwstricmp(string1, string2) (lbl_805F15B4->rwstricmp((string1), (string2)))
-#define rwsprintf lbl_805F15B4->rwsprintf
-#define rwsscanf lbl_805F15B4->rwsscanf
+#define rwstrlen(string) (lbl_805F15B4->stringFuncs.vecStrlen(string))
+#define rwstrcpy(dst, src) (lbl_805F15B4->stringFuncs.vecStrcpy((dst), (src)))
+#define rwstrcat(dst, src) (lbl_805F15B4->stringFuncs.vecStrcat((dst), (src)))
+#define rwstrcmp(string1, string2) (lbl_805F15B4->stringFuncs.vecStrcmp((string1), (string2)))
+#define rwstricmp(string1, string2) (lbl_805F15B4->stringFuncs.vecStricmp((string1), (string2)))
+#define rwsprintf lbl_805F15B4->stringFuncs.vecSprintf
+#define rwsscanf lbl_805F15B4->stringFuncs.vecSscanf
 #define RwRenderStateSet(state, value) (lbl_805F15B4->renderStateSet((state), (value)))
 #define RwRenderStateGet(state, value) (lbl_805F15B4->renderStateGet((state), (value)))
 #define RwIm2DGetNearScreenZ() (lbl_805F15B4->zBufferNear)
