@@ -341,7 +341,7 @@ Rt2dFont *fn_80471300(Rt2dFont *font) {
 Rt2dFont *fn_8047149C(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *line) {
     RwTexDictionary *oldDict = fn_8048D0D8();
     Rt2dFont *result;
-    RwInt16 numChars;
+    RwInt32 numChars;
     RwInt32 maxChars;
     RwInt32 *codes;
     rt2dCharRect *charRects;
@@ -493,7 +493,7 @@ Rt2dFont *fn_80471A54(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
     Rt2dFont *result;
     RwUInt32 textureIndex;
     RwInt32 charOffset;
-    RwInt16 numChars;
+    RwInt32 numChars;
     RwInt32 maxChars;
     Rt2dGlobalVars *globals;
     RwInt32 *codes;
@@ -619,8 +619,9 @@ Rt2dFont *fn_80471A54(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
                             continue;
                         }
                         cellWidth = x - left;
+                        /* two adjacent markers end the row */
                         if (cellWidth == 1) {
-                            continue;
+                            break;
                         }
 
                         if (p == NULL || *p == '\n' || *p == '\0') {
@@ -755,10 +756,10 @@ Rt2dFont *fn_804724AC(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
                 path = fn_80476490();
                 fn_80476510(path);
             } else if (rwstrcmp(line, "end\n") == 0) {
-                Rt2dPath *flattened = fn_80475B4C(path);
+                Rt2dPath *pruned = fn_80475B4C(path);
                 rt2dCharRect *charRect;
 
-                fn_80476830(path);
+                fn_80476830(pruned);
                 GROWCHARCODES(codes);
                 if (code >= rt2dFONTMAPSIZE) {
                     font->flag |= rt2dFONTFLAGWIDECHARS;
@@ -768,7 +769,7 @@ Rt2dFont *fn_804724AC(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
                 }
                 charRect = &charRects[rectOffset];
                 numChars++;
-                charRect->path = flattened;
+                charRect->path = pruned;
                 code = 0;
                 path = NULL;
                 codeOffset++;

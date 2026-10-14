@@ -151,9 +151,11 @@ Rt2dPath *fn_80476830(Rt2dPath *path);                     /* unlock */
 Rt2dPath *fn_80474C7C(Rt2dPath *path, RwReal x, RwReal y); /* moveto */
 Rt2dPath *fn_80474EA0(Rt2dPath *path, RwReal x, RwReal y); /* lineto */
 Rt2dPath *fn_80474FF8(Rt2dPath *path, RwReal x1, RwReal y1, RwReal x2, RwReal y2, RwReal x3,
-                      RwReal y3);                        /* curveto */
-Rt2dPath *fn_80475260(Rt2dPath *path);                   /* closepath */
-Rt2dPath *fn_80475B4C(Rt2dPath *path);                   /* a flattened copy (inferred) */
+                      RwReal y3);      /* curveto */
+Rt2dPath *fn_80475260(Rt2dPath *path); /* closepath */
+/* drops the subpaths that hold a single segment, freeing them, and returns the rest, which may
+ * be NULL (inferred) */
+Rt2dPath *fn_80475B4C(Rt2dPath *path);
 Rt2dPath *fn_80476C4C(RwStream *stream);                 /* stream read */
 Rt2dPath *fn_804771C0(Rt2dPath *path, Rt2dBrush *brush); /* fill */
 
