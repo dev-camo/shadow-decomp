@@ -743,16 +743,21 @@ RwMemoryFunctions *fn_80480530(void);                  /* the engine's memory fu
 RwBool fn_80483444(const RwChar *path); /* whether a file path is absolute (inferred) */
 
 /* frames (inferred) */
+extern RwPluginRegistry lbl_8056DFE8; /* the frame plugin registry */
 RwInt32 fn_804836EC(RwUInt32 pluginID, RwPluginDataChunkReadCallBack readCB,
                     RwPluginDataChunkWriteCallBack writeCB,
                     RwPluginDataChunkGetSizeCallBack getSizeCB);
 RwInt32 fn_804878D4(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructCB,
                     RwPluginObjectDestructor destructCB, RwPluginObjectCopy copyCB);
 RwFrame *fn_8048722C(RwFrame *frame);
-RwFrame *fn_80486C5C(RwFrame *root); /* clones a hierarchy */
-RwFrame *fn_80486CA4(RwFrame *root); /* forgets the clones made of a hierarchy */
-RwBool fn_80486CF0(RwFrame *frame);  /* whether the frame's hierarchy is dirty */
-RwBool fn_80487208(RwFrame *frame);  /* destroys a hierarchy */
+RwFrame *fn_80486C5C(RwFrame *root);                   /* clones a hierarchy */
+RwFrame *fn_80486CA4(RwFrame *root);                   /* forgets the clones made of a hierarchy */
+RwBool fn_80486CF0(RwFrame *frame);                    /* whether the frame's hierarchy is dirty */
+RwBool fn_80487208(RwFrame *frame);                    /* destroys a hierarchy */
+RwFrame *fn_80486D00(void);                            /* create */
+RwFrame *fn_804872D8(RwFrame *frame);                  /* the root */
+RwFrame *fn_804872E0(RwFrame *parent, RwFrame *child); /* adds a child */
+RwFrame *fn_80487348(RwFrame *parent, RwFrame *child); /* adds a child, another way */
 
 /* The frames of a stream (8 bytes) */
 typedef struct RwFrameList {
