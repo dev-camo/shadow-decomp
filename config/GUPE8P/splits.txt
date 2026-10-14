@@ -1537,3 +1537,10 @@ rw/fn_80460974.c:
 
 rw/fn_804626F8.c:
 	.text       start:0x804626F8 end:0x8046288C
+
+rw/fn_8046288C.c:
+	.text       start:0x8046288C end:0x8046335C
+	.bss        start:0x805E1688 end:0x805E16A0
+	.sdata      start:0x805EDDD8 end:0x805EDDE0
+	.sbss       start:0x805F1520 end:0x805F1530
+	.sdata2     start:0x805FB180 end:0x805FB190
