@@ -105,7 +105,8 @@ typedef struct RwGlobals {
     /* 0x0D4 */ RwChar *(*rwstrcat)(RwChar *dst, const RwChar *src);
     /* 0x0D8 */ RwUInt8 field_0xD8[0x10];
     /* 0x0E8 */ RwInt32 (*rwstrcmp)(const RwChar *string1, const RwChar *string2);
-    /* 0x0EC */ RwUInt8 field_0xEC[0x8];
+    /* 0x0EC */ RwUInt8 field_0xEC[0x4];
+    /* 0x0F0 */ RwInt32 (*rwstricmp)(const RwChar *string1, const RwChar *string2);
     /* 0x0F4 */ RwUInt32 (*rwstrlen)(const RwChar *string);
     /* 0x0F8 */ RwUInt8 field_0xF8[0xC];
     /* 0x104 */ RwInt32 (*rwsscanf)(const RwChar *buffer, const RwChar *format, ...);
@@ -128,6 +129,7 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
 #define rwstrcpy(dst, src) (lbl_805F15B4->rwstrcpy((dst), (src)))
 #define rwstrcat(dst, src) (lbl_805F15B4->rwstrcat((dst), (src)))
 #define rwstrcmp(string1, string2) (lbl_805F15B4->rwstrcmp((string1), (string2)))
+#define rwstricmp(string1, string2) (lbl_805F15B4->rwstricmp((string1), (string2)))
 #define rwsprintf lbl_805F15B4->rwsprintf
 #define rwsscanf lbl_805F15B4->rwsscanf
 #define RwRenderStateSet(state, value) (lbl_805F15B4->renderStateSet((state), (value)))
@@ -616,10 +618,15 @@ RwRaster *fn_80489A1C(RwRaster *raster, RwImage *image); /* sets the pixels from
 const RwChar *fn_804885DC(const RwChar *path);           /* sets the path */
 
 /* files (inferred) */
-void *fn_8047A178(const RwChar *name, const RwChar *access);     /* open */
-RwInt32 fn_8047A388(void *fptr);                                 /* close */
+void *fn_8047A178(const RwChar *name, const RwChar *access);                         /* open */
+RwInt32 fn_8047A388(void *fptr);                                                     /* close */
+RwUInt32 fn_8047A3E0(void *buffer, RwUInt32 size, RwUInt32 count, void *fptr);       /* read */
+RwUInt32 fn_8047A428(const void *buffer, RwUInt32 size, RwUInt32 count, void *fptr); /* write */
+RwInt32 fn_8047A470(void *fptr, RwInt32 offset, RwInt32 origin);                     /* seek */
 RwChar *fn_8047A518(RwChar *buffer, RwInt32 maxLen, void *fptr); /* reads a line */
 RwBool fn_8047A67C(const RwChar *name);                          /* whether it exists */
+RwBool fn_8047A650(void *fptr);                                  /* whether at the end */
+RwInt32 fn_8047A7C0(void *fptr);                                 /* the position */
 
 /* lists of fixed-size entries (inferred) */
 typedef struct RwSList RwSList;

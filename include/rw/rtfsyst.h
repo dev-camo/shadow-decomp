@@ -21,13 +21,35 @@ typedef struct RtFileSystem RtFileSystem;
 #define RTFS_ERROR_FSNAMEINUSE 6     /* a file system of that name is registered */
 #define RTFS_ERROR_DEVICENAMEINUSE 7 /* a file system of that device name is registered */
 
+/* The manager's errors, passed to its error callback (inferred) */
+#define RTFSM_ERROR_NOFILESYSTEM 4 /* opening a file without a file system */
+#define RTFSM_ERROR_TOOMANYFS 5    /* registering more file systems than it has room for */
+#define RTFSM_ERROR_FSNOTFOUND 6   /* no file system of that name or device */
+#define RTFSM_ERROR_FSREGISTERED 7 /* a file system of that name is registered */
+#define RTFSM_ERROR_NOFREEFILE 8   /* the file system has no free file */
+
 /* A file's states (inferred) */
 #define RTFILE_STATUS_FREE 1    /* not open */
+#define RTFILE_STATUS_PENDING 3 /* while a seek is pending */
 #define RTFILE_STATUS_OPENING 5 /* taken by an open in progress */
 
 /* A file's asynchronous operation states (inferred) */
 #define RTFILE_ASYNC_IDLE 1
+#define RTFILE_ASYNC_OPEN 2
 #define RTFILE_ASYNC_SETPOSITION 4 /* a seek; reports the new position when it completes */
+
+/* The modes a file is opened with (inferred; 4 and 8 are set by the "w", "a" and "+" modes and
+ * their meanings are not established) */
+#define RTFILE_MODE_READ 0x1
+#define RTFILE_MODE_WRITE 0x2
+#define RTFILE_MODE_FLAG4 0x4
+#define RTFILE_MODE_FLAG8 0x8
+#define RTFILE_MODE_ASYNC 0x10 /* completion is reported to the file's callback */
+
+/* The origins of a file system's set-position function (inferred) */
+#define RTFILE_POS_BEGIN 1
+#define RTFILE_POS_CURRENT 2
+#define RTFILE_POS_END 3
 
 /* Called when a file's asynchronous operation completes */
 typedef void (*RtFileCallBack)(RtFile *file, RwInt32 result, RwInt32 status, RwInt32 asyncStatus,
@@ -39,9 +61,9 @@ struct RtFile {
     /* 0x08 */ RwInt64 position; /* -1 when unknown */
     /* 0x10 */ RwInt32 field_0x10;
     /* 0x14 */ RwUInt8 field_0x14[0x4];
-    /* 0x18 */ RwBool field_0x18; /* copied from its file system's asyncMode */
-    /* 0x1C */ RwUInt8 field_0x1C[0x4];
-    /* 0x20 */ RwInt32 status; /* RTFILE_STATUS_* */
+    /* 0x18 */ RwBool field_0x18;  /* copied from its file system's asyncMode */
+    /* 0x1C */ RwInt32 field_0x1C; /* 2 once opened */
+    /* 0x20 */ RwInt32 status;     /* RTFILE_STATUS_* */
     /* 0x24 */ RwUInt8 field_0x24[0x4];
     /* 0x28 */ RwInt32 asyncStatus; /* RTFILE_ASYNC_* */
     /* 0x2C */ RwInt32 field_0x2C;
@@ -62,9 +84,16 @@ struct RtFileSystem {
     /* 0x1C */ RwUInt8 field_0x1C[0x4];
     /* 0x20 */ void (*registerNotify)(RwChar *name);   /* told the name when registered */
     /* 0x24 */ void (*unregisterNotify)(RwChar *name); /* told the name when unregistered */
-    /* 0x28 */ RwUInt8 field_0x28[0x4];
+    /* 0x28 */ RwInt32 (*fileOpen)(RtFileSystem *fileSystem, RtFile *file, const RwChar *name,
+                                   RwUInt32 mode);
     /* 0x2C */ void (*fileClose)(RtFile *file);
-    /* 0x30 */ RwUInt8 field_0x30[0x20];
+    /* 0x30 */ RwUInt32 (*fileRead)(RtFile *file, void *buffer, RwUInt32 length);
+    /* 0x34 */ RwUInt32 (*fileWrite)(RtFile *file, const void *buffer, RwUInt32 length);
+    /* 0x38 */ void (*fileSetPosition)(RtFile *file, RwInt32 offset, RwInt32 origin);
+    /* 0x3C */ RwUInt8 field_0x3C[0x8];
+    /* 0x44 */ RwBool (*fileIsEOF)(RtFile *file);
+    /* 0x48 */ RwUInt8 field_0x48[0x4];
+    /* 0x4C */ RwBool (*fileExists)(RtFileSystem *fileSystem, const RwChar *name);
     /* 0x50 */ RwChar name[8];
     /* 0x58 */ RwUInt8 field_0x58[0xC];
 };
@@ -87,12 +116,35 @@ void fn_804799B8(RtFileSystem *fileSystem, RwBool asyncMode);            /* sets
 RwBool fn_804799C0(RtFileSystem *fileSystem);                            /* gets asyncMode */
 void fn_804799C8(RtFile *file); /* completes an asynchronous operation */
 
+/* The file system manager (0x18 bytes) */
+typedef struct RtFSManager {
+    /* 0x00 */ RtFileSystem *fileSystems;
+    /* 0x04 */ RwInt32 maxNbFS; /* 0 for no limit */
+    /* 0x08 */ RwInt32 nbFS;
+    /* 0x0C */ RwBool isInit;
+    /* 0x10 */ RwInt32 lastError;
+    /* 0x14 */ void (*errorCallBack)(RwInt32 error); /* RTFSM_ERROR_* */
+} RtFSManager;
+
+extern RtFSManager lbl_805E2A40;
+extern RtFileSystem *lbl_805F1548; /* the default file system */
+
 /* the file system manager (inferred) */
-RwBool fn_80479B48(void);                            /* whether another one fits */
-RwBool fn_80479D08(const RwChar *name);              /* whether a name is in use */
-RtFileSystem *fn_80479FD0(const RwChar *deviceName); /* by device name, or NULL */
-RtFile *fn_80479DCC(RtFileSystem *fileSystem, const RwChar *name, RwUInt32 flags,
+RwBool fn_80479A50(RwInt32 maxNbFS);           /* opens */
+void fn_80479A80(void);                        /* closes, unregistering every file system */
+RwBool fn_80479B48(void);                      /* whether another one fits */
+RwBool fn_80479BAC(RtFileSystem *fileSystem);  /* registers */
+RtFileSystem *fn_80479C74(const RwChar *name); /* by name, or NULL */
+RwBool fn_80479D08(const RwChar *name);        /* whether a name is in use */
+RtFile *fn_80479DCC(RtFileSystem *fileSystem, const RwChar *name, RwUInt32 mode,
                     RtFileCallBack callBack, void *callBackData); /* opens a file */
+RtFile *fn_80479F50(const RwChar *name, RwUInt32 mode, RtFileCallBack callBack,
+                    void *callBackData);             /* opens a file by its path */
+RtFSManager *fn_80479FC4(void);                      /* the manager */
+RtFileSystem *fn_80479FD0(const RwChar *deviceName); /* by device name, or NULL */
+RtFileSystem *fn_8047A044(const RwChar *path);       /* of a path, or the default */
+void fn_8047A168(RtFileSystem *fileSystem);          /* sets the default */
+RtFileSystem *fn_8047A170(void);                     /* the default */
 
 #ifdef __cplusplus
 }
