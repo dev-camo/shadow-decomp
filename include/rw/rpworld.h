@@ -57,6 +57,12 @@ typedef struct RpMeshHeader {
     /* 0xC */ RwUInt32 firstMeshOffset;
 } RpMeshHeader;
 
+/* RpMeshHeader flags: the primitive type of the meshes */
+#define rpMESHHEADERTRISTRIP 0x1
+#define rpMESHHEADERTRIFAN 0x2
+#define rpMESHHEADERLINELIST 0x4
+#define rpMESHHEADERPOLYLINE 0x8
+#define rpMESHHEADERPOINTLIST 0x10
 #define rpMESHHEADERPRIMMASK 0xFF
 
 typedef struct RpMorphTarget {
@@ -381,11 +387,27 @@ RpMaterial *fn_8045B79C(const RpMaterialList *matList, RwInt32 index); /* the ma
 RwInt32 fn_8045B7AC(RpMaterialList *matList, RpMaterial *material);    /* append: its index or -1 */
 RwInt32 fn_8045B8EC(const RpMaterialList *matList, const RpMaterial *material); /* index or -1 */
 
+/* A triangle of a mesh being built (0x14 bytes) */
+typedef struct RpBuildMeshTriangle {
+    /* 0x00 */ RxVertexIndex vertIndex[3];
+    /* 0x08 */ RpMaterial *material;
+    /* 0x0C */ RwUInt16 matIndex;
+    /* 0x0E */ RwUInt16 textureIndex;
+    /* 0x10 */ RwUInt16 rasterIndex;
+    /* 0x12 */ RwUInt16 pipelineIndex;
+} RpBuildMeshTriangle;
+
+/* A mesh being built from triangles (0xC bytes) */
+typedef struct RpBuildMesh {
+    /* 0x0 */ RwUInt32 triangleBufferSize; /* in triangles */
+    /* 0x4 */ RwUInt32 numTriangles;
+    /* 0x8 */ RpBuildMeshTriangle *meshTriangles;
+} RpBuildMesh;
+
 /* meshes and mesh building (inferred) */
-typedef struct RpBuildMesh RpBuildMesh;
-RwBool fn_8045C2D4(RpMeshHeader *mesh);         /* destroy */
-RpBuildMesh *fn_8045C144(RwInt32 numTriangles); /* create */
-RwBool fn_8045C26C(RpBuildMesh *buildMesh);     /* destroy */
+RwBool fn_8045C2D4(RpMeshHeader *mesh);          /* destroy */
+RpBuildMesh *fn_8045C144(RwUInt32 numTriangles); /* create */
+RwBool fn_8045C26C(RpBuildMesh *buildMesh);      /* destroy */
 /* adds a triangle with its material and the indices of its texture, raster and pipeline */
 RpBuildMesh *fn_8045C340(RpBuildMesh *buildMesh, RpMaterial *material, RwUInt16 vert0,
                          RwUInt16 vert1, RwUInt16 vert2, RwUInt16 matIndex, RwUInt16 textureIndex,
@@ -422,18 +444,37 @@ RwInt32 fn_8045B2CC(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor c
 RwInt32 fn_8045B30C(RwUInt32 pluginID, RwPluginDataChunkReadCallBack read,
                     RwPluginDataChunkWriteCallBack write, RwPluginDataChunkGetSizeCallBack getSize);
 
-/* The mesh module's globals in the engine; only the mapped members are used */
+/* The mesh module's globals in the engine (0x30 bytes) */
 typedef struct RpMeshGlobals {
     /* 0x00 */ RwInt16 nextSerialNum;
-    /* 0x02 */ RwUInt8 field_0x2[0x2B];
-    /* 0x2D */ RwUInt8 primType; /* of new mesh headers (inferred) */
+    /* 0x04 */ RwFreeList *triStripListEntryFreeList; /* while triangle strips are built */
+    /* the primitive type of each combination of rpMESHHEADER* primitive flags, and back */
+    /* 0x08 */ RwUInt8 meshFlagsToPrimType[0x1F];
+    /* 0x27 */ RwUInt8 primTypeToMeshFlags[7];
 } RpMeshGlobals;
 
-extern RwInt32 lbl_805F14F0; /* engine plugin offset of the mesh module's globals */
+/* The mesh module (inferred) */
+typedef struct RpMeshModule {
+    /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
+    /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
+} RpMeshModule;
+
+extern RpMeshModule lbl_805F14F0;
+
+#define RPMESHGLOBAL(var)                                                                          \
+    (RWPLUGINOFFSET(RpMeshGlobals, lbl_805F15B4, lbl_805F14F0.globalsOffset)->var)
+
+typedef RpMesh *(*RpMeshCallBack)(RpMesh *mesh, RpMeshHeader *meshHeader, void *data);
 
 /* meshes (inferred from their use) */
 RpMeshHeader *fn_8045BF30(RwUInt32 size); /* allocates a mesh header */
-RwUInt16 fn_8045CA20(void);               /* the next mesh serial number */
+RwInt16 fn_8045CA20(void);                /* the next mesh serial number */
+RpMeshHeader *fn_8045C4E4(RpMeshHeader *meshHeader, RpMeshCallBack callBack, void *data);
+RwStream *fn_8045C56C(const RpMeshHeader *meshHeader, const void *object, RwStream *stream,
+                      const RpMaterialList *matList); /* stream write */
+RpMeshHeader *fn_8045C770(RwStream *stream, const void *object,
+                          const RpMaterialList *matList);                /* stream read */
+RwInt32 fn_8045C9C8(const RpMeshHeader *meshHeader, const void *object); /* stream size */
 
 /* geometry locking (inferred: bracket every edit of a geometry's vertex streams) */
 RpGeometry *fn_8045916C(RpGeometry *geometry, RwInt32 lockMode);

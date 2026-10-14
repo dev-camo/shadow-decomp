@@ -37,6 +37,15 @@ typedef char RwChar;
 #define E_RW_NOMEM 0x80000013 /* reported with the size that could not be allocated */
 
 typedef struct RwFreeList RwFreeList;
+
+/* RwPrimitiveType */
+#define rwPRIMTYPENAPRIMTYPE 0
+#define rwPRIMTYPELINELIST 1
+#define rwPRIMTYPEPOLYLINE 2
+#define rwPRIMTYPETRILIST 3
+#define rwPRIMTYPETRISTRIP 4
+#define rwPRIMTYPETRIFAN 5
+#define rwPRIMTYPEPOINTLIST 6
 typedef struct RwCamera RwCamera;
 
 /* render states (RwRenderStateSet/RwRenderStateGet) */
@@ -386,6 +395,8 @@ RwBool fn_8047B720(const RwSphere *sphere, const RwV3d *v0, const RwV3d *v1, con
                    RwV3d *normal, RwReal *distance);
 
 /* free lists (inferred) */
+RwFreeList *fn_8047FBD8(RwInt32 entrySize, RwInt32 entriesPerBlock, RwInt32 alignment,
+                        RwUInt32 hint); /* create */
 RwFreeList *fn_8047FC04(RwInt32 entrySize, RwInt32 entriesPerBlock, RwInt32 alignment,
                         RwInt32 numBlocksToPreallocate, RwFreeList *freeList, RwUInt32 hint);
 RwBool fn_8047FCDC(RwFreeList *freeList);
