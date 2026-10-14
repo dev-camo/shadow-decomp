@@ -324,7 +324,12 @@ struct RwCamera {
     /* 0x060 */ RwRaster *frameBuffer;
     /* 0x064 */ RwRaster *zBuffer;
     /* 0x068 */ RwV2d viewWindow;
-    /* 0x070 */ RwUInt8 field_0x70[0x24];
+    /* 0x070 */ RwV2d recipViewWindow;
+    /* 0x078 */ RwV2d viewOffset;
+    /* 0x080 */ RwReal nearPlane;
+    /* 0x084 */ RwReal farPlane;
+    /* 0x088 */ RwReal fogPlane;
+    /* 0x08C */ RwUInt8 field_0x8C[0x8];
     /* 0x094 */ RwFrustumPlane frustumPlanes[6];
     /* 0x10C */ RwBBox frustumBoundBox;
 };
@@ -862,8 +867,20 @@ RwBool fn_8049A95C(RwInt32 primType, RwImVertexIndex *indices, RwInt32 numIndice
 RwReal fn_804823F0(const RwV2d *v); /* the length of a vector */
 
 /* cameras (inferred) */
-RwCamera *fn_80483590(RwStream *stream); /* stream read */
-RwBool fn_804859F8(RwCamera *camera);    /* destroy */
+extern RwPluginRegistry lbl_8056DF70; /* the camera plugin registry */
+
+/* cameras (inferred) */
+RwCamera *fn_80485A58(void);                                      /* create */
+RwCamera *fn_80485950(RwCamera *camera, const RwV2d *viewWindow); /* set the view window */
+RwCamera *fn_80485504(RwCamera *camera, const RwV2d *offset);     /* set the view offset */
+RwCamera *fn_80485550(RwCamera *camera, RwReal nearPlane);        /* set the near plane */
+RwCamera *fn_8048560C(RwCamera *camera, RwReal farPlane);         /* set the far plane */
+RwCamera *fn_8048584C(RwCamera *camera, RwInt32 projection);      /* set the projection */
+RwInt32 fn_80483554(RwUInt32 pluginID, RwPluginDataChunkReadCallBack readCB,
+                    RwPluginDataChunkWriteCallBack writeCB,
+                    RwPluginDataChunkGetSizeCallBack getSizeCB); /* registers a stream plugin */
+RwCamera *fn_80483590(RwStream *stream);                         /* stream read */
+RwBool fn_804859F8(RwCamera *camera);                            /* destroy */
 
 /* transforms a point by a matrix and returns out (inferred) */
 RwV3d *fn_80482458(RwV3d *out, const RwV3d *point, const RwMatrix *matrix);
