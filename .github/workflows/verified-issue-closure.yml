@@ -1,0 +1,71 @@
+name: Verified issue closure
+
+on:
+  workflow_run:
+    workflows: [Build, Issue acceptance event]
+    types: [completed]
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: 'Issue number (empty reconciles all open issues)'
+        type: string
+        default: ''
+      dry_run:
+        description: 'Verify without commenting or closing'
+        type: boolean
+        default: true
+
+permissions: {}
+
+concurrency:
+  group: verified-issue-closure
+  cancel-in-progress: false
+
+jobs:
+  close:
+    # Enable only after approval of this new issues:write permission.
+    if: >-
+      vars.VERIFIED_ISSUE_CLOSURE_ENABLED == 'true' &&
+      github.repository == 'dev-camo/shadow-decomp' &&
+      (github.event_name == 'schedule' ||
+       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+       (github.event_name == 'workflow_run' &&
+        github.event.workflow_run.head_repository.id == 1414155513 &&
+        ((github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_branch == 'main' &&
+          github.event.workflow_run.workflow_id == 381155316) ||
+         (github.event.workflow_run.event == 'pull_request_review' &&
+          github.event.workflow_run.name == 'Issue acceptance event'))))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+      checks: read
+      pull-requests: read
+      issues: write
+    steps:
+      - name: Checkout trusted default-branch revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          submodules: false
+      - name: Verify complete acceptance and postmerge checks
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          VERIFIED_ISSUE_CLOSURE_ENABLED: ${{ vars.VERIFIED_ISSUE_CLOSURE_ENABLED }}
+          ISSUE_CLOSURE_AUTHORIZATION: ${{ secrets.ISSUE_CLOSURE_AUTHORIZATION }}
+          REQUESTED_ISSUE: ${{ inputs.issue }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
+        run: |
+          args=()
+          if [[ -n "$REQUESTED_ISSUE" ]]; then
+            args+=(--issue "$REQUESTED_ISSUE")
+          fi
+          if [[ "$DRY_RUN" != "true" ]]; then
+            args+=(--apply)
+          fi
+          python3 -B .github/scripts/verified_issue_closure.py "${args[@]}"
