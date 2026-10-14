@@ -613,8 +613,6 @@ void GXSetArray(GXAttr attr, void *base_ptr, u8 stride) {
     GXAttr cpAttr;
     u32 phyAddr;
 
-    attr; // needed to match
-
     CHECK_GXBEGIN(963, "GXSetArray");
     if (attr == GX_VA_NBT) {
         attr = GX_VA_NRM;
@@ -694,25 +692,18 @@ void GXSetTexCoordGen2(GXTexCoordID dst_coord, GXTexGenType func, GXTexGenSrc sr
         row = 12;
         break;
     case GX_TG_TEXCOORD0:
-        bumprow;
         break;
     case GX_TG_TEXCOORD1:
-        bumprow;
         break;
     case GX_TG_TEXCOORD2:
-        bumprow;
         break;
     case GX_TG_TEXCOORD3:
-        bumprow;
         break;
     case GX_TG_TEXCOORD4:
-        bumprow;
         break;
     case GX_TG_TEXCOORD5:
-        bumprow;
         break;
     case GX_TG_TEXCOORD6:
-        bumprow;
         break;
     default:
         ASSERTMSGLINE(1059, 0, "GXSetTexCoordGen: Invalid source parameter");

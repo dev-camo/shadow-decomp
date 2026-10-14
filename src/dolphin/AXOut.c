@@ -70,7 +70,7 @@ void __AXOutNewFrame(u32 lessDspCycles) {
 
     __AXLocalProfile.axFrameEnd = OSGetTime();
     __AXLocalProfile.axNumVoices = __AXGetNumVoices();
-    profile = (void *)__AXGetCurrentProfile();
+    profile = __AXGetCurrentProfile();
 
     if (profile) {
         i = 56;
