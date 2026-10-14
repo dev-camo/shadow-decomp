@@ -1733,3 +1733,8 @@ rw/fn_8048349C.c:
 
 rw/fn_80483554.c:
 	.text       start:0x80483554 end:0x804836EC
+
+rw/fn_804836EC.c:
+	.text       start:0x804836EC end:0x80483AFC
+	.sdata      start:0x805EDED0 end:0x805EDED8
+	.sdata2     start:0x805FB2D8 end:0x805FB2E0
