@@ -66,18 +66,31 @@ typedef struct RpMorphTarget {
     /* 0x18 */ RwV3d *normals;
 } RpMorphTarget;
 
+/* A triangle of a geometry or world sector (8 bytes). */
+typedef struct RpTriangle {
+    /* 0x0 */ RwUInt16 vertIndex[3];
+    /* 0x6 */ RwUInt16 matIndex; /* 0xFFFF for none */
+} RpTriangle;
+
+/* A list of materials (0xC bytes) */
+typedef struct RpMaterialList {
+    /* 0x0 */ RpMaterial **materials;
+    /* 0x4 */ RwInt32 numMaterials;
+    /* 0x8 */ RwInt32 space;
+} RpMaterialList;
+
+/* A geometry (0x60 bytes) */
 struct RpGeometry {
-    /* 0x00 */ RwUInt8 type;
-    /* 0x01 */ RwUInt8 field_0x1[0x7];
+    /* 0x00 */ RwObject object;
     /* 0x08 */ RwUInt32 flags;
-    /* 0x0C */ RwUInt16 lockedSinceLastInst;
+    /* 0x0C */ RwUInt16 lockedSinceLastInst; /* rpGEOMETRYLOCK* */
     /* 0x0E */ RwInt16 refCount;
     /* 0x10 */ RwInt32 numTriangles;
     /* 0x14 */ RwInt32 numVertices;
     /* 0x18 */ RwInt32 numMorphTargets;
     /* 0x1C */ RwInt32 numTexCoordSets;
-    /* 0x20 */ RpMaterial **materials; /* the material list's materials */
-    /* 0x24 */ RwUInt8 field_0x24[0xC];
+    /* 0x20 */ RpMaterialList matList;
+    /* 0x2C */ RpTriangle *triangles;
     /* 0x30 */ RwRGBA *preLitLum;
     /* 0x34 */ RwTexCoords *texCoords[8]; /* numTexCoordSets sets */
     /* 0x54 */ RpMeshHeader *mesh;
@@ -166,12 +179,6 @@ typedef struct RpClumpObjectExtension {
     /* 0x4 */ RwLLLink inClumpLink;
 } RpClumpObjectExtension;
 
-/* A triangle of a world sector (8 bytes). */
-typedef struct RpTriangle {
-    /* 0x0 */ RwUInt16 vertIndex[3];
-    /* 0x6 */ RwInt16 matIndex;
-} RpTriangle;
-
 /* A node of a world's sector tree: a plane sector (type: the split axis as a byte offset into an
  * RwV3d) or, with a negative type, a world sector. */
 typedef struct RpSector {
@@ -194,13 +201,6 @@ typedef struct RpVertexNormal {
     /* 0x2 */ RwInt8 z;
     /* 0x3 */ RwUInt8 pad;
 } RpVertexNormal;
-
-/* A list of materials (0xC bytes) */
-typedef struct RpMaterialList {
-    /* 0x0 */ RpMaterial **materials;
-    /* 0x4 */ RwInt32 numMaterials;
-    /* 0x8 */ RwInt32 space;
-} RpMaterialList;
 
 /* A leaf of a world's sector tree: the world's geometry inside its box (0x88 bytes) */
 typedef struct RpWorldSector {
@@ -344,6 +344,38 @@ RpGeometryList *fn_80455F18(RwStream *stream, RpGeometryList *geomList); /* stre
 RpGeometry *fn_804599C8(RwStream *stream);                               /* geometry stream read */
 RpGeometry *fn_8045984C(RpGeometry *geometry);                           /* add a reference */
 
+/* RpGeometry lock flags */
+#define rpGEOMETRYLOCKPOLYGONS 0x1
+#define rpGEOMETRYLOCKALL 0xFFF
+
+/* the texture coordinate sets of an RpGeometry format */
+#define rpGEOMETRYTEXCOORDSETS(flags) (((flags) & 0xFF0000) >> 16)
+
+/* material lists (inferred) */
+RpMaterialList *fn_8045B788(RpMaterialList *matList);                  /* initialise */
+RpMaterialList *fn_8045B6F0(RpMaterialList *matList);                  /* deinitialise */
+RpMaterial *fn_8045B79C(const RpMaterialList *matList, RwInt32 index); /* the material at index */
+RwInt32 fn_8045B7AC(RpMaterialList *matList, RpMaterial *material);    /* append: its index or -1 */
+RwInt32 fn_8045B8EC(const RpMaterialList *matList, const RpMaterial *material); /* index or -1 */
+
+/* meshes and mesh building (inferred) */
+typedef struct RpBuildMesh RpBuildMesh;
+RwBool fn_8045C2D4(RpMeshHeader *mesh);         /* destroy */
+RpBuildMesh *fn_8045C144(RwInt32 numTriangles); /* create */
+RwBool fn_8045C26C(RpBuildMesh *buildMesh);     /* destroy */
+/* adds a triangle with its material and the indices of its texture, raster and pipeline */
+RpBuildMesh *fn_8045C340(RpBuildMesh *buildMesh, RpMaterial *material, RwUInt16 vert0,
+                         RwUInt16 vert1, RwUInt16 vert2, RwUInt16 matIndex, RwUInt16 textureIndex,
+                         RwUInt16 rasterIndex, RwUInt16 pipelineIndex);
+/* the mesh header of a built mesh, as triangle strips or a triangle list */
+RpMeshHeader *fn_8045F1FC(RpBuildMesh *buildMesh, RwBool triStrip);
+
+typedef RpMaterial *(*RpMaterialCallBack)(RpMaterial *material, void *data);
+
+/* geometries (inferred from their use) */
+RpGeometry *fn_80459464(RwInt32 numVertices, RwInt32 numTriangles, RwUInt32 format); /* create */
+RwInt32 fn_80458DB0(RpGeometry *geometry, RwInt32 numMorphTargets); /* the first new one, or -1 */
+RpGeometry *fn_804590E8(RpGeometry *geometry, RpMaterialCallBack callBack, void *data);
 /* geometries (inferred from their use) */
 RpGeometry *fn_80458D24(RwReal radius);   /* an empty geometry with a bounding sphere of radius */
 RwBool fn_8045985C(RpGeometry *geometry); /* destroy */
