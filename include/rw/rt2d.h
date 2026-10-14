@@ -18,7 +18,11 @@ typedef struct rt2dShadeParameters {
 
 /* The brush flags */
 #define FIELDRGBA 0x1 /* the colours are not uniform */
-#define FIELDUV 0x2   /* the brush is textured or its texture coordinates vary */
+/* Written independently by two setters, so it does not track one property: the texture
+ * coordinate setter (fn_80470998) sets it when either edge's coordinates differ along the edge and
+ * clears it otherwise, whatever the texture; the texture setter (fn_80470A4C) sets it for a
+ * texture and clears it for none, whatever the coordinates */
+#define FIELDUV 0x2
 
 /* A brush (0x78 bytes): the colours and texture coordinates at the top edge and at the bottom
  * edge, each as a base and the difference to the second value (inferred) */
