@@ -1678,3 +1678,12 @@ rw/fn_8047DB10.c:
 
 rw/fn_8047DC90.c:
 	.text       start:0x8047DC90 end:0x8047E100
+
+rw/fn_8047E100.c:
+	.text       start:0x8047E100 end:0x8047FA28
+	.rodata     start:0x8051C2C0 end:0x8051C2D0
+	.data       start:0x8056DF50 end:0x8056DF70
+	.bss        start:0x805E2A58 end:0x805E2A80
+	.sdata      start:0x805EDE98 end:0x805EDEA0
+	.sbss       start:0x805F1560 end:0x805F1568
+	.sdata2     start:0x805FB2A0 end:0x805FB2B0
