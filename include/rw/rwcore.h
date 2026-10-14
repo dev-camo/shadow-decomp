@@ -252,7 +252,11 @@ struct RwCamera {
     /* 0x014 */ RwInt32 projectionType;
     /* 0x018 */ RwCameraBeginUpdateFunc beginUpdate;
     /* 0x01C */ RwCameraEndUpdateFunc endUpdate;
-    /* 0x020 */ RwUInt8 field_0x20[0x74];
+    /* 0x020 */ RwUInt8 field_0x20[0x40];
+    /* 0x060 */ RwRaster *frameBuffer;
+    /* 0x064 */ RwRaster *zBuffer;
+    /* 0x068 */ RwV2d viewWindow;
+    /* 0x070 */ RwUInt8 field_0x70[0x24];
     /* 0x094 */ RwFrustumPlane frustumPlanes[6];
     /* 0x10C */ RwBBox frustumBoundBox;
 };
@@ -460,11 +464,17 @@ RwMatrix *fn_8047E990(RwMatrix *matrix, const void *tolerance);
 #define rwCOMBINEPRECONCAT 1
 #define rwCOMBINEPOSTCONCAT 2
 
+#define rwPARALLEL 2 /* the camera projection */
+
 /* matrices (inferred) */
 RwMatrix *fn_8047F994(void);             /* create */
 RwBool fn_8047F958(RwMatrix *matrix);    /* destroy */
 RwMatrix *fn_8047EBA0(RwMatrix *matrix); /* clears the identity and orthonormal flags */
 RwMatrix *fn_8047F59C(RwMatrix *matrix, const RwV3d *translation, RwInt32 combine);
+RwMatrix *fn_8047F398(RwMatrix *matrix, const RwV3d *scale, RwInt32 combine);
+RwMatrix *fn_8047EBB8(RwMatrix *dst, const RwMatrix *matrixA,
+                      const RwMatrix *matrixB);               /* multiply */
+RwMatrix *fn_8047F0B0(RwMatrix *dst, const RwMatrix *matrix); /* invert */
 RwMatrix *fn_8047EFC8(RwMatrix *matrix, const RwV3d *axis, RwReal angle, RwInt32 combine);
 RwMatrix *fn_8047F72C(RwMatrix *matrix, const RwMatrix *transform, RwInt32 combine);
 
