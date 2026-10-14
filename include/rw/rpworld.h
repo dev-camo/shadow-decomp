@@ -703,22 +703,40 @@ typedef struct RpGameCubeStreamSource {
     /* 0x0C */ RwUInt8 field_0xC[0xC];
 } RpGameCubeStreamSource;
 
+/* GameCube: the duplicate values of a source stream: for each vertex, the earlier vertex with an
+ * equal value, or -1 for a distinct value, and the number of distinct values (inferred) */
+typedef struct RpGameCubeStreamRemap {
+    /* 0x0 */ RwInt32 *remap;
+    /* 0x4 */ RwUInt32 numValues;
+} RpGameCubeStreamRemap;
+
 /* building instanced data from source streams (inferred) */
-void *fn_80466194(RpGameCubeStreamSource *streams, RwInt32 numStreams, RwInt32 numVertices);
-RpGameCubeBuiltStream *fn_80465ED4(void *builder, RpGameCubeStreamSource *streams,
+RpGameCubeStreamRemap *fn_80466194(RpGameCubeStreamSource *streams, RwInt32 numStreams,
+                                   RwInt32 numVertices);
+RpGameCubeBuiltStream *fn_80465ED4(RpGameCubeStreamRemap *remaps, RpGameCubeStreamSource *streams,
                                    RwInt32 numStreams, RwInt32 numVertices);
 /* each stream's indices into its built values for a mesh */
-RxVertexIndex **fn_80465CDC(void *builder, RxVertexIndex **indices, RwInt32 numStreams,
-                            RwUInt32 numIndices);
+RxVertexIndex **fn_80465CDC(RpGameCubeStreamRemap *remaps, RxVertexIndex **indices,
+                            RwInt32 numStreams, RwUInt32 numIndices);
 /* the triangle strips of a mesh's indices */
 void fn_8046D8C8(RxVertexIndex *indices, RwUInt32 numIndices, RwInt32 *numStrips,
                  RwUInt32 *numStripIndices, RwInt32 flags);
 RpGameCubeVertexFormat *fn_80462E1C(void); /* the default vertex format */
 
-/* GameCube: a builder of GX vertex descriptors and formats (0x20 bytes, inferred) */
+/* GameCube: a builder of GX vertex descriptors and formats (0x20 bytes, inferred); only the
+ * vertex attribute format, in the layout of the GX VAT A, B and C registers, is mapped */
 typedef struct RpGameCubeVertexDescBuilder {
-    /* 0x00 */ RwUInt8 field_0x0[0x20];
+    /* 0x00 */ RwUInt8 field_0x0[0x4];
+    /* 0x04 */ RwUInt32 vat[3];
+    /* 0x10 */ RwUInt8 field_0x10[0x10];
 } RpGameCubeVertexDescBuilder;
+
+/* the byte sizes of a vertex's attributes in a builder's format */
+RwUInt32 fn_8046693C(const RpGameCubeVertexDescBuilder *builder);                  /* position */
+RwUInt32 fn_804669A0(const RpGameCubeVertexDescBuilder *builder);                  /* normal */
+RwUInt32 fn_804669EC(const RpGameCubeVertexDescBuilder *builder, RwUInt8 channel); /* colour */
+RwUInt32 fn_80466A54(const RpGameCubeVertexDescBuilder *builder,
+                     RwUInt8 set); /* texture coordinates */
 
 void fn_8046FC1C(RpGameCubeVertexDescBuilder *builder);                       /* initializes */
 void fn_8046FC48(RpGameCubeVertexDescBuilder *builder, RwInt32 vertexFormat); /* starts */
