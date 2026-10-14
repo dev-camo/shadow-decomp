@@ -553,10 +553,14 @@ RpWorld *fn_80461658(RpWorld *world, RwCamera *camera) {
             for (i = 0; i < 6; i++) {
                 RwSplitBits distance;
 
-                distance.nReal = corners[plane->closestX].x * plane->plane.normal.x +
-                                 corners[plane->closestY].y * plane->plane.normal.y +
-                                 corners[plane->closestZ].z * plane->plane.normal.z -
-                                 plane->plane.distance;
+                RwV3d corner;
+
+                corner.x = corners[plane->closestX].x;
+                corner.y = corners[plane->closestY].y;
+                corner.z = corners[plane->closestZ].z;
+                distance.nReal = corner.x * plane->plane.normal.x +
+                                 corner.y * plane->plane.normal.y +
+                                 corner.z * plane->plane.normal.z - plane->plane.distance;
 
                 outside = distance.nInt > 0;
                 if (outside) {
