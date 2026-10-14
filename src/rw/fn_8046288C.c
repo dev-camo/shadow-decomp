@@ -27,10 +27,6 @@ typedef struct VtxFmtModule {
 
 #define PIPELINEGLOBAL(var) (RWPLUGINOFFSET(RpPipelineGlobals, lbl_805F15B4, lbl_805F1690)->var)
 
-/* the world plugin offset of a world's vertex format */
-#define GAMECUBEWORLDVERTEXFORMAT(world)                                                           \
-    (*RWPLUGINOFFSET(RpGameCubeVertexFormat *, world, lbl_805F1524))
-
 RpGameCubeVertexFormat lbl_805E1688; /* the default vertex format */
 
 RwInt32 lbl_805EDDD8 = 1; /* the instancing optimisation mode (inferred) */

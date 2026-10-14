@@ -664,6 +664,12 @@ extern RwInt32 lbl_805F1520; /* geometry plugin offset of the vertex format */
 #define GAMECUBEVERTEXFORMAT(geometry)                                                             \
     (*RWPLUGINOFFSET(RpGameCubeVertexFormat *, geometry, lbl_805F1520))
 
+extern RwInt32 lbl_805F1524; /* world plugin offset of the vertex format */
+
+/* the world plugin offset of a world's vertex format */
+#define GAMECUBEWORLDVERTEXFORMAT(world)                                                           \
+    (*RWPLUGINOFFSET(RpGameCubeVertexFormat *, world, lbl_805F1524))
+
 /* vertex formats (inferred from their use) */
 RpGameCubeVertexFormat *fn_8046301C(void);                                    /* create */
 void fn_80462FAC(RpGameCubeVertexFormat *format);                             /* initializes */
@@ -771,11 +777,11 @@ RwInt32 fn_8046ACBC(const RpGameCubeVertexDescBuilder *builder);
  * and degenerate triangle handling (meaning not established) */
 void fn_8046E594(RpGameCubeVertexDescBuilder *builder, void *displayListRecord,
                  RpGameCubeIndexSource *indices, RwUInt32 numIndices, RwInt32 triStrip,
-                 RwInt32 vertexFormat, RwInt32 flag, RwInt32 primitive, RwInt32 flags);
+                 RwInt32 vertexFormat, RwInt32 flag, RwInt32 primitive, const RwV3d *origin);
 void fn_8046F208(RpGameCubeVertexDescBuilder *builder, RpGameCubeInstanceData *instance,
                  RpGameCubeVertexSource *source, void *vertexData);
 void fn_8046F6CC(RpGameCubeVertexDescBuilder *builder, RpGameCubeInstanceData *instance,
-                 RpGameCubeVertexSource *source, RwInt32 firstVertex, RwInt32 flags);
+                 RpGameCubeVertexSource *source, RwInt32 firstVertex, const RwV3d *origin);
 extern RwUInt16 lbl_805F1678; /* a GameCube instance stamp (inferred) */
 
 /* GameCube: a mesh's display list (inferred) */
@@ -889,6 +895,11 @@ RpWorldSector *fn_80463DF4(RpWorldSector *sector, RpGameCubeRenderMesh *renderMe
 RpWorldSector *fn_80463F10(RpWorldSector *sector, RpGameCubeRenderMesh *renderMesh); /* instance */
 RxNodeDefinition *fn_804641C0(void); /* the world sector all-in-one node definition */
 /* create the instanced data of a world sector for its owner (inferred) */
+/* the same for a world sector */
+RwBool fn_8046C4D0(RpWorld *world, RpWorldSector *sector, RpGameCubeBuiltStream **builtStreams,
+                   RxVertexIndex ****meshIndexLists);
+RpGameCubeVertexDescBuilder *fn_8046C94C(RpWorld *world, RpGameCubeBuiltStream *counts);
+RpGameCubeVertexDescBuilder *fn_8046D2B8(RpWorld *world, RpWorldSector *sector);
 RwResEntry *fn_8046CB94(RpWorld *world, RpWorldSector *sector, void *owner, RwResEntry **ownerRef);
 RwResEntry *fn_8046D4C8(RpWorld *world, RpWorldSector *sector, void *owner, RwResEntry **ownerRef);
 RpAtomic *fn_804639AC(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh); /* atomic instance */
@@ -915,6 +926,12 @@ void fn_804643E8(RpLight *light, RpGameCubeRenderMesh *renderMesh); /* adds a li
 
 /* GameCube instanced data (inferred from their use) */
 /* creates the instanced data of a geometry for its owner, the atomic or the geometry itself */
+/* building the instanced data of a geometry (inferred): its built streams and mesh indices, and
+ * its vertex descriptors indexed into the built streams or by vertex */
+RwBool fn_8046B110(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
+                   RxVertexIndex ****meshIndexLists);
+RpGameCubeVertexDescBuilder *fn_8046B554(RpGeometry *geometry, RpGameCubeBuiltStream *counts);
+RpGameCubeVertexDescBuilder *fn_8046BEC4(RpGeometry *geometry);
 RwResEntry *fn_8046B79C(RpGeometry *geometry, void *owner, RwResEntry **ownerRef);
 RwResEntry *fn_8046C0D4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef);
 /* writes an atomic's interpolated morph targets into its instanced data */
