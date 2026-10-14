@@ -197,11 +197,14 @@ typedef struct RwPluginRegistry {
 } RwPluginRegistry;
 
 /* plugin registries (inferred) */
-RwBool fn_8048209C(RwPluginRegistry *registry, void *object); /* constructs the plugins' data */
+/* each returns the registry, or NULL on failure */
+/* constructs the plugins' data */
+RwPluginRegistry *fn_8048209C(RwPluginRegistry *registry, void *object);
 /* reads an object's plugin data chunks */
-RwStream *fn_804816AC(RwPluginRegistry *registry, RwStream *stream, void *object);
+RwPluginRegistry *fn_804816AC(RwPluginRegistry *registry, RwStream *stream, void *object);
 /* calls the rights callback of the plugin with the ID */
-RwBool fn_80481870(RwPluginRegistry *registry, RwUInt32 pluginID, void *object, RwUInt32 extraData);
+RwPluginRegistry *fn_80481870(RwPluginRegistry *registry, RwUInt32 pluginID, void *object,
+                              RwUInt32 extraData);
 
 /* A rendering pipeline; only the plugin that owns it is mapped */
 typedef struct RxPipeline {
