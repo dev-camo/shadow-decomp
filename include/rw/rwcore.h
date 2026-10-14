@@ -406,6 +406,9 @@ RwBool fn_8047BDD0(const RwBBox *box, const RwV3d *v0, const RwV3d *v1, const Rw
 RwBool fn_8047B720(const RwSphere *sphere, const RwV3d *v0, const RwV3d *v1, const RwV3d *v2,
                    RwV3d *normal, RwReal *distance);
 
+/* whether a sphere is in a camera's view frustum (inferred) */
+RwInt32 fn_804856C8(const RwCamera *camera, const RwSphere *sphere);
+
 /* free lists (inferred) */
 RwFreeList *fn_8047FBD8(RwInt32 entrySize, RwInt32 entriesPerBlock, RwInt32 alignment,
                         RwUInt32 hint); /* create */
