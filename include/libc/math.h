@@ -16,6 +16,15 @@ double sin(double x);
 double cos(double x);
 double atan2(double y, double x);
 
+/* the MSL wrapper keeps its C name when C++ calls it */
+#ifdef __cplusplus
+extern "C" {
+#endif
+double fmod(double x, double y);
+#ifdef __cplusplus
+}
+#endif
+
 float sinf(float x);
 float cosf(float x);
 float tanf(float x);
