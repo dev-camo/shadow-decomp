@@ -917,17 +917,24 @@ RwResEntry *fn_8046C0D4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
 /* writes an atomic's interpolated morph targets into its instanced data */
 void fn_80464814(RpGeometry *geometry, RpGameCubeInstanceData *instance,
                  RpInterpolator *interpolator);
-/* write a stream into instanced data in a GX component type and return the size written;
- * positions are made relative to origin - fmod(origin, 1 / scale), the origin truncated toward
- * zero to a multiple of the fixed point step */
-RwUInt32 fn_80466B58(void *data, const RwV3d *positions, RwUInt8 type, RwInt32 numVertices,
-                     RwUInt8 stride, const RwV3d *origin, RwReal scale);
-RwUInt32 fn_80467BC8(void *data, const RwV3d *normals, RwUInt8 type, RwInt32 numVertices,
-                     RwUInt8 stride);
-RwUInt32 fn_804699F0(void *data, const RwRGBA *colors, RwUInt8 type, RwInt32 numVertices,
-                     RwUInt8 stride);
-RwUInt32 fn_8046A270(void *data, const RwTexCoords *texCoords, RwUInt8 type, RwInt32 numVertices,
-                     RwUInt8 stride, RwReal scale);
+/* write a stream into instanced data in a GX component type at a stride (0 for the component size)
+ * and return the size written; positions are made relative to origin - fmod(origin, 1 / scale),
+ * the origin truncated toward zero to a multiple of the fixed point step */
+RwUInt32 fn_80466B58(void *data, RwV3d *positions, RwInt32 type, RwInt32 numVertices,
+                     RwUInt32 stride, const RwV3d *origin, RwReal scale);
+RwUInt32 fn_80467BC8(void *data, RwV3d *normals, RwInt32 type, RwInt32 numVertices,
+                     RwUInt32 stride);
+RwUInt32 fn_804683AC(void *data, RpVertexNormal *normals, RwInt32 type, RwInt32 numVertices,
+                     RwUInt32 stride); /* from compressed normals */
+/* normals of a format with binormals and tangents */
+RwUInt32 fn_80468ADC(void *data, RwV3d *normals, RwInt32 type, RwInt32 numVertices,
+                     RwUInt32 stride);
+RwUInt32 fn_804692C0(void *data, RpVertexNormal *normals, RwInt32 type, RwInt32 numVertices,
+                     RwUInt32 stride);
+RwUInt32 fn_804699F0(void *data, RwRGBA *colors, RwInt32 type, RwInt32 numVertices,
+                     RwUInt32 stride);
+RwUInt32 fn_8046A270(void *data, RwTexCoords *texCoords, RwInt32 type, RwInt32 numVertices,
+                     RwUInt32 stride, RwReal scale);
 void fn_8049B800(void *pipeline); /* destroys a pipeline */
 
 /* GameCube render helpers (inferred from their use) */
