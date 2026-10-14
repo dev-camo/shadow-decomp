@@ -88,7 +88,7 @@ typedef struct {
     Sint32 x30;                                                /* 0x30 */
     Sint32 x34;                                                /* 0x34 */
     Sint32 x38;                                                /* 0x38 */
-    Sint32 x3c;                                                /* 0x3C */
+    Sint16 *x3c;                                               /* 0x3C */
     Sint32 x40;                                                /* 0x40 */
     Sint32 x44;                                                /* 0x44 */
     Sint16 *inbuf;                                             /* 0x48 */

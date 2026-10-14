@@ -627,7 +627,7 @@ Sint32 ADXB_GetFormat(ADXB adxb) {
 /* Base of the PCM output ring (the SJD's first output stream-joint buffer), as passed to
  * ADXB_Create. */
 Sint16 *ADXB_GetPcmBuf(ADXB adxb) {
-    return (Sint16 *)adxb->x3c;
+    return adxb->x3c;
 }
 
 /* Replaces the default write-window callback: the SJD installs adxsjd_get_wr so the decoder writes
@@ -678,7 +678,7 @@ void ADXB_SetDefPrm(ADXB adxb) {
     adxb->out_nch = adxb->nch;
     adxb->x54 = adxb->x0f;
     adxb->out_fmt = adxb->fmt;
-    adxb->pcmbuf = (Sint16 *)adxb->x3c;
+    adxb->pcmbuf = adxb->x3c;
     adxb->pcmbuf_nsmpl = adxb->x40;
     adxb->pcmbuf_chofst = adxb->x44;
     adxb->x8c = 0;
@@ -798,7 +798,7 @@ Sint32 ADXB_DecodeHeaderAdx(ADXB adxb, Uint8 *buf, Sint32 bsize) {
     adxb->out_nch = adxb->nch;
     adxb->x54 = adxb->x0f;
     adxb->out_fmt = adxb->fmt;
-    adxb->pcmbuf = (Sint16 *)adxb->x3c;
+    adxb->pcmbuf = adxb->x3c;
     adxb->pcmbuf_nsmpl = adxb->x40;
     adxb->pcmbuf_chofst = adxb->x44;
     adxb->x8c = 0;
@@ -849,7 +849,7 @@ ADXB ADXB_Create(Sint32 x38, Sint16 *pcmbuf, Sint32 bufsmpl, Sint32 chofst) {
         return 0;
     }
     adxb->x38 = x38;
-    adxb->x3c = (Sint32)pcmbuf;
+    adxb->x3c = pcmbuf;
     adxb->x40 = bufsmpl;
     adxb->x44 = chofst;
     adxb->getwr_func = adxb_DefGetWr;
@@ -881,7 +881,7 @@ Sint16 *adxb_DefGetWr(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *x70) {
     *pos = adxb->x8c;
     *nsmpl = adxb->x40 - adxb->x8c;
     *x70 = adxb->total_nsmpl - adxb->x88;
-    return (Sint16 *)adxb->x3c;
+    return adxb->x3c;
 }
 
 /* Library init: brings up the ADPCM core (ADXPD) and the key generator and clears the 16 decoder
