@@ -983,10 +983,13 @@ void fn_804950AC(RwMatrix *matrix, RwBool normals);  /* loads the position (and 
 void fn_80499C38(RwTexture *texture, RwInt32 stage); /* sets a texture */
 void fn_80497778(RwBool opaque);                     /* sets alpha compare for opaque textures */
 
-/* The GameCube raster plugin data; only the flags are mapped */
+/* The GameCube raster plugin data; only the flags and the byte at 0x33 are mapped. Images are
+ * copied into a raster without their palette while that byte is set. */
 typedef struct RwGameCubeRasterExt {
     /* 0x00 */ RwUInt8 field_0x0[0x14];
     /* 0x14 */ RwUInt32 flags;
+    /* 0x18 */ RwUInt8 field_0x18[0x1B];
+    /* 0x33 */ RwUInt8 field_0x33;
 } RwGameCubeRasterExt;
 
 extern RwInt32 lbl_805F1658; /* raster plugin offset */
