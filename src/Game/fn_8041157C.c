@@ -12,12 +12,19 @@ void fn_8041157C(Fn8040Vector3 *destination, const Fn8040Matrix34 *matrix,
         matrix = &matrix_copy;
     }
 
-    output.x = vector->y * matrix->values[0][1] + vector->x * matrix->values[0][0] +
-               vector->z * matrix->values[0][2];
-    output.y = vector->y * matrix->values[1][1] + vector->x * matrix->values[1][0] +
-               vector->z * matrix->values[1][2];
-    output.z = vector->y * matrix->values[2][1] + vector->x * matrix->values[2][0] +
-               vector->z * matrix->values[2][2];
+    /* Each row's y product is rounded on its own before the x product is added to it */
+    {
+        float y_product = vector->y * matrix->values[0][1];
+        output.x = y_product + vector->x * matrix->values[0][0] + vector->z * matrix->values[0][2];
+    }
+    {
+        float y_product = vector->y * matrix->values[1][1];
+        output.y = y_product + vector->x * matrix->values[1][0] + vector->z * matrix->values[1][2];
+    }
+    {
+        float y_product = vector->y * matrix->values[2][1];
+        output.z = y_product + vector->x * matrix->values[2][0] + vector->z * matrix->values[2][2];
+    }
 
     fn_800091D0(destination, &output);
 }
