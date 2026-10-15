@@ -380,6 +380,14 @@ typedef struct RwFrustumPlane {
 } RwFrustumPlane;
 
 typedef void *(*RwObjectHasFrameSyncFunction)(void *object);
+
+/* The header of an object attached to a frame: it is in the frame's object list, and its sync
+ * function runs when the frame's hierarchy is synchronized */
+typedef struct RwObjectHasFrame {
+    /* 0x00 */ RwObject object;
+    /* 0x08 */ RwLLLink lFrame;
+    /* 0x10 */ RwObjectHasFrameSyncFunction sync;
+} RwObjectHasFrame;
 typedef RwCamera *(*RwCameraBeginUpdateFunc)(RwCamera *camera);
 typedef RwCamera *(*RwCameraEndUpdateFunc)(RwCamera *camera);
 
