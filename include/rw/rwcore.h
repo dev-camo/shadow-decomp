@@ -174,6 +174,7 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
 #define RwFreeListFree(freeList, mem) (lbl_805F15B4->rwfreelistfree((freeList), (mem)))
 #define rwstrlen(string) (lbl_805F15B4->stringFuncs.vecStrlen(string))
 #define rwstrcpy(dst, src) (lbl_805F15B4->stringFuncs.vecStrcpy((dst), (src)))
+#define rwstrncpy(dst, src, n) (lbl_805F15B4->stringFuncs.vecStrncpy((dst), (src), (n)))
 #define rwstrcat(dst, src) (lbl_805F15B4->stringFuncs.vecStrcat((dst), (src)))
 #define rwstrrchr(string, findThis) (lbl_805F15B4->stringFuncs.vecStrrchr((string), (findThis)))
 #define rwstrchr(string, findThis) (lbl_805F15B4->stringFuncs.vecStrchr((string), (findThis)))
@@ -609,18 +610,29 @@ RwBool fn_804829D4(void *heap);                /* destroys a heap */
 void fn_804829DC(void *mem);                   /* frees a heap block */
 void *fn_80482A94(void *heap, RwUInt32 size);  /* allocates a heap block */
 
-/* A texture: its raster and reference count (0x58 bytes) */
 /* The characters of a texture name, with its terminator */
 #define rwTEXTUREBASENAMELENGTH 32
 
+typedef struct RwTexDictionary RwTexDictionary;
+
+/* A texture: its raster, the dictionary it is in, its names, filtering and addressing, and its
+ * reference count (0x58 bytes) */
 typedef struct RwTexture {
     /* 0x00 */ RwRaster *raster;
-    /* 0x04 */ RwUInt8 field_0x4[0xC];
+    /* 0x04 */ RwTexDictionary *dict;
+    /* 0x08 */ RwLLLink lInDictionary;
     /* 0x10 */ RwChar name[rwTEXTUREBASENAMELENGTH];
     /* 0x30 */ RwChar mask[rwTEXTUREBASENAMELENGTH];
     /* 0x50 */ RwUInt32 filterAddressing; /* the filter mode in the low byte */
     /* 0x54 */ RwInt32 refCount;
 } RwTexture;
+
+/* A texture dictionary: the textures in it and its link in the list of dictionaries (0x18 bytes) */
+struct RwTexDictionary {
+    /* 0x00 */ RwObject object;
+    /* 0x08 */ RwLinkList texturesInDict;
+    /* 0x10 */ RwLLLink lInInstance;
+};
 
 typedef struct RwLine {
     RwV3d start;
@@ -916,9 +928,17 @@ void fn_8048D834(void *object);                 /* releases the frame */
 RwTexture *fn_80483D28(RwStream *stream); /* stream read */
 RwBool fn_8048CD8C(RwTexture *texture);   /* destroy (releases a reference) */
 RwTexture *fn_8048D130(const RwChar *name, const RwChar *maskName); /* read */
+RwTexture *fn_8048CCDC(RwRaster *raster);                           /* create */
+RwTexture *fn_8048CE54(RwTexture *texture, const RwChar *name);     /* sets the name */
+RwTexture *fn_8048CF00(RwTexture *texture, const RwChar *maskName); /* sets the mask name */
+RwTexture *fn_8048CA00(RwTexture *texture, RwRaster *raster);       /* sets the raster */
+RwTexture *fn_8048CFFC(RwTexDictionary *dict, const RwChar *name);  /* finds a texture by name */
+RwBool fn_8048CC54(RwTexDictionary *(*callBack)(RwTexDictionary *dict, void *data),
+                   void *data); /* calls a function for each dictionary */
+RwBool fn_8048D0EC(RwChar *name, RwChar *maskName, RwUInt8 mipLevel,
+                   RwInt32 format); /* a mip level's names */
 
 /* texture dictionaries (inferred) */
-typedef struct RwTexDictionary RwTexDictionary;
 RwTexDictionary *fn_8048CA64(void);                  /* create */
 RwBool fn_8048CB38(RwTexDictionary *dict);           /* destroy */
 RwTexDictionary *fn_8048D0C4(RwTexDictionary *dict); /* sets the current one */
@@ -983,6 +1003,24 @@ RwImage *fn_8048A96C(const RwImage *sourceImage, RwInt32 width,
                      RwInt32 height); /* a 32-bit copy resampled to a new size */
 RwImage *fn_80489A90(RwImage *image, RwInt32 rasterType, RwInt32 *width, RwInt32 *height,
                      RwInt32 *depth, RwInt32 *format); /* the raster format that suits an image */
+
+/* A palette quantizer (0x4008 bytes; only the words at its end are known to be used) */
+typedef struct RwPalQuant {
+    /* 0x0000 */ RwUInt8 field_0x0[0x4000];
+    /* 0x4000 */ RwInt32 field_0x4000;
+    /* 0x4004 */ RwFreeList *field_0x4004;
+} RwPalQuant;
+
+/* palette quantization (inferred) */
+RwBool fn_8048FED8(RwPalQuant *palQuant);                                      /* initialize */
+void fn_8048DEB0(RwPalQuant *palQuant, RwImage *image, RwReal weight);         /* adds the colors */
+RwInt32 fn_8048F5D0(RwRGBA *palette, RwInt32 maxColors, RwPalQuant *palQuant); /* the palette */
+void fn_8048FAB0(RwUInt8 *pixels, RwInt32 stride, RwInt32 depth, RwBool packed,
+                 RwPalQuant *palQuant, RwImage *image); /* matches an image to the palette */
+void fn_804903F8(RwPalQuant *palQuant);                 /* terminate */
+
+/* generates a raster's mip levels from an image, or from its first level (inferred) */
+RwBool fn_8048D2C0(RwRaster *raster, RwImage *image); /* generates the mip levels */
 
 /* rasters (inferred) */
 #define rwRASTERTYPETEXTURE 0x4
