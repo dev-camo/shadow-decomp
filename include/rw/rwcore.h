@@ -137,6 +137,9 @@ typedef struct RwLinkList {
     RwLLLink link;
 } RwLinkList;
 
+/* A device's standard function (RwStandard): out, inOut and numIn depend on the function */
+typedef RwBool (*RwStandardFunc)(void *out, void *inOut, RwInt32 numIn);
+
 /* The engine globals; only the current camera and world, the frame counters, the open device's
  * near screen depth, render state and 2D indexed primitive functions, the standard functions,
  * the dirty frames, the string, memory and free list functions and the engine status are
@@ -148,7 +151,7 @@ typedef struct RwGlobals {
     /* 0x00A */ RwUInt16 lightFrame; /* lights are created one frame behind it */
     /* 0x00C */ RwUInt8 field_0xC[0x4];
     /* 0x010 */ RwDevice dOpenDevice;
-    /* 0x048 */ RwBool (*stdFunc[0x1D])(void *out, void *inOut, RwInt32 numIn); /* RwStandard */
+    /* 0x048 */ RwStandardFunc stdFunc[0x1D];
     /* 0x0BC */ RwLinkList dirtyFrameList; /* the roots of hierarchies that need synchronizing */
     /* 0x0C4 */ RwStringFunctions stringFuncs;
     /* 0x108 */ RwMemoryFunctions memoryFuncs;
@@ -289,6 +292,14 @@ typedef struct RwMatrix {
 } RwMatrix;
 
 /* A camera; its parent object is its frame */
+
+/* A rectangle */
+typedef struct RwRect {
+    RwInt32 x;
+    RwInt32 y;
+    RwInt32 w;
+    RwInt32 h;
+} RwRect;
 
 /* A raster; a sub-raster's parent is the raster that owns its pixels */
 typedef struct RwRaster {
@@ -935,6 +946,16 @@ RwImage *fn_80489A90(RwImage *image, RwInt32 rasterType, RwInt32 *width, RwInt32
 #define rwRASTERTYPETEXTURE 0x4
 RwRaster *fn_80489E74(RwInt32 width, RwInt32 height, RwInt32 depth, RwInt32 flags); /* create */
 RwBool fn_80489BDC(RwRaster *raster);                                               /* destroy */
+RwRaster *fn_80489B2C(RwRaster *raster, RwInt16 *xOffset, RwInt16 *yOffset);        /* its offset */
+RwRaster *fn_80489B40(RwRaster *raster);                                            /* unlock */
+RwRaster *fn_80489B88(RwRaster *raster); /* unlocks the palette */
+RwInt32 fn_80489C54(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructCB,
+                    RwPluginObjectDestructor destructCB,
+                    RwPluginObjectCopy copyCB);           /* registers a plugin */
+RwUInt8 *fn_80489C94(RwRaster *raster, RwInt32 lockMode); /* locks the palette */
+RwInt32 fn_80489CE4(RwRaster *raster);                    /* the number of mip levels */
+RwRaster *fn_80489DC4(RwRaster *subRaster, RwRaster *raster, RwRect *rect); /* a sub raster */
+RwUInt8 *fn_80489F70(RwRaster *raster, RwUInt8 level, RwInt32 lockMode);    /* lock */
 RwRaster *fn_80489A1C(RwRaster *raster, RwImage *image); /* sets the pixels from an image */
 const RwChar *fn_804885DC(const RwChar *path);           /* sets the path */
 
