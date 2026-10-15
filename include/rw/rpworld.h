@@ -2,6 +2,7 @@
 #define RW_RPWORLD_H
 
 #include "rw/rwcore.h"
+#include <dolphin/gx/GXStruct.h>
 #include <stddef.h>
 
 /* RenderWare world objects; only the members used by recovered code are mapped. */
@@ -985,13 +986,25 @@ void fn_804950AC(RwMatrix *matrix, RwBool normals);  /* loads the position (and 
 void fn_80499C38(RwTexture *texture, RwInt32 stage); /* sets a texture */
 void fn_80497778(RwBool opaque);                     /* sets alpha compare for opaque textures */
 
-/* The GameCube raster plugin data; only the flags and the byte at 0x33 are mapped. Images are
- * copied into a raster without their palette while that byte is set. */
+/* The GameCube raster plugin data (0x34 bytes; names inferred): the palette's TLUT object, the GX
+ * texture and TLUT formats, the flags (bit 0: the pixel format has alpha), the allocated memory and
+ * the 32-byte aligned texels and palette within it, the texels of the locked mip level and the
+ * linear buffer it is converted through, the texture cache region, the draw sync token of the last
+ * use, the highest mip level (0xFF while unknown) and the locked mip level (0xFF while unlocked) */
 typedef struct RwGameCubeRasterExt {
-    /* 0x00 */ RwUInt8 field_0x0[0x14];
+    /* 0x00 */ GXTlutObj tlutObj;
+    /* 0x0C */ RwUInt32 texFormat;  /* GXTexFmt */
+    /* 0x10 */ RwUInt32 tlutFormat; /* GXTlutFmt */
     /* 0x14 */ RwUInt32 flags;
-    /* 0x18 */ RwUInt8 field_0x18[0x1B];
-    /* 0x33 */ RwUInt8 field_0x33;
+    /* 0x18 */ void *memory;
+    /* 0x1C */ RwUInt8 *texels;
+    /* 0x20 */ RwUInt16 *palette;
+    /* 0x24 */ RwUInt8 *lockedTexels;
+    /* 0x28 */ RwUInt8 *lockBuffer;
+    /* 0x2C */ GXTexRegion *texRegion;
+    /* 0x30 */ RwUInt16 syncToken;
+    /* 0x32 */ RwUInt8 maxLevel;
+    /* 0x33 */ RwUInt8 lockedLevel;
 } RwGameCubeRasterExt;
 
 extern RwInt32 lbl_805F1658; /* raster plugin offset */
