@@ -1004,12 +1004,38 @@ RwImage *fn_8048A96C(const RwImage *sourceImage, RwInt32 width,
 RwImage *fn_80489A90(RwImage *image, RwInt32 rasterType, RwInt32 *width, RwInt32 *height,
                      RwInt32 *depth, RwInt32 *format); /* the raster format that suits an image */
 
-/* A palette quantizer (0x4008 bytes; only the words at its end are known to be used). The word at
- * 0x4000 holds a node allocated from the free list at 0x4004. */
+/* The color statistics of a palette quantizer leaf or box (0x1C bytes): the weight, the weighted
+ * sums of red, green, blue and alpha (red and blue scaled for perceptual distance), the weighted
+ * squared error, and the palette index (type and field names inferred) */
+typedef struct rwPalQuantLeafNode {
+    /* 0x00 */ RwReal weight;
+    /* 0x04 */ RwRGBAReal sums;
+    /* 0x14 */ RwReal error;
+    /* 0x18 */ RwUInt8 palIndex;
+} rwPalQuantLeafNode;
+
+/* A palette quantizer tree node: its statistics and its 16 children (one per combination of a bit
+ * of red, green, blue and alpha) (0x5C bytes; type and field names inferred) */
+typedef struct rwPalQuantOctNode {
+    /* 0x00 */ rwPalQuantLeafNode leaf;
+    /* 0x1C */ struct rwPalQuantOctNode *children[16];
+} rwPalQuantOctNode;
+
+/* A box of quantized colors: its lower and upper corners in tree cells (0x20 bytes; type and field
+ * names inferred) */
+typedef struct rwPalQuantBox {
+    /* 0x00 */ RwInt32 lower[4];
+    /* 0x10 */ RwInt32 upper[4];
+} rwPalQuantBox;
+
+/* A palette quantizer: the boxes the colors are split into, their errors and statistics, and the
+ * tree the colors are added to (0x4008 bytes; field names inferred) */
 typedef struct RwPalQuant {
-    /* 0x0000 */ RwUInt8 field_0x0[0x4000];
-    /* 0x4000 */ void *field_0x4000;
-    /* 0x4004 */ RwFreeList *field_0x4004;
+    /* 0x0000 */ rwPalQuantBox boxes[256];
+    /* 0x2000 */ RwReal boxErrors[256];
+    /* 0x2400 */ rwPalQuantLeafNode boxStats[256];
+    /* 0x4000 */ rwPalQuantOctNode *root;
+    /* 0x4004 */ RwFreeList *nodeFreeList;
 } RwPalQuant;
 
 /* palette quantization (inferred) */
