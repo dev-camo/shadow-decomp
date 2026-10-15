@@ -169,8 +169,8 @@ RwFrame *fn_80486D00(void) {
     return frame;
 }
 
-/* Destroys a frame: it leaves its parent and the dirty list, and its children become roots
- * without parents */
+/* Destroys a frame: it leaves its parent and the dirty list, and its children's parent pointers
+ * are cleared. The children's cached root pointers, and their descendants', are left unchanged. */
 RwBool fn_80486E2C(RwFrame *frame) {
     RwFrame *child;
 
