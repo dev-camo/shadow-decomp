@@ -1004,10 +1004,11 @@ RwImage *fn_8048A96C(const RwImage *sourceImage, RwInt32 width,
 RwImage *fn_80489A90(RwImage *image, RwInt32 rasterType, RwInt32 *width, RwInt32 *height,
                      RwInt32 *depth, RwInt32 *format); /* the raster format that suits an image */
 
-/* A palette quantizer (0x4008 bytes; only the words at its end are known to be used) */
+/* A palette quantizer (0x4008 bytes; only the words at its end are known to be used). The word at
+ * 0x4000 holds a node allocated from the free list at 0x4004. */
 typedef struct RwPalQuant {
     /* 0x0000 */ RwUInt8 field_0x0[0x4000];
-    /* 0x4000 */ RwInt32 field_0x4000;
+    /* 0x4000 */ void *field_0x4000;
     /* 0x4004 */ RwFreeList *field_0x4004;
 } RwPalQuant;
 
