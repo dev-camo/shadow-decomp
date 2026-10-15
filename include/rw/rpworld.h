@@ -982,9 +982,14 @@ void fn_804A457C(RpMesh *mesh, RpGameCubeDisplayList *displayList, RpAtomic *ato
 RwBool fn_804A2064(RpAtomic *atomic);        /* whether an atomic has material effects */
 extern RpGameCubeVertexFormat *lbl_805F16B8; /* the vertex format of material effects geometries */
 
-void fn_804950AC(RwMatrix *matrix, RwBool normals);  /* loads the position (and normal) matrix */
-void fn_80499C38(RwTexture *texture, RwInt32 stage); /* sets a texture */
-void fn_80497778(RwBool opaque);                     /* sets alpha compare for opaque textures */
+void fn_804950AC(RwMatrix *matrix, RwBool normals);    /* loads the position (and normal) matrix */
+void fn_80499C38(RwTexture *texture, RwInt32 stage);   /* sets a texture */
+void fn_80497778(RwBool opaque);                       /* sets alpha compare for opaque textures */
+void fn_80499BC8(void);                                /* called when the device starts */
+RwBool fn_80497668(RwBool enable);                     /* enables or disables fog */
+void fn_804978C0(RwInt32 srcBlend, RwInt32 destBlend); /* sets the GX blend mode */
+void fn_80497F24(RwInt32 comp0, RwUInt8 ref0, RwInt32 op, RwInt32 comp1,
+                 RwUInt8 ref1); /* sets the alpha compare directly */
 
 /* The GameCube raster plugin data (0x34 bytes; names inferred): the palette's TLUT object, the GX
  * texture and TLUT formats, the flags (bit 0: the pixel format has alpha), the allocated memory and
@@ -1008,6 +1013,38 @@ typedef struct RwGameCubeRasterExt {
 } RwGameCubeRasterExt;
 
 extern RwInt32 lbl_805F1658; /* raster plugin offset */
+
+/* The GameCube device's render state cache (0x50 bytes; names inferred): the depth test and write
+ * and depth compare, the cull mode, the fog (enabled, type, packed and GX colors, whether its end
+ * was given, and its start, end, near and far), the blend factors, whether alpha testing is off for
+ * opaque drawing, and the alpha compare (both comparisons, the operation and both references, and
+ * whether it was set directly) */
+typedef struct RwGameCubeRenderState {
+    /* 0x00 */ RwBool zWriteEnable;
+    /* 0x04 */ RwBool zTestEnable;
+    /* 0x08 */ RwInt32 zCompare; /* GXCompare */
+    /* 0x0C */ RwInt32 cullMode;
+    /* 0x10 */ RwBool fogEnable;
+    /* 0x14 */ RwInt32 fogType;
+    /* 0x18 */ RwUInt32 fogColor;
+    /* 0x1C */ GXColor fogColorGX;
+    /* 0x20 */ RwBool fogEndSet;
+    /* 0x24 */ RwReal fogStart;
+    /* 0x28 */ RwReal fogEnd;
+    /* 0x2C */ RwReal fogNear;
+    /* 0x30 */ RwReal fogFar;
+    /* 0x34 */ RwInt32 srcBlend;
+    /* 0x38 */ RwInt32 destBlend;
+    /* 0x3C */ RwBool opaque;
+    /* 0x40 */ RwInt32 alphaComp0; /* GXCompare */
+    /* 0x44 */ RwInt32 alphaComp1; /* GXCompare */
+    /* 0x48 */ RwInt32 alphaOp;    /* GXAlphaOp */
+    /* 0x4C */ RwUInt8 alphaRef0;
+    /* 0x4D */ RwUInt8 alphaRef1;
+    /* 0x4E */ RwUInt8 alphaCompareSet;
+} RwGameCubeRenderState;
+
+extern RwGameCubeRenderState lbl_805E3210; /* the render state cache */
 
 #ifdef __cplusplus
 }
