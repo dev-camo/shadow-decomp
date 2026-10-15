@@ -928,7 +928,7 @@ RwCamera *fn_804854B4(RwCamera *camera); /* end update */
 RwCamera *fn_804854DC(RwCamera *camera); /* begin update */
 RwCamera *fn_804857BC(RwCamera *camera, RwRGBA *color, RwInt32 clearMode); /* clear */
 RwCamera *fn_80485808(RwCamera *camera, void *device, RwUInt32 flags);     /* show raster */
-void fn_8048B354(void);             /* synchronizes dirty frames */
+RwBool fn_8048B354(void);           /* synchronizes dirty frames; returns TRUE (inferred) */
 void fn_8049B148(RwCamera *camera); /* empty */
 RwRaster *fn_80489D44(RwRaster *raster, void *device, RwUInt32 flags); /* shows a raster */
 extern RwPluginRegistry lbl_8056DF70; /* the camera plugin registry */
