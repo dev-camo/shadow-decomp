@@ -535,6 +535,7 @@ config.libs = [
                 Object(Matching, "rw/fn_80489B2C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8048A178.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8048ADE0.c", cflags=cflags_game),
+                Object(NonMatching, "rw/fn_8048B6AC.c", cflags=cflags_game),
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/fn_80008D48.c"),
