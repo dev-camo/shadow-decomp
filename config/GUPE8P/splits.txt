@@ -1815,3 +1815,12 @@ rw/fn_80491AB4.c:
 	.text       start:0x80491AB4 end:0x804939DC
 	.data       start:0x8056E0C8 end:0x8056E348
 	.sdata2     start:0x805FB3A8 end:0x805FB3B0
+
+rw/fn_804939DC.c:
+	.text       start:0x804939DC end:0x804951B8
+	.rodata     start:0x8051C2E8 end:0x8051C3C0
+	.data       start:0x8056E348 end:0x8056E484
+	.bss        start:0x805E3178 end:0x805E3210
+	.sdata      start:0x805EDF28 end:0x805EDF40
+	.sbss       start:0x805F15E0 end:0x805F1658
+	.sdata2     start:0x805FB3B0 end:0x805FB3D0
