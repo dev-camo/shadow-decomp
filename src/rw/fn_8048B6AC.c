@@ -33,11 +33,6 @@
 #define rwRASTERLOCKREAD 0x2
 #define rwRASTERLOCKNOFETCH 0x4
 
-/* texture filtering and addressing */
-#define rwTEXTUREFILTERMODEMASK 0x000000FF
-#define rwTEXTUREADDRESSINGMASK 0x0000FF00
-#define rwTEXTUREADDRESSWRAP 1
-
 /* errors (inferred) */
 #define E_RW_INVIMAGEFORMAT 0x80000009  /* the image cannot be put in a raster */
 #define E_RW_STRINGTRUNCATED 0x8000001E /* reported with the string, its limit and the cut */
