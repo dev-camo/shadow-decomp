@@ -81,8 +81,7 @@ typedef struct RwCamera RwCamera;
 
 typedef struct RwIm2DVertex RwIm2DVertex;
 
-/* The device the engine renders with (0x38 bytes); only its system function, near screen depth,
- * render state functions and 2D indexed primitive function are mapped */
+/* The device the engine renders with (0x38 bytes) */
 typedef struct RwDevice {
     /* 0x00 */ RwReal gammaCorrection;
     /* 0x04 */ RwBool (*fpSystem)(RwInt32 request, void *out, void *inOut, RwInt32 numIn);
@@ -90,11 +89,20 @@ typedef struct RwDevice {
     /* 0x0C */ RwReal zBufferFar;
     /* 0x10 */ RwBool (*fpRenderStateSet)(RwInt32 state, void *value);
     /* 0x14 */ RwBool (*fpRenderStateGet)(RwInt32 state, void *value);
-    /* 0x18 */ RwUInt8 field_0x18[0xC];
+    /* 0x18 */ RwBool (*fpIm2DRenderLine)(RwIm2DVertex *vertices, RwInt32 numVertices,
+                                          RwInt32 vert1, RwInt32 vert2);
+    /* 0x1C */ RwBool (*fpIm2DRenderTriangle)(RwIm2DVertex *vertices, RwInt32 numVertices,
+                                              RwInt32 vert1, RwInt32 vert2, RwInt32 vert3);
+    /* 0x20 */ RwBool (*fpIm2DRenderPrimitive)(RwInt32 primType, RwIm2DVertex *vertices,
+                                               RwInt32 numVertices);
     /* 0x24 */ RwBool (*fpIm2DRenderIndexedPrimitive)(RwInt32 primType, RwIm2DVertex *vertices,
                                                       RwInt32 numVertices, RwUInt16 *indices,
                                                       RwInt32 numIndices);
-    /* 0x28 */ RwUInt8 field_0x28[0x10];
+    /* 0x28 */ RwBool (*fpIm3DRenderLine)(RwInt32 vert1, RwInt32 vert2);
+    /* 0x2C */ RwBool (*fpIm3DRenderTriangle)(RwInt32 vert1, RwInt32 vert2, RwInt32 vert3);
+    /* 0x30 */ RwBool (*fpIm3DRenderPrimitive)(RwInt32 primType);
+    /* 0x34 */ RwBool (*fpIm3DRenderIndexedPrimitive)(RwInt32 primType, RwUInt16 *indices,
+                                                      RwInt32 numIndices);
 } RwDevice;
 
 /* The string functions the engine uses (0x44 bytes) */
@@ -832,7 +840,15 @@ typedef struct RwEngineOpenParams {
     void *displayID; /* the device's display (inferred) */
 } RwEngineOpenParams;
 
-typedef struct RwVideoMode RwVideoMode;
+/* A video mode (0x18 bytes) */
+typedef struct RwVideoMode {
+    /* 0x00 */ RwInt32 width;
+    /* 0x04 */ RwInt32 height;
+    /* 0x08 */ RwInt32 depth;
+    /* 0x0C */ RwInt32 flags; /* rwVIDEOMODE* */
+    /* 0x10 */ RwInt32 refRate;
+    /* 0x14 */ RwInt32 format;
+} RwVideoMode;
 
 /* The device the engine opens on (inferred) */
 RwDevice *fn_804950A0(void);
@@ -1127,6 +1143,56 @@ extern RwInt32 lbl_805F1648;    /* a frame buffer line that scissor boxes are sp
 extern RwInt32 lbl_805EDF28;    /* selects which side of that line scissor boxes cover */
 extern RwTexture *lbl_805F1664; /* 2D vertices are textured while its raster is set */
 void fn_80497804(void);         /* sets up the texture of textured 2D vertices */
+
+/* GameCube 2D immediate mode (inferred) */
+RwBool fn_80490CBC(RwIm2DVertex *vertices, RwInt32 numVertices, RwInt32 vert1,
+                   RwInt32 vert2); /* draws a line */
+RwBool fn_80490AB8(RwIm2DVertex *vertices, RwInt32 numVertices, RwInt32 vert1, RwInt32 vert2,
+                   RwInt32 vert3); /* draws a triangle */
+RwBool fn_80490E30(RwInt32 primType, RwIm2DVertex *vertices,
+                   RwInt32 numVertices); /* draws a primitive */
+RwBool fn_8049140C(RwInt32 primType, RwIm2DVertex *vertices, RwInt32 numVertices,
+                   RwImVertexIndex *indices, RwInt32 numIndices); /* draws an indexed primitive */
+
+/* GameCube device standard functions (inferred roles from the standards table) */
+RwBool fn_804946A4(void *out, void *inOut, RwInt32 numIn); /* camera begin update */
+RwBool fn_80494C5C(void *out, void *inOut, RwInt32 numIn); /* camera end update */
+RwBool fn_804945E8(void *out, void *inOut, RwInt32 numIn); /* camera clear */
+RwBool fn_80494C6C(void *out, void *inOut, RwInt32 numIn); /* raster show */
+RwBool fn_80491BAC(void *out, void *inOut, RwInt32 numIn); /* RGB to pixel */
+RwBool fn_80491EC0(void *out, void *inOut, RwInt32 numIn); /* pixel to RGB */
+RwBool fn_804929F0(void *out, void *inOut, RwInt32 numIn); /* image from a raster */
+RwBool fn_804935C4(void *out, void *inOut, RwInt32 numIn); /* raster from an image */
+RwBool fn_80493888(void *out, void *inOut, RwInt32 numIn); /* raster format for an image */
+RwBool fn_80497008(void *out, void *inOut, RwInt32 numIn); /* raster destroy */
+RwBool fn_80496C58(void *out, void *inOut, RwInt32 numIn); /* raster create */
+RwBool fn_8049714C(void *out, void *inOut, RwInt32 numIn); /* texture set raster */
+RwBool fn_80495C54(void *out, void *inOut, RwInt32 numIn); /* raster lock */
+RwBool fn_804960B4(void *out, void *inOut, RwInt32 numIn); /* raster unlock */
+RwBool fn_80496268(void *out, void *inOut, RwInt32 numIn); /* raster palette lock */
+RwBool fn_80496338(void *out, void *inOut, RwInt32 numIn); /* raster palette unlock */
+RwBool fn_804994DC(void *out, void *inOut, RwInt32 numIn); /* raster clear */
+RwBool fn_804994B8(void *out, void *inOut, RwInt32 numIn); /* raster clear rectangle */
+RwBool fn_80498A4C(void *out, void *inOut, RwInt32 numIn); /* raster render */
+RwBool fn_80498A9C(void *out, void *inOut, RwInt32 numIn); /* raster render scaled */
+RwBool fn_80498A74(void *out, void *inOut, RwInt32 numIn); /* raster render fast */
+RwBool fn_80499520(void *out, void *inOut, RwInt32 numIn); /* set raster context */
+RwBool fn_80497168(void *out, void *inOut, RwInt32 numIn); /* sub raster */
+RwBool fn_8049952C(void *out, void *inOut, RwInt32 numIn); /* native texture size */
+RwBool fn_804995B4(void *out, void *inOut, RwInt32 numIn); /* native texture write */
+RwBool fn_8049988C(void *out, void *inOut, RwInt32 numIn); /* native texture read */
+RwBool fn_80495688(void *out, void *inOut, RwInt32 numIn); /* raster mip levels */
+
+/* GameCube device driver functions in later units (inferred) */
+RwBool fn_80497904(RwInt32 state, void *value); /* sets a render state */
+RwBool fn_80497474(RwInt32 state, void *value); /* gets a render state */
+RwBool fn_804953F0(void);                       /* registers a device plugin */
+RwBool fn_80499BF8(void);                       /* registers a device plugin */
+RwBool fn_8049A78C(RwUInt16 token);             /* checks a draw sync token */
+RwBool fn_80498E08(RwRaster *raster, RwRect *rect, RwRGBA *color,
+                   RwInt32 clearMode); /* clears a raster rectangle */
+void fn_80497198(void);                /* finishes starting the device */
+void fn_8049742C(void);                /* starts stopping the device */
 
 #define rwIM3D_VERTEXUV 0x1
 #define rwIM3D_NOCLIP 0x4

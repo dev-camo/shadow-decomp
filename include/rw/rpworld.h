@@ -787,7 +787,9 @@ void fn_8046F208(RpGameCubeVertexDescBuilder *builder, RpGameCubeInstanceData *i
 /* compressedNormals: the normals are RpVertexNormal rather than RwV3d (inferred) */
 void fn_8046F6CC(RpGameCubeVertexDescBuilder *builder, RpGameCubeInstanceData *instance,
                  RpGameCubeVertexSource *source, RwBool compressedNormals, const RwV3d *origin);
-extern RwUInt16 lbl_805F1678; /* a GameCube instance stamp (inferred) */
+/* the GX draw sync token stamped on instances; volatile: the device start loop rereads it while
+ * setting it until GX reports it (inferred) */
+extern volatile RwUInt16 lbl_805F1678;
 
 /* GameCube: a mesh's display list (inferred) */
 typedef struct RpGameCubeDisplayList {
