@@ -559,7 +559,7 @@ RwImage *fn_80492B24(RwImage *image, RwInt32 depth) {
 }
 
 /* Copies an image into a locked 4-bit raster, palettizing 8- and 32-bit images; the palette is
- * kept when the raster's flag at 0x33 is set */
+ * written when the locked mip level is the first */
 void fn_80492BE8(RwRaster *raster, RwImage *image) {
     RwGameCubeRasterExt *rasterExt =
         RWPLUGINOFFSET(RwGameCubeRasterExt, raster->parent, lbl_805F1658);
@@ -580,7 +580,7 @@ void fn_80492BE8(RwRaster *raster, RwImage *image) {
                 destination++;
             }
         }
-        if (rasterExt->field_0x33 == 0) {
+        if (rasterExt->lockedLevel == 0) {
             RwUInt16 *palette = (RwUInt16 *)raster->palette;
             RwInt32 i;
 
@@ -628,7 +628,7 @@ void fn_80492E40(RwRaster *raster, RwImage *image) {
                 source++;
             }
         }
-        if (rasterExt->field_0x33 == 0) {
+        if (rasterExt->lockedLevel == 0) {
             RwUInt16 *palette = (RwUInt16 *)raster->palette;
             RwInt32 i;
 
