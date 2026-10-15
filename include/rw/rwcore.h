@@ -126,9 +126,21 @@ typedef struct RwMemoryFunctions {
     /* 0xC */ void *(*rwcalloc)(RwUInt32 numObj, RwUInt32 sizeObj, RwUInt32 hint);
 } RwMemoryFunctions;
 
+/* A link of a doubly linked list */
+typedef struct RwLLLink {
+    struct RwLLLink *next;
+    struct RwLLLink *prev;
+} RwLLLink;
+
+/* A doubly linked list: its link is the head and the tail sentinel */
+typedef struct RwLinkList {
+    RwLLLink link;
+} RwLinkList;
+
 /* The engine globals; only the current camera and world, the frame counters, the open device's
  * near screen depth, render state and 2D indexed primitive functions, the standard functions,
- * the string, memory and free list functions and the engine status are mapped. */
+ * the dirty frames, the string, memory and free list functions and the engine status are
+ * mapped. */
 typedef struct RwGlobals {
     /* 0x000 */ RwCamera *curCamera;
     /* 0x004 */ void *curWorld;
@@ -137,7 +149,7 @@ typedef struct RwGlobals {
     /* 0x00C */ RwUInt8 field_0xC[0x4];
     /* 0x010 */ RwDevice dOpenDevice;
     /* 0x048 */ RwBool (*stdFunc[0x1D])(void *out, void *inOut, RwInt32 numIn); /* RwStandard */
-    /* 0x0BC */ RwUInt8 field_0xBC[0x8];
+    /* 0x0BC */ RwLinkList dirtyFrameList; /* the roots of hierarchies that need synchronizing */
     /* 0x0C4 */ RwStringFunctions stringFuncs;
     /* 0x108 */ RwMemoryFunctions memoryFuncs;
     /* 0x118 */ void *(*rwfreelistalloc)(RwFreeList *freeList, RwUInt32 hint);
@@ -292,17 +304,6 @@ typedef struct RwRaster {
     /* 0x22 */ RwUInt8 privateFlags;
     /* 0x23 */ RwUInt8 cFormat; /* the rwRASTERFORMAT* bits above the low byte */
 } RwRaster;
-
-/* A link of a doubly linked list */
-typedef struct RwLLLink {
-    struct RwLLLink *next;
-    struct RwLLLink *prev;
-} RwLLLink;
-
-/* A doubly linked list: its link is the head and the tail sentinel */
-typedef struct RwLinkList {
-    RwLLLink link;
-} RwLinkList;
 
 /* A free list: fixed size entries allocated in blocks. Each block is a link in blockList, then a
  * bitmap with a bit per entry, set while the entry is in use, then the entries at the alignment. */
@@ -824,7 +825,24 @@ RwBool fn_80487208(RwFrame *frame);                    /* destroys a hierarchy *
 RwFrame *fn_80486D00(void);                            /* create */
 RwFrame *fn_804872D8(RwFrame *frame);                  /* the root */
 RwFrame *fn_804872E0(RwFrame *parent, RwFrame *child); /* adds a child */
-RwFrame *fn_80487348(RwFrame *parent, RwFrame *child); /* adds a child, another way */
+RwFrame *fn_80487348(RwFrame *parent, RwFrame *child); /* adds a child and marks it dirty */
+RwBool fn_80486E2C(RwFrame *frame);                    /* destroy */
+RwFrame *fn_80487448(RwFrame *oldChild);               /* removes a child from its parent */
+RwFrame *fn_8048752C(RwFrame *frame, RwFrameCallBack callBack,
+                     void *data); /* calls a function for each child, until it returns NULL */
+RwFrame *fn_804875B0(RwFrame *frame, const RwV3d *translation, RwInt32 combine);  /* translate */
+RwFrame *fn_8048764C(RwFrame *frame, const RwV3d *scale, RwInt32 combine);        /* scale */
+RwFrame *fn_804876E8(RwFrame *frame, const RwMatrix *transform, RwInt32 combine); /* transform */
+RwFrame *fn_80487784(RwFrame *frame, const RwV3d *axis, RwReal angle, RwInt32 combine); /* rotate */
+RwFrame *fn_80487820(RwFrame *frame); /* sets the modelling matrix to the identity */
+void fn_8048B5D8(RwFrame *root);      /* synchronizes a dirty hierarchy's LTMs */
+
+/* A frame's private flags: what of its hierarchy (on the root) or its subtree needs
+ * synchronizing */
+#define rwFRAMEPRIVATEHIERARCHYSYNCLTM 0x01
+#define rwFRAMEPRIVATEHIERARCHYSYNCOBJ 0x02
+#define rwFRAMEPRIVATESUBTREESYNCLTM 0x04
+#define rwFRAMEPRIVATESUBTREESYNCOBJ 0x08
 
 /* The frames of a stream (8 bytes) */
 typedef struct RwFrameList {
