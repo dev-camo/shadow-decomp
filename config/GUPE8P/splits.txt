@@ -1797,3 +1797,10 @@ rw/fn_8048B6AC.c:
 
 rw/fn_8048D7C0.c:
 	.text       start:0x8048D7C0 end:0x8048D85C
+
+rw/fn_8048D85C.c:
+	.text       start:0x8048D85C end:0x8049043C
+	.bss        start:0x805E2D58 end:0x805E3158
+	.sdata      start:0x805EDF20 end:0x805EDF28
+	.sdata2     start:0x805FB360 end:0x805FB380
+	.sbss2      start:0x805FB560 end:0x805FB564
