@@ -1763,3 +1763,11 @@ rw/fn_80486888.c:
 	.sdata      start:0x805EDEE0 end:0x805EDEE8
 	.sbss       start:0x805F15B8 end:0x805F15C0
 	.sdata2     start:0x805FB308 end:0x805FB310
+
+rw/fn_80487914.c:
+	.text       start:0x80487914 end:0x80489B2C
+	.data       start:0x8056E000 end:0x8056E018
+	.bss        start:0x805E2CA0 end:0x805E2CE8
+	.sdata      start:0x805EDEE8 end:0x805EDEF8
+	.sbss       start:0x805F15C0 end:0x805F15C8
+	.sdata2     start:0x805FB310 end:0x805FB328
