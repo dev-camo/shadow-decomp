@@ -88,6 +88,7 @@ typedef struct RwCamera RwCamera;
 #define rwFILTERNEAREST 1
 #define rwFILTERLINEAR 2
 #define rwTEXTUREADDRESSWRAP 1
+#define rwTEXTUREADDRESSCLAMP 3
 #define rwTEXTUREADDRESSBORDER 4
 #define rwSHADEMODEGOURAUD 2
 #define rwFOGTYPELINEAR 1
@@ -1175,6 +1176,9 @@ extern RwInt32 lbl_805F1648;    /* a frame buffer line that scissor boxes are sp
 extern RwInt32 lbl_805EDF28;    /* selects which side of that line scissor boxes cover */
 extern RwTexture *lbl_805F1664; /* 2D vertices are textured while its raster is set */
 extern RwInt32 lbl_805F15E0;    /* whether frame buffer copies clear the frame buffer */
+extern RwInt32 lbl_805F15E4;    /* the frame buffer's GX pixel format */
+extern RwInt32 lbl_805F15E8;    /* the GX pixel format currently set */
+extern RwRaster *lbl_805F1668;  /* the raster context, which rasters are rendered into */
 /* The device's frame queue and external frame buffers (see the device unit) */
 extern volatile RwInt32 lbl_805F161C;
 extern volatile RwInt32 lbl_805F1610;
@@ -1229,10 +1233,10 @@ RwBool fn_80497474(RwInt32 state, void *value); /* gets a render state */
 RwInt32 fn_804953F0(void);          /* registers the raster plugin; returns its offset */
 RwBool fn_80499BF8(void);           /* registers a device plugin */
 RwBool fn_8049A78C(RwUInt16 token); /* checks a draw sync token */
-RwBool fn_80498E08(RwRaster *raster, RwRect *rect, RwRGBA *color,
-                   RwInt32 clearMode); /* clears a raster rectangle */
-void fn_80497198(void);                /* finishes starting the device */
-void fn_8049742C(void);                /* starts stopping the device */
+void fn_80498E08(RwRaster *raster, RwRect *rect, RwRGBA *color,
+                 RwInt32 clearMode); /* clears a raster rectangle */
+void fn_80497198(void);              /* finishes starting the device */
+void fn_8049742C(void);              /* starts stopping the device */
 
 #define rwIM3D_VERTEXUV 0x1
 #define rwIM3D_NOCLIP 0x4

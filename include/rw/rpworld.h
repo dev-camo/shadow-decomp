@@ -990,6 +990,14 @@ RwBool fn_80497668(RwBool enable);                     /* enables or disables fo
 void fn_804978C0(RwInt32 srcBlend, RwInt32 destBlend); /* sets the GX blend mode */
 void fn_80497F24(RwInt32 comp0, RwUInt8 ref0, RwInt32 op, RwInt32 comp1,
                  RwUInt8 ref1); /* sets the alpha compare directly */
+void fn_80497FB4(RwRect *rect); /* sets up GX to render a raster into the raster context */
+void fn_80498344(RwRaster *raster, RwRect *rect, RwBool scaled,
+                 RwBool blend); /* draws a raster into the raster context */
+RwBool fn_804988D4(RwRaster *raster, RwRect *rect, RwBool scaled,
+                   RwBool blend);   /* renders a raster */
+void fn_80498AC4(RwRaster *raster); /* sets up GX to clear a raster */
+RwBool fn_804990D4(RwRaster *raster, RwRect *rect,
+                   RwInt32 color); /* clears a rectangle of the raster context */
 
 /* The GameCube raster plugin data (0x34 bytes; names inferred): the palette's TLUT object, the GX
  * texture and TLUT formats, the flags (bit 0: the pixel format has alpha), the allocated memory and
