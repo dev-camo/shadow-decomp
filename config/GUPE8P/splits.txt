@@ -1782,3 +1782,6 @@ rw/fn_80489B2C.c:
 rw/fn_8048A178.c:
 	.text       start:0x8048A178 end:0x8048ADE0
 	.sdata2     start:0x805FB328 end:0x805FB358
+
+rw/fn_8048ADE0.c:
+	.text       start:0x8048ADE0 end:0x8048B6AC
