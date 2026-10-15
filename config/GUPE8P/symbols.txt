@@ -70433,4 +70433,4 @@ lbl_805FB548 = .sbss2:0x805FB548; // type:object size:0x4 data:4byte
 lbl_805FB54C = .sbss2:0x805FB54C; // type:object size:0x4 data:4byte
 lbl_805FB550 = .sbss2:0x805FB550; // type:object size:0x8 scope:local data:4byte
 lbl_805FB558 = .sbss2:0x805FB558; // type:object size:0x4 scope:local data:4byte
-lbl_805FB560 = .sbss2:0x805FB560; // type:object size:0x4 data:4byte
+lbl_805FB560 = .sbss2:0x805FB560; // type:object size:0x4 scope:local data:4byte
