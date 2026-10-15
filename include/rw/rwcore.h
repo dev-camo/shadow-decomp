@@ -270,6 +270,36 @@ typedef struct RwRGBAReal {
         (o)->alpha = (RwUInt8)(RwInt32)((i)->alpha * 255.0f + 0.5f);                               \
     } while (0)
 
+/* converts a color with byte components to components 0 to 1 */
+#define RwRGBARealFromRwRGBA(o, i)                                                                 \
+    do {                                                                                           \
+        (o)->red = (RwReal)(i)->red * (1.0f / 255.0f);                                             \
+        (o)->green = (RwReal)(i)->green * (1.0f / 255.0f);                                         \
+        (o)->blue = (RwReal)(i)->blue * (1.0f / 255.0f);                                           \
+        (o)->alpha = (RwReal)(i)->alpha * (1.0f / 255.0f);                                         \
+    } while (0)
+
+/* o = a * scale, by component */
+#define RwRGBARealScale(o, a, scale)                                                               \
+    do {                                                                                           \
+        (o)->red = (a)->red * (scale);                                                             \
+        (o)->green = (a)->green * (scale);                                                         \
+        (o)->blue = (a)->blue * (scale);                                                           \
+        (o)->alpha = (a)->alpha * (scale);                                                         \
+    } while (0)
+
+/* o = a + b, by component */
+#define RwRGBARealAdd(o, a, b)                                                                     \
+    do {                                                                                           \
+        (o)->red = (a)->red + (b)->red;                                                            \
+        (o)->green = (a)->green + (b)->green;                                                      \
+        (o)->blue = (a)->blue + (b)->blue;                                                         \
+        (o)->alpha = (a)->alpha + (b)->alpha;                                                      \
+    } while (0)
+
+/* A 16.16 fixed point number */
+typedef RwInt32 RwFixed;
+
 /* The header of every engine object: its type and the object it is attached to */
 typedef struct RwObject {
     /* 0x0 */ RwUInt8 type;
@@ -939,6 +969,10 @@ RwImage *fn_80488B94(const RwChar *imageName, const RwChar *maskName); /* reads 
 RwRGBA *fn_80489118(RwRGBA *rgbOut, RwUInt32 pixelValue, RwInt32 rasterFormat); /* a pixel's RGBA */
 RwImage *fn_804893B8(RwImage *destImage, const RwImage *sourceImage);           /* copy */
 RwImage *fn_804894B8(RwImage *image); /* gamma corrects the palette or pixels */
+RwImage *fn_8048A790(RwImage *destImage,
+                     const RwImage *sourceImage); /* resamples a 32-bit image into another */
+RwImage *fn_8048A96C(const RwImage *sourceImage, RwInt32 width,
+                     RwInt32 height); /* a 32-bit copy resampled to a new size */
 RwImage *fn_80489A90(RwImage *image, RwInt32 rasterType, RwInt32 *width, RwInt32 *height,
                      RwInt32 *depth, RwInt32 *format); /* the raster format that suits an image */
 
