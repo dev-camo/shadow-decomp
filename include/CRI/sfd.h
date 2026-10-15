@@ -647,17 +647,17 @@ typedef struct {
 /* creation parameters (SFD_Create, 0x44 bytes); the handle starts with a copy of them (sfd_ply.c).
  * The first 0x2C bytes are what sfd_buf.c reads as SFBUF_PRM. */
 typedef struct {
-    Sint32 x00;     /* 0x00 */
-    Uint32 adr;     /* 0x04 buffer work base (aligned to 32 in place by sfply_InitHn) */
-    Sint32 size[7]; /* 0x08 sizes of buffers 0..6 */
-    Sint32 x24;     /* 0x24 */
-    Sint32 unit;    /* 0x28 ring buffer 0 alignment */
-    Sint32 x2c;     /* 0x2C */
-    Sint32 x30;     /* 0x30 */
-    Sint32 x34;     /* 0x34 */
-    Sint32 x38;     /* 0x38 */
-    void *hnwork;   /* 0x3C handle work (SFD_OBJ, aligned to 32) */
-    Sint32 hnwksiz; /* 0x40 its size (>= 0x3660, SFD_HNWORK_MIN) */
+    SFD_TR_FUNC **trif_tbl; /* 0x00 transfer driver tables, as SFTRN_PRM.trif_tbl */
+    Uint32 adr;             /* 0x04 buffer work base (aligned to 32 in place by sfply_InitHn) */
+    Sint32 size[7];         /* 0x08 sizes of buffers 0..6 */
+    Sint32 x24;             /* 0x24 */
+    Sint32 unit;            /* 0x28 ring buffer 0 alignment */
+    Sint32 x2c;             /* 0x2C */
+    Sint32 x30;             /* 0x30 */
+    Sint32 x34;             /* 0x34 */
+    Sint32 x38;             /* 0x38 */
+    void *hnwork;           /* 0x3C handle work (SFD_OBJ, aligned to 32) */
+    Sint32 hnwksiz;         /* 0x40 its size (>= 0x3660, SFD_HNWORK_MIN) */
 } SFD_CREPRM;
 
 /* video PTS manager entry kept across a player reset (sfd_ply.c), SFD_OBJ + 0x12E0 */
