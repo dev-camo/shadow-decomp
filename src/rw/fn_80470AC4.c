@@ -474,10 +474,10 @@ Rt2dFont *fn_8047149C(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
         }                                                                                          \
     } while (0)
 
-/* Moves the rest of the line to the start of the buffer and reads more after it */
+/* Moves the rest of the line, length characters from p, to the start of the buffer and reads
+ * more after it */
 #define SHIFTLINE()                                                                                \
     do {                                                                                           \
-        length = rwstrlen(p);                                                                      \
         memcpy(line, p, length + 1);                                                               \
         p = line;                                                                                  \
         if (line[length - 1] == '\n') {                                                            \
@@ -633,6 +633,7 @@ Rt2dFont *fn_80471A54(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
                                 SHIFTLINE();
                             }
                         } else if (p - line >= 0x80) { /* (sic) */
+                            length = rwstrlen(p);
                             SHIFTLINE();
                         }
 
