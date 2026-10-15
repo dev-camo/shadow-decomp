@@ -172,6 +172,8 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
 #define rwstrlen(string) (lbl_805F15B4->stringFuncs.vecStrlen(string))
 #define rwstrcpy(dst, src) (lbl_805F15B4->stringFuncs.vecStrcpy((dst), (src)))
 #define rwstrcat(dst, src) (lbl_805F15B4->stringFuncs.vecStrcat((dst), (src)))
+#define rwstrrchr(string, findThis) (lbl_805F15B4->stringFuncs.vecStrrchr((string), (findThis)))
+#define rwstrchr(string, findThis) (lbl_805F15B4->stringFuncs.vecStrchr((string), (findThis)))
 #define rwstrcmp(string1, string2) (lbl_805F15B4->stringFuncs.vecStrcmp((string1), (string2)))
 #define rwstricmp(string1, string2) (lbl_805F15B4->stringFuncs.vecStricmp((string1), (string2)))
 #define rwsprintf lbl_805F15B4->stringFuncs.vecSprintf
@@ -303,6 +305,10 @@ typedef struct RwRaster {
     /* 0x21 */ RwUInt8 cFlags;
     /* 0x22 */ RwUInt8 privateFlags;
     /* 0x23 */ RwUInt8 cFormat; /* the rwRASTERFORMAT* bits above the low byte */
+    /* 0x24 */ RwUInt8 *originalPixels;
+    /* 0x28 */ RwInt32 originalWidth;
+    /* 0x2C */ RwInt32 originalHeight;
+    /* 0x30 */ RwInt32 originalStride;
 } RwRaster;
 
 /* A free list: fixed size entries allocated in blocks. Each block is a link in blockList, then a
@@ -913,6 +919,17 @@ RwImage *fn_80487D08(RwInt32 width, RwInt32 height, RwInt32 depth); /* create */
 RwBool fn_80487DB0(RwImage *image);                                 /* destroy */
 RwImage *fn_80487E18(RwImage *image);                               /* allocates the pixels */
 RwImage *fn_804899A8(RwImage *image, RwRaster *raster);             /* reads a raster */
+RwImage *fn_80487F50(RwImage *image);                               /* frees the pixels */
+RwImage *fn_80487FA8(RwImage *image); /* sets each pixel's alpha to its brightest component */
+RwImage *fn_80488088(RwImage *image, const RwImage *mask); /* applies a mask's alpha */
+const RwChar *
+fn_80488B58(const RwChar *name); /* the extension of the image file found for a name */
+RwImage *fn_80488B94(const RwChar *imageName, const RwChar *maskName); /* reads a masked image */
+RwRGBA *fn_80489118(RwRGBA *rgbOut, RwUInt32 pixelValue, RwInt32 rasterFormat); /* a pixel's RGBA */
+RwImage *fn_804893B8(RwImage *destImage, const RwImage *sourceImage);           /* copy */
+RwImage *fn_804894B8(RwImage *image); /* gamma corrects the palette or pixels */
+RwImage *fn_80489A90(RwImage *image, RwInt32 rasterType, RwInt32 *width, RwInt32 *height,
+                     RwInt32 *depth, RwInt32 *format); /* the raster format that suits an image */
 
 /* rasters (inferred) */
 #define rwRASTERTYPETEXTURE 0x4
