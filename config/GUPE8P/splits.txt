@@ -1785,3 +1785,12 @@ rw/fn_8048A178.c:
 
 rw/fn_8048ADE0.c:
 	.text       start:0x8048ADE0 end:0x8048B6AC
+
+rw/fn_8048B6AC.c:
+	.text       start:0x8048B6AC end:0x8048D7C0
+	.rodata     start:0x8051C2D0 end:0x8051C2E8
+	.data       start:0x8056E030 end:0x8056E060
+	.bss        start:0x805E2D10 end:0x805E2D58
+	.sdata      start:0x805EDF00 end:0x805EDF20
+	.sbss       start:0x805F15D0 end:0x805F15E0
+	.sdata2     start:0x805FB358 end:0x805FB360
