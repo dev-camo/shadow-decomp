@@ -1755,3 +1755,11 @@ rw/fn_80485BCC.c:
 	.data       start:0x8056DFB0 end:0x8056DFE8
 	.bss        start:0x805E2B48 end:0x805E2C78
 	.sbss       start:0x805F15B0 end:0x805F15B8
+
+rw/fn_80486888.c:
+	.text       start:0x80486888 end:0x80487914
+	.data       start:0x8056DFE8 end:0x8056E000
+	.bss        start:0x805E2C78 end:0x805E2CA0
+	.sdata      start:0x805EDEE0 end:0x805EDEE8
+	.sbss       start:0x805F15B8 end:0x805F15C0
+	.sdata2     start:0x805FB308 end:0x805FB310
