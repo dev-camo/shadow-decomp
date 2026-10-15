@@ -127,8 +127,8 @@ typedef struct RwMemoryFunctions {
 } RwMemoryFunctions;
 
 /* The engine globals; only the current camera and world, the frame counters, the open device's
- * near screen depth, render state and 2D indexed primitive functions, the standard functions and
- * the string, memory and free list functions are mapped. */
+ * near screen depth, render state and 2D indexed primitive functions, the standard functions,
+ * the string, memory and free list functions and the engine status are mapped. */
 typedef struct RwGlobals {
     /* 0x000 */ RwCamera *curCamera;
     /* 0x004 */ void *curWorld;
@@ -142,7 +142,8 @@ typedef struct RwGlobals {
     /* 0x108 */ RwMemoryFunctions memoryFuncs;
     /* 0x118 */ void *(*rwfreelistalloc)(RwFreeList *freeList, RwUInt32 hint);
     /* 0x11C */ RwFreeList *(*rwfreelistfree)(RwFreeList *freeList, void *mem);
-    /* 0x120 */ RwUInt8 field_0x120[0x8];
+    /* 0x120 */ RwUInt8 field_0x120[0x4];
+    /* 0x124 */ RwInt32 engineStatus;      /* rwENGINESTATUS* */
     /* 0x128 */ RwUInt32 resArenaInitSize; /* the bytes of the resources heap (inferred) */
 } RwGlobals;
 
@@ -752,6 +753,55 @@ RwBool fn_8047FCDC(RwFreeList *freeList);
 void *fn_8047FDB0(RwFreeList *freeList, RwUInt32 hint);   /* allocates an entry */
 RwFreeList *fn_8047FF50(RwFreeList *freeList, void *mem); /* frees an entry */
 
+/* The engine's status (RwEngineStatus) */
+#define rwENGINESTATUSIDLE 0    /* not initialized */
+#define rwENGINESTATUSINITED 1  /* initialized; can be opened */
+#define rwENGINESTATUSOPENED 2  /* opened on a device; can be started */
+#define rwENGINESTATUSSTARTED 3 /* started; can render */
+
+/* The parameters an engine is opened with */
+typedef struct RwEngineOpenParams {
+    void *displayID; /* the device's display (inferred) */
+} RwEngineOpenParams;
+
+typedef struct RwVideoMode RwVideoMode;
+
+/* The device the engine opens on (inferred) */
+RwDevice *fn_804950A0(void);
+/* registers the device's plugins (inferred) */
+RwBool fn_80493E64(void);
+/* sets the gamma correction (inferred) */
+RwBool fn_80489830(RwReal gamma);
+/* registers more core plugins; negative on failure, like a plugin offset (inferred) */
+RwInt32 fn_8049B140(void);
+
+/* the opening and closing callbacks of the core modules the engine registers (inferred from their
+ * module IDs) */
+void *fn_80482548(void *instance, RwInt32 offset, RwInt32 size); /* closes the vector module */
+void *fn_804825EC(void *instance, RwInt32 offset, RwInt32 size); /* opens the vector module */
+void *fn_80486888(void *instance, RwInt32 offset, RwInt32 size); /* opens the frame module */
+void *fn_8048692C(void *instance, RwInt32 offset, RwInt32 size); /* closes the frame module */
+void *fn_80480C6C(void *instance, RwInt32 offset, RwInt32 size); /* opens the stream module */
+void *fn_80480CF8(void *instance, RwInt32 offset, RwInt32 size); /* closes the stream module */
+void *fn_80485424(void *instance, RwInt32 offset, RwInt32 size); /* opens the camera module */
+void *fn_804853C0(void *instance, RwInt32 offset, RwInt32 size); /* closes the camera module */
+void *fn_80487914(void *instance, RwInt32 offset, RwInt32 size); /* opens the image module */
+void *fn_80487BB0(void *instance, RwInt32 offset, RwInt32 size); /* closes the image module */
+void *fn_8048A02C(void *instance, RwInt32 offset, RwInt32 size); /* opens the raster module */
+void *fn_80489FC0(void *instance, RwInt32 offset, RwInt32 size); /* closes the raster module */
+void *fn_8048D4DC(void *instance, RwInt32 offset, RwInt32 size); /* opens the texture module */
+void *fn_8048D300(void *instance, RwInt32 offset, RwInt32 size); /* closes the texture module */
+void *fn_8049B0CC(void *instance, RwInt32 offset, RwInt32 size); /* opens the pipeline module */
+void *fn_8049B110(void *instance, RwInt32 offset, RwInt32 size); /* closes the pipeline module */
+void *fn_80482BC4(void *instance, RwInt32 offset, RwInt32 size); /* opens the string module */
+void *fn_80482C50(void *instance, RwInt32 offset, RwInt32 size); /* closes the string module */
+void *fn_8049AFF8(void *instance, RwInt32 offset, RwInt32 size); /* opens the immediate module */
+void *fn_8049AF94(void *instance, RwInt32 offset, RwInt32 size); /* closes the immediate module */
+void *fn_8048053C(void *instance, RwInt32 offset, RwInt32 size); /* opens the resources module */
+void *fn_80480690(void *instance, RwInt32 offset, RwInt32 size); /* closes the resources module */
+RwBool fn_80482E20(void); /* sets the engine's string functions */
+void fn_80482F60(void);   /* does nothing */
+
 /* memory (inferred) */
 RwBool fn_80480274(const RwMemoryFunctions *memFuncs); /* open; NULL uses the C library */
 void fn_8048038C(void);                                /* close */
@@ -991,6 +1041,15 @@ RwInt32 fn_80485D6C(void);
 RwInt32 fn_80485D78(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructor,
                     RwPluginObjectDestructor destructor);
 RwInt32 fn_80485DB8(RwUInt32 pluginID); /* the engine plugin offset of a plugin, or -1 */
+RwVideoMode *fn_80485DE4(RwVideoMode *modeinfo, RwInt32 modeIndex); /* a video mode's info */
+RwInt32 fn_80485E70(void);                                          /* the current video mode */
+RwBool fn_80485EF4(void);                                           /* stop */
+RwBool fn_80485FE0(void);                                           /* start */
+RwBool fn_80486138(void);                                           /* close */
+RwBool fn_80486204(RwEngineOpenParams *initParams);                 /* open */
+RwBool fn_804864AC(void);                                           /* terminate */
+RwBool fn_804864F8(const RwMemoryFunctions *memFuncs, RwUInt32 initFlags,
+                   RwUInt32 resArenaSize); /* initialize */
 
 #ifdef __cplusplus
 }
