@@ -1771,3 +1771,10 @@ rw/fn_80487914.c:
 	.sdata      start:0x805EDEE8 end:0x805EDEF8
 	.sbss       start:0x805F15C0 end:0x805F15C8
 	.sdata2     start:0x805FB310 end:0x805FB328
+
+rw/fn_80489B2C.c:
+	.text       start:0x80489B2C end:0x8048A178
+	.data       start:0x8056E018 end:0x8056E030
+	.bss        start:0x805E2CE8 end:0x805E2D10
+	.sdata      start:0x805EDEF8 end:0x805EDF00
+	.sbss       start:0x805F15C8 end:0x805F15D0
