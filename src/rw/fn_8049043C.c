@@ -70,7 +70,7 @@ void fn_8049043C(void) {
     GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE,
                   GX_AF_NONE);
 
-    if (*lbl_805F1664 != NULL) {
+    if (lbl_805F1664->raster != NULL) {
         GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
         GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_F32, 0);
         GXSetTevOp(GX_TEVSTAGE0, GX_MODULATE);
@@ -165,7 +165,7 @@ RwBool fn_80490AB8(RwIm2DVertex *vertices, RwInt32 numVertices, RwInt32 vert1, R
 
     fn_8049043C();
     GXBegin(GX_TRIANGLES, GX_VTXFMT0, 3);
-    if (*lbl_805F1664 != NULL) {
+    if (lbl_805F1664->raster != NULL) {
         Im2DVertexTextured(vertex1);
         Im2DVertexTextured(vertex2);
         Im2DVertexTextured(vertex3);
@@ -185,7 +185,7 @@ RwBool fn_80490CBC(RwIm2DVertex *vertices, RwInt32 numVertices, RwInt32 vert1, R
 
     fn_8049043C();
     GXBegin(GX_LINES, GX_VTXFMT0, 2);
-    if (*lbl_805F1664 != NULL) {
+    if (lbl_805F1664->raster != NULL) {
         Im2DVertexTextured(vertex1);
         Im2DVertexTextured(vertex2);
     } else {
@@ -207,7 +207,7 @@ RwBool fn_80490E30(RwInt32 primType, RwIm2DVertex *vertices, RwInt32 numVertices
     case rwPRIMTYPETRISTRIP:
     case rwPRIMTYPETRIFAN:
         count = numVertices;
-        if (*lbl_805F1664 != NULL) {
+        if (lbl_805F1664->raster != NULL) {
             while (count--) {
                 Im2DVertexTextured(vertices);
                 vertices++;
@@ -221,7 +221,7 @@ RwBool fn_80490E30(RwInt32 primType, RwIm2DVertex *vertices, RwInt32 numVertices
         break;
     case rwPRIMTYPELINELIST:
         count = numVertices >> 1;
-        if (*lbl_805F1664 != NULL) {
+        if (lbl_805F1664->raster != NULL) {
             while (count--) {
                 Im2DVertexTextured(&vertices[0]);
                 Im2DVertexTextured(&vertices[1]);
@@ -237,7 +237,7 @@ RwBool fn_80490E30(RwInt32 primType, RwIm2DVertex *vertices, RwInt32 numVertices
         break;
     case rwPRIMTYPETRILIST:
         count = numVertices / 3;
-        if (*lbl_805F1664 != NULL) {
+        if (lbl_805F1664->raster != NULL) {
             while (count--) {
                 Im2DVertexTextured(&vertices[0]);
                 Im2DVertexTextured(&vertices[1]);
@@ -273,7 +273,7 @@ RwBool fn_8049140C(RwInt32 primType, RwIm2DVertex *vertices, RwInt32 numVertices
     case rwPRIMTYPETRISTRIP:
     case rwPRIMTYPETRIFAN:
         count = numIndices;
-        if (*lbl_805F1664 != NULL) {
+        if (lbl_805F1664->raster != NULL) {
             while (count--) {
                 Im2DVertexTextured(&vertices[*indices]);
                 indices++;
@@ -287,7 +287,7 @@ RwBool fn_8049140C(RwInt32 primType, RwIm2DVertex *vertices, RwInt32 numVertices
         break;
     case rwPRIMTYPELINELIST:
         count = numIndices >> 1;
-        if (*lbl_805F1664 != NULL) {
+        if (lbl_805F1664->raster != NULL) {
             while (count--) {
                 Im2DVertexTextured(&vertices[indices[0]]);
                 Im2DVertexTextured(&vertices[indices[1]]);
@@ -303,7 +303,7 @@ RwBool fn_8049140C(RwInt32 primType, RwIm2DVertex *vertices, RwInt32 numVertices
         break;
     case rwPRIMTYPETRILIST:
         count = numIndices / 3;
-        if (*lbl_805F1664 != NULL) {
+        if (lbl_805F1664->raster != NULL) {
             while (count--) {
                 Im2DVertexTextured(&vertices[indices[0]]);
                 Im2DVertexTextured(&vertices[indices[1]]);
