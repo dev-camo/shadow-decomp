@@ -1810,3 +1810,8 @@ rw/fn_8049043C.c:
 	.data       start:0x8056E060 end:0x8056E0C8
 	.bss        start:0x805E3158 end:0x805E3178
 	.sdata2     start:0x805FB380 end:0x805FB3A8
+
+rw/fn_80491AB4.c:
+	.text       start:0x80491AB4 end:0x804939DC
+	.data       start:0x8056E0C8 end:0x8056E348
+	.sdata2     start:0x805FB3A8 end:0x805FB3B0
