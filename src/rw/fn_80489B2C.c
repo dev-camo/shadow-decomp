@@ -16,10 +16,10 @@
 /* raster formats */
 #define rwRASTERFORMATMIPMAP 0x8000
 
-/* raster private flags */
-#define rwRASTERPIXELLOCKEDREAD 0x08
-#define rwRASTERPIXELLOCKEDWRITE 0x10
-#define rwRASTERPIXELLOCKED (rwRASTERPIXELLOCKEDREAD | rwRASTERPIXELLOCKEDWRITE)
+/* raster private flags: the palette locked for reading and for writing */
+#define rwRASTERPALETTELOCKEDREAD 0x08
+#define rwRASTERPALETTELOCKEDWRITE 0x10
+#define rwRASTERPALETTELOCKED (rwRASTERPALETTELOCKEDREAD | rwRASTERPALETTELOCKEDWRITE)
 
 /* standard functions */
 #define rwSTANDARDRASTERCREATE 4
@@ -69,7 +69,7 @@ RwRaster *fn_80489B40(RwRaster *raster) {
 
 RwRaster *fn_80489B88(RwRaster *raster) {
     lbl_805F15B4->stdFunc[rwSTANDARDRASTERUNLOCKPALETTE](NULL, raster, 0);
-    raster->privateFlags &= ~rwRASTERPIXELLOCKED;
+    raster->privateFlags &= ~rwRASTERPALETTELOCKED;
     return raster;
 }
 
