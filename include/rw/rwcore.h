@@ -1119,6 +1119,15 @@ struct RwIm2DVertex {
     /* 0x14 */ RwReal v;
 };
 
+/* GameCube device driver state (inferred) */
+struct _GXRenderModeObj;
+extern struct _GXRenderModeObj *lbl_805F164C; /* the render mode of the frame buffer */
+extern RwInt32 lbl_805F15F0; /* non-zero while subraster viewports are at double height */
+extern RwInt32 lbl_805F1648; /* a frame buffer line that scissor boxes are split at */
+extern RwInt32 lbl_805EDF28; /* selects which side of that line scissor boxes cover */
+extern void **lbl_805F1664;  /* points at a word that is non-NULL while 2D vertices are textured */
+void fn_80497804(void);      /* sets up the texture of textured 2D vertices */
+
 #define rwIM3D_VERTEXUV 0x1
 #define rwIM3D_NOCLIP 0x4
 
