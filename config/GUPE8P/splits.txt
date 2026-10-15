@@ -1794,3 +1794,6 @@ rw/fn_8048B6AC.c:
 	.sdata      start:0x805EDF00 end:0x805EDF20
 	.sbss       start:0x805F15D0 end:0x805F15E0
 	.sdata2     start:0x805FB358 end:0x805FB360
+
+rw/fn_8048D7C0.c:
+	.text       start:0x8048D7C0 end:0x8048D85C
