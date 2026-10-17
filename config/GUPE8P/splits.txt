@@ -49,6 +49,12 @@ Game/CSD/fn_80360528.cpp:
 	.text       start:0x80360528 end:0x803605E8
 	.bss        start:0x80585988 end:0x80585990
 
+Game/CSD/fn_80361A24.cpp:
+	.text       start:0x80361A24 end:0x80361CF8
+	.ctors      start:0x804AA044 end:0x804AA048
+	.rodata     start:0x80512F48 end:0x80512F50
+	.bss        start:0x805859A8 end:0x805859E0
+
 dolphin/PPCArch.c:
 	.text       start:0x8036FC94 end:0x8036FDA8
 
