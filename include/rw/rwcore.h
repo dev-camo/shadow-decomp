@@ -44,6 +44,20 @@ typedef char RwChar;
 #define rwID_ATOMICSECT 0x9
 #define rwID_PLANESECT 0xA
 #define rwID_WORLD 0xB
+#define rwID_EXTENSION 0x3
+#define rwID_TEXTURE 0x6
+#define rwCHUNKHEADERSIZE 12 /* the bytes of a chunk header in a stream */
+
+/* memory hints: how long an allocation lives, whether it is resized, and the chunk ID of what it
+ * is for in the low bits */
+#define rwMEMHINTDUR_FUNCTION 0x10000
+#define rwMEMHINTDUR_EVENT 0x30000
+#define rwMEMHINTDUR_GLOBAL 0x40000
+#define rwMEMHINTFLAG_RESIZABLE 0x1000000
+
+/* the platforms platform-specific data is for */
+typedef RwInt32 RwPlatformID;
+#define rwID_GAMECUBE 6
 
 /* errors */
 #define E_RW_BADVERSION 0x80000004
@@ -51,6 +65,7 @@ typedef char RwChar;
 #define E_RW_NOMEM 0x80000013   /* reported with the size that could not be allocated */
 #define E_RW_NOERROR 0x80000000 /* no error is pending */
 #define E_RW_NULLP 0x80000016   /* a required argument is NULL */
+#define E_RW_READTEXMASK 0x16   /* a texture was read without its mask */
 
 typedef struct RwFreeList RwFreeList;
 
@@ -113,6 +128,47 @@ typedef struct RwCamera RwCamera;
 #define rwTEXTUREADDRESSINGUMASK 0x00000F00
 #define rwTEXTUREADDRESSINGVMASK 0x0000F000
 #define rwTEXTUREADDRESSINGMASK 0x0000FF00
+
+/* A texture's filter mode and addressing; the getters return the (int-sized) RenderWare enum
+ * values, so they compare signed */
+#define RwTextureSetFilterMode(texture, filtering)                                                 \
+    ((texture)->filterAddressing = ((texture)->filterAddressing & ~rwTEXTUREFILTERMODEMASK) |      \
+                                   ((filtering) & rwTEXTUREFILTERMODEMASK))
+#define RwTextureGetFilterMode(texture)                                                            \
+    ((RwInt32)((texture)->filterAddressing & rwTEXTUREFILTERMODEMASK))
+#define RwTextureSetAddressing(texture, addressing)                                                \
+    ((texture)->filterAddressing = ((texture)->filterAddressing & ~rwTEXTUREADDRESSINGMASK) |      \
+                                   ((((addressing) << 8) & rwTEXTUREADDRESSINGUMASK) |             \
+                                    (((addressing) << 12) & rwTEXTUREADDRESSINGVMASK)))
+#define RwTextureSetAddressingU(texture, addressing)                                               \
+    ((texture)->filterAddressing = ((texture)->filterAddressing & ~rwTEXTUREADDRESSINGUMASK) |     \
+                                   (((addressing) << 8) & rwTEXTUREADDRESSINGUMASK))
+#define RwTextureSetAddressingV(texture, addressing)                                               \
+    ((texture)->filterAddressing = ((texture)->filterAddressing & ~rwTEXTUREADDRESSINGVMASK) |     \
+                                   (((addressing) << 12) & rwTEXTUREADDRESSINGVMASK))
+#define RwTextureGetAddressingU(texture)                                                           \
+    ((RwInt32)(((texture)->filterAddressing & rwTEXTUREADDRESSINGUMASK) >> 8))
+#define RwTextureGetAddressingV(texture)                                                           \
+    ((RwInt32)(((texture)->filterAddressing & rwTEXTUREADDRESSINGVMASK) >> 12))
+
+/* raster formats */
+#define rwRASTERFORMATDEFAULT 0x0000
+#define rwRASTERFORMAT1555 0x0100
+#define rwRASTERFORMAT565 0x0200
+#define rwRASTERFORMAT4444 0x0300
+#define rwRASTERFORMATLUM8 0x0400
+#define rwRASTERFORMAT8888 0x0500
+#define rwRASTERFORMAT888 0x0600
+#define rwRASTERFORMAT555 0x0A00
+#define rwRASTERFORMATPIXELFORMATMASK 0x0F00
+#define rwRASTERFORMATAUTOMIPMAP 0x1000
+#define rwRASTERFORMATPAL8 0x2000
+#define rwRASTERFORMATPAL4 0x4000
+#define rwRASTERFORMATMIPMAP 0x8000
+#define rwRASTERFORMATPALMASK (rwRASTERFORMATPAL8 | rwRASTERFORMATPAL4)
+#define rwRASTERFORMATMASK 0xFF00
+
+#define RwRasterGetFormat(raster) (((raster)->cFormat & (rwRASTERFORMATMASK >> 8)) << 8)
 
 typedef struct RwIm2DVertex RwIm2DVertex;
 
@@ -225,6 +281,7 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
 #define rwstrcpy(dst, src) (lbl_805F15B4->stringFuncs.vecStrcpy((dst), (src)))
 #define rwstrncpy(dst, src, n) (lbl_805F15B4->stringFuncs.vecStrncpy((dst), (src), (n)))
 #define rwstrcat(dst, src) (lbl_805F15B4->stringFuncs.vecStrcat((dst), (src)))
+#define rwstrncat(dst, src, n) (lbl_805F15B4->stringFuncs.vecStrncat((dst), (src), (n)))
 #define rwstrrchr(string, findThis) (lbl_805F15B4->stringFuncs.vecStrrchr((string), (findThis)))
 #define rwstrchr(string, findThis) (lbl_805F15B4->stringFuncs.vecStrchr((string), (findThis)))
 #define rwstrcmp(string1, string2) (lbl_805F15B4->stringFuncs.vecStrcmp((string1), (string2)))

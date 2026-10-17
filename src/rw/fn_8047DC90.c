@@ -2,9 +2,6 @@
  * file name is unknown. */
 #include "rw/rwcore.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTFLAG_RESIZABLE 0x1000000
-
 /* The entries a new list has room for */
 #define rwSLISTINITIALENTRIES 20
 
