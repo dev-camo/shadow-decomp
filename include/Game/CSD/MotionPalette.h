@@ -1,7 +1,7 @@
 #ifndef GAME_CSD_MOTIONPALETTE_H
 #define GAME_CSD_MOTIONPALETTE_H
 
-#include <stddef.h>
+#include <cstddef>
 #include <dolphin/types.h>
 #include "layout_check.h"
 

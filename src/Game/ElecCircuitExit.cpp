@@ -8,7 +8,7 @@
 #include "Game/SharedConstants.h"
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
-#include <string.h>
+#include <cstring>
 #include "layout_check.h"
 
 class UnkHandleBTarget_8015BE64;

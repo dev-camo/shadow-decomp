@@ -5,8 +5,8 @@
 #include "Game/CSD/MotionPalette.h"
 #include "Game/CSD/Screen.h"
 #include "Game/CSD/csdBase.h"
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 /* Undecompiled callees at 0x8035BA28 and 0x8035C294: a name-to-index search of a sorted name
  * table and the reset of an entry to its defaults (behaviour inferred). */

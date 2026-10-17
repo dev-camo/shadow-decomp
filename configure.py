@@ -244,6 +244,18 @@ cflags_game = [
     "-i include/libc",
 ]
 
+# The MSL C, math and C++ library headers. The Elec and Chao::CSD C++ units (cflags_game_cpp,
+# cflags_csd) search them in place of include/libc; C game code and the fn_8040 C++ helpers
+# (cflags_game) keep the C declarations in include/libc.
+msl_includes = [
+    "-i src/PowerPC_EABI_Support",
+    "-i src/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Include",
+    "-i src/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Include",
+    "-i src/PowerPC_EABI_Support/MSL/MSL_C/PPC_EABI/Include",
+    "-i src/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/Include",
+    "-i src/PowerPC_EABI_Support/Runtime/Inc",
+]
+
 # Game C++: the original carries MWCC RTTI type infos for its classes and is optimized for size
 # (saving register pairs with stmw/lmw). Only functions marked inline are inlined, and only those
 # whose bodies call no other inline function (level=1): a constructor that just stores three floats
@@ -252,7 +264,8 @@ cflags_game = [
 # it. Inlining is deferred: functions are emitted in reverse definition order, and the RTTI names
 # are pooled before the function literals.
 cflags_game_cpp = [
-    *cflags_game,
+    *cflags_base,
+    *msl_includes,
     "-O4,s",
     "-use_lmw_stmw on",
     "-str reuse,readonly",
@@ -275,7 +288,8 @@ cflags_game_gcax = [
 # (functions in reverse definition order) one level deep (recursive inline functions are expanded
 # once).
 cflags_csd = [
-    *cflags_game,
+    *cflags_base,
+    *msl_includes,
     "-O4,s",
     "-use_lmw_stmw on",
     "-str reuse,readonly",

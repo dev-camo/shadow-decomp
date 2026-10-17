@@ -33,6 +33,13 @@ typedef int BOOL;
 
 #define INT_MAX 2147483647
 
+#if defined(__MWERKS__) && defined(__cplusplus)
+/* C++ is compiled against MSL's C library headers, which also define NULL. */
+#include <cstdio>
+#include <cstdarg>
+#include <cstring>
+#include <cctype>
+#else
 #ifndef NULL
 #define NULL ((void *)0)
 #endif
@@ -42,16 +49,16 @@ typedef int BOOL;
 #include "libc/stdarg.h"
 #include "libc/string.h"
 #include "libc/ctype.h"
+#include "libc/cmath.h"
 #else
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
 #endif
+#endif
 
-#ifdef __MWERKS__
-#include "cmath.h"
-#else
+#ifndef __MWERKS__
 #define fabsf fabsf_libm // math_sub.h defines its own inline fabsf
 #include <math.h>
 #undef fabsf
