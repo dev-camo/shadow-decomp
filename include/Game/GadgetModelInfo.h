@@ -22,6 +22,9 @@ class GadgetModelInfo {
     bool fn_80160B18(int arg0);
     bool fn_80160C28(int arg0);
     void fn_80161880();
+    /* Passes the three floats to a virtual method of each part whose id equals arg0 (behaviour
+     * inferred; meanings of the arguments unknown). */
+    void fn_801617D0(int arg0, int arg1, float arg2, float arg3, float arg4);
     /* Attaches a character info to the model node named nodeName (behaviour inferred). */
     bool fn_80161F08(const char *nodeName, const boost::weak_ptr<CharInfo> &info);
     void fn_80162804();

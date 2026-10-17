@@ -57,6 +57,11 @@ void fn_8040B848(Fn8040Matrix34 *matrix, float angle);
  * that fn_8001E070 builds from the y, x and z angles of a rotation vector (behaviour inferred). */
 void fn_8040B884(Fn8040Matrix34 *matrix, float angle);
 void fn_8040B80C(Fn8040Matrix34 *matrix, float angle);
+/* Applies the three angles of rotation in the axis order selected by order, 0 to 2 (behaviour
+ * inferred). */
+void fn_8001E070(Fn8040Matrix34 *matrix, const Fn8040Vector3 *rotation, int order);
+/* Scales the matrix's three rotation columns by x, y and z (behaviour inferred). */
+void fn_8040B720(Fn8040Matrix34 *matrix, float x, float y, float z);
 /* identity matrix, set up at startup by fn_8040C190 */
 extern Fn8040Matrix34 lbl_805E0720;
 

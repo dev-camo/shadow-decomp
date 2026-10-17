@@ -16,7 +16,7 @@ class CharInfo {
     /* 0x0C */ Fn8040Vector3 m_rotation; /* radians */
     /* 0x18 */ Fn8040Vector3 field_0x18;
     /* 0x24 */ Fn8040Vector3 field_0x24;
-    /* 0x30 */ s32 field_0x30;
+    /* 0x30 */ s32 field_0x30; /* the rotation order passed to fn_8001E070 (inferred) */
     /* 0x34 */ u32 field_0x34;
 
     virtual ~CharInfo();
