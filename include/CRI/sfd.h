@@ -322,8 +322,10 @@ CHECK_SIZEOF(SFD_TR, 0x44);
 #define SFD_COND_VID_SELECT 0x3B
 #define SFD_COND_HDRCB_FN 0x4B
 #define SFD_COND_HDRCB_OBJ 0x4C
-#define SFD_COND_AUDIO_AUTO_OFF 0x4F
-#define SFD_COND_VIDEO_AUTO_OFF 0x50
+/* switch video / audio off when the stream has no elementary stream and no input data once the
+ * other stream's output is prepared (sfmps_ProcPrep) */
+#define SFD_COND_VIDEO_AUTO_OFF 0x4F
+#define SFD_COND_AUDIO_AUTO_OFF 0x50
 #define SFD_COND_SYSFN 0x55
 #define SFD_COND_SYSOBJ 0x56
 #define SFD_COND_PSMAPFN 0x57

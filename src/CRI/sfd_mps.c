@@ -319,12 +319,12 @@ static void sfmps_ProcPrep(SFD sfd) {
     }
     wk = SFMPS_WK(sfd);
     if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) != 0 &&
-        SFSET_GetCond(sfd, SFD_COND_VIDEO_AUTO_OFF) != 0 && SFBUF_GetWTot(sfd, 2) == 0 &&
+        SFSET_GetCond(sfd, SFD_COND_AUDIO_AUTO_OFF) != 0 && SFBUF_GetWTot(sfd, 2) == 0 &&
         wk->naud == 0 && SFTRN_GetPrepFlg(sfd, 6) != 0) {
         SFSET_SetCond(sfd, SFD_COND_AUDIO_ON, 0);
     }
     if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) != 0 &&
-        SFSET_GetCond(sfd, SFD_COND_AUDIO_AUTO_OFF) != 0 && SFBUF_GetWTot(sfd, 1) == 0 &&
+        SFSET_GetCond(sfd, SFD_COND_VIDEO_AUTO_OFF) != 0 && SFBUF_GetWTot(sfd, 1) == 0 &&
         wk->nvid == 0 && SFTRN_GetPrepFlg(sfd, 7) != 0) {
         SFSET_SetCond(sfd, SFD_COND_VIDEO_ON, 0);
     }
