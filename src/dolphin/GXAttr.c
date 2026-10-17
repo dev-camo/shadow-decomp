@@ -29,7 +29,7 @@
 #define CHECK_LISTPTR(line, list)                                                                  \
     ASSERTMSGLINE(line, (list) != NULL, "GXSetVtxAttrFmt: list pointer is NULL")
 #define CHECK_MTXIDX(line, attr, type)                                                             \
-    ASSERTMSGLINE(line, (attr) > GX_VA_TEX7MTXIDX || (type) <= GX_VA_TEX0MTXIDX,                   \
+    ASSERTMSGLINE(line, (attr) > GX_VA_TEX7MTXIDX || (type) <= GX_DIRECT,                          \
                   "GXSetVtxDesc: GX_VA_*MTXIDX accepts GX_NONE or GX_DIRECT only")
 
 static void __GXXfVtxSpecs(void) {
