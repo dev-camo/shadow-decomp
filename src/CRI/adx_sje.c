@@ -16,6 +16,7 @@
 #include "CRI/adx_dcd.h"
 #include "CRI/adx_sje.h"
 #include "CRI/sj.h"
+#include "layout_check.h"
 
 #define ADXSJE_MAX_OBJ 8
 #define ADXSJE_MAX_FLT 16
@@ -32,6 +33,7 @@ typedef struct {
     Sint16 h1;  /* 0x08 */
     Sint16 h2;  /* 0x0A */
 } ADXSJE_IIRFLT;
+CHECK_SIZEOF(ADXSJE_IIRFLT, 0xC);
 
 /* prediction filter of one channel */
 typedef struct {
@@ -53,6 +55,7 @@ typedef struct {
     ADXSJE_IIRFLT *iir;           /* 0x88 */
     Sint32 x8c;                   /* 0x8C */
 } ADXSJE_PRDFLT;
+CHECK_SIZEOF(ADXSJE_PRDFLT, 0x90);
 
 struct ADXSJE_OBJ {
     Sint8 used;                                   /* 0x00 */
@@ -110,6 +113,7 @@ struct ADXSJE_OBJ {
     void *cinf;                                   /* 0x2F0 */
     Sint32 cinf_len;                              /* 0x2F4 */
 };
+CHECK_SIZEOF(struct ADXSJE_OBJ, 0x2F8);
 typedef struct ADXSJE_OBJ ADXSJE_OBJ;
 
 Sint32 AdxGainDataMax = 0x1000;

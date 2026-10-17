@@ -7,6 +7,7 @@
 #include <dolphin/gx.h>
 #include <dolphin/mtx.h>
 #include <dolphin/os.h>
+#include "layout_check.h"
 
 #define rpATOMIC 1 /* RwObject type of an atomic */
 #define rwMEMHINTDUR_EVENT 0x30000
@@ -27,6 +28,7 @@ typedef struct SkinKernelParams {
     /* 0x18 */ RwInt32 nbtSize; /* bytes of a vertex's binormal and tangent, or 0 */
     /* 0x1C */ RwInt32 numVertices;
 } SkinKernelParams;
+CHECK_SIZEOF(SkinKernelParams, 0x20);
 
 /* the skinning kernels (hand-written assembly) */
 void fn_80450D6C(RwMatrix *matrices, RwMatrix *skinToBone, RwMatrix *boneMatrices,

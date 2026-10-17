@@ -4,7 +4,9 @@ typedef struct ExceptionIndex {
     /* 0x00 */ unsigned int start;
     /* 0x04 */ unsigned int size_and_flags;
     /* 0x08 */ unsigned int exception_table;
+#include "layout_check.h"
 } ExceptionIndex;
+CHECK_SIZEOF(ExceptionIndex, 0xC);
 
 struct __eti_init_info {
     /* 0x00 */ ExceptionIndex *index_begin;
@@ -12,6 +14,7 @@ struct __eti_init_info {
     /* 0x08 */ char *text_start;
     /* 0x0C */ unsigned int text_size;
 };
+CHECK_SIZEOF(struct __eti_init_info, 0x10);
 
 /* registered exception-table fragment (names from MSL's Gecko_ExceptionPPC.cp) */
 typedef struct ProcessInfo {
@@ -19,6 +22,7 @@ typedef struct ProcessInfo {
     /* 0x04 */ char *TOC;
     /* 0x08 */ int active;
 } ProcessInfo;
+CHECK_SIZEOF(ProcessInfo, 0xC);
 
 typedef struct FragmentInfo {
     /* 0x00 */ void *exception_record;
@@ -30,6 +34,7 @@ typedef struct FragmentInfo {
     /* 0x18 */ unsigned int reserved_18;
     /* 0x1C */ unsigned int reserved_1C;
 } FragmentInfo;
+CHECK_SIZEOF(FragmentInfo, 0x20);
 
 typedef struct FragmentSearchInfo {
     /* 0x00 */ ExceptionIndex *index_begin;
@@ -40,18 +45,21 @@ typedef struct FragmentSearchInfo {
     /* 0x10 */ unsigned long long relative_base;
     /* 0x18 */ char *toc;
 } FragmentSearchInfo;
+CHECK_SIZEOF(FragmentSearchInfo, 0x20);
 
 typedef struct LongExceptionEntry {
     /* 0x00 */ unsigned int start;
     /* 0x04 */ unsigned short length;
     /* 0x06 */ unsigned short exception_offset;
 } LongExceptionEntry;
+CHECK_SIZEOF(LongExceptionEntry, 0x8);
 
 typedef struct ShortExceptionEntry {
     /* 0x00 */ unsigned short start;
     /* 0x02 */ unsigned short end;
     /* 0x04 */ unsigned short exception_offset;
 } ShortExceptionEntry;
+CHECK_SIZEOF(ShortExceptionEntry, 0x6);
 
 static ProcessInfo fragmentinfo[1];
 

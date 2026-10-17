@@ -1,5 +1,6 @@
 /* RenderWare frame lists in streams. The original file name is unknown. */
 #include "rw/rwcore.h"
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 
@@ -31,6 +32,7 @@ typedef struct rwStreamFrame {
     /* 0x30 */ RwInt32 parentIndex; /* -1 for a root */
     /* 0x34 */ RwUInt32 data;
 } rwStreamFrame;
+CHECK_SIZEOF(rwStreamFrame, 0x38);
 
 /* Whether frames read are added to their parents with fn_80487348, then updated from each root
  * (inferred); otherwise fn_804872E0 adds them */

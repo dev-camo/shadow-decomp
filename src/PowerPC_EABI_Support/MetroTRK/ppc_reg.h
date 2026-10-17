@@ -2,6 +2,7 @@
 #define _PPC_REG_H
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,12 +16,14 @@ typedef struct Default_PPC {
     u32 CTR;
     u32 XER;
 } Default_PPC;
+CHECK_SIZEOF(Default_PPC, 0x94);
 
 typedef struct Float_PPC {
     u64 FPR[32];
     u64 FPSCR;
     u64 FPECR;
 } Float_PPC;
+CHECK_SIZEOF(Float_PPC, 0x110);
 
 typedef struct Extended1_PPC_6xx_7xx {
     // u8 pad[0x168];
@@ -100,10 +103,12 @@ typedef struct Extended1_PPC_6xx_7xx {
     u32 DMA_U_;
     u32 DMA_L_;
 } Extended1_PPC_6xx_7xx;
+CHECK_SIZEOF(Extended1_PPC_6xx_7xx, 0x184);
 
 typedef struct Extended2_PPC_6xx_7xx {
     u32 PSR[32][2];
 } Extended2_PPC_6xx_7xx;
+CHECK_SIZEOF(Extended2_PPC_6xx_7xx, 0x100);
 
 typedef struct ProcessorState_PPC_6xx_7xx {
     Default_PPC Default;
@@ -112,6 +117,7 @@ typedef struct ProcessorState_PPC_6xx_7xx {
     Extended2_PPC_6xx_7xx Extended2;
     u32 transport_handler_saved_ra;
 } ProcessorState_PPC_6xx_7xx;
+CHECK_SIZEOF(ProcessorState_PPC_6xx_7xx, 0x430);
 
 typedef ProcessorState_PPC_6xx_7xx ProcessorState_PPC;
 

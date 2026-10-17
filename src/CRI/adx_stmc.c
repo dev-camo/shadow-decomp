@@ -19,6 +19,7 @@
 #include "CRI/cvfs.h"
 #include "CRI/sj.h"
 #include "CRI/svm.h"
+#include "layout_check.h"
 
 #define ADXSTM_MAX_OBJ 40
 #define ADXSTM_SCT_SHIFT 11
@@ -63,6 +64,7 @@ typedef struct ADXSTM_OBJ {
     Sint32 pos;                  /* 0x58 */
     Uint32 lim_nsct;             /* 0x5C */
 } ADXSTM_OBJ;
+CHECK_SIZEOF(ADXSTM_OBJ, 0x60);
 
 static Sint32 adxstm_init_cnt = 0; /* name inferred */
 static Sint32 adxstmf_rtim_ofst = 0;

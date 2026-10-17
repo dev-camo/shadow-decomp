@@ -2,12 +2,14 @@
 #include <dolphin/dvd.h>
 
 #include "__dvd.h"
+#include "layout_check.h"
 
 typedef struct FSTEntry {
     /* 0x00 */ unsigned int isDirAndStringOff;
     /* 0x04 */ unsigned int parentOrPosition;
     /* 0x08 */ unsigned int nextEntryOrLength;
 } FSTEntry;
+CHECK_SIZEOF(FSTEntry, 0xC);
 
 static OSBootInfo *BootInfo;
 static FSTEntry *FstStart;

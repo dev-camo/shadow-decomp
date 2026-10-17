@@ -9,6 +9,7 @@
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include <string.h>
+#include "layout_check.h"
 
 class UnkHandleBTarget_8015BE64;
 
@@ -32,6 +33,7 @@ struct UnkStateFields_802C7FC0 {
     /* 0x0C */ u32 field_0xC;
     /* 0x10 */ u8 field_0x10;
 };
+CHECK_SIZEOF(UnkStateFields_802C7FC0, 0x14);
 
 struct UnkState_802C7FC0 {
     /* 0x00 */ UnkStateFields_802C7FC0 cur;
@@ -39,6 +41,7 @@ struct UnkState_802C7FC0 {
     /* 0x28 */ u8 dirty;
     /* 0x2C */ s32 index;
 };
+CHECK_SIZEOF(UnkState_802C7FC0, 0x30);
 
 class ElecCircuitExit : public Gadget {
   public:
@@ -64,6 +67,7 @@ class ElecCircuitExit : public Gadget {
     /* 0x44 */ boost::weak_ptr<GadgetCharInfo> field_0x44; /* pointee type inferred */
     /* 0x4C */ u32 field_0x4C;
 };
+CHECK_SIZEOF(ElecCircuitExit, 0x50);
 
 const char *ElecCircuitExit::s_name = "ElecCircuitExit";
 
@@ -75,6 +79,7 @@ struct UnkAngles_80584590 {
     float y;
     float z;
 };
+CHECK_SIZEOF(UnkAngles_80584590, 0xC);
 
 static UnkAngles_80584590 lbl_80584590(0.5f * lbl_805FAD38, 0.0f, 0.0f);
 

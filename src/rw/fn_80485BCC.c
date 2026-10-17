@@ -2,6 +2,7 @@
  * device requests, video modes and plugins. The original file name is unknown. */
 #include "rw/rwcore.h"
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_GLOBAL 0x40000
 
@@ -67,6 +68,7 @@
 typedef struct RwSubSystemInfo {
     RwChar name[80];
 } RwSubSystemInfo;
+CHECK_SIZEOF(RwSubSystemInfo, 0x50);
 
 /* The engine plugin registry: the engine globals with their plugins' data */
 RwPluginRegistry lbl_8056DFB0 = {sizeof(RwGlobals), sizeof(RwGlobals), 0, 0, NULL, NULL};

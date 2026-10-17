@@ -3,6 +3,7 @@
 #include "rw/rwcore.h"
 #include <stdio.h>
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINTDUR_GLOBAL 0x40000
@@ -41,6 +42,7 @@
 typedef struct rwStringGlobals {
     /* 0x0 */ RwFreeList *stringFreeList;
 } rwStringGlobals;
+CHECK_SIZEOF(rwStringGlobals, 0x4);
 
 #define RWSTRINGGLOBAL(var)                                                                        \
     (RWPLUGINOFFSET(rwStringGlobals, lbl_805F15B4, lbl_805F15A0.globalsOffset)->var)

@@ -2,6 +2,7 @@
 #define NMWEXCEPTION_H
 
 #include "__ppc_eabi_linker.h"
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,6 +17,7 @@ typedef struct DestructorChain {
     /* 0x04 */ void (*destructor)(void *object, int flags);
     /* 0x08 */ void *object;
 } DestructorChain;
+CHECK_SIZEOF(DestructorChain, 0xC);
 
 void __unregister_fragment(int fragmentID);
 int __register_fragment(struct __eti_init_info *info, char *TOC);

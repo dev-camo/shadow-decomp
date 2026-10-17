@@ -3,6 +3,7 @@
  * original file name is unknown. */
 #include "rw/rwcore.h"
 #include <math.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINTDUR_GLOBAL 0x40000
@@ -32,6 +33,7 @@ typedef struct rwMatrixGlobals {
     /* 0x08 */ void (*multiply)(RwMatrix *dst, const RwMatrix *matrixA, const RwMatrix *matrixB);
     /* 0x0C */ RwMatrixTolerance tolerance; /* the default one */
 } rwMatrixGlobals;
+CHECK_SIZEOF(rwMatrixGlobals, 0x18);
 
 #define RWMATRIXGLOBAL(var)                                                                        \
     (RWPLUGINOFFSET(rwMatrixGlobals, lbl_805F15B4, lbl_805F1560.globalsOffset)->var)

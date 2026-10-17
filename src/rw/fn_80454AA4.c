@@ -3,6 +3,7 @@
  * plane and world sectors, all in one allocation. The original file name is unknown. */
 #include "rw/rpworld.h"
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 
@@ -32,6 +33,7 @@ typedef union OldTriangle {
         /* 0x2 */ RwUInt16 vertIndex[3];
     } old;
 } OldTriangle;
+CHECK_SIZEOF(OldTriangle, 0x8);
 
 /* The stream header of a world (0x40 bytes) */
 typedef struct WorldChunk {
@@ -45,6 +47,7 @@ typedef struct WorldChunk {
     /* 0x24 */ RwInt32 format;        /* the world's flags */
     /* 0x28 */ RwBBox boundingBox;
 } WorldChunk;
+CHECK_SIZEOF(WorldChunk, 0x40);
 
 /* The stream header of a plane sector (0x18 bytes) */
 typedef struct PlaneSectorChunk {
@@ -55,6 +58,7 @@ typedef struct PlaneSectorChunk {
     /* 0x10 */ RwReal leftValue;
     /* 0x14 */ RwReal rightValue;
 } PlaneSectorChunk;
+CHECK_SIZEOF(PlaneSectorChunk, 0x18);
 
 /* The stream header of a world sector (0x2C bytes) */
 typedef struct WorldSectorChunk {
@@ -66,6 +70,7 @@ typedef struct WorldSectorChunk {
     /* 0x24 */ RwInt32 field_0x24;
     /* 0x28 */ RwInt32 field_0x28;
 } WorldSectorChunk;
+CHECK_SIZEOF(WorldSectorChunk, 0x2C);
 
 /* the rights read from the last world and world sector streams: the plugin that owns the pipeline
  * and its data, declared in reverse address order (the compiler places them in .sbss last
@@ -74,6 +79,7 @@ typedef struct WorldModuleGlobals {
     /* 0x0 */ RwInt32 field_0x0;
     /* 0x4 */ RwInt32 numInstances; /* the open engine instances */
 } WorldModuleGlobals;
+CHECK_SIZEOF(WorldModuleGlobals, 0x8);
 
 WorldModuleGlobals lbl_805F14B0;
 RwUInt32 lbl_805F14AC; /* world pipeline plugin */

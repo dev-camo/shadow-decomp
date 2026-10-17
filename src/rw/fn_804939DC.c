@@ -8,6 +8,7 @@
 #include <dolphin/mtx.h>
 #include <dolphin/os.h>
 #include <dolphin/vi.h>
+#include "layout_check.h"
 
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
@@ -98,6 +99,7 @@ typedef struct RwStandard {
     RwInt32 nStandard;
     RwStandardFunc fpStandard;
 } RwStandard;
+CHECK_SIZEOF(RwStandard, 0x8);
 
 /* The display the engine is opened with: the render mode (NULL for the TV format's default), the
  * pixel format and the FIFO size (inferred) */
@@ -106,18 +108,21 @@ typedef struct GameCubeDisplay {
     RwInt32 pixelFormat;
     RwInt32 fifoSize;
 } GameCubeDisplay;
+CHECK_SIZEOF(GameCubeDisplay, 0xC);
 
 /* The device's state (inferred) */
 typedef struct GameCubeDeviceState {
     RwCamera *camera;
     RwMemoryFunctions *memoryFuncs;
 } GameCubeDeviceState;
+CHECK_SIZEOF(GameCubeDeviceState, 0x8);
 
 /* A queued frame: the external frame buffer it is copied to and the FIFO position after it */
 typedef struct FrameQueueEntry {
     void *frameBuffer;
     void *breakPoint;
 } FrameQueueEntry;
+CHECK_SIZEOF(FrameQueueEntry, 0x8);
 
 /* The .sbss variables are defined in reverse address order: the compiler lays them out last
  * first */

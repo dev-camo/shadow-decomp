@@ -2,6 +2,7 @@
 #include <dolphin/os.h>
 
 #include "__gx.h"
+#include "layout_check.h"
 
 // GXTexObj internal data
 typedef struct __GXTexObjInt_struct {
@@ -16,6 +17,7 @@ typedef struct __GXTexObjInt_struct {
     u8 loadFmt;
     u8 flags;
 } __GXTexObjInt;
+CHECK_SIZEOF(__GXTexObjInt, 0x20);
 
 // GXTexRegion internal data
 typedef struct __GXTexRegionInt_struct {
@@ -26,6 +28,7 @@ typedef struct __GXTexRegionInt_struct {
     u8 is32bMipmap;
     u8 isCached;
 } __GXTexRegionInt;
+CHECK_SIZEOF(__GXTexRegionInt, 0x10);
 
 // GXTlutObj internal data
 typedef struct __GXTlutObjInt_struct {
@@ -33,12 +36,14 @@ typedef struct __GXTlutObjInt_struct {
     u32 loadTlut0;
     u16 numEntries;
 } __GXTlutObjInt;
+CHECK_SIZEOF(__GXTlutObjInt, 0xC);
 
 // GXTlutRegion internal data
 typedef struct __GXTlutRegionInt_struct {
     u32 loadTlut1;
     __GXTlutObjInt tlutObj;
 } __GXTlutRegionInt;
+CHECK_SIZEOF(__GXTlutRegionInt, 0x10);
 
 u8 GXTexMode0Ids[8] = {0x80, 0x81, 0x82, 0x83, 0xA0, 0xA1, 0xA2, 0xA3};
 u8 GXTexMode1Ids[8] = {0x84, 0x85, 0x86, 0x87, 0xA4, 0xA5, 0xA6, 0xA7};

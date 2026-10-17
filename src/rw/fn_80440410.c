@@ -4,6 +4,7 @@
  * sector tree and then the collision trees of its sectors. The original file name is unknown. */
 #include "rw/rpcollis.h"
 #include "rw/rpworld.h"
+#include "layout_check.h"
 
 #define rwMEMHINT_COLLTREE 0x3002C
 
@@ -17,6 +18,7 @@ typedef struct RpIntersection {
     } t;
     /* 0x18 */ RwInt32 type; /* rpINTERSECT* */
 } RpIntersection;
+CHECK_SIZEOF(RpIntersection, 0x1C);
 
 #define rpINTERSECTLINE 1
 #define rpINTERSECTSPHERE 3
@@ -36,6 +38,7 @@ typedef struct RpCollTreeStreamHeader {
     RwUInt32 numTriangles;
     RwUInt32 numSplits;
 } RpCollTreeStreamHeader;
+CHECK_SIZEOF(RpCollTreeStreamHeader, 0x24);
 
 RwInt32 lbl_805F1410;
 RwInt32 lbl_805F1414;
@@ -458,6 +461,7 @@ typedef struct CollLine {
     /* 0x18 */ RwV3d recip;
     /* 0x24 */ RwV3d pad;
 } CollLine;
+CHECK_SIZEOF(CollLine, 0x30);
 
 /* A pending part of the line walk of a world's sector tree: a sector and the part of the line,
  * between parameters t0 and t1, that may meet it */
@@ -466,12 +470,14 @@ typedef struct CollWorldLineEntry {
     /* 0x4 */ RwReal t0;
     /* 0x8 */ RwReal t1;
 } CollWorldLineEntry;
+CHECK_SIZEOF(CollWorldLineEntry, 0xC);
 
 typedef struct CollWorldLineIt {
     /* 0x000 */ CollLine line;
     /* 0x030 */ CollWorldLineEntry stack[65];
     /* 0x33C */ CollWorldLineEntry *top; /* the current entry; those below it are pending */
 } CollWorldLineIt;
+CHECK_SIZEOF(CollWorldLineIt, 0x340);
 
 /* The same for a collision tree */
 typedef struct CollTreeLineEntry {
@@ -479,6 +485,7 @@ typedef struct CollTreeLineEntry {
     /* 0x4 */ RwReal t0;
     /* 0x8 */ RwReal t1;
 } CollTreeLineEntry;
+CHECK_SIZEOF(CollTreeLineEntry, 0xC);
 
 typedef struct CollTreeLineIt {
     /* 0x000 */ RpCollTree *tree;
@@ -487,6 +494,7 @@ typedef struct CollTreeLineIt {
     /* 0x03C */ CollTreeLineEntry stack[33];
     /* 0x1C8 */ CollTreeLineEntry *top;
 } CollTreeLineIt;
+CHECK_SIZEOF(CollTreeLineIt, 0x1CC);
 
 /* Moves to the next world sector the line may meet, pushing the far side of each split the line
  * crosses; call while there are entries left */
@@ -780,6 +788,7 @@ typedef struct CollWorldBoxIt {
     /* 0x018 */ RpSector *stack[65];
     /* 0x11C */ RpSector **top; /* the current entry; those below it are pending */
 } CollWorldBoxIt;
+CHECK_SIZEOF(CollWorldBoxIt, 0x120);
 
 /* A pending branch of a box walk of a collision tree, with the faces of the clip box that may cut
  * its triangles (bit 2 * axis: the low face, the next bit: the high face) */
@@ -787,6 +796,7 @@ typedef struct CollTreeBoxEntry {
     /* 0x0 */ RpCollTreeBranch *branch;
     /* 0x4 */ RwUInt32 clipFlags;
 } CollTreeBoxEntry;
+CHECK_SIZEOF(CollTreeBoxEntry, 0x8);
 
 typedef struct CollTreeBoxIt {
     /* 0x000 */ RpCollTree *tree;
@@ -796,6 +806,7 @@ typedef struct CollTreeBoxIt {
     /* 0x03C */ CollTreeBoxEntry stack[33];
     /* 0x144 */ CollTreeBoxEntry *top;
 } CollTreeBoxIt;
+CHECK_SIZEOF(CollTreeBoxIt, 0x148);
 
 static inline void CollWorldBoxItStart(CollWorldBoxIt *it, RpWorld *world, const RwBBox *box) {
     it->box = *box;

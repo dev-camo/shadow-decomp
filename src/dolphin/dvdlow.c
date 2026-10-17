@@ -3,6 +3,7 @@
 
 #include "__dvd.h"
 #include "__os.h"
+#include "layout_check.h"
 
 #define DVD_WATYPE_MAX 2
 
@@ -27,6 +28,7 @@ typedef struct {
     u32 length;
     u32 offset;
 } DVDBuffer;
+CHECK_SIZEOF(DVDBuffer, 0xC);
 
 typedef struct {
     s32 command;
@@ -35,6 +37,7 @@ typedef struct {
     u32 offset;
     DVDLowCallback callback;
 } DVDCommand;
+CHECK_SIZEOF(DVDCommand, 0x14);
 
 static DVDCommand CommandList[3];
 static OSAlarm AlarmForWA;

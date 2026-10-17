@@ -3,6 +3,7 @@
 #include "MetroTRK/trkenum.h"
 #include "MetroTRK/dstypes.h"
 #include "MetroTRK/memmap.h"
+#include "layout_check.h"
 
 static BOOL TRKTargetCheckStep();
 
@@ -11,12 +12,14 @@ typedef struct StopInfo_PPC {
     u32 PCInstruction;
     u16 exceptionID;
 } StopInfo_PPC;
+CHECK_SIZEOF(StopInfo_PPC, 0xC);
 
 typedef struct TRKExceptionStatus {
     StopInfo_PPC exceptionInfo;
     u8 inTRK;
     u8 exceptionDetected;
 } TRKExceptionStatus;
+CHECK_SIZEOF(TRKExceptionStatus, 0x10);
 
 typedef struct TRKStepStatus {
     BOOL active;               // 0x0
@@ -25,6 +28,7 @@ typedef struct TRKStepStatus {
     u32 rangeStart;            // 0xC
     u32 rangeEnd;              // 0x10
 } TRKStepStatus;
+CHECK_SIZEOF(TRKStepStatus, 0x14);
 
 ProcessorRestoreFlags_PPC gTRKRestoreFlags = {FALSE, FALSE};
 

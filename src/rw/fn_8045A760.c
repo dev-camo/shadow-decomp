@@ -4,6 +4,7 @@
 #include "rw/rwmath.h"
 #include <math.h>
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINTDUR_GLOBAL 0x40000
@@ -36,17 +37,20 @@ typedef struct LightChunk {
     /* 0x10 */ RwReal minusCosAngle;
     /* 0x14 */ RwUInt32 typeAndFlags; /* the type in bits 16-23, the flags in the low byte */
 } LightChunk;
+CHECK_SIZEOF(LightChunk, 0x18);
 
 /* The light module's globals in the engine (inferred) */
 typedef struct LightGlobals {
     /* 0x0 */ RwFreeList *lightFreeList;
 } LightGlobals;
+CHECK_SIZEOF(LightGlobals, 0x4);
 
 /* The light module (inferred) */
 typedef struct LightModule {
     /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
     /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
 } LightModule;
+CHECK_SIZEOF(LightModule, 0x8);
 
 #define LIGHTGLOBALS() ((LightGlobals *)((RwUInt8 *)lbl_805F15B4 + lbl_805F14D8.globalsOffset))
 #define LIGHTGLOBAL(var) (LIGHTGLOBALS()->var)

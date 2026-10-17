@@ -1,5 +1,6 @@
 #ifndef RUNTIME_ALLOC_INTERNAL_H
 #define RUNTIME_ALLOC_INTERNAL_H
+#include "layout_check.h"
 
 /* Types and helpers of MSL alloc.c, shared by the units this project splits it into (calloc.c,
  * allocator_core.c, allocator_release.c). Layouts and macro names follow the MSL alloc.c in the
@@ -11,6 +12,7 @@ typedef struct Block {
     unsigned long max_size; /* 0x08 */
     unsigned long size;     /* 0x0C */
 } Block;
+CHECK_SIZEOF(Block, 0x10);
 
 typedef struct SubBlock {
     unsigned long size;    /* 0x00 */
@@ -18,6 +20,7 @@ typedef struct SubBlock {
     struct SubBlock *prev; /* 0x08 */
     struct SubBlock *next; /* 0x0C */
 } SubBlock;
+CHECK_SIZEOF(SubBlock, 0x10);
 
 struct FixSubBlock;
 
@@ -28,25 +31,30 @@ typedef struct FixBlock {
     struct FixSubBlock *start_; /* 0x0C */
     unsigned long n_allocated_; /* 0x10 */
 } FixBlock;
+CHECK_SIZEOF(FixBlock, 0x14);
 
 typedef struct FixSubBlock {
     FixBlock *block_;          /* 0x00 */
     struct FixSubBlock *next_; /* 0x04 */
 } FixSubBlock;
+CHECK_SIZEOF(FixSubBlock, 0x8);
 
 typedef struct FixStart {
     FixBlock *tail_; /* 0x00 */
     FixBlock *head_; /* 0x04 */
 } FixStart;
+CHECK_SIZEOF(FixStart, 0x8);
 
 typedef struct __mem_pool_obj {
     Block *start_;         /* 0x00 */
     FixStart fix_start[6]; /* 0x04 */
 } __mem_pool_obj;
+CHECK_SIZEOF(__mem_pool_obj, 0x34);
 
 typedef struct __mem_pool {
     void *reserved[14]; /* 0x00 */
 } __mem_pool;
+CHECK_SIZEOF(__mem_pool, 0x38);
 
 /* Every allocation is preceded by a header word: a fixed-size block stores its FixBlock pointer
  * (bit 0 clear), a variable-size block its size with flag bits (bit 0 set). */

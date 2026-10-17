@@ -7,6 +7,7 @@
 #include "__gx.h"
 #include "__os.h"
 #include "__vi.h"
+#include "layout_check.h"
 
 #ifdef DEBUG
 const char *__VIVersion = "<< Dolphin SDK - VI\tdebug build: Apr  7 2004 03:55:59 (0x2301) >>";
@@ -39,6 +40,7 @@ typedef struct {
     u8 hbeCCIR656;
     u16 hbsCCIR656;
 } VITiming;
+CHECK_SIZEOF(VITiming, 0x26);
 
 typedef struct {
     u16 DispPosX;
@@ -73,6 +75,7 @@ typedef struct {
     u32 rbfbb;
     VITiming *timing;
 } SomeVIStruct;
+CHECK_SIZEOF(SomeVIStruct, 0x58);
 
 static BOOL IsInitialized;
 static volatile u32 retraceCount;

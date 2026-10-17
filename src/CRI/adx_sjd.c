@@ -13,6 +13,7 @@
 #include "CRI/adx_b.h"
 #include "CRI/adx_dcd.h"
 #include "CRI/adx_sjd.h"
+#include "layout_check.h"
 
 #define ADXSJD_MAX_OBJ 16
 #define ADXSJD_MAX_NCH 2
@@ -56,6 +57,7 @@ struct ADXSJD_OBJ {
     Sint32 pad_nsmpl;  /* 0xA0 silence samples to insert before the output */
     Sint32 skip_nsmpl; /* 0xA4 output samples to discard */
 };
+CHECK_SIZEOF(struct ADXSJD_OBJ, 0xA8);
 typedef struct ADXSJD_OBJ ADXSJD_OBJ;
 
 ADXSJD_OBJ adxsjd_obj[ADXSJD_MAX_OBJ];

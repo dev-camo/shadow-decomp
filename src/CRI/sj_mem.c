@@ -7,6 +7,7 @@
  */
 #include "CRI/sj.h"
 #include <string.h>
+#include "layout_check.h"
 
 #define SJMEM_MAX_OBJ 32
 
@@ -21,6 +22,7 @@ typedef struct {
     /* 0x1C */ void (*errfunc)(void *obj, Char8 *msg);
     /* 0x20 */ void *errobj;
 } SJMEM_OBJ;
+CHECK_SIZEOF(SJMEM_OBJ, 0x24);
 
 static const SJUUID sjmem_uuid = {{0xDD, 0x9E, 0xEE, 0x41, 0x16, 0x79, 0x11, 0xD2, 0x93, 0x6C, 0x00,
                                    0x60, 0x08, 0x94, 0x48, 0xBC}};

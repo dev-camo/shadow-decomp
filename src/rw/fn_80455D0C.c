@@ -4,6 +4,7 @@
  * name is unknown. */
 #include "rw/rpworld.h"
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINTDUR_GLOBAL 0x40000
@@ -41,6 +42,7 @@ typedef struct ClumpChunk {
     /* 0x4 */ RwInt32 numLights;
     /* 0x8 */ RwInt32 numCameras;
 } ClumpChunk;
+CHECK_SIZEOF(ClumpChunk, 0xC);
 
 /* The stream header of an atomic (0x10 bytes) */
 typedef struct AtomicChunk {
@@ -49,18 +51,21 @@ typedef struct AtomicChunk {
     /* 0x8 */ RwInt32 flags;
     /* 0xC */ RwInt32 unused;
 } AtomicChunk;
+CHECK_SIZEOF(AtomicChunk, 0x10);
 
 /* The clump module's globals in the engine (inferred) */
 typedef struct ClumpGlobals {
     /* 0x0 */ RwFreeList *atomicFreeList;
     /* 0x4 */ RwFreeList *clumpFreeList;
 } ClumpGlobals;
+CHECK_SIZEOF(ClumpGlobals, 0x8);
 
 /* The clump module (inferred) */
 typedef struct ClumpModule {
     /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
     /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
 } ClumpModule;
+CHECK_SIZEOF(ClumpModule, 0x8);
 
 #define CLUMPGLOBALS() ((ClumpGlobals *)((RwUInt8 *)lbl_805F15B4 + lbl_805F14C8.globalsOffset))
 #define CLUMPGLOBAL(var) (CLUMPGLOBALS()->var)
@@ -662,6 +667,7 @@ typedef struct ClumpCloneData {
     RpClump *newClump;
     RwBool cloned;
 } ClumpCloneData;
+CHECK_SIZEOF(ClumpCloneData, 0xC);
 
 /* Clones an atomic of the clump onto the clone of its frame; NULL stops the cloning. As in the
  * original, an atomic without a frame stops it without marking the clone failed. */

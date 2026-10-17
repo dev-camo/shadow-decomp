@@ -3,6 +3,7 @@
 #include <dolphin/si.h>
 
 #include "__si.h"
+#include "layout_check.h"
 
 #if DEBUG
 const char *__PADVersion = "<< Dolphin SDK - PAD\tdebug build: Apr  5 2004 03:56:05 (0x2301) >>";
@@ -467,6 +468,7 @@ typedef struct XY {
     u8 line;
     u8 count;
 } XY;
+CHECK_SIZEOF(XY, 0x2);
 
 void PADSetSamplingRate(u32 msec) {
     SISetSamplingRate(msec);

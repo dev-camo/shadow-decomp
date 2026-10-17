@@ -1,5 +1,6 @@
 /* RenderWare textures and texture dictionaries in streams. The original file name is unknown. */
 #include "rw/rwcore.h"
+#include "layout_check.h"
 
 /* chunk IDs */
 #define rwID_TEXTURE 0x6
@@ -49,6 +50,7 @@ typedef struct rwStreamTexDictionary {
     /* 0x0 */ RwUInt16 deviceId; /* 0 for any device */
     /* 0x2 */ RwUInt16 numTextures;
 } rwStreamTexDictionary;
+CHECK_SIZEOF(rwStreamTexDictionary, 0x4);
 
 /* Registers a texture plugin's stream chunk callbacks */
 RwInt32 fn_80483AFC(RwUInt32 pluginID, RwPluginDataChunkReadCallBack readCB,

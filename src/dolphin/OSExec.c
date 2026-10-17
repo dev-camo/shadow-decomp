@@ -3,6 +3,7 @@
 
 #include "__os.h"
 #include "__dvd.h"
+#include "layout_check.h"
 
 extern volatile u32 BOOT_REGION_START AT_ADDRESS(0x812FDFF0);
 extern volatile u32 BOOT_REGION_END AT_ADDRESS(0x812FDFEC);
@@ -197,6 +198,7 @@ typedef struct {
     u32 rebootSize;
     u32 reserved2;
 } AppLoaderStruct;
+CHECK_SIZEOF(AppLoaderStruct, 0x20);
 
 static AppLoaderStruct *LoadApploader() {
     AppLoaderStruct *header;

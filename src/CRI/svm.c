@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #include "CRI/svm.h"
+#include "layout_check.h"
 
 #define SVM_MAX_SVTYPE 8
 #define SVM_MAX_SVR_FUNC 6
@@ -26,16 +27,19 @@ typedef struct {
     void *obj;                 /* 0x04 */
     const Char8 *name;         /* 0x08 */
 } SvmSvrFunc;
+CHECK_SIZEOF(SvmSvrFunc, 0xC);
 
 typedef struct {
     void (*func)(void *obj); /* 0x00 */
     void *obj;               /* 0x04 */
 } SvmVoidFunc;
+CHECK_SIZEOF(SvmVoidFunc, 0x8);
 
 typedef struct {
     void (*func)(void *obj, Char8 *msg); /* 0x00 */
     void *obj;                           /* 0x04 */
 } SvmErrFunc;
+CHECK_SIZEOF(SvmErrFunc, 0x8);
 
 /* Version string, kept by its pointer in .rodata. */
 const Char8 *const svm_build = "\nSVM/GC Ver.1.58 Build:Feb 28 2005 15:48:25\n";

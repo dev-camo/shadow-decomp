@@ -1,6 +1,7 @@
 /* RenderWare meshes: the mesh module's globals, mesh headers, building meshes from triangles, and
  * reading and writing meshes in a stream. The original file name is unknown. */
 #include "rw/rpworld.h"
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINTDUR_GLOBAL 0x40000
@@ -41,18 +42,21 @@ typedef struct BinMeshHeader {
     /* 0x4 */ RwUInt32 numMeshes;
     /* 0x8 */ RwUInt32 totalIndicesInMesh;
 } BinMeshHeader;
+CHECK_SIZEOF(BinMeshHeader, 0xC);
 
 /* The stream header of a mesh (8 bytes) */
 typedef struct BinMesh {
     /* 0x0 */ RwUInt32 numIndices;
     /* 0x4 */ RwInt32 matIndex;
 } BinMesh;
+CHECK_SIZEOF(BinMesh, 0x8);
 
 /* The mesh unit's statics. The original initialises them as an aggregate, which places them in
  * .sdata even though they are zero (inferred). */
 typedef struct MeshStatics {
     /* 0x0 */ RwFreeList *buildMeshFreeList;
 } MeshStatics;
+CHECK_SIZEOF(MeshStatics, 0x4);
 
 MeshStatics lbl_805EDDC0 = {NULL};
 

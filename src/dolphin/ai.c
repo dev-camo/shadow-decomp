@@ -4,6 +4,7 @@
 #include <dolphin/hw_regs.h>
 
 #include "__gx.h"
+#include "layout_check.h"
 
 #ifdef DEBUG
 const char *__AIVersion = "<< Dolphin SDK - AI\tdebug build: Apr  5 2004 03:56:18 (0x2301) >>";
@@ -31,6 +32,7 @@ typedef struct {
     OSTime t4;
     OSTime t_end;
 } STRUCT_TIMELOG;
+CHECK_SIZEOF(STRUCT_TIMELOG, 0x30);
 STRUCT_TIMELOG profile;
 
 OSTime __ai_src_time_start;

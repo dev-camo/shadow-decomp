@@ -1,5 +1,6 @@
 #include "NMWException.h"
 #include "MWCPlusLib.h"
+#include "layout_check.h"
 
 namespace std {
 typedef void (*unexpected_handler)();
@@ -166,6 +167,7 @@ class __partial_array_destructor {
         }
     }
 };
+CHECK_SIZEOF(__partial_array_destructor, 0x14);
 
 extern void *__construct_new_array(void *block, ConstructorDestructor ctor,
                                    ConstructorDestructor dtor, size_t size, size_t n) {

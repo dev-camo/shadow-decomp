@@ -4,6 +4,7 @@
  * is unknown. */
 #include "rw/rpworld.h"
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_FUNCTION 0x10000
 #define rwMEMHINTDUR_EVENT 0x30000
@@ -41,6 +42,7 @@ typedef struct GeometryChunk {
     /* 0x8 */ RwInt32 numVertices;
     /* 0xC */ RwInt32 numMorphTargets;
 } GeometryChunk;
+CHECK_SIZEOF(GeometryChunk, 0x10);
 
 /* The stream header of a morph target (0x18 bytes) */
 typedef struct MorphTargetChunk {
@@ -48,18 +50,21 @@ typedef struct MorphTargetChunk {
     /* 0x10 */ RwBool pointsPresent;
     /* 0x14 */ RwBool normalsPresent;
 } MorphTargetChunk;
+CHECK_SIZEOF(MorphTargetChunk, 0x18);
 
 /* A triangle as the stream stores it: two words, each with two 16-bit indices, the upper first */
 typedef union StreamTriangle {
     RpTriangle triangle;
     RwUInt32 words[2];
 } StreamTriangle;
+CHECK_SIZEOF(StreamTriangle, 0x8);
 
 /* The geometry module (inferred) */
 typedef struct GeometryModule {
     /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
     /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
 } GeometryModule;
+CHECK_SIZEOF(GeometryModule, 0x8);
 
 RwPluginRegistry lbl_8056D810 = {sizeof(RpGeometry), sizeof(RpGeometry), 0, 0, NULL, NULL};
 

@@ -1,4 +1,5 @@
 #include <string.h>
+#include "layout_check.h"
 
 /* One table record as this function reads it: a 12-byte key and a word. The record's real type and
  * the rest of its layout are unknown. */
@@ -6,6 +7,7 @@ typedef struct {
     /* 0x00 */ char key_0[12];
     /* 0x0C */ unsigned int word_C;
 } Fn803CC9RecordView;
+CHECK_SIZEOF(Fn803CC9RecordView, 0x10);
 
 /* record count (compared signed) and table pointer; original types unknown */
 extern int lbl_805C0AF0;

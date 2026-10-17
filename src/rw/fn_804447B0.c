@@ -2,12 +2,14 @@
  * plugin's pipelines while an engine instance is open, and the attachment of the whole plugin. The
  * original file name is unknown. */
 #include "rw/rpdmorph.h"
+#include "layout_check.h"
 
 /* The plugin's engine globals (inferred) */
 typedef struct DMorphEngineGlobals {
     /* 0x0 */ RwInt32 field_0x0;
     /* 0x4 */ RwInt32 numInstances; /* the open engine instances */
 } DMorphEngineGlobals;
+CHECK_SIZEOF(DMorphEngineGlobals, 0x8);
 
 DMorphEngineGlobals lbl_805EDD68 = {0, 0};
 

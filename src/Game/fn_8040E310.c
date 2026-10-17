@@ -3,7 +3,9 @@ typedef struct Fn8040E310Object {
     /* 0x02 */ unsigned short padding;
     /* 0x04 */ unsigned int value;
     /* 0x08 */ unsigned int mode;
+#include "layout_check.h"
 } Fn8040E310Object;
+CHECK_SIZEOF(Fn8040E310Object, 0xC);
 
 /* Both setters clear the object first; the cleared fields are then overwritten (inferred
  * helper). */

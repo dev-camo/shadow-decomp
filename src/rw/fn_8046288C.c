@@ -5,6 +5,7 @@
 #include "rw/rpworld.h"
 #include <dolphin/gx.h>
 #include <math.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 
@@ -24,6 +25,7 @@ typedef struct VtxFmtModule {
     /* 0x0 */ RwInt32 globalsOffset;
     /* 0x4 */ RwInt32 numInstances; /* the open engine instances */
 } VtxFmtModule;
+CHECK_SIZEOF(VtxFmtModule, 0x8);
 
 #define PIPELINEGLOBAL(var) (RWPLUGINOFFSET(RpPipelineGlobals, lbl_805F15B4, lbl_805F1690)->var)
 

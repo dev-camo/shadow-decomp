@@ -3,6 +3,7 @@
 #include <dolphin/os.h>
 
 #include "__gx.h"
+#include "layout_check.h"
 
 // GXLightObj private data
 typedef struct {
@@ -13,6 +14,7 @@ typedef struct {
     f32 lpos[3];
     f32 ldir[3];
 } __GXLightObjInt_struct;
+CHECK_SIZEOF(__GXLightObjInt_struct, 0x40);
 
 void GXInitLightAttn(GXLightObj *lt_obj, f32 a0, f32 a1, f32 a2, f32 k0, f32 k1, f32 k2) {
     __GXLightObjInt_struct *obj;

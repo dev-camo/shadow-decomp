@@ -2,6 +2,7 @@
  * SFD_ExecOne (stop -> prep -> standby -> play), the buffering pause and the reset that re-creates
  * a handle in place while keeping the user's settings. */
 #include "CRI/sfd.h"
+#include "layout_check.h"
 
 #define SFD_HN_MAX 8
 /* stat is one of STOP..PLAYING */
@@ -29,6 +30,7 @@ typedef struct {
     Sint64 cnt64[12]; /* 0x38 */
     Sint32 rsv[4];    /* 0x98 */
 } SFPLY_PLYINF;
+CHECK_SIZEOF(SFPLY_PLYINF, 0xA8);
 
 #define PLYINF(sfd) ((SFPLY_PLYINF *)&(sfd)->plyinf)
 

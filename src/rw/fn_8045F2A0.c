@@ -2,6 +2,7 @@
  * registration, building a sector's mesh, and destroying a sector tree. The original file name is
  * unknown. */
 #include "rw/rpworld.h"
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_FUNCTION 0x10000
 
@@ -17,6 +18,7 @@ typedef struct WorldSectorModule {
     /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
     /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
 } WorldSectorModule;
+CHECK_SIZEOF(WorldSectorModule, 0x8);
 
 RwPluginRegistry lbl_8056D880 = {sizeof(RpWorldSector), sizeof(RpWorldSector), 0, 0, NULL, NULL};
 

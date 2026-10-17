@@ -11,6 +11,7 @@
 
 #include "CRI/cri_xpt.h"
 #include "CRI/cvfs.h"
+#include "layout_check.h"
 
 #define GCCI_MAX_OBJ 40
 #define GCCI_DEF_SCTLEN 0x800
@@ -39,6 +40,7 @@ typedef struct {
     /* 0x24 */ Sint32 rqsct; /* sectors of the last request */
     /* 0x28 */ DVDFileInfo fi;
 } GCCI_OBJ;
+CHECK_SIZEOF(GCCI_OBJ, 0x64);
 
 typedef GCCI_OBJ *GCCI;
 
@@ -49,6 +51,7 @@ typedef struct {
     /* 0x05 */ Sint8 pad05[3];
     /* 0x08 */ Sint32 cancel; /* inside DVDCancel */
 } GCCI_DEBUG;
+CHECK_SIZEOF(GCCI_DEBUG, 0xC);
 
 /* Defined in gcci_sub.c. */
 extern Sint32 gcg_ci_rdmode;

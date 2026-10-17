@@ -1,6 +1,7 @@
 /* RenderWare's resources heap: blocks in a fixed buffer, each after a 32-byte header, merged with
  * free neighbours when freed. The original file name is unknown. */
 #include "rw/rwcore.h"
+#include "layout_check.h"
 
 /* Blocks and their headers are 32-byte aligned */
 #define rwRESHEAPALIGNMENT 32
@@ -14,12 +15,14 @@ typedef struct RwResHeapBlock {
     /* 0x10 */ RwUInt32 used; /* bit 0: the block is allocated */
     /* 0x14 */ RwUInt8 pad[0xC];
 } RwResHeapBlock;
+CHECK_SIZEOF(RwResHeapBlock, 0x20);
 
 /* A heap, at the start of its buffer */
 typedef struct RwResHeap {
     /* 0x0 */ RwResHeapBlock *firstBlock;
     /* 0x4 */ RwResHeapBlock *freeBlocks; /* the first block that may be free */
 } RwResHeap;
+CHECK_SIZEOF(RwResHeap, 0x8);
 
 /* Initializes a heap of size bytes at heap: one free block fills the aligned buffer */
 RwBool fn_80482984(void *heap, RwUInt32 size) {

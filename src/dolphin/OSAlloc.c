@@ -1,5 +1,6 @@
 #include <dolphin.h>
 #include <dolphin/os.h>
+#include "layout_check.h"
 
 #define ALIGNMENT 32
 
@@ -24,6 +25,9 @@ struct Cell {
     s32 requested;
 #endif
 };
+#ifndef ENABLE_HEAPDESC
+CHECK_SIZEOF(struct Cell, 0xC); /* the retail layout; DEBUG builds add the heap descriptor fields */
+#endif
 
 struct HeapDesc {
     s32 size;
@@ -35,6 +39,9 @@ struct HeapDesc {
     u32 payloadBytes;
 #endif
 };
+#ifndef ENABLE_HEAPDESC
+CHECK_SIZEOF(struct HeapDesc, 0xC); /* the retail layout */
+#endif
 
 volatile int __OSCurrHeap = -1;
 

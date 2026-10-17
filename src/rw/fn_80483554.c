@@ -1,5 +1,6 @@
 /* RenderWare cameras in streams. The original file name is unknown. */
 #include "rw/rwcore.h"
+#include "layout_check.h"
 
 /* The oldest stream version cameras are read from */
 #define rwSTREAMOLDESTVERSION 0x35000
@@ -26,6 +27,7 @@ typedef struct rwStreamCamera {
     /* 0x18 */ RwReal fogPlane;
     /* 0x1C */ RwInt32 projection;
 } rwStreamCamera;
+CHECK_SIZEOF(rwStreamCamera, 0x20);
 
 /* Registers a camera plugin's stream chunk callbacks */
 RwInt32 fn_80483554(RwUInt32 pluginID, RwPluginDataChunkReadCallBack readCB,
