@@ -1893,6 +1893,9 @@ rw/fn_8049B8BC.c:
 	.text       start:0x8049B8BC end:0x8049D408
 	.sdata      start:0x805EDF58 end:0x805EDF60
 
+rw/fn_8049D408.c:
+	.text       start:0x8049D408 end:0x8049EA2C
+
 rw/fn_8049EA2C.c:
 	.text       start:0x8049EA2C end:0x8049F2A4
 
