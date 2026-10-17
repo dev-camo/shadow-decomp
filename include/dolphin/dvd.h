@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-// needed for matching release
+// Unlike ASSERTMSGLINE, these checks are compiled into release builds too.
 #define DVD_ASSERTMSGLINE(line, cond, msg)                                                         \
     if (!(cond))                                                                                   \
     OSPanic(__FILE__, line, msg)

@@ -411,7 +411,6 @@ static void OSExceptionInit(void) {
     // Copy the right vector into the table
     for (exception = 0; exception < __OS_EXCEPTION_MAX; exception++) {
         if (BI2DebugFlag && (*BI2DebugFlag >= 2) && __DBIsExceptionMarked(exception)) {
-            // this DBPrintf is suspicious.
             DBPrintf(">>> OSINIT: exception %d commandeered by TRK\n", exception);
             continue;
         }
