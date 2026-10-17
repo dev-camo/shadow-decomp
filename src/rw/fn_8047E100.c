@@ -10,15 +10,12 @@
 
 #define E_RW_BADPARAM 0x80000003
 
-/* The core's error plugin ID (inferred) */
-#define rwCOREERRORPLUGIN 1
-
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \
         RwError error_;                                                                            \
                                                                                                    \
-        error_.pluginID = rwCOREERRORPLUGIN;                                                       \
+        error_.pluginID = rwID_COREPLUGIN;                                                         \
         error_.errorCode = fn_8047DC28 args;                                                       \
         fn_8047DB84(&error_);                                                                      \
     } while (0)

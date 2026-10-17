@@ -9,12 +9,10 @@
     do {                                                                                           \
         RwError error_;                                                                            \
                                                                                                    \
-        error_.pluginID = rwCOREERRORPLUGIN;                                                       \
+        error_.pluginID = rwID_COREPLUGIN;                                                         \
         error_.errorCode = fn_8047DC28 args;                                                       \
         fn_8047DB84(&error_);                                                                      \
     } while (0)
-
-#define rwCOREERRORPLUGIN 1
 
 /* Error codes (inferred names): a debug message, an image depth that cannot be converted, a raster
  * depth that cannot be converted, and an unsupported raster format or type */

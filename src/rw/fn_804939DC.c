@@ -15,12 +15,10 @@
     do {                                                                                           \
         RwError error_;                                                                            \
                                                                                                    \
-        error_.pluginID = rwCOREERRORPLUGIN;                                                       \
+        error_.pluginID = rwID_COREPLUGIN;                                                         \
         error_.errorCode = fn_8047DC28 args;                                                       \
         fn_8047DB84(&error_);                                                                      \
     } while (0)
-
-#define rwCOREERRORPLUGIN 1
 
 /* The error code of a debug message (inferred name) */
 #define ERRORDEBUGMESSAGE 2
