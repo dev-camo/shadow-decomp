@@ -320,6 +320,10 @@ Sint32 MPVCDEC_NintraBlocks(MPV mpv);
 Sint32 MPVCDEC_IntraBlocks(MPV mpv);
 void MPVCDEC_InitFrm(MPV mpv);
 
+/* mpv_vlc.c */
+Sint32 MPVVLC_IsVlcSizErr(void);
+void MPVVLC_Init(Uint8 *vlc, MPV_IXA *ixa);
+
 /* mpv_m2v.c: MPEG-2 decoder stub */
 Sint32 MPVM2V_DecodeFrm(MPV_OBJ *mpv, SJ sj, MPV_FRM *frm);
 

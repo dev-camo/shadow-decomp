@@ -15,6 +15,7 @@
  * Bodies from the RE4 GameCube decompilation of the same file.
  */
 #include "CRI/cri_xpt.h"
+#include "CRI/mpv.h"
 #include "CRI/uty.h"
 
 #define MPVVLC_VLC_AREA_SIZE 0x5B0
@@ -140,7 +141,7 @@ Sint32 MPVVLC_IsVlcSizErr(void) {
 /* Generates every VLC lookup table (macroblock address increment per picture type, macroblock type,
  * motion codes, coded block pattern, DC sizes, run/level) and copies the run/level tables into the
  * shared area `vlc` when one is given. */
-void MPVVLC_Init(Uint8 *vlc, void *ixa) {
+void MPVVLC_Init(Uint8 *vlc, MPV_IXA *ixa) {
     mpvvlc_InitMbaiIpic();
     mpvvlc_InitMbaiPpic();
     mpvvlc_InitMbaiBpic();
