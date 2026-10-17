@@ -28,15 +28,12 @@
 #define E_RW_INVIMAGEFORMAT 0x80000009 /* the depths cannot be converted */
 #define E_RW_INVIMAGESIZE 0x8000000A   /* the image and mask sizes differ */
 
-/* The core's error plugin ID (inferred) */
-#define rwCOREERRORPLUGIN 1
-
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \
         RwError error_;                                                                            \
                                                                                                    \
-        error_.pluginID = rwCOREERRORPLUGIN;                                                       \
+        error_.pluginID = rwID_COREPLUGIN;                                                         \
         error_.errorCode = fn_8047DC28 args;                                                       \
         fn_8047DB84(&error_);                                                                      \
     } while (0)

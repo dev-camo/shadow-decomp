@@ -5,9 +5,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* The core's error plugin ID (inferred) */
-#define rwCOREERRORPLUGIN 1
-
 /* The newest stream library version read */
 #define rwLIBRARYCURRENTVERSION 0x37002
 
@@ -32,7 +29,7 @@
     do {                                                                                           \
         RwError error_;                                                                            \
                                                                                                    \
-        error_.pluginID = rwCOREERRORPLUGIN;                                                       \
+        error_.pluginID = rwID_COREPLUGIN;                                                         \
         error_.errorCode = fn_8047DC28 args;                                                       \
         fn_8047DB84(&error_);                                                                      \
     } while (0)

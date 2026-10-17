@@ -13,12 +13,10 @@
     do {                                                                                           \
         RwError error_;                                                                            \
                                                                                                    \
-        error_.pluginID = rwCOREERRORPLUGIN;                                                       \
+        error_.pluginID = rwID_COREPLUGIN;                                                         \
         error_.errorCode = fn_8047DC28 args;                                                       \
         fn_8047DB84(&error_);                                                                      \
     } while (0)
-
-#define rwCOREERRORPLUGIN 1
 
 /* Error codes (inferred names): a debug message, an unsupported raster depth, format or type, a
  * raster that cannot be locked, and one that cannot be unlocked */
