@@ -104,6 +104,9 @@ RwStream *fn_804A0C50(RwStream *stream, const RwTexture *texture); /* write */
 RwStream *fn_804A0CDC(RwStream *stream, RwTexture **texture);      /* read */
 RwUInt32 fn_804A0DB8(const RwTexture *texture);                    /* the stream size */
 
+/* makes the bumped texture of a bump map texture and a base texture (or none) (inferred) */
+RwTexture *fn_804A1A08(RwTexture *baseTexture, RwTexture *bumpTexture);
+
 /* attaches the plugin, with the GameCube multi-texturing; TRUE on success (inferred) */
 RwBool fn_804A1E74(void);
 
@@ -163,6 +166,9 @@ RpWorldSector *fn_804A5598(RpWorldSector *sector); /* sets a world sector's pipe
 RwBool fn_804A55A4(MatFXDualData *dualData, RwInt32 renderState);
 /* the bumped texture made from a bump map texture and the material's texture */
 RwTexture *fn_804A55AC(RwTexture *baseTexture, RwTexture *bumpTexture);
+/* renders a mesh with its material's GameCube multi-texture effect (inferred) */
+void fn_804A6A08(RpGameCubeDisplayList *displayList, RpMaterial *material, RpAtomic *atomic,
+                 RpGameCubeRenderMesh *renderMesh, RwMatrix *ltm);
 /* attaches the GameCube multi-texture effects; TRUE on success */
 RwBool fn_804A6C74(void);
 
