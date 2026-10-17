@@ -30,7 +30,7 @@ RwMatrix *fn_8047F0B0(RwMatrix *out, const RwMatrix *in);                   /* i
 void fn_8044CDC4(RwResEntry *repEntry) {
     RpGameCubeInstanceData *instance = (RpGameCubeInstanceData *)(repEntry + 1);
     void *owner;
-    RpGeometry *geometry;
+    RwUInt32 flags;
 
     RPGAMECUBEWAITDRAWSYNC(instance->syncToken);
     if (instance->vertexDescriptors[0].data != NULL) {
@@ -38,12 +38,13 @@ void fn_8044CDC4(RwResEntry *repEntry) {
     }
 
     owner = repEntry->owner;
-    geometry = owner;
+    /* for an atomic owner this reads its frame link (offset 8), not geometry flags */
+    flags = ((RpGeometry *)owner)->flags;
     if (((RwObject *)owner)->type == rpATOMIC) {
         SkinAtomicData *atomicData = RPSKINATOMICGETDATA(owner);
 
         instance->vertexDescriptors[0].data = atomicData->positions;
-        if (geometry->flags & rpGEOMETRYNORMALS) {
+        if (flags & rpGEOMETRYNORMALS) {
             instance->vertexDescriptors[1].data = atomicData->normals;
         }
         atomicData->positions = NULL;
@@ -52,7 +53,7 @@ void fn_8044CDC4(RwResEntry *repEntry) {
         RpSkin *skin = RPSKINGEOMETRYGETDATA(owner);
 
         instance->vertexDescriptors[0].data = skin->positions;
-        if (geometry->flags & rpGEOMETRYNORMALS) {
+        if (flags & rpGEOMETRYNORMALS) {
             instance->vertexDescriptors[1].data = skin->normals;
         }
         skin->positions = NULL;
