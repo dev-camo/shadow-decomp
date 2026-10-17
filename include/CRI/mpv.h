@@ -279,7 +279,6 @@ void MPVMC08_OneRef1p_TuneC(MPVMC *mc);
 void MPVMC08_OneRefH2_TuneC(MPVMC *mc);
 void MPVMC08_OneRefV2_TuneC(MPVMC *mc);
 void MPVMC08_OneRef4p_TuneC(MPVMC *mc);
-void DCT_FsriInitScanTbl(Sint8 *seq, Sint8 *scan); /* not yet decompiled */
 
 #define MPV_ERR_INVALID_HN 0xFF030200
 

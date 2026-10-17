@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "CRI/cri_xpt.h"
+#include "CRI/dct.h"
 #include "CRI/mpv.h"
 #include "CRI/uty.h"
 
