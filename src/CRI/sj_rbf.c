@@ -2,9 +2,8 @@
  * plus xsize extra bytes mirroring its start, so chunks crossing the wrap point stay
  * contiguous.
  *
- * Names, types and layout follow the RE4 GameCube decompilation of sj_rbf.c (same error codes
- * and function order). Shadow's SJ builds each message from the error code and a shared
- * suffix, and pairs init/finish with the SJCRS init count.
+ * Names, types and layout follow the RE4 GameCube decompilation of the same file. Each error
+ * message is built from its code and a shared suffix; init/finish pair with the SJCRS init count.
  */
 #include "CRI/sj.h"
 #include <string.h>
@@ -98,25 +97,13 @@ Sint32 SJRBF_GetFlowCnt(SJ handle, Sint32 id, Sint32 dir) {
     return ret;
 }
 
-/* Unreferenced, so the linker strips it. Body from the RE4 decompilation (not verified
- * against Shadow); its error literals are verified at their .rodata positions.
+/* Stand-in for a function the linker stripped from the game; its body is unknown. Its two error
+ * codes remain in .rodata between those of the functions around it; this never-called function
+ * refers to them in that order. Storing the addresses keeps the references.
  */
-Sint32 SJRBF_GetNumObj(SJ handle) {
-    SJRBF_OBJ *sj = (SJRBF_OBJ *)handle;
-    Sint32 ret;
-
-    SJCRS_Lock();
-    if (sj == 0) {
-        SJRBF_ERR("E2004090227", " : NULL pointer is specified.");
-        ret = 0;
-    } else if (sj->used == 0) {
-        SJRBF_ERR("E2004090228", " : Specified handle is invalid.");
-        ret = 0;
-    } else {
-        ret = SJRBF_MAX_OBJ;
-    }
-    SJCRS_Unlock();
-    return ret;
+static void sjrbf_RodataOrder(const Char8 **out) {
+    out[0] = "E2004090227";
+    out[1] = "E2004090228";
 }
 
 /* The extra (mirror) area size in bytes. */

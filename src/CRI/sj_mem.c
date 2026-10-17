@@ -1,9 +1,8 @@
 /* CRI Stream Joint: memory joint (sj_mem.c, SJMEM). A read-only joint over one fixed
  * buffer: the whole buffer is data at creation and GetChunk(DATA) walks through it.
  *
- * Names, types and layout follow the RE4 GameCube decompilation of sj_mem.c (same error
- * codes and function order). Shadow's SJ (Ver.6.31) builds each message from the error code
- * and a shared suffix, and pairs init/finish with the SJCRS init count.
+ * Names, types and layout follow the RE4 GameCube decompilation of the same file. Each error
+ * message is built from its code and a shared suffix; init/finish pair with the SJCRS init count.
  */
 #include "CRI/sj.h"
 #include <string.h>
@@ -89,25 +88,13 @@ Sint32 SJMEM_GetBufSize(SJ handle) {
     return ret;
 }
 
-/* Unreferenced, so the linker strips it. Body from the RE4 decompilation (not verified
- * against Shadow); its error literals are verified at their .rodata positions.
+/* Stand-in for a function the linker stripped from the game; its body is unknown. Its two error
+ * codes remain in .rodata between those of the functions around it; this never-called function
+ * refers to them in that order. Storing the addresses keeps the references.
  */
-void *SJMEM_GetBufPtr(SJ handle) {
-    SJMEM_OBJ *sj = (SJMEM_OBJ *)handle;
-    void *ret;
-
-    SJCRS_Lock();
-    if (sj == 0) {
-        SJMEM_ERR("E2004090249", " : NULL pointer is specified.");
-        ret = 0;
-    } else if (sj->used == 0) {
-        SJMEM_ERR("E2004090250", " : Specified handle is invalid.");
-        ret = 0;
-    } else {
-        ret = sj->buf;
-    }
-    SJCRS_Unlock();
-    return ret;
+static void sjmem_RodataOrder(const Char8 **out) {
+    out[0] = "E2004090249";
+    out[1] = "E2004090250";
 }
 
 /* Whether `nbyte` DATA bytes remain (FREE is always 0: a memory joint is read-only). */
