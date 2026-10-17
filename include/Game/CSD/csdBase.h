@@ -4,7 +4,7 @@
 #ifndef GAME_CSD_CSDBASE_H
 #define GAME_CSD_CSDBASE_H
 
-#include <stddef.h>
+#include <cstddef>
 #include "Game/CSD/CMemoryAlloc.h"
 #include "layout_check.h"
 

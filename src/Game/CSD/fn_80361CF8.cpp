@@ -3,8 +3,8 @@
  * address order (deferred inlining emits the last definition first). */
 #include "Game/CSD/csdBase.h"
 #include "Game/CSD/CPlatform.h"
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 
 /* Undecompiled callee in the loader unit; it frees the matrix stack and the texture list unit's
  * global tree (behaviour inferred). */
