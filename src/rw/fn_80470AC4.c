@@ -58,7 +58,8 @@ RwInt32 lbl_805F1538;
         }                                                                                          \
     } while (0)
 
-/* Shows a string with outline characters: each character's path is filled in turn */
+/* Shows a string with outline characters: each character's path is stroked with the brush in
+ * turn */
 Rt2dFont *fn_80470AC4(Rt2dFont *font, const RwChar *string, RwReal height, RwV2d *anchor,
                       Rt2dBrush *brush) {
     if (font != NULL) {
