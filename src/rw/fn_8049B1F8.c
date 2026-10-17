@@ -3,9 +3,6 @@
 #include "rw/rwcore.h"
 #include <string.h>
 
-/* The pipeline module's ID */
-#define rwID_PIPEMODULE 0x409
-
 /* The core's error plugin ID (inferred) */
 #define rwCOREERRORPLUGIN 1
 
