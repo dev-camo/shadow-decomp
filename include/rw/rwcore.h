@@ -47,8 +47,9 @@ typedef char RwChar;
 #define rwID_WORLD 0xB
 #define rwID_EXTENSION 0x3
 #define rwID_TEXTURE 0x6
-#define rwID_COREPLUGIN 0x1  /* the core's plugin ID, also used for its errors */
-#define rwCHUNKHEADERSIZE 12 /* the bytes of a chunk header in a stream */
+#define rwID_COREPLUGIN 0x1   /* the core's plugin ID, also used for its errors */
+#define rwCHUNKHEADERSIZE 12  /* the bytes of a chunk header in a stream */
+#define rwID_PIPEMODULE 0x409 /* the pipeline module's ID */
 
 /* memory hints: how long an allocation lives, whether it is resized, and the chunk ID of what it
  * is for in the low bits */

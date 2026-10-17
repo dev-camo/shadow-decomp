@@ -5,9 +5,6 @@
 #include "rw/rwcore.h"
 #include <string.h>
 
-/* The pipeline module's ID */
-#define rwID_PIPEMODULE 0x409
-
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \
