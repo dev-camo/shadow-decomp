@@ -71,9 +71,16 @@ typedef RwInt32 RwPlatformID;
 #define E_RW_READTEXMASK 0x16         /* a texture was read without its mask */
 
 /* pipeline errors of the core (inferred from where they are reported) */
-#define E_RX_IM3DNOTACTIVE 0x23 /* no immediate mode 3D transform is active */
+#define E_RX_CYCLICPIPELINE 0x1C
+#define E_RX_FRAGMENTEDPIPELINE 0x22 /* a node other than the entry point has no input */
+#define E_RX_IM3DNOTACTIVE 0x23      /* no immediate mode 3D transform is active */
+#define E_RX_INVALIDENTRYPOINT 0x24
 #define E_RX_INVALIDPRIMTYPE 0x25
+#define E_RX_NODETOOMANYCLUSTERSOFINTEREST 0x28
+#define E_RX_NODETOOMANYOUTPUTS 0x29
+#define E_RX_PIPELINETOOMANYNODES 0x2A
 #define E_RX_TOOMANYVERTS 0x32
+#define E_RX_UNLOCKEDPIPE 0x34 /* the pipeline must be locked */
 
 typedef struct RwFreeList RwFreeList;
 
@@ -835,6 +842,7 @@ CHECK_SIZEOF(RxPipelineNodeTopSortData, 0xC);
 /* The most outputs a node can have; a locked pipeline gives each node an output array of this
  * size in its superblock */
 #define RXNODEMAXOUTPUTS 32
+#define RXNODEMAXCLUSTERSOFINTEREST 32 /* the most clusters of interest a node can have */
 
 /* A node of a pipeline. The nodes of an unlocked pipeline are sorted so that every node comes
  * before the nodes its outputs lead to; outputs are node indices, -1 for none. */
@@ -978,6 +986,18 @@ RxPipeline *fn_8049D0D0(RxPipeline *pipeline, RwUInt32 *firstIndex, RxNodeDefini
 /* finds a pipeline node by name */
 RxPipelineNode *fn_8049CFCC(RxPipeline *pipeline, const RwChar *name, RxPipelineNode *start,
                             RwInt32 *nodeIndex);
+/* connects an unconnected output of a node of a locked pipeline to another of its nodes; NULL on
+ * failure */
+RxPipeline *fn_8049D368(RxPipeline *pipeline, RwUInt32 *output, RxPipelineNode *input);
+
+/* the dependency pass of unlocking a pipeline (inferred): scratch space taken from the top and
+ * the bottom of the free part of the superblock (NULL when it runs out), the number of distinct
+ * cluster definitions of the nodes, and the pass itself, which returns 0 or the error code of
+ * the problem it found */
+void *fn_8049B8BC(RwUInt32 size);
+void *fn_8049B92C(RwUInt32 size);
+RwUInt32 fn_8049B9A4(RxPipeline *pipeline);
+RwUInt32 fn_8049E9AC(RxPipeline *pipeline);
 
 /* sorts numElements records of elementSize bytes into ascending order of the unsigned key word at
  * keyOffset in each, whose values lie between minKey and maxKey (inferred) */
