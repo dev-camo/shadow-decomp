@@ -7,7 +7,6 @@
 #include <dolphin/gx.h>
 #include <dolphin/mtx.h>
 #include <dolphin/os.h>
-#include "layout_check.h"
 
 #define rpATOMIC 1 /* RwObject type of an atomic */
 #define rwMEMHINTDUR_EVENT 0x30000
@@ -16,29 +15,6 @@
 
 /* GameCube skin pipeline types (inferred) */
 #define SKINPIPELINETOON 3
-
-/* The parameters of the skinning kernels */
-typedef struct SkinKernelParams {
-    /* 0x00 */ void *dstPositions;
-    /* 0x04 */ void *dstNormals;
-    /* 0x08 */ void *srcPositions;
-    /* 0x0C */ void *srcNormals;
-    /* 0x10 */ RwInt32 positionSize; /* bytes per component */
-    /* 0x14 */ RwInt32 normalSize;
-    /* 0x18 */ RwInt32 nbtSize; /* bytes of a vertex's binormal and tangent, or 0 */
-    /* 0x1C */ RwInt32 numVertices;
-} SkinKernelParams;
-CHECK_SIZEOF(SkinKernelParams, 0x20);
-
-/* the skinning kernels (hand-written assembly) */
-void fn_80450D6C(RwMatrix *matrices, RwMatrix *skinToBone, RwMatrix *boneMatrices,
-                 RwMatrix *inverseLtm, RwUInt8 *boneIds, RwUInt32 numBoneIds);
-void fn_80450F68(RwMatrix *matrices, RpSkin *skin, SkinKernelParams *params);
-void fn_80451080(RwMatrix *matrices, RpSkin *skin, SkinKernelParams *params);
-void fn_80451254(RwMatrix *matrices, RpSkin *skin, SkinKernelParams *params);
-void fn_804513C4(RwMatrix *matrices, RpSkin *skin, SkinKernelParams *params);
-void fn_80451618(RwMatrix *matrices, RpSkin *skin, SkinKernelParams *params);
-void fn_804517C8(RwMatrix *matrices, RpSkin *skin, SkinKernelParams *params);
 
 /* the instancing of the skin's geometry (inferred) */
 RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef);
