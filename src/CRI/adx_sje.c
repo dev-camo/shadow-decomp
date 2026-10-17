@@ -3,11 +3,10 @@
  * header, block prediction/quantisation through the predictor filter objects (with an IIR decoder
  * model for the quantisation feedback), scale scrambling with the key sequence and the end code.
  * The zero-initialised scalars take their declaration place in .bss; the filter tables follow in
- * first-reference order (the unreferenced table clear helper), the handle table last.
+ * first-reference order (adxsje_BssOrder), the handle table last.
  *
- * Source from the RE4 GameCube decompilation (ADXENC Ver.1.09). This build adds its own reference
- * count around ADXSJE_Init/ADXSJE_Finish; RE4's version/build-string functions and the data words
- * pointing at them have no counterpart here and are left out.
+ * Source adapted from the RE4 GameCube decompilation of the same file. ADXSJE_Init and
+ * ADXSJE_Finish keep a reference count.
  */
 #include <stddef.h>
 #include <string.h>
@@ -130,11 +129,13 @@ static ADXSJE_PRDFLT adxsje_prdflt_obj[ADXSJE_MAX_FLT];
 static ADXSJE_IIRFLT adxsje_iirflt_obj[ADXSJE_MAX_FLT];
 static ADXSJE_OBJ adxsje_obj[ADXSJE_MAX_OBJ];
 
-/* Unreferenced, so the linker strips it (body from RE4, not verified); its references place the
- * filter tables before the handle table in .bss. */
-static void adxsje_flt_init(void) {
-    memset(adxsje_prdflt_obj, 0, sizeof(adxsje_prdflt_obj));
-    memset(adxsje_iirflt_obj, 0, sizeof(adxsje_iirflt_obj));
+/* Stand-in for a function the linker stripped from the game; its body is unknown. MWCC lays out
+ * .bss by first reference, so this never-called function refers to the two filter tables before
+ * any code refers to the handle table. Storing the addresses keeps the references.
+ */
+static void adxsje_BssOrder(void **out) {
+    out[0] = adxsje_prdflt_obj;
+    out[1] = adxsje_iirflt_obj;
 }
 
 /* clamps: the arguments are evaluated twice */

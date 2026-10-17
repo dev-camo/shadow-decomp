@@ -3,9 +3,7 @@
  * callbacks with the SVM; ADXT_Finish undoes it. Holds the handle table adxt_obj, the build string
  * and the server ids.
  *
- * Bodies from the RE4 GameCube decompilation (Ver.9.31). Ver.9.44 always registers the threaded
- * callbacks (with their names), runs the load scheduler through ADXT_ExecLscSvr and also finishes
- * the critical section; the no-thread main callback and the vsync switch are gone. */
+ * Bodies adapted from the RE4 GameCube decompilation of the same file. */
 #include <string.h>
 
 #include "CRI/adx.h"
@@ -62,11 +60,12 @@ void ADXT_Finish(void) {
     }
 }
 
-/* Unreferenced, so the linker strips it (body from RE4, not verified); its reference puts
- * adxt_obj before cri_verstr_ptr in .bss.
+/* Stand-in for a function the linker stripped from the game; its body is unknown. MWCC lays out
+ * .bss by first reference, so this never-called function refers to adxt_obj before ADXT_Init
+ * refers to cri_verstr_ptr. Storing the address keeps the reference from being optimized away.
  */
-ADXT ADXT_GetObj(Sint32 no) {
-    return &adxt_obj[no];
+static void adxini_BssOrder(void **out) {
+    out[0] = adxt_obj;
 }
 
 /* Library init (reference counted): brings up the modules, registers the vsync (talk server),
