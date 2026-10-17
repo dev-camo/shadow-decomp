@@ -48,20 +48,30 @@ typedef struct {
     Sint32 ngop;              /* 0x30 GOP headers seen */
     Sint32 nseq;              /* 0x34 sequence headers seen */
     Sint32 x38;               /* 0x38 */
-    Sint32 x3c, x40, x44;     /* 0x44 */
+    Sint32 x3c;               /* 0x3C */
+    Sint32 x40;               /* 0x40 */
+    Sint32 x44;               /* 0x44 */
     Sint32 bitrate;           /* 0x48 */
     Sint32 vbv_size;          /* 0x4C */
-    Sint16 x50, x52;          /* 0x52 */
+    Sint16 x50;               /* 0x50 */
+    Sint16 x52;               /* 0x52 */
     Sint8 x54;                /* 0x54 */
-    Sint8 x55, x56, x57;      /* 0x57 */
+    Sint8 x55;                /* 0x55 */
+    Sint8 x56;                /* 0x56 */
+    Sint8 x57;                /* 0x57 */
     Sint8 x58;                /* 0x58 */
     Uint8 aspect;             /* 0x59 pel_aspect_ratio */
     Uint8 constrained;        /* 0x5A constrained_parameters_flag */
-    Uint8 x5b, x5c;           /* 0x5C */
+    Uint8 x5b;                /* 0x5B */
+    Uint8 x5c;                /* 0x5C */
     Uint8 x5d;                /* 0x5D */
-    Sint8 x5e, x5f, x60;      /* 0x60 */
+    Sint8 x5e;                /* 0x5E */
+    Sint8 x5f;                /* 0x5F */
+    Sint8 x60;                /* 0x60 */
     Uint8 x61;                /* 0x61 */
-    Uint8 x62, x63, x64;      /* 0x64 */
+    Uint8 x62;                /* 0x62 */
+    Uint8 x63;                /* 0x63 */
+    Uint8 x64;                /* 0x64 */
     Uint8 pad65[0x80 - 0x65]; /* 0x65 */
 } MPV_PICATR;
 
