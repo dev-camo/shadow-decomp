@@ -49,6 +49,11 @@ Game/CSD/fn_80360528.cpp:
 	.text       start:0x80360528 end:0x803605E8
 	.bss        start:0x80585988 end:0x80585990
 
+Game/CSD/csdMotionPalette.cpp:
+	.text       start:0x803605E8 end:0x80361738
+	.rodata     start:0x80512F08 end:0x80512F38
+	.bss        start:0x80585990 end:0x805859A0
+
 Game/CSD/fn_80361A24.cpp:
 	.text       start:0x80361A24 end:0x80361CF8
 	.ctors      start:0x804AA044 end:0x804AA048
