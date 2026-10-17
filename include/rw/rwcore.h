@@ -935,6 +935,11 @@ RxPipeline *fn_8049D0D0(RxPipeline *pipeline, RwUInt32 *firstIndex, RxNodeDefini
 RxPipelineNode *fn_8049CFCC(RxPipeline *pipeline, const RwChar *name, RxPipelineNode *start,
                             RwInt32 *nodeIndex);
 
+/* sorts numElements records of elementSize bytes into ascending order of the unsigned key word at
+ * keyOffset in each, whose values lie between minKey and maxKey (inferred) */
+void fn_8049F5B4(void *base, RwUInt32 numElements, RwUInt32 elementSize, RwUInt32 keyOffset,
+                 RwUInt32 minKey, RwUInt32 maxKey);
+
 typedef struct RwResEntry RwResEntry;
 typedef void (*RwResEntryDestroyNotify)(RwResEntry *resEntry);
 
