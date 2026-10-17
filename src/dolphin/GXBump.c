@@ -314,7 +314,7 @@ void GXSetTevIndRepeat(GXTevStageID tev_stage) {
 void __GXUpdateBPMask(void) {}
 
 void __GXSetIndirectMask(u32 mask) {
-    SET_REG_FIELD(664, __GXData->bpMask, 8, ~0xFF, mask);
+    SET_REG_FIELD(664, __GXData->bpMask, 8, 0, mask);
 
     GX_WRITE_SOME_REG5(GX_LOAD_BP_REG, __GXData->bpMask);
     __GXData->bpSentNot = 0;
