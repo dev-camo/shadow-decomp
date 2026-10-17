@@ -123,13 +123,11 @@ RwBool fn_8044CF68(RpSkin *skin, RpAtomic *atomic, RpGameCubeInstanceData *insta
 
             size = ((geometry->numVertices * componentSizes[format->posType] + 31) & ~31) + 6;
             if (geometry->flags & rpGEOMETRYNORMALS) {
-                RwInt32 normalSize = componentSizes[format->normalType];
-                RwInt32 numNormals = 1;
+                /* binormals and tangents, when present, follow each normal */
+                RwInt32 normalSize =
+                    componentSizes[format->normalType] * (format->normalNbt != 0 ? 3 : 1);
 
-                if (format->normalNbt != 0) {
-                    numNormals = 3;
-                }
-                size += (geometry->numVertices * (normalSize * numNormals) + 31) & ~31;
+                size += (geometry->numVertices * normalSize + 31) & ~31;
             }
         } else {
             RwUInt32 streamSize = (geometry->numVertices * sizeof(RwV3d) + 31) & ~31;
