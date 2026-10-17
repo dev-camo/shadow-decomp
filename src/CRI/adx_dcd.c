@@ -2,9 +2,8 @@
  * extensions, the 0x8001 footer, the info code scan for linked files and the second-order
  * prediction coefficients of the encoder cut-off (MSL inline sqrt / sqrtf / fpclassify).
  *
- * Bodies from the RE4 GameCube decompilation. This build stores the footer length before adding
- * the 4-byte code (ADX_DecodeFooter) and compares the info code word unsigned (ADX_ScanInfoCode).
- * adx_GetVer is unreferenced, so the linker strips it.
+ * Bodies adapted from the RE4 GameCube decompilation of the same file.
+ * adx_GetVer is inlined into its callers; the linker strips its out-of-line copy.
  */
 #include <string.h>
 #include <math.h>
