@@ -5,10 +5,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_FUNCTION 0x10000
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTFLAG_RESIZABLE 0x1000000
-
 #define rwID_MESHMODULE 0x502
 
 /* the plugin ID the world module reports errors with (inferred) */
@@ -23,12 +19,6 @@
         error_.errorCode = fn_8047DC28 args;                                                       \
         fn_8047DB84(&error_);                                                                      \
     } while (0)
-
-/* raster pixel formats with alpha (rwRASTERFORMAT*) */
-#define rwRASTERFORMATPIXELFORMATMASK 0x0F00
-#define rwRASTERFORMAT1555 0x0100
-#define rwRASTERFORMAT4444 0x0300
-#define rwRASTERFORMAT8888 0x0500
 
 /* The first trial at which the strip builder commits polygons; earlier trials only test them */
 #define rpTRISTRIPCOMMIT 4

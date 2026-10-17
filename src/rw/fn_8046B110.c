@@ -6,9 +6,6 @@
 #include <dolphin/os.h>
 #include <string.h>
 
-#define rwMEMHINTDUR_FUNCTION 0x10000
-#define rwMEMHINTDUR_EVENT 0x30000
-
 /* the vertex format plugin ID, which owns the instanced data allocations (inferred) */
 #define rwID_VTXFMTPLUGIN 0x50D
 

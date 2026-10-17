@@ -4,10 +4,6 @@
  * grows as needed. The original file name is unknown. */
 #include "rw/rwcore.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-#define rwMEMHINTFLAG_RESIZABLE 0x1000000
-
 /* The pipeline module's ID */
 #define rwID_PIPEMODULE 0x409
 

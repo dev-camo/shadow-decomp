@@ -2,8 +2,6 @@
  * freed least recently used first when the heap is full. The original file name is unknown. */
 #include "rw/rwcore.h"
 
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 /* The resources module's ID (inferred) */
 #define rwID_RESOURCESMODULE 0x40B
 

@@ -2,13 +2,6 @@
  * and copying, and its stream chunks. The original file name is unknown. */
 #include "rw/rwcore.h"
 
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
-#define rwID_EXTENSION 0x3
-
-/* The size of a chunk header in a stream */
-#define rwCHUNKHEADERSIZE 12
-
 /* errors (inferred) */
 #define E_RW_PLUGININIT 0x80000017 /* plugins cannot be registered now */
 

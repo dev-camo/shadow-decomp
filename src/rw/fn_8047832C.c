@@ -3,9 +3,6 @@
 #include "rw/rtcharset.h"
 #include <string.h>
 
-#define rwMEMHINTDUR_FUNCTION 0x10000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 /* The toolkit's plugin ID, for its errors and memory hints (inferred) */
 #define rwID_CHARSET 0x180
 

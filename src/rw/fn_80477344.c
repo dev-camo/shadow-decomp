@@ -4,8 +4,6 @@
 #include "rw/rtanim.h"
 #include <string.h>
 
-#define rwMEMHINTDUR_EVENT 0x30000
-
 /* The chunk ID of an animation and the error plugin ID of the toolkit (inferred) */
 #define rwID_ANIMANIMATION 0x1B
 #define rwID_RTANIM 0x1B7

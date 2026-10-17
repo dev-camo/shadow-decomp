@@ -6,8 +6,6 @@
 #include <dolphin/os.h>
 
 /* RpGeometry lock flags */
-#define rpGEOMETRYLOCKVERTICES 0x2
-#define rpGEOMETRYLOCKNORMALS 0x4
 #define rpGEOMETRYLOCKPRELIGHT 0x8
 #define rpGEOMETRYLOCKTEXCOORDS1 0x10
 

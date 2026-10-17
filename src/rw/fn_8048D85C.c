@@ -4,8 +4,6 @@
  * The original file name is unknown. */
 #include "rw/rwcore.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-
 /* The memory hint ID of the quantizer's tree nodes (inferred) */
 #define rwID_PALQUANTNODE 0x411
 

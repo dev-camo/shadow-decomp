@@ -4,8 +4,6 @@
 #include <math.h>
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 /* The vector module's ID (inferred) */
 #define rwID_VECTORMODULE 0x401
 

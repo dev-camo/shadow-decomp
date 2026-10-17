@@ -7,27 +7,12 @@
 #include <string.h>
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 /* chunk and module IDs */
-#define rwID_TEXTURE 0x6
 #define rwID_TEXDICTIONARY 0x16
 #define rwID_TEXTUREMODULE 0x408
 
 /* object type */
 #define rwTEXDICTIONARY 6
-
-/* raster types and formats */
-#define rwRASTERTYPETEXTURE 0x4
-#define rwRASTERFORMATAUTOMIPMAP 0x1000
-#define rwRASTERFORMATPAL8 0x2000
-#define rwRASTERFORMATPAL4 0x4000
-#define rwRASTERFORMATMIPMAP 0x8000
-#define rwRASTERFORMATMASK 0xFF00
-
-/* A raster's format bits */
-#define RwRasterGetFormat(raster) (((raster)->cFormat & (rwRASTERFORMATMASK >> 8)) << 8)
 
 /* raster lock modes */
 #define rwRASTERLOCKWRITE 0x1
@@ -37,7 +22,6 @@
 /* errors (inferred) */
 #define E_RW_INVIMAGEFORMAT 0x80000009  /* the image cannot be put in a raster */
 #define E_RW_STRINGTRUNCATED 0x8000001E /* reported with the string, its limit and the cut */
-#define E_RW_READTEXMASK 0x16           /* a texture and mask could not be read */
 
 /* The core's error plugin ID (inferred) */
 #define rwCOREERRORPLUGIN 1

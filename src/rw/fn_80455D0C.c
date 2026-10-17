@@ -6,9 +6,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 /* chunk IDs */
 #define rwID_CAMERA 0x5
 #define rwID_FRAMELIST 0xE

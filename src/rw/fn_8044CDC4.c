@@ -8,9 +8,6 @@
 #include <dolphin/mtx.h>
 #include <dolphin/os.h>
 
-#define rpATOMIC 1 /* RwObject type of an atomic */
-#define rwMEMHINTDUR_EVENT 0x30000
-
 #define rpHANIMHIERARCHYLOCALSPACEMATRICES 0x4000
 
 /* GameCube skin pipeline types (inferred) */

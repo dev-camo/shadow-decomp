@@ -5,11 +5,7 @@
 #include <string.h>
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 /* chunk IDs */
-#define rwID_TEXTURE 0x6
 #define rwID_MATERIAL 0x7
 
 /* the plugin ID the world module reports errors with (inferred) */

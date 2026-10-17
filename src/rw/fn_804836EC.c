@@ -2,8 +2,6 @@
 #include "rw/rwcore.h"
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-
 /* chunk IDs */
 #define rwID_FRAMELIST 0xE
 

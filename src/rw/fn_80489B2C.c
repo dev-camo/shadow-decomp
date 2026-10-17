@@ -4,17 +4,11 @@
 #include <string.h>
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 /* module ID */
 #define rwID_RASTERMODULE 0x407
 
 /* raster types and flags */
 #define rwRASTERTYPENORMAL 0x00
-
-/* raster formats */
-#define rwRASTERFORMATMIPMAP 0x8000
 
 /* raster private flags: the palette locked for reading and for writing */
 #define rwRASTERPALETTELOCKEDREAD 0x08

@@ -5,15 +5,9 @@
 #include <dolphin/gx.h>
 #include <string.h>
 
-#define rwMEMHINTDUR_FUNCTION 0x10000
-#define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINT_SKIN (rwMEMHINTDUR_EVENT | rpID_SKINPLUGIN)
 /* for memory freed before the allocating function returns */
 #define rwMEMHINT_SKINTEMP (rwMEMHINTDUR_FUNCTION | rpID_SKINPLUGIN)
-
-/* RpGeometry lock flags */
-#define rpGEOMETRYLOCKVERTICES 0x2
-#define rpGEOMETRYLOCKNORMALS 0x4
 
 /* the platform of a native skin in the stream */
 #define rwPLATFORMGAMECUBE 6

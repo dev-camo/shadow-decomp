@@ -9,8 +9,6 @@
 #include <dolphin/gx.h>
 #include <dolphin/os.h>
 
-#define rpATOMIC 1 /* RwObject type of an atomic */
-
 /* the plugin's pipelines, by the index fn_80445CE0 takes; only the second is ever created */
 RxPipeline *lbl_805F1438[2];
 

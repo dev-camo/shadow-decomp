@@ -2,9 +2,6 @@
  * name, and reading and destroying dictionaries. The original file name is unknown. */
 #include "rw/rtdict.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 /* The toolkit's error plugin ID (inferred) */
 #define rwID_DICTTOOLKIT 0x1BF
 

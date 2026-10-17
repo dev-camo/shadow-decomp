@@ -7,10 +7,6 @@
 #include <stddef.h>
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-#define rwMEMHINTFLAG_RESIZABLE 0x1000000
-
 /* engine and object plugin IDs (inferred) */
 #define rwID_WORLDMODULE 0x507
 #define rwID_WORLDOBJMODULE 0x509

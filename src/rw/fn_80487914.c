@@ -6,10 +6,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-#define rwMEMHINTFLAG_RESIZABLE 0x1000000
-
 /* chunk and module IDs */
 #define rwID_IMAGE 0x18
 #define rwID_IMAGEMODULE 0x406
@@ -31,8 +27,6 @@
 #define E_RW_INVIMAGEDEPTH 0x80000008  /* the image depth is not supported */
 #define E_RW_INVIMAGEFORMAT 0x80000009 /* the depths cannot be converted */
 #define E_RW_INVIMAGESIZE 0x8000000A   /* the image and mask sizes differ */
-#define E_RW_NOMEM 0x80000013          /* reported with the size that could not be allocated */
-#define E_RW_NULLP 0x80000016          /* a required pointer is NULL */
 
 /* The core's error plugin ID (inferred) */
 #define rwCOREERRORPLUGIN 1
