@@ -172,8 +172,8 @@ extern "C" {
 
 #define GET_REG_FIELD(reg, size, shift) ((int)((reg) >> (shift)) & ((1 << (size)) - 1))
 
-// TODO: reconcile reg macro differences
-// this one is needed to match non GX libs
+// Mask-and-shift form, used by the AI and VI libraries: SET_REG_FIELD's __rlwimi changes their
+// code (ai.c, vi.c).
 #define OLD_SET_REG_FIELD(line, reg, size, shift, val)                                             \
     do {                                                                                           \
         ASSERTMSGLINE(line, ((u32)(val) & ~((1 << (size)) - 1)) == 0,                              \
@@ -181,7 +181,7 @@ extern "C" {
         (reg) = ((u32)(reg) & ~(((1 << (size)) - 1) << (shift))) | ((u32)(val) << (shift));        \
     } while (0)
 
-// above doesn't seem to work with GX, only can get it to work with this
+// Form used by the GX library: the mask-and-shift form above changes its code (e.g. GXGeometry.c).
 #define SET_REG_FIELD(line, reg, size, shift, val)                                                 \
     do {                                                                                           \
         ASSERTMSGLINE(line, ((u32)(val) & ~((1 << (size)) - 1)) == 0,                              \
