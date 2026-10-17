@@ -29,7 +29,7 @@ typedef struct rpDMorphRLE {
     /* 0x0 */ RwUInt8 *code;
     /* 0x4 */ RwUInt32 numCodeElements;
     /* 0x8 */ RwUInt32 numDataElements; /* the vertices that have deltas */
-    /* 0xC */ RwUInt8 *data;            /* one allocation for the target's delta streams */
+    /* 0xC */ void *data;               /* one allocation for the target's delta streams */
 } rpDMorphRLE;
 CHECK_SIZEOF(rpDMorphRLE, 0x10);
 
