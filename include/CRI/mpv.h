@@ -1,11 +1,14 @@
 #ifndef CRI_MPV_H
 #define CRI_MPV_H
 
-/* CRI Sofdec MPEG video decoder (MPV) object layout. Layout and names from the RE4 GameCube
- * decompilation.
+/* CRI Sofdec MPEG video decoder (MPV) object layout. Names follow the RE4 GameCube decompilation
+ * of MPV 1.933; offsets are this game's MPV 1.958 layout, measured from its MPV code (one more
+ * IDCT function pointer at 0x2E8, the motion compensation buffer starting at 0x3A0, and three
+ * words after the user data fields).
  */
 
 #include "CRI/cri_xpt.h"
+#include "CRI/dct.h"
 #include "CRI/sj.h"
 #include "layout_check.h"
 
@@ -126,7 +129,7 @@ typedef struct {
     Sint32 idx0;    /* 0x10 zigzag position of the first coefficient */
     Sint32 idx;     /* 0x14 zigzag position of the last coefficient */
     Sint32 pad18;   /* 0x18 */
-    Float64 *dst;   /* 0x1C block coefficient buffer (64 Float32) */
+    Float32 *dst;   /* 0x1C block coefficient buffer (64 coefficients) */
     Uint8 *iqm;     /* 0x20 quantiser matrix */
     Sint32 qscale;  /* 0x24 */
     Sint32 *dcpred; /* 0x28 intra DC predictor of the component */
@@ -171,15 +174,12 @@ typedef struct MPV_OBJ {
     Uint32 *rl_0c;               /* 0x028 */
     Sint8 *zigzag_tbl;           /* 0x02C */
     Uint16 *bitmsk_tbl;          /* 0x030 */
-    Uint8 *scale_tbl;            /* 0x034 */
+    Float32 *scale_tbl;          /* 0x034 */
     Uint8 *group_tbl_p;          /* 0x038 */
     void *rl_p;                  /* 0x03C */
     Uint8 *clip_base;            /* 0x040 */
     MPV_BLKPRM blkprm;           /* 0x044 */
-    Sint8 cbp[6];                /* 0x078 per-block coded flags */
-    Uint8 pad7E[0xA0 - 0x7E];    /* 0x007E */
-    Sint32 cbp_msk;              /* 0x0A0 */
-    Uint8 padA4[0xCC - 0xA4];    /* 0x00A4 */
+    DCT_PA dctpa;                /* 0x078 */
     MPVMC mc;                    /* 0x0CC */
     MPVCMC_OUTBLK ob_rt;         /* 0x120 */
     MPVCMC_OUTBLK ob;            /* 0x154 */
@@ -187,7 +187,7 @@ typedef struct MPV_OBJ {
     Sint32 x18c;                 /* 0x18C */
     Sint32 cond[16];             /* 0x190 (cond[5] = mcflag) */
     MPV_PICATR picatr;           /* 0x1D0 */
-    MPVERR_INF errinf;           /* 0x250; RE4 mpv_hdec.c counts frames/bytes in reserved */
+    MPVERR_INF errinf;           /* 0x250 */
     MPV_FRM frm;                 /* 0x264 */
     Uint8 pad294[0x2A4 - 0x294]; /* 0x0294 */
     Sint32 aspect;               /* 0x2A4 pel_aspect_ratio */
@@ -203,52 +203,64 @@ typedef struct MPV_OBJ {
     Sint32 (*nintra_blocks)(MPV mpv);       /* 0x2CC */
     void (*mc_intra_func)(MPV mpv);         /* 0x2D0 */
     void (*mc_func[4])(MPV mpv); /* 0x2D4 [0] current, [1] backward, [2] forward, [3] both */
-    Sint32 x2e4;                 /* 0x2E4 */
-    Sint32 qscale;               /* 0x2E8 */
-    MPV_MV fwd;                  /* 0x2EC */
-    MPV_MV bwd;                  /* 0x310 */
-    Sint32 mb_addr;              /* 0x334 macroblock address */
-    Sint32 mb_y;                 /* 0x338 */
-    Sint32 mb_x;                 /* 0x33C */
-    Sint32 mb_last;              /* 0x340 mb_width * mb_height - 1 */
-    Sint32 mbtype; /* 0x344 macroblock_type flags (1 intra, 2 pattern, 4 bwd, 8 fwd, 0x10 quant) */
-    Sint32 cbp_code;                /* 0x348 coded block pattern */
-    Sint32 dcpred[3];               /* 0x34C */
-    Sint32 m2v_mode;                /* 0x358 0 unknown, 1 MPEG-1, 2 MPEG-2 */
-    Sint32 stc[3];                  /* 0x35C "STCCODE" user data values */
-    Uint8 *tbl368[6];               /* 0x368 */
-    Uint8 mcbuf[0x680 - 0x380];     /* 0x380 */
-    Float64 blk[6][32];             /* 0x680 six 0x100-byte coefficient blocks */
-    Uint8 intra_iqm[64];            /* 0xC80 */
-    Uint8 nintra_iqm[64];           /* 0xCC0 */
-    Uint8 padD00[0xD20 - 0xD00];    /* 0x0D00 */
-    Uint8 work[0x1100 - 0xD20];     /* 0xD20 (MPVCMC_InitObj) */
-    Uint16 bitmsk[16];              /* 0x1100 */
-    Sint8 zigzag[64];               /* 0x1120 */
-    Uint8 pad1160[0x1260 - 0x1160]; /* 0x1160 */
-    Uint8 group_tbl[32];            /* 0x1260 */
-    MPV_RUNLEVEL rl[6];             /* 0x1280 */
-    Uint8 pad12B0[0x1300 - 0x12B0]; /* 0x12B0 */
-    Sint32 pic_done;                /* 0x1300 set when a picture has been decoded */
-    Sint32 npic;                    /* 0x1304 */
-    SJCK ck;                        /* 0x1308 chunk being parsed */
-    Sint32 bitofs;                  /* 0x1310 bit offset of the slice data in its first byte */
-    Sint32 dcprec;                  /* 0x1314 "IDCPREC" (0: 8 bit, 3: 11 bit DC) */
-    MPV_BLKDEC_FUNC intra_func;     /* 0x1318 */
-    MPV_BLKDEC_FUNC nintra_func;    /* 0x131C */
-    Sint32 pad1320;                 /* 0x1320 */
-    Sint32 x1324;                   /* 0x1324 copy of cond[7] */
-    void *dctbl_y;                  /* 0x1328 */
-    void *dctbl_c;                  /* 0x132C */
-    void *m2v;                      /* 0x1330 */
-    Sint32 hdrtype;                 /* 0x1334 header being decoded: 1 sequence, 2 GOP, 3 picture */
-    MPV_USRSJ usr[4];               /* 0x1338 */
-    Uint8 *picusr_buf;              /* 0x1368 */
-    Sint32 picusr_bufsiz;           /* 0x136C */
-    Sint32 picusr_len;              /* 0x1370 */
-    Sint32 pad1374;                 /* 0x1374 */
+    void (*x2e4)(DCT_PA *pa);    /* 0x2E4 IDCT of an intra macroblock (fn_803D30A8) */
+    void (*x2e8)(DCT_PA *pa);    /* 0x2E8 IDCT of the coded blocks (fn_803D3084) */
+    Sint32 qscale;               /* 0x2EC */
+    MPV_MV fwd;                  /* 0x2F0 */
+    MPV_MV bwd;                  /* 0x314 */
+    Sint32 mb_addr;              /* 0x338 macroblock address */
+    Sint32 mb_y;                 /* 0x33C */
+    Sint32 mb_x;                 /* 0x340 */
+    Sint32 mb_last;              /* 0x344 mb_width * mb_height - 1 */
+    Sint32 mbtype; /* 0x348 macroblock_type flags (1 intra, 2 pattern, 4 bwd, 8 fwd, 0x10 quant) */
+    Sint32 cbp_code;             /* 0x34C coded block pattern */
+    Sint32 dcpred[3];            /* 0x350 */
+    Sint32 m2v_mode;             /* 0x35C 0 unknown, 1 MPEG-1, 2 MPEG-2 */
+    Sint32 stc[3];               /* 0x360 "STCCODE" user data values */
+    Sint16 *tbl36c[6];           /* 0x36C IDCT output blocks in mcbuf */
+    Uint8 pad384[0x3A0 - 0x384]; /* 0x384 */
+    Sint16 mcbuf[6][64];         /* 0x3A0 six 8x8 IDCT output blocks */
+    Float32 blk[6][64];          /* 0x6A0 coefficient blocks */
+    Uint8 intra_iqm[64];         /* 0xCA0 */
+    Uint8 nintra_iqm[64];        /* 0xCE0 */
+    Uint8 work[0x1320 - 0xD20];  /* 0xD20 (MPVCMC_InitObj) */
+    Sint32 pic_done;             /* 0x1320 set when a picture has been decoded */
+    Sint32 npic;                 /* 0x1324 */
+    SJCK ck;                     /* 0x1328 chunk being parsed */
+    Sint32 bitofs;               /* 0x1330 bit offset of the slice data in its first byte */
+    Sint32 dcprec;               /* 0x1334 "IDCPREC" (0: 8 bit, 3: 11 bit DC) */
+    MPV_BLKDEC_FUNC intra_func;  /* 0x1338 */
+    MPV_BLKDEC_FUNC nintra_func; /* 0x133C */
+    Sint32 pad1340;              /* 0x1340 */
+    Sint32 x1344;                /* 0x1344 copy of cond[7] */
+    void *dctbl_y;               /* 0x1348 */
+    void *dctbl_c;               /* 0x134C */
+    void *m2v;                   /* 0x1350 */
+    Sint32 hdrtype;              /* 0x1354 header being decoded: 1 sequence, 2 GOP, 3 picture */
+    MPV_USRSJ usr[4];            /* 0x1358 */
+    Uint8 *picusr_buf;           /* 0x1388 */
+    Sint32 picusr_bufsiz;        /* 0x138C */
+    Sint32 picusr_len;           /* 0x1390 */
+    Sint32 pad1394;              /* 0x1394 */
+    Sint32 x1398;                /* 0x1398 */
+    Sint32 x139c;                /* 0x139C */
+    Sint32 x13a0;                /* 0x13A0 */
 } MPV_OBJ;
-CHECK_SIZEOF(MPV_OBJ, 0x1378);
+/* MPV_Init publishes this size (mpvlib_siz_mpvobj); handles are 0x13C0 apart. */
+CHECK_SIZEOF(MPV_OBJ, 0x13A4);
+
+/* shared table area behind the handle array (MPV_Init; mpvlib_siz_mpvixa, 0x1C60 bytes) */
+typedef struct {
+    Uint8 pad0[0x1100];         /* 0x0000 */
+    Uint16 bitmsk[16];          /* 0x1100 */
+    Sint8 zigzag[64];           /* 0x1120 */
+    Float32 scale[64];          /* 0x1160 dequantisation scale per coefficient */
+    Uint8 group_tbl[32];        /* 0x1260 */
+    MPV_RUNLEVEL rl[6];         /* 0x1280 */
+    Uint8 vlc[0x1860 - 0x12B0]; /* 0x12B0 VLC table area (MPVVLC_Init) */
+    Uint8 clip[0x400];          /* 0x1860 copy of the clip table (MPV_Init) */
+} MPV_IXA;
+CHECK_SIZEOF(MPV_IXA, 0x1C60);
 
 Sint8 *MPV_SearchDelim(Sint8 *p, Sint32 n, Sint32 mask);
 /* mpv_vlc.c: run/level decode tables used by the block decoder (mpv_bdec.c) */
