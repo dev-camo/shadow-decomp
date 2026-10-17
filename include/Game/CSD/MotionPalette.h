@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <dolphin/types.h>
+#include "Game/CSD/Matrix.h"
 #include "layout_check.h"
 
 /* The runtime records the Chao::CSD library builds from a scene's file data, and that file data.
@@ -10,20 +11,6 @@
  * name here is inferred from that code; members without a supported meaning keep their offset. */
 namespace Chao {
 namespace CSD {
-
-/* A 2x3 matrix. */
-struct MatrixValue {
-    /* 0x00 */ f32 m[6];
-};
-CHECK_SIZEOF(Chao::CSD::MatrixValue, 0x18);
-
-/* An entry's matrix and two optional extra matrices taken from the palette's matrix pool. */
-struct Matrix {
-    /* 0x00 */ f32 m[6];
-    /* 0x18 */ MatrixValue *sub0;
-    /* 0x1C */ MatrixValue *sub1;
-};
-CHECK_SIZEOF(Chao::CSD::Matrix, 0x20);
 
 /* A quad corner: position, colour and texture coordinates. */
 struct Vertex {

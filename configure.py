@@ -607,6 +607,10 @@ config.libs = [
                 Object(Matching, "Game/ElecPillar.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecSmallPillar.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecWakka.cpp", cflags=cflags_game_cpp),
+                # Every function matches except InitMatrixStack, whose allocations pass lines 64 and
+                # 65 instead of the original 53 and 54. .rodata also starts with the two static
+                # doubles of MSL <cmath>'s sqrtf, unreferenced weak data that the link discards.
+                Object(NonMatching, "Game/CSD/csdMatrix.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80360528.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361A24.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361CF8.cpp", cflags=cflags_csd),

@@ -80,6 +80,11 @@ Game/ElecCircuitExit.cpp:
 	.sdata      start:0x805EC030 end:0x805EC050
 	.sdata2     start:0x805F8D88 end:0x805F8DA0
 
+Game/CSD/csdMatrix.cpp:
+	.text       start:0x8035F81C end:0x80360528
+	.rodata     start:0x80512EE8 end:0x80512F08
+	.bss        start:0x80585958 end:0x80585988
+
 Game/CSD/fn_80360528.cpp:
 	.text       start:0x80360528 end:0x803605E8
 	.bss        start:0x80585988 end:0x80585990
