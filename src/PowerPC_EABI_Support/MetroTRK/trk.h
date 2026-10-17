@@ -210,9 +210,11 @@ void SetUseSerialIO(u8);
 u8 GetUseSerialIO(void);
 
 ////// MSL CONSOLE SUPPORT (mslsupp.c) //////
-DSIOResult __read_console(u32 handle, u8 *buffer, size_t *count, void *ref_con);
-DSIOResult __TRK_write_console(u32 handle, u8 *buffer, size_t *count, void *ref_con);
-DSIOResult __close_console(u32 handle, u8 *buffer, size_t *count, void *ref_con);
+/* Console I/O for MSL: __read_console and __close_console are installed in its standard streams
+ * (ansi_files.h), and its __write_console calls __TRK_write_console (uart_console_io_gcn.h). */
+int __read_console(u32 handle, u8 *buffer, size_t *count, void (*idle_fn)(void));
+int __TRK_write_console(u32 handle, u8 *buffer, size_t *count, void (*idle_fn)(void));
+int __close_console(u32 handle);
 
 DSError TRKTargetAddStopInfo(MessageBuffer *);
 void TRKTargetAddExceptionInfo(MessageBuffer *);

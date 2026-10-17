@@ -1,38 +1,38 @@
 #include "trk.h"
 
-static DSIOResult __read_file(u32 handle, u8 *buffer, size_t *count, void *ref_con);
-static DSIOResult __write_file(u32 handle, u8 *buffer, size_t *count, void *ref_con);
-static DSIOResult __close_file(u32 handle, u8 *buffer, size_t *count, void *ref_con);
-static DSIOResult __access_file(u32 handle, u8 *buffer, size_t *count, void *ref_con,
+static DSIOResult __read_file(u32 handle, u8 *buffer, size_t *count, void (*idle_fn)(void));
+static DSIOResult __write_file(u32 handle, u8 *buffer, size_t *count, void (*idle_fn)(void));
+static DSIOResult __close_file(u32 handle);
+static DSIOResult __access_file(u32 handle, u8 *buffer, size_t *count, void (*idle_fn)(void),
                                 MessageCommandID cmd);
 
-DSIOResult __read_console(u32 handle, u8 *buffer, size_t *count, void *ref_con) {
+int __read_console(u32 handle, u8 *buffer, size_t *count, void (*idle_fn)(void)) {
     if (GetUseSerialIO() == 0) {
         return DS_IOError;
     }
-    return __read_file(DS_Stdin, buffer, count, ref_con);
+    return __read_file(DS_Stdin, buffer, count, idle_fn);
 }
 
-DSIOResult __TRK_write_console(u32 handle, u8 *buffer, size_t *count, void *ref_con) {
+int __TRK_write_console(u32 handle, u8 *buffer, size_t *count, void (*idle_fn)(void)) {
     if (GetUseSerialIO() == 0) {
         return DS_IOError;
     }
-    return __write_file(DS_Stdout, buffer, count, ref_con);
+    return __write_file(DS_Stdout, buffer, count, idle_fn);
 }
 
-DSIOResult __close_console(u32 handle, u8 *buffer, size_t *count, void *ref_con) {
-    return __close_file(handle, buffer, count, ref_con);
+int __close_console(u32 handle) {
+    return __close_file(handle);
 }
 
-static DSIOResult __read_file(u32 handle, u8 *buffer, size_t *count, void *ref_con) {
-    return __access_file(handle, buffer, count, ref_con, DSMSG_ReadFile);
+static DSIOResult __read_file(u32 handle, u8 *buffer, size_t *count, void (*idle_fn)(void)) {
+    return __access_file(handle, buffer, count, idle_fn, DSMSG_ReadFile);
 }
 
-static DSIOResult __write_file(u32 handle, u8 *buffer, size_t *count, void *ref_con) {
-    return __access_file(handle, buffer, count, ref_con, DSMSG_WriteFile);
+static DSIOResult __write_file(u32 handle, u8 *buffer, size_t *count, void (*idle_fn)(void)) {
+    return __access_file(handle, buffer, count, idle_fn, DSMSG_WriteFile);
 }
 
-static DSIOResult __close_file(u32 handle, u8 *buffer, size_t *count, void *ref_con) {
+static DSIOResult __close_file(u32 handle) {
     u32 result;
 
     if (GetTRKConnected() == DS_NoError) {
@@ -51,7 +51,7 @@ static DSIOResult __close_file(u32 handle, u8 *buffer, size_t *count, void *ref_
     return DS_IOError;
 }
 
-static DSIOResult __access_file(u32 handle, u8 *buffer, size_t *count, void *ref_con,
+static DSIOResult __access_file(u32 handle, u8 *buffer, size_t *count, void (*idle_fn)(void),
                                 MessageCommandID cmd) {
     size_t count_temp;
     u32 result;
