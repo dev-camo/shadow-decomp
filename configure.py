@@ -590,6 +590,7 @@ config.libs = [
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCristalWallSwitch.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecPillar.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/ElecSmallPillar.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/CSD/fn_80360528.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361A24.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361CF8.cpp", cflags=cflags_csd),
