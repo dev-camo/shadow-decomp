@@ -126,8 +126,11 @@ void fn_80497FB4(RwRect *rect) {
 }
 
 /* Draws raster into the raster context at rect, through the raster's parent as a texture; scaled
- * filters linearly (rect has the drawn size), and blend blends with the raster's alpha. The render
- * states it changes are restored. */
+ * filters linearly (rect has the drawn size), and blend blends with the raster's alpha. It saves
+ * and restores the fog, texture filter, U/V addressing and texture raster render states, and
+ * restores the cached cull and blend modes. Setting up the texture also selects the alpha test for
+ * the parent's format; that is not restored, as restoring the texture raster only sets the raster
+ * back. */
 void fn_80498344(RwRaster *raster, RwRect *rect, RwBool scaled, RwBool blend) {
     RwRaster *parent = raster->parent;
     RwInt32 fogEnable;
@@ -347,7 +350,9 @@ void fn_80498AC4(RwRaster *raster) {
 }
 
 /* Clears rect of raster (in frame buffer coordinates) to color and/or the far Z by drawing a quad,
- * as clearMode selects; the render states it changes are restored */
+ * as clearMode selects. Afterwards it turns fog back on if it was on, sets the cached blend mode,
+ * Z compare and Z write (with the Z test on) and cull mode, and turns color updates on; alpha
+ * testing stays off for opaque drawing, and the GX setup of the clear is left as is. */
 void fn_80498E08(RwRaster *raster, RwRect *rect, RwRGBA *color, RwInt32 clearMode) {
     RwBool fogEnabled = FALSE;
     GXColor clearColor;
