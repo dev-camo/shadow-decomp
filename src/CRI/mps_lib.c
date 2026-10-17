@@ -26,10 +26,12 @@ static Sint32 mpslib_CheckHn(MPS mps) {
     return 0;
 }
 
-/* dead-stripped by the linker; puts cri_verstr_ptr before MPSLIB_libwork in .bss */
-const Char8 *MPS_GetVerStr(void) {
-    cri_verstr_ptr = MPSLIB_version_str;
-    return MPSLIB_version_str;
+/* Stand-in for a function the linker stripped from the game; its body is unknown. MWCC lays out
+ * .bss by first reference, so this never-called function refers to cri_verstr_ptr before the
+ * error functions below refer to MPSLIB_libwork. Storing the address keeps the reference.
+ */
+static void mpslib_BssOrder(void **out) {
+    out[0] = &cri_verstr_ptr;
 }
 
 // Library-level error: records the code and calls the library error callback with it.
