@@ -69,7 +69,7 @@ RpAtomic *fn_80451BCC(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
 
     skin = fn_8044CCAC(atomic->geometry);
     if (skin->maxNumWeightsForVertex > 1) {
-        fn_804950AC(ltm, (renderMesh->geometryFlags >> 4) & 1);
+        fn_804950AC(ltm, (renderMesh->geometryFlags & rpGEOMETRYNORMALS) != 0);
     } else {
         GXSetVtxDesc(GX_VA_PNMTXIDX, GX_DIRECT);
     }
@@ -78,7 +78,7 @@ RpAtomic *fn_80451BCC(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
     if (skin->maxNumWeightsForVertex == 1 && skin->skinSplitData.numMeshes == 0) {
         for (i = 0, index = 0; i < skin->numBoneIds; index += 3, i++) {
             fn_8044DC4C(&lbl_8056D708.matrixCache[skin->boneIds[i]], index,
-                        (renderMesh->geometryFlags >> 4) & 1);
+                        (renderMesh->geometryFlags & rpGEOMETRYNORMALS) != 0);
         }
     }
 
@@ -88,7 +88,7 @@ RpAtomic *fn_80451BCC(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
     while (numMeshes-- != 0) {
         if (skin->maxNumWeightsForVertex == 1 && skin->skinSplitData.numMeshes != 0) {
             fn_8044DD1C(skin, renderMesh->meshHeader->numMeshes - (numMeshes + 1),
-                        (renderMesh->geometryFlags >> 4) & 1);
+                        (renderMesh->geometryFlags & rpGEOMETRYNORMALS) != 0);
         }
         fn_804A457C(mesh, displayList, atomic, ltm, renderMesh);
         displayList++;
