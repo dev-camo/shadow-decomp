@@ -36,7 +36,6 @@
 #define ADXF_CMD_CLOSE 3
 #define ADXF_CMD_READ_NW32 4
 #define ADXF_CMD_STOP 5
-#define ADXF_CMD_STOP_NW 6 /* inferred: only the unreferenced adxf_StopNw records it */
 
 typedef struct {
     /* 0x00 */ Sint8 used;
