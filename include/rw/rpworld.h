@@ -537,6 +537,9 @@ RpGeometry *fn_8045984C(RpGeometry *geometry);                           /* add 
 
 /* RpGeometry lock flags */
 #define rpGEOMETRYLOCKPOLYGONS 0x1
+#define rpGEOMETRYLOCKVERTICES 0x2
+#define rpGEOMETRYLOCKNORMALS 0x4
+#define rpGEOMETRYLOCKTEXCOORDS 0x10
 #define rpGEOMETRYLOCKALL 0xFFF
 
 /* the texture coordinate sets of an RpGeometry format */

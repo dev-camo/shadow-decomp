@@ -556,6 +556,9 @@ config.libs = [
                 Object(Matching, "rw/fn_8049F3F8.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049F8AC.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804A076C.c", cflags=cflags_game),
+                # The original calls fn_804A2F24 from fn_804A457C: the default limit inlines it, an
+                # inline_max_size of 350 to 480 keeps the call.
+                Object(Matching, "rw/fn_804A2C90.c", cflags=[*cflags_game, "-pragma \"inline_max_size(400)\""]),
                 Object(Matching, "rw/fn_804A869C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804A90F8.c", cflags=cflags_game),
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
