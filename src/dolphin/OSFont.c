@@ -187,7 +187,7 @@ static void Decode(u8 *s, u8 *d) {
     int k;
     int p;
     int q;
-    int r7; // huh? DWARF info says these 2 variables might be register names and not actual names.
+    int r7;
     int r25;
     int cnt;
     int os;

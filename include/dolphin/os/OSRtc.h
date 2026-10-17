@@ -8,11 +8,11 @@
 extern "C" {
 #endif
 
-// make the assert happy
+// Modes for OSSetSoundMode
 #define OS_SOUND_MODE_MONO 0
 #define OS_SOUND_MODE_STEREO 1
 
-// make the asserts happy
+// Modes for OSSetVideoMode
 #define OS_VIDEO_MODE_NTSC 0
 #define OS_VIDEO_MODE_MPAL 2
 

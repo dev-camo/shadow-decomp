@@ -60,7 +60,6 @@ void __fstLoad(void) {
             break;
         }
 
-        // weird switch that seemingly wont do anything but break out of its own switch. What was this for? Early DVD development pre-hardware?
         switch (state) {
         case DVD_STATE_FATAL_ERROR:
             break;

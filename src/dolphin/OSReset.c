@@ -3,8 +3,8 @@
 
 #include "__os.h"
 
-// These macros are copied from OSThread.c. Or ARE they the same
-// macros? They dont seem to be in the SDK headers.
+// Queue helpers for the reset function list, in the style of the thread queue macros in
+// OSThread.c.
 #define ENQUEUE_INFO(info, queue)                                                                  \
     do {                                                                                           \
         OSResetFunctionInfo *__prev = (queue)->tail;                                               \

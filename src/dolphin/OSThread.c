@@ -127,15 +127,14 @@ void __OSThreadInit() {
     thread->attr = 1;
     thread->priority = thread->base = 0x10;
     thread->suspend = 0;
-    thread->val = (void *)-1; // wut
+    thread->val = (void *)-1;
     thread->mutex = 0;
 
     OSInitThreadQueue(&thread->queueJoin);
 #ifdef DEBUG
     OSInitMutexQueue(&thread->queueMutex);
 #else
-    thread->queueMutex.head = thread->queueMutex.tail =
-        0; // it got inlined? cant reproduce the inline...
+    thread->queueMutex.head = thread->queueMutex.tail = 0;
 #endif
 
     ASSERTLINE(LINE(348, 357, 357), PPCMfmsr() & MSR_FP);
@@ -424,7 +423,6 @@ int OSCreateThread(OSThread *thread, void *(*func)(void *), void *param, void *s
                   ((priority >= OS_PRIORITY_MIN) && (priority <= OS_PRIORITY_MAX)),
                   "OSCreateThread(): priority out of range (0 <= priority <= 31).");
 
-    // why check this for an assert just to check it again right after?
     if ((priority < OS_PRIORITY_MIN) || (priority > OS_PRIORITY_MAX)) {
         return 0;
     }
@@ -440,7 +438,7 @@ int OSCreateThread(OSThread *thread, void *(*func)(void *), void *param, void *s
 #ifdef DEBUG
     OSInitMutexQueue(&thread->queueMutex);
 #else
-    OSInitThreadQueue((void *)&thread->queueMutex); // why
+    OSInitThreadQueue((void *)&thread->queueMutex);
 #endif
     sp = (u32)stack;
     sp &= ~7;
