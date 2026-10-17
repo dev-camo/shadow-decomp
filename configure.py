@@ -267,6 +267,19 @@ cflags_game_gcax = [
     "-inline noauto,deferred",
 ]
 
+# Chao::CSD UI library (game C++ without RTTI): small data off (globals in .bss, constants in
+# .rodata), read-only strings (literals in .rodata), size-optimized with stmw/lmw, deferred inlining
+# (functions in reverse definition order).
+cflags_csd = [
+    *cflags_game,
+    "-O4,s",
+    "-use_lmw_stmw on",
+    "-str reuse,readonly",
+    "-inline noauto,deferred",
+    "-sdata 0",
+    "-sdata2 0",
+]
+
 # Metrowerks library flags (the runtime units include the MSL and runtime headers)
 cflags_runtime = [
     *cflags_base,
@@ -571,6 +584,7 @@ config.libs = [
                 Object(NonMatching, "rw/fn_804A90F8.c", cflags=cflags_game),
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/CSD/fn_80360528.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/fn_80008D48.c"),
                 Object(Matching, "Game/fn_80008DA4.c"),
                 Object(Matching, "Game/fn_80008E1C.c"),
