@@ -55,6 +55,10 @@ Game/CSD/fn_80361A24.cpp:
 	.rodata     start:0x80512F48 end:0x80512F50
 	.bss        start:0x805859A8 end:0x805859E0
 
+Game/CSD/fn_80361CF8.cpp:
+	.text       start:0x80361CF8 end:0x80361F30
+	.bss        start:0x80585A18 end:0x80585A20
+
 dolphin/PPCArch.c:
 	.text       start:0x8036FC94 end:0x8036FDA8
 
