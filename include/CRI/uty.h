@@ -4,10 +4,21 @@
 /* CRI utility library (UTY) routines shared by the CRI middleware. */
 
 #include "CRI/cri_xpt.h"
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* uty_ppc.c: save area for the graphics quantisation registers; UTY_PushGqr and UTY_PopGqr keep
+ * GQR2..GQR7 at the index of their register number (GQR0 and GQR1 are not touched) */
+typedef struct {
+    Uint32 gqr[8]; /* 0x00 */
+} UTY_GQR;
+CHECK_SIZEOF(UTY_GQR, 0x20);
+
+void UTY_PopGqr(UTY_GQR *gqr);
+void UTY_PushGqr(UTY_GQR *gqr);
 
 /* memcpyd.c: copies ndw 32-bit words (the body works on Uint32 words with an unsigned count) */
 void UTY_MemcpyDword(Uint32 *dst, Uint32 *src, Uint32 ndw);
