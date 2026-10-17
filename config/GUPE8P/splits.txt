@@ -1403,6 +1403,11 @@ rw/fn_804447B0.c:
 	.text       start:0x804447B0 end:0x804448B8
 	.sdata      start:0x805EDD68 end:0x805EDD70
 
+rw/fn_804448B8.c:
+	.text       start:0x804448B8 end:0x80445CF4
+	.sbss       start:0x805F1438 end:0x805F1440
+	.sdata2     start:0x805FAFB0 end:0x805FAFE8
+
 rw/fn_80445CF4.c:
 	.text       start:0x80445CF4 end:0x80446A04
 	.sdata2     start:0x805FAFE8 end:0x805FB050

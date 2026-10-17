@@ -53,7 +53,10 @@ typedef struct RpDMorphGeometry {
     /* 0x00 */ RwUInt32 numDMorphTargets;
     /* 0x04 */ RpDMorphTarget *dmorphTargets;
     /* 0x08 */ RwReal *values; /* one per target, allocated after the targets */
-    /* 0x0C */ RwUInt8 field_0xC[0x10];
+    /* GameCube: the instance's streams the morphed vertices start from, indexed like its vertex
+     * descriptors (positions, normals, prelit colors, texture coordinates); the instance uses a
+     * vertex buffer in their place while the geometry is delta morphed (inferred) */
+    /* 0x0C */ void *baseStreams[4];
 } RpDMorphGeometry;
 CHECK_SIZEOF(RpDMorphGeometry, 0x1C);
 
@@ -112,6 +115,16 @@ extern RwInt32 lbl_805F1430; /* atomic plugin offset */
 
 #define DMORPHATOMIC(atomic) RWPLUGINOFFSET(RpDMorphAtomic, atomic, lbl_805F1430)
 
+/* GameCube: the header of a delta morph vertex buffer: the GX draw sync token of its last use, then
+ * the buffer's resource entry just before the 32-byte aligned streams (inferred) */
+typedef struct DMorphVertexBuffer {
+    /* 0x0 */ RwUInt16 syncToken;
+} DMorphVertexBuffer;
+CHECK_SIZEOF(DMorphVertexBuffer, 0x2);
+
+#define DMORPHVERTEXBUFFERENTRY(vertices) (((RwResEntry **)(vertices))[-1])
+#define DMORPHVERTEXBUFFER(vertices) ((DMorphVertexBuffer *)(DMORPHVERTEXBUFFERENTRY(vertices) + 1))
+
 /* geometries */
 RpGeometry *fn_8044382C(RpGeometry *geometry, RwUInt32 numDMorphTargets);
 RpGeometry *fn_80443908(RpGeometry *geometry);
@@ -127,8 +140,8 @@ RpAtomic *fn_80445CE0(RpAtomic *atomic, RwInt32 pipelineIndex); /* inferred: set
 /* plugin attachment and pipelines */
 RwBool fn_804437B0(void);
 RwBool fn_8044420C(void);
-RwBool fn_80445C38(RwInt32 arg); /* inferred: creates the plugin's pipelines */
-RwBool fn_80445C9C(void);        /* inferred: destroys them */
+RwBool fn_80445C38(RwInt32 pluginData); /* inferred: creates the plugin's pipelines */
+RwBool fn_80445C9C(void);               /* inferred: destroys them */
 
 /* animations */
 RpDMorphAnimation *fn_80442B98(RpDMorphAnimation *animation);
