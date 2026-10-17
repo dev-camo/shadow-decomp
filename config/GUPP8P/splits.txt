@@ -1041,6 +1041,9 @@ CRI/mpv_err.c:
 	.text       start:0x803D8990 end:0x803D8AE0
 	.bss        start:0x805C9E08 end:0x805C9E1C
 
+CRI/mpv_frm.c:
+	.text       start:0x803D8AE0 end:0x803D8CFC
+
 CRI/mpv_get.c:
 	.text       start:0x803D8CFC end:0x803D8F14
 

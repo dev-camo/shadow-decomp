@@ -29,12 +29,14 @@ typedef struct {
 } MPVCMC_OUTBLK;
 CHECK_SIZEOF(MPVCMC_OUTBLK, 0x34);
 
-/* error record (MPVERR_InitErrInf clears all five words) */
+/* error record (MPVERR_InitErrInf clears all five words); in a handle's record the last two words
+ * are picture counters of the header decoder, which MPV_DecodeFrmSj reports per call */
 typedef struct {
     void (*func)(void *obj, Sint32 code); /* 0x00 */
     void *obj;                            /* 0x04 */
     Sint32 code;                          /* 0x08 */
-    Sint32 reserved[2];                   /* 0x0C */
+    Sint32 nfrm_dec;                      /* 0x0C */
+    Sint32 x10;                           /* 0x10 pictures counted while cond[1] is set */
 } MPVERR_INF;
 CHECK_SIZEOF(MPVERR_INF, 0x14);
 
@@ -91,7 +93,7 @@ typedef struct {
     Uint8 pad20[4];     /* 0x20 */
     MPV_PICATR *picatr; /* 0x24 */
     Sint32 nfrm;        /* 0x28 */
-    Sint32 nbyte;       /* 0x2C */
+    Sint32 x2c;         /* 0x2C MPVERR_INF.x10 counted during the call */
 } MPV_FRM;
 CHECK_SIZEOF(MPV_FRM, 0x30);
 
@@ -276,6 +278,27 @@ Sint32 MPV_IsEmptyPpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb);
 Sint32 MPV_IsEmptyBpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb);
 Sint32 MPVLIB_CheckHn(MPV_OBJ *mpv);
 Sint32 MPVERR_SetCode(MPV_OBJ *mpv, Sint32 code);
+
+/* mpv_frm.c */
+Sint32 MPV_SkipFrmSj(void *hn, SJ sj);
+Sint32 MPV_DecodeFrmSj(void *hn, SJ sj, MPV_FRM *frm);
+void MPVFRM_Init(void);
+
+/* mpv_hdec.c (not yet decompiled) */
+Sint32 MPV_GoNextDelimSj(SJ sj);
+Sint32 MPV_MoveChunk(SJ sj, Sint32 id, Sint32 nbyte);
+Sint32 MPVHDEC_DecPicture(MPV_OBJ *mpv, SJ sj);
+
+/* mpv_umc.c (not yet decompiled) */
+void MPVUMC_SetGqr(void);
+void MPVUMC_InitOutRfb(MPV_OBJ *mpv);
+void MPVUMC_EndOfFrame(MPV_OBJ *mpv);
+
+/* mpv_cdec.c (not yet decompiled) */
+void MPVCDEC_InitFrm(MPV_OBJ *mpv);
+
+/* mpv_m2v.c: MPEG-2 decoder stub */
+Sint32 MPVM2V_DecodeFrm(MPV_OBJ *mpv, SJ sj, MPV_FRM *frm);
 
 /* mpv_cmc.c */
 extern void (*mpvcmc_oneref[8])(MPVMC *mc);

@@ -43,8 +43,8 @@ void MPVERR_InitErrInf(MPVERR_INF *inf) {
     inf->func = 0;
     inf->obj = 0;
     inf->code = 0;
-    inf->reserved[0] = 0;
-    inf->reserved[1] = 0;
+    inf->nfrm_dec = 0;
+    inf->x10 = 0;
 }
 
 /* Clears the library-wide error record. */
