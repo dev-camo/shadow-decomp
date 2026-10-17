@@ -148,7 +148,11 @@ void *fn_80453B64(void *object, RwInt32 offset, RwInt32 size) {
     return object;
 }
 
-/* material plugin copy: new interpolators playing the same animations */
+/* material plugin copy: allocates an interpolator for each slot that has one, copies the source's
+ * interpolated frame data into it and adds a reference to the source animation. The animation
+ * association, time and callbacks are not copied: the new interpolators have no current
+ * animation, so unless one is set later, the destructor and this function's failure path pass
+ * that NULL to fn_8045459C. */
 void *fn_80453C04(void *dst, const void *src, RwInt32 offset, RwInt32 size) {
     RpUVAnimMaterialExtension *srcExtension = RPUVANIMMATERIALGETEXT(src);
     RpUVAnimMaterialExtension *dstExtension = RPUVANIMMATERIALGETEXT(dst);
