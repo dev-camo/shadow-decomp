@@ -161,11 +161,9 @@ void __OSThreadInit() {
     Reschedule = 0;
 }
 
-#if DEBUG
-static void OSInitMutexQueue(OSMutexQueue *queue) {
+static inline void OSInitMutexQueue(OSMutexQueue *queue) {
     queue->head = queue->tail = 0;
 }
-#endif
 
 void OSInitThreadQueue(OSThreadQueue *queue) {
     queue->head = queue->tail = 0;
@@ -435,11 +433,7 @@ int OSCreateThread(OSThread *thread, void *(*func)(void *), void *param, void *s
     thread->val = (void *)-1;
     thread->mutex = 0;
     OSInitThreadQueue(&thread->queueJoin);
-#ifdef DEBUG
     OSInitMutexQueue(&thread->queueMutex);
-#else
-    OSInitThreadQueue((void *)&thread->queueMutex);
-#endif
     sp = (u32)stack;
     sp &= ~7;
     sp -= 8;
