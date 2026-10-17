@@ -73,7 +73,9 @@ struct Rt2dPath {
 CHECK_SIZEOF(struct Rt2dPath, 0x1C);
 typedef struct Rt2dFont Rt2dFont;
 
-/* Shows a string in a font at a height, from an anchor that it advances, with a brush */
+/* Shows a string in a font at a height, from an anchor, with a brush. The texture font callback
+ * (fn_80470C54) advances the anchor's x past the string; the outline font callback (fn_80470AC4)
+ * leaves the anchor unchanged. */
 typedef Rt2dFont *(*Rt2dFontShowCallBack)(Rt2dFont *font, const RwChar *string, RwReal height,
                                           RwV2d *anchor, Rt2dBrush *brush);
 

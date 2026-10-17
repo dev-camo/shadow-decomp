@@ -69,7 +69,7 @@ typedef RwInt32 RwPlatformID;
 #define E_RW_NOERROR 0x80000000       /* no error is pending */
 #define E_RW_NULLP 0x80000016         /* a required argument is NULL */
 #define E_RW_PLUGINNOTINIT 0x80000018 /* used before its module is ready (inferred) */
-#define E_RW_READTEXMASK 0x16         /* a texture was read without its mask */
+#define E_RW_READTEXMASK 0x16         /* a texture could not be read by its name and mask */
 
 /* pipeline errors of the core (inferred from where they are reported) */
 #define E_RX_CYCLICPIPELINE 0x1C

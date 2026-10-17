@@ -629,7 +629,8 @@ RwBool fn_804946A4(void *out, void *inOut, RwInt32 numIn) {
     GXSetCurrentGXThread();
     lbl_805F1650.camera = camera;
 
-    /* The view offset, with the view's y and z axes flipped */
+    /* The camera's view offset as a matrix: unit right and up vectors, the view direction offset
+     * by (-x, y) of the view offset and the position by (x, -y); the identity for a zero offset */
     viewOffset.flags = 0;
     viewOffset.right.x = 1.0f;
     viewOffset.right.y = 0.0f;
@@ -852,6 +853,8 @@ void fn_804950AC(RwMatrix *matrix, RwBool normals) {
         transform = &lbl_805E31CC;
     }
 
+    /* The right, up, at and pos vectors become the columns of GX's matrix, with their x and z
+     * components negated */
     gxMatrix[0][0] = -transform->right.x;
     gxMatrix[0][1] = -transform->up.x;
     gxMatrix[0][2] = -transform->at.x;

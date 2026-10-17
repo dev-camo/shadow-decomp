@@ -275,8 +275,8 @@ RwStream *fn_804A0CDC(RwStream *stream, RwTexture **texture) {
             return NULL;
         }
 
-        /* a texture that cannot be read is no error, unless reading it reported one other than a
-         * missing mask */
+        /* a texture that cannot be read is no error, unless reading it reported one other than
+         * E_RW_READTEXMASK (the texture read callback returned NULL) */
         fn_8047DBE4(&error);
         *texture = fn_80483D28(stream);
         if (*texture == NULL) {
