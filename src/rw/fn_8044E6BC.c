@@ -60,10 +60,11 @@ RpGeometry *fn_8044E758(RpGeometry *geometry) {
  * then owns */
 static inline void SkinReleaseBindPose(RpGeometry *geometry, RpSkin *skin) {
     RpGameCubeInstanceData *instance = (RpGameCubeInstanceData *)(geometry->repEntry + 1);
+    RwUInt32 flags = geometry->flags;
 
     SKINVERTEXBUFFERENTRY(instance->vertexDescriptors[0].data)->ownerRef = NULL;
     instance->vertexDescriptors[0].data = skin->positions;
-    if (geometry->flags & rpGEOMETRYNORMALS) {
+    if (flags & rpGEOMETRYNORMALS) {
         instance->vertexDescriptors[1].data = skin->normals;
     }
     geometry->repEntry->destroyNotify = fn_8046288C;
@@ -84,7 +85,8 @@ RwInt32 fn_8044E7D0(RpGeometry *geometry) {
     if (skin->positions != NULL) {
         SkinReleaseBindPose(geometry, skin);
     }
-    return size + fn_8044BDBC(skin);
+    size += fn_8044BDBC(skin);
+    return size;
 }
 
 /* Writes a native skin: a struct chunk with the platform, the counts, the used bones, the byte
@@ -229,11 +231,10 @@ RwInt32 fn_8044EE3C(const void *object, RwInt32 offset, RwInt32 size) {
 
     if (atomicData->positions != NULL) {
         RpGameCubeInstanceData *instance = (RpGameCubeInstanceData *)(atomic->repEntry + 1);
-        RpGeometry *geometry = atomic->geometry;
 
         SKINVERTEXBUFFERENTRY(instance->vertexDescriptors[0].data)->ownerRef = NULL;
         instance->vertexDescriptors[0].data = atomicData->positions;
-        if (geometry->flags & rpGEOMETRYNORMALS) {
+        if (atomic->geometry->flags & rpGEOMETRYNORMALS) {
             instance->vertexDescriptors[1].data = atomicData->normals;
         }
         atomic->repEntry->destroyNotify = fn_8046288C;
@@ -432,8 +433,9 @@ RpGameCubeVertexDescBuilder *fn_8044F4D0(RpGeometry *geometry, RpGameCubeBuiltSt
         fn_8046FF34(&lbl_805E1560, GX_VA_PNMTXIDX, GX_DIRECT);
     }
     fn_8046FC50(&lbl_805E1560, GX_VA_POS, GX_POS_XYZ, format->posType, format->posFrac);
-    fn_8046FF34(&lbl_805E1560, GX_VA_POS, SKININDEXTYPE(counts[0].count));
-    numAttributes = 1;
+    numAttributes = 0;
+    fn_8046FF34(&lbl_805E1560, GX_VA_POS, SKININDEXTYPE(counts[numAttributes].count));
+    numAttributes++;
 
     if (geometry->flags & rpGEOMETRYNORMALS) {
         if (format->normalNbt != 0) {
@@ -443,7 +445,7 @@ RpGameCubeVertexDescBuilder *fn_8044F4D0(RpGeometry *geometry, RpGameCubeBuiltSt
             fn_8046FC50(&lbl_805E1560, GX_VA_NRM, GX_NRM_XYZ, format->normalType, 0);
             fn_8046FF34(&lbl_805E1560, GX_VA_NRM, SKININDEXTYPE(counts[numAttributes].count));
         }
-        numAttributes = 2;
+        numAttributes++;
     }
     if (geometry->flags & rpGEOMETRYPRELIT) {
         fn_8046FC50(&lbl_805E1560, GX_VA_CLR0,
@@ -454,10 +456,12 @@ RpGameCubeVertexDescBuilder *fn_8044F4D0(RpGeometry *geometry, RpGameCubeBuiltSt
     if (geometry->flags & (rpGEOMETRYTEXTURED | rpGEOMETRYTEXTURED2)) {
         RpGameCubeBuiltStream *count = &counts[numAttributes];
 
-        for (i = 0; i < geometry->numTexCoordSets; i++, count++, numAttributes++) {
+        for (i = 0; i < geometry->numTexCoordSets; i++) {
             fn_8046FC50(&lbl_805E1560, GX_VA_TEX0 + i, GX_TEX_ST, format->texCoordType[i],
                         format->texCoordFrac[i]);
             fn_8046FF34(&lbl_805E1560, GX_VA_TEX0 + i, SKININDEXTYPE(count->count));
+            count++;
+            numAttributes++;
         }
     }
 
