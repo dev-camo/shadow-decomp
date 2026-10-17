@@ -2,6 +2,7 @@
 #define RW_RTDICT_H
 
 #include "rw/rwcore.h"
+#include "layout_check.h"
 
 /* RenderWare dictionaries: named entries of one kind (a schema), kept in dictionaries that are read
  * and written as stream chunks. The type and field names are inferred from the schemas' data and
@@ -39,12 +40,14 @@ typedef struct RtDictSchema {
     /* 0x2C */ RtDictStreamReadCompatibilityCallBack streamReadCompatibilityCB;
     /* 0x30 */ RtDictEntryStreamWriteCallBack streamWriteCB;
 } RtDictSchema;
+CHECK_SIZEOF(RtDictSchema, 0x34);
 
 /* A dictionary: its schema and its entries (8 bytes) */
 struct RtDict {
     /* 0x0 */ RtDictSchema *schema;
     /* 0x4 */ RwSList *entries; /* of entry pointers */
 };
+CHECK_SIZEOF(struct RtDict, 0x8);
 
 /* dictionaries (inferred) */
 RtDictSchema *fn_80479040(RtDictSchema *schema);               /* init */

@@ -6,6 +6,7 @@
  */
 
 #include "CRI/cri_xpt.h"
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,11 +25,13 @@ typedef struct {
     Sint32 rsv;      /* 0x08 */
     Sint32 mux_rate; /* 0x0C (sfd_cre reads it) */
 } MPS_PACKHD;
+CHECK_SIZEOF(MPS_PACKHD, 0x10);
 
 /* system header (32 bytes) */
 typedef struct {
     Sint32 raw[8]; /* 0x00 */
 } MPS_SYSHD;
+CHECK_SIZEOF(MPS_SYSHD, 0x20);
 
 /* packet header (40 bytes: holds the 64-bit PTS/DTS) */
 typedef struct {
@@ -36,6 +39,7 @@ typedef struct {
     Sint64 dts;    /* 0x08 */
     Sint32 raw[6]; /* 0x10 */
 } MPS_PKETHD;
+CHECK_SIZEOF(MPS_PKETHD, 0x28);
 
 /* MPS_OBJ.used */
 #define MPS_HN_FREE 1
@@ -66,6 +70,7 @@ typedef struct MPS_OBJ {
     void *pesobj;   /* 0xF8 */
     Sint32 xfc;     /* 0xFC */
 } MPS_OBJ;
+CHECK_SIZEOF(MPS_OBJ, 0x100);
 
 /* MPS_PKETHD.raw */
 #define MPS_PKT_STMID 0
@@ -89,6 +94,7 @@ typedef struct {
     Sint32 num_hn;                         /* 0x0C */
     MPS_OBJ hn[1];                         /* 0x10 */
 } MPSLIB_WORK;
+CHECK_SIZEOF(MPSLIB_WORK, 0x110);
 
 #pragma pack(pop)
 

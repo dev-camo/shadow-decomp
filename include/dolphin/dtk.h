@@ -2,6 +2,7 @@
 #define _DOLPHIN_DTK_H_
 
 #include <dolphin/dvd.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,6 +19,7 @@ typedef struct DTKTrack {
     /* 0x10 */ DTKCallback callback;
     /* 0x14 */ DVDFileInfo dvdFileInfo;
 } DTKTrack;
+CHECK_SIZEOF(DTKTrack, 0x50);
 
 #define DTK_STATE_STOP 0
 #define DTK_STATE_RUN 1

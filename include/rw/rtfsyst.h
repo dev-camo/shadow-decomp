@@ -2,6 +2,7 @@
 #define RW_RTFSYST_H
 
 #include "rw/rwcore.h"
+#include "layout_check.h"
 
 /* RenderWare file system toolkit: file systems registered with a manager under a name and a
  * device name, and the files they open. The type names follow the RenderWare 3 RtFileSystem
@@ -73,6 +74,7 @@ struct RtFile {
     /* 0x34 */ void *callBackData;
     /* 0x38 */ RtFileSystem *fileSystem;
 };
+CHECK_SIZEOF(struct RtFile, 0x40);
 
 /* A file system (0x64 bytes) */
 struct RtFileSystem {
@@ -103,6 +105,7 @@ struct RtFileSystem {
     /* 0x5C */ void (*errorCallBack)(RwInt32 error, void *data); /* told of device errors */
     /* 0x60 */ void *errorCallBackData;
 };
+CHECK_SIZEOF(struct RtFileSystem, 0x64);
 
 /* The notifications of a file system (inferred) */
 #define RTFS_NOTIFY_REGISTER 1
@@ -131,6 +134,7 @@ typedef struct RtFSManager {
     /* 0x10 */ RwInt32 lastError;
     /* 0x14 */ void (*errorCallBack)(RwInt32 error); /* RTFSM_ERROR_* */
 } RtFSManager;
+CHECK_SIZEOF(RtFSManager, 0x18);
 
 extern RtFSManager lbl_805E2A40;
 extern RtFileSystem *lbl_805F1548; /* the default file system */

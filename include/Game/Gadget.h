@@ -3,6 +3,7 @@
 
 #include "Game/Task.h"
 #include "Game/fn_8040_vector_types.h"
+#include "layout_check.h"
 
 class UnkGadgetOwner_800C9CD0;
 
@@ -32,5 +33,6 @@ class Gadget : public Task {
     /* 0x28 */ UnkGadgetOwner_800C9CD0 *m_owner;
     /* 0x2C */ u32 field_0x2C;
 };
+CHECK_SIZEOF(Gadget, 0x30);
 
 #endif

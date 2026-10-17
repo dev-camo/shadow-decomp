@@ -2,6 +2,7 @@
 #define _DOLPHIN_AR_H_
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,6 +22,7 @@ struct ARQRequest {
     /* 0x18 */ u32 length;
     /* 0x1C */ ARQCallback callback;
 };
+CHECK_SIZEOF(struct ARQRequest, 0x20);
 
 #define ARQ_DMA_ALIGNMENT 32
 

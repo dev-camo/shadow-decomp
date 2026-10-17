@@ -3,6 +3,7 @@
 
 #include "rw/rphanim.h"
 #include "rw/rpworld.h"
+#include "layout_check.h"
 
 /* RenderWare skinning (plugin ID 0x116): the bone weights and indices of a geometry's vertices, the
  * matrices that take the skin to each bone, and the split of the skin's meshes into bone-limited
@@ -22,6 +23,7 @@ typedef struct RwMatrixWeights {
     RwReal w2;
     RwReal w3;
 } RwMatrixWeights;
+CHECK_SIZEOF(RwMatrixWeights, 0x10);
 
 /* A two-byte record of the split data: a mesh's first run (its low seven bits index meshRLE) and
  * number of runs, or a run's first bone and number of bones (inferred) */
@@ -29,6 +31,7 @@ typedef struct SkinRLE {
     RwUInt8 start;
     RwUInt8 length;
 } SkinRLE;
+CHECK_SIZEOF(SkinRLE, 0x2);
 
 /* How the skin's meshes are split so that each batch uses at most boneLimit bones: the bone
  * remap table, then each mesh's runs, then the runs; the records follow numBones bytes, so they are
@@ -41,6 +44,7 @@ typedef struct SkinSplitData {
     /* 0x10 */ SkinRLE *meshRLECount;       /* numMeshes entries */
     /* 0x14 */ SkinRLE *meshRLE;            /* numRLE entries */
 } SkinSplitData;
+CHECK_SIZEOF(SkinSplitData, 0x18);
 
 /* A skin (0x4C bytes) */
 typedef struct RpSkin {
@@ -61,6 +65,7 @@ typedef struct RpSkin {
     /* 0x30 */ SkinSplitData skinSplitData;
     /* 0x48 */ void *unaligned; /* the allocation of the bone ids, matrices, indices and weights */
 } RpSkin;
+CHECK_SIZEOF(RpSkin, 0x4C);
 
 /* The skin data of an atomic (0xC bytes) */
 typedef struct SkinAtomicData {
@@ -68,6 +73,7 @@ typedef struct SkinAtomicData {
     /* 0x4 */ void *positions; /* GameCube: the instanced bind-pose positions (inferred) */
     /* 0x8 */ void *normals;
 } SkinAtomicData;
+CHECK_SIZEOF(SkinAtomicData, 0xC);
 
 /* The plugin's globals (0x40 bytes) */
 typedef struct SkinGlobals {
@@ -83,6 +89,7 @@ typedef struct SkinGlobals {
     /* 0x24 */ void *pipelines[3];   /* by skin pipeline type (inferred) */
     /* 0x30 */ RwUInt8 field_0x30[0x10];
 } SkinGlobals;
+CHECK_SIZEOF(SkinGlobals, 0x40);
 
 extern SkinGlobals lbl_8056D708;
 
@@ -91,6 +98,7 @@ extern SkinGlobals lbl_8056D708;
 typedef struct SkinVertexBuffer {
     /* 0x0 */ RwUInt16 syncToken;
 } SkinVertexBuffer;
+CHECK_SIZEOF(SkinVertexBuffer, 0x2);
 
 #define SKINVERTEXBUFFERENTRY(vertices) (((RwResEntry **)(vertices))[-1])
 #define SKINVERTEXBUFFER(vertices) ((SkinVertexBuffer *)(SKINVERTEXBUFFERENTRY(vertices) + 1))

@@ -2,6 +2,7 @@
 #define GAME_GADGETTYPEINFO_H
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 class UnkGadgetOwner_800C9CD0;
 
@@ -21,5 +22,6 @@ struct GadgetTypeInfo {
     /* 0x1C */ u8 field_0x1C;
     /* 0x20 */ void *field_0x20;
 };
+CHECK_SIZEOF(GadgetTypeInfo, 0x24);
 
 #endif

@@ -5,6 +5,7 @@
  * registers its interface table through its xxCiGetInterface function.
  */
 #include "CRI/cri_xpt.h"
+#include "layout_check.h"
 
 typedef struct CVFS_IF CVFS_IF;
 typedef struct CVFS_OBJ CVFS_OBJ;
@@ -39,6 +40,7 @@ struct CVFS_IF {
     Sint32 (*OptFn)(void *hn, Sint32 fnid, Sint32 a, Sint32 b); /* 0x60 (mfci.c only) */
     void *x64;                                                  /* 0x64 */
 };
+CHECK_SIZEOF(struct CVFS_IF, 0x68);
 
 #ifdef __cplusplus
 extern "C" {

@@ -2,6 +2,7 @@
 #define _DOLPHIN_PERF_H_
 
 #include <dolphin/gx.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,6 +42,7 @@ typedef struct PerfSample {
     /* 0xA0 */ u32 rasBusy[2];
     /* 0xA8 */ u32 rasClocks[2];
 } PerfSample;
+CHECK_SIZEOF(PerfSample, 0xB0);
 
 typedef struct {
     PerfSample *samples;
@@ -48,6 +50,7 @@ typedef struct {
     u32 end;
     u32 cachemisscycles;
 } Frame;
+CHECK_SIZEOF(Frame, 0x10);
 
 typedef struct {
     char *name;
@@ -55,6 +58,7 @@ typedef struct {
     s32 currSample;
     GXColor color;
 } PerfEvent;
+CHECK_SIZEOF(PerfEvent, 0x10);
 
 typedef void *(*PERFAllocator)(u32 size);
 typedef void (*PERFDeallocator)(void *block);

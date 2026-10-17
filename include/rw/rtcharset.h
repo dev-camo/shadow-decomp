@@ -2,6 +2,7 @@
 #define RW_RTCHARSET_H
 
 #include "rw/rwcore.h"
+#include "layout_check.h"
 
 /* RenderWare character set toolkit: a raster holding a built-in bitmap font, and printing strings
  * with it as 2D immediate mode quads. The type and field names follow the RenderWare 3 RtCharset
@@ -24,6 +25,7 @@ typedef struct RtCharsetDesc {
     /* 0x14 */ RwInt32 tile_width;      /* the cells across the raster */
     /* 0x18 */ RwInt32 tile_height;     /* the rows of cells in the raster */
 } RtCharsetDesc;
+CHECK_SIZEOF(RtCharsetDesc, 0x1C);
 
 /* The buffered printing state, held between opening and closing the toolkit (0x18 bytes) */
 typedef struct rtCharsetGlobals {
@@ -34,6 +36,7 @@ typedef struct rtCharsetGlobals {
     /* 0x10 */ RwImVertexIndex *indices;
     /* 0x14 */ RwInt32 field_0x14;
 } rtCharsetGlobals;
+CHECK_SIZEOF(rtCharsetGlobals, 0x18);
 
 extern rtCharsetGlobals lbl_8056DD68;
 

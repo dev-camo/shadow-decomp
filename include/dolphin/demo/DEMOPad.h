@@ -2,6 +2,7 @@
 #define _DOLPHIN_DEMOPAD_H_
 
 #include <dolphin/pad.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,6 +20,7 @@ typedef struct {
     /* 0x1A */ s16 substickDeltaX;
     /* 0x1C */ s16 substickDeltaY;
 } DEMODMPad;
+CHECK_SIZEOF(DEMODMPad, 0x1E);
 
 extern DEMODMPad DemoPad[4];
 extern u32 DemoNumValidPads;

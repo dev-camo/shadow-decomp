@@ -2,6 +2,7 @@
 #define RW_RPCOLLIS_H
 
 #include "rw/rwcore.h"
+#include "layout_check.h"
 
 /* The RenderWare collision plugin (plugin ID 0x11D): a tree that splits the triangles of a
  * geometry or world sector along the axes, read and written as chunk 0x2C. The type and field
@@ -25,12 +26,14 @@ typedef struct RpCollTreeBranch {
     /* 0x2 */ RwUInt16 index;    /* the split, or the leaf's first triangle */
     /* 0x4 */ RwReal value;
 } RpCollTreeBranch;
+CHECK_SIZEOF(RpCollTreeBranch, 0x8);
 
 /* One split of the tree (0x10 bytes). */
 typedef struct RpCollTreeSplit {
     /* 0x0 */ RpCollTreeBranch left;
     /* 0x8 */ RpCollTreeBranch right;
 } RpCollTreeSplit;
+CHECK_SIZEOF(RpCollTreeSplit, 0x10);
 
 typedef struct RpCollTree {
     /* 0x00 */ RwUInt32 flags; /* rpCOLLTREE_* */
@@ -40,6 +43,7 @@ typedef struct RpCollTree {
     /* 0x20 */ RpCollTreeSplit *splits;
     /* 0x24 */ RwUInt16 *map;
 } RpCollTree;
+CHECK_SIZEOF(RpCollTree, 0x28);
 
 /* A triangle met by an intersection test, as passed to the callback. */
 typedef struct RpCollisionTriangle {
@@ -48,6 +52,7 @@ typedef struct RpCollisionTriangle {
     /* 0x18 */ RwInt32 index;
     /* 0x1C */ RwV3d *vertices[3];
 } RpCollisionTriangle;
+CHECK_SIZEOF(RpCollisionTriangle, 0x28);
 
 /* the plugin's registration with the engine, atomics, world sectors and geometries */
 extern RwInt32 lbl_805F1410; /* open count */

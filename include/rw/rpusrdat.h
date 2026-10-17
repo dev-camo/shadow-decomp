@@ -2,6 +2,7 @@
 #define RW_RPUSRDAT_H
 
 #include "rw/rpworld.h"
+#include "layout_check.h"
 
 /* RenderWare user data (plugin ID 0x11F): named arrays of integers, reals or strings that the
  * plugin keeps for geometries, world sectors, frames, cameras, lights, materials and textures and
@@ -27,12 +28,14 @@ typedef struct RpUserDataArray {
     /* 0x8 */ RwInt32 numElements;
     /* 0xC */ void *data;
 } RpUserDataArray;
+CHECK_SIZEOF(RpUserDataArray, 0x10);
 
 /* The user data arrays of an object: the plugin data in each object type (8 bytes) */
 typedef struct RpUserDataList {
     /* 0x0 */ RwInt32 numElements;
     /* 0x4 */ RpUserDataArray *arrays;
 } RpUserDataList;
+CHECK_SIZEOF(RpUserDataList, 0x8);
 
 /* the plugin offsets of the user data list in each object type, followed by the stream extension
  * offsets (inferred from the attach order) */

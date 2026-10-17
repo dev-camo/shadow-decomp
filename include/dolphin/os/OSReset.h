@@ -2,6 +2,7 @@
 #define _DOLPHIN_OSRESET_H_
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,6 +17,7 @@ typedef struct OSResetFunctionQueue {
     OSResetFunctionInfo *head;
     OSResetFunctionInfo *tail;
 } OSResetFunctionQueue;
+CHECK_SIZEOF(OSResetFunctionQueue, 0x8);
 
 typedef BOOL (*OSResetFunction)(BOOL);
 
@@ -25,6 +27,7 @@ struct OSResetFunctionInfo {
     OSResetFunctionInfo *next;
     OSResetFunctionInfo *prev;
 };
+CHECK_SIZEOF(struct OSResetFunctionInfo, 0x10);
 
 void OSRegisterResetFunction(OSResetFunctionInfo *info);
 void OSUnregisterResetFunction(OSResetFunctionInfo *info);

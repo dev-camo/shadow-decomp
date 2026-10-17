@@ -3,6 +3,7 @@
 
 #include <dolphin/gx/GXEnum.h>
 #include <dolphin/os/OSThread.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,6 +12,7 @@ extern "C" {
 typedef struct {
     u8 pad[128];
 } GXFifoObj;
+CHECK_SIZEOF(GXFifoObj, 0x80);
 
 typedef void (*GXBreakPtCallback)(void);
 

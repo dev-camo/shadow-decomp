@@ -4,6 +4,7 @@
 #include <dolphin/os.h>
 #include <dolphin/dsp.h>
 #include <dolphin/dvd.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,6 +23,7 @@ typedef struct CARDFileInfo {
     s32 length;
     u16 iBlock;
 } CARDFileInfo;
+CHECK_SIZEOF(CARDFileInfo, 0x14);
 
 typedef struct CARDDir {
     u8 gameName[4];
@@ -40,6 +42,7 @@ typedef struct CARDDir {
     u8 _padding1[2];
     u32 commentAddr; // 0xffffffff if not used
 } CARDDir;
+CHECK_SIZEOF(CARDDir, 0x40);
 
 typedef struct CARDControl {
     /* 0x000 */ BOOL attached;
@@ -81,6 +84,7 @@ typedef struct CARDControl {
     /* 0x108 */ u32 cid;
     /* 0x10C */ const DVDDiskID *diskID;
 } CARDControl;
+CHECK_SIZEOF(CARDControl, 0x110);
 
 typedef struct CARDDecParam {
     /* 0x00 */ u8 *inputAddr;
@@ -88,6 +92,7 @@ typedef struct CARDDecParam {
     /* 0x08 */ u32 aramAddr;
     /* 0x0C */ u8 *outputAddr;
 } CARDDecParam;
+CHECK_SIZEOF(CARDDecParam, 0x10);
 
 typedef struct CARDID {
     /* 0x000 */ u8 serial[32];
@@ -98,6 +103,7 @@ typedef struct CARDID {
     /* 0x1FC */ u16 checkSum;
     /* 0x1FE */ u16 checkSumInv;
 } CARDID;
+CHECK_SIZEOF(CARDID, 0x200);
 
 typedef struct CARDDirCheck {
     /* 0x00 */ u8 padding0[56];
@@ -106,6 +112,7 @@ typedef struct CARDDirCheck {
     /* 0x3C */ u16 checkSum;
     /* 0x3E */ u16 checkSumInv;
 } CARDDirCheck;
+CHECK_SIZEOF(CARDDirCheck, 0x40);
 
 typedef struct CARDStat {
     /* 0x00 */ char fileName[CARD_FILENAME_MAX];
@@ -124,6 +131,7 @@ typedef struct CARDStat {
     /* 0x64 */ u32 offsetIconTlut;
     /* 0x68 */ u32 offsetData;
 } CARDStat;
+CHECK_SIZEOF(CARDStat, 0x6C);
 
 #define CARD_ATTR_PUBLIC 0x04u
 #define CARD_ATTR_NO_COPY 0x08u

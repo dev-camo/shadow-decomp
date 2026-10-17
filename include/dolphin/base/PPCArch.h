@@ -2,6 +2,7 @@
 #define _DOLPHIN_PPCARCH
 
 #include "dolphin/types.h"
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -217,11 +218,13 @@ typedef struct {
     u32 _pad3 : 5;
     u32 storeType : 3;
 } PPC_GQR_t;
+CHECK_SIZEOF(PPC_GQR_t, 0x4);
 
 typedef union {
     u32 val;
     PPC_GQR_t f;
 } PPC_GQR_u;
+CHECK_SIZEOF(PPC_GQR_u, 0x4);
 
 #define DMA_U_ADDR_MASK 0xFFFFFFE0  // Start addr in memory
 #define DMA_U_LEN_U_MASK 0x0000001F // lines to transfer (U)
@@ -237,11 +240,13 @@ typedef struct {
     u32 memAddr : 27;
     u32 dmaLenU : 5;
 } PPC_DMA_U_t;
+CHECK_SIZEOF(PPC_DMA_U_t, 0x4);
 
 typedef union {
     u32 val;
     PPC_DMA_U_t f;
 } PPC_DMA_U_u;
+CHECK_SIZEOF(PPC_DMA_U_u, 0x4);
 
 typedef struct {
     u32 lcAddr : 27;
@@ -250,11 +255,13 @@ typedef struct {
     u32 dmaTrigger : 1;
     u32 dmaFlush : 1;
 } PPC_DMA_L_t;
+CHECK_SIZEOF(PPC_DMA_L_t, 0x4);
 
 typedef union {
     u32 val;
     PPC_DMA_L_t f;
 } PPC_DMA_L_u;
+CHECK_SIZEOF(PPC_DMA_L_u, 0x4);
 
 #define WPAR_ADDR 0xFFFFFFE0 // 32byte gather address
 #define WPAR_BNE 0x00000001  // Buffer not empty (R)
@@ -480,6 +487,7 @@ union FpscrUnion {
         u32 fpscr;
     } u;
 };
+CHECK_SIZEOF(union FpscrUnion, 0x8);
 
 // PPCArch
 u32 PPCMfmsr();

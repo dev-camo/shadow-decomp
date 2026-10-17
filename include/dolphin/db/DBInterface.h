@@ -2,6 +2,7 @@
 #define _DOLPHIN_DBINTERFACE_H_
 
 #include <dolphin/os.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,6 +14,7 @@ typedef struct DBInterface {
     void (*ExceptionDestination)(void);
     void *exceptionReturn;
 } DBInterface;
+CHECK_SIZEOF(DBInterface, 0x10);
 
 extern DBInterface *__DBInterface;
 

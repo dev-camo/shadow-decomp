@@ -3,6 +3,7 @@
 
 #include <dolphin/types.h>
 #include <dolphin/os/OSUtf.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,6 +42,7 @@ typedef struct OSFontHeader {
     u8 c2;
     u8 c3;
 } OSFontHeader;
+CHECK_SIZEOF(OSFontHeader, 0x30);
 
 u16 OSGetFontEncode(void);
 u16 OSSetFontEncode(u16 encode);

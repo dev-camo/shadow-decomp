@@ -4,6 +4,7 @@
 #include "Game/fn_8040_vector_types.h"
 #include "boost/weak_ptr.hpp"
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 class GadgetCharInfo;
 
@@ -33,5 +34,6 @@ class GadgetModelInfo {
 
     /* 0x04 */ u8 field_0x4[0x70];
 };
+CHECK_SIZEOF(GadgetModelInfo, 0x74);
 
 #endif

@@ -2,6 +2,7 @@
 #define RW_RPPTANK_H
 
 #include "rw/rpworld.h"
+#include "layout_check.h"
 
 /* RenderWare particle tank (plugin ID 0x12F): an atomic that draws up to a maximum number of
  * particles from per-particle data streams or per-tank constants. The data flag values follow the
@@ -43,6 +44,7 @@ typedef struct RpPTankLockStruct {
     /* 0x0 */ RwUInt8 *data;
     /* 0x4 */ RwInt32 stride;
 } RpPTankLockStruct;
+CHECK_SIZEOF(RpPTankLockStruct, 0x8);
 
 /* The streams of a tank (0x50 bytes) */
 typedef struct RpPTankData {
@@ -59,6 +61,7 @@ typedef struct RpPTankData {
     /* 0x4C */ RwV3d
         *cameraAxes; /* the right and up axes particles face while rendered (inferred) */
 } RpPTankData;
+CHECK_SIZEOF(RpPTankData, 0x50);
 
 /* How a tank's streams are laid out */
 typedef struct RpPTankFormatDescriptor {
@@ -66,6 +69,7 @@ typedef struct RpPTankFormatDescriptor {
     /* 0x4 */ RwInt32 stride; /* of the interleaved particle structure */
     /* 0x8 */ RwUInt32 dataFlags;
 } RpPTankFormatDescriptor;
+CHECK_SIZEOF(RpPTankFormatDescriptor, 0xC);
 
 /* The callbacks that allocate, create, instance and render a tank */
 typedef void *(*RpPTankAllocCallBack)(RpPTankData *ptankGlobal, RwInt32 maxPCount,
@@ -83,6 +87,7 @@ typedef struct RpPTankCallBacks {
     /* 0x8 */ RpPTankInstanceCallBack instance;
     /* 0xC */ RpPTankRenderCallBack render;
 } RpPTankCallBacks;
+CHECK_SIZEOF(RpPTankCallBacks, 0x10);
 
 /* A GameCube particle kernel: writes the vertices of count particles (hand-written assembly) */
 typedef void (*PTankKernel)(RwUInt16 count, RwUInt32 platFlags, RpPTankData *ptankGlobal);
@@ -117,6 +122,7 @@ typedef struct RpPTankAtomicExtPrv {
     /* 0x0D8 */ RwTexCoords cVtxUV[4];
     /* 0x0F8 */ RwMatrix cMatrix;
 } RpPTankAtomicExtPrv;
+CHECK_SIZEOF(RpPTankAtomicExtPrv, 0x138);
 
 extern RwInt32 lbl_805F1448; /* atomic plugin offset of the tank */
 extern void *lbl_805F1450;   /* the tank pipeline (GameCube) */

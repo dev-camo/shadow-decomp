@@ -2,6 +2,7 @@
 #define _DOLPHIN_OSTHREAD_H_
 
 #include <dolphin/os/OSContext.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,21 +21,25 @@ struct OSThreadQueue {
     OSThread *head;
     OSThread *tail;
 };
+CHECK_SIZEOF(struct OSThreadQueue, 0x8);
 
 struct OSThreadLink {
     OSThread *next;
     OSThread *prev;
 };
+CHECK_SIZEOF(struct OSThreadLink, 0x8);
 
 struct OSMutexQueue {
     OSMutex *head;
     OSMutex *tail;
 };
+CHECK_SIZEOF(struct OSMutexQueue, 0x8);
 
 struct OSMutexLink {
     OSMutex *next;
     OSMutex *prev;
 };
+CHECK_SIZEOF(struct OSMutexLink, 0x8);
 
 struct OSThread {
     /* 0x000 */ OSContext context;
@@ -55,6 +60,7 @@ struct OSThread {
     /* 0x30C */ s32 error;
     /* 0x310 */ void *specific[2];
 };
+CHECK_SIZEOF(struct OSThread, 0x318);
 
 enum OS_THREAD_STATE {
     OS_THREAD_STATE_READY = 1,

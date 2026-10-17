@@ -8,6 +8,7 @@
 #include "CRI/cri_xpt.h"
 #include "CRI/sj.h"
 #include "CRI/adx_stm.h"
+#include "layout_check.h"
 
 #define LSC_MAX_OBJ 32
 #define LSC_MAX_ENTRY 16
@@ -34,6 +35,7 @@ typedef struct {
     /* 0x18 */ Sint32 stat;
     /* 0x1C */ Sint32 pos;
 } LSC_ENTRY;
+CHECK_SIZEOF(LSC_ENTRY, 0x20);
 
 typedef struct {
     /* 0x00 */ Sint8 used;
@@ -56,6 +58,7 @@ typedef struct {
     /* 0x34 */ Sint32 pad34;
     /* 0x38 */ LSC_ENTRY tbl[LSC_MAX_ENTRY];
 } LSC_OBJ;
+CHECK_SIZEOF(LSC_OBJ, 0x238);
 
 typedef LSC_OBJ *LSC;
 

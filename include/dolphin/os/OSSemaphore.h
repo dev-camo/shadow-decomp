@@ -2,6 +2,7 @@
 #define _DOLPHIN_OSSEMAPHORE_H_
 
 #include <dolphin/os/OSThread.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,6 +12,7 @@ typedef struct OSSemaphore {
     s32 count;
     OSThreadQueue queue;
 } OSSemaphore;
+CHECK_SIZEOF(OSSemaphore, 0xC);
 
 void OSInitSemaphore(OSSemaphore *sem, s32 count);
 s32 OSWaitSemaphore(OSSemaphore *sem);

@@ -9,6 +9,7 @@
 #include "CRI/cri_xpt.h"
 #include "CRI/adx_sjd.h"
 #include "CRI/sj.h"
+#include "layout_check.h"
 
 #define ADXT_MAX_OBJ 16
 #define ADXT_MAX_NCH 8
@@ -86,6 +87,7 @@ typedef struct {
     Sint32 stm_nsct;          /* 0xBC */
     Sint32 xc0;               /* 0xC0 Ver.9.44 addition */
 } ADXT_OBJ;
+CHECK_SIZEOF(ADXT_OBJ, 0xC4);
 
 typedef ADXT_OBJ *ADXT;
 

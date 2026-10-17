@@ -2,6 +2,7 @@
 #define _DOLPHIN_OSCONTEXT_H_
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -151,6 +152,7 @@ typedef struct OSContext {
     /* 0x1C4 */ u32 psf_pad;
     /* 0x1C8 */ f64 psf[32];
 } OSContext;
+CHECK_SIZEOF(OSContext, 0x2C8);
 
 u32 OSGetStackPointer(void);
 void OSDumpContext(OSContext *context);

@@ -4,6 +4,7 @@
 #include "rw/rwcore.h"
 #include <dolphin/gx/GXStruct.h>
 #include <stddef.h>
+#include "layout_check.h"
 
 /* RenderWare world objects; only the members used by recovered code are mapped. */
 
@@ -32,6 +33,7 @@ typedef struct RwSurfaceProperties {
     RwReal specular;
     RwReal diffuse;
 } RwSurfaceProperties;
+CHECK_SIZEOF(RwSurfaceProperties, 0xC);
 
 /* A material (0x1C bytes) */
 typedef struct RpMaterial {
@@ -42,6 +44,7 @@ typedef struct RpMaterial {
     /* 0x18 */ RwInt16 refCount;
     /* 0x1A */ RwInt16 pad;
 } RpMaterial;
+CHECK_SIZEOF(RpMaterial, 0x1C);
 
 typedef RwUInt16 RxVertexIndex;
 
@@ -51,6 +54,7 @@ typedef struct RpMesh {
     /* 0x4 */ RwUInt32 numIndices;
     /* 0x8 */ RpMaterial *material;
 } RpMesh;
+CHECK_SIZEOF(RpMesh, 0xC);
 
 /* The header of a geometry's meshes, which follow it */
 typedef struct RpMeshHeader {
@@ -60,6 +64,7 @@ typedef struct RpMeshHeader {
     /* 0x8 */ RwUInt32 totalIndicesInMesh;
     /* 0xC */ RwUInt32 firstMeshOffset;
 } RpMeshHeader;
+CHECK_SIZEOF(RpMeshHeader, 0x10);
 
 /* RpMeshHeader flags: the primitive type of the meshes */
 #define rpMESHHEADERTRISTRIP 0x1
@@ -75,12 +80,14 @@ typedef struct RpMorphTarget {
     /* 0x14 */ RwV3d *verts;
     /* 0x18 */ RwV3d *normals;
 } RpMorphTarget;
+CHECK_SIZEOF(RpMorphTarget, 0x1C);
 
 /* A triangle of a geometry or world sector (8 bytes). */
 typedef struct RpTriangle {
     /* 0x0 */ RwUInt16 vertIndex[3];
     /* 0x6 */ RwUInt16 matIndex; /* 0xFFFF for none */
 } RpTriangle;
+CHECK_SIZEOF(RpTriangle, 0x8);
 
 /* A list of materials (0xC bytes) */
 typedef struct RpMaterialList {
@@ -88,6 +95,7 @@ typedef struct RpMaterialList {
     /* 0x4 */ RwInt32 numMaterials;
     /* 0x8 */ RwInt32 space;
 } RpMaterialList;
+CHECK_SIZEOF(RpMaterialList, 0xC);
 
 /* A geometry (0x60 bytes) */
 struct RpGeometry {
@@ -107,6 +115,7 @@ struct RpGeometry {
     /* 0x58 */ RwResEntry *repEntry;
     /* 0x5C */ RpMorphTarget *morphTarget;
 };
+CHECK_SIZEOF(struct RpGeometry, 0x60);
 
 typedef struct RpAtomic RpAtomic;
 
@@ -134,6 +143,7 @@ typedef struct RpInterpolator {
     /* 0x0C */ RwReal recipTime;
     /* 0x10 */ RwReal position;
 } RpInterpolator;
+CHECK_SIZEOF(RpInterpolator, 0x14);
 
 /* RpInterpolator flags */
 #define rpINTERPOLATORDIRTYINSTANCE 0x1
@@ -169,6 +179,7 @@ struct RpAtomic {
     /* 0x64 */ RwLinkList llWorldSectorsInAtomic;
     /* 0x6C */ RxPipeline *pipeline;
 };
+CHECK_SIZEOF(struct RpAtomic, 0x70);
 
 typedef RpClump *(*RpClumpCallBack)(RpClump *clump, void *data);
 
@@ -181,18 +192,21 @@ struct RpClump {
     /* 0x20 */ RwLLLink inWorldLink;
     /* 0x28 */ RpClumpCallBack callback;
 };
+CHECK_SIZEOF(struct RpClump, 0x2C);
 
 /* The clump plugin data of a light or camera (0xC bytes) */
 typedef struct RpClumpObjectExtension {
     /* 0x0 */ RpClump *clump;
     /* 0x4 */ RwLLLink inClumpLink;
 } RpClumpObjectExtension;
+CHECK_SIZEOF(RpClumpObjectExtension, 0xC);
 
 /* A node of a world's sector tree: a plane sector (type: the split axis as a byte offset into an
  * RwV3d) or, with a negative type, a world sector. */
 typedef struct RpSector {
     /* 0x0 */ RwInt32 type;
 } RpSector;
+CHECK_SIZEOF(RpSector, 0x4);
 
 typedef struct RpPlaneSector {
     /* 0x00 */ RwInt32 type;
@@ -202,6 +216,7 @@ typedef struct RpPlaneSector {
     /* 0x10 */ RwReal leftValue;
     /* 0x14 */ RwReal rightValue;
 } RpPlaneSector;
+CHECK_SIZEOF(RpPlaneSector, 0x18);
 
 /* A compressed vertex normal (4 bytes) */
 typedef struct RpVertexNormal {
@@ -210,6 +225,7 @@ typedef struct RpVertexNormal {
     /* 0x2 */ RwInt8 z;
     /* 0x3 */ RwUInt8 pad;
 } RpVertexNormal;
+CHECK_SIZEOF(RpVertexNormal, 0x4);
 
 /* A leaf of a world's sector tree: the world's geometry inside its box (0x88 bytes) */
 typedef struct RpWorldSector {
@@ -231,6 +247,7 @@ typedef struct RpWorldSector {
     /* 0x84 */ RwUInt16 numTriangles;
     /* 0x86 */ RwUInt16 pad;
 } RpWorldSector;
+CHECK_SIZEOF(RpWorldSector, 0x88);
 
 #define rpWORLDSECTORTYPE -1 /* the RpSector type of a world sector */
 
@@ -273,6 +290,7 @@ typedef struct RpWorld {
     /* 0x68 */ RpWorldSectorCallBackRender renderCallBack; /* for each sector (fn_80460120) */
     /* 0x6C */ RxPipeline *pipeline;
 } RpWorld;
+CHECK_SIZEOF(RpWorld, 0x70);
 
 extern RwPluginRegistry lbl_8056D880; /* world sector plugins */
 extern RwPluginRegistry lbl_8056D898; /* world plugins */
@@ -294,6 +312,7 @@ typedef struct RpTie {
     /* 0x0C */ RwLLLink lWorldSectorInAtomic; /* in the atomic's sector list */
     /* 0x14 */ RpWorldSector *worldSector;
 } RpTie;
+CHECK_SIZEOF(RpTie, 0x18);
 
 /* The tie of a link in an atomic's sector list */
 #define TIEFROMATOMICLINK(link)                                                                    \
@@ -306,6 +325,7 @@ typedef struct RpLightTie {
     /* 0x0C */ RwLLLink WorldSectorInLight; /* in the light's sector list */
     /* 0x14 */ RpWorldSector *sect;
 } RpLightTie;
+CHECK_SIZEOF(RpLightTie, 0x18);
 
 /* world sectors (inferred): destroying a sector tree in a world allocated as one block, or with
  * separate allocations */
@@ -320,6 +340,7 @@ typedef struct RpWorldSectorSearch {
     /* 0x0 */ RpWorldSector *sector;
     /* 0x4 */ RwBool found;
 } RpWorldSectorSearch;
+CHECK_SIZEOF(RpWorldSectorSearch, 0x8);
 
 RpWorldSector *fn_8045F374(RpWorldSector *sector, void *data); /* the search callback */
 
@@ -441,6 +462,7 @@ typedef struct RpPipelineGlobals {
     /* 0x58 */ RxPipeline *platformWorldSectorPipeline;
     /* 0x5C */ RxPipeline *platformMaterialPipeline;
 } RpPipelineGlobals;
+CHECK_SIZEOF(RpPipelineGlobals, 0x60);
 
 extern RwInt32 lbl_805F1690; /* engine plugin offset of the pipeline module's globals */
 
@@ -466,6 +488,7 @@ typedef struct RpLight {
     /* 0x3C */ RwUInt16 lightFrame;
     /* 0x3E */ RwUInt16 pad;
 } RpLight;
+CHECK_SIZEOF(RpLight, 0x40);
 
 typedef RpAtomic *(*RpAtomicCallBack)(RpAtomic *atomic, void *data);
 typedef RpLight *(*RpLightCallBack)(RpLight *light, void *data);
@@ -523,6 +546,7 @@ typedef struct RpGeometryList {
     /* 0x0 */ RpGeometry **geometries;
     /* 0x4 */ RwInt32 numGeoms;
 } RpGeometryList;
+CHECK_SIZEOF(RpGeometryList, 0x8);
 
 RpGeometryList *fn_80455F18(RwStream *stream, RpGeometryList *geomList); /* stream read */
 RpGeometry *fn_804599C8(RwStream *stream);                               /* geometry stream read */
@@ -551,6 +575,7 @@ typedef struct RpBuildMeshTriangle {
     /* 0x10 */ RwUInt16 rasterIndex;
     /* 0x12 */ RwUInt16 pipelineIndex;
 } RpBuildMeshTriangle;
+CHECK_SIZEOF(RpBuildMeshTriangle, 0x14);
 
 /* A mesh being built from triangles (0xC bytes) */
 typedef struct RpBuildMesh {
@@ -558,6 +583,7 @@ typedef struct RpBuildMesh {
     /* 0x4 */ RwUInt32 numTriangles;
     /* 0x8 */ RpBuildMeshTriangle *meshTriangles;
 } RpBuildMesh;
+CHECK_SIZEOF(RpBuildMesh, 0xC);
 
 /* meshes and mesh building (inferred) */
 RwBool fn_8045C2D4(RpMeshHeader *mesh);          /* destroy */
@@ -612,12 +638,14 @@ typedef struct RpMeshGlobals {
     /* 0x08 */ RwUInt8 meshFlagsToPrimType[0x1F];
     /* 0x27 */ RwUInt8 primTypeToMeshFlags[7];
 } RpMeshGlobals;
+CHECK_SIZEOF(RpMeshGlobals, 0x30);
 
 /* The mesh module (inferred) */
 typedef struct RpMeshModule {
     /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
     /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
 } RpMeshModule;
+CHECK_SIZEOF(RpMeshModule, 0x8);
 
 extern RpMeshModule lbl_805F14F0;
 
@@ -659,6 +687,7 @@ typedef struct RpGameCubeVertexFormat {
     /* 0x0E */ RwUInt8 texCoordFrac[8];
     /* 0x16 */ RwUInt16 refCount;
 } RpGameCubeVertexFormat;
+CHECK_SIZEOF(RpGameCubeVertexFormat, 0x18);
 
 extern RwInt32 lbl_805F1520; /* geometry plugin offset of the vertex format */
 
@@ -692,6 +721,7 @@ typedef struct RpGameCubeVertexDescriptor {
     /* 0x6 */ RwUInt8 type; /* GXAttrType: the descriptor mode, e.g. GX_INDEX8 or GX_INDEX16 */
     /* 0x7 */ RwUInt8 field_0x7;
 } RpGameCubeVertexDescriptor;
+CHECK_SIZEOF(RpGameCubeVertexDescriptor, 0x8);
 
 typedef struct RpGameCubeInstanceData RpGameCubeInstanceData;
 
@@ -700,6 +730,7 @@ typedef struct RpGameCubeBuiltStream {
     /* 0x0 */ void *data;
     /* 0x4 */ RwUInt32 count;
 } RpGameCubeBuiltStream;
+CHECK_SIZEOF(RpGameCubeBuiltStream, 0x8);
 
 /* GameCube: a source vertex stream for building instanced data: its data, its kind, and the
  * other streams whose indices go with it (-1 ends the list) (inferred) */
@@ -709,6 +740,7 @@ typedef struct RpGameCubeStreamSource {
     /* 0x08 */ RwInt8 dependencies[4];
     /* 0x0C */ RwUInt8 field_0xC[0xC];
 } RpGameCubeStreamSource;
+CHECK_SIZEOF(RpGameCubeStreamSource, 0x18);
 
 /* GameCube: the duplicate values of a source stream: for each vertex, the earlier vertex with an
  * equal value, or -1 for a distinct value, and the number of distinct values (inferred) */
@@ -716,6 +748,7 @@ typedef struct RpGameCubeStreamRemap {
     /* 0x0 */ RwInt32 *remap;
     /* 0x4 */ RwUInt32 numValues;
 } RpGameCubeStreamRemap;
+CHECK_SIZEOF(RpGameCubeStreamRemap, 0x8);
 
 /* building instanced data from source streams (inferred) */
 RpGameCubeStreamRemap *fn_80466194(RpGameCubeStreamSource *streams, RwInt32 numStreams,
@@ -743,6 +776,7 @@ typedef struct RpGameCubeVertexDescBuilder {
     /* 0x1C */ RwUInt8 numAttributes; /* the vertex descriptors the instanced data takes */
     /* 0x1D */ RwUInt8 field_0x1D[0x3];
 } RpGameCubeVertexDescBuilder;
+CHECK_SIZEOF(RpGameCubeVertexDescBuilder, 0x20);
 
 /* the byte sizes of a vertex's attributes in a builder's format */
 RwUInt32 fn_8046693C(const RpGameCubeVertexDescBuilder *builder);                  /* position */
@@ -764,11 +798,13 @@ typedef struct RpGameCubeVertexSource {
     /* 0x00 */ RwUInt32 numElements[26];
     /* 0x68 */ void *data[26];
 } RpGameCubeVertexSource;
+CHECK_SIZEOF(RpGameCubeVertexSource, 0xD0);
 
 /* GameCube: the indices of a mesh's vertex attributes, indexed by GX attribute (inferred) */
 typedef struct RpGameCubeIndexSource {
     /* 0x00 */ void *indices[26];
 } RpGameCubeIndexSource;
+CHECK_SIZEOF(RpGameCubeIndexSource, 0x68);
 
 /* building GameCube instanced data and display lists (inferred) */
 RwUInt32 fn_8046EE8C(RpGameCubeVertexDescBuilder *builder); /* the vertex data header size */
@@ -797,6 +833,7 @@ typedef struct RpGameCubeDisplayList {
     /* 0x0 */ void *data;
     /* 0x4 */ RwUInt32 size;
 } RpGameCubeDisplayList;
+CHECK_SIZEOF(RpGameCubeDisplayList, 0x8);
 
 /* GameCube: the instanced data of a geometry that follows its resource entry: its vertex
  * descriptors, then a display list record per mesh after the variable descriptor table; only the
@@ -808,6 +845,7 @@ struct RpGameCubeInstanceData {
     /* 0x08 */ RwInt32 numVertexDescriptors;
     /* 0x0C */ RpGameCubeVertexDescriptor vertexDescriptors[1]; /* numVertexDescriptors entries */
 };
+CHECK_SIZEOF(struct RpGameCubeInstanceData, 0x14);
 
 /* The display list records of the meshes, which follow the instance's vertex descriptors. Written
  * as the second descriptor's address plus the remaining descriptors, which is how the original
@@ -858,6 +896,7 @@ typedef struct RpGameCubeRenderMesh {
     /* 0x24 */ RwInt32 numLights;
     /* 0x28 */ struct RxGameCubeAllInOneData *nodeData; /* the node's callbacks */
 } RpGameCubeRenderMesh;
+CHECK_SIZEOF(RpGameCubeRenderMesh, 0x2C);
 
 typedef RpAtomic *(*RpGameCubeInstanceCallBack)(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
 typedef RpAtomic *(*RpGameCubeLightingCallBack)(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
@@ -874,6 +913,7 @@ typedef struct RxGameCubeAllInOneData {
     /* 0x8 */ RxGameCubeAllInOneCallBack lightingCallBack;
     /* 0xC */ RxGameCubeAllInOneCallBack renderCallBack;
 } RxGameCubeAllInOneData;
+CHECK_SIZEOF(RxGameCubeAllInOneData, 0x10);
 
 /* Calls one of an all-in-one node's callbacks if it is set: FALSE when it fails */
 #define RXGAMECUBEALLINONECALL(callBack, object, renderMesh)                                       \
@@ -1019,6 +1059,7 @@ typedef struct RwGameCubeRasterExt {
     /* 0x32 */ RwUInt8 maxLevel;
     /* 0x33 */ RwUInt8 lockedLevel;
 } RwGameCubeRasterExt;
+CHECK_SIZEOF(RwGameCubeRasterExt, 0x34);
 
 extern RwInt32 lbl_805F1658; /* raster plugin offset */
 
@@ -1051,6 +1092,7 @@ typedef struct RwGameCubeRenderState {
     /* 0x4D */ RwUInt8 alphaRef1;
     /* 0x4E */ RwUInt8 alphaCompareSet;
 } RwGameCubeRenderState;
+CHECK_SIZEOF(RwGameCubeRenderState, 0x50);
 
 extern RwGameCubeRenderState lbl_805E3210; /* the render state cache */
 

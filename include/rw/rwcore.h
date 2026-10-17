@@ -3,6 +3,7 @@
 
 #include <dolphin/types.h>
 #include <stdarg.h>
+#include "layout_check.h"
 
 /* RenderWare Graphics 3.7 (stream chunk version 0x37002), linked into the game. Only what the
  * recovered RenderWare code uses is declared. The functions keep placeholder names; their roles
@@ -31,6 +32,7 @@ typedef union RwSplitBits {
     volatile RwInt32 nInt;
     volatile RwUInt32 nUInt;
 } RwSplitBits;
+CHECK_SIZEOF(RwSplitBits, 0x4);
 typedef char RwChar;
 
 #define RW_STREAM_VERSION 0x37002
@@ -137,6 +139,7 @@ typedef struct RwDevice {
     /* 0x34 */ RwBool (*fpIm3DRenderIndexedPrimitive)(RwInt32 primType, RwUInt16 *indices,
                                                       RwInt32 numIndices);
 } RwDevice;
+CHECK_SIZEOF(RwDevice, 0x38);
 
 /* The string functions the engine uses (0x44 bytes) */
 typedef struct RwStringFunctions {
@@ -158,6 +161,7 @@ typedef struct RwStringFunctions {
     /* 0x3C */ RwChar *(*vecStrtok)(RwChar *string, const RwChar *delimit);
     /* 0x40 */ RwInt32 (*vecSscanf)(const RwChar *buffer, const RwChar *format, ...);
 } RwStringFunctions;
+CHECK_SIZEOF(RwStringFunctions, 0x44);
 
 /* The memory functions the engine allocates with */
 typedef struct RwMemoryFunctions {
@@ -166,17 +170,20 @@ typedef struct RwMemoryFunctions {
     /* 0x8 */ void *(*rwrealloc)(void *mem, RwUInt32 newSize, RwUInt32 hint);
     /* 0xC */ void *(*rwcalloc)(RwUInt32 numObj, RwUInt32 sizeObj, RwUInt32 hint);
 } RwMemoryFunctions;
+CHECK_SIZEOF(RwMemoryFunctions, 0x10);
 
 /* A link of a doubly linked list */
 typedef struct RwLLLink {
     struct RwLLLink *next;
     struct RwLLLink *prev;
 } RwLLLink;
+CHECK_SIZEOF(RwLLLink, 0x8);
 
 /* A doubly linked list: its link is the head and the tail sentinel */
 typedef struct RwLinkList {
     RwLLLink link;
 } RwLinkList;
+CHECK_SIZEOF(RwLinkList, 0x8);
 
 /* A device's standard function (RwStandard): out, inOut and numIn depend on the function */
 typedef RwBool (*RwStandardFunc)(void *out, void *inOut, RwInt32 numIn);
@@ -202,6 +209,7 @@ typedef struct RwGlobals {
     /* 0x124 */ RwInt32 engineStatus;      /* rwENGINESTATUS* */
     /* 0x128 */ RwUInt32 resArenaInitSize; /* the bytes of the resources heap (inferred) */
 } RwGlobals;
+CHECK_SIZEOF(RwGlobals, 0x12C);
 
 extern RwGlobals *lbl_805F15B4; /* the engine instance */
 
@@ -238,6 +246,7 @@ typedef struct RwModuleInfo {
     /* 0x0 */ RwInt32 globalsOffset;
     /* 0x4 */ RwInt32 numInstances;
 } RwModuleInfo;
+CHECK_SIZEOF(RwModuleInfo, 0x8);
 
 /* plugin data at offset in an object (offsets are assigned at plugin registration) */
 #define RWPLUGINOFFSET(type, base, offset) ((type *)((RwUInt8 *)(base) + (offset)))
@@ -265,17 +274,20 @@ typedef struct RwError {
     RwInt32 pluginID;
     RwInt32 errorCode;
 } RwError;
+CHECK_SIZEOF(RwError, 0x8);
 
 typedef struct RwV3d {
     RwReal x;
     RwReal y;
     RwReal z;
 } RwV3d;
+CHECK_SIZEOF(RwV3d, 0xC);
 
 typedef struct RwBBox {
     RwV3d sup;
     RwV3d inf;
 } RwBBox;
+CHECK_SIZEOF(RwBBox, 0x18);
 
 RwBBox *fn_8048349C(RwBBox *boundBox, const RwV3d *verts, RwInt32 numVerts); /* calculates */
 
@@ -285,16 +297,19 @@ typedef struct RwRGBA {
     RwUInt8 blue;
     RwUInt8 alpha;
 } RwRGBA;
+CHECK_SIZEOF(RwRGBA, 0x4);
 
 typedef struct RwTexCoords {
     RwReal u;
     RwReal v;
 } RwTexCoords;
+CHECK_SIZEOF(RwTexCoords, 0x8);
 
 typedef struct RwV2d {
     RwReal x;
     RwReal y;
 } RwV2d;
+CHECK_SIZEOF(RwV2d, 0x8);
 
 typedef struct RwRGBAReal {
     RwReal red;
@@ -302,6 +317,7 @@ typedef struct RwRGBAReal {
     RwReal blue;
     RwReal alpha;
 } RwRGBAReal;
+CHECK_SIZEOF(RwRGBAReal, 0x10);
 
 /* converts a color with components 0 to 1 to bytes, rounding */
 #define RwRGBAFromRwRGBAReal(o, i)                                                                 \
@@ -350,6 +366,7 @@ typedef struct RwObject {
     /* 0x3 */ RwUInt8 privateFlags;
     /* 0x4 */ void *parent;
 } RwObject;
+CHECK_SIZEOF(RwObject, 0x8);
 
 /* A matrix: three axes and a position (0x40 bytes) */
 typedef struct RwMatrix {
@@ -362,6 +379,7 @@ typedef struct RwMatrix {
     /* 0x30 */ RwV3d pos;
     /* 0x3C */ RwUInt32 pad3;
 } RwMatrix;
+CHECK_SIZEOF(RwMatrix, 0x40);
 
 /* A camera; its parent object is its frame */
 
@@ -372,6 +390,7 @@ typedef struct RwRect {
     RwInt32 w;
     RwInt32 h;
 } RwRect;
+CHECK_SIZEOF(RwRect, 0x10);
 
 /* A raster; a sub-raster's parent is the raster that owns its pixels */
 typedef struct RwRaster {
@@ -393,6 +412,7 @@ typedef struct RwRaster {
     /* 0x2C */ RwInt32 originalHeight;
     /* 0x30 */ RwInt32 originalStride;
 } RwRaster;
+CHECK_SIZEOF(RwRaster, 0x34);
 
 /* A free list: fixed size entries allocated in blocks. Each block is a link in blockList, then a
  * bitmap with a bit per entry, set while the entry is in use, then the entries at the alignment. */
@@ -405,12 +425,14 @@ struct RwFreeList {
     /* 0x18 */ RwUInt32 flags;
     /* 0x1C */ RwLLLink link; /* in the list of all free lists */
 };
+CHECK_SIZEOF(struct RwFreeList, 0x24);
 
 /* A plane: points p with dot(normal, p) == distance */
 typedef struct RwPlane {
     /* 0x0 */ RwV3d normal;
     /* 0xC */ RwReal distance;
 } RwPlane;
+CHECK_SIZEOF(RwPlane, 0x10);
 
 /* A plane of a camera's view frustum, with the corner of a box nearest to it (0x14 bytes) */
 typedef struct RwFrustumPlane {
@@ -420,6 +442,7 @@ typedef struct RwFrustumPlane {
     /* 0x12 */ RwUInt8 closestZ;
     /* 0x13 */ RwUInt8 pad;
 } RwFrustumPlane;
+CHECK_SIZEOF(RwFrustumPlane, 0x14);
 
 typedef void *(*RwObjectHasFrameSyncFunction)(void *object);
 
@@ -430,6 +453,7 @@ typedef struct RwObjectHasFrame {
     /* 0x08 */ RwLLLink lFrame;
     /* 0x10 */ RwObjectHasFrameSyncFunction sync;
 } RwObjectHasFrame;
+CHECK_SIZEOF(RwObjectHasFrame, 0x14);
 typedef RwCamera *(*RwCameraBeginUpdateFunc)(RwCamera *camera);
 typedef RwCamera *(*RwCameraEndUpdateFunc)(RwCamera *camera);
 
@@ -456,6 +480,7 @@ struct RwCamera {
     /* 0x10C */ RwBBox frustumBoundBox;
     /* 0x124 */ RwV3d frustumCorners[8];
 };
+CHECK_SIZEOF(struct RwCamera, 0x184);
 
 /* Makes a list empty */
 #define rwLinkListInitialize(list)                                                                 \
@@ -489,6 +514,7 @@ typedef struct RwPluginRegistry {
     /* 0x10 */ struct RwPluginRegEntry *firstRegEntry;
     /* 0x14 */ struct RwPluginRegEntry *lastRegEntry;
 } RwPluginRegistry;
+CHECK_SIZEOF(RwPluginRegistry, 0x18);
 
 typedef RwBool (*RwPluginDataChunkAlwaysCallBack)(void *object, RwInt32 offset, RwInt32 size);
 typedef RwBool (*RwPluginDataChunkRightsCallBack)(void *object, RwInt32 offset, RwInt32 size,
@@ -512,6 +538,7 @@ typedef struct RwPluginRegEntry {
     /* 0x34 */ struct RwPluginRegEntry *prevRegEntry;
     /* 0x38 */ RwPluginRegistry *parentRegistry;
 } RwPluginRegEntry;
+CHECK_SIZEOF(RwPluginRegEntry, 0x3C);
 
 /* plugin registries (inferred) */
 /* each returns the registry, or NULL on failure */
@@ -554,17 +581,20 @@ typedef struct RxPipeline {
     /* 0x2C */ RwUInt32 pluginId;   /* 0 for none */
     /* 0x30 */ RwUInt32 pluginData; /* the owner plugin's data */
 } RxPipeline;
+CHECK_SIZEOF(RxPipeline, 0x34);
 
 /* A node of a pipeline; only its private data is mapped */
 typedef struct RxPipelineNode {
     /* 0x00 */ RwUInt8 field_0x0[0x14];
     /* 0x14 */ void *privateData;
 } RxPipelineNode;
+CHECK_SIZEOF(RxPipelineNode, 0x18);
 
 /* The parameters a node body receives; only the object being rendered is mapped */
 typedef struct RxPipelineNodeParam {
     /* 0x0 */ void *dataParam;
 } RxPipelineNodeParam;
+CHECK_SIZEOF(RxPipelineNodeParam, 0x4);
 
 typedef RwBool (*RxNodeBodyFn)(RxPipelineNode *self, const RxPipelineNodeParam *params);
 typedef RwBool (*RxPipelineNodeInitFn)(RxPipelineNode *self);
@@ -584,6 +614,7 @@ typedef struct RxNodeDefinition {
     /* 0x34 */ RwUInt32 pipelineNodePrivateDataSize;
     /* 0x38 */ RwUInt8 field_0x38[0xC];
 } RxNodeDefinition;
+CHECK_SIZEOF(RxNodeDefinition, 0x44);
 
 /* building pipelines (inferred from their use) */
 RxPipeline *fn_8049B76C(void);                 /* creates a pipeline */
@@ -606,6 +637,7 @@ struct RwResEntry {
     /* 0x10 */ RwResEntry **ownerRef;
     /* 0x14 */ RwResEntryDestroyNotify destroyNotify;
 };
+CHECK_SIZEOF(struct RwResEntry, 0x18);
 
 /* The resources module's globals in the engine. Entries are in one of two lists, used this frame
  * or before it; the lists swap roles each frame. */
@@ -619,6 +651,7 @@ typedef struct RwResourcesGlobals {
     /* 0x20 */ RwLLLink *freeEntries; /* the head of the list of entries used before this frame */
     /* 0x24 */ RwLLLink *usedEntries; /* the head of the list used this frame, newest first */
 } RwResourcesGlobals;
+CHECK_SIZEOF(RwResourcesGlobals, 0x28);
 
 extern RwModuleInfo lbl_805F1578; /* the resources module */
 
@@ -667,6 +700,7 @@ typedef struct RwTexture {
     /* 0x50 */ RwUInt32 filterAddressing; /* the filter mode in the low byte */
     /* 0x54 */ RwInt32 refCount;
 } RwTexture;
+CHECK_SIZEOF(RwTexture, 0x58);
 
 /* A texture dictionary: the textures in it and its link in the list of dictionaries (0x18 bytes) */
 struct RwTexDictionary {
@@ -674,11 +708,13 @@ struct RwTexDictionary {
     /* 0x08 */ RwLinkList texturesInDict;
     /* 0x10 */ RwLLLink lInInstance;
 };
+CHECK_SIZEOF(struct RwTexDictionary, 0x18);
 
 typedef struct RwLine {
     RwV3d start;
     RwV3d end;
 } RwLine;
+CHECK_SIZEOF(RwLine, 0x18);
 
 /* A frame (while a hierarchy is being cloned, each frame's root holds its clone) */
 struct RwFrame {
@@ -691,6 +727,7 @@ struct RwFrame {
     /* 0x9C */ struct RwFrame *next;
     /* 0xA0 */ struct RwFrame *root;
 };
+CHECK_SIZEOF(struct RwFrame, 0xA4);
 
 /* The squared errors a matrix may have and still count as normal, orthogonal or the identity */
 typedef struct RwMatrixTolerance {
@@ -698,6 +735,7 @@ typedef struct RwMatrixTolerance {
     /* 0x4 */ RwReal Orthogonal;
     /* 0x8 */ RwReal Identity;
 } RwMatrixTolerance;
+CHECK_SIZEOF(RwMatrixTolerance, 0xC);
 
 /* optimises a matrix's flags, with a tolerance or the default one for NULL (inferred) */
 RwMatrix *fn_8047E990(RwMatrix *matrix, const RwMatrixTolerance *tolerance);
@@ -748,6 +786,7 @@ typedef struct RwSphere {
     RwV3d center;
     RwReal radius;
 } RwSphere;
+CHECK_SIZEOF(RwSphere, 0x10);
 
 /* A stream chunk's header, decoded (0x14 bytes) */
 typedef struct RwChunkHeaderInfo {
@@ -757,6 +796,7 @@ typedef struct RwChunkHeaderInfo {
     /* 0x0C */ RwUInt32 buildNum;
     /* 0x10 */ RwBool isComplex; /* whether the chunk holds other chunks */
 } RwChunkHeaderInfo;
+CHECK_SIZEOF(RwChunkHeaderInfo, 0x14);
 
 /* streams */
 RwBool fn_8047CCF8(const RwChunkHeaderInfo *chunkHeaderInfo); /* whether a chunk is complex */
@@ -793,6 +833,7 @@ typedef struct RwMemory {
     /* 0x0 */ RwUInt8 *start;
     /* 0x4 */ RwUInt32 length;
 } RwMemory;
+CHECK_SIZEOF(RwMemory, 0x8);
 
 /* A memory stream's state */
 typedef struct RwStreamMemory {
@@ -800,6 +841,7 @@ typedef struct RwStreamMemory {
     /* 0x4 */ RwUInt32 nSize; /* the bytes of memBlock */
     /* 0x8 */ RwUInt8 *memBlock;
 } RwStreamMemory;
+CHECK_SIZEOF(RwStreamMemory, 0xC);
 
 /* A custom stream's functions and their data (0x14 bytes) */
 typedef struct RwStreamCustom {
@@ -809,6 +851,7 @@ typedef struct RwStreamCustom {
     /* 0x0C */ RwBool (*sfnskip)(void *data, RwUInt32 offset);
     /* 0x10 */ void *data;
 } RwStreamCustom;
+CHECK_SIZEOF(RwStreamCustom, 0x14);
 
 /* A stream (0x24 bytes) */
 struct RwStream {
@@ -822,6 +865,7 @@ struct RwStream {
     } Type;
     /* 0x20 */ RwBool rwOwned; /* whether the stream is from the stream free list */
 };
+CHECK_SIZEOF(struct RwStream, 0x24);
 
 RwUInt32 fn_80480D4C(RwStream *stream, void *buffer, RwUInt32 length);
 RwStream *fn_80480ED0(RwStream *stream, const void *buffer, RwUInt32 length);
@@ -872,6 +916,7 @@ RwFreeList *fn_8047FF50(RwFreeList *freeList, void *mem); /* frees an entry */
 typedef struct RwEngineOpenParams {
     void *displayID; /* the device's display (inferred) */
 } RwEngineOpenParams;
+CHECK_SIZEOF(RwEngineOpenParams, 0x4);
 
 /* A video mode (0x18 bytes) */
 typedef struct RwVideoMode {
@@ -882,6 +927,7 @@ typedef struct RwVideoMode {
     /* 0x10 */ RwInt32 refRate;
     /* 0x14 */ RwInt32 format;
 } RwVideoMode;
+CHECK_SIZEOF(RwVideoMode, 0x18);
 
 /* The device the engine opens on (inferred) */
 RwDevice *fn_804950A0(void);
@@ -965,6 +1011,7 @@ typedef struct RwFrameList {
     /* 0x0 */ RwFrame **frames;
     /* 0x4 */ RwInt32 numFrames;
 } RwFrameList;
+CHECK_SIZEOF(RwFrameList, 0x8);
 
 RwFrameList *fn_80483774(RwStream *stream, RwFrameList *frameList); /* stream read */
 RwFrameList *fn_80483728(RwFrameList *frameList);                   /* deinitialise */
@@ -1031,6 +1078,7 @@ typedef struct RwImage {
     /* 0x14 */ RwUInt8 *cpPixels;
     /* 0x18 */ RwRGBA *palette;
 } RwImage;
+CHECK_SIZEOF(RwImage, 0x1C);
 
 /* images (inferred) */
 RwImage *fn_80487D08(RwInt32 width, RwInt32 height, RwInt32 depth); /* create */
@@ -1062,6 +1110,7 @@ typedef struct rwPalQuantLeafNode {
     /* 0x14 */ RwReal error;
     /* 0x18 */ RwUInt8 palIndex;
 } rwPalQuantLeafNode;
+CHECK_SIZEOF(rwPalQuantLeafNode, 0x1C);
 
 /* A palette quantizer tree node: its statistics and its 16 children (one per combination of a bit
  * of red, green, blue and alpha) (0x5C bytes; type and field names inferred) */
@@ -1069,6 +1118,7 @@ typedef struct rwPalQuantOctNode {
     /* 0x00 */ rwPalQuantLeafNode leaf;
     /* 0x1C */ struct rwPalQuantOctNode *children[16];
 } rwPalQuantOctNode;
+CHECK_SIZEOF(rwPalQuantOctNode, 0x5C);
 
 /* A box of quantized colors: its lower and upper corners in tree cells (0x20 bytes; type and field
  * names inferred) */
@@ -1076,6 +1126,7 @@ typedef struct rwPalQuantBox {
     /* 0x00 */ RwInt32 lower[4];
     /* 0x10 */ RwInt32 upper[4];
 } rwPalQuantBox;
+CHECK_SIZEOF(rwPalQuantBox, 0x20);
 
 /* A palette quantizer: the boxes the colors are split into, their errors and statistics, and the
  * tree the colors are added to (0x4008 bytes; field names inferred) */
@@ -1086,6 +1137,7 @@ typedef struct RwPalQuant {
     /* 0x4000 */ rwPalQuantOctNode *root;
     /* 0x4004 */ RwFreeList *nodeFreeList;
 } RwPalQuant;
+CHECK_SIZEOF(RwPalQuant, 0x4008);
 
 /* palette quantization (inferred) */
 RwBool fn_8048FED8(RwPalQuant *palQuant);                                      /* initialize */
@@ -1134,6 +1186,7 @@ typedef struct RwSList {
     /* 0x8 */ RwInt32 numElementsAlloced;
     /* 0xC */ RwInt32 entrySize;
 } RwSList;
+CHECK_SIZEOF(RwSList, 0x10);
 RwSList *fn_8047DC90(RwInt32 size, RwUInt32 hint);              /* create */
 void *fn_8047DEA0(RwSList *sList, RwInt32 size, RwUInt32 hint); /* new entries */
 void *fn_8047DFAC(RwSList *sList);                              /* the entries */
@@ -1155,6 +1208,7 @@ typedef struct RwIm3DVertex {
     /* 0x1C */ RwReal u;
     /* 0x20 */ RwReal v;
 } RwIm3DVertex;
+CHECK_SIZEOF(RwIm3DVertex, 0x24);
 
 typedef RwUInt16 RwImVertexIndex;
 
@@ -1167,6 +1221,7 @@ struct RwIm2DVertex {
     /* 0x10 */ RwReal u;
     /* 0x14 */ RwReal v;
 };
+CHECK_SIZEOF(struct RwIm2DVertex, 0x18);
 
 /* GameCube device driver state (inferred) */
 struct _GXRenderModeObj;

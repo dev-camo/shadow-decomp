@@ -3,6 +3,7 @@
 
 #include "rw/rtfsyst.h"
 #include <dolphin/dvd.h>
+#include "layout_check.h"
 
 /* The RenderWare file system on the GameCube disc: files read through the DVD library, each with
  * a read cache for reads that are not 32-byte aligned. The type and member names are inferred from
@@ -18,6 +19,7 @@ extern "C" {
 typedef struct RtGCNFileOffset {
     RwInt64 value;
 } RtGCNFileOffset;
+CHECK_SIZEOF(RtGCNFileOffset, 0x8);
 
 /* A file of the disc file system (0x90 bytes) */
 typedef struct RtGCNFile {
@@ -29,6 +31,7 @@ typedef struct RtGCNFile {
     /* 0x88 */ RwInt32 cacheSize;
     /* 0x8C */ RwUInt8 field_0x8C[0x4];
 } RtGCNFile;
+CHECK_SIZEOF(RtGCNFile, 0x90);
 
 /* The last device state the file system met, which its error callback is told (inferred) */
 #define RTGCNFS_ERROR_NONE 1

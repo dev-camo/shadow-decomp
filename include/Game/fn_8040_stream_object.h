@@ -4,6 +4,7 @@
 /* The stream object shared by fn_80406F08, fn_8040773C and fn_8040307C (see below). */
 
 #include "CRI/lsc.h"
+#include "layout_check.h"
 
 /* Object handed through fn_80406F08 -> fn_8040773C -> fn_8040307C (each passes the same
  * pointer on). Only the fields those functions touch are known; "stream" is inferred from
@@ -16,6 +17,7 @@ typedef struct Fn8040StreamObject {
     /* 0x04C */ unsigned char padding4C[0x1C8 - 0x4C];
     /* 0x1C8 */ int field_1C8;
 } Fn8040StreamObject;
+CHECK_SIZEOF(Fn8040StreamObject, 0x1CC);
 
 #ifdef __cplusplus
 extern "C" {

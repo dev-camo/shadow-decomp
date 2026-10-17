@@ -43,6 +43,7 @@ typedef u32 OSTick;
 #include <dolphin/os/OSSemaphore.h>
 #include <dolphin/os/OSUtf.h>
 #include <dolphin/os/OSTimer.h>
+#include "layout_check.h"
 
 // private macro, maybe shouldn't be defined here?
 #define OFFSET(addr, align) (((u32)(addr) & ((align) - 1)))
@@ -120,6 +121,7 @@ typedef struct OSCalendarTime {
     /* 0x20 */ int msec;
     /* 0x24 */ int usec;
 } OSCalendarTime;
+CHECK_SIZEOF(OSCalendarTime, 0x28);
 
 #include <dolphin/dvd.h>
 typedef struct OSBootInfo_s {
@@ -133,6 +135,7 @@ typedef struct OSBootInfo_s {
     void *FSTLocation;
     u32 FSTMaxLength;
 } OSBootInfo;
+CHECK_SIZEOF(OSBootInfo, 0x40);
 
 typedef struct OSStopwatch {
     char *name;
@@ -144,6 +147,7 @@ typedef struct OSStopwatch {
     BOOL running;
     u32 _padding;
 } OSStopwatch;
+CHECK_SIZEOF(OSStopwatch, 0x30);
 
 void OSInitStopwatch(OSStopwatch *sw, char *name);
 void OSStartStopwatch(OSStopwatch *sw);

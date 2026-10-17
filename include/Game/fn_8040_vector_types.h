@@ -1,5 +1,6 @@
 #ifndef FN_8040_VECTOR_TYPES_H
 #define FN_8040_VECTOR_TYPES_H
+#include "layout_check.h"
 
 /* 2- and 3-float vectors used by the fn_8040xxxx vector helpers. Layouts come from their accesses;
  * the original type and function names are unknown. */
@@ -7,17 +8,20 @@ typedef struct Fn8040Vector2 {
     /* 0x00 */ float x;
     /* 0x04 */ float y;
 } Fn8040Vector2;
+CHECK_SIZEOF(Fn8040Vector2, 0x8);
 
 typedef struct Fn8040Vector3 {
     /* 0x00 */ float x;
     /* 0x04 */ float y;
     /* 0x08 */ float z;
 } Fn8040Vector3;
+CHECK_SIZEOF(Fn8040Vector3, 0xC);
 
 /* 3x4 matrix (three rows of rotation and translation) used by the fn_8040xxxx matrix helpers. */
 typedef struct Fn8040Matrix34 {
     /* 0x00 */ float values[3][4];
 } Fn8040Matrix34;
+CHECK_SIZEOF(Fn8040Matrix34, 0x30);
 
 #ifdef __cplusplus
 extern "C" {

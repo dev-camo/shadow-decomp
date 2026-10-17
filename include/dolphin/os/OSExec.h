@@ -2,6 +2,7 @@
 #define _DOLPHIN_OSEXEC_H_
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,6 +17,7 @@ typedef struct {
     int argsUseDefault;
     void *argsAddr;
 } OSExecParams;
+CHECK_SIZEOF(OSExecParams, 0x1C);
 
 typedef int (*appGetNextCallback)(void *, u32 *, u32 *);
 typedef void (*appInitCallback)(void (*)(char *));

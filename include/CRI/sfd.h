@@ -5,6 +5,7 @@
 #include "CRI/cri_xpt.h"
 #include "CRI/sj.h"
 #include "CRI/uty.h"
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,11 +36,13 @@ typedef struct {
     Sint32 rsv1; /* 0x08 */
     Sint32 rsv2; /* 0x0C */
 } SFUO_CH;
+CHECK_SIZEOF(SFUO_CH, 0x10);
 
 typedef struct {
     Sint32 nch;    /* 0x00 */
     SFUO_CH ch[3]; /* 0x04 */
 } SFUO;
+CHECK_SIZEOF(SFUO, 0x34);
 
 /* audio output (auto-play) driver work (sfd_aoap.c), at SFD_OBJ + 0x34FC: user callbacks */
 typedef struct {
@@ -51,6 +54,7 @@ typedef struct {
     void (*SetSpeed)(SFD sfd, Sint32 speed);             /* 0x14 */
     Sint32 x18;                                          /* 0x18 */
 } SFAOAP;
+CHECK_SIZEOF(SFAOAP, 0x1C);
 
 /* clock source (sfd_tim.c) */
 typedef Sint32 (*SFTIM_FN)(SFD sfd, Sint32 *ncount, Sint32 *tscale);
@@ -74,6 +78,7 @@ typedef struct {
     Sint32 que_rd;             /* 0x1F8 */
     Sint32 tot_que[32];        /* 0x1FC */
 } SFCON;
+CHECK_SIZEOF(SFCON, 0x280);
 
 /* timecode as the user passes it to SFD_Tc2Time (0x20 bytes) */
 typedef struct {
@@ -87,6 +92,7 @@ typedef struct {
     Sint16 x1c;   /* 0x1C */
     Sint16 field; /* 0x1E half frame */
 } SFTIM_TC;
+CHECK_SIZEOF(SFTIM_TC, 0x20);
 
 /* time with its timecode (0x2C bytes) */
 typedef struct {
@@ -95,6 +101,7 @@ typedef struct {
     Sint32 val;   /* 0x24 */
     Sint32 unit;  /* 0x28 */
 } SFTIM_TTU;
+CHECK_SIZEOF(SFTIM_TTU, 0x2C);
 
 /* timing work (sfd_tim.c), the same memory as SFCON at SFD_OBJ + 0xD30 (SFD_TIM(sfd)) */
 typedef struct {
@@ -159,6 +166,7 @@ typedef struct {
     Sint32 x5b4;    /* 0x5B4 */
     Sint32 x5b8;    /* 0x5B8 */
 } SFTIM_WORK;
+CHECK_SIZEOF(SFTIM_WORK, 0x5C0);
 
 typedef SFTIM_WORK *SFTIM;
 
@@ -168,6 +176,7 @@ typedef struct {
     Sint32 x04;   /* 0x04 */
     Sint32 vrate; /* 0x08 vsyncs per second (59940 = 59.94 Hz) */
 } SFTIM_LIB;
+CHECK_SIZEOF(SFTIM_LIB, 0xC);
 
 extern const Sint32 SFTIM_prate[9];
 
@@ -177,6 +186,7 @@ typedef struct {
     Uint32 pos; /* 0x08 */
     Uint32 len; /* 0x0C */
 } SFPTS_ENT;
+CHECK_SIZEOF(SFPTS_ENT, 0x10);
 
 typedef struct {
     SFPTS_ENT *ent; /* 0x00 */
@@ -185,11 +195,13 @@ typedef struct {
     Sint32 wr;      /* 0x0C */
     Sint32 rd;      /* 0x10 */
 } SFPTS_QUE;
+CHECK_SIZEOF(SFPTS_QUE, 0x14);
 
 /* per-frame picture information handed to the user (0x80 bytes) */
 typedef struct {
     Sint32 raw[0x20]; /* 0x00 */
 } SFD_VFRM_INF;
+CHECK_SIZEOF(SFD_VFRM_INF, 0x80);
 
 /* video frame slot (0x88 bytes), SFD_OBJ + 0x16B0 + n * 0x88; slot n pairs with SFMPV frame n */
 typedef struct {
@@ -197,6 +209,7 @@ typedef struct {
     Sint32 x04;       /* 0x04 */
     SFD_VFRM_INF inf; /* 0x08 */
 } SFD_VFRM;
+CHECK_SIZEOF(SFD_VFRM, 0x88);
 
 /* ring-buffer supply of an SFBUF (sfd_buf.c): kind 0 = a memory range (ofst/size), else a stream
  * joint */
@@ -208,6 +221,7 @@ typedef struct {
     Sint32 xsize; /* 0x10 extra (wrap) size */
     Sint32 x14;   /* 0x14 */
 } SFBUF_SUP;
+CHECK_SIZEOF(SFBUF_SUP, 0x18);
 
 /* ring buffer state (SFBUF_WORK.u.ring) */
 typedef struct {
@@ -218,6 +232,7 @@ typedef struct {
     Sint32 rtot;      /* 0x24 total read */
     SFPTS_QUE ptsque; /* 0x28 */
 } SFBUF_RING;
+CHECK_SIZEOF(SFBUF_RING, 0x3C);
 
 /* SFBUF_WORK.mode */
 #define SFBUF_MODE_VFRM 1
@@ -254,6 +269,7 @@ typedef struct {
     Sint32 out_tr; /* 0x50 transfer driver reading this buffer */
     Sint32 rsv[8]; /* 0x54 */
 } SFBUF_WORK;
+CHECK_SIZEOF(SFBUF_WORK, 0x74);
 
 #define SFD_BUF_NUM 8
 
@@ -274,6 +290,7 @@ typedef struct {
     Sint32 (*AddRead)();    /* 0x30 */
     Sint32 (*Seek)();       /* 0x34 */
 } SFD_TR_IF;
+CHECK_SIZEOF(SFD_TR_IF, 0x38);
 
 typedef Sint32 (*SFD_TR_FUNC)();
 
@@ -290,6 +307,7 @@ typedef struct {
     Sint32 x20;               /* 0x20 (-1) */
     Uint8 pad24[0x44 - 0x24]; /* 0x24 */
 } SFD_TR;
+CHECK_SIZEOF(SFD_TR, 0x44);
 
 #define SFD_TR_NUM 9
 #define SFD_COND_NUM 100
@@ -330,12 +348,14 @@ typedef struct {
     Sint16 cwidth; /* 0x0C chroma row bytes */
     Sint16 ywidth; /* 0x0E luma row bytes */
 } SFMPV_PLANE;
+CHECK_SIZEOF(SFMPV_PLANE, 0x10);
 
 /* picture user data slot of a decoded frame */
 typedef struct {
     void *buf;  /* 0x00 */
     Sint32 len; /* 0x04 */
 } SFMPV_PICUSR;
+CHECK_SIZEOF(SFMPV_PICUSR, 0x8);
 
 /* decoded frame object of the video driver (0xE8 bytes; RE4's is 0xE0) */
 typedef struct {
@@ -393,6 +413,7 @@ typedef struct {
     Uint8 padc8[0xE0 - 0xC8]; /* 0xC8 */
     Sint64 pts;               /* 0xE0 */
 } SFMPV_FRM;
+CHECK_SIZEOF(SFMPV_FRM, 0xE8);
 
 /* MPEG video decoder parameters (mwsfd_mpvpara, SFD_SetMpvParaTbl; 0x24 bytes) */
 typedef struct {
@@ -406,6 +427,7 @@ typedef struct {
     Sint32 nfrm;       /* 0x1C decoded frame buffers */
     Sint32 x20;        /* 0x20 */
 } SFMPV_PARA;
+CHECK_SIZEOF(SFMPV_PARA, 0x24);
 
 #define SFMPV_FRM_NUM 16
 
@@ -450,6 +472,7 @@ typedef struct {
     Sint32 pad1094;                     /* 0x1094 */
     Sint64 pts;                         /* 0x1098 PTS of the picture being decoded */
 } SFMPV_WORK;
+CHECK_SIZEOF(SFMPV_WORK, 0x10A0);
 
 /* 0xA8-byte player information block returned by SFD_GetPlyInf; this game's block is 8 bytes longer
  * than RE4's: a frame counter is added at +0x18 (so RE4's fields from +0x18 sit 4 bytes later) and
@@ -458,6 +481,7 @@ typedef struct {
 typedef struct {
     Sint32 raw[0x2A]; /* 0x00 */
 } SFD_PLYINF;
+CHECK_SIZEOF(SFD_PLYINF, 0xA8);
 
 /* creation parameters of SFBUF_InitHn: the first 0x2C bytes of SFD_CREPRM */
 typedef struct {
@@ -467,17 +491,20 @@ typedef struct {
     Sint32 x24;     /* 0x24 */
     Sint32 unit;    /* 0x28 ring buffer 0 alignment */
 } SFBUF_PRM;
+CHECK_SIZEOF(SFBUF_PRM, 0x2C);
 
 /* creation parameters passed to SFTRN_InitHn: trif_tbl[n] is driver n's function table
  * (0 input, 1 system, 2 video, 3 audio, 4 video out, 5 audio out, 6/7 output, 8 user) */
 typedef struct {
     SFD_TR_FUNC **trif_tbl; /* 0x00 */
 } SFTRN_PRM;
+CHECK_SIZEOF(SFTRN_PRM, 0x4);
 
 /* the 15 driver interfaces known to the library (SFTRN_Init) */
 typedef struct {
     SFD_TR_IF *tbl[15]; /* 0x00 */
 } SFTRN_TRIF_TBL;
+CHECK_SIZEOF(SFTRN_TRIF_TBL, 0x3C);
 
 /* error callback state (sfd_lib.c), per handle at SFD_OBJ + 0x9F8 and library-wide */
 typedef struct {
@@ -487,6 +514,7 @@ typedef struct {
     Sint32 x0c;                         /* 0x0C */
     Sint32 x10;                         /* 0x10 */
 } SFLIB_ERRINF;
+CHECK_SIZEOF(SFLIB_ERRINF, 0x14);
 
 /* Sofdec file header analysis results (sfd_hds.c, 0x894 bytes): SFD_OBJ + 0x78, SFSEE_WORK + 0xC */
 #define SFHDS_RAW_SIZE 0x800
@@ -497,6 +525,7 @@ typedef struct {
     Sint32 chnum; /* 0x08 */
     Sint32 smphz; /* 0x0C */
 } SFHDS_AUD;
+CHECK_SIZEOF(SFHDS_AUD, 0x10);
 
 typedef struct {
     Sint32 codec;         /* 0x00 */
@@ -513,6 +542,7 @@ typedef struct {
     Sint32 ftr_gopn;      /* 0x2C */
     Sint32 ftr_gopm;      /* 0x30 */
 } SFHDS_VID;
+CHECK_SIZEOF(SFHDS_VID, 0x34);
 
 typedef struct {
     Sint32 valid;              /* 0x00 header analysed */
@@ -539,12 +569,14 @@ typedef struct {
     Sint32 rawsiz;             /* 0x90 */
     Uint8 raw[SFHDS_RAW_SIZE]; /* 0x94 */
 } SFHDS_FHD;
+CHECK_SIZEOF(SFHDS_FHD, 0x894);
 
 /* raw copies of the pack + system header (video one, audio one) kept for seeking (sfd_mps.c) */
 typedef struct {
     Uint8 data[2][0xB0]; /* 0x00 */
     Sint32 len[2];       /* 0x160 */
 } SFSEE_SYSHD;
+CHECK_SIZEOF(SFSEE_SYSHD, 0x168);
 
 /* system stream analysis kept in the seek work (sfd_mps.c), SFSEE_WORK + 0x8A0 */
 typedef struct {
@@ -560,6 +592,7 @@ typedef struct {
     Sint32 stmid_aud;  /* 0x2C first audio stream id */
     SFSEE_SYSHD syshd; /* 0x30 */
 } SFSEE_SHDR;          /* 0x198 */
+CHECK_SIZEOF(SFSEE_SHDR, 0x198);
 
 /* seek support work supplied by the user through SFD_EntrySeek (sfd_see.c); the header analysis
  * results of the video / audio streams are kept here, followed by the user-set totals */
@@ -591,6 +624,7 @@ typedef struct {
     Sint32 byterate;             /* 0xDD0 SFD_SetByteRate */
     Sint32 seekpos;              /* 0xDD4 SFD_SetSeekPos */
 } SFSEE_WORK;
+CHECK_SIZEOF(SFSEE_WORK, 0xDD8);
 
 /* audio stream header analysis kept in the seek work (a1hdr / a2hdr and the words after them) */
 typedef struct {
@@ -601,12 +635,14 @@ typedef struct {
     Sint32 sfreq;    /* 0x10 */
     Sint32 nsmpl;    /* 0x14 */
 } SFSEE_AHDR;
+CHECK_SIZEOF(SFSEE_AHDR, 0x18);
 
 typedef struct {
     Sint32 x00; /* 0x00 */
     Sint32 pos; /* 0x04 requested seek position (-3: none) */
     Sint32 x08; /* 0x08 */
 } SFSEE_REQ;
+CHECK_SIZEOF(SFSEE_REQ, 0xC);
 
 /* ADX audio driver creation parameters (SFD_SetAdxtPara, 0x1C bytes) */
 typedef struct {
@@ -618,6 +654,7 @@ typedef struct {
     Sint32 worksize; /* 0x14 */
     void *work;      /* 0x18 ADXT work (32-byte aligned) */
 } SFADXT_PARA;
+CHECK_SIZEOF(SFADXT_PARA, 0x1C);
 
 /* ADX audio driver work (sfd_adxt.c, tr[3].hn), SFD_OBJ + 0x3448 */
 typedef struct {
@@ -637,12 +674,14 @@ typedef struct {
     Sint32 totbyte;              /* 0x48 bytes copied into the stream joint */
     Sint32 x4c;                  /* 0x4C */
 } SFADXT_WORK;
+CHECK_SIZEOF(SFADXT_WORK, 0x50);
 
 /* seek request state, SFD_OBJ + 0x3550 */
 typedef struct {
     SFSEE_WORK *wk; /* 0x00 */
     SFSEE_REQ req;  /* 0x04 */
 } SFSEE_HN;
+CHECK_SIZEOF(SFSEE_HN, 0x10);
 
 /* creation parameters (SFD_Create, 0x44 bytes); the handle starts with a copy of them (sfd_ply.c).
  * The first 0x2C bytes are what sfd_buf.c reads as SFBUF_PRM. */
@@ -659,6 +698,7 @@ typedef struct {
     void *hnwork;           /* 0x3C handle work (SFD_OBJ, aligned to 32) */
     Sint32 hnwksiz;         /* 0x40 its size (>= 0x3660, SFD_HNWORK_MIN) */
 } SFD_CREPRM;
+CHECK_SIZEOF(SFD_CREPRM, 0x44);
 
 /* video PTS manager entry kept across a player reset (sfd_ply.c), SFD_OBJ + 0x12E0 */
 typedef struct {
@@ -666,6 +706,7 @@ typedef struct {
     Sint32 x04; /* 0x04 */
     Sint32 x08; /* 0x08 */
 } SFPLY_PTSM;
+CHECK_SIZEOF(SFPLY_PTSM, 0xC);
 
 /* Optional PTS manager hooks (sfd_ply.c, set by SFPLY_SetPtsmFn). The system stream driver passes
  * the PTS of each packet for buffer 2 (the audio driver's input) to the info hook; when it returns -1
@@ -683,6 +724,7 @@ typedef struct {
     Sint64 max; /* 0x10 */
     Sint32 cnt; /* 0x18 */
 } SFTMR_TSUM;
+CHECK_SIZEOF(SFTMR_TSUM, 0x20);
 
 /* this game only: frame statistics of one play (sfd_ply.c; field meanings inferred from use) */
 typedef struct {
@@ -692,6 +734,7 @@ typedef struct {
     Sint32 nfrm;  /* 0x18 frames taken by SFD_GetFrm */
     Float32 rate; /* 0x1C nfrm * tunit / (t1 - t0) */
 } SFPLY_FRMSTAT;
+CHECK_SIZEOF(SFPLY_FRMSTAT, 0x20);
 
 /* system stream (MPS) driver work (sfd_mps.c), SFD_OBJ + 0x2198, tr[1].hn */
 #define SFMPS_STMID_MIN 0xBC
@@ -721,6 +764,7 @@ typedef struct {
     Sint32 x160;                            /* 0x160 */
     Sint32 x164;                            /* 0x164 */
 } SFMPS_WORK;                               /* 0x168 */
+CHECK_SIZEOF(SFMPS_WORK, 0x168);
 
 typedef struct SFD_OBJ {
     SFD_CREPRM prm;   /* 0x00 */
@@ -780,6 +824,7 @@ typedef struct SFD_OBJ {
     SFTMR_TSUM tsum[6];             /* 0x3560 server time statistics (tsum[5]: sfply_ExecOne) */
     SFPLY_FRMSTAT frmstat;          /* 0x3620 (this game only) */
 } SFD_OBJ;
+CHECK_SIZEOF(SFD_OBJ, 0x3640);
 /* Buffer n seen as the SFD object shifted by n buffers: the code adds n * sizeof(SFBUF_WORK) to the
  * handle and keeps buf[0]'s offset (0x1310) in each load/store displacement. Matching constraint
  * (typed access view): writing &sfd->buf[n] adds 0x1310 to the base register instead, and the
@@ -788,6 +833,7 @@ typedef struct {
     Uint8 pad[0x1310]; /* 0x0000 */
     SFBUF_WORK w;      /* 0x1310 sfd->buf[n] */
 } SFBUF_HN;
+CHECK_SIZEOF(SFBUF_HN, 0x1384);
 
 #define SFBUF_GET_HN(sfd, n) ((SFBUF_HN *)((SFBUF_WORK *)(sfd) + (n)))
 
@@ -808,6 +854,7 @@ typedef struct {
     Sint64 a_sj_wcnt;  /* 0x9D0 decoder stream joint: written */
     Sint64 a_sj_rcnt;  /* 0x9D8 decoder stream joint: read */
 } SFD_CNT64;
+CHECK_SIZEOF(SFD_CNT64, 0x9E0);
 
 #define SFD_CNT(sfd) ((SFD_CNT64 *)(sfd))
 #define SFD_TIM(sfd) ((SFTIM) & (sfd)->con)
@@ -828,12 +875,14 @@ typedef struct {
     SFD hn[8];                 /* 0x204 created handles */
     Sint32 x224;               /* 0x224 */
 } SFLIB_WORK;
+CHECK_SIZEOF(SFLIB_WORK, 0x228);
 
 /* SFD_Init parameters */
 typedef struct {
     SFTRN_TRIF_TBL *trif_tbl; /* 0x00 */
     Sint32 prm1;              /* 0x04 */
 } SFD_INIT_PRM;
+CHECK_SIZEOF(SFD_INIT_PRM, 0x8);
 
 /* creation information filled by SFD_AnalyCreInf (sfd_cre.c, 0x40 bytes) */
 typedef struct {
@@ -852,6 +901,7 @@ typedef struct {
     Sint32 afreq;           /* 0x2C */
     Sint32 rsv[4];          /* 0x30 */
 } SFD_CREINF;
+CHECK_SIZEOF(SFD_CREINF, 0x40);
 
 extern SFLIB_WORK SFLIB_libwork;
 
@@ -880,6 +930,7 @@ typedef struct {
     SJCK ck2;      /* 0x08 */
     Sint32 rsv[3]; /* 0x10 */
 } SFBUF_RINF;
+CHECK_SIZEOF(SFBUF_RINF, 0x1C);
 
 Sint32 SFBUF_RingAddWrite(SFD sfd, Sint32 n, Sint32 nbyte,
                           Sint32 rsv); /* rsv: SFBUF_RINF.rsv[1] of the caller, unused */

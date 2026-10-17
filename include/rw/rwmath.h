@@ -2,6 +2,7 @@
 #define RW_RWMATH_H
 
 #include "rw/rwcore.h"
+#include "layout_check.h"
 
 /* RenderWare's single precision maths helpers */
 
@@ -10,6 +11,7 @@ typedef union RwRealShape {
     RwReal value;
     RwInt32 word;
 } RwRealShape;
+CHECK_SIZEOF(RwRealShape, 0x4);
 
 #define GET_FLOAT_WORD(i, d)                                                                       \
     do {                                                                                           \
