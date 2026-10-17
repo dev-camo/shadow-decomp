@@ -1858,6 +1858,11 @@ rw/fn_80497FB4.c:
 	.sbss       start:0x805F1668 end:0x805F1670
 	.sdata2     start:0x805FB3E0 end:0x805FB418
 
+rw/fn_804A869C.c:
+	.text       start:0x804A869C end:0x804A90F8
+	.bss        start:0x805E32D8 end:0x805E3378
+	.sdata      start:0x805EDF68 end:0x805EDF70
+
 rw/fn_804A90F8.c:
 	.text       start:0x804A90F8 end:0x804A9BF8
 	.bss        start:0x805E3378 end:0x805E3440
