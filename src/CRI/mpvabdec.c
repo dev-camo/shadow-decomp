@@ -55,8 +55,7 @@
         if (sgn) {                                                                                 \
             val = -val;                                                                            \
         }                                                                                          \
-        ((Float32 *)prm->dst)[prm->idx] =                                                          \
-            (Float32)val * ((const Float32 *)mpv->scale_tbl)[prm->idx];                            \
+        prm->dst[prm->idx] = (Float32)val * mpv->scale_tbl[prm->idx];                              \
     }
 
 /* the same for the decoded (prm->run, prm->level, prm->sign) coefficient */
@@ -69,8 +68,7 @@
         if (prm->sign) {                                                                           \
             val = -val;                                                                            \
         }                                                                                          \
-        ((Float32 *)prm->dst)[prm->idx] =                                                          \
-            (Float32)val * ((const Float32 *)mpv->scale_tbl)[prm->idx];                            \
+        prm->dst[prm->idx] = (Float32)val * mpv->scale_tbl[prm->idx];                              \
     }
 
 #define MPVABDEC_STORE_AT(ofs, level, sgn)                                                         \
@@ -807,7 +805,8 @@ static inline Sint32 mpvabdec_NintraDecode(MPV mpv, MPV_BLKPRM *prm) {
 
 /* non-intra block: the coefficient block is cleared first */
 Sint32 MPVABDEC_NintraBlock(MPV mpv, MPV_BLKPRM *prm) {
-    Float64 *blk = prm->dst;
+    /* cleared with 8-byte stores */
+    Float64 *blk = (Float64 *)prm->dst;
 
     blk[0] = 0.0;
     blk[1] = 0.0;
@@ -883,7 +882,7 @@ Sint32 MPVABDEC_IntraBlock(MPV mpv, MPV_BLKPRM *prm) {
     MPVABDEC_SKIP(len);
     dc += *prm->dcpred;
     *prm->dcpred = dc;
-    ((Float32 *)prm->dst)[0] = 0.125f * (Float32)dc;
+    prm->dst[0] = 0.125f * (Float32)dc;
     prm->idx0 = 0;
     prm->idx = 0;
     zz = mpv->zigzag_tbl;
@@ -927,7 +926,7 @@ Sint32 MPVABDEC_IntraBlockDc11(MPV mpv, MPV_BLKPRM *prm) {
     MPVABDEC_FINISH(bbuf0, len);
     dc += *prm->dcpred;
     *prm->dcpred = dc;
-    ((Float32 *)prm->dst)[0] = 0.125f * (Float32)dc;
+    prm->dst[0] = 0.125f * (Float32)dc;
     prm->idx0 = 0;
     prm->idx = 0;
     zz = mpv->zigzag_tbl;

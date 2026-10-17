@@ -41,10 +41,10 @@ Uint8 *MPVBDEC_GetDflIqm(void) {
     return mpvbdec_dfl_iqm;
 }
 
-/* Per-handle block decoder tables: the default MPEG-1 intra quantiser matrix (org_iqm, raster
- * order) permuted into the IDCT's coefficient order (DCT_FsriInitScanTbl), the zigzag scan mapped
- * to that order, and the bit masks the coefficient decoder uses. */
-void MPVBDEC_Init(MPV mpv) {
+/* Block decoder tables in the shared table area: the default MPEG-1 intra quantiser matrix
+ * (org_iqm, raster order) permuted into the IDCT's coefficient order (DCT_FsriInitScanTbl), the
+ * zigzag scan mapped to that order, and the bit masks the coefficient decoder uses. */
+void MPVBDEC_Init(MPV_IXA *ixa) {
     Sint8 seq[64];
     Sint8 scan[64];
     Sint32 i;
@@ -59,25 +59,25 @@ void MPVBDEC_Init(MPV mpv) {
         mpvbdec_zigzag[i] = scan[zigzag2seq[i]];
         mpvbdec_dfl_iqm[scan[i]] = org_iqm[i];
     }
-    zigzag = mpv->zigzag;
+    zigzag = ixa->zigzag;
     if (zigzag != 0) {
         UTY_MemcpyDword((Uint32 *)zigzag, (Uint32 *)mpvbdec_zigzag, sizeof(mpvbdec_zigzag) / 4);
     }
-    bitmsk = mpv->bitmsk;
+    bitmsk = ixa->bitmsk;
     if (bitmsk != 0) {
         UTY_MemcpyDword((Uint32 *)bitmsk, (Uint32 *)mpvbdec_bitmsk, sizeof(mpvbdec_bitmsk) / 4);
     }
-    memcpy(mpv->group_tbl, group_tbl, sizeof(group_tbl));
-    mpv->rl[0].tbl = mpvvlc_run_level_4 - 4;
-    mpv->rl[0].bits = 21;
-    mpv->rl[1].tbl = mpvvlc_run_level_2 - 8;
-    mpv->rl[1].bits = 19;
-    mpv->rl[2].tbl = mpvvlc_run_level_1 - 8;
-    mpv->rl[2].bits = 18;
-    mpv->rl[3].tbl = mpvvlc_run_level_0a - 8;
-    mpv->rl[3].bits = 17;
-    mpv->rl[4].tbl = mpvvlc_run_level_0b - 8;
-    mpv->rl[4].bits = 16;
-    mpv->rl[5].tbl = mpvvlc_run_level_0c - 8;
-    mpv->rl[5].bits = 15;
+    memcpy(ixa->group_tbl, group_tbl, sizeof(group_tbl));
+    ixa->rl[0].tbl = mpvvlc_run_level_4 - 4;
+    ixa->rl[0].bits = 21;
+    ixa->rl[1].tbl = mpvvlc_run_level_2 - 8;
+    ixa->rl[1].bits = 19;
+    ixa->rl[2].tbl = mpvvlc_run_level_1 - 8;
+    ixa->rl[2].bits = 18;
+    ixa->rl[3].tbl = mpvvlc_run_level_0a - 8;
+    ixa->rl[3].bits = 17;
+    ixa->rl[4].tbl = mpvvlc_run_level_0b - 8;
+    ixa->rl[4].bits = 16;
+    ixa->rl[5].tbl = mpvvlc_run_level_0c - 8;
+    ixa->rl[5].bits = 15;
 }
