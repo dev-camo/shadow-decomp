@@ -3,6 +3,7 @@
 
 #include <dolphin/types.h>
 #include <dolphin/os.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,6 +23,7 @@ typedef union {
     f32 f32;
     f64 f64;
 } PPCWGPipe;
+CHECK_SIZEOF(PPCWGPipe, 0x8);
 
 #ifdef __MWERKS__
 volatile PPCWGPipe GXWGFifo AT_ADDRESS(GXFIFO_ADDR);

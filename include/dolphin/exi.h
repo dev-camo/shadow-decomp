@@ -2,6 +2,7 @@
 #define _DOLPHIN_EXI_H_
 
 #include <dolphin/os.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -73,6 +74,7 @@ typedef struct EXIControl {
         EXICallback callback;
     } queue[3];
 } EXIControl;
+CHECK_SIZEOF(EXIControl, 0x40);
 
 EXICallback EXISetExiCallback(s32 channel, EXICallback callback);
 

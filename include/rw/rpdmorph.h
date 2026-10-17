@@ -2,6 +2,7 @@
 #define RW_RPDMORPH_H
 
 #include "rw/rpworld.h"
+#include "layout_check.h"
 
 /* RenderWare delta morph animations (plugin ID 0x122, chunk 0x1E). The type and field names are
  * inferred from the stream format and the code that uses them. */
@@ -35,6 +36,7 @@ typedef struct RpDMorphTarget {
     /* 0x2C */ RwTexCoords *texCoords;
     /* 0x30 */ RwSphere boundingSphere;
 } RpDMorphTarget;
+CHECK_SIZEOF(RpDMorphTarget, 0x40);
 
 /* The delta morph data of a geometry (0x1C bytes) */
 typedef struct RpDMorphGeometry {
@@ -43,6 +45,7 @@ typedef struct RpDMorphGeometry {
     /* 0x08 */ RwReal *values; /* one per target, allocated after the targets */
     /* 0x0C */ RwUInt8 field_0xC[0x10];
 } RpDMorphGeometry;
+CHECK_SIZEOF(RpDMorphGeometry, 0x1C);
 
 extern RwInt32 lbl_805F1428; /* geometry plugin offset */
 
@@ -56,18 +59,21 @@ typedef struct RpDMorphFrame {
     /* 0x0C */ RwReal recipDuration;
     /* 0x10 */ RwUInt32 nextFrame; /* index of the next frame, rpDMORPHNOFRAME for none */
 } RpDMorphFrame;
+CHECK_SIZEOF(RpDMorphFrame, 0x14);
 
 /* The frames of one delta morph target */
 typedef struct RpDMorphFrameList {
     /* 0x0 */ RwUInt32 numFrames;
     /* 0x4 */ RpDMorphFrame *frames;
 } RpDMorphFrameList;
+CHECK_SIZEOF(RpDMorphFrameList, 0x8);
 
 /* An animation: a frame list per delta morph target, allocated after it */
 typedef struct RpDMorphAnimation {
     /* 0x0 */ RwUInt32 numDMorphTargets;
     /* 0x4 */ RpDMorphFrameList *frameLists;
 } RpDMorphAnimation;
+CHECK_SIZEOF(RpDMorphAnimation, 0x8);
 
 typedef RpAtomic *(*RpDMorphAtomicCallBack)(RpAtomic *atomic, void *data);
 
@@ -80,6 +86,7 @@ typedef struct RpDMorphInterpolator {
     /* 0x10 */ RpDMorphAtomicCallBack callBack; /* called when a frame list loops */
     /* 0x14 */ void *callBackData;
 } RpDMorphInterpolator;
+CHECK_SIZEOF(RpDMorphInterpolator, 0x18);
 
 /* The delta morph data of an atomic (0xC bytes) */
 typedef struct RpDMorphAtomic {
@@ -87,6 +94,7 @@ typedef struct RpDMorphAtomic {
     /* 0x4 */ RpDMorphInterpolator *interpolator;
     /* 0x8 */ RpAtomicCallBackRender renderCallBack; /* the atomic's own, called after morphing */
 } RpDMorphAtomic;
+CHECK_SIZEOF(RpDMorphAtomic, 0xC);
 
 extern RwInt32 lbl_805F1430; /* atomic plugin offset */
 

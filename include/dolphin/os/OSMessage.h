@@ -2,6 +2,7 @@
 #define _DOLPHIN_OSMESSAGE_H_
 
 #include <dolphin/os/OSThread.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,6 +16,7 @@ typedef struct {
     s32 firstIndex;
     s32 usedCount;
 } OSMessageQueue;
+CHECK_SIZEOF(OSMessageQueue, 0x20);
 
 void OSInitMessageQueue(OSMessageQueue *mq, void *msgArray, s32 msgCount);
 int OSSendMessage(OSMessageQueue *mq, void *msg, s32 flags);

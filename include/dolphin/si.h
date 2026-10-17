@@ -2,6 +2,7 @@
 #define _DOLPHIN_SI_H_
 
 #include <dolphin/os.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -82,6 +83,7 @@ typedef struct {
     void *input;
     SICallback callback;
 } SIControl;
+CHECK_SIZEOF(SIControl, 0x14);
 
 typedef struct {
     s32 chan;
@@ -92,6 +94,7 @@ typedef struct {
     SICallback callback;
     OSTime fire;
 } SIPacket;
+CHECK_SIZEOF(SIPacket, 0x20);
 
 // SIBios
 BOOL SIBusy(void);
@@ -135,6 +138,7 @@ typedef struct {
     OSThreadQueue threadQueue;
     void (*proc)(s32);
 } SISteeringControl;
+CHECK_SIZEOF(SISteeringControl, 0x28);
 
 typedef struct {
     u16 button;
@@ -146,6 +150,7 @@ typedef struct {
     u8 right;
     s8 err;
 } SISteeringStatus;
+CHECK_SIZEOF(SISteeringStatus, 0xA);
 
 extern SISteeringControl __SISteering[4];
 extern u32 __SISteeringEnableBits;

@@ -3,6 +3,7 @@
 
 #include <dolphin/gx/GXEnum.h>
 #include <dolphin/vi/vitypes.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,43 +24,53 @@ typedef struct _GXRenderModeObj {
     /* 0x1A */ u8 sample_pattern[12][2];
     /* 0x32 */ u8 vfilter[7];
 } GXRenderModeObj;
+CHECK_SIZEOF(GXRenderModeObj, 0x3C);
 
 typedef struct _GXColor {
     u8 r, g, b, a;
 } GXColor;
+CHECK_SIZEOF(GXColor, 0x4);
 
 typedef struct _GXColorS10 {
     s16 r, g, b, a;
 } GXColorS10;
+CHECK_SIZEOF(GXColorS10, 0x8);
 
 typedef struct _GXTexObj {
     u32 dummy[8];
 } GXTexObj;
+CHECK_SIZEOF(GXTexObj, 0x20);
 
 typedef struct _GXLightObj {
     u32 dummy[16];
 } GXLightObj;
+CHECK_SIZEOF(GXLightObj, 0x40);
 
 typedef struct _GXTexRegion {
     u32 dummy[4];
 } GXTexRegion;
+CHECK_SIZEOF(GXTexRegion, 0x10);
 
 typedef struct _GXTlutObj {
     u32 dummy[3];
 } GXTlutObj;
+CHECK_SIZEOF(GXTlutObj, 0xC);
 
 typedef struct _GXTlutRegion {
     u32 dummy[4];
 } GXTlutRegion;
+CHECK_SIZEOF(GXTlutRegion, 0x10);
 
 typedef struct _GXFogAdjTable {
     u16 r[10];
 } GXFogAdjTable;
+CHECK_SIZEOF(GXFogAdjTable, 0x14);
 
 typedef struct _GXVtxDescList {
     GXAttr attr;
     GXAttrType type;
 } GXVtxDescList;
+CHECK_SIZEOF(GXVtxDescList, 0x8);
 
 typedef struct _GXVtxAttrFmtList {
     GXAttr attr;
@@ -67,6 +78,7 @@ typedef struct _GXVtxAttrFmtList {
     GXCompType type;
     u8 frac;
 } GXVtxAttrFmtList;
+CHECK_SIZEOF(GXVtxAttrFmtList, 0x10);
 
 #ifdef __cplusplus
 }

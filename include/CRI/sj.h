@@ -5,6 +5,7 @@
  * interface table. Layout from sj_mem.c/sj_rbf.c and the RE4 GameCube decompilation.
  */
 #include "CRI/cri_xpt.h"
+#include "layout_check.h"
 
 typedef struct SJ_OBJ *SJ;
 
@@ -12,10 +13,12 @@ typedef struct {
     Uint8 *data; /* 0x00 */
     Sint32 len;  /* 0x04 */
 } SJCK;
+CHECK_SIZEOF(SJCK, 0x8);
 
 typedef struct {
     Uint8 data[16]; /* 0x00 */
 } SJUUID;
+CHECK_SIZEOF(SJUUID, 0x10);
 
 /* chunk ids */
 #define SJ_CK_FREE 0
@@ -38,10 +41,12 @@ typedef struct {
     Sint32 (*IsGetChunk)(SJ sj, Sint32 id, Sint32 nbyte, Sint32 *rbyte);         /* 0x28 */
     void (*EntryErrFunc)(SJ sj, void (*func)(void *obj, Char8 *msg), void *obj); /* 0x2C */
 } SJ_IF;
+CHECK_SIZEOF(SJ_IF, 0x30);
 
 struct SJ_OBJ {
     SJ_IF *vtbl; /* 0x00 */
 };
+CHECK_SIZEOF(struct SJ_OBJ, 0x4);
 
 #define SJ_Destroy(sj) (*(sj)->vtbl->Destroy)(sj)
 #define SJ_Reset(sj) (*(sj)->vtbl->Reset)(sj)

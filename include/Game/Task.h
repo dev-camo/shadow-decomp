@@ -2,6 +2,7 @@
 #define GAME_TASK_H
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 /* Task (class name from RTTI): a node of the game's task tree. Each task links to its parent, its
  * neighbouring siblings and its first child; every constructor stores its class name in m_name. */
@@ -23,6 +24,7 @@ class Task {
     /* 0x20 */ u32 field_0x20;
     /* 0x24 */ u32 field_0x24;
 };
+CHECK_SIZEOF(Task, 0x28);
 
 /* fn_8001C4F8 returns the task manager; fn_801EB304 returns its parent task for new tasks of the
  * given layer (behaviour inferred). */

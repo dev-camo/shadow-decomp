@@ -2,6 +2,7 @@
 #define _DOLPHIN_DEMOSTATS_H_
 
 #include <dolphin/gx.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,6 +27,7 @@ typedef struct DemoStatData {
     u32 stat;
     u32 count;
 } DemoStatData;
+CHECK_SIZEOF(DemoStatData, 0x40);
 
 typedef enum {
     DEMO_STAT_TL = 0,

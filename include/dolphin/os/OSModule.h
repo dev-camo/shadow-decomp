@@ -2,6 +2,7 @@
 #define _DOLPHIN_OSMODULE_H_
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,11 +23,13 @@ struct OSModuleQueue {
     OSModuleInfo *head;
     OSModuleInfo *tail;
 };
+CHECK_SIZEOF(struct OSModuleQueue, 0x8);
 
 struct OSModuleLink {
     OSModuleInfo *next;
     OSModuleInfo *prev;
 };
+CHECK_SIZEOF(struct OSModuleLink, 0x8);
 
 struct OSModuleInfo {
     OSModuleID id;         // unique identifier for the module
@@ -37,6 +40,7 @@ struct OSModuleInfo {
     u32 nameSize;          // size of module name
     u32 version;           // version number
 };
+CHECK_SIZEOF(struct OSModuleInfo, 0x20);
 
 struct OSModuleHeader {
     // CAUTION: info must be the 1st member
@@ -66,6 +70,7 @@ struct OSModuleHeader {
     u32 fixSize;
 #endif
 };
+CHECK_SIZEOF(struct OSModuleHeader, 0x4C);
 
 #define OSGetSectionInfo(module) ((OSSectionInfo *)(((OSModuleInfo *)(module))->sectionInfoOffset))
 
@@ -73,6 +78,7 @@ struct OSSectionInfo {
     u32 offset;
     u32 size;
 };
+CHECK_SIZEOF(struct OSSectionInfo, 0x8);
 
 // OSSectionInfo.offset bit
 #define OS_SECTIONINFO_EXEC 0x1
@@ -82,6 +88,7 @@ struct OSImportInfo {
     OSModuleID id; // external module id
     u32 offset;    // offset to OSRel instructions
 };
+CHECK_SIZEOF(struct OSImportInfo, 0x8);
 
 struct OSRel {
     u16 offset; // byte offset from the previous entry
@@ -89,6 +96,7 @@ struct OSRel {
     u8 section;
     u32 addend;
 };
+CHECK_SIZEOF(struct OSRel, 0x8);
 
 #define R_DOLPHIN_NOP 201     //  C9h current offset += OSRel.offset
 #define R_DOLPHIN_SECTION 202 //  CAh current section = OSRel.section

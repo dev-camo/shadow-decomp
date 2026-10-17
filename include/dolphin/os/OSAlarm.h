@@ -2,6 +2,7 @@
 #define _DOLPHIN_OSALARM_H_
 
 #include <dolphin/os.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,6 +19,7 @@ struct OSAlarm {
     OSTime period;
     OSTime start;
 };
+CHECK_SIZEOF(struct OSAlarm, 0x28);
 
 BOOL OSCheckAlarmQueue(void);
 void OSInitAlarm(void);

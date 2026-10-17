@@ -2,6 +2,7 @@
 #define RW_RPHANIM_H
 
 #include "rw/rtanim.h"
+#include "layout_check.h"
 
 /* RenderWare hierarchical animation (plugin ID 0x11E): the standard keyframes and the hierarchies
  * they animate; the animations and interpolators come from the animation toolkit. The type and
@@ -16,6 +17,7 @@ typedef struct RtQuat {
     /* 0x0 */ RwV3d imag;
     /* 0xC */ RwReal real;
 } RtQuat;
+CHECK_SIZEOF(RtQuat, 0x10);
 
 /* A standard keyframe: a rotation and translation at a time, after the frame it follows on the
  * same node (0x24 bytes) */
@@ -25,6 +27,7 @@ typedef struct RpHAnimKeyFrame {
     /* 0x08 */ RtQuat q;
     /* 0x18 */ RwV3d t;
 } RpHAnimKeyFrame;
+CHECK_SIZEOF(RpHAnimKeyFrame, 0x24);
 
 /* An interpolated frame: the header of the animation interpolator, then the same rotation and
  * translation as a keyframe */
@@ -34,6 +37,7 @@ typedef struct RpHAnimInterpFrame {
     /* 0x08 */ RtQuat q;
     /* 0x18 */ RwV3d t;
 } RpHAnimInterpFrame;
+CHECK_SIZEOF(RpHAnimInterpFrame, 0x24);
 
 #define rpID_HANIMPLUGIN 0x11E
 
@@ -48,6 +52,7 @@ typedef struct RpHAnimNodeInfo {
     /* 0x8 */ RwInt32 flags;
     /* 0xC */ RwFrame *pFrame;
 } RpHAnimNodeInfo;
+CHECK_SIZEOF(RpHAnimNodeInfo, 0x10);
 
 /* A hierarchy of animated frames (0x24 bytes) */
 typedef struct RpHAnimHierarchy {
@@ -61,12 +66,14 @@ typedef struct RpHAnimHierarchy {
     /* 0x1C */ RwInt32 rootParentOffset;
     /* 0x20 */ RtAnimInterpolator *currentAnim;
 } RpHAnimHierarchy;
+CHECK_SIZEOF(RpHAnimHierarchy, 0x24);
 
 /* The data the plugin keeps in each frame */
 typedef struct RpHAnimFrameExtension {
     /* 0x0 */ RwInt32 id; /* -1 for none */
     /* 0x4 */ RpHAnimHierarchy *hierarchy;
 } RpHAnimFrameExtension;
+CHECK_SIZEOF(RpHAnimFrameExtension, 0x8);
 
 /* hierarchies */
 RpHAnimHierarchy *fn_804472AC(RwInt32 numNodes, RwUInt32 *nodeFlags, RwInt32 *nodeIDs,

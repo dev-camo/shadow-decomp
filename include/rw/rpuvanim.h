@@ -4,6 +4,7 @@
 #include "rw/rphanim.h"
 #include "rw/rpworld.h"
 #include "rw/rtdict.h"
+#include "layout_check.h"
 
 /* RenderWare UV animation (plugin ID 0x135): animations of texture coordinate transforms, kept in a
  * dictionary by name, and up to eight of them playing on a material, each node of an animation
@@ -32,6 +33,7 @@ extern "C" {
 typedef struct RpUVAnimLinearKeyFrameData {
     /* 0x00 */ RwReal uv[6];
 } RpUVAnimLinearKeyFrameData;
+CHECK_SIZEOF(RpUVAnimLinearKeyFrameData, 0x18);
 
 /* A transform as the rotation, scales, skew and translation of a parametric keyframe */
 typedef struct RpUVAnimParamKeyFrameData {
@@ -42,11 +44,13 @@ typedef struct RpUVAnimParamKeyFrameData {
     /* 0x10 */ RwReal x;
     /* 0x14 */ RwReal y;
 } RpUVAnimParamKeyFrameData;
+CHECK_SIZEOF(RpUVAnimParamKeyFrameData, 0x18);
 
 typedef union RpUVAnimKeyFrameData {
     RpUVAnimLinearKeyFrameData linear;
     RpUVAnimParamKeyFrameData param;
 } RpUVAnimKeyFrameData;
+CHECK_SIZEOF(RpUVAnimKeyFrameData, 0x18);
 
 /* A keyframe of either scheme (0x20 bytes) */
 typedef struct RpUVAnimKeyFrame {
@@ -54,6 +58,7 @@ typedef struct RpUVAnimKeyFrame {
     /* 0x04 */ RwReal time;
     /* 0x08 */ RpUVAnimKeyFrameData data;
 } RpUVAnimKeyFrame;
+CHECK_SIZEOF(RpUVAnimKeyFrame, 0x20);
 
 /* An interpolated frame of either scheme (0x20 bytes) */
 typedef struct RpUVAnimInterpFrame {
@@ -61,6 +66,7 @@ typedef struct RpUVAnimInterpFrame {
     /* 0x04 */ RpUVAnimKeyFrame *keyFrame2;
     /* 0x08 */ RpUVAnimKeyFrameData data;
 } RpUVAnimInterpFrame;
+CHECK_SIZEOF(RpUVAnimInterpFrame, 0x20);
 
 /* The custom data of a UV animation (0x44 bytes, from a free list) */
 typedef struct RpUVAnimCustomData {
@@ -68,12 +74,14 @@ typedef struct RpUVAnimCustomData {
     /* 0x20 */ RwUInt32 nodeToUVChannelMap[8]; /* the UV channel each node drives */
     /* 0x40 */ RwUInt32 refCount;
 } RpUVAnimCustomData;
+CHECK_SIZEOF(RpUVAnimCustomData, 0x44);
 
 /* The plugin data of a material (0x28 bytes) */
 typedef struct RpUVAnimMaterialExtension {
     /* 0x00 */ RwMatrix *uv[rpUVANIMNUMCHANNELS]; /* only for the channels some node drives */
     /* 0x08 */ RtAnimInterpolator *interp[rpUVANIMMAXSLOTS];
 } RpUVAnimMaterialExtension;
+CHECK_SIZEOF(RpUVAnimMaterialExtension, 0x28);
 
 #define rwPI 3.1415926535f
 

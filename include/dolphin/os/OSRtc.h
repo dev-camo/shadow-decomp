@@ -2,6 +2,7 @@
 #define _DOLPHIN_OSRTC_H_
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,6 +33,7 @@ typedef struct OSSram {
     u8 language;
     u8 flags;
 } OSSram;
+CHECK_SIZEOF(OSSram, 0x14);
 
 typedef struct OSSramEx {
     u8 flashID[2][12];
@@ -43,6 +45,7 @@ typedef struct OSSramEx {
     u16 gbs;
     u8 _padding1[2];
 } OSSramEx;
+CHECK_SIZEOF(OSSramEx, 0x2C);
 
 #define SRAM_SIZE (sizeof(OSSram) + sizeof(OSSramEx))
 
@@ -54,6 +57,7 @@ typedef struct SramControl {
     int sync;
     void (*callback)();
 } SramControl;
+CHECK_SIZEOF(SramControl, 0x54);
 
 u32 OSGetSoundMode(void);
 void OSSetSoundMode(u32 mode);

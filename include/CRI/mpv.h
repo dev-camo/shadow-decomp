@@ -7,6 +7,7 @@
 
 #include "CRI/cri_xpt.h"
 #include "CRI/sj.h"
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,12 +17,14 @@ typedef struct {
     void *p;  /* 0x00 */
     Sint32 n; /* 0x04 */
 } MPVCMC_REF;
+CHECK_SIZEOF(MPVCMC_REF, 0x8);
 
 /* an output block table: chroma block count (-1: none) and the six block descriptors */
 typedef struct {
     Sint32 ccnt;      /* 0x00 */
     MPVCMC_REF oi[6]; /* 0x04 */
 } MPVCMC_OUTBLK;
+CHECK_SIZEOF(MPVCMC_OUTBLK, 0x34);
 
 /* error record (MPVERR_InitErrInf clears all five words) */
 typedef struct {
@@ -30,6 +33,7 @@ typedef struct {
     Sint32 code;                          /* 0x08 */
     Sint32 reserved[2];                   /* 0x0C */
 } MPVERR_INF;
+CHECK_SIZEOF(MPVERR_INF, 0x14);
 
 /* picture attributes (0x80 bytes; MPV_OBJ + 0x1D0, copied out by MPV_GetPicAtr) */
 typedef struct {
@@ -74,6 +78,7 @@ typedef struct {
     Uint8 x64;                /* 0x64 */
     Uint8 pad65[0x80 - 0x65]; /* 0x65 */
 } MPV_PICATR;
+CHECK_SIZEOF(MPV_PICATR, 0x80);
 
 /* frame parameter block passed to MPV_DecodeFrmSj (0x30 bytes) */
 typedef struct {
@@ -85,12 +90,14 @@ typedef struct {
     Sint32 nfrm;        /* 0x28 */
     Sint32 nbyte;       /* 0x2C */
 } MPV_FRM;
+CHECK_SIZEOF(MPV_FRM, 0x30);
 
 /* run/level VLC table selector (mpv_bdec.c) */
 typedef struct {
     Uint32 *tbl; /* 0x00 */
     Sint32 bits; /* 0x04 */
 } MPV_RUNLEVEL;
+CHECK_SIZEOF(MPV_RUNLEVEL, 0x8);
 
 typedef struct MPV_OBJ *MPV;
 
@@ -107,6 +114,7 @@ typedef struct MPVMC {
     void (*oneref16[4])(struct MPVMC *mc); /* 0x34 16x16 block */
     Uint8 pad44[0x54 - 0x44];              /* 0x44 */
 } MPVMC;
+CHECK_SIZEOF(MPVMC, 0x54);
 
 /* block decoder parameters (mpv_cdec.c -> intra/nintra block decode function; the first six are
  * the run/level decode state of mpvabdec.c) */
@@ -125,6 +133,7 @@ typedef struct {
     void *dctbl;    /* 0x2C intra DC size table */
     Sint32 nintra;  /* 0x30 */
 } MPV_BLKPRM;
+CHECK_SIZEOF(MPV_BLKPRM, 0x34);
 
 typedef Sint32 (*MPV_BLKDEC_FUNC)(MPV mpv, MPV_BLKPRM *prm);
 
@@ -138,6 +147,7 @@ typedef struct {
     Sint32 vec[2];   /* 0x18 decoded vector (h, v) */
     Sint32 pad;      /* 0x20 */
 } MPV_MV;
+CHECK_SIZEOF(MPV_MV, 0x24);
 
 /* user data stream joints (MPV_SetUsrSj) */
 typedef struct {
@@ -145,6 +155,7 @@ typedef struct {
     void (*func)(void *obj, Sint32 id); /* 0x04 */
     void *obj;                          /* 0x08 */
 } MPV_USRSJ;
+CHECK_SIZEOF(MPV_USRSJ, 0xC);
 
 typedef struct MPV_OBJ {
     Uint32 bbuf;                 /* 0x000 bit reader state saved around the block decoders */
@@ -237,6 +248,7 @@ typedef struct MPV_OBJ {
     Sint32 picusr_len;              /* 0x1370 */
     Sint32 pad1374;                 /* 0x1374 */
 } MPV_OBJ;
+CHECK_SIZEOF(MPV_OBJ, 0x1378);
 
 Sint8 *MPV_SearchDelim(Sint8 *p, Sint32 n, Sint32 mask);
 /* mpv_vlc.c: run/level decode tables used by the block decoder (mpv_bdec.c) */

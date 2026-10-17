@@ -10,6 +10,7 @@
 #include "CRI/sj.h"
 #include "CRI/adx_stm.h"
 #include "CRI/adx.h"
+#include "layout_check.h"
 
 #define ADXF_OBJ_MAX 16
 #define ADXF_PART_MAX 256
@@ -59,6 +60,7 @@ typedef struct {
     /* 0x3C */ Sint32 bind_ofst; /* range passed to ADXSTM_BindFile */
     /* 0x40 */ Sint32 bind_nsct;
 } ADX_FS;
+CHECK_SIZEOF(ADX_FS, 0x44);
 
 typedef ADX_FS *ADXF;
 
@@ -77,6 +79,7 @@ typedef struct ADXF_PTINFO {
     /* 0x114 */ Sint32 ofst;
     /* 0x118 */ Sint32 top;
 } ADXF_PTINFO;
+CHECK_SIZEOF(ADXF_PTINFO, 0x11C);
 
 typedef struct {
     /* 0x00 */ Uint8 cmdid;
@@ -84,6 +87,7 @@ typedef struct {
     /* 0x02 */ Uint16 ncall;
     /* 0x04 */ Sint32 prm[3];
 } ADXF_CMD_HSTRY;
+CHECK_SIZEOF(ADXF_CMD_HSTRY, 0x10);
 
 #ifdef __cplusplus
 extern "C" {

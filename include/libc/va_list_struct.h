@@ -1,5 +1,6 @@
 #ifndef _VA_LIST_STRUCT_H_
 #define _VA_LIST_STRUCT_H_
+#include "layout_check.h"
 
 /* The PowerPC EABI variable argument record, shared by the C library facade (stdarg.h) and MSL
  * (va_list), and the runtime function that fetches the next argument (Runtime/Src/__va_arg.c). */
@@ -15,6 +16,7 @@ typedef struct __va_list_struct {
     char *input_arg_area; /* the arguments passed on the stack */
     char *reg_save_area;  /* the argument registers saved by the callee */
 } _va_list_struct;
+CHECK_SIZEOF(_va_list_struct, 0xC);
 
 typedef _va_list_struct __va_list[1];
 

@@ -2,6 +2,7 @@
 #define _DOLPHIN_PAD_H_
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,6 +59,7 @@ typedef struct PADStatus {
     /* 0x09 */ u8 analogB;
     /* 0x0A */ s8 err;
 } PADStatus;
+CHECK_SIZEOF(PADStatus, 0xC);
 
 typedef struct PADClampRegion {
     u8 minTrigger;
@@ -71,6 +73,7 @@ typedef struct PADClampRegion {
     s8 radStick;
     s8 radSubstick;
 } PADClampRegion;
+CHECK_SIZEOF(PADClampRegion, 0xA);
 
 typedef void (*PADSamplingCallback)(void);
 

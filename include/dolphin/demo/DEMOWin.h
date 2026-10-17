@@ -3,6 +3,7 @@
 
 #include <dolphin/gx.h>
 #include <dolphin/pad.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,6 +26,7 @@ typedef struct {
     /* 0x60 */ u32 repeat_button[4];
     /* 0x70 */ u32 repeat_ctr[4];
 } DEMOWinPadInfo;
+CHECK_SIZEOF(DEMOWinPadInfo, 0x80);
 
 typedef struct STRUCT_DEMOWIN DEMOWindow;
 struct STRUCT_DEMOWIN {
@@ -57,6 +59,7 @@ struct STRUCT_DEMOWIN {
     /* 0x50 */ void *parent;
     /* 0x54 */ DEMOWinPadInfo pad;
 };
+CHECK_SIZEOF(struct STRUCT_DEMOWIN, 0xD4);
 
 typedef struct STRUCT_MENU DEMOWinMenu;
 typedef struct STRUCT_MENU_ITEM {
@@ -65,6 +68,7 @@ typedef struct STRUCT_MENU_ITEM {
     /* 0x08 */ void (*function)(DEMOWinMenu *, u32, u32 *);
     /* 0x0C */ DEMOWinMenu *link;
 } DEMOWinMenuItem;
+CHECK_SIZEOF(DEMOWinMenuItem, 0x10);
 
 struct STRUCT_MENU {
     /* 0x00 */ char *title;
@@ -82,11 +86,13 @@ struct STRUCT_MENU {
     /* 0x30 */ s32 curr_pos;
     /* 0x34 */ s32 display_pos;
 };
+CHECK_SIZEOF(struct STRUCT_MENU, 0x38);
 
 typedef struct STRUCT_LISTBOX_ITEM {
     /* 0x00 */ char *name; // offset 0x0, size 0x4
     /* 0x04 */ u32 flags;  // offset 0x4, size 0x4
 } DEMOWinListboxItem;
+CHECK_SIZEOF(DEMOWinListboxItem, 0x8);
 
 typedef struct STRUCT_LISTBOX {
     /* 0x00 */ char *title;               // offset 0x0, size 0x4
@@ -101,6 +107,7 @@ typedef struct STRUCT_LISTBOX {
     /* 0x24 */ s32 display_pos;           // offset 0x24, size 0x4
     /* 0x28 */ int cursor_state;          // offset 0x28, size 0x4
 } DEMOWinListbox;
+CHECK_SIZEOF(DEMOWinListbox, 0x2C);
 
 void DEMOWinInit(void);
 DEMOWindow *DEMOWinCreateWindow(s32 x1, s32 y1, s32 x2, s32 y2, char *caption, u16 scroll,

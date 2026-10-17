@@ -7,6 +7,7 @@
  */
 #include "CRI/cri_xpt.h"
 #include "CRI/sj.h"
+#include "layout_check.h"
 
 typedef struct ADXPD_OBJ *ADXPD;
 
@@ -44,6 +45,7 @@ typedef struct ADXPD_OBJ {
     Sint16 ext3;      /* 0x38 */
     Sint16 pad3a;     /* 0x3A */
 } ADXPD_OBJ;
+CHECK_SIZEOF(ADXPD_OBJ, 0x3C);
 
 /* ADXB_OBJ.stat */
 #define ADXB_STAT_STOP 0
@@ -133,6 +135,7 @@ typedef struct {
     void (*cb_func)(void *obj, Sint32 nbyte, Sint32 nsmpl); /* 0xF0 decode callback */
     void *cb_obj;                                           /* 0xF4 */
 } ADXB_OBJ;
+CHECK_SIZEOF(ADXB_OBJ, 0xF8);
 
 #define ADXB_MAX_OBJ 16
 

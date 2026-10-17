@@ -2,6 +2,7 @@
 #define _DOLPHIN_OSMUTEX_H_
 
 #include <dolphin/os/OSThread.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,10 +14,12 @@ struct OSMutex {
     /* 0x0C */ s32 count;
     /* 0x10 */ OSMutexLink link;
 };
+CHECK_SIZEOF(struct OSMutex, 0x18);
 
 typedef struct OSCond {
     OSThreadQueue queue;
 } OSCond;
+CHECK_SIZEOF(OSCond, 0x8);
 
 void OSInitMutex(OSMutex *mutex);
 void OSLockMutex(OSMutex *mutex);

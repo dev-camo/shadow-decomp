@@ -2,6 +2,7 @@
 #define _DOLPHIN_DVD_H_
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -75,6 +76,7 @@ typedef struct DVDDiskID {
     u8 streamingBufSize;
     u8 padding[22];
 } DVDDiskID;
+CHECK_SIZEOF(DVDDiskID, 0x20);
 
 typedef struct DVDCommandBlock DVDCommandBlock;
 typedef void (*DVDCBCallback)(s32 result, DVDCommandBlock *block);
@@ -97,6 +99,7 @@ struct DVDCommandBlock {
     /* 0x28 */ DVDCBCallback callback;
     /* 0x2C */ void *userData;
 };
+CHECK_SIZEOF(struct DVDCommandBlock, 0x30);
 
 typedef struct DVDFileInfo DVDFileInfo;
 typedef void (*DVDCallback)(s32 result, DVDFileInfo *fileInfo);
@@ -106,18 +109,21 @@ struct DVDFileInfo {
     /* 0x34 */ u32 length;
     /* 0x38 */ DVDCallback callback;
 };
+CHECK_SIZEOF(struct DVDFileInfo, 0x3C);
 
 typedef struct {
     u32 entryNum;
     u32 location;
     u32 next;
 } DVDDir;
+CHECK_SIZEOF(DVDDir, 0xC);
 
 typedef struct {
     u32 entryNum;
     BOOL isDir;
     char *name;
 } DVDDirEntry;
+CHECK_SIZEOF(DVDDirEntry, 0xC);
 
 typedef struct DVDBB2 {
     /* 0x00 */ u32 bootFilePosition;
@@ -129,6 +135,7 @@ typedef struct DVDBB2 {
     /* 0x18 */ u32 userLength;
     /* 0x1C */ u32 padding0;
 } DVDBB2;
+CHECK_SIZEOF(DVDBB2, 0x20);
 
 typedef struct DVDDriveInfo {
     /* 0x00 */ u16 revisionLevel;
@@ -136,6 +143,7 @@ typedef struct DVDDriveInfo {
     /* 0x04 */ u32 releaseDate;
     /* 0x08 */ u8 padding[24];
 } DVDDriveInfo;
+CHECK_SIZEOF(DVDDriveInfo, 0x20);
 
 // DVD
 void DVDInit(void);

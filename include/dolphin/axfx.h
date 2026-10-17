@@ -2,6 +2,7 @@
 #define _DOLPHIN_AXFX_H_
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,6 +15,7 @@ typedef struct AXFX_REVSTD_DELAYLINE {
     /* 0x0C */ f32 *inputs;
     /* 0x10 */ f32 lastOutput;
 } AXFX_REVSTD_DELAYLINE;
+CHECK_SIZEOF(AXFX_REVSTD_DELAYLINE, 0x14);
 
 typedef struct AXFX_REVSTD_WORK {
     /* 0x000 */ AXFX_REVSTD_DELAYLINE AP[6];
@@ -27,6 +29,7 @@ typedef struct AXFX_REVSTD_WORK {
     /* 0x124 */ f32 *preDelayLine[3];
     /* 0x130 */ f32 *preDelayPtr[3];
 } AXFX_REVSTD_WORK;
+CHECK_SIZEOF(AXFX_REVSTD_WORK, 0x13C);
 
 typedef struct AXFX_REVERBSTD {
     /* 0x000 */ AXFX_REVSTD_WORK rv;
@@ -37,12 +40,14 @@ typedef struct AXFX_REVERBSTD {
     /* 0x14C */ f32 damping;
     /* 0x150 */ f32 preDelay;
 } AXFX_REVERBSTD;
+CHECK_SIZEOF(AXFX_REVERBSTD, 0x154);
 
 typedef struct AXFX_BUFFERUPDATE {
     /* 0x00 */ s32 *left;
     /* 0x04 */ s32 *right;
     /* 0x08 */ s32 *surround;
 } AXFX_BUFFERUPDATE;
+CHECK_SIZEOF(AXFX_BUFFERUPDATE, 0xC);
 
 typedef struct AXFX_BUFFERUPDATE_DPL2 {
     /* 0x00 */ s32 *L;
@@ -50,6 +55,7 @@ typedef struct AXFX_BUFFERUPDATE_DPL2 {
     /* 0x08 */ s32 *Ls;
     /* 0x0C */ s32 *Rs;
 } AXFX_BUFFERUPDATE_DPL2;
+CHECK_SIZEOF(AXFX_BUFFERUPDATE_DPL2, 0x10);
 
 // REVHI Structs
 
@@ -60,6 +66,7 @@ typedef struct AXFX_REVHI_DELAYLINE {
     /* 0x0C */ f32 *inputs;
     /* 0x10 */ f32 lastOutput;
 } AXFX_REVHI_DELAYLINE;
+CHECK_SIZEOF(AXFX_REVHI_DELAYLINE, 0x14);
 
 typedef struct AXFX_REVHI_WORK {
     /* 0x000 */ AXFX_REVHI_DELAYLINE AP[9];
@@ -74,6 +81,7 @@ typedef struct AXFX_REVHI_WORK {
     /* 0x1AC */ f32 *preDelayLine[3];
     /* 0x1B8 */ f32 *preDelayPtr[3];
 } AXFX_REVHI_WORK;
+CHECK_SIZEOF(AXFX_REVHI_WORK, 0x1C4);
 
 typedef struct AXFX_REVHI_WORK_DPL2 {
     /* 0x000 */ AXFX_REVHI_DELAYLINE AP[12];
@@ -88,6 +96,7 @@ typedef struct AXFX_REVHI_WORK_DPL2 {
     /* 0x234 */ f32 *preDelayLine[4];
     /* 0x244 */ f32 *preDelayPtr[4];
 } AXFX_REVHI_WORK_DPL2;
+CHECK_SIZEOF(AXFX_REVHI_WORK_DPL2, 0x254);
 
 typedef struct AXFX_REVERBHI {
     /* 0x000 */ AXFX_REVHI_WORK rv;
@@ -99,6 +108,7 @@ typedef struct AXFX_REVERBHI {
     /* 0x1D8 */ f32 preDelay;
     /* 0x1DC */ f32 crosstalk;
 } AXFX_REVERBHI;
+CHECK_SIZEOF(AXFX_REVERBHI, 0x1E0);
 
 typedef struct AXFX_REVERBHI_DPL2 {
     /* 0x000 */ AXFX_REVHI_WORK_DPL2 rv;
@@ -109,6 +119,7 @@ typedef struct AXFX_REVERBHI_DPL2 {
     /* 0x264 */ f32 damping;
     /* 0x268 */ f32 preDelay;
 } AXFX_REVERBHI_DPL2;
+CHECK_SIZEOF(AXFX_REVERBHI_DPL2, 0x26C);
 
 typedef struct AXFX_DELAY {
     /* 0x00 */ u32 currentSize[3];
@@ -122,6 +133,7 @@ typedef struct AXFX_DELAY {
     /* 0x48 */ u32 feedback[3];
     /* 0x54 */ u32 output[3];
 } AXFX_DELAY;
+CHECK_SIZEOF(AXFX_DELAY, 0x60);
 
 typedef struct AXFX_CHORUS_SRCINFO {
     /* 0x00 */ s32 *dest;
@@ -134,6 +146,7 @@ typedef struct AXFX_CHORUS_SRCINFO {
     /* 0x1C */ u32 trigger;
     /* 0x20 */ u32 target;
 } AXFX_CHORUS_SRCINFO;
+CHECK_SIZEOF(AXFX_CHORUS_SRCINFO, 0x24);
 
 typedef struct AXFX_CHORUS_WORK {
     /* 0x00 */ s32 *lastLeft[3];
@@ -150,6 +163,7 @@ typedef struct AXFX_CHORUS_WORK {
     /* 0x68 */ u32 pitchOffsetPeriod;
     /* 0x6C */ AXFX_CHORUS_SRCINFO src;
 } AXFX_CHORUS_WORK;
+CHECK_SIZEOF(AXFX_CHORUS_WORK, 0x90);
 
 typedef struct AXFX_CHORUS {
     /* 0x00 */ AXFX_CHORUS_WORK work;
@@ -157,6 +171,7 @@ typedef struct AXFX_CHORUS {
     /* 0x94 */ u32 variation;
     /* 0x98 */ u32 period;
 } AXFX_CHORUS;
+CHECK_SIZEOF(AXFX_CHORUS, 0x9C);
 
 // chorus
 int AXFXChorusInit(AXFX_CHORUS *c);

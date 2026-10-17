@@ -3,6 +3,7 @@
 
 #include <dolphin/types.h>
 #include <dolphin/ax.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,6 +50,7 @@ typedef struct MIXChannel {
     /* 0x5C */ u16 vBS;
     /* 0x5E */ u16 vBS1;
 } MIXChannel;
+CHECK_SIZEOF(MIXChannel, 0x60);
 
 void MIXInit(void);
 void MIXQuit(void);

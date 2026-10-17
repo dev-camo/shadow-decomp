@@ -2,6 +2,7 @@
 #define BOOST_WEAK_PTR_HPP
 
 #include "boost/shared_ptr.hpp"
+#include "layout_check.h"
 
 /* Declarations of the boost weak pointer members recovered code calls; see shared_ptr.hpp. */
 namespace boost {
@@ -19,6 +20,7 @@ class weak_count {
 
     sp_counted_base *pi_;
 };
+CHECK_SIZEOF(boost::detail::weak_count, 0x4);
 
 } // namespace detail
 

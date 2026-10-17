@@ -2,6 +2,7 @@
 #define _DOLPHIN_DSP_H_
 
 #include <dolphin/os.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,6 +32,7 @@ struct STRUCT_DSP_TASK {
     /* 0x40 */ OSTime t_context;
     /* 0x48 */ OSTime t_task;
 };
+CHECK_SIZEOF(struct STRUCT_DSP_TASK, 0x50);
 
 u32 DSPCheckMailToDSP(void);
 u32 DSPCheckMailFromDSP(void);

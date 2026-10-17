@@ -1,5 +1,6 @@
 #ifndef BOOST_SHARED_PTR_HPP
 #define BOOST_SHARED_PTR_HPP
+#include "layout_check.h"
 
 /* The boost smart pointers the game uses (its RTTI names boost::detail::sp_counted_base and
  * boost::checked_deleter<...>). These are declarations only, of the members recovered code calls:
@@ -20,6 +21,7 @@ class shared_count {
 
     sp_counted_base *pi_;
 };
+CHECK_SIZEOF(boost::detail::shared_count, 0x4);
 
 } // namespace detail
 

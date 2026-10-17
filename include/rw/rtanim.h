@@ -2,6 +2,7 @@
 #define RW_RTANIM_H
 
 #include "rw/rwcore.h"
+#include "layout_check.h"
 
 /* RenderWare animation toolkit: interpolation schemes, keyframe animations and the interpolators
  * that play them. The type and field names follow the RenderWare 3 RtAnim toolkit, whose layout
@@ -48,6 +49,7 @@ typedef struct RtAnimInterpolatorInfo {
     /* 0x28 */ RtAnimKeyFrameStreamGetSizeCallBack keyFrameStreamGetSizeCB;
     /* 0x2C */ RwInt32 customDataSize;
 } RtAnimInterpolatorInfo;
+CHECK_SIZEOF(RtAnimInterpolatorInfo, 0x30);
 
 /* An animation (0x18 bytes, followed by its keyframes and custom data) */
 struct RtAnimAnimation {
@@ -58,18 +60,21 @@ struct RtAnimAnimation {
     /* 0x10 */ void *pFrames;
     /* 0x14 */ void *customData;
 };
+CHECK_SIZEOF(struct RtAnimAnimation, 0x18);
 
 /* The start of every keyframe: the previous keyframe of its node and its time */
 typedef struct RtAnimKeyFrameHeader {
     /* 0x0 */ void *prevFrame;
     /* 0x4 */ RwReal time;
 } RtAnimKeyFrameHeader;
+CHECK_SIZEOF(RtAnimKeyFrameHeader, 0x8);
 
 /* The start of every interpolated frame: the keyframes it is between */
 typedef struct RtAnimInterpFrameHeader {
     /* 0x0 */ RtAnimKeyFrameHeader *keyFrame1;
     /* 0x4 */ RtAnimKeyFrameHeader *keyFrame2;
 } RtAnimInterpFrameHeader;
+CHECK_SIZEOF(RtAnimInterpFrameHeader, 0x8);
 
 /* An interpolator (0x4C bytes, followed by an interpolated frame per node) */
 struct RtAnimInterpolator {
@@ -93,6 +98,7 @@ struct RtAnimInterpolator {
     /* 0x44 */ RtAnimKeyFrameInterpolateCallBack keyFrameInterpolateCB;
     /* 0x48 */ RtAnimKeyFrameAddCallBack keyFrameAddCB;
 };
+CHECK_SIZEOF(struct RtAnimInterpolator, 0x4C);
 
 /* the interpolated frames of an interpolator's nodes */
 #define RTANIMINTERPOLATORFRAMES(interpolator) ((RwUInt8 *)((interpolator) + 1))

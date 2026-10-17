@@ -6,6 +6,7 @@
 #include <dolphin/axfx.h>
 #include <dolphin/os.h>
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 /* Sega's GameCube AX sound library ("AX SDLIB" in its messages). Only the parts of its work area
  * used by recovered code are mapped; the type and field names are inferred. */
@@ -20,6 +21,7 @@ typedef struct GcaxMemBlock {
     /* 0x04 */ struct GcaxMemBlock *next;
     /* 0x08 */ u8 field_0x8[0x18];
 } GcaxMemBlock;
+CHECK_SIZEOF(GcaxMemBlock, 0x20);
 
 #define GCAX_MEM_FREE 0x4D46 /* 'MF' */
 #define GCAX_MEM_USED 0x4D42 /* 'MB' */
@@ -29,6 +31,7 @@ typedef struct GcaxRange {
     /* 0x0 */ u32 addr;
     /* 0x4 */ u32 size;
 } GcaxRange;
+CHECK_SIZEOF(GcaxRange, 0x8);
 
 typedef void (*GcaxCallback)(void *arg);
 
@@ -37,10 +40,12 @@ typedef struct GcaxNode {
     /* 0x0 */ struct GcaxNode *next;
     /* 0x4 */ void *data;
 } GcaxNode;
+CHECK_SIZEOF(GcaxNode, 0x8);
 
 typedef struct GcaxList {
     /* 0x0 */ GcaxNode *head;
 } GcaxList;
+CHECK_SIZEOF(GcaxList, 0x4);
 
 typedef void (*GcaxNodeFunc)(GcaxNode *node);
 typedef int (*GcaxNodePredicate)(GcaxNode *node);
@@ -55,6 +60,7 @@ typedef struct GcaxBankHeader {
     /* 0x4 */ u32 velocityCurves; /* 128-byte curves */
     /* 0x8 */ u32 programs;       /* words locating each program's GcaxLayer table */
 } GcaxBankHeader;
+CHECK_SIZEOF(GcaxBankHeader, 0xC);
 
 /* A sample: a DSP ADPCM header (addresses relative to the sample's ARAM data), its sample format
  * and its offset in the bank's ARAM range (0x50 bytes). */
@@ -78,6 +84,7 @@ typedef struct GcaxSample {
     /* 0x4A */ u8 format; /* 0: ADPCM, 10: PCM16, 25: PCM8 */
     /* 0x4C */ u32 offset;
 } GcaxSample;
+CHECK_SIZEOF(GcaxSample, 0x50);
 
 /* A layer of a program (0x10 bytes). */
 typedef struct GcaxLayer {
@@ -86,6 +93,7 @@ typedef struct GcaxLayer {
     /* 0x5 */ u8 bendRangeDown;
     /* 0x6 */ u8 field_0x6[0xA];
 } GcaxLayer;
+CHECK_SIZEOF(GcaxLayer, 0x10);
 
 /* A key/velocity region of a layer (0x40 bytes). */
 typedef struct GcaxRegion {
@@ -111,6 +119,7 @@ typedef struct GcaxRegion {
     /* 0x16 */ u8 field_0x16;
     /* 0x17 */ u8 field_0x17[0x29];
 } GcaxRegion;
+CHECK_SIZEOF(GcaxRegion, 0x40);
 
 struct GcaxPlayer;
 struct GcaxNote;
@@ -172,6 +181,7 @@ typedef struct GcaxVoice {
     /* 0x104 */ u32 field_0x104;
     /* 0x108 */ struct GcaxNote *note;
 } GcaxVoice;
+CHECK_SIZEOF(GcaxVoice, 0x10C);
 
 /* A sounding note and the voices playing it (0x14 bytes). */
 typedef struct GcaxNote {
@@ -184,6 +194,7 @@ typedef struct GcaxNote {
     /* 0x0C */ struct GcaxPlayer *owner;
     /* 0x10 */ GcaxList voices;
 } GcaxNote;
+CHECK_SIZEOF(GcaxNote, 0x14);
 
 /* MIDI channel state of a player (0x48 bytes). */
 typedef struct GcaxChannel {
@@ -206,6 +217,7 @@ typedef struct GcaxChannel {
     /* 0x40 */ f32 field_0x40;
     /* 0x44 */ u32 field_0x44;
 } GcaxChannel;
+CHECK_SIZEOF(GcaxChannel, 0x48);
 
 #define GCAX_PLAYERS 8
 #define GCAX_LOADS 64
@@ -219,6 +231,7 @@ typedef struct GcaxLoad {
     /* 0x0C */ GcaxCallback callback;
     /* 0x10 */ void *arg;
 } GcaxLoad;
+CHECK_SIZEOF(GcaxLoad, 0x14);
 
 #define GCAX_EVENTS 1024
 
@@ -229,6 +242,7 @@ typedef struct GcaxFade {
     /* 0x8 */ f32 time;
     /* 0xC */ f32 remaining; /* negative when no fade runs */
 } GcaxFade;
+CHECK_SIZEOF(GcaxFade, 0x10);
 
 /* A Standard MIDI File track being played (0x58 bytes). Times are in ticks. */
 typedef struct GcaxSequence {
@@ -253,6 +267,7 @@ typedef struct GcaxSequence {
     /* 0x50 */ f32 loopNow;
     /* 0x54 */ s32 loopCount;
 } GcaxSequence;
+CHECK_SIZEOF(GcaxSequence, 0x58);
 
 /* A MIDI sequence player; only the members used so far are mapped. */
 typedef struct GcaxPlayer {
@@ -275,6 +290,7 @@ typedef struct GcaxPlayer {
     /* 0x1528 */ s32 eventWrite;
     /* 0x152C */ s32 eventCount;
 } GcaxPlayer;
+CHECK_SIZEOF(GcaxPlayer, 0x1530);
 
 typedef struct GcaxWork {
     /* 0x00000 */ s32 active; /* set once the library is set up */
@@ -336,6 +352,7 @@ typedef struct GcaxWork {
     /* 0x13F6C */ GcaxLoad loads[GCAX_LOADS];
     /* 0x1446C */ u8 loadAsync;
 } GcaxWork;
+CHECK_SIZEOF(GcaxWork, 0x14470);
 
 /* Header of a bank file section: two magic words, then the size of the data that follows. */
 typedef struct GcaxFileHeader {
@@ -344,6 +361,7 @@ typedef struct GcaxFileHeader {
     /* 0x8 */ u32 field_0x8;
     /* 0xC */ u32 size;
 } GcaxFileHeader;
+CHECK_SIZEOF(GcaxFileHeader, 0x10);
 
 #ifdef __cplusplus
 extern "C" {

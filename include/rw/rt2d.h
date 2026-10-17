@@ -2,6 +2,7 @@
 #define RW_RT2D_H
 
 #include "rw/rwcore.h"
+#include "layout_check.h"
 
 /* RenderWare 2D toolkit. The type and field names follow the RenderWare 3 Rt2d brush, whose layout
  * and behaviour the code matches (inferred). */
@@ -15,6 +16,7 @@ typedef struct rt2dShadeParameters {
     /* 0x00 */ RwRGBAReal col;
     /* 0x10 */ RwV2d uv;
 } rt2dShadeParameters;
+CHECK_SIZEOF(rt2dShadeParameters, 0x18);
 
 /* The brush flags */
 #define FIELDRGBA 0x1 /* the colours are not uniform */
@@ -38,6 +40,7 @@ typedef struct Rt2dBrush {
     /* 0x70 */ RwReal halfwidth;
     /* 0x74 */ RwInt32 refCount;
 } Rt2dBrush;
+CHECK_SIZEOF(Rt2dBrush, 0x78);
 
 typedef struct Rt2dPath Rt2dPath;
 
@@ -54,6 +57,7 @@ typedef struct rt2dPathNode {
     /* 0x0C */ RwV2d normal;
     /* 0x14 */ RwReal dist;
 } rt2dPathNode;
+CHECK_SIZEOF(rt2dPathNode, 0x18);
 
 /* A path (0x1C bytes): a chain of subpaths. While locked, the points are a list and numPoints is
  * -1; unlocked, they are an array of numPoints (inferred) */
@@ -66,6 +70,7 @@ struct Rt2dPath {
     /* 0x14 */ Rt2dPath *next;
     /* 0x18 */ Rt2dPath *curr; /* the subpath being added to */
 };
+CHECK_SIZEOF(struct Rt2dPath, 0x1C);
 typedef struct Rt2dFont Rt2dFont;
 
 /* Shows a string in a font at a height, from an anchor that it advances, with a brush */
@@ -86,6 +91,7 @@ typedef struct rt2dCharRect {
     /* 0x1C */ RwInt8 textureIndex; /* of the font's textures */
     /* 0x1D */ RwUInt8 field_0x1D[0x3];
 } rt2dCharRect;
+CHECK_SIZEOF(rt2dCharRect, 0x20);
 
 /* The font flags */
 #define rt2dFONTFLAGWIDECHARS 0x2 /* characters are two bytes (inferred) */
@@ -111,6 +117,7 @@ struct Rt2dFont {
     /* 0x13C */ void *field_0x13C;
     /* 0x140 */ void *field_0x140;
 };
+CHECK_SIZEOF(struct Rt2dFont, 0x144);
 
 /* A named font in the font dictionary (inferred) */
 typedef struct rt2dFontDictNode {
@@ -118,6 +125,7 @@ typedef struct rt2dFontDictNode {
     /* 0x4 */ Rt2dFont *font;
     /* 0x8 */ struct rt2dFontDictNode *next;
 } rt2dFontDictNode;
+CHECK_SIZEOF(rt2dFontDictNode, 0xC);
 
 /* The depth of the transformation stack */
 #define rt2dCTMSTACKSIZE 32
@@ -177,6 +185,7 @@ typedef struct Rt2dGlobalVars {
     /* 0xD50 */ RwInt32 numCharCodes;
     /* 0xD54 */ RwUInt8 field_0xD54[0x4];
 } Rt2dGlobalVars;
+CHECK_SIZEOF(Rt2dGlobalVars, 0xD58);
 
 extern Rt2dGlobalVars lbl_805E1950;
 
@@ -244,6 +253,7 @@ typedef struct rt2dStreamPath {
     /* 0x8 */ RwInt32 flags; /* closed, flat, another subpath follows */
     /* 0xC */ RwReal inset;
 } rt2dStreamPath;
+CHECK_SIZEOF(rt2dStreamPath, 0x10);
 
 Rt2dPath *fn_80476ABC(Rt2dPath *path, rt2dStreamPath *header, RwStream *stream);
 Rt2dPath *fn_804771C0(Rt2dPath *path, Rt2dBrush *brush); /* stroke */
