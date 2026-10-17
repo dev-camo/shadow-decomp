@@ -16,9 +16,6 @@
         fn_8047DB84(&error_);                                                                      \
     } while (0)
 
-#define DMORPHATOMIC(atomic) RWPLUGINOFFSET(RpDMorphAtomic, atomic, lbl_805F1430)
-#define DMORPHGEOMETRY(geometry) (*RWPLUGINOFFSET(RpDMorphGeometry *, geometry, lbl_805F1428))
-
 RwInt32 lbl_805F1430;
 
 /* The render callback of a delta morphed atomic: applies the change of each target's weight since
@@ -66,13 +63,13 @@ RpAtomic *fn_80443A74(RpAtomic *atomic) {
                 if (target->flags & rpDMORPHTARGETPOSITIONS) {
                     RwV3d *next = targetPositions;
 
-                    for (run = 0, vertex = 0; run < target->field_0x14; run++) {
-                        if (target->field_0x10[run] & 0x80) {
+                    for (run = 0, vertex = 0; run < target->rle.numCodeElements; run++) {
+                        if (target->rle.code[run] & 0x80) {
                             RwV3d *dst = &verts[vertex];
                             RwV3d *src = next;
                             RwUInt8 j;
 
-                            for (j = 0; j < (target->field_0x10[run] & 0x7F); j++) {
+                            for (j = 0; j < (target->rle.code[run] & 0x7F); j++) {
                                 vertex++;
                                 next++;
                                 dst->x += delta * src->x;
@@ -82,20 +79,20 @@ RpAtomic *fn_80443A74(RpAtomic *atomic) {
                                 dst++;
                             }
                         } else {
-                            vertex += target->field_0x10[run] & 0x7F;
+                            vertex += target->rle.code[run] & 0x7F;
                         }
                     }
                 }
                 if (target->flags & rpDMORPHTARGETNORMALS) {
                     RwV3d *next = targetNormals;
 
-                    for (run = 0, vertex = 0; run < target->field_0x14; run++) {
-                        if (target->field_0x10[run] & 0x80) {
+                    for (run = 0, vertex = 0; run < target->rle.numCodeElements; run++) {
+                        if (target->rle.code[run] & 0x80) {
                             RwV3d *dst = &normals[vertex];
                             RwV3d *src = next;
                             RwUInt8 j;
 
-                            for (j = 0; j < (target->field_0x10[run] & 0x7F); j++) {
+                            for (j = 0; j < (target->rle.code[run] & 0x7F); j++) {
                                 vertex++;
                                 next++;
                                 dst->x += delta * src->x;
@@ -105,7 +102,7 @@ RpAtomic *fn_80443A74(RpAtomic *atomic) {
                                 dst++;
                             }
                         } else {
-                            vertex += target->field_0x10[run] & 0x7F;
+                            vertex += target->rle.code[run] & 0x7F;
                         }
                     }
                 }
@@ -113,13 +110,13 @@ RpAtomic *fn_80443A74(RpAtomic *atomic) {
                     /* colours take out the old weight's share and put in the new one */
                     RwRGBA *next = targetPreLitLum;
 
-                    for (run = 0, vertex = 0; run < target->field_0x14; run++) {
-                        if (target->field_0x10[run] & 0x80) {
+                    for (run = 0, vertex = 0; run < target->rle.numCodeElements; run++) {
+                        if (target->rle.code[run] & 0x80) {
                             RwRGBA *dst = &preLitLum[vertex];
                             RwRGBA *src = next;
                             RwUInt8 j;
 
-                            for (j = 0; j < (target->field_0x10[run] & 0x7F); j++) {
+                            for (j = 0; j < (target->rle.code[run] & 0x7F); j++) {
                                 RwReal oldValue = dmorphGeometry->values[i];
                                 RwReal newValue = dmorphAtomic->values[i];
 
@@ -137,20 +134,20 @@ RpAtomic *fn_80443A74(RpAtomic *atomic) {
                                 dst++;
                             }
                         } else {
-                            vertex += target->field_0x10[run] & 0x7F;
+                            vertex += target->rle.code[run] & 0x7F;
                         }
                     }
                 }
                 if (target->flags & rpDMORPHTARGETTEXCOORDS) {
                     RwTexCoords *next = targetTexCoords;
 
-                    for (run = 0, vertex = 0; run < target->field_0x14; run++) {
-                        if (target->field_0x10[run] & 0x80) {
+                    for (run = 0, vertex = 0; run < target->rle.numCodeElements; run++) {
+                        if (target->rle.code[run] & 0x80) {
                             RwTexCoords *dst = &texCoords[vertex];
                             RwTexCoords *src = next;
                             RwUInt8 j;
 
-                            for (j = 0; j < (target->field_0x10[run] & 0x7F); j++) {
+                            for (j = 0; j < (target->rle.code[run] & 0x7F); j++) {
                                 vertex++;
                                 next++;
                                 dst->u += delta * src->u;
@@ -159,7 +156,7 @@ RpAtomic *fn_80443A74(RpAtomic *atomic) {
                                 dst++;
                             }
                         } else {
-                            vertex += target->field_0x10[run] & 0x7F;
+                            vertex += target->rle.code[run] & 0x7F;
                         }
                     }
                 }
