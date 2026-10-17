@@ -165,11 +165,6 @@ ADXPD ADXPD_Create(void);
 void ADXPD_Init(void);
 
 /* adx_bsc.c */
-void ADXB_SetAhxExtFunc(void (*func)(void *ahx, Sint16 *key));
-void ADXB_SetPl2Func(void (*encode)(ADXB adxb, Sint16 smpl, Sint16 *in, Sint16 *out),
-                     void (*reset)(ADXB adxb));
-void ADXB_SetDefKey(Sint16 k0, Sint16 km, Sint16 ka);
-void ADXB_SetIgnoreHdrErr(Sint32 flg);
 void ADXB_ExecHndl(ADXB adxb);
 void ADXB_ExecOneAdx(ADXB adxb);
 void ADXB_EvokeDecode(ADXB adxb);
@@ -201,7 +196,6 @@ void ADXB_EntryGetWrFunc(ADXB adxb, ADXB_GETWR_FUNC func, void *obj);
 Sint32 ADXB_DecodeHeader(ADXB adxb, void *buf, Sint32 bsize);
 void ADXB_SetDefPrm(ADXB adxb);
 Sint32 ADXB_DecodeHeaderAdx(ADXB adxb, Uint8 *buf, Sint32 bsize);
-const Char8 *ADXB_GetSignature(void);
 void ADXB_Destroy(ADXB adxb);
 ADXB ADXB_Create(Sint32 x38, Sint16 *pcmbuf, Sint32 bufsmpl, Sint32 chofst);
 void ADXB_Init(void);
