@@ -922,6 +922,10 @@ extern RwInt32 lbl_805F1690; /* engine plugin offset of the pipeline module's gl
 
 #define RXPIPELINEGLOBAL(var) (RWPLUGINOFFSET(rwPipeGlobals, lbl_805F15B4, lbl_805F1690)->var)
 
+/* opening and closing the pipeline library (inferred); each returns TRUE on success */
+RwBool fn_8049B258(void);
+RwBool fn_8049B1F8(void);
+
 /* creating, executing and destroying pipelines (inferred from their use) */
 RxPipeline *fn_8049B76C(void);          /* creates a pipeline */
 void fn_8049B800(RxPipeline *pipeline); /* destroys a pipeline */
@@ -1636,7 +1640,7 @@ RwCamera *fn_804854DC(RwCamera *camera); /* begin update */
 RwCamera *fn_804857BC(RwCamera *camera, RwRGBA *color, RwInt32 clearMode); /* clear */
 RwCamera *fn_80485808(RwCamera *camera, void *device, RwUInt32 flags);     /* show raster */
 RwBool fn_8048B354(void);           /* synchronizes dirty frames; returns TRUE (inferred) */
-void fn_8049B148(RwCamera *camera); /* empty */
+void fn_8049B148(RwCamera *camera); /* the pipeline library's camera hook; does nothing */
 RwRaster *fn_80489D44(RwRaster *raster, void *device, RwUInt32 flags); /* shows a raster */
 extern RwPluginRegistry lbl_8056DF70; /* the camera plugin registry */
 
