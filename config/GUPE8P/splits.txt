@@ -1862,6 +1862,9 @@ rw/fn_8049B0CC.c:
 	.text       start:0x8049B0CC end:0x8049B14C
 	.sbss       start:0x805F1690 end:0x805F1698
 
+rw/fn_8049B14C.c:
+	.text       start:0x8049B14C end:0x8049B1F8
+
 rw/fn_8049EA2C.c:
 	.text       start:0x8049EA2C end:0x8049F2A4
 

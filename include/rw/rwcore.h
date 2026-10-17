@@ -922,6 +922,9 @@ extern RwInt32 lbl_805F1690; /* engine plugin offset of the pipeline module's gl
 
 #define RXPIPELINEGLOBAL(var) (RWPLUGINOFFSET(rwPipeGlobals, lbl_805F15B4, lbl_805F1690)->var)
 
+/* the heap pipelines execute with (inferred) */
+extern RxHeap *lbl_805F169C;
+
 /* the pipeline heap (inferred from their use) */
 RxHeap *fn_8049F168(RwUInt32 size);        /* creates a heap of at least size bytes */
 void fn_8049F0CC(RxHeap *heap);            /* destroys it */
@@ -930,6 +933,9 @@ void fn_8049EA2C(RxHeap *heap, void *ptr); /* frees a block */
 
 /* Resets a heap if anything was allocated from it since its last reset; FALSE on failure */
 #define RxHeapReset(heap) ((heap)->dirty == FALSE ? TRUE : fn_8049ECFC(heap))
+
+/* destroys a packet (inferred) */
+void fn_8049B14C(RxPacket *packet);
 
 /* opening and closing the pipeline library (inferred); each returns TRUE on success */
 RwBool fn_8049B258(void);

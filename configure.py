@@ -548,6 +548,7 @@ config.libs = [
                 Object(Matching, "rw/fn_80497198.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80497FB4.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049B0CC.c", cflags=cflags_game),
+                Object(Matching, "rw/fn_8049B14C.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049EA2C.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049F2A4.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049F3F8.c", cflags=cflags_game),
