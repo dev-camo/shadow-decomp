@@ -3,14 +3,24 @@
 #include "layout_check.h"
 
 /* 2- and 3-float vectors used by the fn_8040xxxx vector helpers. Layouts come from their accesses;
- * the original type and function names are unknown. */
+ * the original type and function names are unknown. The original constructs its global vectors
+ * at startup in .sbss/.bss, so the C++ view has component constructors, and an empty default
+ * constructor for the members and locals declared without an initialiser. */
 typedef struct Fn8040Vector2 {
+#ifdef __cplusplus
+    Fn8040Vector2() {}
+    Fn8040Vector2(float x_, float y_) : x(x_), y(y_) {}
+#endif
     /* 0x00 */ float x;
     /* 0x04 */ float y;
 } Fn8040Vector2;
 CHECK_SIZEOF(Fn8040Vector2, 0x8);
 
 typedef struct Fn8040Vector3 {
+#ifdef __cplusplus
+    Fn8040Vector3() {}
+    Fn8040Vector3(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
+#endif
     /* 0x00 */ float x;
     /* 0x04 */ float y;
     /* 0x08 */ float z;
@@ -27,8 +37,9 @@ CHECK_SIZEOF(Fn8040Matrix34, 0x30);
 extern "C" {
 #endif
 
-/* Vectors cleared by the static initialisers fn_8040CD60 and fn_8040D02C; used as fallbacks
- * when a vector is too short to normalise. lbl_805E07A0 occupies 0x10 bytes. */
+/* Zero vectors constructed by the static initialisers in fn_8040CD60.cpp and fn_8040D02C.cpp;
+ * fn_8040CC6C/fn_8040CE74 return them for a vector too short to normalise, and lbl_805E07A0 is
+ * read throughout the game code. */
 extern Fn8040Vector2 lbl_805F1358;
 /* float constants in .sdata2: lbl_805FAD78 (2D clear value), lbl_805FAD80 (3D clear value, also
  * the length fn_8040CE74 returns for a too-short vector) */

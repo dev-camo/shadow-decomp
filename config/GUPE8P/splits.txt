@@ -1313,9 +1313,10 @@ Game/fn_8040CCEC.c:
 Game/fn_8040CD20.c:
 	.text       start:0x8040CD20 end:0x8040CD60
 
-Game/fn_8040CD60.c:
+Game/fn_8040CD60.cpp:
 	.text       start:0x8040CD60 end:0x8040CD74
-	.ctors      start:0x804AA050 end:0x804AA054 rename:.ctors$50
+	.ctors      start:0x804AA050 end:0x804AA054
+	.sbss       start:0x805F1358 end:0x805F1360
 
 Game/fn_8040CE74.cpp:
 	extab       start:0x80005860 end:0x80005868
@@ -1333,9 +1334,10 @@ Game/fn_8040CF50.cpp:
 Game/fn_8040CF90.c:
 	.text       start:0x8040CF90 end:0x8040D02C
 
-Game/fn_8040D02C.c:
+Game/fn_8040D02C.cpp:
 	.text       start:0x8040D02C end:0x8040D044
-	.ctors      start:0x804AA054 end:0x804AA058 rename:.ctors$50
+	.ctors      start:0x804AA054 end:0x804AA058
+	.bss        start:0x805E07A0 end:0x805E07B0
 
 Game/fn_8040D044.cpp:
 	extab       start:0x80005878 end:0x80005880
