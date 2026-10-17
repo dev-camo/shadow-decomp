@@ -817,6 +817,10 @@ typedef struct RxPipelineNodeTopSortData {
 } RxPipelineNodeTopSortData;
 CHECK_SIZEOF(RxPipelineNodeTopSortData, 0xC);
 
+/* The most outputs a node can have; a locked pipeline gives each node an output array of this
+ * size in its superblock */
+#define RXNODEMAXOUTPUTS 32
+
 /* A node of a pipeline. The nodes of an unlocked pipeline are sorted so that every node comes
  * before the nodes its outputs lead to; outputs are node indices, -1 for none. */
 struct RxPipelineNode {
@@ -944,6 +948,10 @@ RwBool fn_8049B1F8(void);
 /* creating, executing and destroying pipelines (inferred from their use) */
 RxPipeline *fn_8049B76C(void);          /* creates a pipeline */
 void fn_8049B800(RxPipeline *pipeline); /* destroys a pipeline */
+/* destroys a node of a pipeline; in a locked pipeline the node is also removed from the node
+ * array */
+RxPipelineNode *fn_8049B350(RxPipelineNode *node, RxPipeline *pipeline);
+RxHeap *fn_8049B66C(void); /* the heap pipelines execute with */
 /* executes a pipeline on an object, first resetting the heap if heapReset is set; NULL on failure */
 RxPipeline *fn_8049B674(RxPipeline *pipeline, void *data, RwBool heapReset);
 
