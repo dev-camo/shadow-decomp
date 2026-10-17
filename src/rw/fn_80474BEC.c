@@ -37,8 +37,8 @@ Rt2dPath *fn_80474BEC(Rt2dPath *path) {
     do {                                                                                           \
         RwInt32 numPoints_ = fn_8047E03C((subpath)->points);                                       \
         rt2dPathNode *node_ = fn_8047DDBC((subpath)->points, rwMEMHINTDUR_EVENT | RT2DMEMID);      \
-        RwReal dx_;                                                                                \
         RwReal dy_;                                                                                \
+        RwReal dx_;                                                                                \
         RwReal lengthSq_;                                                                          \
         RwReal length_;                                                                            \
         RwReal recip_;                                                                             \
@@ -46,8 +46,8 @@ Rt2dPath *fn_80474BEC(Rt2dPath *path) {
         node_->type = rt2dLINETO;                                                                  \
         node_->pos.x = (px);                                                                       \
         node_->pos.y = (py);                                                                       \
-        dx_ = node_[-1].pos.x - (px);                                                              \
         dy_ = (py) - node_[-1].pos.y;                                                              \
+        dx_ = node_[-1].pos.x - (px);                                                              \
         lengthSq_ = dy_ * dy_ + dx_ * dx_;                                                         \
         length_ = fn_80482340(lengthSq_);                                                          \
         recip_ = fn_80482394(lengthSq_);                                                           \
@@ -55,14 +55,15 @@ Rt2dPath *fn_80474BEC(Rt2dPath *path) {
         node_->normal.y = dx_ * recip_;                                                            \
         node_->dist = node_[-1].dist + length_;                                                    \
         if (numPoints_ > 1) {                                                                      \
-            RwV2d sum_;                                                                            \
+            RwReal sumX_;                                                                          \
+            RwReal sumY_;                                                                          \
             RwReal scale_;                                                                         \
                                                                                                    \
-            sum_.x = node_[-1].normal.x + node_->normal.x;                                         \
-            sum_.y = node_[-1].normal.y + node_->normal.y;                                         \
-            scale_ = 1.0f / (node_[-1].normal.x * sum_.x + node_[-1].normal.y * sum_.y);           \
-            node_[-1].normal.x = sum_.x * scale_;                                                  \
-            node_[-1].normal.y = sum_.y * scale_;                                                  \
+            sumX_ = node_[-1].normal.x + node_->normal.x;                                          \
+            sumY_ = node_[-1].normal.y + node_->normal.y;                                          \
+            scale_ = 1.0f / (node_[-1].normal.x * sumX_ + node_[-1].normal.y * sumY_);             \
+            node_[-1].normal.x = sumX_ * scale_;                                                   \
+            node_[-1].normal.y = sumY_ * scale_;                                                   \
         } else {                                                                                   \
             node_[-1].normal = node_->normal;                                                      \
         }                                                                                          \
@@ -124,14 +125,15 @@ Rt2dPath *fn_80474FF8(Rt2dPath *path, RwReal x1, RwReal y1, RwReal x2, RwReal y2
 
     CURVEPOINT(&node[0], &node[-1], x1, y1);
     if (numPoints > 1) {
-        RwV2d sum;
+        RwReal sumX;
+        RwReal sumY;
         RwReal scale;
 
-        sum.x = node[-1].normal.x + node[0].normal.x;
-        sum.y = node[-1].normal.y + node[0].normal.y;
-        scale = 1.0f / (node[-1].normal.x * sum.x + node[-1].normal.y * sum.y);
-        node[-1].normal.x = sum.x * scale;
-        node[-1].normal.y = sum.y * scale;
+        sumX = node[-1].normal.x + node[0].normal.x;
+        sumY = node[-1].normal.y + node[0].normal.y;
+        scale = 1.0f / (node[-1].normal.x * sumX + node[-1].normal.y * sumY);
+        node[-1].normal.x = sumX * scale;
+        node[-1].normal.y = sumY * scale;
     } else {
         node[-1].normal.x = node[0].normal.x;
         node[-1].normal.y = node[0].normal.y;
@@ -149,7 +151,8 @@ Rt2dPath *fn_80475260(Rt2dPath *path) {
     rt2dPathNode *first = fn_8047DFAC(curr->points);
     rt2dPathNode *last = fn_8047E0CC(curr->points, numPoints - 1);
     RwV2d pos;
-    RwV2d sum;
+    RwReal sumX;
+    RwReal sumY;
     RwReal scale;
 
     pos = first->pos;
@@ -158,11 +161,11 @@ Rt2dPath *fn_80475260(Rt2dPath *path) {
         first = fn_8047DFAC(curr->points);
         last = fn_8047E0CC(curr->points, numPoints);
     }
-    sum.x = first->normal.x + last->normal.x;
-    sum.y = first->normal.y + last->normal.y;
-    scale = 1.0f / (first->normal.x * sum.x + first->normal.y * sum.y);
-    last->normal.x = sum.x * scale;
-    last->normal.y = sum.y * scale;
+    sumX = first->normal.x + last->normal.x;
+    sumY = first->normal.y + last->normal.y;
+    scale = 1.0f / (first->normal.x * sumX + first->normal.y * sumY);
+    last->normal.x = sumX * scale;
+    last->normal.y = sumY * scale;
     first->normal = last->normal;
     curr->closed = TRUE;
     return path;
