@@ -1430,6 +1430,12 @@ rw/fn_80448CB0.c:
 	.text       start:0x80448CB0 end:0x8044920C
 	.sdata2     start:0x805FB078 end:0x805FB098
 
+rw/fn_8044920C.c:
+	.text       start:0x8044920C end:0x8044BAB4
+	.rodata     start:0x8051BCF0 end:0x8051BD10
+	.sdata      start:0x805EDD78 end:0x805EDD80
+	.sdata2     start:0x805FB098 end:0x805FB0A8
+
 rw/fn_8044BAB4.c:
 	.text       start:0x8044BAB4 end:0x8044CDC4
 	.data       start:0x8056D708 end:0x8056D748
