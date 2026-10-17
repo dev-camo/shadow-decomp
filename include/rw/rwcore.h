@@ -73,8 +73,12 @@ typedef RwInt32 RwPlatformID;
 
 /* pipeline errors of the core (inferred from where they are reported) */
 #define E_RX_CYCLICPIPELINE 0x1C
-#define E_RX_FRAGMENTEDPIPELINE 0x22 /* a node other than the entry point has no input */
-#define E_RX_IM3DNOTACTIVE 0x23      /* no immediate mode 3D transform is active */
+#define E_RX_DEP_DEPENDENCIESMISMATCH 0x1D /* an output does not create a required cluster */
+#define E_RX_DEP_DUPLICATECLUSTERDEFS 0x1E /* a node lists a cluster of interest twice */
+#define E_RX_DEP_NULLCLUSTERDEF 0x1F       /* a cluster of interest has no definition */
+#define E_RX_DEP_OUTOFMEMORY 0x20          /* the dependency pass ran out of scratch space */
+#define E_RX_FRAGMENTEDPIPELINE 0x22       /* a node other than the entry point has no input */
+#define E_RX_IM3DNOTACTIVE 0x23            /* no immediate mode 3D transform is active */
 #define E_RX_INVALIDENTRYPOINT 0x24
 #define E_RX_INVALIDPRIMTYPE 0x25
 #define E_RX_NODETOOMANYCLUSTERSOFINTEREST 0x28
@@ -832,11 +836,14 @@ struct RxNodeDefinition {
 };
 CHECK_SIZEOF(struct RxNodeDefinition, 0x40);
 
+/* the requirements of a node during the dependency pass (inferred) */
+typedef struct rxReq rxReq;
+
 /* What the dependency pass keeps for a node while it sorts the pipeline */
 typedef struct RxPipelineNodeTopSortData {
     /* 0x0 */ RwUInt32 numIns;
     /* 0x4 */ RwUInt32 numInsVisited;
-    /* 0x8 */ void *req; /* the requirements being propagated (inferred) */
+    /* 0x8 */ rxReq *req; /* the requirements being propagated (inferred) */
 } RxPipelineNodeTopSortData;
 CHECK_SIZEOF(RxPipelineNodeTopSortData, 0xC);
 
