@@ -52986,7 +52986,6 @@ sj_hexstr_to_val_tbl = .data:0x80569360; // type:object size:0x1C0
 mfci_vtbl = .data:0x80569520; // type:object size:0x68
 gcg_ci_vtbl = .data:0x80569588; // type:object size:0x68
 gcg_ci_rdmode = .data:0x805695F0; // type:object size:0x4 data:4byte
-lbl_805695F4 = .data:0x805695F4; // type:object size:0x4 data:4byte
 lbl_805695F8 = .data:0x805695F8; // type:object size:0x4 data:4byte
 lbl_805695FC = .data:0x805695FC; // type:object size:0x7C data:4byte
 lbl_80569678 = .data:0x80569678; // type:object size:0x30

@@ -53,10 +53,6 @@ typedef struct {
 } GCCI_DEBUG;
 CHECK_SIZEOF(GCCI_DEBUG, 0xC);
 
-/* Defined in gcci_sub.c. */
-extern Sint32 gcg_ci_rdmode;
-extern Char8 gcg_ci_root_dir[256];
-
 const Char8 gcg_ci_build_str[] = "\nGCCI Ver.1.09 Build:Feb 28 2005 15:48:31\n";
 
 GCCI_DEBUG gcg_ci_debug;
