@@ -406,7 +406,7 @@ u32 SIGetCommand(s32 chan) {
 }
 
 void SITransferCommands(void) {
-    __SIRegs[SI_STATUS_IDX] = SI_COMCSR_TCINT_MASK;
+    __SIRegs[SI_STATUS_IDX] = SI_STATUS_WR_MASK;
 }
 
 u32 SISetXY(u32 x, u32 y) {

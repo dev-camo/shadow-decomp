@@ -65,7 +65,7 @@ extern "C" {
 #define DVD_COMMAND_AUDIO_BUFFER_CONFIG 13
 #define DVD_COMMAND_INQUIRY 14
 #define DVD_COMMAND_BS_CHANGE_DISK 15
-#define DVD_COMMAND_UNK_16 16
+#define DVD_COMMAND_STOP_MOTOR 16
 
 typedef struct DVDDiskID {
     char gameName[4];

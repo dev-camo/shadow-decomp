@@ -33,6 +33,10 @@ extern "C" {
 
 #define SI_COMCSR_TSTART_MASK (1 << 0)
 
+// STATUS write-buffer (WR) bit: writing 1 copies the channel output buffers set by SISetCommand
+// to the hardware.
+#define SI_STATUS_WR_MASK (1 << 31)
+
 #define SI_ERROR_UNDER_RUN 0x0001
 #define SI_ERROR_OVER_RUN 0x0002
 #define SI_ERROR_COLLISION 0x0004

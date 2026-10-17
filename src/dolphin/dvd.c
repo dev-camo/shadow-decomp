@@ -734,7 +734,7 @@ static void stateBusy(DVDCommandBlock *block) {
         block->currTransferSize = 0x20;
         DVDLowInquiry(block->addr, cbForStateBusy);
         return;
-    case DVD_COMMAND_UNK_16:
+    case DVD_COMMAND_STOP_MOTOR:
         __DIRegs[1] = __DIRegs[1];
         DVDLowStopMotor(cbForStateBusy);
         return;
@@ -1436,7 +1436,7 @@ int DVDStopMotorAsync(DVDCommandBlock *block, DVDCBCallback callback) {
     int idle;
     ASSERTMSGLINE(2996, block, "DVDStopMotor(): Null address was specified for block");
 
-    block->command = DVD_COMMAND_UNK_16;
+    block->command = DVD_COMMAND_STOP_MOTOR;
     block->callback = callback;
 
     idle = issueCommand(2, block);

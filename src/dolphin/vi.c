@@ -789,14 +789,14 @@ void VIConfigure(const GXRenderModeObj *rm) {
                    "VIConfigure(): Odd number(%d) is specified to viHeight\n", rm->viHeight);
 
 #ifdef DEBUG
-    if (rm->xFBmode == VI_XFBMODE_DF || newNonInter == VI_TVMODE_NTSC_PROG || newNonInter == 3) {
+    if (rm->xFBmode == VI_XFBMODE_DF || newNonInter == VI_PROGRESSIVE || newNonInter == 3) {
         ASSERTMSGLINEV(
             1933, rm->xfbHeight == rm->viHeight,
             "VIConfigure(): xfbHeight(%d) is not equal to viHeight(%d) when DF XFB mode or progressive mode is specified\n",
             rm->xfbHeight, rm->viHeight);
     }
 
-    if (rm->xFBmode == VI_XFBMODE_SF && newNonInter != VI_TVMODE_NTSC_PROG && newNonInter != 3) {
+    if (rm->xFBmode == VI_XFBMODE_SF && newNonInter != VI_PROGRESSIVE && newNonInter != 3) {
         ASSERTMSGLINEV(
             1941, rm->viHeight == rm->xfbHeight * 2,
             "VIConfigure(): xfbHeight(%d) is not as twice as viHeight(%d) when SF XFB mode is specified\n",
