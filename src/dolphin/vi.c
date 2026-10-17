@@ -74,8 +74,8 @@ typedef struct {
     u32 rtfbb;
     u32 rbfbb;
     VITiming *timing;
-} SomeVIStruct;
-CHECK_SIZEOF(SomeVIStruct, 0x58);
+} VIPositionInfo;
+CHECK_SIZEOF(VIPositionInfo, 0x58);
 
 static BOOL IsInitialized;
 static volatile u32 retraceCount;
@@ -126,7 +126,7 @@ static u16 taps[25] = {0x01F0, 0x01DC, 0x01AE, 0x0174, 0x0129, 0x00DB, 0x008E, 0
                        0x00E2, 0x00CB, 0x00C0, 0x00C4, 0x00CF, 0x00DE, 0x00EC, 0x00FC, 0x0008,
                        0x000F, 0x0013, 0x0013, 0x000F, 0x000C, 0x0008, 0x0001};
 
-static SomeVIStruct HorVer;
+static VIPositionInfo HorVer;
 static u32 FBSet;
 static VITiming *timingExtra;
 
@@ -636,7 +636,7 @@ static void calcFbbs(u32 bufAddr, u16 panPosX, u16 panPosY, u8 wordPerLine, VIXF
     *bfbb &= 0x3FFFFFFF;
 }
 
-static void setFbbRegs(SomeVIStruct *HorVer, u32 *tfbb, u32 *bfbb, u32 *rtfbb, u32 *rbfbb) {
+static void setFbbRegs(VIPositionInfo *HorVer, u32 *tfbb, u32 *bfbb, u32 *rtfbb, u32 *rbfbb) {
     u32 shifted;
 
     calcFbbs(HorVer->bufAddr, HorVer->PanPosX, HorVer->AdjustedPanPosY, HorVer->wordPerLine,
