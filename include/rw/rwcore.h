@@ -46,6 +46,7 @@ typedef char RwChar;
 #define rwID_WORLD 0xB
 #define rwID_EXTENSION 0x3
 #define rwID_TEXTURE 0x6
+#define rwID_COREPLUGIN 0x1  /* the core's plugin ID, also used for its errors */
 #define rwCHUNKHEADERSIZE 12 /* the bytes of a chunk header in a stream */
 
 /* memory hints: how long an allocation lives, whether it is resized, and the chunk ID of what it
@@ -67,6 +68,11 @@ typedef RwInt32 RwPlatformID;
 #define E_RW_NULLP 0x80000016         /* a required argument is NULL */
 #define E_RW_PLUGINNOTINIT 0x80000018 /* used before its module is ready (inferred) */
 #define E_RW_READTEXMASK 0x16         /* a texture was read without its mask */
+
+/* pipeline errors of the core (inferred from where they are reported) */
+#define E_RX_IM3DNOTACTIVE 0x23 /* no immediate mode 3D transform is active */
+#define E_RX_INVALIDPRIMTYPE 0x25
+#define E_RX_TOOMANYVERTS 0x32
 
 typedef struct RwFreeList RwFreeList;
 
@@ -1640,13 +1646,86 @@ void fn_80498E08(RwRaster *raster, RwRect *rect, RwRGBA *color,
 void fn_80497198(void);              /* finishes starting the device */
 void fn_8049742C(void);              /* starts stopping the device */
 
+/* immediate mode 3D vertex flags (RwIm3DTransformFlags) */
 #define rwIM3D_VERTEXUV 0x1
 #define rwIM3D_NOCLIP 0x4
+#define rwIM3D_VERTEXXYZ 0x8
+#define rwIM3D_VERTEXRGBA 0x10
+
+/* The transformed vertices and primitive an Im3D render pipeline works on */
+typedef struct rwIm3DPoolStash {
+    /* 0x00 */ RwUInt32 flags; /* rwIM3D_* */
+    /* 0x04 */ RwMatrix *ltm;  /* the vertices' frame, or NULL */
+    /* 0x08 */ RwUInt32 numVerts;
+    /* 0x0C */ RwIm3DVertex *objVerts;
+    /* 0x10 */ void *camVerts;    /* not used by the GameCube pipelines */
+    /* 0x14 */ void *devVerts;    /* not used by the GameCube pipelines */
+    /* 0x18 */ void *meshState;   /* not used by the GameCube pipelines */
+    /* 0x1C */ void *renderState; /* not used by the GameCube pipelines */
+    /* 0x20 */ RxPipeline *pipeline;
+    /* 0x24 */ RwInt32 primType; /* rwPRIMTYPE* */
+    /* 0x28 */ RwImVertexIndex *indices;
+    /* 0x2C */ RwUInt32 numIndices;
+} rwIm3DPoolStash;
+CHECK_SIZEOF(rwIm3DPoolStash, 0x30);
+
+/* The vertices of the current immediate mode 3D transform */
+typedef struct rwIm3DPool {
+    /* 0x00 */ RwUInt16 numElements;
+    /* 0x04 */ RwIm3DVertex *elements; /* NULL when no transform is active */
+    /* 0x08 */ RwInt32 stride;
+    /* 0x0C */ rwIm3DPoolStash stash;
+} rwIm3DPool;
+CHECK_SIZEOF(rwIm3DPool, 0x3C);
+
+/* An Im3D render pipeline per primitive type */
+typedef struct rwIm3DRenderPipelines {
+    /* 0x00 */ RxPipeline *triList;
+    /* 0x04 */ RxPipeline *triFan;
+    /* 0x08 */ RxPipeline *triStrip;
+    /* 0x0C */ RxPipeline *lineList;
+    /* 0x10 */ RxPipeline *polyLine;
+    /* 0x14 */ RxPipeline *pointList;
+} rwIm3DRenderPipelines;
+CHECK_SIZEOF(rwIm3DRenderPipelines, 0x18);
+
+/* The immediate module's globals in the engine: the current transform and render pipelines,
+ * the platform's, and the current transform */
+typedef struct rwImmediGlobals {
+    /* 0x00 */ RxPipeline *im3DTransformPipeline;
+    /* 0x04 */ rwIm3DRenderPipelines im3DRenderPipelines;
+    /* 0x1C */ RxPipeline *platformIm3DTransformPipeline;
+    /* 0x20 */ rwIm3DRenderPipelines platformIm3DRenderPipelines;
+    /* 0x38 */ rwIm3DPool curPool;
+} rwImmediGlobals;
+CHECK_SIZEOF(rwImmediGlobals, 0x74);
+
+extern RwModuleInfo lbl_805F1684; /* the immediate module */
+
+#define RWIMMEDIGLOBAL(var)                                                                        \
+    (RWPLUGINOFFSET(rwImmediGlobals, lbl_805F15B4, lbl_805F1684.globalsOffset)->var)
 
 /* immediate mode 3D (inferred) */
-void *fn_8049A82C(RwIm3DVertex *vertices, RwInt32 numVertices, RwMatrix *ltm, RwUInt32 flags);
-RwBool fn_8049A90C(void); /* end */
+/* transforms vertices for the render functions below; NULL on failure */
+void *fn_8049A82C(RwIm3DVertex *vertices, RwUInt32 numVertices, RwMatrix *ltm, RwUInt32 flags);
+RwBool fn_8049A90C(void); /* ends the transform */
 RwBool fn_8049A95C(RwInt32 primType, RwImVertexIndex *indices, RwInt32 numIndices);
+RwBool fn_8049AAF8(RwInt32 primType); /* renders the transformed vertices in order */
+/* set the transform pipeline and a primitive type's render pipeline; NULL restores the
+ * platform's. They return the pipeline set, or NULL */
+RxPipeline *fn_8049AC90(RxPipeline *pipeline);
+RxPipeline *fn_8049ACE0(RxPipeline *pipeline, RwInt32 primType);
+
+/* the GameCube Im3D pipelines (inferred): create and destroy the transform pipeline and the
+ * render pipelines; the creators return FALSE on failure */
+RwBool fn_8049F8AC(RxPipeline **transformPipeline);
+void fn_8049F948(RxPipeline **transformPipeline);
+void fn_8049F990(rwIm3DRenderPipelines *renderPipelines);
+RwBool fn_8049FA1C(rwIm3DRenderPipelines *renderPipelines);
+
+/* the node definitions of the GameCube Im3D pipelines (inferred) */
+RxNodeDefinition *fn_8049FB0C(void); /* the transform node */
+RxNodeDefinition *fn_804A0760(void); /* the render node */
 
 RwReal fn_804823F0(const RwV2d *v); /* the length of a vector */
 
