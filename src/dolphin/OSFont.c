@@ -187,16 +187,16 @@ static void Decode(u8 *s, u8 *d) {
     int k;
     int p;
     int q;
-    int r7;
-    int r25;
+    int link_pos;
+    int chunk_pos;
     int cnt;
     int os;
     unsigned int flag;
     unsigned int code;
 
     os = *(int *)(s + 0x4);
-    r7 = *(int *)(s + 0x8);
-    r25 = *(int *)(s + 0xC);
+    link_pos = *(int *)(s + 0x8);
+    chunk_pos = *(int *)(s + 0xC);
 
     q = 0;
     flag = 0;
@@ -212,19 +212,19 @@ static void Decode(u8 *s, u8 *d) {
 
         // Non-linked chunk
         if (code & 0x80000000) {
-            d[q++] = s[r25++];
+            d[q++] = s[chunk_pos++];
         }
         // Linked chunk
         else {
             // Read offset from link table
-            j = s[r7] << 8 | s[r7 + 1];
-            r7 += sizeof(u16);
+            j = s[link_pos] << 8 | s[link_pos + 1];
+            link_pos += sizeof(u16);
 
             // Apply offset
             k = q - (j & 0x0FFF);
             cnt = j >> 12;
             if (cnt == 0) {
-                cnt = s[r25++] + 0x12;
+                cnt = s[chunk_pos++] + 0x12;
             } else {
                 cnt += 2;
             }
