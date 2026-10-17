@@ -1,10 +1,9 @@
 /* CRI Sofdec "auto-play" audio output driver (sfd_aoap.c, SFD_tr_ao_auto_p, driver slot 7): the
  * audio decoder (ADXT driver, slot 3) plays by itself, so this output driver only relays
- * start/stop/pause/standby to it and exposes volume/pan (SFD_SetOutVol / SFD_SetOutPan) through the
- * callback block the ADXT driver fills in (SFAOAP).
+ * start/stop/pause/standby to it and exposes the volume (SFD_GetOutVol / SFD_SetOutVol) through
+ * the callback block the ADXT driver fills in (SFAOAP).
  *
- * Source from the RE4 GameCube decompilation with this game's SFD_OBJ layout; RE4's SFD_GetOutPan
- * and SFD_SetOutPan are unreferenced here (the linker strips them). */
+ * Source adapted from the RE4 GameCube decompilation with this game's SFD_OBJ layout. */
 #include "CRI/sfd.h"
 
 #define SFAOAP_TR 7
@@ -155,36 +154,6 @@ Sint32 SFD_SetOutVol(SFD sfd, Sint32 vol) {
     if (SFSET_GetCond(sfd, SFAOAP_COND) != 0) {
         aoap = sfd->tr[SFAOAP_TR].hn;
         return aoap->SetOutVol(sfd, vol);
-    }
-    /* No return statement: the caller gets SFSET_GetCond's 0, which is still in the return
-     * register. */
-}
-
-/* Channel pan through the audio driver's callback. */
-Sint32 SFD_GetOutPan(SFD sfd, Sint32 ch) {
-    SFAOAP *aoap;
-
-    if (SFLIB_CheckHn(sfd) != 0) {
-        SFLIB_SetErr(0, 0xFF0001A2);
-        return 0;
-    }
-    if (SFSET_GetCond(sfd, SFAOAP_COND) == 0) {
-        return 0;
-    }
-    aoap = sfd->tr[SFAOAP_TR].hn;
-    return aoap->GetOutPan(sfd, ch);
-}
-
-/* Channel pan through the audio driver's callback (-> ADXT_SetOutPan). */
-Sint32 SFD_SetOutPan(SFD sfd, Sint32 ch, Sint32 pan) {
-    SFAOAP *aoap;
-
-    if (SFLIB_CheckHn(sfd) != 0) {
-        return SFLIB_SetErr(0, 0xFF0001A1);
-    }
-    if (SFSET_GetCond(sfd, SFAOAP_COND) != 0) {
-        aoap = sfd->tr[SFAOAP_TR].hn;
-        return aoap->SetOutPan(sfd, ch, pan);
     }
     /* No return statement: the caller gets SFSET_GetCond's 0, which is still in the return
      * register. */
