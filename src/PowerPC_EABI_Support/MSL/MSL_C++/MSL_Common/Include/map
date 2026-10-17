@@ -1,0 +1,293 @@
+#ifndef MSL_MAP_H_
+#define MSL_MAP_H_
+
+#include <functional>
+#include <limits>
+#include <memory>
+#include <utility>
+#include "layout_check.h"
+
+/* The parts of <map> that the Chao::CSD texture list registry uses (insert, find, erase and end of
+ * its map with an unsigned long key), built on the library's red-black tree; "tree::insert length
+ * error" is the library's message. The game's other maps (string keys among them) are not covered.
+ *
+ * find, insert, erase, the tree constructor, __insert_node and __destroy (inline) are defined
+ * outside the class. The internal names (__tree, its members and the node and iterator types) are
+ * placeholders: the library's names are not recoverable from the game. The three node routines are
+ * only declared and keep the fn_ names of the game's own copies, which the program uses; their
+ * signatures are inferred from their call sites (the original may define them inline or as
+ * templates). */
+namespace std {
+
+/* A tree node without its value: children, then the parent with the node's colour in bit 0. */
+struct __tree_node_base {
+    __tree_node_base *left_;
+    __tree_node_base *right_;
+    unsigned long parent_;
+
+    void set_parent(__tree_node_base *p) {
+        parent_ = reinterpret_cast<unsigned long>(p) | (parent_ & 1);
+    }
+};
+CHECK_SIZEOF(std::__tree_node_base, 0xC);
+
+/* The tree's end node: only the root pointer, in the place of a node's left child. */
+struct __tree_end_node {
+    __tree_end_node() : left_(0) {}
+    __tree_node_base *left_;
+};
+CHECK_SIZEOF(std::__tree_end_node, 0x4);
+
+/* Rebalances the tree after inserting x (behaviour inferred). */
+extern "C" void fn_8000CD64(__tree_node_base *x, __tree_node_base *root);
+/* Unlinks z from the tree and rebalances it (behaviour inferred). */
+extern "C" void fn_80013398(__tree_node_base *z, __tree_node_base *root);
+/* Steps x to the next node in order (behaviour inferred). */
+extern "C" void fn_80012E90(__tree_node_base *&x);
+
+template <class Key, class Value, class Compare, class Allocator> class __tree {
+  public:
+    typedef size_t size_type;
+
+    struct node : public __tree_node_base {
+        Value value_;
+    };
+    typedef allocator<node> node_allocator;
+
+    class iterator {
+      public:
+        iterator(__tree_node_base *n) : node_(n) {}
+        Value *operator->() const {
+            return &static_cast<node *>(node_)->value_;
+        }
+        iterator &operator++() {
+            fn_80012E90(node_);
+            return *this;
+        }
+        bool operator==(const iterator &x) const {
+            return node_ == x.node_;
+        }
+        bool operator!=(const iterator &x) const {
+            return node_ != x.node_;
+        }
+
+        __tree_node_base *node_;
+    };
+
+    __tree(const Compare &comp, const Allocator &a);
+    ~__tree() {
+        if (root() != 0) {
+            __destroy(root());
+        }
+    }
+
+    size_type size() const {
+        return __size();
+    }
+    size_type max_size() const {
+        return numeric_limits<size_type>::max();
+    }
+
+    iterator begin() {
+        return iterator(__begin());
+    }
+    iterator end() {
+        return iterator(end_node());
+    }
+
+    iterator find(const Key &k);
+
+    pair<iterator, bool> insert(const Value &v);
+    void erase(iterator position);
+
+  private:
+    size_type &__size() {
+        return size_.first();
+    }
+    const size_type &__size() const {
+        return size_.first();
+    }
+    Allocator &__alloc() {
+        return size_.second();
+    }
+    node_allocator &__node_alloc() {
+        return header_.second();
+    }
+    __tree_node_base *end_node() {
+        return reinterpret_cast<__tree_node_base *>(&header_.first());
+    }
+    __tree_node_base *&root() {
+        return end_node()->left_;
+    }
+    __tree_node_base *&__begin() {
+        return begin_.first();
+    }
+    Compare &comp() {
+        return begin_.second();
+    }
+
+    void __destroy(__tree_node_base *x);
+
+    node *__insert_node(__tree_node_base *parent, bool left, bool leftmost, const Value &v);
+
+    /* The node count with the value allocator, the end node with the node allocator, and the
+     * leftmost node with the comparison. */
+    __compressed_pair<size_type, Allocator> size_;
+    __compressed_pair<__tree_end_node, node_allocator> header_;
+    __compressed_pair<__tree_node_base *, Compare> begin_;
+};
+
+template <class Key, class Value, class Compare, class Allocator>
+__tree<Key, Value, Compare, Allocator>::__tree(const Compare &comp, const Allocator &a)
+    : size_(a, 0), header_(node_allocator()), begin_(comp) {
+    __begin() = end_node();
+}
+
+template <class Key, class Value, class Compare, class Allocator>
+inline void __tree<Key, Value, Compare, Allocator>::__destroy(__tree_node_base *x) {
+    if (x->left_ != 0) {
+        __destroy(x->left_);
+    }
+    if (x->right_ != 0) {
+        __destroy(x->right_);
+    }
+    __alloc().destroy(&static_cast<node *>(x)->value_);
+    __node_alloc().deallocate(static_cast<node *>(x), 1);
+}
+
+template <class Key, class Value, class Compare, class Allocator>
+pair<typename __tree<Key, Value, Compare, Allocator>::iterator, bool>
+__tree<Key, Value, Compare, Allocator>::insert(const Value &v) {
+    __tree_node_base *y = 0;
+    __tree_node_base *parent = end_node();
+    __tree_node_base *x = root();
+    bool left = true;
+    bool leftmost = true;
+    while (x != 0) {
+        parent = x;
+        if (comp()(v, static_cast<node *>(x)->value_)) {
+            x = x->left_;
+            left = true;
+        } else {
+            y = x;
+            x = x->right_;
+            left = false;
+            leftmost = false;
+        }
+    }
+    if (y == 0 || comp()(static_cast<node *>(y)->value_, v)) {
+        return pair<iterator, bool>(iterator(__insert_node(parent, left, leftmost, v)), true);
+    }
+    return pair<iterator, bool>(iterator(y), false);
+}
+
+template <class Key, class Value, class Compare, class Allocator>
+typename __tree<Key, Value, Compare, Allocator>::node *
+__tree<Key, Value, Compare, Allocator>::__insert_node(__tree_node_base *parent, bool left,
+                                                      bool leftmost, const Value &v) {
+    if (size() > max_size() - 1) {
+        __msl_error("tree::insert length error\n");
+    }
+    node *n = __node_alloc().allocate(1, 0);
+    __alloc().construct(&n->value_, v);
+    n->left_ = n->right_ = 0;
+    n->set_parent(parent);
+    if (left) {
+        parent->left_ = n;
+    } else {
+        parent->right_ = n;
+    }
+    ++__size();
+    fn_8000CD64(n, root());
+    if (leftmost) {
+        __begin() = n;
+    }
+    return n;
+}
+
+template <class Key, class Value, class Compare, class Allocator>
+void __tree<Key, Value, Compare, Allocator>::erase(iterator position) {
+    __tree_node_base *n = position.node_;
+    if (position == begin()) {
+        ++position;
+        __begin() = position.node_;
+    }
+    fn_80013398(n, root());
+    __alloc().destroy(&static_cast<node *>(n)->value_);
+    __node_alloc().deallocate(static_cast<node *>(n), 1);
+    --__size();
+}
+
+template <class Key, class Value, class Compare, class Allocator>
+typename __tree<Key, Value, Compare, Allocator>::iterator
+__tree<Key, Value, Compare, Allocator>::find(const Key &k) {
+    __tree_node_base *x = root();
+    __tree_node_base *y = end_node();
+    while (x != 0) {
+        if (!comp()(static_cast<node *>(x)->value_, k)) {
+            y = x;
+            x = x->left_;
+        } else {
+            x = x->right_;
+        }
+    }
+    if (y == end_node() || comp()(k, static_cast<node *>(y)->value_)) {
+        return end();
+    }
+    return iterator(y);
+}
+
+template <class Key, class T, class Compare = less<Key>,
+          class Allocator = allocator<pair<const Key, T> > >
+class map {
+  public:
+    typedef Key key_type;
+    typedef pair<const Key, T> value_type;
+
+    /* Orders values by key; the tree also compares a key with a value in find. */
+    class value_compare {
+      public:
+        value_compare() {}
+
+        bool operator()(const value_type &x, const value_type &y) const {
+            return comp_(x.first, y.first);
+        }
+        bool operator()(const key_type &x, const value_type &y) const {
+            return comp_(x, y.first);
+        }
+        bool operator()(const value_type &x, const key_type &y) const {
+            return comp_(x.first, y);
+        }
+
+      private:
+        Compare comp_;
+    };
+
+  private:
+    typedef __tree<key_type, value_type, value_compare, Allocator> tree_type;
+
+  public:
+    typedef typename tree_type::iterator iterator;
+
+    map() : tree_(value_compare(), Allocator()) {}
+
+    iterator end() {
+        return tree_.end();
+    }
+    iterator find(const key_type &k) {
+        return tree_.find(k);
+    }
+    pair<iterator, bool> insert(const value_type &v) {
+        return tree_.insert(v);
+    }
+    void erase(iterator position) {
+        tree_.erase(position);
+    }
+
+  private:
+    tree_type tree_;
+};
+
+} // namespace std
+
+#endif

@@ -11,7 +11,15 @@ struct pair {
         first = T1();
         second = T2();
     }
+    pair(const T1 &x, const T2 &y) : first(x), second(y) {}
+    template <class U1, class U2>
+    pair(const pair<U1, U2> &p) : first(p.first), second(p.second) {}
 };
+
+template <class T1, class T2>
+inline pair<T1, T2> make_pair(const T1 &x, const T2 &y) {
+    return pair<T1, T2>(x, y);
+}
 }  // namespace std
 
 #endif
