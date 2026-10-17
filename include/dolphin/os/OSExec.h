@@ -20,7 +20,7 @@ typedef struct {
 CHECK_SIZEOF(OSExecParams, 0x1C);
 
 typedef int (*appGetNextCallback)(void *, u32 *, u32 *);
-typedef void (*appInitCallback)(void (*)(char *));
+typedef void (*appInitCallback)(void (*)(const char *, ...));
 typedef void *(*appGetEntryCallback)();
 typedef void (*AppLoaderCallback)(appInitCallback *, appGetNextCallback *, appGetEntryCallback *);
 

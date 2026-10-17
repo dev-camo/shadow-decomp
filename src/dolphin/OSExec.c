@@ -224,7 +224,7 @@ static void *LoadDol(const OSExecParams *params, AppLoaderCallback getInterface)
     getInterface(&appInit, &appGetNext, &appGetEntry);
     paramsWork = (OSExecParams *)OSAllocFromArenaLo(sizeof(OSExecParams), 1);
     __OSSetExecParams(params, paramsWork);
-    appInit((void (*)(char *))OSReport);
+    appInit(OSReport);
     OSSetArenaLo(paramsWork);
 
     while (appGetNext(&addr, &length, &offset) != 0) {
