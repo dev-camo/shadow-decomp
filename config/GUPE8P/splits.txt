@@ -1906,6 +1906,11 @@ rw/fn_8049F3F8.c:
 rw/fn_8049F8AC.c:
 	.text       start:0x8049F8AC end:0x8049FAFC
 
+rw/fn_8049FAFC.c:
+	.text       start:0x8049FAFC end:0x804A076C
+	.data       start:0x8056EC40 end:0x8056ED00
+	.sbss       start:0x805F16A0 end:0x805F16A8
+
 rw/fn_804A076C.c:
 	.text       start:0x804A076C end:0x804A2C90
 	.rodata     start:0x8051C3C0 end:0x8051C400
