@@ -9,12 +9,6 @@
 #include "CRI/sfh.h"
 #include "layout_check.h"
 
-#define SFH_VER_STR "1.19"
-#define SFH_VER_DATE "SFH_VER_DATE"
-
-/* ver_str and cpy_str are stripped by the linker in this game: their text is RE4's, unverified */
-const Char8 ver_str[] = " SFH Version " SFH_VER_STR SFH_VER_DATE;
-const Char8 cpy_str[] = "Copyright (c) 1999-2004 CRI-MW";
 const Char8 SFH_sbver_str[] = "\nCRI SFH/GC Ver.1.19 Build:Feb 28 2005 19:36:31\n";
 
 /* handle states */
