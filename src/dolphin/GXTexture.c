@@ -1148,17 +1148,6 @@ void GXPreLoadEntireTexture(GXTexObj *tex_obj, GXTexRegion *region) {
         }
     }
     __GXFlushTextureState();
-
-    // needed to match debug
-    maxLevelIndex;
-    maxLevelIndex;
-    base;
-    base;
-    base;
-    tmem1;
-    tmem1;
-    tmem2;
-    tmem2;
 }
 
 void GXSetTexCoordScaleManually(GXTexCoordID coord, GXBool enable, u16 ss, u16 ts) {

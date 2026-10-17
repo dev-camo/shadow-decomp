@@ -15,9 +15,7 @@ DSPTaskInfo *__DSP_rude_task;
 int __DSP_rude_task_pending;
 
 void __DSPHandler(__OSInterrupt intr, OSContext *context) {
-    /* Matching constraint: reserves stack space the original uses for an unknown local (verified:
-     * the unit drops to 51% without it). */
-    u8 unused[4];
+    u8 unused[4]; // keeps the 0x2E8-byte stack frame (0x2E0 without it); its use is unknown
     OSContext exceptionContext;
     u16 tmp;
     u32 mail;

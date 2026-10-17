@@ -145,9 +145,9 @@ void GXGetCullMode(GXCullMode *mode) {
         break;
     }
 #else
-    // fake match?
+    // The hardware cull field (genMode bits 14-15) holds the two GXCullMode bits swapped.
     GXCullMode hwMode = __GXData->genMode;
-    *mode = ((hwMode >> 0xD) & 0x2) | (((((int)hwMode >> 0xE) & 0x2) >> 0x1));
+    *mode = ((hwMode >> 13) & 2) | (((hwMode >> 14) & 2) >> 1);
 #endif
 }
 
