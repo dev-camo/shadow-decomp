@@ -265,7 +265,9 @@ f32 fn_8043D3BC(s32 rootKey, s32 fineTune, s32 key) {
     return ratio;
 }
 
-/* 2 to the power of steps/3072 (steps of 1/256 semitone, rounded to pairs). */
+/* 2 to the power of steps/3072 (steps of 1/256 semitone). The remainder below a semitone is
+ * applied in pairs: an odd positive remainder overshoots to -1, which the separate negative pass
+ * undoes with one division, so an odd count rounds down to the next lower even step. */
 f32 fn_8043D318(s32 steps) {
     f64 ratio = 1.0;
 

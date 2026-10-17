@@ -419,8 +419,8 @@ s32 fn_8043EF48(void) {
     return 0;
 }
 
-/* Fades the player's pitch over time milliseconds to a shift of steps (256 per semitone; fn_8043D318
- * converts it in pairs of steps, rounding odd remainders up) */
+/* Fades the player's pitch over time milliseconds to a shift of steps (256 per semitone;
+ * fn_8043D318 applies them in pairs, so an odd count rounds down to the next lower even step) */
 s32 fn_8043EE74(void *handle, s16 steps, s32 time) {
     s32 result;
     GcaxPlayer *player = handle;
