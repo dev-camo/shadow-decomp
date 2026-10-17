@@ -10,12 +10,12 @@
 extern "C" {
 #endif
 
-/* IDCT parameter block of an MPV handle (MPV_OBJ + 0x78). fn_803D332C clears its 0x54 bytes and
- * the IDCT entry points installed in the handle receive its address. */
+/* IDCT parameter block of an MPV handle (MPV_OBJ + 0x78). DCT_FsriInitPa clears its 0x54 bytes
+ * and the IDCT entry points installed in the handle receive its address. */
 typedef struct {
     Sint8 cbp[6];             /* 0x00 per block: 0 when only the DC coefficient is coded */
     Uint8 pad06[0x18 - 0x06]; /* 0x06 */
-    Sint32 cnt0;              /* 0x18 read with cnt1 by fn_803DA090 */
+    Sint32 cnt0;              /* 0x18 read with cnt1 by MPV_GetDctCnt */
     Sint32 cnt1;              /* 0x1C */
     Uint8 pad20[0x28 - 0x20]; /* 0x20 */
     Sint32 cbp_msk;           /* 0x28 coded block pattern, block 0 in the sign bit */
@@ -28,8 +28,13 @@ typedef struct {
 CHECK_SIZEOF(DCT_PA, 0x54);
 
 /* IDCT (not yet decompiled) */
+void DCT_FsriTransCbp(DCT_PA *pa);
+void DCT_FsriTrans6Blk(DCT_PA *pa);
 void DCT_FsriInitScanTbl(Sint8 *seq, Sint8 *scan);
 void DCT_FsriSetGqr(void);
+void DCT_FsriInitPa(DCT_PA *pa);
+void DCT_FsriInitScaleTbl(Float32 *tbl);
+void DCT_FsriInit(void);
 
 /* dct_ver.c */
 extern const Char8 DCT_version_str[];
