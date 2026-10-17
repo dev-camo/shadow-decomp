@@ -19,8 +19,6 @@
         fn_8047DB84(&error_);                                                                      \
     } while (0)
 
-#define rwSTREAMOLDESTVERSION 0x35000
-
 /* how many slots a full list grows by */
 #define rpMATERIALLISTGRANULARITY 20
 
@@ -134,7 +132,7 @@ RpMaterialList *fn_8045B924(RwStream *stream, RpMaterialList *matList) {
     if (!fn_8047CF50(stream, rwID_STRUCT, &length, &version)) {
         return NULL;
     }
-    if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+    if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
         status = fn_8047D868(stream, &numMaterials, sizeof(RwInt32)) != NULL;
         if (!status) {
             return NULL;
@@ -165,7 +163,7 @@ RpMaterialList *fn_8045B924(RwStream *stream, RpMaterialList *matList) {
                     fn_8045B6F0(matList);
                     return NULL;
                 }
-                if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+                if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
                     material = fn_8045B348(stream);
                     if (material == NULL) {
                         RwFree(indices);

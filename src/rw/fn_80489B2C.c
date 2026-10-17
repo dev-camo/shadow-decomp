@@ -12,7 +12,6 @@
 
 /* raster types and flags */
 #define rwRASTERTYPENORMAL 0x00
-#define rwRASTERDONTALLOCATE 0x80 /* the raster uses another raster's pixels */
 
 /* raster formats */
 #define rwRASTERFORMATMIPMAP 0x8000

@@ -6,9 +6,6 @@
 #define rwID_TEXTURE 0x6
 #define rwID_TEXTURENATIVE 0x15
 
-/* The oldest stream version textures are read from */
-#define rwSTREAMOLDESTVERSION 0x35000
-
 /* The size of a chunk header in a stream */
 #define rwCHUNKHEADERSIZE 12
 
@@ -18,10 +15,6 @@
 /* A texture's flags in a stream: its filtering and addressing, and above them whether its
  * mipmaps were not generated (inferred) */
 #define rwTEXTURESTREAMUSERMIPMAPS 0x10000
-
-/* the filter modes that use mipmaps */
-#define rwFILTERMIPNEAREST 3
-#define rwFILTERLINEARMIPLINEAR 6
 
 /* The system request for the device's ID (inferred) */
 #define rwDEVICESYSTEMGETID 0x16
@@ -121,7 +114,7 @@ RwTexture *fn_80483D28(RwStream *stream) {
     if (!fn_8047CF50(stream, rwID_STRUCT, &size, &version)) {
         return NULL;
     }
-    if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+    if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
         memset(&flags, 0, sizeof(flags));
         if (size != fn_80480D4C(stream, &flags, size)) {
             return NULL;
@@ -207,7 +200,7 @@ RwTexDictionary *fn_80483FBC(RwStream *stream) {
     if (!fn_8047CF50(stream, rwID_STRUCT, &size, &version)) {
         return NULL;
     }
-    if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+    if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
         device = &lbl_805F15B4->dOpenDevice;
         memset(&binDict, 0, sizeof(binDict));
         if (size != fn_80480D4C(stream, &binDict, size)) {
@@ -233,7 +226,7 @@ RwTexDictionary *fn_80483FBC(RwStream *stream) {
                 fn_8048CB38(dict);
                 return NULL;
             }
-            if (!(version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION)) {
+            if (!(version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION)) {
                 fn_8048CBE0(dict, fn_80483F8C, NULL);
                 fn_8048CB38(dict);
                 RWERROR((E_RW_BADVERSION));

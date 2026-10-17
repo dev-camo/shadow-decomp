@@ -9,9 +9,6 @@
 /* The size of a chunk header in a stream */
 #define rwCHUNKHEADERSIZE 12
 
-/* The oldest stream version plugin data chunks are read from */
-#define rwSTREAMOLDESTVERSION 0x35000
-
 /* errors (inferred) */
 #define E_RW_PLUGININIT 0x80000017 /* plugins cannot be registered now */
 
@@ -103,7 +100,7 @@ RwPluginRegistry *fn_804816AC(RwPluginRegistry *registry, RwStream *stream, void
     if (!fn_8047CF50(stream, rwID_EXTENSION, &length, &version)) {
         return NULL;
     }
-    if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+    if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
         RwPluginRegEntry *entry;
 
         while (length > 0) {

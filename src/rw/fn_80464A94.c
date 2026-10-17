@@ -16,9 +16,6 @@
 /* the plugin that reports native data errors (inferred) */
 #define rwID_NATIVEDATAPLUGIN 2
 
-/* the oldest stream version whose native data can be read */
-#define rwLIBRARYBASEVERSION 0x35000
-
 #define rwCHUNKHEADERSIZE 12
 
 /* The size of a resource entry's native data chunk; the original subtracts 7 from the entry size,

@@ -2,9 +2,6 @@
 #include "rw/rwcore.h"
 #include "layout_check.h"
 
-/* The oldest stream version cameras are read from */
-#define rwSTREAMOLDESTVERSION 0x35000
-
 /* The core's error plugin ID (inferred) */
 #define rwCOREERRORPLUGIN 1
 
@@ -44,7 +41,7 @@ RwCamera *fn_80483590(RwStream *stream) {
     if (!fn_8047CF50(stream, rwID_STRUCT, &size, &version)) {
         return NULL;
     }
-    if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+    if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
         rwStreamCamera cam;
         RwCamera *camera;
 

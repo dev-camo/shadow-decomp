@@ -7,9 +7,6 @@
 /* chunk IDs */
 #define rwID_FRAMELIST 0xE
 
-/* The oldest stream version frame lists are read from */
-#define rwSTREAMOLDESTVERSION 0x35000
-
 /* The core's error plugin ID (inferred) */
 #define rwCOREERRORPLUGIN 1
 
@@ -64,7 +61,7 @@ RwFrameList *fn_80483774(RwStream *stream, RwFrameList *frameList) {
     if (!fn_8047CF50(stream, rwID_STRUCT, &size, &version)) {
         return NULL;
     }
-    if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+    if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
         if (fn_80480D4C(stream, &numFrames, sizeof(numFrames)) != sizeof(numFrames)) {
             return NULL;
         }

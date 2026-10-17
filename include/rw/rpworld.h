@@ -1012,6 +1012,12 @@ void fn_80498AC4(RwRaster *raster); /* sets up GX to clear a raster */
 RwBool fn_804990D4(RwRaster *raster, RwRect *rect,
                    RwInt32 color); /* clears a rectangle of the raster context */
 
+/* sets and gets a texture's GX LOD parameters (inferred) */
+void fn_8049A518(RwTexture *texture, RwReal lodBias, RwBool biasClamp, RwBool edgeLOD,
+                 RwInt32 maxAniso);
+void fn_8049A6E4(RwTexture *texture, RwReal *lodBias, RwBool *biasClamp, RwBool *edgeLOD,
+                 RwInt32 *maxAniso);
+
 /* The GameCube raster plugin data (0x34 bytes; names inferred): the palette's TLUT object, the GX
  * texture and TLUT formats, the flags (bit 0: the pixel format has alpha), the allocated memory and
  * the 32-byte aligned texels and palette within it, the texels of the locked mip level and the
@@ -1034,7 +1040,33 @@ typedef struct RwGameCubeRasterExt {
 } RwGameCubeRasterExt;
 CHECK_SIZEOF(RwGameCubeRasterExt, 0x34);
 
-extern RwInt32 lbl_805F1658; /* raster plugin offset */
+/* The plugin ID the raster and texture plugin data are registered with */
+#define rwID_DEVICEMODULE 0x40C
+
+/* The raster plugin data flag of pixel formats with alpha */
+#define rwGAMECUBERASTERHASALPHA 0x1
+
+extern RwInt32 lbl_805F1658;                             /* raster plugin offset */
+RwInt32 fn_80495558(RwRaster *raster);                   /* the bytes of all its mip levels */
+RwBool fn_80496A20(RwRaster *raster, RwUInt8 numLevels); /* allocates its texels and palette */
+
+/* The GameCube texture plugin data (0x24 bytes; names inferred): the GX texture object built from
+ * the texture's raster, and flags. The low 16 bits of the flags keep the filter mode and addressing
+ * the object was built with, so a texture is rebuilt when they change. */
+typedef struct RwGameCubeTextureExt {
+    /* 0x00 */ GXTexObj texObj;
+    /* 0x20 */ RwUInt32 flags;
+} RwGameCubeTextureExt;
+CHECK_SIZEOF(RwGameCubeTextureExt, 0x24);
+
+/* Texture plugin data flags (inferred names): the filter mode and addressing the texture object was
+ * built with; the texture object has not been built yet (set by the plugin constructor, cleared by
+ * every build, and reported as the default LOD parameters); and the texture is loaded from its
+ * raster's preloaded texture cache region (GXLoadTexObjPreLoaded), keeping its own TLUT. Nothing
+ * in the game sets the last flag. */
+#define rwGAMECUBETEXTUREFILTERADDRESSINGMASK (rwTEXTUREFILTERMODEMASK | rwTEXTUREADDRESSINGMASK)
+#define rwGAMECUBETEXTURENOTBUILT 0x01000000
+#define rwGAMECUBETEXTUREPRELOADED 0x02000000
 
 /* The GameCube device's render state cache (0x50 bytes; names inferred): the depth test and write
  * and depth compare, the cull mode, the fog (enabled, type, packed and GX colors, whether its end

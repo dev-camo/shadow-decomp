@@ -30,8 +30,6 @@
         fn_8047DB84(&error_);                                                                      \
     } while (0)
 
-#define rwSTREAMOLDESTVERSION 0x35000
-
 /* the most vertices a geometry can have (16-bit indices) */
 #define rpGEOMETRYMAXVERTICES 0x10000
 
@@ -478,7 +476,7 @@ RpGeometry *fn_804599C8(RwStream *stream) {
     if (!fn_8047CF50(stream, rwID_STRUCT, NULL, &version)) {
         return NULL;
     }
-    if (version < rwSTREAMOLDESTVERSION || version > RW_STREAM_VERSION) {
+    if (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION) {
         RWERROR((E_RW_BADVERSION));
         return NULL;
     }
@@ -574,7 +572,7 @@ RpGeometry *fn_804599C8(RwStream *stream) {
     if (!fn_8047CF50(stream, rwID_MATLIST, NULL, &version)) {
         return NULL;
     }
-    if (version < rwSTREAMOLDESTVERSION || version > RW_STREAM_VERSION) {
+    if (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION) {
         fn_8045985C(geometry);
         RWERROR((E_RW_BADVERSION));
         return NULL;
