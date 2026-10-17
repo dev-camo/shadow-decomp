@@ -25,8 +25,6 @@
         fn_8047DB84(&error_);                                                                      \
     } while (0)
 
-#define rwSTREAMOLDESTVERSION 0x35000
-
 /* The stream header of a material (0x1C bytes) */
 typedef struct MaterialChunk {
     /* 0x00 */ RwInt32 flags;
@@ -199,7 +197,7 @@ RpMaterial *fn_8045B348(RwStream *stream) {
     if (!fn_8047CF50(stream, rwID_STRUCT, &length, &version)) {
         return NULL;
     }
-    if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+    if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
         memset(&header, 0, sizeof(header));
         if (length != fn_80480D4C(stream, &header, length)) {
             return NULL;
@@ -222,7 +220,7 @@ RpMaterial *fn_8045B348(RwStream *stream) {
                 fn_8045B1F4(material);
                 return NULL;
             }
-            if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+            if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
                 material->texture = fn_80483D28(stream);
             } else {
                 fn_8045B1F4(material);

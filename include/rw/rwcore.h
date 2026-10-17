@@ -37,6 +37,7 @@ typedef char RwChar;
 
 #define RW_STREAM_VERSION 0x37002
 #define RW_STREAM_BUILD 0x37
+#define rwLIBRARYBASEVERSION 0x35000 /* the oldest stream version that is read */
 
 /* chunk IDs */
 #define rwID_STRUCT 0x1
@@ -111,7 +112,12 @@ typedef struct RwCamera RwCamera;
 /* render state values */
 #define rwFILTERNEAREST 1
 #define rwFILTERLINEAR 2
+#define rwFILTERMIPNEAREST 3
+#define rwFILTERMIPLINEAR 4
+#define rwFILTERLINEARMIPNEAREST 5
+#define rwFILTERLINEARMIPLINEAR 6
 #define rwTEXTUREADDRESSWRAP 1
+#define rwTEXTUREADDRESSMIRROR 2
 #define rwTEXTUREADDRESSCLAMP 3
 #define rwTEXTUREADDRESSBORDER 4
 #define rwSHADEMODEGOURAUD 2
@@ -175,6 +181,9 @@ typedef struct RwCamera RwCamera;
 #define rwRASTERFORMATMIPMAP 0x8000
 #define rwRASTERFORMATPALMASK (rwRASTERFORMATPAL8 | rwRASTERFORMATPAL4)
 #define rwRASTERFORMATMASK 0xFF00
+
+/* the raster flag of rasters created without their own pixels */
+#define rwRASTERDONTALLOCATE 0x80
 
 #define RwRasterGetFormat(raster) (((raster)->cFormat & (rwRASTERFORMATMASK >> 8)) << 8)
 
@@ -1583,6 +1592,7 @@ extern RwInt32 lbl_805F15F0;    /* non-zero while subraster viewports are at dou
 extern RwInt32 lbl_805F1648;    /* a frame buffer line that scissor boxes are split at */
 extern RwInt32 lbl_805EDF28;    /* selects which side of that line scissor boxes cover */
 extern RwTexture *lbl_805F1664; /* 2D vertices are textured while its raster is set */
+extern RwRaster *lbl_805F1660;  /* a white 4x4 raster, set on lbl_805F1664 for a NULL texture */
 extern RwInt32 lbl_805F15E0;    /* whether frame buffer copies clear the frame buffer */
 extern RwInt32 lbl_805F15E4;    /* the frame buffer's GX pixel format */
 extern RwInt32 lbl_805F15E8;    /* the GX pixel format currently set */
@@ -1631,15 +1641,17 @@ RwBool fn_80498A74(void *out, void *inOut, RwInt32 numIn); /* raster render fast
 RwBool fn_80499520(void *out, void *inOut, RwInt32 numIn); /* set raster context */
 RwBool fn_80497168(void *out, void *inOut, RwInt32 numIn); /* sub raster */
 RwBool fn_8049952C(void *out, void *inOut, RwInt32 numIn); /* native texture size */
-RwBool fn_804995B4(void *out, void *inOut, RwInt32 numIn); /* native texture write */
-RwBool fn_8049988C(void *out, void *inOut, RwInt32 numIn); /* native texture read */
 RwBool fn_80495688(void *out, void *inOut, RwInt32 numIn); /* raster mip levels */
+
+/* native texture write and read, whose out argument is the stream */
+RwBool fn_804995B4(void *stream, void *inOut, RwInt32 numIn);
+RwBool fn_8049988C(void *stream, void *inOut, RwInt32 numIn);
 
 /* GameCube device driver functions in later units (inferred) */
 RwBool fn_80497904(RwInt32 state, void *value); /* sets a render state */
 RwBool fn_80497474(RwInt32 state, void *value); /* gets a render state */
 RwInt32 fn_804953F0(void);          /* registers the raster plugin; returns its offset */
-RwBool fn_80499BF8(void);           /* registers a device plugin */
+RwInt32 fn_80499BF8(void);          /* registers the texture plugin; returns its offset */
 RwBool fn_8049A78C(RwUInt16 token); /* whether the GPU has passed a draw sync token */
 void fn_80498E08(RwRaster *raster, RwRect *rect, RwRGBA *color,
                  RwInt32 clearMode); /* clears a raster rectangle */

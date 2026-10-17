@@ -20,8 +20,6 @@
         fn_8047DB84(&error_);                                                                      \
     } while (0)
 
-/* the oldest stream version read */
-#define rwSTREAMOLDESTVERSION 0x35000
 /* the first stream version with the vertex indices before the material index in triangles */
 #define rwSTREAMTRIANGLEVERSION 0x36002
 
@@ -181,7 +179,7 @@ RpWorldSector *fn_80454CE4(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
     if (!fn_8047CF50(stream, rwID_STRUCT, NULL, &version)) {
         return NULL;
     }
-    if (version < rwSTREAMOLDESTVERSION || version > RW_STREAM_VERSION) {
+    if (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION) {
         RWERROR((E_RW_BADVERSION));
         return NULL;
     }
@@ -328,7 +326,7 @@ RpPlaneSector *fn_804552AC(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
     if (!fn_8047CF50(stream, rwID_STRUCT, &length, &version)) {
         return NULL;
     }
-    if (version < rwSTREAMOLDESTVERSION || version > RW_STREAM_VERSION) {
+    if (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION) {
         RWERROR((E_RW_BADVERSION));
         return NULL;
     }
@@ -358,7 +356,7 @@ RpPlaneSector *fn_804552AC(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
         if (!fn_8047CF50(stream, rwID_ATOMICSECT, NULL, &version)) {
             status = FALSE;
         }
-        if (status && (version < rwSTREAMOLDESTVERSION || version > RW_STREAM_VERSION)) {
+        if (status && (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION)) {
             RWERROR((E_RW_BADVERSION));
             status = FALSE;
         }
@@ -373,7 +371,7 @@ RpPlaneSector *fn_804552AC(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
         if (!fn_8047CF50(stream, rwID_PLANESECT, NULL, &version)) {
             status = FALSE;
         }
-        if (status && (version < rwSTREAMOLDESTVERSION || version > RW_STREAM_VERSION)) {
+        if (status && (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION)) {
             RWERROR((E_RW_BADVERSION));
             status = FALSE;
         }
@@ -391,7 +389,7 @@ RpPlaneSector *fn_804552AC(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
             if (!fn_8047CF50(stream, rwID_ATOMICSECT, NULL, &version)) {
                 status = FALSE;
             }
-            if (status && (version < rwSTREAMOLDESTVERSION || version > RW_STREAM_VERSION)) {
+            if (status && (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION)) {
                 RWERROR((E_RW_BADVERSION));
                 status = FALSE;
             }
@@ -406,7 +404,7 @@ RpPlaneSector *fn_804552AC(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
             if (!fn_8047CF50(stream, rwID_PLANESECT, NULL, &version)) {
                 status = FALSE;
             }
-            if (status && (version < rwSTREAMOLDESTVERSION || version > RW_STREAM_VERSION)) {
+            if (status && (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION)) {
                 RWERROR((E_RW_BADVERSION));
                 status = FALSE;
             }
@@ -453,7 +451,7 @@ RpWorld *fn_804556F4(RwStream *stream) {
     if (!fn_8047CF50(stream, rwID_STRUCT, &length, &version)) {
         return NULL;
     }
-    if (version < rwSTREAMOLDESTVERSION || version > RW_STREAM_VERSION) {
+    if (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION) {
         RWERROR((E_RW_BADVERSION));
         return NULL;
     }
@@ -525,7 +523,7 @@ RpWorld *fn_804556F4(RwStream *stream) {
         fn_8045FFA0(world);
         return NULL;
     }
-    if (chunkVersion < rwSTREAMOLDESTVERSION || chunkVersion > RW_STREAM_VERSION) {
+    if (chunkVersion < rwLIBRARYBASEVERSION || chunkVersion > RW_STREAM_VERSION) {
         RWERROR((E_RW_BADVERSION));
         fn_8045FFA0(world);
         return NULL;
@@ -540,7 +538,7 @@ RpWorld *fn_804556F4(RwStream *stream) {
             fn_8045FFA0(world);
             return NULL;
         }
-        if (chunkVersion < rwSTREAMOLDESTVERSION || chunkVersion > RW_STREAM_VERSION) {
+        if (chunkVersion < rwLIBRARYBASEVERSION || chunkVersion > RW_STREAM_VERSION) {
             RWERROR((E_RW_BADVERSION));
             fn_8045FFA0(world);
             return NULL;
@@ -556,7 +554,7 @@ RpWorld *fn_804556F4(RwStream *stream) {
             fn_8045FFA0(world);
             return NULL;
         }
-        if (chunkVersion < rwSTREAMOLDESTVERSION || chunkVersion > RW_STREAM_VERSION) {
+        if (chunkVersion < rwLIBRARYBASEVERSION || chunkVersion > RW_STREAM_VERSION) {
             RWERROR((E_RW_BADVERSION));
             fn_8045FFA0(world);
             return NULL;

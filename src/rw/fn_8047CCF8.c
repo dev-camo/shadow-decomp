@@ -8,8 +8,7 @@
 /* The core's error plugin ID (inferred) */
 #define rwCOREERRORPLUGIN 1
 
-/* The oldest and newest stream library versions read */
-#define rwLIBRARYBASEVERSION 0x35000
+/* The newest stream library version read */
 #define rwLIBRARYCURRENTVERSION 0x37002
 
 /* The bytes converted at a time when writing */

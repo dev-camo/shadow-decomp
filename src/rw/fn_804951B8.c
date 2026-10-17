@@ -7,7 +7,6 @@
 #include <dolphin/gx.h>
 #include <dolphin/os.h>
 #include <string.h>
-#include "layout_check.h"
 
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
@@ -29,9 +28,6 @@
 #define ERRORCANNOTLOCK 0x8000000E
 #define ERRORCANNOTUNLOCK 0x80000011
 
-/* The plugin ID of the raster device data (inferred) */
-#define rwID_RASTERDEVICEPLUGIN 0x40C
-
 /* The memory hint of raster memory (inferred) */
 #define rwMEMHINT_RASTER 0x30411
 
@@ -45,7 +41,6 @@
 
 /* A raster type RenderWare does not define; the driver's switches reject it explicitly */
 #define RASTERTYPEUNDEFINED 0x3
-#define rwRASTERDONTALLOCATE 0x80
 #define rwRASTERFLAGSMASK 0xF8
 
 /* raster formats */
@@ -81,16 +76,6 @@
 #define rwRASTERLOCKWRITE 0x1
 #define rwRASTERLOCKREAD 0x2
 #define rwRASTERLOCKRAW 0x8
-
-/* The flag of the raster plugin data for formats with alpha */
-#define rwGAMECUBERASTERHASALPHA 0x1
-
-/* A texture's plugin data; only the word set with its raster is mapped (inferred) */
-typedef struct RwGameCubeTextureExt {
-    /* 0x00 */ RwUInt8 field_0x0[0x20];
-    /* 0x20 */ RwUInt32 field_0x20;
-} RwGameCubeTextureExt;
-CHECK_SIZEOF(RwGameCubeTextureExt, 0x24);
 
 /* The next draw sync token (declared volatile in rpworld.h) */
 volatile RwUInt16 lbl_805EDF40 = 1;
@@ -159,7 +144,7 @@ void fn_804953C0(void **shownFrameBuffer, void **nextFrameBuffer) {
 /* Registers the raster plugin data */
 RwInt32 fn_804953F0(void) {
     return lbl_805F1658 =
-               fn_80489C54(sizeof(RwGameCubeRasterExt), rwID_RASTERDEVICEPLUGIN, NULL, NULL, NULL);
+               fn_80489C54(sizeof(RwGameCubeRasterExt), rwID_DEVICEMODULE, NULL, NULL, NULL);
 }
 
 /* The size of a raster's mip level in GX tiles, 32-byte aligned; the whole raster's size while it
@@ -1057,7 +1042,7 @@ RwBool fn_8049714C(void *out, void *inOut, RwInt32 numIn) {
     RwTexture *texture = (RwTexture *)out;
 
     texture->raster = (RwRaster *)inOut;
-    RWPLUGINOFFSET(RwGameCubeTextureExt, texture, lbl_805F1670)->field_0x20 = 0x1000000;
+    RWPLUGINOFFSET(RwGameCubeTextureExt, texture, lbl_805F1670)->flags = rwGAMECUBETEXTURENOTBUILT;
     return TRUE;
 }
 

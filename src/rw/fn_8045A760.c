@@ -24,7 +24,6 @@
         fn_8047DB84(&error_);                                                                      \
     } while (0)
 
-#define rwSTREAMOLDESTVERSION 0x35000
 /* the first stream version that stores minusCosAngle itself (inferred) */
 #define rwSTREAMLIGHTCONEVERSION 0x30300
 
@@ -135,7 +134,7 @@ RpLight *fn_8045AB1C(RwStream *stream) {
     if (!fn_8047CF50(stream, rwID_STRUCT, &length, &version)) {
         return NULL;
     }
-    if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+    if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
         memset(&header, 0, sizeof(header));
         if (length != fn_80480D4C(stream, &header, length)) {
             return NULL;

@@ -15,9 +15,6 @@
 /* The string module's ID (inferred) */
 #define rwID_STRINGMODULE 0x412
 
-/* The oldest stream version strings are read from */
-#define rwSTREAMOLDESTVERSION 0x35000
-
 /* The bytes a string chunk is read in at a time */
 #define rwSTRINGREADCHUNK 64
 #define rwUNICODESTRINGREADCHUNK 128
@@ -272,7 +269,7 @@ RwChar *fn_80483060(RwChar *string, RwStream *stream) {
     while (fn_8047CDB4(stream, &type, &length, &version, NULL)) {
         RwBool versionOK = FALSE;
 
-        if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+        if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
             versionOK = TRUE;
         }
         if (!versionOK) {

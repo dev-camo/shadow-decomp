@@ -34,8 +34,6 @@
         fn_8047DB84(&error_);                                                                      \
     } while (0)
 
-#define rwSTREAMOLDESTVERSION 0x35000
-
 /* The stream header of a clump (0xC bytes) */
 typedef struct ClumpChunk {
     /* 0x0 */ RwInt32 numAtomics;
@@ -200,7 +198,7 @@ RpGeometryList *fn_80455F18(RwStream *stream, RpGeometryList *geomList) {
     if (!fn_8047CF50(stream, rwID_STRUCT, &length, &version)) {
         return NULL;
     }
-    if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+    if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
         if (fn_80480D4C(stream, &numGeoms, sizeof(RwInt32)) != sizeof(RwInt32)) {
             return NULL;
         }
@@ -223,7 +221,7 @@ RpGeometryList *fn_80455F18(RwStream *stream, RpGeometryList *geomList) {
                 GeometryListDeinitialize(geomList);
                 return NULL;
             }
-            if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+            if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
                 geometry = fn_804599C8(stream);
                 geomList->geometries[i] = geometry;
                 if (geometry == NULL) {
@@ -292,7 +290,7 @@ RpAtomic *fn_80456234(RwStream *stream, RwFrameList *frameList, RpGeometryList *
         RWERROR((E_RW_READ));
         return NULL;
     }
-    if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+    if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
         memset(&header, 0, sizeof(header));
         status = fn_80480D4C(stream, &header, length) == length;
         if (!status) {
@@ -318,7 +316,7 @@ RpAtomic *fn_80456234(RwStream *stream, RwFrameList *frameList, RpGeometryList *
                 RWERROR((E_RW_READ));
                 return NULL;
             }
-            if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+            if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
                 geometry = fn_804599C8(stream);
                 if (geometry == NULL) {
                     fn_80456FD8(atomic);
@@ -871,7 +869,7 @@ RpClump *fn_80457698(RwStream *stream) {
         RWERROR((E_RW_READ));
         return NULL;
     }
-    if (version >= rwSTREAMOLDESTVERSION && version <= RW_STREAM_VERSION) {
+    if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
         RwFrameList frameList;
         RpGeometryList geomList;
 
