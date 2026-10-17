@@ -24,9 +24,9 @@ int __put_char(int c, FILE *stream) {
     if (stream->file_state.io_state == __neutral && (stream->file_mode.io_mode & __write)) {
         if ((stream->file_mode.io_mode & __append)) {
 #if PLATFORM_GCN
-            if (fseek(stream, 0, 2) != 0)
+            if (fseek(stream, 0, SEEK_END) != 0)
 #else
-            if (_fseek(stream, 0, 2) != 0)
+            if (_fseek(stream, 0, SEEK_END) != 0)
 #endif
             {
                 return 0;
@@ -41,7 +41,7 @@ int __put_char(int c, FILE *stream) {
         stream->file_state.error = 1;
         ret = -1;
         stream->buffer_length = 0;
-    } else if ((stream->file_mode.buffer_mode == 2 ||
+    } else if ((stream->file_mode.buffer_mode == _IOFBF ||
                 stream->buffer_size ==
                     (unsigned int)stream->buffer_ptr - (unsigned int)stream->buffer) &&
                __flush_buffer(stream, NULL) != 0) {
@@ -52,8 +52,8 @@ int __put_char(int c, FILE *stream) {
         stream->buffer_length--;
         *stream->buffer_ptr++ = c;
 
-        if (stream->file_mode.buffer_mode != 2) {
-            if ((stream->file_mode.buffer_mode == 0 || c == 10) &&
+        if (stream->file_mode.buffer_mode != _IOFBF) {
+            if ((stream->file_mode.buffer_mode == _IONBF || c == '\n') &&
                 __flush_buffer(stream, NULL) != 0) {
                 stream->file_state.error = 1;
                 ret = -1;

@@ -9,7 +9,7 @@ int _ftell(FILE *file) {
 
     unsigned char tmp_kind = file->file_mode.file_kind;
     if (!(tmp_kind == __disk_file || tmp_kind == __console_file) || file->file_state.error) {
-        errno = 0x28;
+        errno = EFPOS;
         return -1;
     }
 
@@ -50,16 +50,16 @@ int _fseek(FILE *file, unsigned long offset, int whence) {
 
     unsigned char *ptr;
 
-    if (file->file_mode.file_kind != 1 || file->file_state.error != 0) {
-        errno = 0x28;
+    if (file->file_mode.file_kind != __disk_file || file->file_state.error != 0) {
+        errno = EFPOS;
         return -1;
     }
 
-    if (file->file_state.io_state == 1) {
+    if (file->file_state.io_state == __writing) {
         if (__flush_buffer(file, NULL) != 0) {
             file->file_state.error = 1;
             file->buffer_length = 0;
-            errno = 0x28;
+            errno = EFPOS;
             return -1;
         }
     }
@@ -70,25 +70,25 @@ int _fseek(FILE *file, unsigned long offset, int whence) {
         offset += pos;
     }
 
-    if ((whence != SEEK_END) && (file->file_mode.io_mode != 3) &&
-        (file->file_state.io_state == 2 || file->file_state.io_state == 3)) {
+    if ((whence != SEEK_END) && (file->file_mode.io_mode != __read_write) &&
+        (file->file_state.io_state == __reading || file->file_state.io_state == __rereading)) {
         if ((offset >= file->position) || !(offset >= file->buffer_position)) {
-            file->file_state.io_state = 0;
+            file->file_state.io_state = __neutral;
         } else {
             file->buffer_ptr = file->buffer + (offset - file->buffer_position);
             file->buffer_length = file->position - offset;
-            file->file_state.io_state = 2;
+            file->file_state.io_state = __reading;
         }
     } else {
-        file->file_state.io_state = 0;
+        file->file_state.io_state = __neutral;
     }
 
-    if (file->file_state.io_state == 0) {
+    if (file->file_state.io_state == __neutral) {
         if (file->position_fn != NULL &&
             (int)file->position_fn(file->handle, &offset, whence, file->idle_fn)) {
             file->file_state.error = 1;
             file->buffer_length = 0;
-            errno = 0x28;
+            errno = EFPOS;
             return -1;
         } else {
             file->file_state.eof = 0;
