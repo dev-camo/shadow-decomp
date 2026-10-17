@@ -1,6 +1,7 @@
 /* RenderWare streams: reading, writing and skipping through files, memory and custom functions.
  * The original file name is unknown. */
 #include "rw/rwcore.h"
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINTDUR_GLOBAL 0x40000
@@ -39,6 +40,7 @@
 typedef struct rwStreamGlobals {
     /* 0x0 */ RwFreeList *streamFreeList;
 } rwStreamGlobals;
+CHECK_SIZEOF(rwStreamGlobals, 0x4);
 
 RwFreeList lbl_805E2AA8; /* the stream free list */
 

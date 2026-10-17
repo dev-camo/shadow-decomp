@@ -5,6 +5,7 @@
 
 #include "CRI/cri_xpt.h"
 #include "CRI/uty.h"
+#include "layout_check.h"
 
 extern Sint32 sfadxt_stat;
 
@@ -13,6 +14,7 @@ typedef struct {
     Sint64 cnt;  /* 0x00 */
     Sint64 unit; /* 0x08 */
 } SFTST_TIME;
+CHECK_SIZEOF(SFTST_TIME, 0x10);
 
 #define SFTST_HIST_NUM 60
 #define SFTST_DEBOUT_MARGIN 0x400
@@ -48,6 +50,7 @@ typedef struct {
     Sint32 diff_a_min;           /* 0x1B8 */
     Sint32 rsv;                  /* 0x1BC */
 } SFTST_WORK;
+CHECK_SIZEOF(SFTST_WORK, 0x1C0);
 
 typedef SFTST_WORK *SFTST;
 
@@ -109,6 +112,7 @@ static const Char8 sftst_msg_hdr[] =
 typedef struct {
     Char8 s[sizeof(sftst_msg_hdr)]; /* 0x00 */
 } SFTST_HDRSTR;
+CHECK_SIZEOF(SFTST_HDRSTR, 0x112);
 static const Char8 sftst_msg_fmt[] =
     "%p, %ld, %ld, %08lX%08lX, %ld, %ld, %ld, %ld,   %ld, %ld,   %ld, %ld, %ld, %ld,   %ld, %ld,   "
     "%ld, %ld, %ld, %ld, %ld,   %ld, %ld,   %ld \n";

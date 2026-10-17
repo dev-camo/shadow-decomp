@@ -3,6 +3,7 @@
  * attenuation. The original file name is unknown. */
 #include "rw/rpworld.h"
 #include <dolphin/gx.h>
+#include "layout_check.h"
 
 /* the light plugin ID (inferred) */
 #define rwID_GAMECUBELIGHTPLUGIN 0x505
@@ -21,12 +22,14 @@ typedef struct LightAttenuation {
     /* 0x14 */ RwReal k1;
     /* 0x18 */ RwReal k2;
 } LightAttenuation;
+CHECK_SIZEOF(LightAttenuation, 0x1C);
 
 /* The light plugin module (8 bytes); only the plugin offset is used */
 typedef struct LightModule {
     /* 0x0 */ RwInt32 attenuationOffset; /* light plugin offset of the attenuation */
     /* 0x4 */ RwInt32 field_0x4;
 } LightModule;
+CHECK_SIZEOF(LightModule, 0x8);
 
 #define LIGHTATTENUATION(light)                                                                    \
     RWPLUGINOFFSET(LightAttenuation, light, lbl_805F1530.attenuationOffset)

@@ -4,12 +4,14 @@
 #include <dolphin/exi.h>
 
 #include "__os.h"
+#include "layout_check.h"
 
 typedef struct OSFatalParam {
     GXColor fg;
     GXColor bg;
     const char *msg;
 } OSFatalParam;
+CHECK_SIZEOF(OSFatalParam, 0xC);
 
 static OSFatalParam FatalParam;
 static OSContext FatalContext;

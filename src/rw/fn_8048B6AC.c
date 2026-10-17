@@ -5,6 +5,7 @@
 #include "rw/rwcore.h"
 #include <stddef.h>
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINTDUR_GLOBAL 0x40000
@@ -104,6 +105,7 @@ typedef struct rwTextureGlobals {
     /* 0x2C */ RwTextureCallBackMipmapGeneration mipmapGenerationCallBack;
     /* 0x30 */ RwTextureCallBackMipmapName mipmapNameCallBack;
 } rwTextureGlobals;
+CHECK_SIZEOF(rwTextureGlobals, 0x34);
 
 #define RWTEXTUREGLOBAL(var)                                                                       \
     (RWPLUGINOFFSET(rwTextureGlobals, lbl_805F15B4, lbl_805F15D4.globalsOffset)->var)

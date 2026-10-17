@@ -2,11 +2,13 @@
  * forming error codes. The original file name is unknown. */
 #include "rw/rwcore.h"
 #include <stdarg.h>
+#include "layout_check.h"
 
 /* The engine globals of the error module */
 typedef struct rwErrorGlobals {
     /* 0x0 */ RwError errEr; /* the pending error */
 } rwErrorGlobals;
+CHECK_SIZEOF(rwErrorGlobals, 0x8);
 
 #define RWERRORGLOBAL(var)                                                                         \
     (RWPLUGINOFFSET(rwErrorGlobals, lbl_805F15B4, lbl_805F1558.globalsOffset)->var)

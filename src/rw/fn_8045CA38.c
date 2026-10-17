@@ -3,6 +3,7 @@
 #include "rw/rpworld.h"
 #include <stdlib.h>
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_FUNCTION 0x10000
 #define rwMEMHINTDUR_EVENT 0x30000
@@ -45,6 +46,7 @@ struct TriStripPolygon {
     /* 0x1C */ RwInt32 testDone; /* in a trial strip */
     /* 0x20 */ RwUInt8 numNeighbours;
 };
+CHECK_SIZEOF(struct TriStripPolygon, 0x24);
 
 /* An edge shared by up to two triangles (0x10 bytes) */
 struct TriStripEdge {
@@ -54,6 +56,7 @@ struct TriStripEdge {
     /* 0x8 */ TriStripPolygon *poly1;
     /* 0xC */ TriStripEdge *next;
 };
+CHECK_SIZEOF(struct TriStripEdge, 0x10);
 
 /* A triangle strip (0x10 bytes) */
 typedef struct TriStripList {
@@ -62,12 +65,14 @@ typedef struct TriStripList {
     /* 0x8 */ RwUInt32 size; /* in vertices */
     /* 0xC */ struct TriStripList *next;
 } TriStripList;
+CHECK_SIZEOF(TriStripList, 0x10);
 
 /* The free lists of the strip builder's polygons and edges */
 typedef struct TriStripFreeLists {
     /* 0x0 */ RwFreeList *polygons;
     /* 0x4 */ RwFreeList *edges;
 } TriStripFreeLists;
+CHECK_SIZEOF(TriStripFreeLists, 0x8);
 
 /* A run of sorted triangles that share a material (0xC bytes) */
 typedef struct MaterialRun {
@@ -75,6 +80,7 @@ typedef struct MaterialRun {
     /* 0x4 */ RwUInt32 numTriangles; /* first the index of the run's first triangle */
     /* 0x8 */ RpMaterial *material;
 } MaterialRun;
+CHECK_SIZEOF(MaterialRun, 0xC);
 
 typedef RpMeshHeader *(*RpTriStripMeshCallBack)(RpBuildMesh *buildMesh, void *data);
 
@@ -83,6 +89,7 @@ typedef struct TriStripMethod {
     /* 0x0 */ RpTriStripMeshCallBack callBack;
     /* 0x4 */ void *data;
 } TriStripMethod;
+CHECK_SIZEOF(TriStripMethod, 0x8);
 
 RpMeshHeader *fn_8045EF3C(RpBuildMesh *buildMesh, void *data);
 
@@ -91,6 +98,7 @@ typedef struct MeshGenerationStatics {
     /* 0x00 */ RpMeshHeader emptyMeshHeader; /* of a build mesh without triangles; not freed */
     /* 0x10 */ TriStripMethod triStripMethod;
 } MeshGenerationStatics;
+CHECK_SIZEOF(MeshGenerationStatics, 0x18);
 
 MeshGenerationStatics lbl_8056D868 = {{0, 0, 0, 0, 0}, {fn_8045EF3C, NULL}};
 
@@ -99,6 +107,7 @@ MeshGenerationStatics lbl_8056D868 = {{0, 0, 0, 0, 0}, {fn_8045EF3C, NULL}};
 typedef struct MaterialSortKeys {
     /* 0x0 */ RwUInt32 transparent; /* transparent triangles sort after the opaque ones */
 } MaterialSortKeys;
+CHECK_SIZEOF(MaterialSortKeys, 0x4);
 
 const MaterialSortKeys lbl_805FB170 = {16};
 

@@ -3,6 +3,7 @@
  * attachment of the plugin. The original file name is unknown. */
 #include "rw/rpusrdat.h"
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINT_USERDATA 0x3011F
 #define rwMEMHINT_STRING 0x30002
@@ -24,6 +25,7 @@ typedef struct UserDataEngineGlobals {
     /* 0x0 */ RwInt32 field_0x0;
     /* 0x4 */ RwInt32 numInstances; /* the open engine instances */
 } UserDataEngineGlobals;
+CHECK_SIZEOF(UserDataEngineGlobals, 0x8);
 
 /* The plugin's globals, declared in reverse address order (the compiler places them in .sbss
  * last first): the module globals, then the plugin offsets of the user data list and its stream

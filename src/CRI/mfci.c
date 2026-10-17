@@ -12,6 +12,7 @@
 #include "CRI/cri_xpt.h"
 #include "CRI/cvfs.h"
 #include "CRI/svm.h"
+#include "layout_check.h"
 
 #define MFCI_MAX_OBJ 40
 #define MFCI_DEF_SCTLEN 0x800
@@ -36,6 +37,7 @@ typedef struct {
     /* 0x30 */ Sint32 rd_ofst;
     /* 0x34 */ Sint32 rd_nbyte;
 } MFCI_OBJ;
+CHECK_SIZEOF(MFCI_OBJ, 0x38);
 
 typedef MFCI_OBJ *MFCI;
 

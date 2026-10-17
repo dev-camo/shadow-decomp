@@ -4,6 +4,7 @@
  * unknown. */
 #include "rw/rpuvanim.h"
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINTDUR_GLOBAL 0x40000
@@ -14,6 +15,7 @@ typedef struct UVAnimEngineGlobals {
     /* 0x0 */ RwInt32 field_0x0;
     /* 0x4 */ RwInt32 numInstances; /* the open engine instances */
 } UVAnimEngineGlobals;
+CHECK_SIZEOF(UVAnimEngineGlobals, 0x8);
 
 UVAnimEngineGlobals lbl_805EDD88 = {0, 0};
 RwInt32 lbl_805EDD90 = 128; /* custom data free list entries per block */

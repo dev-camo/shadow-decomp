@@ -1,5 +1,6 @@
 #ifndef __PPC_EABI_LINKER
 #define __PPC_EABI_LINKER
+#include "layout_check.h"
 
 extern char _stack_addr[];
 extern char _stack_end[];
@@ -17,6 +18,7 @@ typedef struct __rom_copy_info {
     char *addr;
     unsigned int size;
 } __rom_copy_info;
+CHECK_SIZEOF(__rom_copy_info, 0xC);
 
 extern __rom_copy_info _rom_copy_info[];
 
@@ -24,6 +26,7 @@ typedef struct __bss_init_info {
     char *addr;
     unsigned int size;
 } __bss_init_info;
+CHECK_SIZEOF(__bss_init_info, 0x8);
 
 extern __bss_init_info _bss_init_info[];
 
@@ -33,6 +36,7 @@ typedef struct __eti_init_info {
     void *code_start;
     unsigned long code_size;
 } __eti_init_info;
+CHECK_SIZEOF(__eti_init_info, 0x10);
 
 extern __eti_init_info _eti_init_info[];
 extern const char _f_init_rom[];

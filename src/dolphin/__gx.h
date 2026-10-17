@@ -2,6 +2,7 @@
 #define _DOLPHIN_GX_INTERNAL_H_
 
 #include <dolphin/gx.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -213,6 +214,7 @@ typedef struct __GXFifoObj {
     u8 bind_cpu;
     u8 bind_gp;
 } __GXFifoObj;
+CHECK_SIZEOF(__GXFifoObj, 0x24);
 
 void __GXSaveCPUFifoAux(__GXFifoObj *realFifo);
 void __GXFifoInit(void);
@@ -307,6 +309,7 @@ typedef struct __GXData_struct {
     u8 dirtyVAT;
     u32 dirtyState;
 } GXData;
+CHECK_SIZEOF(GXData, 0x5B0);
 
 extern GXData *const __GXData;
 extern void *__memReg;
@@ -570,6 +573,7 @@ typedef struct __GXVerifyData {
     u8 xfDMtxDirty[256];
     u8 xfLightDirty[128];
 } __GXVerifyData;
+CHECK_SIZEOF(__GXVerifyData, 0x13F8);
 
 extern __GXVerifyData *__gxVerif;
 extern char *__gxvWarnings[125];

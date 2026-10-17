@@ -9,7 +9,9 @@ typedef struct Fn8040D608Object {
     /* 0x10 */ unsigned int field_10;
     /* 0x14 */ unsigned int field_14;
     /* 0x18 */ unsigned int field_18;
+#include "layout_check.h"
 } Fn8040D608Object;
+CHECK_SIZEOF(Fn8040D608Object, 0x1C);
 
 void fn_8040D608(Fn8040D608Object *object) {
     object->state = 0;

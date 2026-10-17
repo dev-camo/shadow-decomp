@@ -2,6 +2,7 @@
 #define _MSL_LOCALE_H
 
 #include <cstddef>
+#include "layout_check.h"
 
 typedef int (*__decode_mbyte) (wchar_t*, const char*,  size_t);
 typedef int (*__encode_mbyte) (char*, wchar_t);
@@ -32,6 +33,7 @@ struct lconv {
     char int_p_sign_posn;
     char int_n_sign_posn;
 };
+CHECK_SIZEOF(struct lconv, 0x38);
 
 struct _loc_mon_cmpt {
     char CmptName[8];
@@ -57,6 +59,7 @@ struct _loc_mon_cmpt {
     char int_p_sign_posn; 
     char int_n_sign_posn; 
 };
+CHECK_SIZEOF(struct _loc_mon_cmpt, 0x34);
 
 struct _loc_num_cmpt {
     char CmptName[8];
@@ -64,6 +67,7 @@ struct _loc_num_cmpt {
     char* thousands_sep;
     char* grouping;
 };
+CHECK_SIZEOF(struct _loc_num_cmpt, 0x14);
 
 struct _loc_time_cmpt {
     char CmptName[8];
@@ -76,6 +80,7 @@ struct _loc_time_cmpt {
     const char* MonthNames;
     char* TimeZone;
 };
+CHECK_SIZEOF(struct _loc_time_cmpt, 0x28);
 
 struct _loc_coll_cmpt {
     char name[8];
@@ -85,6 +90,7 @@ struct _loc_coll_cmpt {
     unsigned short* char_coll_table_ptr;
     unsigned short* wchar_coll_seq_ptr;
 };
+CHECK_SIZEOF(struct _loc_coll_cmpt, 0x1C);
 
 struct _loc_ctype_cmpt {
     char name[8];                               // 0x0
@@ -97,6 +103,7 @@ struct _loc_ctype_cmpt {
     __decode_mbyte  decode_mb;
     __encode_mbyte  encode_wc;
 };
+CHECK_SIZEOF(struct _loc_ctype_cmpt, 0x28);
 
 struct __locale {
     struct __locale* next_locale;               // 0x0
@@ -107,6 +114,7 @@ struct __locale {
 	struct _loc_num_cmpt* num_cmpt_ptr;         // 0x40
 	struct _loc_time_cmpt* time_cmpt_ptr;       // 0x44
 };
+CHECK_SIZEOF(struct __locale, 0x48);
 
 extern struct __locale _current_locale;
 extern struct lconv __lconv;

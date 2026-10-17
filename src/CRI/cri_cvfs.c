@@ -18,6 +18,7 @@
 #include <stdio.h>
 
 #include "CRI/cvfs.h"
+#include "layout_check.h"
 
 #define CVFS_MAX_DEV 32
 #define CVFS_MAX_HN 40
@@ -28,11 +29,13 @@ typedef struct {
     CVFS_IF *vtbl;                /* 0x00 */
     Char8 name[CVFS_DEVNAME_LEN]; /* 0x04 */
 } CVFS_DEV;
+CHECK_SIZEOF(CVFS_DEV, 0x10);
 
 struct CVFS_OBJ {
     CVFS_IF *vtbl; /* 0x00 */
     void *hn;      /* 0x04 the device's handle */
 };
+CHECK_SIZEOF(struct CVFS_OBJ, 0x8);
 
 CVFS_USRERRFN cvfs_errfn;
 static void *cvfs_errobj;

@@ -2,6 +2,7 @@
 #define _MSL_COMMON_ANSI_FILES_H
 
 #include <cstddef>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,6 +38,7 @@ typedef struct _file_modes {
     unsigned int file_orientation : 2;
     unsigned int binary_io : 1;
 } file_modes;
+CHECK_SIZEOF(file_modes, 0x4);
 
 enum __io_modes {
     __read = 1,
@@ -64,6 +66,7 @@ typedef struct _file_states {
     unsigned char eof;
     unsigned char error;
 } file_states;
+CHECK_SIZEOF(file_states, 0x4);
 
 typedef void (*__idle_proc)(void);
 typedef int (*__pos_proc)(__file_handle file, fpos_t *position, int mode, __idle_proc idle_proc);
@@ -95,6 +98,7 @@ typedef struct _FILE {
     /* 0x48 */ __idle_proc idle_fn;
     /* 0x4C */ struct _FILE *next_file;
 } FILE;
+CHECK_SIZEOF(FILE, 0x50);
 
 typedef struct _files {
     FILE _stdin;
@@ -102,6 +106,7 @@ typedef struct _files {
     FILE _stderr;
     FILE empty;
 } files;
+CHECK_SIZEOF(files, 0x140);
 
 #define _IONBF 0
 #define _IOLBF 1

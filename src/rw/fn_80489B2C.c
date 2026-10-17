@@ -2,6 +2,7 @@
  * pixels and palettes, mip levels and showing a raster. The original file name is unknown. */
 #include "rw/rwcore.h"
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINTDUR_GLOBAL 0x40000
@@ -42,6 +43,7 @@ typedef struct rwRasterGlobals {
     /* 0x2C */ RwRaster dummyRaster; /* the bottom of the stack */
     /* 0x60 */ RwFreeList *rasterFreeList;
 } rwRasterGlobals;
+CHECK_SIZEOF(rwRasterGlobals, 0x64);
 
 #define RWRASTERGLOBAL(var)                                                                        \
     (RWPLUGINOFFSET(rwRasterGlobals, lbl_805F15B4, lbl_805F15C8.globalsOffset)->var)

@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include "layout_check.h"
 
 #define TARGET_FLOAT_BITS 64
 #define TARGET_FLOAT_BYTES (TARGET_FLOAT_BITS / 8)
@@ -46,6 +47,7 @@ typedef struct {
     int field_width;                     // _8
     int precision;                       // _C
 } print_format;
+CHECK_SIZEOF(print_format, 0x10);
 
 static const char *parse_format(const char *format_string, va_list *arg, print_format *format) {
     print_format f;

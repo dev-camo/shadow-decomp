@@ -2,6 +2,7 @@
  * transforming points and vectors by matrices. The original file name is unknown. */
 #include "rw/rwcore.h"
 #include <math.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_GLOBAL 0x40000
 
@@ -34,6 +35,7 @@ typedef struct rwVectorGlobals {
     /* 0x0 */ RwUInt32 *SqrtTab;
     /* 0x4 */ RwUInt32 *InvSqrtTab;
 } rwVectorGlobals;
+CHECK_SIZEOF(rwVectorGlobals, 0x8);
 
 #define RWVECTORGLOBAL(var)                                                                        \
     (RWPLUGINOFFSET(rwVectorGlobals, lbl_805F15B4, lbl_805F1598.globalsOffset)->var)

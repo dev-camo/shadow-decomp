@@ -2,6 +2,7 @@
  * adding and removing children, transforming frames and marking them dirty. The original file
  * name is unknown. */
 #include "rw/rwcore.h"
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINTDUR_GLOBAL 0x40000
@@ -14,6 +15,7 @@
 typedef struct rwFrameGlobals {
     /* 0x0 */ RwFreeList *frameFreeList;
 } rwFrameGlobals;
+CHECK_SIZEOF(rwFrameGlobals, 0x4);
 
 #define RWFRAMEGLOBAL(var)                                                                         \
     (RWPLUGINOFFSET(rwFrameGlobals, lbl_805F15B4, lbl_805F15B8.globalsOffset)->var)

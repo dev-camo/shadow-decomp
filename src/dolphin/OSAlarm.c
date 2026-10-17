@@ -3,11 +3,13 @@
 
 #include "__os.h"
 #include "__dvd.h"
+#include "layout_check.h"
 
 typedef struct {
     OSAlarm *head;
     OSAlarm *tail;
 } OSAlarmQueue;
+CHECK_SIZEOF(OSAlarmQueue, 0x8);
 
 // prototypes
 static void SetTimer(OSAlarm *alarm);

@@ -7,6 +7,7 @@
  */
 #include "CRI/cri_xpt.h"
 #include "CRI/mps.h"
+#include "layout_check.h"
 
 /* system header information handed to the system header callback */
 typedef struct {
@@ -14,6 +15,7 @@ typedef struct {
     Uint8 scale;  /* 0x01 STD buffer bound scale */
     Uint16 bound; /* 0x02 STD buffer size bound */
 } MPSDEC_STMINF;
+CHECK_SIZEOF(MPSDEC_STMINF, 0x4);
 
 typedef struct {
     Sint32 rate_bound;     /* 0x00 */
@@ -28,6 +30,7 @@ typedef struct {
     Sint32 nstm;           /* 0x0C */
     MPSDEC_STMINF stm[48]; /* 0x10 */
 } MPSDEC_SYSHDINF;
+CHECK_SIZEOF(MPSDEC_SYSHDINF, 0xD0);
 
 typedef void (*MPSDEC_SYSFN)(void *obj, MPSDEC_SYSHDINF *inf);
 typedef void (*MPSDEC_PESFN)(void *obj, Uint8 stmid);

@@ -5,6 +5,7 @@
  * unknown. */
 #include "rw/rpworld.h"
 #include <stddef.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINTDUR_GLOBAL 0x40000
@@ -63,24 +64,28 @@ typedef struct CameraExt {
     /* 0x14 */ RwCameraEndUpdateFunc oldEndUpdate;
     /* 0x18 */ RwObjectHasFrameSyncFunction oldSync;
 } CameraExt;
+CHECK_SIZEOF(CameraExt, 0x1C);
 
 /* The world data of an atomic */
 typedef struct AtomicExt {
     /* 0x0 */ RpWorld *world;
     /* 0x4 */ RwObjectHasFrameSyncFunction oldSync;
 } AtomicExt;
+CHECK_SIZEOF(AtomicExt, 0x8);
 
 /* The world data of a clump */
 typedef struct ClumpExt {
     /* 0x0 */ RpWorld *world;
     /* 0x4 */ RwInt32 field_0x4; /* the module's field_0x8 when the clump is created or added */
 } ClumpExt;
+CHECK_SIZEOF(ClumpExt, 0x8);
 
 /* The world data of a light */
 typedef struct LightExt {
     /* 0x0 */ RpWorld *world;
     /* 0x4 */ RwObjectHasFrameSyncFunction oldSync;
 } LightExt;
+CHECK_SIZEOF(LightExt, 0x8);
 
 /* The world object module's globals in the engine (0xC bytes) */
 typedef struct WorldObjGlobals {
@@ -88,12 +93,14 @@ typedef struct WorldObjGlobals {
     /* 0x4 */ RwFreeList *lightTieFreeList;
     /* 0x8 */ RwInt32 field_0x8;
 } WorldObjGlobals;
+CHECK_SIZEOF(WorldObjGlobals, 0xC);
 
 /* The world object module (inferred) */
 typedef struct WorldObjModule {
     /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
     /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
 } WorldObjModule;
+CHECK_SIZEOF(WorldObjModule, 0x8);
 
 #define WORLDOBJGLOBAL(var)                                                                        \
     (RWPLUGINOFFSET(WorldObjGlobals, lbl_805F15B4, lbl_805F1518.globalsOffset)->var)

@@ -4,6 +4,7 @@
 #include <dolphin/types.h>
 #include <dolphin/os.h>
 #include "MetroTRK/trkenum.h"
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,6 +37,7 @@ typedef struct MessageBuffer {
     u32 position;            // _0C
     u8 data[TRKMSGBUF_SIZE]; // _10
 } MessageBuffer;
+CHECK_SIZEOF(MessageBuffer, 0x890);
 
 // Struct for storing DB communication functions (size 0x28).
 typedef struct DBCommTable {
@@ -50,6 +52,7 @@ typedef struct DBCommTable {
     DBCommFunc pre_continue_func;    // _20
     DBCommFunc post_stop_func;       // _24
 } DBCommTable;
+CHECK_SIZEOF(DBCommTable, 0x28);
 
 // Struct for information on DS versions (kernel and protocol) (size 0x4)
 typedef struct DSVersions {
@@ -58,12 +61,14 @@ typedef struct DSVersions {
     u8 protocolMajor; // _02
     u8 protocolMinor; // _03
 } DSVersions;
+CHECK_SIZEOF(DSVersions, 0x4);
 
 // Struct for packet information (size 0x8).
 typedef struct TRKPacketSeq {
     u16 _00;   // _00, unknown
     u8 _02[6]; // _02, unknown
 } TRKPacketSeq;
+CHECK_SIZEOF(TRKPacketSeq, 0x8);
 
 // Struct for receiving packets from serial poll (size 0x14).
 typedef struct TRKFramingState {
@@ -73,6 +78,7 @@ typedef struct TRKFramingState {
     BOOL isEscape;              // _0C
     u8 fcsType;                 // _10
 } TRKFramingState;
+CHECK_SIZEOF(TRKFramingState, 0x14);
 
 // Size of a command/reply packet header (CommandReply); payloads start after it.
 #define TRKMSG_HEADER_SIZE 0x40
@@ -91,6 +97,7 @@ typedef struct CommandReply {
     u32 _0C;      // _0C
     u8 _10[0x30]; // _10, unknown
 } CommandReply;
+CHECK_SIZEOF(CommandReply, 0x40);
 
 // Nub event information (size 0xC).
 typedef struct TRKEvent {
@@ -98,6 +105,7 @@ typedef struct TRKEvent {
     NubEventID eventID;       // _04
     MessageBufferID msgBufID; // _08
 } TRKEvent;
+CHECK_SIZEOF(TRKEvent, 0xC);
 
 // Event queue (size 0x28).
 typedef struct TRKEventQueue {
@@ -107,6 +115,7 @@ typedef struct TRKEventQueue {
     TRKEvent events[2]; // _0C
     NubEventID eventID; // _24, ID to assign next event, min 0x100
 } TRKEventQueue;
+CHECK_SIZEOF(TRKEventQueue, 0x28);
 
 // Struct for state information (size 0xA4).
 typedef struct TRKState {
@@ -121,6 +130,7 @@ typedef struct TRKState {
     BOOL inputActivated;   // _9C
     void *inputPendingPtr; // _A0
 } TRKState;
+CHECK_SIZEOF(TRKState, 0xA4);
 
 typedef struct TRKState_PPC {
     u32 GPR[32];         // 0x0
@@ -134,12 +144,14 @@ typedef struct TRKState_PPC {
     BOOL inputActivated; // 0x9c
     u8 *inputPendingPtr; // 0xA0
 } TRKState_PPC;
+CHECK_SIZEOF(TRKState_PPC, 0xA4);
 
 typedef struct ProcessorRestoreFlags_PPC {
     u8 TBR;
     u8 DEC;
     u8 linker_padding[0x9 - 0x2];
 } ProcessorRestoreFlags_PPC;
+CHECK_SIZEOF(ProcessorRestoreFlags_PPC, 0x9);
 
 ////////////////////////////////////
 

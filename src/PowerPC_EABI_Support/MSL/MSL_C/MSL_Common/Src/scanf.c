@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
+#include "layout_check.h"
 
 enum argument_options {
     normal_argument,
@@ -28,6 +29,7 @@ typedef struct {
     int field_width;
     char_map char_set;
 } scan_format;
+CHECK_SIZEOF(scan_format, 0x28);
 
 #define set_char_map(map, ch) map[(unsigned char)ch >> 3] |= (1 << (ch & 7))
 #define tst_char_map(map, ch) (map[(unsigned char)ch >> 3] & (1 << (ch & 7)))

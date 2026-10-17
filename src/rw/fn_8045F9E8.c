@@ -5,6 +5,7 @@
 #include "rw/rpworld.h"
 #include <stddef.h>
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINTDUR_GLOBAL 0x40000
@@ -47,18 +48,21 @@ typedef struct WorldListEntry {
     /* 0x4 */ RwUInt32 size;
     /* 0x8 */ RwLLLink link;
 } WorldListEntry;
+CHECK_SIZEOF(WorldListEntry, 0x10);
 
 /* The world module's globals in the engine (0xC bytes) */
 typedef struct WorldGlobals {
     /* 0x0 */ RwFreeList *worldListFreeList;
     /* 0x4 */ RwLinkList worldList;
 } WorldGlobals;
+CHECK_SIZEOF(WorldGlobals, 0xC);
 
 /* The world module (inferred) */
 typedef struct WorldModule {
     /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
     /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
 } WorldModule;
+CHECK_SIZEOF(WorldModule, 0x8);
 
 /* The world list entry of a link */
 #define WORLDLISTENTRY(link)                                                                       \

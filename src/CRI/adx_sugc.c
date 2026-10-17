@@ -4,10 +4,12 @@
  */
 #include "CRI/adx.h"
 #include "CRI/cvfs.h"
+#include "layout_check.h"
 
 typedef struct {
     Sint32 rdmode; /* 0x00 */
 } ADXGC_DVDFS_PRM;
+CHECK_SIZEOF(ADXGC_DVDFS_PRM, 0x4);
 
 /* volatile: ADXGC_SetupDvdFs reads the build string pointer without using it. */
 const Char8 *const volatile adxgcsdk_build =

@@ -3,6 +3,7 @@
  * original file name is unknown. */
 #include "rw/rpworld.h"
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINTDUR_GLOBAL 0x40000
@@ -34,17 +35,20 @@ typedef struct MaterialChunk {
     /* 0x0C */ RwBool textured;
     /* 0x10 */ RwSurfaceProperties surfaceProps;
 } MaterialChunk;
+CHECK_SIZEOF(MaterialChunk, 0x1C);
 
 /* The material module's globals in the engine (inferred) */
 typedef struct MaterialGlobals {
     /* 0x0 */ RwFreeList *materialFreeList;
 } MaterialGlobals;
+CHECK_SIZEOF(MaterialGlobals, 0x4);
 
 /* The material module (inferred) */
 typedef struct MaterialModule {
     /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
     /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
 } MaterialModule;
+CHECK_SIZEOF(MaterialModule, 0x8);
 
 #define MATERIALGLOBALS()                                                                          \
     ((MaterialGlobals *)((RwUInt8 *)lbl_805F15B4 + lbl_805F14E8.globalsOffset))

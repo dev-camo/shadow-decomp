@@ -3,6 +3,7 @@
  * converted reals and integers. The original file name is unknown. */
 #include "rw/rwcore.h"
 #include <string.h>
+#include "layout_check.h"
 
 /* The core's error plugin ID (inferred) */
 #define rwCOREERRORPLUGIN 1
@@ -45,6 +46,7 @@ typedef struct rwChunkHeader {
     RwUInt32 length;
     RwUInt32 libraryID; /* the version and build number */
 } rwChunkHeader;
+CHECK_SIZEOF(rwChunkHeader, 0xC);
 
 RwBool fn_8047CCF8(const RwChunkHeaderInfo *chunkHeaderInfo) {
     switch (chunkHeaderInfo->type) {

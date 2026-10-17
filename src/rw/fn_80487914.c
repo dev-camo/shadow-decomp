@@ -4,6 +4,7 @@
 #include "rw/rwcore.h"
 #include <math.h>
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINTDUR_GLOBAL 0x40000
@@ -57,6 +58,7 @@ typedef struct rwImageFormat {
     /* 0x2C */ RwImage *(*imageWrite)(RwImage *image, const RwChar *imageName); /* (inferred) */
     /* 0x30 */ struct rwImageFormat *nextFormat;
 } rwImageFormat;
+CHECK_SIZEOF(rwImageFormat, 0x34);
 
 /* The engine globals of the image module (0x220 bytes) */
 typedef struct rwImageGlobals {
@@ -71,6 +73,7 @@ typedef struct rwImageGlobals {
     /* 0x218 */ RwFreeList *imageFormatFreeList;
     /* 0x21C */ rwImageFormat *imageFormats;
 } rwImageGlobals;
+CHECK_SIZEOF(rwImageGlobals, 0x220);
 
 #define RWIMAGEGLOBAL(var)                                                                         \
     (RWPLUGINOFFSET(rwImageGlobals, lbl_805F15B4, lbl_805F15C0.globalsOffset)->var)
@@ -83,6 +86,7 @@ typedef struct ImageReadData {
     RwImage *(*imageRead)(const RwChar *imageName);
     RwImage *image;
 } ImageReadData;
+CHECK_SIZEOF(ImageReadData, 0x8);
 
 /* The image plugin registry */
 RwPluginRegistry lbl_8056E000 = {sizeof(RwImage), sizeof(RwImage), 0, 0, NULL, NULL};

@@ -8,6 +8,7 @@
  */
 #include "CRI/sj.h"
 #include <string.h>
+#include "layout_check.h"
 
 #define SJRBF_MAX_OBJ 256
 
@@ -26,6 +27,7 @@ typedef struct {
     void (*errfunc)(void *obj, Char8 *msg); /* 0x38 */
     void *errobj;                           /* 0x3C */
 } SJRBF_OBJ;
+CHECK_SIZEOF(SJRBF_OBJ, 0x40);
 
 /* build string: unreferenced, but kept in the original data */
 static const Char8 sj_build[] = "\nSJ/GC Ver.6.31 Build:Feb 28 2005 15:48:28\n";

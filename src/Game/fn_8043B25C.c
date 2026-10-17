@@ -2,6 +2,7 @@
  * helpers and the player's note lists, note allocation and note stealing. The original file name
  * is unknown. Definitions are in reverse address order (deferred inlining). */
 #include "Game/gcaxSnd.h"
+#include "layout_check.h"
 
 /* dB to linear gain: the first entry whose threshold exceeds a dB value gives its gain. Entry i
  * holds gain i / 1024 and its level in dB (-96 dB for silence). */
@@ -9,6 +10,7 @@ typedef struct GcaxCurvePoint {
     f32 value;
     f32 threshold; /* dB */
 } GcaxCurvePoint;
+CHECK_SIZEOF(GcaxCurvePoint, 0x8);
 
 static GcaxCurvePoint lbl_8056B090[1025] = {
     {0.0f, -96.0f},

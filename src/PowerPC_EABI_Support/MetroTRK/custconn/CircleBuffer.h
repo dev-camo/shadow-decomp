@@ -2,6 +2,7 @@
 #define TRK_CIRCLE_BUFFER_H
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 typedef struct CircleBuffer {
     u8 *mReadPtr;          // _00
@@ -13,6 +14,7 @@ typedef struct CircleBuffer {
     unsigned int mSection; // _18
     u32 _1C;               // _1C
 } CircleBuffer;
+CHECK_SIZEOF(CircleBuffer, 0x20);
 
 u32 CBGetBytesAvailableForRead(CircleBuffer *cb);
 u32 CBGetBytesAvailableForWrite(CircleBuffer *cb);

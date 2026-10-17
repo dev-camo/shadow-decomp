@@ -3,6 +3,7 @@
  * registration of the standard keyframe scheme. The original file name is unknown. */
 #include "rw/rphanim.h"
 #include <string.h>
+#include "layout_check.h"
 
 #define rwMEMHINT_HANIM 0x3011E
 
@@ -11,6 +12,7 @@ typedef struct HAnimGlobals {
     /* 0x0 */ RwInt32 frameOffset;           /* frame plugin offset */
     /* 0x4 */ RwFreeList *hierarchyFreeList; /* RpHAnimHierarchy entries */
 } HAnimGlobals;
+CHECK_SIZEOF(HAnimGlobals, 0x8);
 
 HAnimGlobals lbl_805F1440;
 RwFreeList lbl_805E1510;    /* the hierarchy free list */

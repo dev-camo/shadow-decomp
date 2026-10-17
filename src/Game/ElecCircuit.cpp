@@ -6,6 +6,7 @@
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
 #include "Game/GadgetTypeInfo.h"
+#include "layout_check.h"
 
 class UnkManager_800CB69C;
 
@@ -39,6 +40,7 @@ class ElecCircuit : public Gadget {
     /* 0x40 */ s32 m_state;   /* 0 new, 1 after a reset from the owner, 3 switched (inferred) */
     /* 0x44 */ u32 field_0x44;
 };
+CHECK_SIZEOF(ElecCircuit, 0x48);
 
 const char *ElecCircuit::s_name = "ElecCircuit";
 

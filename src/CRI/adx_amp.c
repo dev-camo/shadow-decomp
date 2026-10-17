@@ -10,6 +10,7 @@
 #include "CRI/adx.h"
 #include "CRI/adx_amp.h"
 #include "CRI/sj.h"
+#include "layout_check.h"
 
 struct ADXAMP_OBJ {
     Sint8 used;      /* 0x00 */
@@ -25,6 +26,7 @@ struct ADXAMP_OBJ {
     Sint32 rsv28;    /* 0x28 */
     Sint32 total;    /* 0x2C */
 };
+CHECK_SIZEOF(struct ADXAMP_OBJ, 0x30);
 typedef struct ADXAMP_OBJ ADXAMP_OBJ;
 
 /* Records the sampling rate. */

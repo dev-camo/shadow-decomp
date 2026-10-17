@@ -7,6 +7,7 @@
 #include <dolphin/gx.h>
 #include <dolphin/os.h>
 #include <string.h>
+#include "layout_check.h"
 
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
@@ -89,6 +90,7 @@ typedef struct RwGameCubeTextureExt {
     /* 0x00 */ RwUInt8 field_0x0[0x20];
     /* 0x20 */ RwUInt32 field_0x20;
 } RwGameCubeTextureExt;
+CHECK_SIZEOF(RwGameCubeTextureExt, 0x24);
 
 /* The next draw sync token (declared volatile in rpworld.h) */
 volatile RwUInt16 lbl_805EDF40 = 1;

@@ -7,6 +7,7 @@
 
 #include "CRI/cri_xpt.h"
 #include "CRI/sfh.h"
+#include "layout_check.h"
 
 #define SFH_VER_STR "1.19"
 #define SFH_VER_DATE "SFH_VER_DATE"
@@ -62,6 +63,7 @@ typedef struct SFH_OBJ {
     Sint32 size; /* 0x08 */
     Sint32 ver;  /* 0x0C */
 } SFH_OBJ;
+CHECK_SIZEOF(SFH_OBJ, 0x10);
 
 /* one stream element record (0x40 bytes) */
 typedef struct {
@@ -81,6 +83,7 @@ typedef struct {
     Uint8 ftr_fxtype;   /* 0x27 */
     Uint8 pad28[0x18];  /* 0x28 */
 } SFH_ELEM;
+CHECK_SIZEOF(SFH_ELEM, 0x40);
 
 #define SFH_ELEM_BITRATE(e) (*(Uint16 *)&(e)->aud_layer)
 #define SFH_ELEM_PICSZ(e) ((e)->aud_smphz)
@@ -92,6 +95,7 @@ typedef struct {
     Sint32 used; /* 0x04 */
     SFH_OBJ *hn; /* 0x08 */
 } SFH_OBJINF;
+CHECK_SIZEOF(SFH_OBJINF, 0xC);
 
 static Sint32 sfh_init_cont = 0;
 static SFH_OBJINF sfh_objinf;

@@ -1,5 +1,6 @@
 #ifndef _MSL_COMMON_ANSI_FP_H
 #define _MSL_COMMON_ANSI_FP_H
+#include "layout_check.h"
 
 #define SIGDIGLEN 36
 
@@ -13,12 +14,14 @@ typedef struct decimal {
         unsigned char unk41;
     } sig;
 } decimal;
+CHECK_SIZEOF(decimal, 0x2A);
 
 typedef struct decform {
     char style;
     char unk1;
     short digits;
 } decform;
+CHECK_SIZEOF(decform, 0x4);
 
 void __ull2dec(decimal *, unsigned long long);
 void __timesdec(decimal *, const decimal *, const decimal *);
