@@ -1908,6 +1908,10 @@ rw/fn_804A55CC.c:
 	.sbss       start:0x805F16C8 end:0x805F16D0
 	.sdata2     start:0x805FB488 end:0x805FB498
 
+rw/fn_804A6CDC.c:
+	.text       start:0x804A6CDC end:0x804A869C
+	.sdata2     start:0x805FB498 end:0x805FB4C0
+
 rw/fn_804A869C.c:
 	.text       start:0x804A869C end:0x804A90F8
 	.bss        start:0x805E32D8 end:0x805E3378
