@@ -17,7 +17,6 @@ Sint32 SVM_ExecSvrFs(void);
 Sint32 SVM_ExecSvrVsync(void);
 void SVM_SetCbUnlock(void (*func)(void *obj), void *obj);
 void SVM_SetCbLock(void (*func)(void *obj), void *obj);
-void SVM_SetCbErr(void (*func)(void *obj, Char8 *msg), void *obj);
 void SVM_GotoSvrBorder(Sint32 svtype);
 void SVM_SetCbBdr(Sint32 svtype, void (*func)(void *obj), void *obj);
 void SVM_SetCbSvrId(Sint32 svtype, Sint32 id, Sint32 (*func)(void *obj), void *obj,

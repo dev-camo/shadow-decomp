@@ -2,9 +2,7 @@
  * module. It holds up to 6 named server callbacks per server type, the lock/unlock hooks
  * and the error callback that every module's error message ends in.
  *
- * Names, types and layout follow SVM/GC Ver.1.54 in the RE4 and Mortal Kombat: Deception
- * GameCube decompilations (same error codes and function order). Ver.1.58 adds a name to
- * each server callback and validates the server type in the registration functions.
+ * Names, types and layout follow the RE4 and Mortal Kombat: Deception GameCube decompilations.
  */
 #include <string.h>
 #include <stdarg.h>
@@ -60,57 +58,22 @@ SvmSvrFunc svm_svr_ftbl[SVM_MAX_SVTYPE][SVM_MAX_SVR_FUNC];
 Sint32 svm_svr_exec_flag[SVM_MAX_SVTYPE];
 Sint32 svm_exec_cnt[SVM_MAX_SVTYPE];
 
-/* Unreferenced functions (stripped by the linker): svm_itoa, SVM_SetCbWaitVsync,
- * SVM_SetCbTestAndSet, SVM_SetCbGotoSvrBorder, SVM_GetNumCbSvr, SVM_SetCbErr,
- * SVM_ExecSvrFuncId and SVM_ItoA2. Their bodies are taken unchanged from the RE4 and
- * Mortal Kombat: Deception decompilations of SVM/GC Ver.1.54; Shadow's executable does not
- * contain them, so their code is not verified. What the match does verify is their effect on
- * the object: MWCC places .bss objects in order of first reference (these functions touch the
- * itoa buffer, the hooks and the server tables first) and emits their string literals
- * (ExecSvrFuncId's error codes, ItoA2's " ") at the observed .rodata positions.
+/* Several functions of this file are stripped from the game, so their bodies are unknown. MWCC
+ * lays out .bss by first reference and .rodata literals by first use, so the never-called
+ * stand-ins below refer to what those functions left in the object, at their positions: a 32-byte
+ * static buffer, the hooks and server tables, and three literals.
  */
 
-/* Reference body, kept as written in both decompilations: it stores raw digit values
- * (0-9, not ASCII) and its loop overwrites the last digit with the terminator, so it is not
- * a working decimal formatter. Only its 32-byte static buffer is checked (.bss offset 0x0C).
+/* Stand-in for the stripped functions before svm_call_err1: the static buffer at .bss 0x0C, then
+ * the vsync-wait hooks and the test-and-set hook. Storing the addresses keeps the references.
  */
-static void svm_itoa(Sint32 val, Char8 *str, Sint32 len) {
+static void svm_BssOrderHooks(void **out) {
     static Char8 buf[32];
-    Sint32 i;
-    Sint32 n;
-    Sint32 l;
 
-    for (i = 0; i < 32; i++) {
-        buf[i] = val % 10;
-        val /= 10;
-        if (val == 0) {
-            buf[i] = '\0';
-            break;
-        }
-    }
-    l = strlen(buf);
-    n = len - 1;
-    if (l < n) {
-        n = l;
-    }
-    for (i = 0; i < n; i++) {
-        str[i] = buf[n - 1 - i];
-    }
-    str[i] = '\0';
-}
-
-/* Pre/post vsync-wait hooks of the threaded server. */
-void SVM_SetCbWaitVsync(void (*pre)(void *obj), void *pre_obj, void (*post)(void *obj),
-                        void *post_obj) {
-    svm_post_waitv_func.func = post;
-    svm_post_waitv_func.obj = post_obj;
-    svm_pre_waitv_func.func = pre;
-    svm_pre_waitv_func.obj = pre_obj;
-}
-
-/* Installs a platform test-and-set for SVM_TestAndSet. */
-void SVM_SetCbTestAndSet(Sint32 (*func)(Sint32 *flag)) {
-    svm_tas_fptr = func;
+    out[0] = buf;
+    out[1] = &svm_post_waitv_func;
+    out[2] = &svm_pre_waitv_func;
+    out[3] = &svm_tas_fptr;
 }
 
 /* Delivers a fixed message to the error callback. */
@@ -148,23 +111,12 @@ static void svm_lock(void) {
     }
 }
 
-/* Installs the per-server-type "go to border" hook. */
-void SVM_SetCbGotoSvrBorder(Sint32 svtype, void (*func)(void *obj), void *obj) {
-    svm_goto_border_func[svtype].func = func;
-    svm_goto_border_func[svtype].obj = obj;
-}
-
-/* Registered callbacks of one server type. */
-Sint32 SVM_GetNumCbSvr(Sint32 svtype) {
-    Sint32 i;
-    Sint32 n = 0;
-
-    for (i = 0; i < SVM_MAX_SVR_FUNC; i++) {
-        if (svm_svr_ftbl[svtype][i].func != 0) {
-            n++;
-        }
-    }
-    return n;
+/* Stand-in for the stripped functions before svm_exec_svr: the border hooks and the server
+ * table, in storage order. Storing the addresses keeps the references.
+ */
+static void svm_BssOrderTables(void **out) {
+    out[0] = svm_goto_border_func;
+    out[1] = svm_svr_ftbl;
 }
 
 /* Runs the callbacks of one server type in order and counts the pass. */
@@ -268,14 +220,6 @@ void SVM_SetCbLock(void (*func)(void *obj), void *obj) {
     svm_lock_func.obj = obj;
 }
 
-/* Installs the error callback (unreferenced in this game, so stripped). */
-void SVM_SetCbErr(void (*func)(void *obj, Char8 *msg), void *obj) {
-    svm_lock();
-    svm_err_func.func = func;
-    svm_err_func.obj = obj;
-    svm_unlock();
-}
-
 /* Calls the registered border hook of a server type. */
 void SVM_GotoSvrBorder(Sint32 svtype) {
     if (svm_goto_border_func[svtype].func != 0) {
@@ -291,27 +235,12 @@ void SVM_SetCbBdr(Sint32 svtype, void (*func)(void *obj), void *obj) {
     svm_unlock();
 }
 
-/* Runs one callback of a server type by slot id. */
-Sint32 SVM_ExecSvrFuncId(Sint32 svtype, Sint32 id) {
-    Sint32 ret = 0;
-    SvmSvrFunc *p;
-
-    if (id < 0 || id >= SVM_MAX_SVR_FUNC) {
-        svm_call_err1("1071301:SVM_ExecSvrFuncId:illegal id");
-        return 0;
-    }
-    if (svtype < 0 || svtype >= SVM_MAX_SVTYPE) {
-        svm_call_err1("1071302:SVM_ExecSvrFuncId:illegal svtype");
-        return 0;
-    }
-    p = &svm_svr_ftbl[svtype][id];
-    if (p->func != 0) {
-        svm_svr_exec_flag[svtype] = 1;
-        ret = p->func(p->obj);
-        svm_svr_exec_flag[svtype] = 0;
-    }
-    svm_exec_cnt[svtype]++;
-    return ret;
+/* Stand-in for the stripped functions before SVM_SetCbSvrId. Their parameter messages, which
+ * name SVM_ExecSvrFuncId, remain in .rodata. Storing the addresses keeps the references.
+ */
+static void svm_RodataOrderExecId(const Char8 **out) {
+    out[0] = "1071301:SVM_ExecSvrFuncId:illegal id";
+    out[1] = "1071302:SVM_ExecSvrFuncId:illegal svtype";
 }
 
 /* Registers a named callback in a fixed slot of a server type. */
@@ -406,11 +335,11 @@ void SVM_CallErr(Char8 *fmt, ...) {
     }
 }
 
-/* Joins two svm_itoa results with a space (reference body; unverified, see above). */
-void SVM_ItoA2(Sint32 a, Sint32 b, Char8 *str, Sint32 len) {
-    svm_itoa(a, str, len);
-    strncat(str, " ", len - strlen(str) - 1);
-    svm_itoa(b, str + strlen(str), len - strlen(str));
+/* Stand-in for the stripped function before SVM_Unlock; its " " literal remains last in .rodata.
+ * Storing the address keeps the reference.
+ */
+static void svm_RodataOrderSpace(const Char8 **out) {
+    out[0] = " ";
 }
 
 void SVM_Unlock(void) {
