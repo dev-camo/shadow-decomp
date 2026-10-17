@@ -1,0 +1,115 @@
+#ifndef MSL_VECTOR_H_
+#define MSL_VECTOR_H_
+
+#include <memory>
+
+/* The part of <vector> that the Chao::CSD code uses: the vector of pointers (the game's vectors of
+ * other element types are not covered yet). Its messages ("vector::reserve length error",
+ * "vector::insert length error") are the library's.
+ *
+ * Every vector of pointers is implemented by one vector of void pointers, through private bases:
+ * the GameCube code has, for each pointer type, an out-of-line copy of each member of vector<T *>
+ * and of __vector_ptr<T>'s back, push_back, pop_back, constructor and destructor, each calling the
+ * next layer. __vector_ptr's reserve is inlined into vector<T *>'s, and __vector_imp's pop_back
+ * into __vector_ptr's. The names __vector_ptr and __vector_imp are placeholders: the library's
+ * names for these internal classes are not recoverable from the game.
+ *
+ * reserve and insert are only declared: the program uses the game's own void-pointer instances
+ * (0x800D15D8 and 0x8006CD9C in the USA release). The game's own push_back (0x8006CB24) is this
+ * push_back with end() (0x8006CB68) called out of line, and its destructor (0x80019890) reads the
+ * elements through an accessor (0x80019904) that this header does not declare. The Chao::CSD copies
+ * inline end() and read the elements directly, so they differ from the game's and are weak
+ * duplicates that the link discards. */
+namespace std {
+
+/* The vector implementation: capacity (paired with the allocator), size, then the elements. */
+template <class T, class Allocator> class __vector_imp {
+  public:
+    typedef T value_type;
+    typedef T *iterator;
+    typedef size_t size_type;
+
+    __vector_imp() : cap_(0), size_(0), data_(0) {}
+    ~__vector_imp() {
+        if (data_ != 0) {
+            __alloc().deallocate(data_, __cap());
+        }
+    }
+
+    iterator end() {
+        return data_ + size_;
+    }
+    value_type &back() {
+        return *(end() - 1);
+    }
+
+    void reserve(size_type n);
+    void insert(iterator position, size_type n, const value_type &x);
+    void push_back(const value_type &x) {
+        insert(end(), 1, x);
+    }
+    void pop_back() {
+        --size_;
+    }
+
+  private:
+    size_type &__cap() {
+        return cap_.first();
+    }
+    Allocator &__alloc() {
+        return cap_.second();
+    }
+
+    __compressed_pair<size_type, Allocator> cap_;
+    size_type size_;
+    T *data_;
+};
+
+/* A vector of T pointers stored as void pointers. */
+template <class T> class __vector_ptr : private __vector_imp<void *, allocator<void *> > {
+    typedef __vector_imp<void *, allocator<void *> > base;
+
+  public:
+    typedef size_t size_type;
+
+    T *&back() {
+        return (T *&)base::back();
+    }
+
+    void reserve(size_type n) {
+        base::reserve(n);
+    }
+    void push_back(T *const &x) {
+        base::push_back((void *const &)x);
+    }
+    void pop_back() {
+        base::pop_back();
+    }
+};
+
+template <class T, class Allocator = allocator<T> > class vector;
+
+template <class T, class Allocator> class vector<T *, Allocator> : private __vector_ptr<T> {
+    typedef __vector_ptr<T> base;
+
+  public:
+    typedef size_t size_type;
+
+    T *&back() {
+        return base::back();
+    }
+
+    void reserve(size_type n) {
+        base::reserve(n);
+    }
+    void push_back(T *const &x) {
+        base::push_back(x);
+    }
+    void pop_back() {
+        base::pop_back();
+    }
+};
+
+} // namespace std
+
+#endif

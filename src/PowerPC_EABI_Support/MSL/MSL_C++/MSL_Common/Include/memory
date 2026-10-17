@@ -40,6 +40,43 @@ template <class T> inline T *uninitialized_copy(T *first, T *last, T *result) {
     return __uninitialized_copy_helper<T, true, false>::uninitialized_copy(first, last, result);
 }
 
+template <class T> class allocator {
+  public:
+    typedef size_t size_type;
+    typedef T *pointer;
+
+    allocator() {}
+
+    void deallocate(pointer p, size_type n) {
+        ::operator delete(p);
+    }
+};
+
+/* A pair whose second member is usually an empty class (an allocator), stored as a base class so
+ * that it takes no space; the containers keep their sizes and allocators in one. The names of this
+ * pair and its base are placeholders: the library's names are not recoverable from the game. */
+template <class T1, class T2> class __compressed_pair_imp : private T2 {
+  public:
+    __compressed_pair_imp(T1 x) : T2(), first_(x) {}
+
+    T1 &first() {
+        return first_;
+    }
+    T2 &second() {
+        return *this;
+    }
+
+  private:
+    T1 first_;
+};
+
+template <class T1, class T2> class __compressed_pair : public __compressed_pair_imp<T1, T2> {
+    typedef __compressed_pair_imp<T1, T2> base;
+
+  public:
+    __compressed_pair(T1 x) : base(x) {}
+};
+
 } // namespace std
 
 #endif
