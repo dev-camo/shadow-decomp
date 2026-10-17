@@ -631,9 +631,9 @@ void fn_8043C89C(GcaxList *voices, s32 bank, s32 program, s32 key, s32 velocity)
         numLayers = GCAX_COUNT(entry);
 
         for (i = 0; i < numLayers; i++) {
-            GcaxRegion *regions = (GcaxRegion *)gcaxSndBankData(
-                header, ((GcaxLayer *)gcaxSndBankData(header, entry))[i].regions);
-            int numRegions = GCAX_COUNT(((GcaxLayer *)gcaxSndBankData(header, entry))[i].regions);
+            GcaxLayer *layers = (GcaxLayer *)gcaxSndBankData(header, entry);
+            GcaxRegion *regions = (GcaxRegion *)gcaxSndBankData(header, layers[i].regions);
+            int numRegions = GCAX_COUNT(layers[i].regions);
             int j;
 
             for (j = 0; j < numRegions; j++) {
@@ -641,9 +641,8 @@ void fn_8043C89C(GcaxList *voices, s32 bank, s32 program, s32 key, s32 velocity)
                 if (region->keyMin <= key && key <= region->keyMax) {
                     ref = gcaxSndNextRef(voices, ref);
                     if (ref != NULL && ref->data != NULL) {
-                        fn_8043CA7C(bank, ref->data,
-                                    &((GcaxLayer *)gcaxSndBankData(header, entry))[i], header,
-                                    region, key, curves, velocity);
+                        fn_8043CA7C(bank, ref->data, &layers[i], header, region, key, curves,
+                                    velocity);
                     }
                 }
             }
