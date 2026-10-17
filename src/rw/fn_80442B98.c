@@ -19,7 +19,7 @@
 /* Allocates an animation with numDMorphTargets empty frame lists after it */
 static inline RpDMorphAnimation *DMorphAnimationCreate(RwInt32 numDMorphTargets) {
     RpDMorphAnimation *animation;
-    RwUInt32 size = numDMorphTargets * sizeof(RpDMorphFrameList) + sizeof(RpDMorphAnimation);
+    RwInt32 size = numDMorphTargets * sizeof(RpDMorphFrameList) + sizeof(RpDMorphAnimation);
     RwUInt32 i;
     RpDMorphFrameList *frameList;
 
@@ -42,7 +42,7 @@ static inline RpDMorphAnimation *DMorphAnimationCreate(RwInt32 numDMorphTargets)
 static inline RpDMorphAnimation *DMorphAnimationCreateFrames(RpDMorphAnimation *animation,
                                                              RwUInt32 index, RwUInt32 numFrames) {
     RpDMorphFrameList *frameList = &animation->frameLists[index];
-    RwUInt32 size = numFrames * sizeof(RpDMorphFrame);
+    RwInt32 size = numFrames * sizeof(RpDMorphFrame);
     RwUInt32 i;
 
     frameList->frames = RwMalloc(size, rwMEMHINT_DMORPHFRAMES);
