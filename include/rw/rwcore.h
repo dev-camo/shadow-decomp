@@ -61,11 +61,12 @@ typedef RwInt32 RwPlatformID;
 
 /* errors */
 #define E_RW_BADVERSION 0x80000004
-#define E_RW_READ 0x8000001A    /* reading a stream failed */
-#define E_RW_NOMEM 0x80000013   /* reported with the size that could not be allocated */
-#define E_RW_NOERROR 0x80000000 /* no error is pending */
-#define E_RW_NULLP 0x80000016   /* a required argument is NULL */
-#define E_RW_READTEXMASK 0x16   /* a texture was read without its mask */
+#define E_RW_READ 0x8000001A          /* reading a stream failed */
+#define E_RW_NOMEM 0x80000013         /* reported with the size that could not be allocated */
+#define E_RW_NOERROR 0x80000000       /* no error is pending */
+#define E_RW_NULLP 0x80000016         /* a required argument is NULL */
+#define E_RW_PLUGINNOTINIT 0x80000018 /* used before its module is ready (inferred) */
+#define E_RW_READTEXMASK 0x16         /* a texture was read without its mask */
 
 typedef struct RwFreeList RwFreeList;
 
@@ -108,6 +109,7 @@ typedef struct RwCamera RwCamera;
 #define rwTEXTUREADDRESSCLAMP 3
 #define rwTEXTUREADDRESSBORDER 4
 #define rwSHADEMODEGOURAUD 2
+#define rwFOGTYPENAFOGTYPE 0
 #define rwFOGTYPELINEAR 1
 #define rwBLENDZERO 1
 #define rwBLENDONE 2
@@ -939,6 +941,9 @@ RxPipelineNode *fn_8049CFCC(RxPipeline *pipeline, const RwChar *name, RxPipeline
  * keyOffset in each, whose values lie between minKey and maxKey (inferred) */
 void fn_8049F5B4(void *base, RwUInt32 numElements, RwUInt32 elementSize, RwUInt32 keyOffset,
                  RwUInt32 minKey, RwUInt32 maxKey);
+
+/* sets a render state vector to the default render states; NULL on failure (inferred) */
+RxRenderStateVector *fn_8049F2A4(RxRenderStateVector *rsvp);
 
 typedef struct RwResEntry RwResEntry;
 typedef void (*RwResEntryDestroyNotify)(RwResEntry *resEntry);
