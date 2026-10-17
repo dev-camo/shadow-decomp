@@ -62,6 +62,8 @@ RwInt32 lbl_805F1538;
  * turn */
 Rt2dFont *fn_80470AC4(Rt2dFont *font, const RwChar *string, RwReal height, RwV2d *anchor,
                       Rt2dBrush *brush) {
+    const RwUInt8 *text = (const RwUInt8 *)string;
+
     if (font != NULL) {
         rt2dCharRect *charRects = fn_8047DFAC(font->charRects);
         RwInt32 charSize;
@@ -78,13 +80,12 @@ Rt2dFont *fn_80470AC4(Rt2dFont *font, const RwChar *string, RwReal height, RwV2d
         fn_804748FC(height, height);
         fn_80474964(0.0f, -font->baseline);
 
-        for (code = FONTCHARCODE((const RwUInt8 *)string); code > 0;
-             code = FONTCHARCODE((const RwUInt8 *)string)) {
+        for (code = FONTCHARCODE(text); code > 0; code = FONTCHARCODE(text)) {
             RwInt32 index;
 
             FONTCHARINDEX(index, font, code);
 
-            string += charSize;
+            text += charSize;
             if (index >= 0) {
                 rt2dCharRect *charRect = &charRects[index];
 
@@ -812,9 +813,9 @@ Rt2dFont *fn_804724AC(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
 /* Reads the texture characters of a font stream: their rectangles and widths, then the textures
  * by name */
 Rt2dFont *fn_80472A60(Rt2dFont *font, RwStream *stream) {
-    rt2dCharRect *charRects = fn_8047DFAC(font->charRects);
     RwInt32 numTextures;
     RwInt32 i;
+    rt2dCharRect *charRects = fn_8047DFAC(font->charRects);
 
     for (i = 0; i < font->numChars; i++) {
         if (fn_8047D784(stream, &charRects[i].uvTopLeft.x, sizeof(RwV2d) * 2) == NULL) {
