@@ -92,12 +92,12 @@ RwInt32 fn_8044E7D0(RpGeometry *geometry) {
 /* Writes a native skin: a struct chunk with the platform, the counts, the used bones, the byte
  * indices and weights, the matrices and the split data */
 RwStream *fn_8044E89C(RwStream *stream, RpGeometry *geometry) {
+    RwUInt32 maxNumWeights;
     RwInt32 platform = rwPLATFORMGAMECUBE;
+    RwInt32 numVertices;
+    RwUInt32 size;
     RwUInt32 counts;
     RpSkin *skin;
-    RwInt32 numVertices;
-    RwUInt32 maxNumWeights;
-    RwUInt32 size;
 
     if (fn_8047CEF0(stream, rwID_STRUCT, fn_8044E7D0(geometry) - 12, RW_STREAM_VERSION,
                     RW_STREAM_BUILD) == NULL) {
