@@ -265,6 +265,18 @@ typedef struct {
 CHECK_SIZEOF(MPV_IXA, 0x1C60);
 
 Sint8 *MPV_SearchDelim(Sint8 *p, Sint32 n, Sint32 mask);
+/* mpv_vlc.c: VLC decode tables used by the slice decoder (mpv_dec.c) */
+extern Sint16 *mpvvlc_mbai_i_0;
+extern Sint16 *mpvvlc_mbai_i_1;
+extern Sint16 *mpvvlc_mbai_p_0;
+extern Sint16 *mpvvlc_mbai_p_1;
+extern Sint16 *mpvvlc_mbai_b_0;
+extern Sint16 *mpvvlc_mbai_b_1;
+extern Sint16 *mpvvlc_p_mbtype;
+extern Sint16 *mpvvlc_b_mbtype;
+extern Sint16 *mpvvlc_cbp;
+extern Sint16 *mpvvlc_motion_0;
+extern Sint16 *mpvvlc_motion_1;
 /* mpv_vlc.c: run/level decode tables used by the block decoder (mpv_bdec.c) */
 extern Uint32 *mpvvlc_run_level_0a;
 extern Uint32 *mpvvlc_run_level_0b;
@@ -293,6 +305,15 @@ Sint32 MPVHDEC_DecPicture(MPV_OBJ *mpv, SJ sj);
 void MPVUMC_SetGqr(void);
 void MPVUMC_InitOutRfb(MPV_OBJ *mpv);
 void MPVUMC_EndOfFrame(MPV_OBJ *mpv);
+
+/* mpv_dec.c */
+Sint32 MPVDEC_DecDpicMb(MPV mpv, SJ sj);
+Sint32 MPVDEC_DecBpicMb(MPV mpv, SJ sj);
+void MPVDEC_ResetDc(MPV mpv);
+void MPVDEC_ResetMv(MPV_MV *mv);
+Sint32 MPVDEC_DecPpicMb(MPV mpv, SJ sj);
+Sint32 MPVDEC_DecIpicMb(MPV mpv, SJ sj);
+Sint32 MPVDEC_CheckVersion(const Char8 *ver, Sint32 objsiz, Sint32 picatrsiz);
 
 /* mpv_cdec.c */
 Sint32 MPVCDEC_NintraBlocks(MPV mpv);

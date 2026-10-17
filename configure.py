@@ -1117,6 +1117,16 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            Object(
+                Matching,
+                "CRI/mpv_dec.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
             # Deferred inlining: the table generators are emitted in reverse order.
             Object(
                 Matching,
