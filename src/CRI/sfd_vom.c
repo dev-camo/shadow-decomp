@@ -42,32 +42,26 @@ Sint32 SFVOM_GetWrite(SFD sfd) {
     return SFLIB_SetErr(sfd, 0xFF000701);
 }
 
-/* Nothing to do. */
 Sint32 SFVOM_Pause(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFVOM_Stop(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFVOM_Start(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFVOM_Standby(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFVOM_Destroy(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFVOM_Create(void) {
     return 0;
 }
@@ -102,12 +96,10 @@ Sint32 SFVOM_ExecServer(SFD sfd) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFVOM_Finish(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFVOM_Init(void) {
     return 0;
 }

@@ -182,10 +182,8 @@ Sint32 ADXB_CheckAiff(Uint8 *buf) {
     return 0;
 }
 
-/* Matching constraints: ckid/type are Sint32 locals compared with int constants; `end = p + cksz -
- * 4` keeps the original subtract-then-add; the 16-bit reads stored to *nch and *bps carry explicit
- * `& 0xFF` / `& 0xFFFF` masks while the exponent/mantissa reads do not; exp/mant are Uint16 locals,
- * and the `(Uint16)` cast on SWAP16's argument keeps the 16-bit value a separate temporary. */
+/* The `& 0xFF` / `& 0xFFFF` masks on the *nch and *bps reads and the (Uint16) casts on SWAP16's
+ * arguments are required: without them MWCC generates different code. */
 Uint8 *AIFF_GetInfo(Uint8 *buf, Sint32 *sfreq, Sint32 *nch, Sint32 *bps, Sint32 *nsmpl) {
     Uint8 *p;
     Uint8 *end;

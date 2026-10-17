@@ -80,10 +80,10 @@ static void sfset_SetCondDef(SFD sfd, Sint32 id, Sint32 val) {
     }
 }
 
-/* Matching constraint (COMPILER-DIFF): the library condition is written through a byte offset `ofs
- * = id << 2`, an own local declared last that the inlined SFSET_SetCond reuses for its index.
- * `SFLIB_libwork.cond[id] = val`, an index local and a `Sint32 *` slot all give a different
- * register assignment (verified: the unit drops to 53%). */
+/* Sets the condition on one handle (its value and its default), or with sfd 0 on every live handle
+ * and the library defaults. COMPILER-DIFF: the library slot is addressed through the byte offset
+ * `ofs`, which the inlined SFSET_SetCond calls also use for their index; writing
+ * SFLIB_libwork.cond[id] directly, or through an index local, compiles differently. */
 Sint32 SFD_SetCond(SFD sfd, Sint32 id, Sint32 val) {
     SFD hn;
     Sint32 i;

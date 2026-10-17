@@ -79,9 +79,7 @@ static inline float adx_sqrtf(float x) {
     return x;
 }
 
-/* header block length rounded to the block alignment (with / without the loop extension).
- * The leading constant keeps the add chain in source order (the constant becomes the trailing
- * `addi`); without it MWCC defers the leaf next to the strlen() call to the end of the chain. */
+/* header block length rounded to the block alignment (with / without the loop extension) */
 Sint32 ADX_CalcHdrInfoLen(Sint32 loop, Sint32 infolen, Sint32 ofst, Sint32 align) {
     if (loop == 0) {
         return (0x1B + infolen + strlen("(c)CRI") + ofst + align) / align * align - ofst;
@@ -145,21 +143,16 @@ Sint32 ADX_DecodeInfoAinf(Uint8 *data, Sint32 len, Sint32 *ainfsiz, void *ainf, 
     if (*(Sint16 *)(data + 2) < need - 4) {
         return -1;
     }
-    /* matching constraint: a default plus a conditional store (not `?:`) keeps ofs in its own
-     * register, as in the original */
     ofs = 0x14;
     if (ver == 4) {
         ofs = 0x20;
     }
-    /* matching constraint: the add is done on integers; `data + ofs` reorders the operands (83%) */
+    /* integer sum: `data + ofs` would order the add operands differently */
     p = (Uint8 *)((Uint32)ofs + (Uint32)data);
     ofs += 4;
     if (*(Sint16 *)(p + 2) != 0) {
         ofs += 0x14;
     }
-    /* Matching constraint: the AINF address is the expression `&data[ofs]`, not a local; the
-     * compiler folds its repeated uses into one add, as in the original. A `q` local gets a
-     * different register order. */
     if (ADX_LD32(&data[ofs]) != ADX_AINF) {
         return -2;
     }
@@ -325,10 +318,8 @@ Sint32 ADX_ScanInfoCode(Uint8 *data, Sint32 len, Sint16 *ofst) {
     return -1;
 }
 
-/* The original loads each float literal of ADX_GetCoefficient with its own lis/lfs pair; with
- * data pooling on, MWCC addresses them through one .rodata base instead. pool_data off restores
- * the unpooled loads (the unit has no other pooled data).
- */
+/* pool_data off: each float literal of ADX_GetCoefficient is loaded with its own lis/lfs pair
+ * instead of through one pooled .rodata base (the unit has no other pooled data). */
 #pragma pool_data off
 /* Second-order prediction coefficients (12-bit fixed point) of the ADX high-pass for `cutoff` Hz at
  * `sfreq`: c1 = 2c, c2 = -c^2 with c from the cosine of the normalised cut-off. */

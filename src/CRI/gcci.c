@@ -164,7 +164,7 @@ void gcCiSetSctLen(GCCI gcci, Sint32 sctlen) {
     }
     pos_byte = gcci->pos_sct * gcci->sctlen;
     gcci->sctlen = sctlen;
-    /* Round up to whole sectors; this operand order gives the target's add-then-decrement. */
+    /* Round up to whole sectors. */
     gcci->fsize_sct = (gcci->fsize_byte + (gcci->sctlen - 1)) / gcci->sctlen;
     gcci->pos_sct = pos_byte / gcci->sctlen;
     gcci->numtr = gcci->rqsct * sctlen;
@@ -408,9 +408,6 @@ Sint32 gcCiSeek(GCCI gcci, Sint32 pos, Sint32 type) {
     return gcci->pos_sct;
 }
 
-/* The handle arrives as void *; passing hn (not gcci) to the inlined StopTr keeps the
- * target's second copy of r3.
- */
 void gcCiClose(void *hn) {
     GCCI gcci;
 
@@ -418,7 +415,7 @@ void gcCiClose(void *hn) {
     if (gcci == 0) {
         return;
     }
-    gcCiStopTr(hn);
+    gcCiStopTr(hn); /* required: passing gcci compiles differently */
     DVDClose(&gcci->fi);
     gcci->used = 0;
     memset(gcci, 0, sizeof(GCCI_OBJ));

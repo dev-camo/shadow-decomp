@@ -125,8 +125,7 @@ static CVFS_IF *cvFsGetDevIf(CVFS_DEV *tbl, const Char8 *name) {
     return 0;
 }
 
-/* Device search by table index. cvfs_ResolveDev's second and third searches must be index loops: a
- * pointer local (`dev = tbl`) gives the stepping pointer a different register than the original. */
+/* Device search by table index. */
 static CVFS_IF *cvfs_SearchDev(CVFS_DEV *tbl, const Char8 *name) {
     Uint32 i;
     Sint32 len;
@@ -222,9 +221,7 @@ static CVFS_IF *cvfs_FindDev(CVFS_DEV *tbl, const Char8 *name, Sint32 len) {
     return 0;
 }
 
-/* Whether the named device asks for the "DEV:path" form (option 100). This first search sits one
- * inlining level deeper than the two cvfs_SearchDev copies, which gives its loop variables the
- * original register order. */
+/* Whether the named device asks for the "DEV:path" form (option 100). */
 static Sint32 cvfs_WantsDevForm(CVFS_DEV *tbl, const Char8 *name, Sint32 len) {
     return cvfs_OptFn(cvfs_FindDev(tbl, name, len), 0, 100, 0, 0) == 1;
 }
@@ -252,8 +249,7 @@ static CVFS_IF *cvfs_ResolveDev(const Char8 *fname, Char8 *dev, Char8 *path) {
     tbl = cvfs_tbl;
     if (cvfs_WantsDevForm(tbl, name, len)) {
         strcpy(add_dev_tmp, path);
-        sprintf(path, "%s:%s", name,
-                add_dev_tmp); /* the target passes the checked `name` (r26), not `dev` */
+        sprintf(path, "%s:%s", name, add_dev_tmp);
     }
     vtbl = cvfs_SearchDev(tbl, dev);
     if (vtbl == 0) {
@@ -829,7 +825,6 @@ void cvFsClose(CVFS_OBJ *obj) {
 
 /* a free handle slot */
 static CVFS_OBJ *cvfs_AllocObj(void) {
-    /* declared before i for the original register order (matching constraint) */
     CVFS_OBJ *obj;
     Sint32 i;
 
@@ -865,7 +860,7 @@ CVFS_OBJ *cvFsOpen(const Char8 *fname, void *dir, Sint32 rw) {
         cvfs_Error("cvFsOpen #1:illegal file name");
         return 0;
     }
-    /* allocated through a `void *` and copied: the original keeps the copy (`mr r30, r3`) */
+    /* required: assigning cvfs_AllocObj() to obj directly compiles differently */
     hn = cvfs_AllocObj();
     obj = hn;
     if (obj == 0) {
@@ -887,8 +882,7 @@ CVFS_OBJ *cvFsOpen(const Char8 *fname, void *dir, Sint32 rw) {
         cvfs_Error("cvFsOpen #4:device not found");
         return 0;
     }
-    if (obj->vtbl->Open !=
-        0) { /* the target reloads obj->vtbl (r3) for the Open call, not `vtbl` */
+    if (obj->vtbl->Open != 0) {
         obj->hn = obj->vtbl->Open(path, dir, rw);
     } else {
         obj->hn = 0;
@@ -944,8 +938,7 @@ void cvFsDelDev(const Char8 *devname) {
 }
 
 /* Registers the device in the table unless its name is already there; 0 when the table is full.
- * The interface arrives as `void *` and is converted once: the original keeps that copy of getif's
- * result (`mr r28, r3`). */
+ * The interface arrives as `void *` and is converted once. */
 static CVFS_IF *cvfs_AddDevTbl(Char8 *devname, void *vt) {
     CVFS_DEV *dev;
     Sint32 i;

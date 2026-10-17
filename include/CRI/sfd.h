@@ -826,9 +826,8 @@ typedef struct SFD_OBJ {
 } SFD_OBJ;
 CHECK_SIZEOF(SFD_OBJ, 0x3640);
 /* Buffer n seen as the SFD object shifted by n buffers: the code adds n * sizeof(SFBUF_WORK) to the
- * handle and keeps buf[0]'s offset (0x1310) in each load/store displacement. Matching constraint
- * (typed access view): writing &sfd->buf[n] adds 0x1310 to the base register instead, and the
- * sfd_buf.c, sfd_pts.c and sfd_mps.c functions stop matching. */
+ * handle and keeps buf[0]'s offset (0x1310) in each load/store displacement, where &sfd->buf[n]
+ * would add 0x1310 to the base register instead. */
 typedef struct {
     Uint8 pad[0x1310]; /* 0x0000 */
     SFBUF_WORK w;      /* 0x1310 sfd->buf[n] */

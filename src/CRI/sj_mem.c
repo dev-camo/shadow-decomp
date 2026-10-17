@@ -246,7 +246,6 @@ Sint32 SJMEM_GetNumData(SJMEM_OBJ *sj, Sint32 id) {
 
 /* Rewinds: the whole buffer is unread data again. */
 static inline void sjmem_Reset(SJMEM_OBJ *sj) {
-    /* This declaration order gives the target's stack slots where it is inlined. */
     Char8 msg_invalid[64];
     Char8 msg_null[64];
 

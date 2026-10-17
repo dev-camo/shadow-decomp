@@ -81,9 +81,6 @@ static void sfbuf_RingGetCk(SJ sj, Sint32 id, SJCK *ck1, SJCK *ck2) {
     SJ_UngetChunk(sj, id, ck1);
 }
 
-/* Matching constraint: the body is a static helper so that len1/len2 become inlined temporaries
- * (the target copies len1 into len2 rather than loading 0); len1 is assigned first and declared
- * last for the original register order. */
 static Sint32 sfbuf_RingGetDataSizHn(SFBUF_HN *hn) {
     SJ sj;
     SJCK ck1;
@@ -226,11 +223,10 @@ void SFBUF_RingGetDlm(SFD sfd, Sint32 n, Uint8 **pos, Sint32 *len) {
     SFLIB_UnlockCs(&cs);
 }
 
-/* Matching constraints (AddRead/AddWrite): the bodies are inlined helpers so that the first arm's
- * `ret = 0` folds into the entry zero as in the original, and the helper locals are declared in
- * reverse of the original register order. `ring` is reached in two steps through `wk` (an own local
- * with its own uses), which keeps ring's address separate while the sj/used reads fold into hn. The
- * delimiter check reads `ring->dlm_pos` inline; a `pos` local changes the register order. */
+/* COMPILER-DIFF (AddRead/AddWrite): the bodies are inline helpers whose locals are declared in this
+ * order, `ring` is reached through `wk`, and the delimiter check reads `ring->dlm_pos` inline; the
+ * plain forms (bodies written in place, a one-step `ring` address, a `pos` local) compile
+ * differently. */
 static inline Sint32 sfbuf_RingAddReadSub(SFD sfd, Sint32 n, Sint32 nbyte) {
     SJCK ck1;
     SJCK ckw;
@@ -327,8 +323,6 @@ Sint32 SFBUF_RingAddWrite(SFD sfd, Sint32 n, Sint32 nbyte, Sint32 rsv) {
     return sfbuf_RingAddWriteSub(sfd, n, nbyte);
 }
 
-/* Matching constraint (both Get functions): the handle address is computed after inf is cleared,
- * as in the original instruction order. */
 Sint32 SFBUF_RingGetRead(SFD sfd, Sint32 n, SFBUF_RINF *inf) {
     SFBUF_HN *hn;
     SJ sj;
@@ -427,8 +421,6 @@ static void sfbuf_SetSup(SFBUF_WORK *wk, SFBUF_RING *ring, SFBUF_SUP *sup, Sint3
     SFLIB_UnlockCs(&cs);
 }
 
-/* Matching constraint: ring is computed through wk before the mode test (two-step address, see
- * AddRead) and declared before hn, for the original register order. */
 Sint32 SFBUF_SetSupplySj(SFD sfd, SFBUF_SUP *sup) {
     Sint32 n;
     SFBUF_RING *ring;
@@ -465,8 +457,6 @@ static void sfbuf_DestroySup(SFBUF_SUP *sup) {
     }
 }
 
-/* each sup pointer is `&wk->u.ring.sup` off a `wk` local that also tests the mode: the two-step
- * address keeps `addi sup, sfd, 0x1318 + n*0x74` as a node (three defs, one register) */
 void SFBUF_DestroySj(SFD sfd) {
     SFBUF_WORK *wk;
     SFBUF_SUP *sup;
@@ -534,7 +524,7 @@ static Sint32 sfbuf_InitRing(SFBUF_WORK *wk, Uint32 *adr, Sint32 size, Sint32 xs
 }
 
 /* Vfrm/Aout take the size by pointer and read it twice: `used` before the mode store, the size
- * field after the adr store (the target reloads it there) */
+ * field after the adr store */
 static void sfbuf_InitVfrm(SFD sfd, SFBUF_WORK *wk, Uint32 *adr, Sint32 *size) {
     Sint32 i;
     Sint32 used;
@@ -579,10 +569,9 @@ static void sfbuf_InitAout(SFBUF_WORK *wk, Uint32 *adr, Sint32 *size) {
     wk->u.aout.rsv2[2] = 0;
 }
 
-/* adr[] stays a stack array (9 elements: with 8 the backend's array-register transform turns it
- * into registers) and the running address is one variable stored through a stepping pointer: the
- * chain is then a single register and the first InitRing reloads adr[0] from the frame like the
- * target */
+/* Lays the eight buffers out back to back from prm->adr: adr[i] is the start of buffer i. adr has
+ * one spare element; with exactly eight MWCC keeps the array in registers rather than on the
+ * stack. */
 Sint32 SFBUF_InitHn(SFD sfd, SFBUF_WORK *wk, SFBUF_PRM *prm) {
     Uint32 adr[9];
     Sint32 xsize;

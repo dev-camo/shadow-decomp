@@ -62,8 +62,6 @@ const Sint32 SFPLY_cond_dfl[101] = {
     0,      0,      0,        0,     0,      0,      0x5A5A5A5A, 0,  0, 0,
 };
 
-/* Tells the input driver where its data comes from: a memory range or a stream joint (the player's
- * file ring fed by ADXSTM). MWSFCRE_SetSupplySj calls it at every start. */
 /* This game only: returns the pause switch (inferred) */
 Sint32 fn_803F94D8(SFD sfd) {
     if (SFLIB_CheckHn(sfd) != 0) {
@@ -73,6 +71,8 @@ Sint32 fn_803F94D8(SFD sfd) {
     return sfd->pause_sw;
 }
 
+/* Tells the input driver where its data comes from: a memory range or a stream joint (the player's
+ * file ring fed by ADXSTM). MWSFCRE_SetSupplySj calls it at every start. */
 Sint32 SFD_SetSupplySj(SFD sfd, SFBUF_SUP *sup) {
     if (SFLIB_CheckHn(sfd) != 0) {
         return SFLIB_SetErr(0, 0xFF000139);
@@ -380,8 +380,7 @@ Sint32 SFD_Start(SFD sfd) {
     return ret;
 }
 
-/* Returns SFTRN_CallTrSetup's result (mwsfdcre checks it). Keeping that result live across the
- * table clear also gives the loop its original registers. */
+/* Returns SFTRN_CallTrSetup's result (mwsfdcre checks it). */
 Sint32 SFD_Destroy(SFD sfd) {
     SFD *tbl;
     Sint32 i;
@@ -1096,8 +1095,7 @@ Bool SFD_IsSvrWait(void) {
 
 /* 1 when this handle has nothing to do (inactive state or no change flagged). */
 Bool SFD_IsHnSvrWait(SFD sfd) {
-    /* matching constraint: the inactive test is written out rather than as !SFD_STAT_IS_ACTIVE,
-     * which orders the branch and the `return 1` differently */
+    /* !SFD_STAT_IS_ACTIVE, written out */
     if ((Uint32)(sfd->stat - SFD_STAT_STOP) > SFD_STAT_PLAYING - SFD_STAT_STOP) {
         return 1;
     }

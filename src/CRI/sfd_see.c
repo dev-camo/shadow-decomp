@@ -237,9 +237,6 @@ static void sfsee_ExecEstimate(SFD sfd, SFSEE_HN *see) {
     }
 }
 
-/* Matching constraint: wk and req are locals of the inlined sfsee_ExecEstimate (req declared after
- * wk), and `see` is a local with three uses; together they give the original register order and
- * the two-step address of req. */
 void SFSEE_ExecServer(SFD sfd) {
     SFSEE_HN *see;
 
