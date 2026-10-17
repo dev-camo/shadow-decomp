@@ -184,7 +184,6 @@ void DBInitInterrupts(void) {
 void DBInitComm(u8 **a, MTRCallbackType b) {
     BOOL interrupts = OSDisableInterrupts();
     {
-        pEXIInputFlag = (u8 *)EXIInputFlag;
         pEXIInputFlag = &EXIInputFlag;
 
         *a = pEXIInputFlag;

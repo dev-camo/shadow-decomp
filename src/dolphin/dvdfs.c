@@ -405,15 +405,14 @@ int DVDSeekAsyncPrio(DVDFileInfo *fileInfo, s32 offset, DVDCallback callback, s3
                       "DVDSeek(): offset is out of the file  ");
 
     fileInfo->callback = callback;
-    DVDSeekAbsAsyncPrio(&fileInfo->cb, (u32)(char *)fileInfo->startAddr + offset, cbForSeekAsync,
-                        prio);
+    DVDSeekAbsAsyncPrio(&fileInfo->cb, fileInfo->startAddr + offset, cbForSeekAsync, prio);
     return 1;
 }
 
 static void cbForSeekAsync(s32 result, DVDCommandBlock *block) {
     DVDFileInfo *fileInfo;
 
-    fileInfo = (DVDFileInfo *)&block->next;
+    fileInfo = (DVDFileInfo *)((char *)block - offsetof(DVDFileInfo, cb));
     ASSERTLINE(925, (void *)&fileInfo->cb == (void *)block);
     if (fileInfo->callback) {
         (fileInfo->callback)(result, fileInfo);
@@ -433,8 +432,7 @@ s32 DVDSeekPrio(DVDFileInfo *fileInfo, s32 offset, s32 prio) {
                   "DVDSeek(): offset is out of the file  ");
 
     block = &fileInfo->cb;
-    result =
-        DVDSeekAbsAsyncPrio(block, (u32)(char *)fileInfo->startAddr + offset, cbForSeekSync, prio);
+    result = DVDSeekAbsAsyncPrio(block, fileInfo->startAddr + offset, cbForSeekSync, prio);
     if (!result) {
         return -1;
     }
