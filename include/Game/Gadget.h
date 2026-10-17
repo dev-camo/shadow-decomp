@@ -13,6 +13,9 @@ extern "C" {
 void fn_800C9F14(UnkGadgetOwner_800C9CD0 *owner, Fn8040Vector3 *position);
 void fn_800C9ED4(UnkGadgetOwner_800C9CD0 *owner, Fn8040Vector3 *rotation);
 void fn_800C9E60(UnkGadgetOwner_800C9CD0 *owner, u8 *value);
+/* Copies the owner's parameter block into params when its size equals size, and otherwise flags
+ * the owner (behaviour inferred). */
+void fn_800C9DBC(UnkGadgetOwner_800C9CD0 *owner, void *params, int size);
 }
 
 /* Gadget (class name from RTTI): a stage object task registered with an owner object. */

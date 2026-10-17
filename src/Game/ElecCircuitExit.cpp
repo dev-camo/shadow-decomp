@@ -64,7 +64,7 @@ class ElecCircuitExit : public Gadget {
     /* 0x30 */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
     /* 0x38 */ u8 field_0x38; /* copied from the owner */
     /* 0x3C */ boost::shared_ptr<UnkHandleBTarget_8015BE64> field_0x3C;
-    /* 0x44 */ boost::weak_ptr<GadgetCharInfo> field_0x44; /* pointee type inferred */
+    /* 0x44 */ boost::weak_ptr<CharInfo> field_0x44;
     /* 0x4C */ u32 field_0x4C;
 };
 CHECK_SIZEOF(ElecCircuitExit, 0x50);
@@ -103,14 +103,14 @@ void ElecCircuitExit::fn_800CBC1C() {
 }
 
 void ElecCircuitExit::fn_802C8158() {
-    if (field_0x3C.px != 0) {
-        fn_8015BE64(field_0x3C.px);
+    if (field_0x3C.get() != 0) {
+        fn_8015BE64(field_0x3C.get());
     }
 }
 
 void ElecCircuitExit::CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
-    fn_800C9F14(owner, &m_charInfo.px->m_position);
-    fn_800C9ED4(owner, &m_charInfo.px->m_rotation);
+    fn_800C9F14(owner, &m_charInfo->m_position);
+    fn_800C9ED4(owner, &m_charInfo->m_rotation);
     fn_800C9E60(owner, &field_0x38);
 }
 
