@@ -2,13 +2,10 @@
  * the dictionary schema and the keyframe schemes), the material plugin data and its stream, the
  * animations' custom data, and playing the animations on materials. The original file name is
  * unknown. */
+#include "rw/rpmatfx.h"
 #include "rw/rpuvanim.h"
 #include <string.h>
 #include "layout_check.h"
-
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-#define rwCHUNKHEADERSIZE 12
 
 /* The plugin's engine globals (inferred) */
 typedef struct UVAnimEngineGlobals {

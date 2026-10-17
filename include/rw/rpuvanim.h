@@ -183,10 +183,6 @@ RpMaterial *fn_804548EC(RpMaterial *material, RwReal time);
 RpMaterial *fn_80454964(RpMaterial *material, RwReal deltaTime);
 RwBool fn_804549DC(const RpMaterial *material); /* whether any animation plays on it */
 
-/* material effects: sets the UV transform matrices of a material's UV transform effect and
- * returns the material (inferred) */
-RpMaterial *fn_804A2BE0(RpMaterial *material, RwMatrix *uv0, RwMatrix *uv1);
-
 /* attaches the plugin */
 RwBool fn_80453A78(void);
 
