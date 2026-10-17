@@ -5,12 +5,8 @@
  * decompilation; bodies follow the RE4 and Mortal Kombat: Deception GameCube decompilations.
  * The file is compiled with deferred inlining, so MWCC emits the functions in reverse order
  * (LSC_SetLpFlg first) and Stop/Start/Destroy inline the functions they call. Each function has
- * its own error code, numbered in source order (E2005012801..22).
- *
- * LSC_GetStmId, LSC_GetStmFname, LSC_GetStmStat, LSC_GetStmRdSct, LSC_GetFlowLimit and
- * LSC_Pause are unreferenced, so the linker strips them. Their bodies come from the 3rd Strike
- * decompilation and are not verified against this game; only their error literals, which sit
- * at the observed .rodata positions, are.
+ * its own error code, numbered in source order (E2005012801..22); the functions behind codes 08
+ * and 11..18 and 21 are stripped from the game and represented by literal-order stand-ins.
  */
 
 #include <string.h>
@@ -175,16 +171,12 @@ void LSC_Stop(LSC lsc) {
     }
 }
 
-void LSC_Pause(LSC lsc, Sint32 sw) {
-    if (lsc == 0) {
-        LSC_CallErrFunc("E2005012808: Illigal parameter lsc=NULL\n");
-        return;
-    }
-    if (sw == 1) {
-        lsc->pause_flag = 1;
-    } else {
-        lsc->pause_flag = 0;
-    }
+/* Stand-in for a function the linker stripped from the game; its body is unknown. Its error
+ * message (E2005012808) remains in .rodata; this never-called function refers to it at this
+ * position. Storing the address keeps the reference.
+ */
+static void lsc_RodataOrder08(const Char8 **out) {
+    out[0] = "E2005012808: Illigal parameter lsc=NULL\n";
 }
 
 /* Scheduler server pass: lsc_ExecHndl on every live scheduler, under the lock. */
@@ -221,73 +213,20 @@ Sint32 LSC_GetNumStm(LSC lsc) {
     return lsc->num_stm;
 }
 
-Sint32 LSC_GetStmId(LSC lsc, Sint32 no) {
-    if (lsc == 0) {
-        LSC_CallErrFunc("E2005012811: Illigal parameter lsc=NULL\n");
-        return -1;
-    }
-    if (no < 0 || no >= lsc->num_stm) {
-        LSC_CallErrFunc("E2005012812: Illigal parameter no=%d\n", (int)no);
-        return -1;
-    }
-    return lsc->tbl[(lsc->rd_idx + no) % LSC_MAX_ENTRY].id;
-}
-
-Char8 *LSC_GetStmFname(LSC lsc, Sint32 stm_id) {
-    Sint32 i;
-
-    if (lsc == 0) {
-        LSC_CallErrFunc("E2005012813: Illigal parameter lsc=NULL\n");
-        return 0;
-    }
-    for (i = 0; i < LSC_MAX_ENTRY; i++) {
-        if (lsc->tbl[i].id == stm_id) {
-            break;
-        }
-    }
-    if (i == LSC_MAX_ENTRY) {
-        LSC_CallErrFunc("E2005012814: Can not find stream ID =%d\n", (int)stm_id);
-        return 0;
-    }
-    return lsc->tbl[i].fname;
-}
-
-Sint32 LSC_GetStmStat(LSC lsc, Sint32 stm_id) {
-    Sint32 i;
-
-    if (lsc == 0) {
-        LSC_CallErrFunc("E2005012815: Illigal parameter lsc=NULL\n");
-        return -1;
-    }
-    for (i = 0; i < LSC_MAX_ENTRY; i++) {
-        if (lsc->tbl[i].id == stm_id) {
-            break;
-        }
-    }
-    if (i == LSC_MAX_ENTRY) {
-        LSC_CallErrFunc("E2005012816: Can not find stream ID =%d\n", (int)stm_id);
-        return -1;
-    }
-    return lsc->tbl[i].stat;
-}
-
-Sint32 LSC_GetStmRdSct(LSC lsc, Sint32 stm_id) {
-    Sint32 i;
-
-    if (lsc == 0) {
-        LSC_CallErrFunc("E2005012817: Illigal parameter lsc=NULL\n");
-        return 0;
-    }
-    for (i = 0; i < LSC_MAX_ENTRY; i++) {
-        if (lsc->tbl[i].id == stm_id) {
-            break;
-        }
-    }
-    if (i == LSC_MAX_ENTRY) {
-        LSC_CallErrFunc("E2005012818: Can not find stream ID =%d\n", (int)stm_id);
-        return 0;
-    }
-    return lsc->tbl[i].pos;
+/* Stand-in for four functions the linker stripped from the game; their bodies are unknown. Their
+ * error messages (E2005012811..18) remain in .rodata. Deferred inlining emits the four last-first,
+ * so this never-called function refers to their message pairs in that order. Storing the addresses
+ * keeps the references.
+ */
+static void lsc_RodataOrder11(const Char8 **out) {
+    out[0] = "E2005012817: Illigal parameter lsc=NULL\n";
+    out[1] = "E2005012818: Can not find stream ID =%d\n";
+    out[2] = "E2005012815: Illigal parameter lsc=NULL\n";
+    out[3] = "E2005012816: Can not find stream ID =%d\n";
+    out[4] = "E2005012813: Illigal parameter lsc=NULL\n";
+    out[5] = "E2005012814: Can not find stream ID =%d\n";
+    out[6] = "E2005012811: Illigal parameter lsc=NULL\n";
+    out[7] = "E2005012812: Illigal parameter no=%d\n";
 }
 
 /* Refill threshold for the stream controller. */
@@ -303,12 +242,12 @@ void LSC_SetFlowLimit(LSC lsc, Sint32 min_val) {
     lsc->min_val = min_val;
 }
 
-Sint32 LSC_GetFlowLimit(LSC lsc) {
-    if (lsc == 0) {
-        LSC_CallErrFunc("E2005012821: Illigal parameter lsc=NULL\n");
-        return -1;
-    }
-    return lsc->min_val;
+/* Stand-in for a function the linker stripped from the game; its body is unknown. Its error
+ * message (E2005012821) remains in .rodata; this never-called function refers to it at this
+ * position. Storing the address keeps the reference.
+ */
+static void lsc_RodataOrder21(const Char8 **out) {
+    out[0] = "E2005012821: Illigal parameter lsc=NULL\n";
 }
 
 /* Calls the status callback when a scheduler's queue runs empty. */
