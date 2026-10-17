@@ -35,7 +35,7 @@ DSError TRKGetFreeBuffer(int *msgID, MessageBuffer **outMsg) {
             error = DS_NoError;
             *outMsg = buf;
             *msgID = i;
-            i = 3; // why not break? weird choice
+            i = 3; // ends the loop once this buffer's mutex is released
         }
         TRKReleaseMutex(buf);
     }
@@ -82,8 +82,6 @@ DSError TRKSetBufferPosition(MessageBuffer *msg, u32 pos) {
         error = DS_MessageBufferOverflow;
     } else {
         msg->position = pos;
-        // If the new position is past the current length,
-        // update the length
         if (pos > msg->length) {
             msg->length = pos;
         }
@@ -93,32 +91,26 @@ DSError TRKSetBufferPosition(MessageBuffer *msg, u32 pos) {
 }
 
 DSError TRKAppendBuffer(MessageBuffer *msg, const void *data, size_t length) {
-    DSError error = DS_NoError; // r31
+    DSError error = DS_NoError;
     u32 bytesLeft;
 
-    // Return if no bytes to append
     if (length == 0) {
         return DS_NoError;
     }
 
     bytesLeft = 0x880 - msg->position;
 
-    // If there isn't enough space left in the buffer, change the number
-    // of bytes to append to the remaining number of bytes
     if (bytesLeft < length) {
         error = DS_MessageBufferOverflow;
         length = bytesLeft;
     }
 
     if (length == 1) {
-        // If the length of bytes to append is 1, just copy the byte over
         msg->data[msg->position] = ((u8 *)data)[0];
     } else {
-        // Otherwise, use memcpy
         TRK_memcpy(msg->data + msg->position, data, length);
     }
 
-    // Update the position and length
     msg->position += length;
     msg->length = msg->position;
 
@@ -129,15 +121,12 @@ DSError TRKReadBuffer(MessageBuffer *msg, void *data, size_t length) {
     DSError error = DS_NoError;
     u32 bytesLeft;
 
-    // Return if no bytes to read
     if (length == 0) {
         return DS_NoError;
     }
 
     bytesLeft = msg->length - msg->position;
 
-    // If the number of bytes to read exceeds the buffer length, change
-    // the length to the remaining number of bytes
     if (length > bytesLeft) {
         error = DS_MessageBufferReadError;
         length = bytesLeft;
@@ -242,7 +231,6 @@ DSError TRKReadBuffer1_ui32(MessageBuffer *buffer, u32 *data) {
     }
 
     return err;
-    // UNUSED FUNCTION
 }
 
 DSError TRKReadBuffer1_ui64(MessageBuffer *buffer, u64 *data) {
