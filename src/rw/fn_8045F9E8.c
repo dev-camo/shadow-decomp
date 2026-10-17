@@ -117,8 +117,7 @@ RpWorldSector *fn_8045FB10(RpWorldSector *sector) {
     } else if (((RpWorld *)lbl_805F15B4->curWorld)->pipeline != NULL) {
         pipeline = ((RpWorld *)lbl_805F15B4->curWorld)->pipeline;
     } else {
-        pipeline = RWPLUGINOFFSET(RpPipelineGlobals, lbl_805F15B4, lbl_805F1690)
-                       ->defaultWorldSectorPipeline;
+        pipeline = RXPIPELINEGLOBAL(currentWorldSectorPipeline);
     }
     if (fn_8049B674(pipeline, sector, TRUE) != NULL) {
         return sector;

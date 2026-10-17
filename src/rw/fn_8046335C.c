@@ -322,8 +322,12 @@ RwBool fn_80463CE0(RxPipelineNode *self) {
 RwChar lbl_8056D8B0[] = "GameCubeAtomicAllInOne.csl";
 
 RxNodeDefinition lbl_8056D8CC = {
-    lbl_8056D8B0, fn_80463A5C, NULL, NULL, fn_80463CE0,
-    NULL,         NULL,        NULL, {0},  sizeof(RxGameCubeAllInOneData),
+    lbl_8056D8B0,
+    {fn_80463A5C, NULL, NULL, fn_80463CE0, NULL, NULL, NULL},
+    {0, NULL, NULL, 0, NULL},
+    sizeof(RxGameCubeAllInOneData),
+    rxNODEDEFCONST,
+    0,
 };
 
 RxNodeDefinition *fn_80463D1C(void) {
