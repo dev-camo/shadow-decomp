@@ -40,11 +40,13 @@ typedef struct RpCollTreeStreamHeader {
 } RpCollTreeStreamHeader;
 CHECK_SIZEOF(RpCollTreeStreamHeader, 0x24);
 
-RwInt32 lbl_805F1410;
-RwInt32 lbl_805F1414;
-RwInt32 lbl_805F1418;
-RwInt32 lbl_805F141C;
+/* the plugin's offsets and open count, defined from the highest address down (the compiler places
+ * the last definition first) */
 RwInt32 lbl_805F1420;
+RwInt32 lbl_805F141C;
+RwInt32 lbl_805F1418;
+RwInt32 lbl_805F1414;
+RwInt32 lbl_805F1410;
 
 /* Reports an error of this plugin; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
@@ -502,13 +504,23 @@ static inline void CollWorldLineItNext(CollWorldLineIt *it) {
     it->top--;
     while (it->top->sector->type >= 0) {
         RpPlaneSector *plane = (RpPlaneSector *)it->top->sector;
-        RwReal lineStart = RwV3dGetCoord(it->line.start, plane->type);
-        RwReal lineDelta = RwV3dGetCoord(it->line.delta, plane->type);
-        RwReal p1 = it->top->t1 * lineDelta + lineStart;
-        RwReal p0 = it->top->t0 * lineDelta + lineStart;
-        RwReal pad = RwV3dGetCoord(it->line.pad, plane->type);
-        RwReal rightLo = plane->rightValue - pad;
-        RwReal leftHi = plane->leftValue + pad;
+        /* the line's coordinates along the split axis at the walk's two parameters, and the
+         * split's two extents widened by the tolerance */
+        RwReal leftHi;
+        RwReal rightLo;
+        RwReal pad;
+        RwReal p0;
+        RwReal p1;
+        RwReal lineDelta;
+        RwReal lineStart;
+
+        lineStart = RwV3dGetCoord(it->line.start, plane->type);
+        lineDelta = RwV3dGetCoord(it->line.delta, plane->type);
+        p1 = it->top->t1 * lineDelta + lineStart;
+        p0 = it->top->t0 * lineDelta + lineStart;
+        pad = RwV3dGetCoord(it->line.pad, plane->type);
+        rightLo = plane->rightValue - pad;
+        leftHi = plane->leftValue + pad;
 
         if (lineDelta > 0.0f) {
             if (rightLo > p1) {
@@ -618,6 +630,8 @@ void fn_80441188(RpWorld *world, RpIntersection *intersection,
 
         while (treeIt.top > treeIt.stack) {
             RpCollTreeBranch *branch;
+            RwInt32 axis;
+            CollTreeLineEntry *curr; /* the entry being descended */
             RwUInt16 i;
             RwUInt16 start;
             RwUInt8 count;
@@ -625,25 +639,33 @@ void fn_80441188(RpWorld *world, RpIntersection *intersection,
             treeIt.top--;
 
             /* descend the same way to the leaves of the sector's tree */
-            while ((branch = treeIt.top->branch)->type == 0xFF) {
-                RpCollTreeSplit *split = &treeIt.tree->splits[branch->index];
-                RwInt32 axis = split->left.field_0x0 & 0xC;
-                RwReal lineStart = RwV3dGetCoord(treeIt.line.start, axis);
-                RwReal lineDelta = RwV3dGetCoord(treeIt.line.delta, axis);
-                RwReal p1 = treeIt.top->t1 * lineDelta + lineStart;
-                RwReal p0 = treeIt.top->t0 * lineDelta + lineStart;
-                RwReal pad = RwV3dGetCoord(treeIt.line.pad, axis);
-                RwReal rightLo = split->right.value - pad;
-                RwReal leftHi = split->left.value + pad;
+            while ((branch = (curr = treeIt.top)->branch)->type == 0xFF) {
+                RpCollTreeSplit *split;
+                RwReal lineStart;
+                RwReal lineDelta;
+                RwReal p1;
+                RwReal p0;
+                RwReal pad;
+                RwReal rightLo;
+                RwReal leftHi;
+                RwReal recip;
+
+                split = &treeIt.tree->splits[branch->index];
+                axis = split->left.field_0x0 & 0xC;
+                lineStart = RwV3dGetCoord(treeIt.line.start, axis);
+                lineDelta = RwV3dGetCoord(treeIt.line.delta, axis);
+                p1 = curr->t1 * lineDelta + lineStart;
+                p0 = curr->t0 * lineDelta + lineStart;
+                pad = RwV3dGetCoord(treeIt.line.pad, axis);
+                rightLo = split->right.value - pad;
+                leftHi = split->left.value + pad;
 
                 if (lineDelta > 0.0f) {
                     if (rightLo > p1) {
-                        treeIt.top->branch = &split->left;
+                        curr->branch = &split->left;
                     } else if (leftHi < p0) {
-                        treeIt.top->branch = &split->right;
+                        curr->branch = &split->right;
                     } else {
-                        RwReal recip;
-
                         treeIt.top++;
                         recip = RwV3dGetCoord(treeIt.line.recip, axis);
                         treeIt.top->branch = &split->left;
@@ -659,12 +681,10 @@ void fn_80441188(RpWorld *world, RpIntersection *intersection,
                     }
                 } else {
                     if (leftHi < p1) {
-                        treeIt.top->branch = &split->right;
+                        curr->branch = &split->right;
                     } else if (rightLo > p0) {
-                        treeIt.top->branch = &split->left;
+                        curr->branch = &split->left;
                     } else {
-                        RwReal recip;
-
                         treeIt.top++;
                         recip = RwV3dGetCoord(treeIt.line.recip, axis);
                         treeIt.top->branch = &split->right;
@@ -722,12 +742,12 @@ void fn_80441188(RpWorld *world, RpIntersection *intersection,
                     RwReal hi;
                     RwReal u;
 
+                    lo = -det * 1e-5f;
+                    hi = det - lo;
                     tVec.x = worldIt.line.start.x - v0->x;
                     tVec.y = worldIt.line.start.y - v0->y;
                     tVec.z = worldIt.line.start.z - v0->z;
                     u = tVec.x * pVec.x + tVec.y * pVec.y + tVec.z * pVec.z;
-                    lo = -det * 1e-5f;
-                    hi = det - lo;
                     result = (u >= lo) && (u <= hi);
                     if (result) {
                         RwReal v;
