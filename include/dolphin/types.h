@@ -31,15 +31,16 @@ typedef int BOOL;
 
 #define ATTRIBUTE_ALIGN(num) __attribute__((aligned(num)))
 
-#define INT_MAX 2147483647
-
 #if defined(__MWERKS__) && defined(__cplusplus)
-/* C++ is compiled against MSL's C library headers, which also define NULL. */
+/* C++ is compiled against MSL's C library headers, which also define NULL and INT_MAX. */
+#include <climits>
 #include <cstdio>
 #include <cstdarg>
 #include <cstring>
 #include <cctype>
 #else
+#define INT_MAX 2147483647
+
 #ifndef NULL
 #define NULL ((void *)0)
 #endif

@@ -2,6 +2,7 @@
 #define MSL_MEMORY_H_
 
 #include <new>
+#include <cstdlib>
 
 namespace std {
 
@@ -40,6 +41,12 @@ template <class T> inline T *uninitialized_copy(T *first, T *last, T *result) {
     return __uninitialized_copy_helper<T, true, false>::uninitialized_copy(first, last, result);
 }
 
+/* With exceptions off, the library reports a failure on stderr and aborts. */
+inline void __msl_error(const char *message) {
+    fprintf(stderr, message);
+    abort();
+}
+
 template <class T> class allocator {
   public:
     typedef size_t size_type;
@@ -47,8 +54,21 @@ template <class T> class allocator {
 
     allocator() {}
 
+    pointer allocate(size_type n, const void *hint) {
+        pointer p = static_cast<pointer>(::operator new(n * sizeof(T)));
+        if (p == 0) {
+            __msl_error("Memory allocation failure");
+        }
+        return p;
+    }
     void deallocate(pointer p, size_type n) {
         ::operator delete(p);
+    }
+    void construct(pointer p, const T &value) {
+        new (static_cast<void *>(p)) T(value);
+    }
+    void destroy(pointer p) {
+        p->~T();
     }
 };
 
@@ -58,8 +78,13 @@ template <class T> class allocator {
 template <class T1, class T2> class __compressed_pair_imp : private T2 {
   public:
     __compressed_pair_imp(T1 x) : T2(), first_(x) {}
+    __compressed_pair_imp(const T2 &y, T1 x) : T2(y), first_(x) {}
+    __compressed_pair_imp(const T2 &y) : T2(y) {}
 
     T1 &first() {
+        return first_;
+    }
+    const T1 &first() const {
         return first_;
     }
     T2 &second() {
@@ -75,6 +100,8 @@ template <class T1, class T2> class __compressed_pair : public __compressed_pair
 
   public:
     __compressed_pair(T1 x) : base(x) {}
+    __compressed_pair(const T2 &y, T1 x) : base(y, x) {}
+    __compressed_pair(const T2 &y) : base(y) {}
 };
 
 } // namespace std
