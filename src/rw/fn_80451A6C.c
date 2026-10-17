@@ -1,10 +1,9 @@
 /* RenderWare skinning plugin (plugin ID 0x116), GameCube: the skin pipelines (the plain one and the
  * material effects one), the instance, reinstance and render callbacks of the material effects
  * pipeline, and the choice of an atomic's skin pipeline. The original file name is unknown. */
+#include "rw/rpmatfx.h"
 #include "rw/rpskin.h"
 #include <dolphin/gx.h>
-
-#define rpID_MATFXPLUGIN 0x120
 
 /* skin pipeline types (inferred) */
 #define SKINPIPELINEAUTO 0 /* chosen by whether the atomic has material effects */

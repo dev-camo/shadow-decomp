@@ -1011,16 +1011,6 @@ void fn_80462C30(RpGameCubeVertexFormat *format, RpGameCubeRenderMesh *renderMes
 extern RwInt32 lbl_805EDDD8;    /* the instancing optimisation mode (inferred) */
 RwInt32 fn_80462C28(void);      /* a GameCube render mode (lbl_805EDDD8) */
 void fn_80462C20(RwInt32 mode); /* sets it */
-void fn_804A2F08(void);         /* resets the material effects render state */
-RwBool fn_804A8478(RpGameCubeRenderMesh *renderMesh); /* whether a mesh uses material effects */
-/* builds the material effects data of a skinned geometry with binormals and tangents */
-void fn_804A8120(RpGameCubeRenderMesh *renderMesh, RpGameCubeVertexFormat *format,
-                 RwInt32 numVertices);
-/* renders a mesh with material effects */
-void fn_804A457C(RpMesh *mesh, RpGameCubeDisplayList *displayList, RpAtomic *atomic, RwMatrix *ltm,
-                 RpGameCubeRenderMesh *renderMesh);
-RwBool fn_804A2064(RpAtomic *atomic);        /* whether an atomic has material effects */
-extern RpGameCubeVertexFormat *lbl_805F16B8; /* the vertex format of material effects geometries */
 
 void fn_804950AC(RwMatrix *matrix, RwBool normals);    /* loads the position (and normal) matrix */
 void fn_80499C38(RwTexture *texture, RwInt32 stage);   /* sets a texture */
