@@ -199,7 +199,7 @@ void *fn_80443FFC(void *object, RwInt32 offset, RwInt32 size) {
 /* Allocates the zeroed weights of an atomic, one per target of its geometry, in its plugin data
  * dmorphAtomic */
 static inline RpAtomic *DMorphAtomicCreateValues(RpAtomic *atomic, RpDMorphAtomic *dmorphAtomic) {
-    RwUInt32 size = fn_80443A54(atomic->geometry) * sizeof(RwReal);
+    RwInt32 size = fn_80443A54(atomic->geometry) * sizeof(RwReal);
 
     dmorphAtomic->values = RwMalloc(size, rwMEMHINT_DMORPH);
     if (dmorphAtomic->values == NULL) {
@@ -287,7 +287,7 @@ RwReal *fn_804442E4(RpAtomic *atomic) {
     RpDMorphAtomic *dmorphAtomic = DMORPHATOMIC(atomic);
 
     if (dmorphAtomic->values == NULL) {
-        RwUInt32 size = fn_80443A54(atomic->geometry) * sizeof(RwReal);
+        RwInt32 size = fn_80443A54(atomic->geometry) * sizeof(RwReal);
 
         dmorphAtomic->values = RwMalloc(size, rwMEMHINT_DMORPH);
         if (dmorphAtomic->values == NULL) {
@@ -302,8 +302,8 @@ RwReal *fn_804442E4(RpAtomic *atomic) {
 /* Allocates the animation state of an atomic */
 static inline RpAtomic *DMorphAtomicCreateInterpolator(RpAtomic *atomic) {
     RwUInt32 numDMorphTargets = fn_80443A54(atomic->geometry);
-    RwUInt32 size = numDMorphTargets * (sizeof(RwReal) + sizeof(RpDMorphFrame *)) +
-                    sizeof(RpDMorphInterpolator);
+    RwInt32 size = numDMorphTargets * (sizeof(RwReal) + sizeof(RpDMorphFrame *)) +
+                   sizeof(RpDMorphInterpolator);
     RpDMorphInterpolator *interpolator = RwMalloc(size, rwMEMHINT_DMORPH);
 
     if (interpolator == NULL) {
