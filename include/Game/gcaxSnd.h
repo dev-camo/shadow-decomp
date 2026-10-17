@@ -451,7 +451,8 @@ void fn_8043E088(GcaxPlayer *player);
 GcaxPlayer *fn_8043E0E8(void);
 void fn_8043E228(GcaxPlayer *player, int channel);
 
-/* setup, frame update and API entry points (Game/fn_8043E2B4.c) */
+/* setup, frame update and API entry points (Game/fn_8043E2B4.c). The checked entry points take
+ * opaque player and load request handles. */
 void fn_8043E2B4(s32 bus, s32 effect);
 void fn_8043E394(void);
 void fn_8043E430(s32 surround);
@@ -462,28 +463,28 @@ s32 fn_8043E6F4(void *buffer, s32 maxVoices, u32 size, u32 aramSize);
 void fn_8043E950(void);
 void fn_8043E9C4(void *buffer, u32 size);
 s32 fn_8043EBFC(void);
-s32 fn_8043EC3C(GcaxPlayer *player);
-s32 fn_8043ECDC(GcaxPlayer *player);
-s32 fn_8043ED7C(GcaxPlayer *player, s8 volume, s32 time);
-s32 fn_8043EE74(GcaxPlayer *player, s16 steps, s32 time);
+s32 fn_8043EC3C(void *handle);
+s32 fn_8043ECDC(void *handle);
+s32 fn_8043ED7C(void *handle, s8 volume, s32 time);
+s32 fn_8043EE74(void *handle, s16 steps, s32 time);
 s32 fn_8043EF48(void);
-s32 fn_8043EF50(GcaxPlayer *player);
-s32 fn_8043EFF0(GcaxPlayer *player, s8 bank, s8 song, s8 priority);
+s32 fn_8043EF50(void *handle);
+s32 fn_8043EFF0(void *handle, s8 bank, s8 song, s8 priority);
 s32 fn_8043F0D4(void);
-s32 fn_8043F13C(GcaxPlayer *player);
+s32 fn_8043F13C(void *handle);
 s32 fn_8043F1FC(void);
 s32 fn_8043F240(void);
 s32 fn_8043F284(void);
 s32 fn_8043F2F0(void);
-s32 fn_8043F35C(GcaxPlayer *player, u8 *msg, u8 priority);
-s32 fn_8043F41C(GcaxPlayer *player, u8 *msg, u16 status, ...);
+s32 fn_8043F35C(void *handle, u8 *msg, u8 priority);
+s32 fn_8043F41C(void *handle, u8 *msg, u16 status, ...);
 s32 fn_8043F5AC(void);
-s32 fn_8043F60C(GcaxPlayer *player);
-s32 fn_8043F6AC(GcaxPlayer **out);
-s32 fn_8043F70C(GcaxLoad *load);
-s32 fn_8043F8C4(GcaxLoad *load);
-s32 fn_8043F980(GcaxLoad *load, u8 *file, u32 arg2, GcaxCallback callback, void *arg);
-s32 fn_8043FA20(GcaxLoad **out);
+s32 fn_8043F60C(void *handle);
+s32 fn_8043F6AC(void **out);
+s32 fn_8043F70C(void *handle);
+s32 fn_8043F8C4(void *handle);
+s32 fn_8043F980(void *handle, u8 *file, u32 arg2, GcaxCallback callback, void *arg);
+s32 fn_8043FA20(void **out);
 s32 fn_8043FAB0(s32 mode);
 s32 fn_8043FB24(void *buffer);
 
