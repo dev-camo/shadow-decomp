@@ -346,7 +346,6 @@ static Bool sfhds_SetHdrPkt(SFD sfd, Uint8 *p, Sint32 len, Sint32 *result) {
     return 1;
 }
 
-/* the file header travels in a private stream 2 packet: `data` points at its payload */
 /* the file header travels in a private stream 2 packet: `data` points at its payload. Matching
  * constraint: the original keeps a copy of `result` in a callee-saved register (`mr r30, r7`); the
  * codeless register move below keeps that copy (COMPILER-DIFF M1; both moves are deleted). */
