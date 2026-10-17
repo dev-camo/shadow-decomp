@@ -12,6 +12,7 @@ Sint16 *adxb_DefGetWr(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *x70);
 
 /* ---- SKG: key generation from the sample count (file-local copy; adx_sje.c has its own) ---- */
 
+/* build string: unreferenced, but kept in the original data */
 static const Char8 skg_version[] = "\nSKG/GC Ver.0.64 Build:Feb 28 2005 15:48:53\n";
 
 /* 1024 primes >= 16411; [0x80..] index the hex digit characters, [0x100], [0x200], [0x300] seed
@@ -106,6 +107,7 @@ static const Sint16 skg_prim_tbl[1024] = {
 };
 
 static Sint32 skg_init_count;
+/* SKG error callback: only stripped code refers to it */
 static void (*skg_err_func)(void *obj, const Char8 *msg);
 static void *skg_err_obj;
 
@@ -115,23 +117,14 @@ static void SKG_Init(void) {
     skg_init_count++;
 }
 
-/* dead-stripped by the linker; they keep the SKG statics in front of the .bss */
-void SKG_Finish(void) {
-    if (skg_init_count != 0) {
-        skg_init_count--;
-    }
-}
-
-/* Registers the SKG error callback (never invoked by this build: the key generator has no error
- * paths). */
-void SKG_EntryErrFunc(void (*func)(void *obj, const Char8 *msg), void *obj) {
-    skg_err_func = func;
-    skg_err_obj = obj;
-}
-
-/* Returns the SKG build string (skg_version: "SKG/GC Ver.0.64 Build:Feb 28 2005 15:48:53"). */
-const Char8 *SKG_GetVersion(void) {
-    return skg_version;
+/* Stand-in for functions the linker stripped from the game; their bodies are unknown. MWCC lays
+ * out .bss by first reference, so this never-called function refers to the SKG error callback
+ * statics in storage order before the ADXB code below refers to its own. Storing the addresses
+ * keeps the references.
+ */
+static void skg_BssOrder(void **out) {
+    out[0] = &skg_err_func;
+    out[1] = &skg_err_obj;
 }
 
 /* one step of the key chain */
@@ -175,8 +168,12 @@ static Sint32 SKG_MakeKey(Sint32 nsmpl, Sint16 *k0, Sint16 *km, Sint16 *ka) {
 /* ---- ADXB ---- */
 
 static void (*ahxsetextfunc)(void *ahx, Sint16 *key);
+/* Dolby Pro Logic II hooks used when a handle has an xdc (PL2 encoder): ADXB_ExecOneAdx runs
+ * `encode` over every decoded sample pair, ADXB_Stop calls `reset`. */
 static void (*pl2encodefunc)(ADXB adxb, Sint16 smpl, Sint16 *in, Sint16 *out);
 static void (*pl2resetfunc)(ADXB adxb);
+/* Library-wide default decryption key (k0, km, ka) for ADX version 4.08 streams whose handle has
+ * no key of its own (adxb_SetKey). */
 static Sint16 adxb_def_k0;
 static Sint16 adxb_def_km;
 static Sint16 adxb_def_ka;
@@ -184,32 +181,19 @@ static Sint16 adxb_def_ka;
 static Sint32 adxb_ignore_hdrerr;
 static ADXB_OBJ adxb_obj[ADXB_MAX_OBJ];
 
-/* dead-stripped by the linker; the references fix the .bss order */
-void ADXB_SetAhxExtFunc(void (*func)(void *ahx, Sint16 *key)) {
-    ahxsetextfunc = func;
-}
-
-/* Installs the Dolby Pro Logic II encode/reset hooks used when a handle has an xdc (PL2 encoder):
- * ADXB_ExecOneAdx runs `encode` over every decoded sample pair, ADXB_Stop calls `reset`. */
-void ADXB_SetPl2Func(void (*encode)(ADXB adxb, Sint16 smpl, Sint16 *in, Sint16 *out),
-                     void (*reset)(ADXB adxb)) {
-    pl2encodefunc = encode;
-    pl2resetfunc = reset;
-}
-
-/* Sets the library-wide default decryption key (k0, km, ka) used for ADX version 4.08 streams whose
- * handle has no key of its own (adxb_SetKey). */
-void ADXB_SetDefKey(Sint16 k0, Sint16 km, Sint16 ka) {
-    adxb_def_k0 = k0;
-    adxb_def_km = km;
-    adxb_def_ka = ka;
-}
-
-/* Unreferenced, so the linker strips it (inferred: ADXB_Init only clears the flag, so a setter
- * like the other ADXB_Set* entries must exist; its reference also places the flag before
- * adxb_obj in .bss). */
-void ADXB_SetIgnoreHdrErr(Sint32 flg) {
-    adxb_ignore_hdrerr = flg;
+/* Stand-in for functions the linker stripped from the game (presumably the setters of the
+ * statics above); their bodies are unknown. MWCC lays out .bss by first reference, so this
+ * never-called function refers to the statics in storage order before any other code does.
+ * Storing the addresses keeps the references from being optimized away.
+ */
+static void adxb_BssOrder(void **out) {
+    out[0] = &ahxsetextfunc;
+    out[1] = &pl2encodefunc;
+    out[2] = &pl2resetfunc;
+    out[3] = &adxb_def_k0;
+    out[4] = &adxb_def_km;
+    out[5] = &adxb_def_ka;
+    out[6] = &adxb_ignore_hdrerr;
 }
 
 /* One server tick of a block decoder: dispatches on the container type in x98
@@ -797,10 +781,12 @@ Sint32 ADXB_DecodeHeaderAdx(ADXB adxb, Uint8 *buf, Sint32 bsize) {
     return hdrlen;
 }
 
-/* dead-stripped by the linker; the literal stays in the .rodata pool after DecodeHeaderAdx's
- * messages */
-const Char8 *ADXB_GetSignature(void) {
-    return "CRI-MW";
+/* Stand-in for a function the linker stripped from the game; its body is unknown. Its literal
+ * remains in .rodata after DecodeHeaderAdx's messages; this never-called function refers to it
+ * there. Storing the address keeps the reference.
+ */
+static void adxb_RodataOrder(const Char8 **out) {
+    out[0] = "CRI-MW";
 }
 
 /* Frees a block decoder: destroys its ADPCM core and clears the slot in adxb_obj. */
