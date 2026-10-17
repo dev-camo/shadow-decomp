@@ -1034,6 +1034,10 @@ CRI/mpv_cmc.c:
 	.text       start:0x803D5F2C end:0x803D6060
 	.bss        start:0x805C9348 end:0x805C9368
 
+CRI/mpv_dec.c:
+	.text       start:0x803D6060 end:0x803D7678
+	.rodata     start:0x80518A30 end:0x80518A38
+
 CRI/mpv_deli.c:
 	.text       start:0x803D7678 end:0x803D7914
 
