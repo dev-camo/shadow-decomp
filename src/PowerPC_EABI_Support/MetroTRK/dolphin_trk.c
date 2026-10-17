@@ -220,7 +220,7 @@ asm void InitMetroTRK(void) {
 	stw r4, ProcessorState_PPC.Default.PC(r3)
 	mfcr r4
 	stw r4, ProcessorState_PPC.Default.CR(r3)
-	//???
+	//Turn off external interrupts (clear MSR[EE])
 	mfmsr r4
 	ori r3, r4, (1 << (31 - 16))
 	xori r3, r3, (1 << (31 - 16))
@@ -235,16 +235,17 @@ asm void InitMetroTRK(void) {
 	li r0, 0
 	mtspr  0x3f2, r0
 	mtspr  0x3f5, r0
-	//Restore stack pointer
+	//Switch to the debugger stack
 	lis r1, _db_stack_addr@h
 	ori r1, r1, _db_stack_addr@l
 	mr r3, r5
 	bl InitMetroTRKCommTable //Initialize comm table
 	/*
-	If InitMetroTRKCommTable returned 1 (failure), an invalid hardware
-	id or the id for GDEV was somehow passed. Since only BBA or NDEV
-	are supported, we return early. Otherwise, we proceed with
-	starting up TRK.
+	InitMetroTRKCommTable returns 1 for an unknown hardware id or when
+	the selected GDEV or AMC DDH transport reports a stub (Hu_IsStub,
+	AMC_IsStub; in this build Hu_IsStub returns 0 and AMC_IsStub 1);
+	BBA always returns 0. On 1, take the failure path below; otherwise
+	start TRK.
 	*/
 	cmpwi r3, 1
 	bne initCommTableSuccess
@@ -295,15 +296,14 @@ asm void InitMetroTRK_BBA(void) {
 	li r0, 0
 	mtspr  0x3f2, r0
 	mtspr 0x3f5, r0
-	//Restore the stack pointer
+	//Switch to the debugger stack
 	lis r1, _db_stack_addr@h
 	ori r1, r1, _db_stack_addr@l
 	li r3, 2
 	bl InitMetroTRKCommTable //Initialize comm table as BBA hardware
 	/*
-	If InitMetroTRKCommTable returned 1 (failure), something went wrong
-	or whatever reason. If everything goes as expected, we proceed with
-	starting up TRK.
+	InitMetroTRKCommTable always returns 0 for the BBA id, so the failure
+	path below is not taken in practice.
 	*/
 	cmpwi r3, 1
 	bne initCommTableSuccess
