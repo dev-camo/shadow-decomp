@@ -3,9 +3,6 @@
 #include "rw/rwcore.h"
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 /* object type and chunk ID */
 #define rwCAMERA 4
 #define rwID_CAMERA 0x5

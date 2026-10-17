@@ -7,18 +7,12 @@
 #include <math.h>
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-
 /* engine and object plugin IDs (inferred) */
 #define rwID_VTXFMTPLUGIN 0x50D
 #define rwID_GAMECUBEWORLDPLUGIN 0x511
 
 /* the plugin ID the platform pipelines report (inferred) */
 #define rwPLATFORMPIPELINEPLUGIN 2
-
-/* RwMatrix flags */
-#define rwMATRIXTYPEORTHONORMAL 0x3
-#define rwMATRIXINTERNALIDENTITY 0x20000
 
 /* The vertex format module (inferred) */
 typedef struct VtxFmtModule {

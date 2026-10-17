@@ -5,18 +5,11 @@
 #include <dolphin/gx.h>
 #include <dolphin/os.h>
 
-#define rwMEMHINTDUR_EVENT 0x30000
-
 /* the vertex format plugin ID, which owns the instanced data allocation (inferred) */
 #define rwID_VTXFMTPLUGIN 0x50D
 
-/* the platform the native data is for */
-#define rwID_GAMECUBE 6
-
 /* the plugin that reports native data errors (inferred) */
 #define rwID_NATIVEDATAPLUGIN 2
-
-#define rwCHUNKHEADERSIZE 12
 
 /* The size of a resource entry's native data chunk; the original subtracts 7 from the entry size,
  * whose meaning is not established */

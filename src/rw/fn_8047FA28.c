@@ -3,8 +3,6 @@
 #include "rw/rwcore.h"
 #include <stdlib.h>
 
-#define rwMEMHINTDUR_FUNCTION 0x10000
-#define rwMEMHINTDUR_GLOBAL 0x40000
 #define rwMEMHINTDUR_MASK 0xFF0000
 
 /* free list flags (inferred) */

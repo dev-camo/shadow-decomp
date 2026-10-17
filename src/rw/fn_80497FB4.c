@@ -34,10 +34,6 @@
 /* A raster type RenderWare does not define; the driver's switches name it explicitly */
 #define RASTERTYPEUNDEFINED 0x3
 
-/* A raster's format */
-#define rwRASTERFORMATMASK 0xFF00
-#define RwRasterGetFormat(raster) (((raster)->cFormat & (rwRASTERFORMATMASK >> 8)) << 8)
-
 /* raster lock modes and the private flag of a raster locked for writing */
 #define rwRASTERLOCKWRITE 0x1
 #define rwRASTERLOCKREAD 0x2

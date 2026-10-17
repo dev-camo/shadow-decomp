@@ -4,7 +4,6 @@
 #include "rw/rpptank.h"
 #include <string.h>
 
-#define rwMEMHINTDUR_EVENT 0x30000
 #define rwMEMHINT_PTANK (rwMEMHINTDUR_EVENT | rpID_PTANKPLUGIN)
 
 RwInt32 lbl_805F144C; /* engine plugin offset */

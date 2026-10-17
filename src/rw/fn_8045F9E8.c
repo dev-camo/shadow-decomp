@@ -7,12 +7,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
-/* chunk IDs */
-#define rwID_WORLD 0xB
-
 /* engine plugin IDs of the world modules (inferred) */
 #define rwID_MATERIALMODULE 0x501
 #define rwID_MESHMODULE 0x502

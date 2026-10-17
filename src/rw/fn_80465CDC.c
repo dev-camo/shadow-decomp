@@ -5,8 +5,6 @@
 #include <dolphin/gx.h>
 #include <string.h>
 
-#define rwMEMHINTDUR_EVENT 0x30000
-
 /* the vertex format plugin ID, which owns the build allocations (inferred) */
 #define rwID_VTXFMTPLUGIN 0x50D
 

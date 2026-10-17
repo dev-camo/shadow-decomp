@@ -4,8 +4,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 /* RwEngineInitFlag: free list entries are allocated and freed with the memory functions */
 #define rwENGINEINITNOFREELISTS 0x1
 
@@ -46,8 +44,6 @@
 
 /* errors (inferred) */
 #define E_RW_BADENGINESTATE 0x80000001 /* the engine is not in the status the call needs */
-#define E_RW_NOMEM 0x80000013          /* reported with the size that could not be allocated */
-#define E_RW_NULLP 0x80000016          /* a required argument is NULL */
 #define E_RW_DEVICEERROR 0x18          /* reported with the device request that failed */
 
 /* The core's error plugin ID (inferred) */

@@ -6,11 +6,7 @@
 #include <string.h>
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_FUNCTION 0x10000
-#define rwMEMHINTDUR_EVENT 0x30000
-
 /* chunk and memory hint IDs */
-#define rwID_TEXTURE 0x6
 #define rwID_GEOMETRY 0xF
 #define rwID_RASTER 0x503
 

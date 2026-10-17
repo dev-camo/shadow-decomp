@@ -3,11 +3,7 @@
 #include "layout_check.h"
 
 /* chunk IDs */
-#define rwID_TEXTURE 0x6
 #define rwID_TEXTURENATIVE 0x15
-
-/* The size of a chunk header in a stream */
-#define rwCHUNKHEADERSIZE 12
 
 /* rwRASTERFORMATAUTOMIPMAP in a raster's cFormat */
 #define rwRASTERFORMATAUTOMIPMAP_CFORMAT 0x10

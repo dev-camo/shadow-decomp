@@ -3,10 +3,6 @@
 #include "rw/rwcore.h"
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-#define rwMEMHINTFLAG_RESIZABLE 0x1000000
-
 /* The stream module's ID (inferred) */
 #define rwID_STREAMMODULE 0x404
 

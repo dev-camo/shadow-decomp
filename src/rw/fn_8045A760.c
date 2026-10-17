@@ -6,9 +6,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 #define rwID_LIGHT 0x12
 
 /* the plugin ID the world module reports errors with (inferred) */

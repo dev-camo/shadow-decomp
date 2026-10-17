@@ -15,9 +15,7 @@
 #define rwSTREAMCONVERTBUFFER 0x100
 
 /* The chunk types (only those that hold other chunks are named here) */
-#define rwID_EXTENSION 0x3
 #define rwID_CAMERA 0x5
-#define rwID_TEXTURE 0x6
 #define rwID_MATERIAL 0x7
 #define rwID_MATRIX 0xD
 #define rwID_FRAMELIST 0xE

@@ -4,10 +4,7 @@
 #include "rw/rpworld.h"
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_FUNCTION 0x10000
-
 /* chunk IDs */
-#define rwID_TEXTURE 0x6
 #define rwID_WORLDMODULE 0x507 /* (inferred) */
 
 /* a sector type that is freed without being deinitialised (inferred) */

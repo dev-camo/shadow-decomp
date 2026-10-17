@@ -2,9 +2,6 @@
  * lists of three more kinds of toolkit object. The original file name is unknown. */
 #include "rw/rt2d.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 /* The object IDs of the memory hints (inferred) */
 #define RT2DMEMID 0x190
 #define RT2DPATHMEMID 0x1A1

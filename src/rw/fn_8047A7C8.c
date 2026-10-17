@@ -4,8 +4,6 @@
 #include <dolphin/os.h>
 #include <string.h>
 
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 /* The file system toolkit's plugin ID, for its memory hints (inferred) */
 #define rwID_FILESYSTEM 0x1BE
 

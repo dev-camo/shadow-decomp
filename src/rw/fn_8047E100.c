@@ -5,9 +5,6 @@
 #include <math.h>
 #include "layout_check.h"
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 /* The matrix chunk ID, for its memory hints */
 #define rwID_MATRIX 0xD
 

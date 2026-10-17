@@ -4,9 +4,6 @@
 #include "rw/rt2d.h"
 #include <string.h>
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
-
 /* The object IDs of the memory hints (inferred) */
 #define RT2DMEMID 0x190
 #define RT2DBRUSHMEMID 0x1A2

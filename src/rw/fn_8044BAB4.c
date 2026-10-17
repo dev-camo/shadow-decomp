@@ -1,14 +1,12 @@
 /* RenderWare skinning plugin (plugin ID 0x116): skins and their split data, the engine, atomic and
  * geometry plugin data, the skin stream format, and the plugin attachment. The original file name
  * is unknown. */
+#include "rw/rpmatfx.h"
 #include "rw/rpskin.h"
 #include <string.h>
 
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTDUR_GLOBAL 0x40000
 #define rwMEMHINT_SKIN (rwMEMHINTDUR_EVENT | rpID_SKINPLUGIN)
 
-#define rpID_MATFXPLUGIN 0x120
 #define rpID_TOONPLUGIN 0x12E /* (inferred) */
 
 SkinGlobals lbl_8056D708 = {0};
