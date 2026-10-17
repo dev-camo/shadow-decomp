@@ -29,7 +29,7 @@ typedef struct RtDictSchema {
     /* 0x00 */ const RwChar *name;
     /* 0x04 */ RwUInt32 dictChunkType;
     /* 0x08 */ RwUInt32 entryChunkType;
-    /* 0x0C */ RwUInt32 compatibilityVersion; /* the oldest stream version read */
+    /* 0x0C */ RwUInt32 compatibilityVersion; /* lower versions: streamReadCompatibilityCB */
     /* 0x10 */ RwSList *dictionaries;         /* of RtDict pointers */
     /* 0x14 */ RtDict *current;               /* the current dictionary (fn_804790C4) */
     /* 0x18 */ RtDictEntryAddRefCallBack addRefCB;

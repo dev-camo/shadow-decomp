@@ -396,8 +396,9 @@ RpGameCubeVertexDescBuilder *fn_8046BEC4(RpGeometry *geometry) {
     return &lbl_805E18A0;
 }
 
-/* Instances a geometry with every stream indexed by vertex: the vertex data and a triangle list
- * per mesh. A geometry instanced for the platform owns a separate allocation. */
+/* Instances a geometry with every stream indexed by vertex: the vertex data and a display list
+ * per mesh (triangle strips when the geometry has them). A geometry instanced for the platform
+ * owns a separate allocation. */
 RwResEntry *fn_8046C0D4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef) {
     RpGameCubeIndexSource indexSource;
     RpGameCubeVertexSource vertexSource;
