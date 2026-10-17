@@ -20,16 +20,26 @@ extern "C" {
 #define rpDMORPHTARGETPRELIT 0x8
 #define rpDMORPHTARGETNORMALS 0x10
 
+/* The run length code of a delta morph target's vertices: each code byte is a run of as many
+ * vertices as its low seven bits, which have deltas when its top bit is set. The deltas of those
+ * vertices follow one another in the target's streams. The GameCube delta kernels receive the
+ * address of this record and read the code and its length through it; the member meanings are
+ * inferred from that use and from the stream reader. */
+typedef struct rpDMorphRLE {
+    /* 0x0 */ RwUInt8 *code;
+    /* 0x4 */ RwUInt32 numCodeElements;
+    /* 0x8 */ RwUInt32 numDataElements; /* the vertices that have deltas */
+    /* 0xC */ RwUInt8 *data;            /* one allocation for the target's delta streams */
+} rpDMorphRLE;
+CHECK_SIZEOF(rpDMorphRLE, 0x10);
+
 /* A delta morph target of a geometry (0x40 bytes) */
 typedef struct RpDMorphTarget {
     /* 0x00 */ RpGeometry *geometry;
     /* 0x04 */ RwChar *name;
-    /* 0x08 */ RwUInt32 flags;      /* rpDMORPHTARGET* */
-    /* 0x0C */ RwUInt32 field_0xC;  /* passed to fn_8045916C when the target is applied */
-    /* 0x10 */ RwUInt8 *field_0x10; /* field_0x14 vertex runs (see fn_80443A74) */
-    /* 0x14 */ RwUInt32 field_0x14;
-    /* 0x18 */ RwUInt32 numVertices;
-    /* 0x1C */ RwUInt8 *vertexData; /* one allocation for the vertex streams below */
+    /* 0x08 */ RwUInt32 flags;     /* rpDMORPHTARGET* */
+    /* 0x0C */ RwUInt32 field_0xC; /* passed to fn_8045916C when the target is applied */
+    /* 0x10 */ rpDMorphRLE rle;
     /* 0x20 */ RwV3d *positions;
     /* 0x24 */ RwV3d *normals;
     /* 0x28 */ RwRGBA *preLitLum;
@@ -48,6 +58,8 @@ typedef struct RpDMorphGeometry {
 CHECK_SIZEOF(RpDMorphGeometry, 0x1C);
 
 extern RwInt32 lbl_805F1428; /* geometry plugin offset */
+
+#define DMORPHGEOMETRY(geometry) (*RWPLUGINOFFSET(RpDMorphGeometry *, geometry, lbl_805F1428))
 
 #define rpDMORPHNOFRAME 0xFFFFFFFF
 
@@ -97,6 +109,8 @@ typedef struct RpDMorphAtomic {
 CHECK_SIZEOF(RpDMorphAtomic, 0xC);
 
 extern RwInt32 lbl_805F1430; /* atomic plugin offset */
+
+#define DMORPHATOMIC(atomic) RWPLUGINOFFSET(RpDMorphAtomic, atomic, lbl_805F1430)
 
 /* geometries */
 RpGeometry *fn_8044382C(RpGeometry *geometry, RwUInt32 numDMorphTargets);

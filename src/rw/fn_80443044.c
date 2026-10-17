@@ -16,8 +16,6 @@
         fn_8047DB84(&error_);                                                                      \
     } while (0)
 
-#define DMORPHGEOMETRY(geometry) (*RWPLUGINOFFSET(RpDMorphGeometry *, geometry, lbl_805F1428))
-
 RwInt32 lbl_805F1428;
 
 /* The size of a vertex in a target's vertex data */
@@ -88,34 +86,34 @@ RwStream *fn_804430B0(RwStream *stream, RwInt32 length, void *object, RwInt32 of
         }
         target->flags = header[0];
         target->field_0xC = header[1];
-        target->field_0x14 = header[2];
-        target->numVertices = header[3];
+        target->rle.numCodeElements = header[2];
+        target->rle.numDataElements = header[3];
 
-        byteSize = target->field_0x14;
-        target->field_0x10 = RwMalloc(byteSize, rwMEMHINT_DMORPH);
-        if (target->field_0x10 == NULL) {
+        byteSize = target->rle.numCodeElements;
+        target->rle.code = RwMalloc(byteSize, rwMEMHINT_DMORPH);
+        if (target->rle.code == NULL) {
             RWERROR((0x80000013, byteSize));
             return NULL;
         }
-        if (fn_80480D4C(stream, target->field_0x10, byteSize) == 0) {
+        if (fn_80480D4C(stream, target->rle.code, byteSize) == 0) {
             return NULL;
         }
 
-        if (target->numVertices == 0) {
-            target->vertexData = NULL;
+        if (target->rle.numDataElements == 0) {
+            target->rle.data = NULL;
         } else {
             RwUInt8 *data;
 
             byteSize = DMorphTargetVertexSize(target->flags);
-            byteSize *= target->numVertices;
-            target->vertexData = RwMalloc(byteSize, rwMEMHINT_DMORPH);
-            if (target->vertexData == NULL) {
+            byteSize *= target->rle.numDataElements;
+            target->rle.data = RwMalloc(byteSize, rwMEMHINT_DMORPH);
+            if (target->rle.data == NULL) {
                 RWERROR((0x80000013, byteSize));
                 return NULL;
             }
-            data = target->vertexData;
+            data = target->rle.data;
             if (target->flags & rpDMORPHTARGETPOSITIONS) {
-                byteSize = target->numVertices * sizeof(RwV3d);
+                byteSize = target->rle.numDataElements * sizeof(RwV3d);
                 if (fn_8047D784(stream, (RwReal *)data, byteSize) == NULL) {
                     return NULL;
                 }
@@ -123,7 +121,7 @@ RwStream *fn_804430B0(RwStream *stream, RwInt32 length, void *object, RwInt32 of
                 data += byteSize;
             }
             if (target->flags & rpDMORPHTARGETNORMALS) {
-                byteSize = target->numVertices * sizeof(RwV3d);
+                byteSize = target->rle.numDataElements * sizeof(RwV3d);
                 if (fn_8047D784(stream, (RwReal *)data, byteSize) == NULL) {
                     return NULL;
                 }
@@ -131,7 +129,7 @@ RwStream *fn_804430B0(RwStream *stream, RwInt32 length, void *object, RwInt32 of
                 data += byteSize;
             }
             if (target->flags & rpDMORPHTARGETPRELIT) {
-                byteSize = target->numVertices * sizeof(RwRGBA);
+                byteSize = target->rle.numDataElements * sizeof(RwRGBA);
                 if (fn_80480D4C(stream, data, byteSize) == 0) {
                     return NULL;
                 }
@@ -140,7 +138,7 @@ RwStream *fn_804430B0(RwStream *stream, RwInt32 length, void *object, RwInt32 of
             }
             if (target->flags & rpDMORPHTARGETTEXCOORDS) {
                 if (fn_8047D784(stream, (RwReal *)data,
-                                target->numVertices * sizeof(RwTexCoords)) == NULL) {
+                                target->rle.numDataElements * sizeof(RwTexCoords)) == NULL) {
                     return NULL;
                 }
                 target->texCoords = (RwTexCoords *)data;
@@ -186,37 +184,37 @@ RwStream *fn_80443474(RwStream *stream, RwInt32 length, const void *object, RwIn
 
         header[0] = target->flags;
         header[1] = target->field_0xC;
-        header[2] = target->field_0x14;
-        header[3] = target->numVertices;
+        header[2] = target->rle.numCodeElements;
+        header[3] = target->rle.numDataElements;
         if (fn_8047D458(stream, (RwInt32 *)header, sizeof(header)) == NULL) {
             return NULL;
         }
-        if (fn_80480ED0(stream, target->field_0x10, target->field_0x14) == NULL) {
+        if (fn_80480ED0(stream, target->rle.code, target->rle.numCodeElements) == NULL) {
             return NULL;
         }
 
-        if (target->numVertices != 0) {
+        if (target->rle.numDataElements != 0) {
             if (target->flags & rpDMORPHTARGETPOSITIONS) {
                 if (fn_8047D350(stream, (RwReal *)target->positions,
-                                target->numVertices * sizeof(RwV3d)) == NULL) {
+                                target->rle.numDataElements * sizeof(RwV3d)) == NULL) {
                     return NULL;
                 }
             }
             if (target->flags & rpDMORPHTARGETNORMALS) {
                 if (fn_8047D350(stream, (RwReal *)target->normals,
-                                target->numVertices * sizeof(RwV3d)) == NULL) {
+                                target->rle.numDataElements * sizeof(RwV3d)) == NULL) {
                     return NULL;
                 }
             }
             if (target->flags & rpDMORPHTARGETPRELIT) {
-                if (fn_80480ED0(stream, target->preLitLum, target->numVertices * sizeof(RwRGBA)) ==
-                    NULL) {
+                if (fn_80480ED0(stream, target->preLitLum,
+                                target->rle.numDataElements * sizeof(RwRGBA)) == NULL) {
                     return NULL;
                 }
             }
             if (target->flags & rpDMORPHTARGETTEXCOORDS) {
                 if (fn_8047D350(stream, (RwReal *)target->texCoords,
-                                target->numVertices * sizeof(RwTexCoords)) == NULL) {
+                                target->rle.numDataElements * sizeof(RwTexCoords)) == NULL) {
                     return NULL;
                 }
             }
@@ -247,8 +245,8 @@ RwInt32 fn_804436B0(const void *object, RwInt32 offset, RwInt32 size) {
                 streamSize += rwstrlen(target->name) + 1;
             }
             streamSize += 4 * sizeof(RwUInt32);
-            streamSize += target->field_0x14;
-            streamSize += target->numVertices * DMorphTargetVertexSize(flags);
+            streamSize += target->rle.numCodeElements;
+            streamSize += target->rle.numDataElements * DMorphTargetVertexSize(flags);
             streamSize += sizeof(RwSphere);
         }
     }
@@ -313,11 +311,11 @@ RpGeometry *fn_804439A8(RpGeometry *geometry, RwUInt32 index) {
     if (target->name != NULL) {
         RwFree(target->name);
     }
-    if (target->field_0x10 != NULL) {
-        RwFree(target->field_0x10);
+    if (target->rle.code != NULL) {
+        RwFree(target->rle.code);
     }
-    if (target->vertexData != NULL) {
-        RwFree(target->vertexData);
+    if (target->rle.data != NULL) {
+        RwFree(target->rle.data);
     }
     memset(target, 0, sizeof(RpDMorphTarget));
     return geometry;
