@@ -1858,6 +1858,15 @@ rw/fn_80497FB4.c:
 	.sbss       start:0x805F1668 end:0x805F1670
 	.sdata2     start:0x805FB3E0 end:0x805FB418
 
+rw/fn_804A076C.c:
+	.text       start:0x804A076C end:0x804A2C90
+	.rodata     start:0x8051C3C0 end:0x8051C400
+	.data       start:0x8056ED00 end:0x8056ED28
+	.bss        start:0x805E32A0 end:0x805E32C8
+	.sdata      start:0x805EDF60 end:0x805EDF68
+	.sbss       start:0x805F16A8 end:0x805F16B8
+	.sdata2     start:0x805FB438 end:0x805FB450
+
 rw/fn_804A869C.c:
 	.text       start:0x804A869C end:0x804A90F8
 	.bss        start:0x805E32D8 end:0x805E3378
