@@ -2,8 +2,7 @@
  * A "file" is a memory range named "%08x.%08x" (address.size); reads are memcpy and
  * complete at once.
  *
- * Names, types and layout follow MFCI Ver.1.09 in the RE4 GameCube decompilation (same
- * error codes and function order); Ver.1.10 adds mfCiOptFn for the CVFS OptFn slot.
+ * Names, types and layout follow the RE4 GameCube decompilation of the same file.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -187,31 +186,17 @@ Sint32 mfCiOptFn(void *hn, Sint32 fnid, Sint32 a, Sint32 b) {
     return ret;
 }
 
-/* Unreferenced, so the linker strips it. Body from the RE4 decompilation (not verified
- * against Shadow); its literals and the mfci_init_flag storage are verified in the object.
+/* Stand-in for a function the linker stripped from the game; its body is unknown. Its messages
+ * (which name it, mfCiOpenEntry) remain in .rodata between those of the functions around it, and
+ * MWCC lays out .bss by first reference. This never-called function refers to the messages, then
+ * to mfci_obj and mfci_init_flag in storage order. Storing the addresses keeps the references.
  */
-MFCI mfCiOpenEntry(Sint32 entry, Sint32 rw) {
-    MFCI mfci;
-
-    if (entry < 0 || entry >= MFCI_MAX_OBJ) {
-        sprintf(mfci_err_str, "E1041001:invalid entry number.(mfCiOpenEntry)");
-        mfci_CallErr(mfci_err_str, 0);
-        return 0;
-    }
-    if (rw != 0) {
-        sprintf(mfci_err_str, "E1041002:rw is illigal.(mfCiOpenEntry)");
-        mfci_CallErr(mfci_err_str, 0);
-        return 0;
-    }
-    mfci = &mfci_obj[entry];
-    if (mfci->used != 0) {
-        sprintf(mfci_err_str, "E1041002:not enough handle resource.(mfCiOpenEntry)");
-        mfci_CallErr(mfci_err_str, 0);
-        return 0;
-    }
-    mfci_init_flag = 1;
-    mfci->used = 1;
-    return mfci;
+static void mfci_DataOrder(const void **out) {
+    out[0] = "E1041001:invalid entry number.(mfCiOpenEntry)";
+    out[1] = "E1041002:rw is illigal.(mfCiOpenEntry)";
+    out[2] = "E1041002:not enough handle resource.(mfCiOpenEntry)";
+    out[3] = mfci_obj;
+    out[4] = &mfci_init_flag;
 }
 
 /* Bytes transferred by the last read request. */
