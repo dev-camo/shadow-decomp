@@ -2,6 +2,8 @@
 #define RW_RPMATFX_H
 
 #include "rw/rpworld.h"
+#include <dolphin/gx/GXStruct.h>
+#include <dolphin/mtx.h>
 #include "layout_check.h"
 
 /* RenderWare material effects (plugin ID 0x120): up to two effects on a material (bump mapping,
@@ -166,11 +168,6 @@ RpWorldSector *fn_804A5598(RpWorldSector *sector); /* sets a world sector's pipe
 RwBool fn_804A55A4(MatFXDualData *dualData, RwInt32 renderState);
 /* the bumped texture made from a bump map texture and the material's texture */
 RwTexture *fn_804A55AC(RwTexture *baseTexture, RwTexture *bumpTexture);
-/* renders a mesh with its material's GameCube multi-texture effect (inferred) */
-void fn_804A6A08(RpGameCubeDisplayList *displayList, RpMaterial *material, RpAtomic *atomic,
-                 RpGameCubeRenderMesh *renderMesh, RwMatrix *ltm);
-/* attaches the GameCube multi-texture effects; TRUE on success */
-RwBool fn_804A6C74(void);
 
 #define rpMTEFFECTNAMELENGTH 32
 #define rpMTEFFECTPATHLENGTH 256
@@ -287,6 +284,139 @@ RpMultiTexture *fn_804A90B0(RpMultiTexture *multiTexture, RwUInt32 index, RwUInt
 RwUInt32 fn_804A90BC(const RpMultiTexture *multiTexture, RwUInt32 index); /* the coordinate set */
 /* a material's texture set for a platform, or NULL */
 RpMultiTexture *fn_804A90C8(const RpMaterial *material, RwPlatformID platformID);
+
+#define rpID_GCNMATPLUGIN 0x129
+
+/* GameCube multi-texture effect flags (inferred) */
+#define rpMTGCNEFFECTTEVCOLORS 0x01 /* sets the TEV colour registers */
+#define rpMTGCNEFFECTKCOLORS 0x02   /* sets the TEV constant colours */
+#define rpMTGCNEFFECTBLEND 0x04     /* sets the blend modes */
+#define rpMTGCNEFFECTALPHATEST 0x08 /* draws with the cached alpha compare, else as opaque */
+#define rpMTGCNEFFECTCOLOR0 0x10    /* stages that use a colour channel use channel 0 */
+#define rpMTGCNEFFECTENVMATRIX 0x20 /* loads texture matrix 0 with an environment projection */
+
+/* a stage, texture coordinate generator or indirect stage that is skipped (inferred) */
+#define rpMTGCNDISABLED 0x1
+
+/* texture coordinate generator flags (inferred) */
+#define rpMTGCNTEXGENNORMALIZE 0x2     /* normalizes the coordinates before the post-transform */
+#define rpMTGCNTEXGENSCALEMANUALLY 0x4 /* scales the coordinates by the generator's scale */
+
+/* texture matrix flags (inferred) */
+#define rpMTGCNTEXMTX2X4 0x1         /* loaded as GX_MTX2x4, else GX_MTX3x4 */
+#define rpMTGCNTEXMTXTRANSLATION 0x2 /* keeps the source's translation */
+
+/* A texture coordinate generator of a GameCube effect (GXSetTexCoordGen2) (name inferred) */
+typedef struct MTEffectGameCubeTexGen {
+    /* 0x00 */ RwUInt32 flags; /* rpMTGCNDISABLED, rpMTGCNTEXGEN* */
+    /* 0x04 */ GXTexGenType func;
+    /* 0x08 */ GXTexGenSrc src; /* texture coordinates follow the material's sets */
+    /* 0x0C */ RwUInt32 mtx;
+    /* 0x10 */ RwUInt32 postMtx;
+    /* 0x14 */ RwUInt16 scaleS;
+    /* 0x16 */ RwUInt16 scaleT;
+} MTEffectGameCubeTexGen;
+CHECK_SIZEOF(MTEffectGameCubeTexGen, 0x18);
+
+/* A TEV stage of a GameCube effect (name inferred) */
+typedef struct MTEffectGameCubeTevStage {
+    /* 0x00 */ RwUInt32 colorIn[4]; /* GXTevColorArg */
+    /* 0x10 */ RwUInt32 alphaIn[4]; /* GXTevAlphaArg */
+    /* 0x20 */ RwUInt32 colorOp;
+    /* 0x24 */ RwUInt32 colorBias;
+    /* 0x28 */ RwUInt32 colorScale;
+    /* 0x2C */ RwUInt8 colorClamp;
+    /* 0x30 */ RwUInt32 colorOut;
+    /* 0x34 */ RwUInt32 alphaOp;
+    /* 0x38 */ RwUInt32 alphaBias;
+    /* 0x3C */ RwUInt32 alphaScale;
+    /* 0x40 */ RwUInt8 alphaClamp;
+    /* 0x44 */ RwUInt32 alphaOut;
+    /* 0x48 */ RwUInt32 kColorSel;
+    /* 0x4C */ RwUInt32 kAlphaSel;
+    /* 0x50 */ RwUInt32 texCoord;
+    /* 0x54 */ RwUInt32 texMap;
+    /* 0x58 */ GXChannelID color;
+    /* 0x5C */ RwUInt32 flags;    /* rpMTGCNDISABLED */
+    /* 0x60 */ RwUInt32 indirect; /* the packed indirect stage setup, or 0 for a direct stage */
+} MTEffectGameCubeTevStage;
+CHECK_SIZEOF(MTEffectGameCubeTevStage, 0x64);
+
+/* A texture matrix of a GameCube effect, applied after the matrix of its source (name inferred) */
+typedef struct MTEffectGameCubeTexMtx {
+    /* 0x00 */ RwUInt32 id;
+    /* 0x04 */ RwInt32 source; /* see fn_804A6170 */
+    /* 0x08 */ RwUInt32 flags; /* rpMTGCNTEXMTX* */
+    /* 0x0C */ Mtx matrix;
+} MTEffectGameCubeTexMtx;
+CHECK_SIZEOF(MTEffectGameCubeTexMtx, 0x3C);
+
+/* An indirect texture matrix of a GameCube effect, applied after the matrix of its source (name
+ * inferred) */
+typedef struct MTEffectGameCubeIndMtx {
+    /* 0x00 */ RwUInt32 id;
+    /* 0x04 */ RwInt32 source;
+    /* 0x08 */ RwUInt32 flags;
+    /* 0x0C */ RwReal offset[2][3];
+    /* 0x24 */ RwInt32 scaleExp;
+} MTEffectGameCubeIndMtx;
+CHECK_SIZEOF(MTEffectGameCubeIndMtx, 0x28);
+
+/* An indirect texture stage of a GameCube effect (name inferred) */
+typedef struct MTEffectGameCubeIndStage {
+    /* 0x00 */ RwUInt32 flags; /* rpMTGCNDISABLED */
+    /* 0x04 */ RwUInt32 texCoord;
+    /* 0x08 */ RwUInt32 texMap;
+    /* 0x0C */ RwUInt32 scaleS;
+    /* 0x10 */ RwUInt32 scaleT;
+} MTEffectGameCubeIndStage;
+CHECK_SIZEOF(MTEffectGameCubeIndStage, 0x14);
+
+/* The GameCube data of a multi-texture effect (name inferred): the GX state it renders with. The arrays follow the
+ * effect, which a GameCube effect is allocated with. */
+typedef struct MTEffectGameCube {
+    /* 0x00 */ RwUInt32 flags;     /* rpMTGCNEFFECT* */
+    /* 0x04 */ RwUInt8 maxTexGens; /* the arrays' sizes */
+    /* 0x05 */ RwUInt8 maxTevStages;
+    /* 0x06 */ RwUInt8 maxTexMtx;
+    /* 0x07 */ RwUInt8 maxIndStages;
+    /* 0x08 */ RwUInt8 maxIndMtx;
+    /* 0x09 */ RwUInt8 numTexGens;
+    /* 0x0A */ RwUInt8 numTevStages;
+    /* 0x0B */ RwUInt8 numTexMtx;
+    /* 0x0C */ RwUInt8 numIndStages;
+    /* 0x0D */ RwUInt8 numIndMtx;
+    /* 0x0E */ GXColorS10 tevColors[4]; /* registers 0 to 2, then the previous register */
+    /* 0x2E */ GXColor kColors[4];
+    /* 0x40 */ MTEffectGameCubeTexMtx *texMtx;
+    /* 0x44 */ MTEffectGameCubeTexGen *texGens;
+    /* 0x48 */ MTEffectGameCubeIndMtx *indMtx;
+    /* 0x4C */ MTEffectGameCubeIndStage *indStages;
+    /* 0x50 */ MTEffectGameCubeTevStage *tevStages;
+    /* 0x54 */ RwInt32 srcBlend; /* rwBLEND* */
+    /* 0x58 */ RwInt32 dstBlend;
+} MTEffectGameCube;
+CHECK_SIZEOF(MTEffectGameCube, 0x5C);
+
+/* A GameCube multi-texture effect (name inferred) */
+typedef struct RpMTEffectGameCube {
+    /* 0x00 */ RpMTEffect effect;
+    /* 0x30 */ MTEffectGameCube data;
+} RpMTEffectGameCube;
+CHECK_SIZEOF(RpMTEffectGameCube, 0x8C);
+
+/* GameCube multi-texture effects (inferred) */
+RwBool fn_804A5F08(void); /* registers the GameCube effect callbacks */
+/* creates a GameCube effect with room for the stages, generators and matrices */
+RpMTEffect *fn_804A5F48(RwUInt32 numTevStages, RwUInt32 numTexGens, RwUInt32 numTexMtx,
+                        RwUInt32 numIndStages, RwUInt32 numIndMtx);
+MTEffectGameCube *fn_804A60D0(RpMTEffect *effect); /* its GameCube data */
+RwBool fn_804A6C30(void);                          /* registers the GameCube engine plugin */
+
+/* renders a mesh with its material's GameCube multi-texture effect (inferred) */
+void fn_804A6A08(RpGameCubeDisplayList *displayList, RpMaterial *material, RpAtomic *atomic,
+                 RpGameCubeRenderMesh *renderMesh, RwMatrix *ltm);
+RwBool fn_804A6C74(void); /* attaches the GameCube multi-texturing */
 
 #ifdef __cplusplus
 }
