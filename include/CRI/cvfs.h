@@ -65,6 +65,10 @@ CVFS_IF *mfCiGetInterface(void);
 CVFS_IF *gcCiGetInterface(void);
 void gcCiSetRdMode(void *obj, Sint32 a, Sint32 b, Sint32 mode);
 
+/* gcci_sub.c: DVD read mode and the root directory of GCD-device file names (gcci.c) */
+extern Sint32 gcg_ci_rdmode;
+extern Char8 gcg_ci_root_dir[256];
+
 #ifdef __cplusplus
 }
 #endif
