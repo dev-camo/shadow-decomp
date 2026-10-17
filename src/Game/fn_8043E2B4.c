@@ -82,7 +82,7 @@ s32 fn_8043FAB0(s32 mode) {
 }
 
 /* Takes a free load request */
-s32 fn_8043FA20(GcaxLoad **out) {
+s32 fn_8043FA20(void **out) {
     GcaxLoad *load;
     int i;
 
@@ -105,8 +105,9 @@ found:
 }
 
 /* Sets the file and completion callback of a load request */
-s32 fn_8043F980(GcaxLoad *load, u8 *file, u32 arg2, GcaxCallback callback, void *arg) {
+s32 fn_8043F980(void *handle, u8 *file, u32 arg2, GcaxCallback callback, void *arg) {
     s32 result;
+    GcaxLoad *load = handle;
 
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
@@ -125,8 +126,9 @@ s32 fn_8043F980(GcaxLoad *load, u8 *file, u32 arg2, GcaxCallback callback, void 
 
 /* Frees a load request, first waiting for its ARAM request. The original reads the busy flag
  * once into a local, so the wait never sees it clear. */
-s32 fn_8043F8C4(GcaxLoad *load) {
+s32 fn_8043F8C4(void *handle) {
     s32 result;
+    GcaxLoad *load = handle;
 
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
@@ -166,12 +168,13 @@ static inline s32 gcaxSndLoadEntry(GcaxLoad *load, u32 *entry, u8 *data) {
     return status;
 }
 
-s32 fn_8043F70C(GcaxLoad *load) {
+s32 fn_8043F70C(void *handle) {
     GcaxFileHeader *header;
     u8 *data;
     s32 count;
     u32 *entry;
     s32 result;
+    GcaxLoad *load = handle;
 
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
@@ -204,7 +207,7 @@ s32 fn_8043F70C(GcaxLoad *load) {
 }
 
 /* Takes a free player */
-s32 fn_8043F6AC(GcaxPlayer **out) {
+s32 fn_8043F6AC(void **out) {
     GcaxPlayer *player;
 
     if (lbl_805F1404 == NULL) {
@@ -219,8 +222,9 @@ s32 fn_8043F6AC(GcaxPlayer **out) {
 }
 
 /* Frees a player */
-s32 fn_8043F60C(GcaxPlayer *player) {
+s32 fn_8043F60C(void *handle) {
     s32 result;
+    GcaxPlayer *player = handle;
 
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
@@ -251,9 +255,10 @@ s32 fn_8043F5AC(void) {
 
 /* Builds a MIDI message: status, the first data byte and, for messages with two data bytes, the
  * second one */
-s32 fn_8043F41C(GcaxPlayer *player, u8 *msg, u16 status, ...) {
+s32 fn_8043F41C(void *handle, u8 *msg, u16 status, ...) {
     va_list args;
     s32 result;
+    GcaxPlayer *player = handle;
 
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
@@ -284,8 +289,9 @@ s32 fn_8043F41C(GcaxPlayer *player, u8 *msg, u16 status, ...) {
 }
 
 /* Queues a MIDI message built by fn_8043F41C with a note priority */
-s32 fn_8043F35C(GcaxPlayer *player, u8 *msg, u8 priority) {
+s32 fn_8043F35C(void *handle, u8 *msg, u8 priority) {
     s32 result;
+    GcaxPlayer *player = handle;
 
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
@@ -340,9 +346,10 @@ s32 fn_8043F1FC(void) {
 }
 
 /* Resets all channels of a player */
-s32 fn_8043F13C(GcaxPlayer *player) {
+s32 fn_8043F13C(void *handle) {
     s32 result;
     int i;
+    GcaxPlayer *player = handle;
 
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
@@ -371,8 +378,9 @@ s32 fn_8043F0D4(void) {
 }
 
 /* Starts song song of the sound data of bank bank with note priority priority */
-s32 fn_8043EFF0(GcaxPlayer *player, s8 bank, s8 song, s8 priority) {
+s32 fn_8043EFF0(void *handle, s8 bank, s8 song, s8 priority) {
     s32 result;
+    GcaxPlayer *player = handle;
 
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
@@ -392,8 +400,9 @@ s32 fn_8043EFF0(GcaxPlayer *player, s8 bank, s8 song, s8 priority) {
 }
 
 /* Stops the player's sequence */
-s32 fn_8043EF50(GcaxPlayer *player) {
+s32 fn_8043EF50(void *handle) {
     s32 result;
+    GcaxPlayer *player = handle;
 
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
@@ -412,8 +421,9 @@ s32 fn_8043EF48(void) {
 
 /* Fades the player's pitch over time milliseconds to a shift of steps (256 per semitone; fn_8043D318
  * converts it in pairs of steps, rounding odd remainders up) */
-s32 fn_8043EE74(GcaxPlayer *player, s16 steps, s32 time) {
+s32 fn_8043EE74(void *handle, s16 steps, s32 time) {
     s32 result;
+    GcaxPlayer *player = handle;
 
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
@@ -427,8 +437,9 @@ s32 fn_8043EE74(GcaxPlayer *player, s16 steps, s32 time) {
 }
 
 /* Fades the player's volume to volume / 127 over time milliseconds */
-s32 fn_8043ED7C(GcaxPlayer *player, s8 volume, s32 time) {
+s32 fn_8043ED7C(void *handle, s8 volume, s32 time) {
     s32 result;
+    GcaxPlayer *player = handle;
 
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
@@ -445,8 +456,9 @@ s32 fn_8043ED7C(GcaxPlayer *player, s8 volume, s32 time) {
 }
 
 /* Pauses a player */
-s32 fn_8043ECDC(GcaxPlayer *player) {
+s32 fn_8043ECDC(void *handle) {
     s32 result;
+    GcaxPlayer *player = handle;
 
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
@@ -460,8 +472,9 @@ s32 fn_8043ECDC(GcaxPlayer *player) {
 }
 
 /* Resumes a paused player */
-s32 fn_8043EC3C(GcaxPlayer *player) {
+s32 fn_8043EC3C(void *handle) {
     s32 result;
+    GcaxPlayer *player = handle;
 
     if (lbl_805F1404 == NULL) {
         return GCAX_ERR_NOT_READY;
