@@ -19,7 +19,7 @@ CMemoryAlloc *GetMemoryAlloc();
 CMemoryAlloc *SetMemoryAlloc(CMemoryAlloc *alloc);
 
 /* Buffer allocation through the current allocator; callers pass __FILE__ and __LINE__. */
-void *Alloc(unsigned long size, const char *file, int line);
+void *Alloc(size_t size, const char *file, int line);
 void Free(void *ptr);
 
 /* The current platform (names inferred). */
@@ -32,11 +32,11 @@ void PrintError(const char *format, ...);
 /* As PrintError, then never returns (name inferred). */
 void PrintFatalError(const char *format, ...);
 
-/* Heap objects of the library allocate through the current allocator (sizes are unsigned long,
- * MWCC's size type, as in CMemoryAlloc). */
+/* Heap objects of the library allocate through the current allocator (CMemoryAlloc's object
+ * slots). */
 class CBase {
   public:
-    static void *operator new(unsigned long size) {
+    static void *operator new(size_t size) {
         return GetMemoryAlloc()->AllocObject(size, __FILE__, __LINE__);
     }
     static void operator delete(void *ptr) {

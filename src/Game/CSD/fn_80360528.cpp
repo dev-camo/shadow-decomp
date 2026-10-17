@@ -21,7 +21,7 @@ CMemoryAlloc *GetMemoryAlloc() {
     return s_pMemoryAlloc;
 }
 
-void *Alloc(unsigned long size, const char *file, int line) {
+void *Alloc(size_t size, const char *file, int line) {
     return s_pMemoryAlloc->AllocBuffer(size, file, line);
 }
 
