@@ -1,10 +1,9 @@
 /* CRI ADXT seamless (linked-file) playback over the load scheduler (adx_lsc.c, ADXT Ver.9.44):
  * file entry, start, loop switch, entry count and reset, plus the load scheduler server.
  *
- * Functions and error codes from Street Fighter III 3rd Strike's (PS2) adx_lsc.c. Ver.9.44 wraps
- * every public entry in ADXCRS_Enter/ADXCRS_Leave, enters files as a full range, starts the
- * scheduler under the lock and names the internal adxt_* routines in its messages. The file is
- * compiled with deferred inlining, so the functions are emitted in reverse order.
+ * Function names follow the Street Fighter III 3rd Strike decompilation of the same file. Every
+ * public entry runs under ADXCRS_Enter/ADXCRS_Leave. The file is compiled with deferred inlining,
+ * so the functions are emitted in reverse order.
  */
 #include "CRI/adx.h"
 #include "CRI/adx_t.h"
@@ -60,14 +59,16 @@ void ADXT_SetSeamlessLp(ADXT adxt, Sint32 flg) {
     ADXCRS_Leave();
 }
 
-/* Unreferenced, so the linker strips it. 3rd Strike has ADXT_StartFnameLp here; this body is
- * inferred: an inlined StartSeamless / EntryFname / SetSeamlessLp sequence without a message of
- * its own is what places those messages after GetNumFiles' in .rodata.
+/* Stand-in for a function the linker stripped from the game; its body is unknown. The messages of
+ * StartSeamless and EntryFname sit after GetNumFiles' in .rodata; this never-called function
+ * refers to them there, followed by SetSeamlessLp's message, in storage order. Storing the
+ * addresses keeps the references.
  */
-void ADXT_StartFnameLp(ADXT adxt, Char8 *fname) {
-    ADXT_StartSeamless(adxt);
-    ADXT_EntryFname(adxt, fname);
-    ADXT_SetSeamlessLp(adxt, 1);
+static void adxlsc_RodataOrder(const Char8 **out) {
+    out[0] = "E02080850 adxt_StartSeamless: parameter error";
+    out[1] = "E02080848 adxt_EntryFnameRange: parameter error";
+    out[2] = "E4063001:Can't entry file ";
+    out[3] = "E02080851 adxt_SetSeamlessLp: parameter error";
 }
 
 /* Number of files in the seamless list (-1: no handle). */

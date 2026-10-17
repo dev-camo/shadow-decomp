@@ -123,7 +123,6 @@ void ADXT_SetLnkSw(ADXT adxt, Sint32 sw);
 void ADXT_EntryFname(ADXT adxt, Char8 *fname);
 void ADXT_StartSeamless(ADXT adxt);
 void ADXT_SetSeamlessLp(ADXT adxt, Sint32 flg);
-void ADXT_StartFnameLp(ADXT adxt, Char8 *fname);
 Sint32 ADXT_GetNumFiles(ADXT adxt);
 void ADXT_ResetEntry(ADXT adxt);
 void ADXT_ExecLscSvr(void);
