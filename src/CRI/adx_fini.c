@@ -27,29 +27,23 @@ ADX_FS adxf_obj[ADXF_OBJ_MAX];
 /* Address of the build string, set by ADXF_Init (name inferred). */
 const Char8 *adxf_build_ptr;
 
-/* Unreferenced, so the linker strips it. Body adapted from the RE4 decompilation (not verified
- * against Shadow); as the first function touching the globals it fixes their .bss order.
+/* Stand-in for a function the linker stripped from the game; its body is unknown. MWCC lays out
+ * .bss by first reference, so this never-called function refers to every global in storage order
+ * before ADXF_Finish does. Storing the addresses keeps those references from being optimized away.
  */
-Sint32 ADXF_GetNumCmd(Sint32 *ncall) {
-    Sint32 i;
-    Sint32 n;
-
-    if (adxf_init_cnt == 0) {
-        return 0;
-    }
-    adxf_ldptnw_last_stat = 0;
-    adxf_ldptnw_ptid = -1;
-    adxf_ldptnw_hn = 0;
-    adxf_flno = 0;
-    adxf_hstry_no = 0;
-    n = 0;
-    for (i = 0; i < ADXF_CMD_NUM; i++) {
-        ncall[i] = adxf_cmd_ncall[i];
-        n += adxf_cmd_hstry[i].ncall;
-    }
-    adxf_ocbi_fg = 0;
-    adxf_ptinfo[0] = (ADXF_PTINFO *)adxf_obj;
-    return n;
+static void adxf_BssOrder(void **out) {
+    out[0] = &adxf_init_cnt;
+    out[1] = &adxf_ldptnw_last_stat;
+    out[2] = &adxf_ldptnw_ptid;
+    out[3] = &adxf_ldptnw_hn;
+    out[4] = &adxf_flno;
+    out[5] = &adxf_hstry_no;
+    out[6] = &adxf_cmd_ncall;
+    out[7] = &adxf_cmd_hstry;
+    out[8] = &adxf_ocbi_fg;
+    out[9] = &adxf_ptinfo;
+    out[10] = &adxf_obj;
+    out[11] = &adxf_build_ptr;
 }
 
 /* Reference-counted shutdown: closes every handle and clears the partition table, the command
