@@ -1,7 +1,7 @@
 /* CRI Sofdec file header analyser (sfh_main.c): validates the 0x800-byte SofdecStream header and
  * reads the pack/element/feature fields out of it.
  *
- * The seven big-endian 32-bit readers keep the original's `rlwinm`/`rlwimi` swap chain and plain
+ * The seven little-endian 32-bit readers keep the original's `rlwinm`/`rlwimi` swap chain and plain
  * `stw` through a never-taken conditional (see SFH_AnlyElemSmpHz). */
 #include <string.h>
 
@@ -70,7 +70,7 @@ typedef struct {
     Uint8 pad0[0x18];   /* 0x00 */
     Uint8 id;           /* 0x18 */
     Uint8 codec;        /* 0x19 */
-    Uint8 aud_layer;    /* 0x1A video: bitrate (Sint16, big endian) */
+    Uint8 aud_layer;    /* 0x1A video: bitrate (Sint16, little endian) */
     Uint8 aud_chnum;    /* 0x1B */
     Uint8 aud_smphz[4]; /* 0x1C video: picsz[3], picrate */
     Uint8 ftr_flag;     /* 0x20 */
@@ -433,7 +433,7 @@ Bool SFH_AnlyElemPicRate(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-/* Video element: picture width and height (24-bit fields). */
+/* Video element: picture width and height (two 12-bit fields packed in three bytes). */
 Bool SFH_AnlyElemPicSz(SFH sfh, Uint8 id, Sint32 *width, Sint32 *height) {
     SFH_ELEM *elem;
 
@@ -455,7 +455,7 @@ Bool SFH_AnlyElemPicSz(SFH sfh, Uint8 id, Sint32 *width, Sint32 *height) {
     return TRUE;
 }
 
-/* Video element: bit rate (big-endian 16-bit). */
+/* Video element: bit rate (little-endian 16-bit). */
 Bool SFH_AnlyElemBitRate(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
     Sint32 rate, tmp;
@@ -495,7 +495,7 @@ Bool SFH_AnlyElemCodecVid(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-/* Audio element: sampling rate (big-endian 32-bit). */
+/* Audio element: sampling rate (little-endian 32-bit). */
 /* Matching constraint (COMPILER-DIFF M4): the original stores the swapped word with `stw` after a
  * `rlwinm`/`rlwimi` chain; our compiler folds a same-block swap+store into `stwbrx`, so the
  * never-taken `if (z != 0)` puts the store in another basic block. */
@@ -574,7 +574,7 @@ Bool SFH_AnlyElemCodecAud(SFH sfh, Uint8 id, Sint32 *val) {
     return TRUE;
 }
 
-/* Big-endian 32-bit header field after the handle checks (same store constraint as
+/* Little-endian 32-bit header field after the handle checks (same store constraint as
  * SFH_AnlyElemSmpHz). */
 static Bool sfh_GetHdrU32(SFH sfh, Sint32 ofs, Sint32 *val) {
     Uint8 *hdr = sfh->hdr;
@@ -595,7 +595,7 @@ static Bool sfh_GetHdrU32(SFH sfh, Sint32 ofs, Sint32 *val) {
     return ret;
 }
 
-/* Big-endian 16-bit header field after the handle checks. */
+/* Little-endian 16-bit header field after the handle checks. */
 static Bool sfh_GetHdrS16(SFH sfh, Sint32 ofs, Sint32 *val) {
     Uint8 *hdr = sfh->hdr;
 
@@ -617,7 +617,7 @@ static Bool sfh_GetHdrU8(SFH sfh, Sint32 ofs, Sint32 *val) {
     return TRUE;
 }
 
-/* Big-endian 32-bit header field, only for tool versions >= `ver` (same store constraint as
+/* Little-endian 32-bit header field, only for tool versions >= `ver` (same store constraint as
  * SFH_AnlyElemSmpHz). */
 static Bool sfh_GetHdrU32Ver(SFH sfh, Sint32 ofs, Sint32 ver, Sint32 *val) {
     Uint8 *hdr = sfh->hdr;
