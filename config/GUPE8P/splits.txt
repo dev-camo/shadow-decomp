@@ -1857,3 +1857,8 @@ rw/fn_80497FB4.c:
 	.data       start:0x8056EA90 end:0x8056EBD0
 	.sbss       start:0x805F1668 end:0x805F1670
 	.sdata2     start:0x805FB3E0 end:0x805FB418
+
+rw/fn_804A90F8.c:
+	.text       start:0x804A90F8 end:0x804A9BF8
+	.bss        start:0x805E3378 end:0x805E3440
+	.sbss       start:0x805F16D0 end:0x805F16D4
