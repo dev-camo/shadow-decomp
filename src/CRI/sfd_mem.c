@@ -29,32 +29,26 @@ Sint32 SFMEM_GetWrite(SFD sfd, SFBUF_RINF *a) {
     return SFBUF_RingGetWrite(sfd, sfd->tr[0].bufout, a);
 }
 
-/* Nothing to do. */
 Sint32 SFMEM_Pause(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFMEM_Stop(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFMEM_Start(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFMEM_Standby(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFMEM_Destroy(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFMEM_Create(void) {
     return 0;
 }
@@ -65,12 +59,10 @@ Sint32 SFMEM_ExecServer(SFD sfd) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFMEM_Finish(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFMEM_Init(void) {
     return 0;
 }

@@ -78,7 +78,6 @@ Sint32 SFAOAP_Standby(SFD sfd) {
     return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, 3, 5, 0, 0));
 }
 
-/* Nothing to do. */
 Sint32 SFAOAP_Destroy(void) {
     return 0;
 }
@@ -111,12 +110,10 @@ Sint32 SFAOAP_ExecServer(SFD sfd) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFAOAP_Finish(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFAOAP_Init(void) {
     return 0;
 }
@@ -159,8 +156,8 @@ Sint32 SFD_SetOutVol(SFD sfd, Sint32 vol) {
         aoap = sfd->tr[SFAOAP_TR].hn;
         return aoap->SetOutVol(sfd, vol);
     }
-    /* No return here, as in the original: the caller gets SFSET_GetCond's 0, which is still in the
-     * return register. Adding `return 0;` changes the code (verified). */
+    /* No return statement: the caller gets SFSET_GetCond's 0, which is still in the return
+     * register. */
 }
 
 /* Channel pan through the audio driver's callback. */
@@ -189,8 +186,8 @@ Sint32 SFD_SetOutPan(SFD sfd, Sint32 ch, Sint32 pan) {
         aoap = sfd->tr[SFAOAP_TR].hn;
         return aoap->SetOutPan(sfd, ch, pan);
     }
-    /* No return here, as in the original: the caller gets SFSET_GetCond's 0, which is still in the
-     * return register. Adding `return 0;` changes the code (verified). */
+    /* No return statement: the caller gets SFSET_GetCond's 0, which is still in the return
+     * register. */
 }
 
 const SFD_TR_IF SFD_tr_ao_auto_p = {

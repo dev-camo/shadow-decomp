@@ -17,22 +17,19 @@ Sint32 SFTRN_IsSetup(SFD sfd, Sint32 strm) {
     return sfd->tr[strm].trif != 0;
 }
 
-/* The driver's "stream ended" flag. */
+/* Per-driver flags: termflg marks the end of the stream, prepflg that the driver is prepared. */
 Sint32 SFTRN_GetTermFlg(SFD sfd, Sint32 strm) {
     return sfd->tr[strm].termflg;
 }
 
-/* Sets the driver's "stream ended" flag. */
 void SFTRN_SetTermFlg(SFD sfd, Sint32 strm, Sint32 flg) {
     sfd->tr[strm].termflg = flg;
 }
 
-/* The driver's "prepared" flag. */
 Sint32 SFTRN_GetPrepFlg(SFD sfd, Sint32 strm) {
     return sfd->tr[strm].prepflg;
 }
 
-/* Sets the driver's "prepared" flag. */
 void SFTRN_SetPrepFlg(SFD sfd, Sint32 strm, Sint32 flg) {
     sfd->tr[strm].prepflg = flg;
 }
@@ -192,8 +189,7 @@ static Sint32 sftrn_BuildAll(SFD sfd, SFD_TR_FUNC **tbl) {
 
 /* Fills the 9 driver slots from the creation table (no handle, flags cleared, buffer ids 8 = none)
  * and wires the buffers (error 0xFF000302 when nothing can be built). `x` is the second SFD_Create
- * argument, which sfply_InitHn passes on (it is loaded into r6 for the call) but this function
- * never reads. */
+ * argument, which sfply_InitHn passes on but this function never reads. */
 Sint32 SFTRN_InitHn(SFD sfd, SFD_TR *tr, SFTRN_PRM *prm, Sint32 x) {
     SFD_TR_FUNC **trif;
     SFD_TR_FUNC **tbl;

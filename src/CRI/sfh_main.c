@@ -468,8 +468,7 @@ Bool SFH_AnlyElemBitRate(SFH sfh, Uint8 id, Sint32 *val) {
     if (sfh_GetStmType(id) != SFH_STM_VID) {
         return FALSE;
     }
-    /* 16-bit swap written with a (Uint8) cast: keeps srawi/clrlwi unmerged (the & 0xFF form of
-     * SWAP16 gives extrwi) */
+    /* 16-bit swap written with a (Uint8) cast rather than SWAP16's `& 0xFF` mask */
     rate = (Sint16)(Uint16)(((SFH_ELEM_BITRATE(elem) & 0xFF) << 8) |
                             (Uint8)(SFH_ELEM_BITRATE(elem) >> 8));
     tmp = rate;
@@ -755,7 +754,7 @@ Bool SFH_IsEffFtrInf(SFH sfh, Uint8 id, Sint32 *flag) {
     if (ver < SFH_VER_110) {
         return FALSE;
     }
-    sid = id; /* one zero-extension (r0) shared by the switch, the search and the type check */
+    sid = id; /* one zero-extended copy for the switch, the search and the type check */
     switch (sfh_GetStmType(sid)) {
     case SFH_STM_AUD:
         elem = sfh_GetElem(sfh, sid);
@@ -866,7 +865,6 @@ static void sfh_ClearHn(SFH_OBJ *hn, Sint32 num) {
     }
 }
 
-/* Library init (once): handle table in the caller's work. */
 /* This game only: drops an init reference and clears the handle table at the last one
  * (inferred SFH library finish) */
 void fn_80402058(void) {
@@ -878,6 +876,7 @@ void fn_80402058(void) {
     sfh_objinf.hn = 0;
 }
 
+/* Library init (once): handle table in the caller's work. */
 void SFH_Init(Sint32 num, void *work) {
     if (sfh_init_cont > 0) {
         return;

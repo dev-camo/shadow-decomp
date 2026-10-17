@@ -311,10 +311,8 @@ void mpsdec_DecSysHd(MPS mps, Uint8 *adr, Sint32 *hdrlen) {
     }
 }
 
-/* pack header: adr points at the 00 00 01 BA start code; MPEG-1 packs are 12 bytes. Matching
- * constraint: the reader init is written out (`cur = p[0]; ... cur <<= pos;` shifts in place, where
- * the BS_INIT macro's `cur = p[0] << pos` uses a temporary), and the declaration order p, pos, cur,
- * nxt gives the original register order; the other decoders use the macro. */
+/* pack header: adr points at the 00 00 01 BA start code; MPEG-1 packs are 12 bytes. The bit reader
+ * init is written out with `cur` shifted in place (the other decoders use BS_INIT). */
 void mpsdec_DecPackHd(MPS mps, Uint8 *adr, Sint32 *hdrlen) {
     Uint32 *p;
     Sint32 pos;

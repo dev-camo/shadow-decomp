@@ -137,10 +137,7 @@ const Char8 *SKG_GetVersion(void) {
 /* one step of the key chain */
 #define SKG_MIX(k, c) (skg_prim_tbl[((k) * skg_prim_tbl[0x80 + (c)]) % 1024])
 
-/* The three keys of a stream: hex digits of the sample count fed through the prime table. Matching
- * constraints: `k` is Sint16 (the original's extsh after the 7th step and on the third seed), the
- * keys are cleared through the pointers after the init check, and the first two keys are stored
- * after the third seed is loaded. */
+/* The three keys of a stream: hex digits of the sample count fed through the prime table. */
 static Sint32 SKG_MakeKey(Sint32 nsmpl, Sint16 *k0, Sint16 *km, Sint16 *ka) {
     Char8 str[16];
     Sint16 k;
@@ -263,10 +260,8 @@ static void adxb_CopySmpl(Sint16 *dst, Sint16 *src, Sint32 n) {
  * optionally runs the Pro Logic II encoder over the output, computes the samples produced (trimming
  * the padding of the last partial block at the stream end), copies samples decoded past the ring
  * end back to its start (mirror), resets the core and reports through addwr_func; state DONE. */
-/* Matching constraints: `ofst = x70 + ofst` (not `ofst += x70`, which swaps the add operands) with
- * opt_lifetimes off gives the target's in-place add and keeps pad's subtraction where it is. The
- * mono copy loop reads through its own pointer `sp`; sharing `src` with the Pro Logic loop gives
- * the copy loop a different register. */
+/* opt_lifetimes off and the operand order of `ofst = x70 + ofst` are required: otherwise MWCC
+ * swaps the add operands and moves the padding subtraction. */
 #pragma opt_lifetimes off
 void ADXB_ExecOneAdx(ADXB adxb) {
     Sint32 chofst;
@@ -300,8 +295,8 @@ void ADXB_ExecOneAdx(ADXB adxb) {
             if (adxb->xdc != 0) {
                 pd = adxb->pd;
                 ADXCRS_Lock();
-                /* Matching constraint (COMPILER-DIFF): the samples are stepped by a separate byte
-                 * offset n; indexing out0/out1 by i gives a different loop (verified: 86%). */
+                /* COMPILER-DIFF: the samples are stepped by a separate byte offset n; indexing
+                 * out0/out1 by i compiles to a different loop */
                 for (i = 0, n = 0; i < pd->nblk * 32; i++) {
                     src = (Sint16 *)((Uint8 *)pd->out0 + n);
                     dst = (Sint16 *)((Uint8 *)pd->out1 + n);
@@ -350,10 +345,7 @@ void ADXB_ExecOneAdx(ADXB adxb) {
 }
 #pragma opt_lifetimes on
 
-/* hand the input to the expander: stereo, Pro Logic II or mono. Matching constraints: the `void
- * *` copies keep the arms' wr_pos reloads apart from the caller's pos, and `pcm = pcmbuf; pcm +=
- * wr_pos` gives the original argument registers and moves the pd load below pcmbuf in the mono
- * arm. */
+/* hand the input to the expander: stereo, Pro Logic II or mono */
 static void adxb_EntrySte(void *obj, Sint32 n) {
     ADXB adxb = obj;
     ADXPD pd;

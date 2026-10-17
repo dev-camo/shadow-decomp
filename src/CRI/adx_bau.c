@@ -136,8 +136,8 @@ void ADXB_ExecOneAu8(ADXB adxb) {
     }
 }
 
-/* The 2ch swap goes through a `Uint16` temporary: the unroller's 15th copy is then `extrwi 8,16`
- * like the original (the direct `inbuf[i * 2] >> 8` form gives `srawi 8` for all 16 copies). */
+/* The 2ch byte swap goes through a `Uint16` temporary (required: swapping inbuf[i * 2] in place
+ * compiles differently). */
 void ADXB_ExecOneAu16(ADXB adxb) {
     Uint16 *inbuf;
     Uint16 *out0;

@@ -428,7 +428,6 @@ Sint32 SJRBF_GetNumData(SJRBF_OBJ *sj, Sint32 id) {
 
 /* Empties the ring: all bytes free, both cursors at 0, counters cleared. */
 static inline void sjrbf_Reset(SJRBF_OBJ *sj) {
-    /* This declaration order gives the target's stack slots where it is inlined. */
     Char8 msg_invalid[64];
     Char8 msg_null[64];
 

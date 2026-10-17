@@ -148,22 +148,18 @@ Sint32 SFMPS_GetWrite(SFD sfd) {
     return SFLIB_SetErr(sfd, SFMPS_ERR_NOTSUPPORTED);
 }
 
-/* Nothing to do. */
 Sint32 SFMPS_Pause(SFD sfd) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFMPS_Stop(SFD sfd) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFMPS_Start(SFD sfd) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFMPS_Standby(SFD sfd) {
     return 0;
 }
@@ -241,8 +237,7 @@ static void sfmps_UpdateNumStm(SFMPS_WORK *wk, MPS_SYSHD *hd) {
     wk->nvid = nvid;
 }
 
-/* Fills the seek-work header. Kept as an inlined helper: that gives `w` and shdr the original
- * registers. */
+/* Fills the seek-work header. */
 static inline void sfmps_ProcPrepSee(SFD sfd) {
     SFMPS_WORK *w;
     SFSEE_SHDR *shdr;
@@ -724,8 +719,7 @@ static Bool sfmps_IsZero(Sint8 *p, Sint32 n) {
     return TRUE;
 }
 
-/* Installs the PES callbacks. Kept as a helper: the original register order of the caller's `cnt`
- * and `ret` depends on it. */
+/* Installs the PES callbacks. */
 static void sfmps_SetPesFns(SFD sfd, MPS mps) {
     void *fn;
     void *obj;
@@ -814,8 +808,7 @@ Sint32 sfmps_DecodeOneUnit(SFD sfd, Uint8 *data, Sint32 len, Sint32 *nbyte, Sint
         shdr = sfmps_GetSeeShdr(sfd);
         if (shdr != 0 && shdr->analyzed == 0) {
             /* dst walks the raw system-header copies; the lengths are stored through it (dst is
-             * &shdr->syshd at that point). Matching constraint: storing to shdr->syshd.len[] uses a
-             * different base register (verified: the unit drops to 78%). */
+             * &shdr->syshd at that point). */
             dst = shdr->syshd.data[0];
             MPS_GetLastSysHd(mps, &syshd);
             n = (len < 0xB0) ? len : 0xB0;
@@ -841,9 +834,8 @@ no_syshd:
     } else if (delim == 0) {
         *nskip = 0;
         p = (Sint8 *)data;
-        /* Matching constraint (COMPILER-DIFF): the original reads the unit for the compare
-         * separately from the later reads; reading it through the creation-parameter view of the
-         * handle keeps it apart. */
+        /* COMPILER-DIFF: the unit for the compare is read through the creation-parameter view of
+         * the handle; reading sfd->prm.unit here merges it with the later reads */
         if (len >= ((SFD_CREPRM *)sfd)->unit + 3 && sfmps_IsZero(p, sfd->prm.unit)) {
             *nskip = sfd->prm.unit;
         } else {
@@ -946,8 +938,7 @@ static Sint32 sfmps_AddRead(SFD sfd, Sint32 nbyte) {
     return ret;
 }
 
-/* Server loop; `len` is the caller's local passed by address, which gives the original register
- * order of ret and len. */
+/* Server loop; `len` is the caller's local, passed by address. */
 static Sint32 sfmps_ExecServerLoop(SFD sfd, Sint32 *len) {
     Sint32 wcnt, rcnt;
     Sint32 nbyte, nskip;
@@ -1013,8 +1004,8 @@ Sint32 sfmps_ExecServerSub(SFD sfd) {
     return sfmps_ExecServerLoop(sfd, &len);
 }
 
-/* Matching constraint (COMPILER-DIFF): the original calls sfmps_ExecServerSub out of line; our
- * compiler would inline it, so inlining is disabled here. */
+/* COMPILER-DIFF: sfmps_ExecServerSub is called out of line; without dont_inline MWCC inlines it
+ * here. */
 #pragma dont_inline on
 /* Driver ExecServer (SFD_tr_sd_mps slot 2). */
 static Sint32 SFMPS_ExecServer(SFD sfd) {

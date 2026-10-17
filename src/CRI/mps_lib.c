@@ -111,7 +111,6 @@ MPS MPS_Create(void) {
     for (i = 0; i < 8; i++) {
         mps->last_syshd.raw[i] = -1;
     }
-    /* Matching constraint: three separate loops (a nested loop schedules two loads differently). */
     for (i = 0; i < 8; i++) {
         mps->syshd[0].raw[i] = -1;
     }

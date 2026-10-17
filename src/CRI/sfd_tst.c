@@ -80,7 +80,7 @@ static Sint64 sftst_Conv(SFTST_TIME *t, Sint64 unit) {
     return unit * t->cnt / t->unit;
 }
 
-/* Sum of the history window. `i` is declared before `sum` for the original register order. */
+/* Sum of the history window. */
 static Sint32 sftst_SumHist(SFTST tst) {
     Sint32 i;
     Sint32 sum;
@@ -92,8 +92,7 @@ static Sint32 sftst_SumHist(SFTST tst) {
     return sum;
 }
 
-/* Subtracts the correction step from the history window. Kept as a helper: written inline in
- * SFTST_Calc its counter gets a different register than in the original. */
+/* Subtracts the correction step from the history window. */
 static void sftst_SubHist(SFTST tst, Sint32 sub) {
     Sint32 i;
 
@@ -117,9 +116,6 @@ static const Char8 sftst_msg_fmt[] =
     "%p, %ld, %ld, %08lX%08lX, %ld, %ld, %ld, %ld,   %ld, %ld,   %ld, %ld, %ld, %ld,   %ld, %ld,   "
     "%ld, %ld, %ld, %ld, %ld,   %ld, %ld,   %ld \n";
 
-/* Matching constraints: the absolute difference is computed with the `diff = ..` assignment nested
- * in its condition, which keeps it before the sftst_Conv call as in the original; `tol` is written
- * out (see below). */
 void SFTST_Calc(SFTST tst, SFTST_TIME *mt, SFTST_TIME *hlp, SFTST_TIME *out) {
     Sint64 est;
     Sint64 q;
@@ -177,6 +173,7 @@ void SFTST_Calc(SFTST tst, SFTST_TIME *mt, SFTST_TIME *hlp, SFTST_TIME *out) {
             tst->adj_limit++;
         }
     } else if (tst->adjflg == 1) {
+        /* the nested assignment keeps the subtraction ahead of the sftst_Conv call */
         adiff = ((diff = mt->cnt - est) < 0) ? -diff : diff;
         excess = sftst_Conv(&tst->excesserr, mt->unit);
         if (excess < adiff) {
@@ -191,8 +188,7 @@ void SFTST_Calc(SFTST tst, SFTST_TIME *mt, SFTST_TIME *hlp, SFTST_TIME *out) {
             ave = sftst_SumHist(tst) / tst->movave_range;
             tst->movave_1st = (Sint32)ave;
             tst->movave_2nd = (Sint32)ave;
-            /* written out rather than sftst_Conv(): through the helper `tol` would take a different
-             * register than in the original */
+            /* sftst_Conv(), written out (required: the call compiles differently) */
             tol = mt->unit * tst->tolerance.cnt / tst->tolerance.unit;
             aave = (ave < 0) ? -ave : ave;
             if (tol < aave) {

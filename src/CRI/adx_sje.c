@@ -200,13 +200,10 @@ void ADXSJE_ExecServer(void) {
 }
 
 /* header stage: wait for the first sample of every input (the decoder history seed), write the
- * header and program the filter coefficients. An inlined helper, which gives its counters the
- * original registers relative to the loops' stepping pointers.
- * Matching constraint (COMPILER-DIFF): the per-channel fields are reached through `Uint8 *` copies
- * of the handle stepped by 4/2 plus the member offset (the adx_tsvr ExecHndl idiom: `mr rIV, sje` +
- * offset loads), declared in the order that gives the original register assignment.
- * Indexing sje->sji[ch], sje->first[ch] and sje->prd[i] directly gives a different loop shape
- * (verified: 95% in any declaration order). */
+ * header and program the filter coefficients. COMPILER-DIFF: the per-channel fields are reached
+ * through `Uint8 *` copies of the handle stepped by the field width plus the member offset (as in
+ * adx_tsvr's ExecHndl); indexing sje->sji[ch], sje->first[ch] and sje->prd[i] compiles to a
+ * different loop. */
 static inline void adxsje_header_exec(ADXSJE sje) {
     Sint32 n;
     Sint16 c1;
@@ -257,8 +254,6 @@ static inline void adxsje_header_exec(ADXSJE sje) {
     sje->stat = 2;
 }
 
-/* server callback signature: the object arrives as `void *` and is copied into a typed local, which
- * the original also keeps (matching constraint: a typed parameter changes the register order) */
 void ADXSJE_ExecHndl(void *obj) {
     ADXSJE sje = obj;
 
@@ -494,9 +489,8 @@ static void adxsje_put16(SJ sj, void *src) {
     if (ck.len < 2) {
         SJ_UngetChunk(sj, SJ_CK_FREE, &ck);
     } else {
-        /* Matching constraint: the write cursor `dp` and its (unused) post-increment keep the
-         * ck.data load ahead of the value load; storing through ck.data directly, or without the
-         * increment, evaluates the value first (verified: 94%). */
+        /* the write cursor `dp` and its unused post-increment keep the ck.data load ahead of the
+         * value load */
         Sint16 *dp = (Sint16 *)ck.data;
         *dp++ = *(Sint16 *)src;
         SJ_PutChunk(sj, SJ_CK_DATA, &ck);
@@ -675,7 +669,7 @@ Sint32 adxsje_write_end_code(ADXSJE sje) {
 
 /* read n samples per channel into the block buffers; 0 when an input has less than n */
 static Sint32 adxsje_read_pcm(ADXSJE sje, Sint16 **bufs, Sint32 n) {
-    SJ *sji = sje->sji; /* declared first for the original register order (matching constraint) */
+    SJ *sji = sje->sji;
     Sint32 cnt = 0;
     Sint32 ch;
     SJCK ck;
@@ -698,8 +692,7 @@ static Sint32 adxsje_read_pcm(ADXSJE sje, Sint16 **bufs, Sint32 n) {
     return cnt;
 }
 
-/* predict, quantise and pack one block per channel. Matching constraints: a separate helper so its
- * `ch` gets the original register, and `iir = prd->iir` places the iir load right after prd. */
+/* predict, quantise and pack one block per channel */
 static void adxsje_encode_blocks(ADXSJE sje) {
     Sint32 ch;
     ADXSJE_PRDFLT *prd;
@@ -745,7 +738,6 @@ Sint32 adxsje_encode_data(ADXSJE sje) {
         }
         bufs[0] = sje->pcm[0];
         bufs[1] = sje->pcm[1];
-        /* matching constraint: `?:` rather than if/else gives the original register order */
         n = (sje->blksmpl < sje->total - sje->nsmpl) ? sje->blksmpl : sje->total - sje->nsmpl;
         cnt = adxsje_read_pcm(sje, bufs, n);
         if (cnt == 0) {
@@ -799,9 +791,7 @@ Sint32 adxsje_output_sdata(ADXSJE sje) {
 }
 
 /* pack the block of channel ch: the residuals scaled, quantised to bps bits and written as nibbles
- * into the block body. The body bytes are indexed (`dst[++n]`, n from -1): the strength reducer's
- * pointer is then a temporary initialised `addi p, dst, -1` off the dying `dst`, and the shift
- * amount is an expression (a variable `sft` ranks as an own local below the tail temporaries) */
+ * into the block body */
 void adxsje_set_rsig(ADXSJE sje, Sint32 ch) {
     Sint16 *res;
     Sint16 *scl;
@@ -916,9 +906,7 @@ Sint32 adxsje_calc_rsig(ADXSJE sje, Sint32 ch) {
         prd->invscale = 32767.0 / (Float64)prd->maxabs;
     }
     adxsje_iirflt_set_hist(prd->iir, sje->hist1[ch], sje->hist2[ch]);
-    /* re-derived before the second pass: the redefinition (a range-split copy of the same address
-     * temporary, coalesced away) is what schedules the preheader's `li i, 0` above the pool `addi`
-     * and lets the peephole fold the 0x4330 constant's `lfd` onto its `lis` */
+    /* pcm is reloaded from the handle for the second pass, which steps it */
     pcm = sje->pcm[ch];
     for (i = 0; i < sje->blksmpl; pcm++, i++) {
         smp = *pcm;

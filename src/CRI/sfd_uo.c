@@ -28,33 +28,27 @@ Sint32 SFUO_GetWrite(SFD sfd) {
     return SFLIB_SetErr(sfd, 0xFF000601);
 }
 
-/* Nothing to do. */
 Sint32 SFUO_Pause(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFUO_Stop(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFUO_Start(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFUO_Standby(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFUO_Destroy(void) {
     return 0;
 }
 
-/* Clears the three user output channels and hands them to the buffer. Kept as an inlined helper
- * taking `&sfd->uo_tbl` directly: that gives the original's loop registers. */
+/* Clears the three user output channels and hands them to the buffer. */
 static void sfuo_InitCh(SFD sfd, SFUO *uo, Sint32 uobuf) {
     Sint32 i;
 
@@ -95,12 +89,10 @@ Sint32 SFUO_ExecServer(SFD sfd) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFUO_Finish(void) {
     return 0;
 }
 
-/* Nothing to do. */
 Sint32 SFUO_Init(void) {
     return 0;
 }
