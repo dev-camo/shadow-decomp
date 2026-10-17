@@ -6,7 +6,7 @@
 #include <dolphin/types.h>
 #include "layout_check.h"
 
-class GadgetCharInfo;
+class CharInfo;
 
 /* GadgetModelInfo (class name from RTTI): the 0x74-byte model of a gadget, loaded from a named
  * model file. Its members are not mapped yet; the methods keep placeholder names and argument types
@@ -22,8 +22,11 @@ class GadgetModelInfo {
     bool fn_80160B18(int arg0);
     bool fn_80160C28(int arg0);
     void fn_80161880();
+    /* Passes the three floats to a virtual method of each part whose id equals arg0 (behaviour
+     * inferred; meanings of the arguments unknown). */
+    void fn_801617D0(int arg0, int arg1, float arg2, float arg3, float arg4);
     /* Attaches a character info to the model node named nodeName (behaviour inferred). */
-    bool fn_80161F08(const char *nodeName, const boost::weak_ptr<GadgetCharInfo> &info);
+    bool fn_80161F08(const char *nodeName, const boost::weak_ptr<CharInfo> &info);
     void fn_80162804();
     bool fn_80162A68(int arg0, int arg1);
     void fn_80162EF4();

@@ -40,17 +40,39 @@ float fn_8000FEE4(
     float value); /* not yet decompiled; returns the square root (inferred from use) */
 float fn_8040CCEC(const Fn8040Vector2 *vector);
 float fn_8040CF50(const Fn8040Vector3 *vector);
+/* Squared length. */
+float fn_8040CF2C(Fn8040Vector3 *vector);
+/* destination = a - b (behaviour inferred). */
+void fn_8040CD74(Fn8040Vector3 *destination, const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 void fn_800091D0(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
 void fn_800091EC(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
 void fn_80008E1C(Fn8040Vector3 *vector, float x, float y, float z);
 /* Matrix helpers (behaviour inferred): copy, translate by matrix * offset, rotate by an angle. */
 void fn_8040C148(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
+/* Sets matrix to the identity rotation with the given translation (behaviour inferred). */
+void fn_8040B034(Fn8040Matrix34 *matrix, const Fn8040Vector3 *translation);
 void fn_8040B59C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *offset);
 void fn_8040B848(Fn8040Matrix34 *matrix, float angle);
+/* The same for the other two axes: fn_8040B848, fn_8040B884 and fn_8040B80C apply the rotations
+ * that fn_8001E070 builds from the y, x and z angles of a rotation vector (behaviour inferred). */
+void fn_8040B884(Fn8040Matrix34 *matrix, float angle);
+void fn_8040B80C(Fn8040Matrix34 *matrix, float angle);
+/* Applies the three angles of rotation in the axis order selected by order, 0 to 2 (behaviour
+ * inferred). */
+void fn_8001E070(Fn8040Matrix34 *matrix, const Fn8040Vector3 *rotation, int order);
+/* Scales the matrix's three rotation columns by x, y and z (behaviour inferred). */
+void fn_8040B720(Fn8040Matrix34 *matrix, float x, float y, float z);
 /* identity matrix, set up at startup by fn_8040C190 */
 extern Fn8040Matrix34 lbl_805E0720;
 
 #ifdef __cplusplus
+}
+
+/* Sets matrix to the identity rotation with the given translation (name inferred). Where a smart
+ * pointer's operator-> supplies the vector, the original calls that operator out of line, which
+ * happens for an argument of an inline call such as this wrapper. */
+inline void MakeTranslationMatrix(Fn8040Matrix34 *matrix, const Fn8040Vector3 &translation) {
+    fn_8040B034(matrix, &translation);
 }
 #endif
 

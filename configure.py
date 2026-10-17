@@ -244,17 +244,20 @@ cflags_game = [
     "-i include/libc",
 ]
 
-# Game C++: the original carries MWCC RTTI type infos for its classes, is optimized for size (saving
-# register pairs with stmw/lmw) and calls small methods out of line rather than auto-inlining them.
-# Inlining is deferred: functions are emitted in reverse definition order, and the RTTI names are
-# pooled before the function literals.
+# Game C++: the original carries MWCC RTTI type infos for its classes and is optimized for size
+# (saving register pairs with stmw/lmw). Only functions marked inline are inlined, and only those
+# whose bodies call no other inline function (level=1): a constructor that just stores three floats
+# is inlined into a static initializer, while weak_ptr's converting constructor, whose body calls
+# weak_count's inline constructor, is never inlined and leaves a local copy in each unit that uses
+# it. Inlining is deferred: functions are emitted in reverse definition order, and the RTTI names
+# are pooled before the function literals.
 cflags_game_cpp = [
     *cflags_game,
     "-O4,s",
     "-use_lmw_stmw on",
     "-str reuse,readonly",
     "-RTTI on",
-    "-inline noauto,deferred",
+    "-inline noauto,level=1,deferred",
 ]
 
 # Sega's GameCube AX sound library (gcax*.c): optimized for size with stmw/lmw, read-only strings,
@@ -585,6 +588,11 @@ config.libs = [
                 Object(NonMatching, "rw/fn_804A90F8.c", cflags=cflags_game),
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/ElecCristalWallSwitch.cpp", cflags=cflags_game_cpp),
+                Object(NonMatching, "Game/ElecCube.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/ElecPillar.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/ElecSmallPillar.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/ElecWakka.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/CSD/fn_80360528.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361A24.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361CF8.cpp", cflags=cflags_csd),

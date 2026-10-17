@@ -1,19 +1,18 @@
 #ifndef GAME_GADGETCHARINFO_H
 #define GAME_GADGETCHARINFO_H
 
-#include "Game/fn_8040_vector_types.h"
+#include "Game/CharInfo.h"
 #include "boost/shared_ptr.hpp"
 #include <dolphin/types.h>
 #include "layout_check.h"
 
-/* GadgetCharInfo (class name from RTTI): the 0x6C-byte character info of a gadget. Only the
- * position and rotation copied from the owner are mapped (names inferred); the rest of the layout
- * is not yet known. */
-class GadgetCharInfo {
+/* GadgetCharInfo (class name from RTTI, with CharInfo as its only base): the 0x6C-byte character
+ * info of a gadget. */
+class GadgetCharInfo : public CharInfo {
   public:
-    /* 0x00 */ Fn8040Vector3 m_position;
-    /* 0x0C */ Fn8040Vector3 m_rotation; /* radians */
-    /* 0x18 */ u8 field_0x18[0x6C - 0x18];
+    virtual ~GadgetCharInfo();
+
+    /* 0x64 */ u8 field_0x64[0x6C - 0x64];
 };
 CHECK_SIZEOF(GadgetCharInfo, 0x6C);
 
