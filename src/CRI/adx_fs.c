@@ -6,9 +6,10 @@
  * and the TMNT2 CRI sources (worker/wrapper pairs, adxf_OpenRange). The file is compiled with
  * -inline noauto, so only the functions declared inline are expanded.
  *
- * The unreferenced functions below keep their error literals in .rodata, where they sit between
- * the literals of the matched functions. Their bodies come from the 3rd Strike decompilation and
- * are not verified against this game; the linker strips them.
+ * Several functions of this file are stripped from the game, so their bodies are unknown; only
+ * their error messages remain in .rodata, between those of the kept functions. MWCC places
+ * literals in order of first use, so never-called stand-ins at their positions refer to those
+ * messages in order (storing the addresses keeps the references).
  */
 #include "CRI/adx_f.h"
 #include <string.h>
@@ -117,13 +118,9 @@ static inline void adxf_CloseSjStm(ADXF adxf) {
     }
 }
 
-/* Unreferenced (reference-derived, see above). */
-void adxf_SetReqRdSct(ADXF adxf, Sint32 nsct) {
-    if (adxf->stat == ADXF_STAT_READING) {
-        ADXERR_CallErrFunc1("E0041201:state is reading(ADXF_SetReqRdSct)");
-        return;
-    }
-    adxf->rqrdsct = nsct;
+/* Stand-in for a stripped function (see above). */
+static void adxf_RodataOrderReqRdSct(const Char8 **out) {
+    out[0] = "E0041201:state is reading(ADXF_SetReqRdSct)";
 }
 
 /* Name, device and sector range of file flid in partition ptid. On an invalid id the range is
@@ -185,51 +182,13 @@ static inline Sint32 adxf_GetStat(ADXF adxf) {
     return adxf->stat;
 }
 
-/* Unreferenced (reference-derived, see above). */
-Sint32 ADXF_GetStat(ADXF adxf) {
-    Sint32 stat;
-
-    ADXCRS_Enter();
-    stat = adxf_GetStat(adxf);
-    ADXCRS_Leave();
-    return stat;
-}
-
-/* Unreferenced (reference-derived, see above). */
-Sint32 adxf_GetNumReadSct(ADXF adxf) {
-    if (adxf == 0) {
-        ADXERR_CallErrFunc1("E9040831:'adxf' is NULL.(adxf_GetNumReadSct)");
-        return ADXF_ERR_PRM;
-    }
-    return adxf->rdsct;
-}
-
-/* Unreferenced (reference-derived, see above). */
-Sint32 adxf_GetNumReqSct(ADXF adxf, Sint32 *seekpos) {
-    if (adxf == 0) {
-        ADXERR_CallErrFunc1("E9040830:'adxf' is NULL.(adxf_GetNumReqSct)");
-        return ADXF_ERR_PRM;
-    }
-    *seekpos = adxf->rdstpos;
-    return adxf->rqsct;
-}
-
-/* Unreferenced (reference-derived, see above). */
-Sint32 adxf_GetFsizeSct(ADXF adxf) {
-    if (adxf == 0) {
-        ADXERR_CallErrFunc1("E9040828:'adxf' is NULL.(adxf_GetFsizeSct)");
-        return ADXF_ERR_PRM;
-    }
-    return adxf->fnsct;
-}
-
-/* Unreferenced (reference-derived, see above). */
-Sint32 adxf_Tell(ADXF adxf) {
-    if (adxf == 0) {
-        ADXERR_CallErrFunc1("E9040827:'adxf' is NULL.(ADXF_Tell)");
-        return ADXF_ERR_PRM;
-    }
-    return adxf->skpos;
+/* Stand-in for five stripped functions (see above). */
+static void adxf_RodataOrderGetters(const Char8 **out) {
+    out[0] = "E9040832:'adxf' is NULL.(adxf_GetStat)";
+    out[1] = "E9040831:'adxf' is NULL.(adxf_GetNumReadSct)";
+    out[2] = "E9040830:'adxf' is NULL.(adxf_GetNumReqSct)";
+    out[3] = "E9040828:'adxf' is NULL.(adxf_GetFsizeSct)";
+    out[4] = "E9040827:'adxf' is NULL.(ADXF_Tell)";
 }
 
 /* Stops a running read and records how many sectors arrived. */
@@ -262,41 +221,12 @@ static inline Sint32 adxf_Stop(ADXF adxf) {
     return adxf->skpos;
 }
 
-/* Unreferenced (reference-derived, see above). */
-Sint32 adxf_Seek(ADXF adxf, Sint32 pos, Sint32 type) {
-    if (adxf == 0) {
-        ADXERR_CallErrFunc1("E9040825:'adxf' is NULL.(adxf_Seek)");
-        return ADXF_ERR_PRM;
-    }
-    if (adxf->stat == ADXF_STAT_READING) {
-        adxf_Stop(adxf);
-    }
-    if (type == 0) {
-        adxf->skpos = pos;
-    } else if (type == 1) {
-        adxf->skpos += pos;
-    } else if (type == 2) {
-        adxf->skpos = adxf->fnsct + pos;
-    } else {
-        ADXERR_CallErrFunc1("E9040826:'type' is illigal.(adxf_Seek)");
-        return ADXF_ERR_PRM;
-    }
-    if (adxf->skpos < 0) {
-        adxf->skpos = 0;
-    } else if (adxf->skpos > adxf->fnsct) {
-        adxf->skpos = adxf->fnsct;
-    }
-    return adxf->skpos;
-}
-
-/* Unreferenced (reference-derived, see above). */
-Sint32 ADXF_Stop(ADXF adxf) {
-    Sint32 ret;
-
-    ADXCRS_Enter();
-    ret = adxf_Stop(adxf);
-    ADXCRS_Leave();
-    return ret;
+/* Stand-in for two stripped functions; the adxf_Stop messages are first used here (see above). */
+static void adxf_RodataOrderSeek(const Char8 **out) {
+    out[0] = "E9040825:'adxf' is NULL.(adxf_Seek)";
+    out[1] = "E9040822:'adxf' is NULL.(adxf_Stop)";
+    out[2] = "E9040823:'adxf->stm' is NULL.(adxf_Stop)";
+    out[3] = "E9040826:'type' is illigal.(adxf_Seek)";
 }
 
 /* Server step for one handle: follows the stream state of a running read and finishes a
@@ -337,25 +267,10 @@ void ADXF_ExecServer(void) {
     ADXCRS_Leave();
 }
 
-/* Unreferenced (reference-derived, see above). */
-Sint32 adxf_StopNw(ADXF adxf) {
-    adxf_SetCmdHstry(ADXF_CMD_STOP_NW, 0, (Sint32)adxf, -1, -1);
-    if (adxf == 0) {
-        ADXERR_CallErrFunc1("E2092301:'adxf' is NULL.(adxf_StopNw)");
-        return ADXF_ERR_PRM;
-    }
-    if (adxf->stat == ADXF_STAT_READEND) {
-        adxf->stat = ADXF_STAT_STOP;
-    } else if (adxf->stat != ADXF_STAT_STOP) {
-        if (adxf->stm == 0) {
-            ADXERR_CallErrFunc1("E2092302:'adxf->stm' is NULL.(adxf_StopNw)");
-            return ADXF_ERR_FATAL;
-        }
-        ADXSTM_StopNw(adxf->stm);
-        adxf->stopnw_flg = 1;
-        adxf_SetCmdHstry(ADXF_CMD_STOP_NW, 1, (Sint32)adxf, -1, -1);
-    }
-    return adxf->skpos;
+/* Stand-in for a stripped function (see above). */
+static void adxf_RodataOrderStopNw(const Char8 **out) {
+    out[0] = "E2092301:'adxf' is NULL.(adxf_StopNw)";
+    out[1] = "E2092302:'adxf->stm' is NULL.(adxf_StopNw)";
 }
 
 /* Starts a no-wait read into a 32-byte aligned buffer. */
@@ -367,14 +282,9 @@ static inline Sint32 adxf_ReadNw(ADXF adxf, Sint32 nsct, void *buf) {
     return adxf_ReadNw32(adxf, nsct, buf);
 }
 
-/* Unreferenced (reference-derived, see above). */
-Sint32 ADXF_ReadNw(ADXF adxf, Sint32 nsct, void *buf) {
-    Sint32 ret;
-
-    ADXCRS_Enter();
-    ret = adxf_ReadNw(adxf, nsct, buf);
-    ADXCRS_Leave();
-    return ret;
+/* Stand-in for a stripped function; the adxf_ReadNw message is first used here (see above). */
+static void adxf_RodataOrderReadNw(const Char8 **out) {
+    out[0] = "E0120401:'buf' isn't 32byte alignment.(adxf_ReadNw)";
 }
 
 /* Starts streaming up to nsct sectors from the current position into sj; returns the number
@@ -464,25 +374,11 @@ Sint32 adxf_ReadNw32(ADXF adxf, Sint32 nsct, void *buf) {
     return rqsct;
 }
 
-/* Unreferenced (reference-derived, see above). */
-Sint32 adxf_ReadSj32(ADXF adxf, Sint32 nsct, SJ sj) {
-    if (adxf == 0) {
-        ADXERR_CallErrFunc1("E9040811:'adxf' is NULL.(adxf_ReadSj32)");
-        return ADXF_ERR_PRM;
-    }
-    if (nsct < 0) {
-        ADXERR_CallErrFunc1("E9040812:'nsct'is negative.(adxf_ReadSj32)");
-        return ADXF_ERR_PRM;
-    }
-    if (sj == 0) {
-        ADXERR_CallErrFunc1("E9040813:'sj'is NULL.(adxf_ReadSj32)");
-        return ADXF_ERR_PRM;
-    }
-    if (adxf->stat == ADXF_STAT_READING) {
-        return ADXF_ERR_OK;
-    }
-    adxf->sjflag = 1;
-    return adxf_read_sj32(adxf, nsct, sj);
+/* Stand-in for a stripped function (see above). */
+static void adxf_RodataOrderReadSj32(const Char8 **out) {
+    out[0] = "E9040811:'adxf' is NULL.(adxf_ReadSj32)";
+    out[1] = "E9040812:'nsct'is negative.(adxf_ReadSj32)";
+    out[2] = "E9040813:'sj'is NULL.(adxf_ReadSj32)";
 }
 
 /* Closes every open handle. */
@@ -625,13 +521,9 @@ ADXF adxf_OpenRange(const Char8 *fname, void *dir, Sint32 ofst, Sint32 fnsct) {
     return adxf;
 }
 
-/* Unreferenced (reference-derived, see above). */
-Sint32 adxf_SetFileInfoEx(ADXF adxf, const Char8 *fname, void *dir) {
-    if (fname == 0) {
-        ADXERR_CallErrFunc1("E9081901:illigal parameter fname=null.(adxf_SetFileInfoEx)");
-        return ADXF_ERR_FATAL;
-    }
-    return adxf_SetFileInfoRange(adxf, fname, dir, 0, 0xFFFFF);
+/* Stand-in for a stripped function (see above). */
+static void adxf_RodataOrderFileInfoEx(const Char8 **out) {
+    out[0] = "E9081901:illigal parameter fname=null.(adxf_SetFileInfoEx)";
 }
 
 /* Advances the no-wait partition load of ptid: parses the AFS header from the first block,
