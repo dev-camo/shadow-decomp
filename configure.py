@@ -560,6 +560,7 @@ config.libs = [
                 # inline_max_size of 350 to 480 keeps the call.
                 Object(Matching, "rw/fn_804A2C90.c", cflags=[*cflags_game, "-pragma \"inline_max_size(400)\""]),
                 Object(NonMatching, "rw/fn_804A55CC.c", cflags=[*cflags_game, "-inline noauto"]),
+                Object(NonMatching, "rw/fn_804A6CDC.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_804A869C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804A90F8.c", cflags=cflags_game),
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
