@@ -48,7 +48,7 @@ void __AXServiceVPB(AXVPB *pvpb) {
         return;
     }
     if (sync & AX_SYNC_FLAG_COPYALL) {
-        // copy the whole PB struct. (size: 0xF4)
+        // Copy the first 0xD0 bytes (52 words) of the 0xF4-byte PB, up to and including pad[6].
         u32 *src;
         u32 *dst;
         src = (void *)ppbUser;
