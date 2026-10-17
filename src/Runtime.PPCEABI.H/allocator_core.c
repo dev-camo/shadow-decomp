@@ -31,10 +31,9 @@ inline static unsigned int FreeListOffset(Block *area) {
     return (area->size & BLOCK_SIZE_MASK) - 4;
 }
 
-/* The target reloads the head between these checks; preserve both updates in order. */
 /* The head is the block's last word, at the variable offset FreeListOffset() returns (MSL's
- * Block_start); indexing the block as words keeps 95% of the target, a separate head pointer
- * 94.6%. */
+ * Block_start). It is read again for the second check, which clears the head when block was the
+ * list's only node (see above). */
 inline static void UnlinkFreeBlock(Block *area, unsigned int offset, SubBlock *block) {
     if (((SubBlock **)area)[offset / sizeof(SubBlock *)] == block) {
         ((SubBlock **)area)[offset / sizeof(SubBlock *)] = block->next;
