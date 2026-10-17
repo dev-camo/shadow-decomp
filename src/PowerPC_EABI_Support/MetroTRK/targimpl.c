@@ -748,8 +748,8 @@ DSError TRKPPCAccessSpecialReg(void *value, u32 *access_func, BOOL read) {
 	*/
 
     /*
-	** Put blr instruction at the end of access function (it should be
-	** a 5-instruction array w/the last one empty).
+	** Put blr instruction at the end of access function (callers pass
+	** a 10-word array of nops with the access sequence at its start).
 	*/
 
     access_func[9] = INSTR_BLR;

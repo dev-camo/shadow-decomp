@@ -31,7 +31,6 @@ inline ForwardIterator lower_bound(ForwardIterator first, ForwardIterator last, 
 
 template <class ForwardIterator, class T>
 ForwardIterator lower_bound(ForwardIterator first, ForwardIterator last, const T& val) {
-	// For some reason, calling the other lower_bound matches for debug, but not for retail:
 	#if DEBUG
 	return lower_bound(first, last, val, std::detail::less<T, T>());
 	#else
@@ -77,7 +76,6 @@ ForwardIterator upper_bound(ForwardIterator first, ForwardIterator last, const T
 	return first;
 }
 
-// should be inline, but breaks JStudio/JStudio/ctb weak function order
 template<class InputIt, class UnaryPredicate>
 InputIt find_if(InputIt first, InputIt last, UnaryPredicate p) {
 	while (first != last && !p(*first)) {
@@ -86,7 +84,7 @@ InputIt find_if(InputIt first, InputIt last, UnaryPredicate p) {
 	return first;
 }
 
-// fakematch: val should be a const reference, but that breaks JMessage::TResource::toMessageIndex_messageID
+// Unlike the standard find, val is taken by non-const reference.
 template<class ForwardIterator, class T>
 inline ForwardIterator find(ForwardIterator first, ForwardIterator last, T& val) {
     while (first != last && !(*first == val)) {
