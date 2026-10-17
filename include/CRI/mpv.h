@@ -294,8 +294,10 @@ void MPVUMC_SetGqr(void);
 void MPVUMC_InitOutRfb(MPV_OBJ *mpv);
 void MPVUMC_EndOfFrame(MPV_OBJ *mpv);
 
-/* mpv_cdec.c (not yet decompiled) */
-void MPVCDEC_InitFrm(MPV_OBJ *mpv);
+/* mpv_cdec.c */
+Sint32 MPVCDEC_NintraBlocks(MPV mpv);
+Sint32 MPVCDEC_IntraBlocks(MPV mpv);
+void MPVCDEC_InitFrm(MPV mpv);
 
 /* mpv_m2v.c: MPEG-2 decoder stub */
 Sint32 MPVM2V_DecodeFrm(MPV_OBJ *mpv, SJ sj, MPV_FRM *frm);
