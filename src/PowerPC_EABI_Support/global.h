@@ -7,10 +7,6 @@
 #define PLATFORM_WII 0
 #define PLATFORM_SHIELD 0
 
-#ifndef DEBUG
-#define DEBUG 0
-#endif
-
 #define MSL_INLINE inline
 
 #endif
