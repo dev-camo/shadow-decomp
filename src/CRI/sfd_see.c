@@ -110,10 +110,10 @@ Sint32 SFD_SetFileSize(SFD sfd, Sint32 fsize) {
  * a system demuxer (driver 1) is set up, else from the video header, else from the audio header */
 static void sfsee_ExecHeadAnaly(SFD sfd) {
     SFSEE_WORK *wk;
-    Sint32 a2;
-    Sint32 a1;
+    Sint32 use_audio;
+    Sint32 use_video;
     Sint32 wait;
-    Sint32 v;
+    Sint32 use_system;
     Sint32 fsize;
     Sint32 rate;
     Sint32 ncount;
@@ -124,35 +124,35 @@ static void sfsee_ExecHeadAnaly(SFD sfd) {
         return;
     }
     if (SFTRN_IsSetup(sfd, 3) != 0 && SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 1) {
-        a2 = 1;
-        if (wk->a2hdr == 0) {
+        use_audio = 1;
+        if (wk->aud_analyzed == 0) {
             wait = 1;
         } else {
             wait = 0;
         }
     } else {
-        a2 = 0;
+        use_audio = 0;
         wait = 0;
     }
     if (wait != 0) {
         return;
     }
     if (SFTRN_IsSetup(sfd, 2) != 0 && SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 1) {
-        a1 = 1;
-        if (wk->a1hdr == 0) {
+        use_video = 1;
+        if (wk->vid_analyzed == 0) {
             wait = 1;
         } else {
             wait = 0;
         }
     } else {
-        a1 = 0;
+        use_video = 0;
         wait = 0;
     }
     if (wait != 0) {
         return;
     }
-    v = (SFTRN_IsSetup(sfd, 1) != 0);
-    if (v) {
+    use_system = (SFTRN_IsSetup(sfd, 1) != 0);
+    if (use_system) {
         wk->shdr.analyzed = 1;
         if (wk->fhd.valid != 0 && wk->fhd.byterate > 0) {
             fsize = wk->fsize;
@@ -168,12 +168,12 @@ static void sfsee_ExecHeadAnaly(SFD sfd) {
             ncount = wk->shdr.ncount;
         }
         tscale = wk->shdr.tscale;
-    } else if (a1 != 0) {
-        ncount = wk->a1ncount;
-        tscale = wk->a1tscale;
-    } else if (a2 != 0) {
-        ncount = wk->a2ncount;
-        tscale = wk->a2tscale;
+    } else if (use_video != 0) {
+        ncount = wk->vid_ncount;
+        tscale = wk->vid_tscale;
+    } else if (use_audio != 0) {
+        ncount = wk->aud_ncount;
+        tscale = wk->aud_tscale;
     } else {
         return;
     }

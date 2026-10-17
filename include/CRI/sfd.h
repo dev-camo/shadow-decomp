@@ -582,9 +582,9 @@ CHECK_SIZEOF(SFSEE_SYSHD, 0x168);
 
 /* system stream analysis kept in the seek work (sfd_mps.c), SFSEE_WORK + 0x8A0 */
 typedef struct {
-    Sint32 analyzed;   /* 0x00 (sfd_see.c: vhdr) */
-    Sint32 ncount;     /* 0x04 picrate * 50 (sfd_see.c: vncount) */
-    Sint32 tscale;     /* 0x08 (sfd_see.c: vtscale) */
+    Sint32 analyzed;   /* 0x00 */
+    Sint32 ncount;     /* 0x04 picrate * 50 */
+    Sint32 tscale;     /* 0x08 */
     Sint32 nvid;       /* 0x0C video streams of the system header */
     Sint32 naud;       /* 0x10 audio streams */
     Sint32 pad14;      /* 0x14 */
@@ -605,13 +605,13 @@ typedef struct {
     SFHDS_FHD fhd;               /* 0x00C system header analysis */
     SFSEE_SHDR shdr;             /* 0x8A0 system stream analysis (sfd_mps.c), 0x198 bytes */
     Uint8 pada38[0xAD0 - 0xA38]; /* 0xA38 */
-    Sint32 a1hdr;                /* 0xAD0 video header analysed (video decoder, driver 2) */
-    Sint32 a1ncount;             /* 0xAD4 */
-    Sint32 a1tscale;             /* 0xAD8 */
+    Sint32 vid_analyzed;         /* 0xAD0 video total time known (read when driver 2, video, runs) */
+    Sint32 vid_ncount;           /* 0xAD4 */
+    Sint32 vid_tscale;           /* 0xAD8 */
     Uint8 padadc[0xD0C - 0xADC]; /* 0xADC */
-    Sint32 a2hdr;                /* 0xD0C audio header analysed (audio decoder, driver 3) */
-    Sint32 a2ncount;             /* 0xD10 */
-    Sint32 a2tscale;             /* 0xD14 */
+    Sint32 aud_analyzed;         /* 0xD0C audio total time known (read when driver 3, audio, runs) */
+    Sint32 aud_ncount;           /* 0xD10 */
+    Sint32 aud_tscale;           /* 0xD14 */
     Uint8 padd18[0xDA8 - 0xD18]; /* 0xD18 */
     Sint32 rate;                 /* 0xDA8 estimated byte rate */
     Sint32 fsize_est;            /* 0xDAC file size seen by the input driver */
@@ -627,17 +627,6 @@ typedef struct {
     Sint32 seekpos;              /* 0xDD4 SFD_SetSeekPos */
 } SFSEE_WORK;
 CHECK_SIZEOF(SFSEE_WORK, 0xDD8);
-
-/* audio stream header analysis kept in the seek work (a2hdr and the words after it) */
-typedef struct {
-    Sint32 analyzed; /* 0x00 */
-    Sint32 byterate; /* 0x04 bytes per second */
-    Sint32 tunit;    /* 0x08 (1) */
-    Sint32 nch;      /* 0x0C */
-    Sint32 sfreq;    /* 0x10 */
-    Sint32 nsmpl;    /* 0x14 */
-} SFSEE_AHDR;
-CHECK_SIZEOF(SFSEE_AHDR, 0x18);
 
 typedef struct {
     Sint32 x00; /* 0x00 */
