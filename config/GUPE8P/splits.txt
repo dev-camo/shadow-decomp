@@ -1241,6 +1241,9 @@ CRI/muldiv.c:
 CRI/muldivr.c:
 	.text       start:0x804023A0 end:0x804024FC
 
+CRI/uty_ppc.c:
+	.text       start:0x80402680 end:0x804026E8
+
 Game/fn_80403054.c:
 	.text       start:0x80403054 end:0x80403058
 

@@ -1152,6 +1152,9 @@ CRI/muldiv.c:
 CRI/muldivr.c:
 	.text       start:0x804029E0 end:0x80402B3C
 
+CRI/uty_ppc.c:
+	.text       start:0x80402CC0 end:0x80402D28
+
 CRI/mwstm.c:
 	.text       start:0x804039D8 end:0x80403B4C
 
