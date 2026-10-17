@@ -123,7 +123,10 @@ typedef struct MPVMC {
     Uint8 *src2;                           /* 0x28 second reference row / block */
     Uint8 pad2C[8];                        /* 0x2C */
     void (*oneref16[4])(struct MPVMC *mc); /* 0x34 16x16 block */
-    Uint8 pad44[0x54 - 0x44];              /* 0x44 */
+    Uint8 *clip;                           /* 0x44 clip table zero point (mpvlib_InitHn) */
+    Sint16 *buf0;                          /* 0x48 the handle's mcbuf */
+    Uint8 *work;                           /* 0x4C the handle's work area */
+    Uint8 *work2;                          /* 0x50 work + 0x180 */
 } MPVMC;
 CHECK_SIZEOF(MPVMC, 0x54);
 
@@ -211,8 +214,8 @@ typedef struct MPV_OBJ {
     Sint32 (*nintra_blocks)(MPV mpv);       /* 0x2CC */
     void (*mc_intra_func)(MPV mpv);         /* 0x2D0 */
     void (*mc_func[4])(MPV mpv); /* 0x2D4 [0] current, [1] backward, [2] forward, [3] both */
-    void (*x2e4)(DCT_PA *pa);    /* 0x2E4 IDCT of an intra macroblock (fn_803D30A8) */
-    void (*x2e8)(DCT_PA *pa);    /* 0x2E8 IDCT of the coded blocks (fn_803D3084) */
+    void (*x2e4)(DCT_PA *pa);    /* 0x2E4 IDCT of an intra macroblock (DCT_FsriTrans6Blk) */
+    void (*x2e8)(DCT_PA *pa);    /* 0x2E8 IDCT of the coded blocks (DCT_FsriTransCbp) */
     Sint32 qscale;               /* 0x2EC */
     MPV_MV fwd;                  /* 0x2F0 */
     MPV_MV bwd;                  /* 0x314 */
@@ -254,7 +257,8 @@ typedef struct MPV_OBJ {
     Sint32 x139c;                /* 0x139C other pictures since then or the last I/P picture */
     Sint32 x13a0;                /* 0x13A0 */
 } MPV_OBJ;
-/* MPV_Init publishes this size (mpvlib_siz_mpvobj); handles are 0x13C0 apart. */
+/* The library exports this size as mpvlib_siz_mpvobj, and MPV_Init passes it as an immediate to
+ * MPVDEC_CheckVersion; handles are 0x13C0 apart. */
 CHECK_SIZEOF(MPV_OBJ, 0x13A4);
 
 /* shared table area behind the handle array (MPV_Init; mpvlib_siz_mpvixa, 0x1C60 bytes) */
@@ -284,6 +288,7 @@ extern Sint16 *mpvvlc_cbp;
 extern Sint16 *mpvvlc_motion_0;
 extern Sint16 *mpvvlc_motion_1;
 /* mpv_vlc.c: run/level decode tables used by the block decoder (mpv_bdec.c) */
+extern Uint32 *mpvvlc_run_level_8;
 extern Uint32 *mpvvlc_run_level_0a;
 extern Uint32 *mpvvlc_run_level_0b;
 extern Uint32 *mpvvlc_run_level_0c;
@@ -332,6 +337,8 @@ Sint32 MPVHDEC_DecPicture(MPV mpv, SJ sj);
 Sint32 MPV_MoveChunk(SJ sj, Sint32 id, Sint32 nbyte);
 
 /* mpv_umc.c (not yet decompiled) */
+void MPVUMC_Init(void);
+void MPVUMC_Finish(void);
 void MPVUMC_SetGqr(void);
 void MPVUMC_InitOutRfb(MPV_OBJ *mpv);
 void MPVUMC_EndOfFrame(MPV_OBJ *mpv);
@@ -363,6 +370,29 @@ void MPVVLC_Init(Uint8 *vlc, MPV_IXA *ixa);
 /* mpv_m2v.c: MPEG-2 decoder stub */
 Sint32 MPVM2V_DecodeFrm(MPV_OBJ *mpv, SJ sj, MPV_FRM *frm);
 Sint32 MPVM2V_DecodePicAtr(MPV_OBJ *mpv, SJ sj);
+void MPVM2V_SetCond(MPV_OBJ *mpv, Sint32 id, Sint32 val);
+void MPVM2V_Destroy(MPV_OBJ *mpv);
+void *MPVM2V_Create(MPV_OBJ *mpv);
+void MPVM2V_Finish(void);
+void MPVM2V_Init(void);
+
+/* mpv_lib.c */
+Sint32 MPV_Init(Sint32 nhn, void *work);
+void MPV_Finish(void);
+MPV MPV_Create(void);
+MPV mpvlib_InitHn(MPV mpv);
+void MPV_GetDctCnt(MPV mpv, Sint32 *cnt0, Sint32 *cnt1);
+Sint32 MPV_Destroy(MPV mpv);
+void MPV_MbCbFn(void);
+Sint32 MPV_SetCond(MPV mpv, Sint32 id, Sint32 val);
+Sint32 MPV_GetCond(MPV mpv, Sint32 id, Sint32 *val);
+
+/* mpv_err.c */
+void MPVERR_InitErrInf(MPVERR_INF *inf);
+void MPVERR_Init(void);
+
+/* mpv_bdec.c */
+void MPVBDEC_Init(MPV_IXA *ixa);
 
 /* mpvabdec.c: block coefficient decoders */
 Sint32 MPVABDEC_NintraBlock(MPV mpv, MPV_BLKPRM *prm);
