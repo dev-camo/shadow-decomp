@@ -269,13 +269,14 @@ cflags_game_gcax = [
 
 # Chao::CSD UI library (game C++ without RTTI): small data off (globals in .bss, constants in
 # .rodata), read-only strings (literals in .rodata), size-optimized with stmw/lmw, deferred inlining
-# (functions in reverse definition order).
+# (functions in reverse definition order) one level deep (recursive inline functions are expanded
+# once).
 cflags_csd = [
     *cflags_game,
     "-O4,s",
     "-use_lmw_stmw on",
     "-str reuse,readonly",
-    "-inline noauto,deferred",
+    "-inline noauto,deferred,level=1",
     "-sdata 0",
     "-sdata2 0",
 ]
@@ -587,6 +588,12 @@ config.libs = [
                 Object(Matching, "Game/CSD/fn_80360528.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361A24.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361CF8.cpp", cflags=cflags_csd),
+                # Every function present matches except BuildTextEntry and InitPalette, which address
+                # .rodata through one section base where the original addresses each literal on its
+                # own (probably also the cause of their register and scheduling differences), and
+                # whose allocations pass lower __LINE__ values than the original 442 and 234. MarkEntryDirty (0x803609D4) is not emitted and MarkMatrixUsers comes after its
+                # caller: the original file has callers the game does not use (removed at link).
+                Object(NonMatching, "Game/CSD/csdMotionPalette.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/fn_80008D48.c"),
                 Object(Matching, "Game/fn_80008DA4.c"),
                 Object(Matching, "Game/fn_80008E1C.c"),
