@@ -2,10 +2,6 @@
  * and reading one from a stream. The original file name is unknown. */
 #include "rw/rpworld.h"
 
-#define rwMEMHINTDUR_FUNCTION 0x10000
-#define rwMEMHINTDUR_EVENT 0x30000
-#define rwMEMHINTFLAG_RESIZABLE 0x1000000
-
 /* chunk IDs */
 #define rwID_MATERIAL 0x7
 #define rwID_MATERIALMODULE 0x501 /* the material module, which owns the stream read index buffer */

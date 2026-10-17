@@ -5,30 +5,7 @@
 #include <dolphin/gx.h>
 #include <string.h>
 
-/* A texture's filter mode and addressing; the getters return the (int-sized) RenderWare enum
- * values, so they compare signed */
-#define RwTextureSetFilterMode(texture, filtering)                                                 \
-    ((texture)->filterAddressing = ((texture)->filterAddressing & ~rwTEXTUREFILTERMODEMASK) |      \
-                                   ((filtering) & rwTEXTUREFILTERMODEMASK))
-#define RwTextureGetFilterMode(texture)                                                            \
-    ((RwInt32)((texture)->filterAddressing & rwTEXTUREFILTERMODEMASK))
-#define RwTextureSetAddressing(texture, addressing)                                                \
-    ((texture)->filterAddressing = ((texture)->filterAddressing & ~rwTEXTUREADDRESSINGMASK) |      \
-                                   ((((addressing) << 8) & rwTEXTUREADDRESSINGUMASK) |             \
-                                    (((addressing) << 12) & rwTEXTUREADDRESSINGVMASK)))
-#define RwTextureSetAddressingU(texture, addressing)                                               \
-    ((texture)->filterAddressing = ((texture)->filterAddressing & ~rwTEXTUREADDRESSINGUMASK) |     \
-                                   (((addressing) << 8) & rwTEXTUREADDRESSINGUMASK))
-#define RwTextureSetAddressingV(texture, addressing)                                               \
-    ((texture)->filterAddressing = ((texture)->filterAddressing & ~rwTEXTUREADDRESSINGVMASK) |     \
-                                   (((addressing) << 12) & rwTEXTUREADDRESSINGVMASK))
-#define RwTextureGetAddressingU(texture)                                                           \
-    ((RwInt32)(((texture)->filterAddressing & rwTEXTUREADDRESSINGUMASK) >> 8))
-#define RwTextureGetAddressingV(texture)                                                           \
-    ((RwInt32)(((texture)->filterAddressing & rwTEXTUREADDRESSINGVMASK) >> 12))
-
-/* raster creation flags and lock modes */
-#define rwRASTERFORMAT565 0x0200
+/* raster lock modes */
 #define rwRASTERLOCKWRITE 0x1
 #define rwRASTERLOCKRAW 0x8
 
