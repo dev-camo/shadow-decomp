@@ -586,6 +586,7 @@ config.libs = [
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/CSD/fn_80360528.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361A24.cpp", cflags=cflags_csd),
+                Object(Matching, "Game/CSD/fn_80361CF8.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/fn_80008D48.c"),
                 Object(Matching, "Game/fn_80008DA4.c"),
                 Object(Matching, "Game/fn_80008E1C.c"),
