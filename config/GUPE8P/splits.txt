@@ -104,6 +104,12 @@ Game/CSD/fn_80361CF8.cpp:
 	.text       start:0x80361CF8 end:0x80361F30
 	.bss        start:0x80585A18 end:0x80585A20
 
+Game/CSD/csdTexList.cpp:
+	.text       start:0x80361F30 end:0x80362BD4
+	.rodata     start:0x80512F50 end:0x80512F98
+	.data       start:0x8055FA88 end:0x8055FAB0
+	.bss        start:0x80585A20 end:0x80585A28
+
 dolphin/PPCArch.c:
 	.text       start:0x8036FC94 end:0x8036FDA8
 

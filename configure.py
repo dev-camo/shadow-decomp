@@ -620,6 +620,20 @@ config.libs = [
                 # whose allocations pass lower __LINE__ values than the original 442 and 234. MarkEntryDirty (0x803609D4) is not emitted and MarkMatrixUsers comes after its
                 # caller: the original file has callers the game does not use (removed at link).
                 Object(NonMatching, "Game/CSD/csdMotionPalette.cpp", cflags=cflags_csd),
+                # Every function matches except LoadFile (its allocation passes __LINE__ 53 where
+                # the original passes 137) and RegisterTexList (the pair conversion takes its
+                # argument from a recomputed stack address where the original reuses make_pair's
+                # returned pointer: two words). The map's out-of-line functions also come out in a
+                # different order: __destroy and its four helpers directly follow the tree
+                # destructor, where the original has them after root, InitTexLists, the map
+                # constructor, tree::find, its two key comparisons and comp; after the map
+                # constructor the final block begins with erase (followed by __size, __begin, begin
+                # and insert) instead of tree::find, and comp, tree::find and its two comparisons
+                # come only after insert's pair constructor and comparison (the original's order is
+                # not reproduced yet). The inline CMemoryAlloc::FreeObject is also emitted as an
+                # unreferenced weak copy (0x2C bytes); the original's copy was removed at link, and
+                # the game keeps its own at 0x8003CB64.
+                Object(NonMatching, "Game/CSD/csdTexList.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/fn_80008D48.c"),
                 Object(Matching, "Game/fn_80008DA4.c"),
                 Object(Matching, "Game/fn_80008E1C.c"),
