@@ -147,16 +147,19 @@ Sint32 SFD_GetOutVol(SFD sfd) {
 /* Movie audio volume (1/10 dB) through the audio driver's callback (-> ADXT_SetOutVol). */
 Sint32 SFD_SetOutVol(SFD sfd, Sint32 vol) {
     SFAOAP *aoap;
+    Sint32 cond;
 
     if (SFLIB_CheckHn(sfd) != 0) {
         return SFLIB_SetErr(0, 0xFF0001A3);
     }
-    if (SFSET_GetCond(sfd, SFAOAP_COND) != 0) {
+    cond = SFSET_GetCond(sfd, SFAOAP_COND);
+    if (cond != 0) {
         aoap = sfd->tr[SFAOAP_TR].hn;
         return aoap->SetOutVol(sfd, vol);
     }
-    /* No return statement: the caller gets SFSET_GetCond's 0, which is still in the return
-     * register. */
+    /* Without audio the result is the condition value, 0, left in r3 for the epilogue; a literal
+     * `return 0` would add a branch and an `li r3, 0`. */
+    return cond;
 }
 
 const SFD_TR_IF SFD_tr_ao_auto_p = {
