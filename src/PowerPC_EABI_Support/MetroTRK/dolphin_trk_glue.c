@@ -112,7 +112,7 @@ void TRK_board_display(char *str) {
     OSReport("%s\n", str);
 }
 
-DSError InitializeProgramEndTrap(void) {
+void InitializeProgramEndTrap(void) {
     static const u32 EndofProgramInstruction = 'END';
 
     u8 *endOfProgramInstructionBytes = (u8 *)&EndofProgramInstruction;

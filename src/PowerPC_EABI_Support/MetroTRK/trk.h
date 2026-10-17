@@ -170,7 +170,7 @@ void *TRK_memset(void *dst, int val, size_t n);
 DSError TRKInitializeEventQueue();
 DSError TRKInitializeMessageBuffers();
 DSError TRKInitializeDispatcher();
-DSError InitializeProgramEndTrap();
+void InitializeProgramEndTrap();
 DSError TRKInitializeSerialHandler();
 DSError TRKTerminateSerialHandler();
 DSError TRKInitializeTarget();
