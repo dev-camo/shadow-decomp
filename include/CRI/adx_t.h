@@ -12,7 +12,6 @@
 #include "layout_check.h"
 
 #define ADXT_MAX_OBJ 16
-#define ADXT_MAX_NCH 8
 
 /* ADXT_OBJ.stat (internal) */
 #define ADXT_ISTAT_STOP 0

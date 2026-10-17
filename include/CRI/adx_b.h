@@ -61,13 +61,6 @@ CHECK_SIZEOF(ADXPD_OBJ, 0x3C);
 #define ADXB_TYPE_AU 4
 #define ADXB_TYPE_AHX 10
 
-/* ADX header format field values (not the container type above) */
-#define ADXB_FMT_ADX 0
-#define ADXB_FMT_AHX 1
-#define ADXB_FMT_PCM16 2
-#define ADXB_FMT_PCM8 3
-#define ADXB_FMT_SPSD 4
-
 typedef struct {
     Sint16 used;                                               /* 0x00 */
     Sint16 x02;                                                /* 0x02 */
