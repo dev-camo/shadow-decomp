@@ -632,49 +632,301 @@ RwBool fn_80481C58(void); /* closes plugin registration */
 
 RwUInt32 fn_80485D64(void); /* the number of engine instances (inferred) */
 
-/* A rendering pipeline; only the plugin that owns it is mapped */
-typedef struct RxPipeline {
-    /* 0x00 */ RwUInt8 field_0x0[0x2C];
-    /* 0x2C */ RwUInt32 pluginId;   /* 0 for none */
-    /* 0x30 */ RwUInt32 pluginData; /* the owner plugin's data */
-} RxPipeline;
-CHECK_SIZEOF(RxPipeline, 0x34);
+/* The pipeline heap: a scratch heap that pipeline nodes allocate packet data from during one
+ * execution. It is carved out of superblocks; every block, used or free, starts with a header. */
+typedef struct rxHeapFreeBlock rxHeapFreeBlock;
+typedef struct rxHeapSuperBlockDescriptor rxHeapSuperBlockDescriptor;
+typedef struct rxHeapBlockHeader rxHeapBlockHeader;
 
-/* A node of a pipeline; only its private data is mapped */
-typedef struct RxPipelineNode {
-    /* 0x00 */ RwUInt8 field_0x0[0x14];
-    /* 0x14 */ void *privateData;
-} RxPipelineNode;
-CHECK_SIZEOF(RxPipelineNode, 0x18);
+/* An entry of the heap's free block table */
+struct rxHeapFreeBlock {
+    /* 0x0 */ RwUInt32 size;
+    /* 0x4 */ rxHeapBlockHeader *ptr;
+};
+CHECK_SIZEOF(struct rxHeapFreeBlock, 0x8);
 
-/* The parameters a node body receives; only the object being rendered is mapped */
+/* A superblock: one allocation the heap carves its blocks out of */
+struct rxHeapSuperBlockDescriptor {
+    /* 0x0 */ void *start;
+    /* 0x4 */ RwUInt32 size;
+    /* 0x8 */ rxHeapSuperBlockDescriptor *next;
+};
+CHECK_SIZEOF(struct rxHeapSuperBlockDescriptor, 0xC);
+
+typedef struct RxHeap {
+    /* 0x00 */ RwUInt32 superBlockSize; /* how much the heap grows by */
+    /* 0x04 */ rxHeapSuperBlockDescriptor *head;
+    /* 0x08 */ rxHeapBlockHeader *headBlock;
+    /* 0x0C */ rxHeapFreeBlock *freeBlocks;
+    /* 0x10 */ RwUInt32 entriesAlloced; /* of the free block table */
+    /* 0x14 */ RwUInt32 entriesUsed;
+    /* 0x18 */ RwBool dirty; /* whether anything was allocated since the last reset */
+} RxHeap;
+CHECK_SIZEOF(RxHeap, 0x1C);
+
+/* The header of a heap block (0x20 bytes, so that block data stays 32-byte aligned) */
+struct rxHeapBlockHeader {
+    /* 0x00 */ rxHeapBlockHeader *prev;
+    /* 0x04 */ rxHeapBlockHeader *next;
+    /* 0x08 */ RwUInt32 size;
+    /* 0x0C */ rxHeapFreeBlock *freeEntry; /* NULL while the block is in use */
+    /* 0x10 */ RwUInt32 pad[4];
+};
+CHECK_SIZEOF(struct rxHeapBlockHeader, 0x20);
+
+typedef struct RxPipeline RxPipeline;
+typedef struct RxPipelineNode RxPipelineNode;
+typedef struct RxNodeDefinition RxNodeDefinition;
+
+/* A cluster definition: a named kind of per-vertex or per-primitive data that flows through a
+ * pipeline */
+typedef struct RxClusterDefinition {
+    /* 0x0 */ RwChar *name;
+    /* 0x4 */ RwUInt32 defaultStride;
+    /* 0x8 */ RwUInt32 defaultAttributes;
+    /* 0xC */ const RwChar *attributeSet;
+} RxClusterDefinition;
+CHECK_SIZEOF(RxClusterDefinition, 0x10);
+
+/* What a node requires of a cluster on input (RxClusterValidityReq) */
+#define rxCLREQ_DONTWANT 0
+#define rxCLREQ_REQUIRED 1
+#define rxCLREQ_OPTIONAL 2
+
+/* What becomes of a cluster on one of a node's outputs (RxClusterValid) */
+#define rxCLVALID_NOCHANGE 0
+#define rxCLVALID_VALID 1
+#define rxCLVALID_INVALID 2
+
+/* One of a node's outputs: the state of its clusters of interest, and of all other clusters */
+typedef struct RxOutputSpec {
+    /* 0x0 */ RwChar *name;
+    /* 0x4 */ RwInt32 *outputClusters; /* rxCLVALID_* per cluster of interest */
+    /* 0x8 */ RwInt32 allOtherClusters;
+} RxOutputSpec;
+CHECK_SIZEOF(RxOutputSpec, 0xC);
+
+/* A cluster a node is interested in */
+typedef struct RxClusterRef {
+    /* 0x0 */ RxClusterDefinition *clusterDef;
+    /* 0x4 */ RwBool forcePresent; /* create the cluster even when no earlier node does */
+    /* 0x8 */ RwUInt32 reserved;
+} RxClusterRef;
+CHECK_SIZEOF(RxClusterRef, 0xC);
+
+/* A node's inputs and outputs */
+typedef struct RxIoSpec {
+    /* 0x00 */ RwUInt32 numClustersOfInterest;
+    /* 0x04 */ RxClusterRef *clustersOfInterest;
+    /* 0x08 */ RwInt32 *inputRequirements; /* rxCLREQ_* per cluster of interest */
+    /* 0x0C */ RwUInt32 numOutputs;
+    /* 0x10 */ RxOutputSpec *outputs;
+} RxIoSpec;
+CHECK_SIZEOF(RxIoSpec, 0x14);
+
+/* A pipeline cluster: a cluster of interest as one pipeline uses it */
+typedef struct RxPipelineCluster {
+    /* 0x0 */ RxClusterDefinition *clusterRef;
+    /* 0x4 */ RwUInt32 creationAttributes;
+} RxPipelineCluster;
+CHECK_SIZEOF(RxPipelineCluster, 0x8);
+
+/* RxCluster flags */
+#define rxCLFLAGS_CLUSTERVALID 0x0001
+#define rxCLFLAGS_EXTERNAL 0x0002 /* the data is not the heap's, so it is not freed */
+
+/* A cluster of a packet: its data, the elements allocated and used, and a cursor */
+typedef struct RxCluster {
+    /* 0x00 */ RwUInt16 flags; /* rxCLFLAGS_* */
+    /* 0x02 */ RwUInt16 stride;
+    /* 0x04 */ void *data;
+    /* 0x08 */ void *currentData;
+    /* 0x0C */ RwUInt32 numAlloced;
+    /* 0x10 */ RwUInt32 numUsed;
+    /* 0x14 */ RxPipelineCluster *clusterRef; /* NULL while the slot is empty */
+    /* 0x18 */ RwUInt32 attributes;
+} RxCluster;
+CHECK_SIZEOF(RxCluster, 0x1C);
+
+/* A packet: what passes from node to node during an execution. It has a cluster for each slot of
+ * the pipeline, so it is allocated with numClusters clusters. */
+typedef struct RxPacket {
+    /* 0x00 */ RwUInt16 flags;
+    /* 0x02 */ RwUInt16 numClusters;
+    /* 0x04 */ RxPipeline *pipeline;
+    /* 0x08 */ RwUInt32 *inputToClusterSlot;
+    /* 0x0C */ RwUInt32 *slotsContinue;
+    /* 0x10 */ RxPipelineCluster **slotClusterRefs;
+    /* 0x14 */ RxCluster clusters[1];
+} RxPacket;
+CHECK_SIZEOF(RxPacket, 0x30);
+
+/* The parameters a node body receives */
 typedef struct RxPipelineNodeParam {
-    /* 0x0 */ void *dataParam;
+    /* 0x0 */ void *dataParam; /* the object being rendered */
+    /* 0x4 */ RxHeap *heap;    /* the heap of the execution */
 } RxPipelineNodeParam;
-CHECK_SIZEOF(RxPipelineNodeParam, 0x4);
+CHECK_SIZEOF(RxPipelineNodeParam, 0x8);
 
+/* the node methods */
 typedef RwBool (*RxNodeBodyFn)(RxPipelineNode *self, const RxPipelineNodeParam *params);
+typedef RwBool (*RxNodeInitFn)(RxNodeDefinition *self);
+typedef void (*RxNodeTermFn)(RxNodeDefinition *self);
 typedef RwBool (*RxPipelineNodeInitFn)(RxPipelineNode *self);
+typedef void (*RxPipelineNodeTermFn)(RxPipelineNode *self);
+typedef RwBool (*RxPipelineNodeConfigFn)(RxPipelineNode *self, RxPipeline *pipeline);
+typedef RwUInt32 (*RxConfigMsgHandlerFn)(RxPipelineNode *self, RwUInt32 msg, RwUInt32 intparam,
+                                         void *ptrparam);
 
-/* The definition of a pipeline node (0x44 bytes); only the name, the node body, the pipeline node
- * initialisation and the private data size are mapped */
-typedef struct RxNodeDefinition {
+/* What a node does: its body runs for every execution; the node definition is initialised when
+ * the first unlocked pipeline uses it and terminated after the last, and each pipeline node is
+ * initialised and terminated with its pipeline */
+typedef struct RxNodeMethods {
+    /* 0x00 */ RxNodeBodyFn nodeBody;
+    /* 0x04 */ RxNodeInitFn nodeInit;
+    /* 0x08 */ RxNodeTermFn nodeTerm;
+    /* 0x0C */ RxPipelineNodeInitFn pipelineNodeInit;
+    /* 0x10 */ RxPipelineNodeTermFn pipelineNodeTerm;
+    /* 0x14 */ RxPipelineNodeConfigFn pipelineNodeConfig;
+    /* 0x18 */ RxConfigMsgHandlerFn configMsgHandler;
+} RxNodeMethods;
+CHECK_SIZEOF(RxNodeMethods, 0x1C);
+
+/* RxNodeDefEditable */
+#define rxNODEDEFCONST FALSE
+#define rxNODEDEFEDITABLE TRUE
+
+/* The definition of a pipeline node */
+struct RxNodeDefinition {
     /* 0x00 */ RwChar *name;
-    /* 0x04 */ RxNodeBodyFn nodeBody;
-    /* 0x08 */ void *nodeInit;
-    /* 0x0C */ void *nodeTerm;
-    /* 0x10 */ RxPipelineNodeInitFn pipelineNodeInit;
-    /* 0x14 */ void *pipelineNodeTerm;
-    /* 0x18 */ void *pipelineNodeConfig;
-    /* 0x1C */ void *configMsgHandler;
-    /* 0x20 */ RwUInt8 io[0x14];
+    /* 0x04 */ RxNodeMethods nodeMethods;
+    /* 0x20 */ RxIoSpec io;
     /* 0x34 */ RwUInt32 pipelineNodePrivateDataSize;
-    /* 0x38 */ RwUInt8 field_0x38[0xC];
-} RxNodeDefinition;
-CHECK_SIZEOF(RxNodeDefinition, 0x44);
+    /* 0x38 */ RwBool editable;       /* rxNODEDEF*: whether the definition was allocated */
+    /* 0x3C */ RwInt32 InputPipesCnt; /* the unlocked pipelines that use it */
+};
+CHECK_SIZEOF(struct RxNodeDefinition, 0x40);
 
-/* building pipelines (inferred from their use) */
-RxPipeline *fn_8049B76C(void);                 /* creates a pipeline */
+/* What the dependency pass keeps for a node while it sorts the pipeline */
+typedef struct RxPipelineNodeTopSortData {
+    /* 0x0 */ RwUInt32 numIns;
+    /* 0x4 */ RwUInt32 numInsVisited;
+    /* 0x8 */ void *req; /* the requirements being propagated (inferred) */
+} RxPipelineNodeTopSortData;
+CHECK_SIZEOF(RxPipelineNodeTopSortData, 0xC);
+
+/* A node of a pipeline. The nodes of an unlocked pipeline are sorted so that every node comes
+ * before the nodes its outputs lead to; outputs are node indices, -1 for none. */
+struct RxPipelineNode {
+    /* 0x00 */ RxNodeDefinition *nodeDef;
+    /* 0x04 */ RwUInt32 numOutputs;
+    /* 0x08 */ RwUInt32 *outputs;
+    /* 0x0C */ RxPipelineCluster **slotClusterRefs; /* the pipeline cluster of each packet slot */
+    /* 0x10 */ RwUInt32 *slotsContinue;             /* which slots persist through each output */
+    /* 0x14 */ void *privateData;
+    /* 0x18 */ RwUInt32 *inputToClusterSlot; /* the packet slot of each cluster of interest */
+    /* 0x1C */ RxPipelineNodeTopSortData *topSortData;
+    /* 0x20 */ void *initializationData; /* kept so the node can be initialised again */
+    /* 0x24 */ RwUInt32 initializationDataSize;
+};
+CHECK_SIZEOF(struct RxPipelineNode, 0x28);
+
+/* The state of a pipeline's embedded packet (rxEmbeddedPacketState) */
+#define rxPKST_PACKETLESS 0 /* not created */
+#define rxPKST_UNUSED 1     /* created and destroyed */
+#define rxPKST_INUSE 2      /* created and not yet destroyed */
+#define rxPKST_PENDING 3    /* dispatched and not yet fetched */
+
+/* The pipeline being executed and its node */
+typedef struct RxExecutionContext {
+    /* 0x00 */ RxPipeline *pipeline;
+    /* 0x04 */ RxPipelineNode *currentNode;
+    /* 0x08 */ RwInt32 exitCode;
+    /* 0x0C */ RwUInt32 pad;
+    /* 0x10 */ RxPipelineNodeParam params;
+} RxExecutionContext;
+CHECK_SIZEOF(RxExecutionContext, 0x18);
+
+/* A cluster an unlocked pipeline needs on input, and the packet slot it occupies */
+typedef struct RxPipelineRequiresCluster {
+    /* 0x0 */ RxClusterDefinition *clusterDef;
+    /* 0x4 */ RwInt32 rqdOrOpt; /* rxCLREQ_* */
+    /* 0x8 */ RwUInt32 slotIndex;
+} RxPipelineRequiresCluster;
+CHECK_SIZEOF(RxPipelineRequiresCluster, 0xC);
+
+/* A rendering pipeline */
+struct RxPipeline {
+    /* 0x00 */ RwBool locked; /* whether it is locked for editing */
+    /* 0x04 */ RwUInt32 numNodes;
+    /* 0x08 */ RxPipelineNode *nodes;
+    /* 0x0C */ RwUInt32 packetNumClusterSlots;
+    /* 0x10 */ RwInt32 embeddedPacketState; /* rxPKST_* */
+    /* 0x14 */ RxPacket *embeddedPacket;
+    /* 0x18 */ RwUInt32 numInputRequirements;
+    /* 0x1C */ RxPipelineRequiresCluster *inputRequirements;
+    /* 0x20 */ void *superBlock; /* one allocation for the nodes' arrays and private data */
+    /* 0x24 */ RwUInt32 superBlockSize;
+    /* 0x28 */ RwUInt32 entryPoint; /* the index of the first node to execute */
+    /* 0x2C */ RwUInt32 pluginId;   /* the plugin that owns it, 0 for none */
+    /* 0x30 */ RwUInt32 pluginData; /* the owner plugin's data */
+};
+CHECK_SIZEOF(struct RxPipeline, 0x34);
+
+/* RxRenderStateVector flags */
+#define rxRENDERSTATEFLAG_TEXTUREPERSPECTIVE 0x00000001
+#define rxRENDERSTATEFLAG_ZTESTENABLE 0x00000002
+#define rxRENDERSTATEFLAG_ZWRITEENABLE 0x00000004
+#define rxRENDERSTATEFLAG_VERTEXALPHAENABLE 0x00000008
+#define rxRENDERSTATEFLAG_FOGENABLE 0x00000010
+
+/* A complete set of the render states that pipelines render with */
+typedef struct RxRenderStateVector {
+    /* 0x00 */ RwUInt32 Flags; /* rxRENDERSTATEFLAG_* */
+    /* 0x04 */ RwInt32 ShadeMode;
+    /* 0x08 */ RwInt32 SrcBlend;
+    /* 0x0C */ RwInt32 DestBlend;
+    /* 0x10 */ RwRaster *TextureRaster;
+    /* 0x14 */ RwInt32 AddressModeU;
+    /* 0x18 */ RwInt32 AddressModeV;
+    /* 0x1C */ RwInt32 FilterMode;
+    /* 0x20 */ RwRGBA BorderColor;
+    /* 0x24 */ RwInt32 FogType;
+    /* 0x28 */ RwRGBA FogColor;
+} RxRenderStateVector;
+CHECK_SIZEOF(RxRenderStateVector, 0x2C);
+
+/* The pipeline module's globals in the engine: the free list pipelines are allocated from, the
+ * default render states, and the current, generic and platform pipelines of atomics, world sectors
+ * and materials */
+typedef struct rwPipeGlobals {
+    /* 0x00 */ RwFreeList *pipesFreeList;
+    /* 0x04 */ RxRenderStateVector defaultRenderState;
+    /* 0x30 */ RwLinkList allPipelines; /* cleared when the module opens */
+    /* 0x38 */ RwUInt32 maxNodesPerPipe;
+    /* 0x3C */ RxPipeline *currentAtomicPipeline;
+    /* 0x40 */ RxPipeline *currentWorldSectorPipeline;
+    /* 0x44 */ RxPipeline *currentMaterialPipeline;
+    /* 0x48 */ RxPipeline *genericAtomicPipeline;
+    /* 0x4C */ RxPipeline *genericWorldSectorPipeline;
+    /* 0x50 */ RxPipeline *genericMaterialPipeline;
+    /* 0x54 */ RxPipeline *platformAtomicPipeline;
+    /* 0x58 */ RxPipeline *platformWorldSectorPipeline;
+    /* 0x5C */ RxPipeline *platformMaterialPipeline;
+} rwPipeGlobals;
+CHECK_SIZEOF(rwPipeGlobals, 0x60);
+
+extern RwInt32 lbl_805F1690; /* engine plugin offset of the pipeline module's globals */
+
+#define RXPIPELINEGLOBAL(var) (RWPLUGINOFFSET(rwPipeGlobals, lbl_805F15B4, lbl_805F1690)->var)
+
+/* creating, executing and destroying pipelines (inferred from their use) */
+RxPipeline *fn_8049B76C(void);          /* creates a pipeline */
+void fn_8049B800(RxPipeline *pipeline); /* destroys a pipeline */
+/* executes a pipeline on an object, first resetting the heap if heapReset is set; NULL on failure */
+RxPipeline *fn_8049B674(RxPipeline *pipeline, void *data, RwBool heapReset);
+
+/* editing pipelines (inferred from their use) */
 RxPipeline *fn_8049CCB8(RxPipeline *pipeline); /* locks a pipeline for editing */
 RxPipeline *fn_8049C1E0(RxPipeline *pipeline); /* unlocks it */
 /* adds a fragment of the NULL-terminated node definitions to a locked pipeline */
@@ -992,8 +1244,9 @@ RwDevice *fn_804950A0(void);
 RwBool fn_80493E64(void);
 /* sets the gamma correction (inferred) */
 RwBool fn_80489830(RwReal gamma);
-/* registers more core plugins; negative on failure, like a plugin offset (inferred) */
-RwInt32 fn_8049B140(void);
+/* the pipeline library's plugin attach step (inferred): it has nothing to attach and returns TRUE,
+ * which the engine ORs into its plugin offsets */
+RwBool fn_8049B140(void);
 
 /* the opening and closing callbacks of the core modules the engine registers (inferred from their
  * module IDs) */
@@ -1344,7 +1597,7 @@ RwBool fn_80497904(RwInt32 state, void *value); /* sets a render state */
 RwBool fn_80497474(RwInt32 state, void *value); /* gets a render state */
 RwInt32 fn_804953F0(void);          /* registers the raster plugin; returns its offset */
 RwBool fn_80499BF8(void);           /* registers a device plugin */
-RwBool fn_8049A78C(RwUInt16 token); /* checks a draw sync token */
+RwBool fn_8049A78C(RwUInt16 token); /* whether the GPU has passed a draw sync token */
 void fn_80498E08(RwRaster *raster, RwRect *rect, RwRGBA *color,
                  RwInt32 clearMode); /* clears a raster rectangle */
 void fn_80497198(void);              /* finishes starting the device */
@@ -1404,8 +1657,6 @@ extern RwMatrix lbl_805E31CC;
 /* calls a function for each entry in use in a free list (inferred) */
 RwFreeList *fn_804800DC(RwFreeList *freeList, void (*callBack)(void *mem, void *data), void *data);
 
-/* executes a pipeline on an object (inferred) */
-RxPipeline *fn_8049B674(RxPipeline *pipeline, void *data, RwBool heapReset);
 RwFrame *fn_8048752C(RwFrame *frame, RwFrameCallBack callBack, void *data);
 
 /* plugin registration with cameras and textures (inferred: the user data plugin registers with

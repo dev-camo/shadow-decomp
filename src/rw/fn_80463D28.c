@@ -164,8 +164,12 @@ RwBool fn_80464188(RxPipelineNode *self) {
 RwChar lbl_8056D910[] = "GamerCubeWorldSectorAllInOne.csl";
 
 RxNodeDefinition lbl_8056D934 = {
-    lbl_8056D910, fn_80463FA4, NULL, NULL, fn_80464188,
-    NULL,         NULL,        NULL, {0},  sizeof(RxGameCubeAllInOneData),
+    lbl_8056D910,
+    {fn_80463FA4, NULL, NULL, fn_80464188, NULL, NULL, NULL},
+    {0, NULL, NULL, 0, NULL},
+    sizeof(RxGameCubeAllInOneData),
+    rxNODEDEFCONST,
+    0,
 };
 
 RxNodeDefinition *fn_804641C0(void) {

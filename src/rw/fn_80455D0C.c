@@ -70,8 +70,6 @@ CHECK_SIZEOF(ClumpModule, 0x8);
 #define CLUMPGLOBALS() ((ClumpGlobals *)((RwUInt8 *)lbl_805F15B4 + lbl_805F14C8.globalsOffset))
 #define CLUMPGLOBAL(var) (CLUMPGLOBALS()->var)
 
-#define PIPELINEGLOBAL(var) (((RpPipelineGlobals *)((RwUInt8 *)lbl_805F15B4 + lbl_805F1690))->var)
-
 RwPluginRegistry lbl_8056D7E0 = {sizeof(RpAtomic), sizeof(RpAtomic), 0, 0, NULL, NULL};
 RwPluginRegistry lbl_8056D7F8 = {sizeof(RpClump), sizeof(RpClump), 0, 0, NULL, NULL};
 
@@ -170,7 +168,7 @@ RpAtomic *fn_80455EB4(RpAtomic *atomic) {
     RxPipeline *pipeline = atomic->pipeline;
 
     if (pipeline == NULL) {
-        pipeline = PIPELINEGLOBAL(defaultAtomicPipeline);
+        pipeline = RXPIPELINEGLOBAL(currentAtomicPipeline);
     }
     if (fn_8049B674(pipeline, atomic, TRUE) != NULL) {
         return atomic;

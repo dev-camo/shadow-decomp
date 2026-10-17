@@ -2,13 +2,11 @@
  * pipeline globals. The original file name is unknown. */
 #include "rw/rpworld.h"
 
-#define PIPELINEGLOBAL(var) (RWPLUGINOFFSET(RpPipelineGlobals, lbl_805F15B4, lbl_805F1690)->var)
-
 /* Sets the default world sector pipeline, or the platform's for NULL */
 RxPipeline *fn_804626F8(RxPipeline *pipeline) {
     if (pipeline == NULL) {
         /* the platform's pipeline, else none (the original tests it with no other fallback) */
-        RxPipeline *platform = PIPELINEGLOBAL(platformWorldSectorPipeline);
+        RxPipeline *platform = RXPIPELINEGLOBAL(platformWorldSectorPipeline);
 
         if (platform != NULL) {
             pipeline = platform;
@@ -16,7 +14,7 @@ RxPipeline *fn_804626F8(RxPipeline *pipeline) {
             pipeline = NULL;
         }
     }
-    PIPELINEGLOBAL(defaultWorldSectorPipeline) = pipeline;
+    RXPIPELINEGLOBAL(currentWorldSectorPipeline) = pipeline;
     return pipeline;
 }
 
@@ -24,7 +22,7 @@ RxPipeline *fn_804626F8(RxPipeline *pipeline) {
 RxPipeline *fn_80462734(RxPipeline *pipeline) {
     if (pipeline == NULL) {
         /* the platform's pipeline, else none (the original tests it with no other fallback) */
-        RxPipeline *platform = PIPELINEGLOBAL(platformAtomicPipeline);
+        RxPipeline *platform = RXPIPELINEGLOBAL(platformAtomicPipeline);
 
         if (platform != NULL) {
             pipeline = platform;
@@ -32,7 +30,7 @@ RxPipeline *fn_80462734(RxPipeline *pipeline) {
             pipeline = NULL;
         }
     }
-    PIPELINEGLOBAL(defaultAtomicPipeline) = pipeline;
+    RXPIPELINEGLOBAL(currentAtomicPipeline) = pipeline;
     return pipeline;
 }
 
@@ -47,15 +45,15 @@ void fn_80462770(void) {
 RwBool fn_80462798(void) {
     RwBool status;
 
-    PIPELINEGLOBAL(defaultAtomicPipeline) = NULL;
-    PIPELINEGLOBAL(defaultWorldSectorPipeline) = NULL;
-    PIPELINEGLOBAL(defaultMaterialPipeline) = NULL;
-    PIPELINEGLOBAL(genericAtomicPipeline) = NULL;
-    PIPELINEGLOBAL(genericWorldSectorPipeline) = NULL;
-    PIPELINEGLOBAL(genericMaterialPipeline) = NULL;
-    PIPELINEGLOBAL(platformAtomicPipeline) = NULL;
-    PIPELINEGLOBAL(platformWorldSectorPipeline) = NULL;
-    PIPELINEGLOBAL(platformMaterialPipeline) = NULL;
+    RXPIPELINEGLOBAL(currentAtomicPipeline) = NULL;
+    RXPIPELINEGLOBAL(currentWorldSectorPipeline) = NULL;
+    RXPIPELINEGLOBAL(currentMaterialPipeline) = NULL;
+    RXPIPELINEGLOBAL(genericAtomicPipeline) = NULL;
+    RXPIPELINEGLOBAL(genericWorldSectorPipeline) = NULL;
+    RXPIPELINEGLOBAL(genericMaterialPipeline) = NULL;
+    RXPIPELINEGLOBAL(platformAtomicPipeline) = NULL;
+    RXPIPELINEGLOBAL(platformWorldSectorPipeline) = NULL;
+    RXPIPELINEGLOBAL(platformMaterialPipeline) = NULL;
 
     status = fn_804631CC();
     if (status) {

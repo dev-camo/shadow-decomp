@@ -27,8 +27,6 @@ typedef struct VtxFmtModule {
 } VtxFmtModule;
 CHECK_SIZEOF(VtxFmtModule, 0x8);
 
-#define PIPELINEGLOBAL(var) (RWPLUGINOFFSET(RpPipelineGlobals, lbl_805F15B4, lbl_805F1690)->var)
-
 RpGameCubeVertexFormat lbl_805E1688; /* the default vertex format */
 
 RwInt32 lbl_805EDDD8 = 1; /* the instancing optimisation mode (inferred) */
@@ -373,7 +371,7 @@ RwBool fn_804631D8(void) {
                                  (RpGameCubeSectorCallBack)fn_80462914);
 
     if (pipeline != NULL) {
-        PIPELINEGLOBAL(platformWorldSectorPipeline) = pipeline;
+        RXPIPELINEGLOBAL(platformWorldSectorPipeline) = pipeline;
         fn_804626F8(pipeline);
         return TRUE;
     }
@@ -382,9 +380,9 @@ RwBool fn_804631D8(void) {
 
 void fn_80463244(void) {
     fn_804626F8(NULL);
-    if (PIPELINEGLOBAL(platformWorldSectorPipeline) != NULL) {
-        fn_8049B800(PIPELINEGLOBAL(platformWorldSectorPipeline));
-        PIPELINEGLOBAL(platformWorldSectorPipeline) = NULL;
+    if (RXPIPELINEGLOBAL(platformWorldSectorPipeline) != NULL) {
+        fn_8049B800(RXPIPELINEGLOBAL(platformWorldSectorPipeline));
+        RXPIPELINEGLOBAL(platformWorldSectorPipeline) = NULL;
     }
 }
 
@@ -393,7 +391,7 @@ RwBool fn_80463298(void) {
                                  (RpGameCubeRenderCallBack)fn_80462914);
 
     if (pipeline != NULL) {
-        PIPELINEGLOBAL(platformAtomicPipeline) = pipeline;
+        RXPIPELINEGLOBAL(platformAtomicPipeline) = pipeline;
         fn_80462734(pipeline);
         return TRUE;
     }
@@ -402,8 +400,8 @@ RwBool fn_80463298(void) {
 
 void fn_80463308(void) {
     fn_80462734(NULL);
-    if (PIPELINEGLOBAL(platformAtomicPipeline) != NULL) {
-        fn_8049B800(PIPELINEGLOBAL(platformAtomicPipeline));
-        PIPELINEGLOBAL(platformAtomicPipeline) = NULL;
+    if (RXPIPELINEGLOBAL(platformAtomicPipeline) != NULL) {
+        fn_8049B800(RXPIPELINEGLOBAL(platformAtomicPipeline));
+        RXPIPELINEGLOBAL(platformAtomicPipeline) = NULL;
     }
 }

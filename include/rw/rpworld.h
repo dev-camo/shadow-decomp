@@ -449,23 +449,6 @@ RpWorld *fn_804622F0(RpAtomic *atomic);  /* the world the atomic is in, or NULL 
 /* RpAtomicSetGeometry flags */
 #define rpATOMICSAMEBOUNDINGSPHERE 0x1
 
-/* The pipeline module's globals in the engine; only the pipelines are mapped */
-typedef struct RpPipelineGlobals {
-    /* 0x00 */ RwUInt8 field_0x0[0x3C];
-    /* 0x3C */ RxPipeline *defaultAtomicPipeline; /* the current defaults */
-    /* 0x40 */ RxPipeline *defaultWorldSectorPipeline;
-    /* 0x44 */ RxPipeline *defaultMaterialPipeline;
-    /* 0x48 */ RxPipeline *genericAtomicPipeline;
-    /* 0x4C */ RxPipeline *genericWorldSectorPipeline;
-    /* 0x50 */ RxPipeline *genericMaterialPipeline;
-    /* 0x54 */ RxPipeline *platformAtomicPipeline;
-    /* 0x58 */ RxPipeline *platformWorldSectorPipeline;
-    /* 0x5C */ RxPipeline *platformMaterialPipeline;
-} RpPipelineGlobals;
-CHECK_SIZEOF(RpPipelineGlobals, 0x60);
-
-extern RwInt32 lbl_805F1690; /* engine plugin offset of the pipeline module's globals */
-
 /* clumps (inferred) */
 RpClump *fn_804573A8(void);                             /* create */
 RwBool fn_80457468(RpClump *clump);                     /* destroy */
@@ -861,9 +844,6 @@ extern volatile RwUInt16 lbl_805EDF40;
 /* GX draw sync tokens wrap below this */
 #define rwGAMECUBEMAXSYNCTOKEN 0xE000
 
-/* the GX draw sync */
-RwBool fn_8049A78C(RwUInt16 token); /* whether the GPU has passed the token */
-
 /* Waits until the GPU is done with the draw that used a sync token, first issuing the token if it
  * is the current one */
 #define RPGAMECUBEWAITDRAWSYNC(syncToken)                                                          \
@@ -1003,7 +983,6 @@ RwUInt32 fn_804699F0(void *data, RwRGBA *colors, RwInt32 type, RwInt32 numVertic
                      RwUInt32 stride);
 RwUInt32 fn_8046A270(void *data, RwTexCoords *texCoords, RwInt32 type, RwInt32 numVertices,
                      RwUInt32 stride, RwReal scale);
-void fn_8049B800(void *pipeline); /* destroys a pipeline */
 
 /* GameCube render helpers (inferred from their use) */
 /* sets the vertex descriptors and formats for a vertex format and render mesh */
