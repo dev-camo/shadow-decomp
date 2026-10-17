@@ -43,6 +43,13 @@ Game/ElecCristalWallSwitch.cpp:
 	.sdata      start:0x805E9098 end:0x805E90B8
 	.sdata2     start:0x805F66C8 end:0x805F66E0
 
+Game/ElecCube.cpp:
+	.text       start:0x8021BCF0 end:0x8021C5AC
+	.rodata     start:0x804F0558 end:0x804F0580
+	.data       start:0x805458F0 end:0x805459A8
+	.sdata      start:0x805E9868 end:0x805E9888
+	.sdata2     start:0x805F6CA0 end:0x805F6CE0
+
 Game/ElecPillar.cpp:
 	.text       start:0x8021C5AC end:0x8021C958
 	.rodata     start:0x804F0580 end:0x804F05A8
