@@ -50,6 +50,13 @@ Game/ElecPillar.cpp:
 	.sdata      start:0x805E9888 end:0x805E98A8
 	.sdata2     start:0x805F6CE0 end:0x805F6CF8
 
+Game/ElecSmallPillar.cpp:
+	.text       start:0x80230F98 end:0x80231340
+	.rodata     start:0x804F2568 end:0x804F25A0
+	.data       start:0x80546F98 end:0x80547000
+	.sdata      start:0x805E9C88 end:0x805E9CA8
+	.sdata2     start:0x805F7158 end:0x805F7170
+
 Game/ElecCircuitExit.cpp:
 	.text       start:0x802C7FC0 end:0x802C8308
 	.ctors      start:0x804A9F80 end:0x804A9F84
