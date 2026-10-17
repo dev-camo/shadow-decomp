@@ -106,7 +106,8 @@ Sint32 SFD_SetFileSize(SFD sfd, Sint32 fsize) {
     return 0;
 }
 
-/* total time from the first analysed stream header (video, else audio 1, else audio 2) */
+/* total time, once every enabled decoder's header is analysed: from the system stream analysis when
+ * a system demuxer (driver 1) is set up, else from the video header, else from the audio header */
 static void sfsee_ExecHeadAnaly(SFD sfd) {
     SFSEE_WORK *wk;
     Sint32 a2;

@@ -603,11 +603,11 @@ typedef struct {
     SFHDS_FHD fhd;               /* 0x00C system header analysis */
     SFSEE_SHDR shdr;             /* 0x8A0 system stream analysis (sfd_mps.c), 0x198 bytes */
     Uint8 pada38[0xAD0 - 0xA38]; /* 0xA38 */
-    Sint32 a1hdr;                /* 0xAD0 audio 1 header analysed */
+    Sint32 a1hdr;                /* 0xAD0 video header analysed (video decoder, driver 2) */
     Sint32 a1ncount;             /* 0xAD4 */
     Sint32 a1tscale;             /* 0xAD8 */
     Uint8 padadc[0xD0C - 0xADC]; /* 0xADC */
-    Sint32 a2hdr;                /* 0xD0C audio 2 header analysed */
+    Sint32 a2hdr;                /* 0xD0C audio header analysed (audio decoder, driver 3) */
     Sint32 a2ncount;             /* 0xD10 */
     Sint32 a2tscale;             /* 0xD14 */
     Uint8 padd18[0xDA8 - 0xD18]; /* 0xD18 */
@@ -626,7 +626,7 @@ typedef struct {
 } SFSEE_WORK;
 CHECK_SIZEOF(SFSEE_WORK, 0xDD8);
 
-/* audio stream header analysis kept in the seek work (a1hdr / a2hdr and the words after them) */
+/* audio stream header analysis kept in the seek work (a2hdr and the words after it) */
 typedef struct {
     Sint32 analyzed; /* 0x00 */
     Sint32 byterate; /* 0x04 bytes per second */

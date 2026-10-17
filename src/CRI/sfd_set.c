@@ -7,8 +7,8 @@
  */
 #include "CRI/sfd.h"
 
-/* Driver `strm`'s handle (e.g. 3 -> the ADXT audio driver work), 0 when the driver is not set
- * up. */
+/* The decoder handle of driver `strm`: the first word of the driver's work (1 -> MPS, 2 -> MPV,
+ * 3 -> ADXT handle), 0 when the driver has no work. */
 Sint32 SFD_GetTrHn(SFD sfd, Sint32 strm, void **hn) {
     void **trhn;
 
