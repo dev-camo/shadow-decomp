@@ -54,7 +54,7 @@ Sint32 MPV_SkipFrmSj(void *hn, SJ sj) {
 Sint32 MPV_DecodeFrmSj(void *hn, SJ sj, MPV_FRM *frm) {
     MPV_OBJ *mpv = hn;
     UTY_GQR gqr;
-    Sint32 nfrm;
+    Sint32 n0c;
     Sint32 n10;
     Sint32 ret;
 
@@ -67,7 +67,7 @@ Sint32 MPV_DecodeFrmSj(void *hn, SJ sj, MPV_FRM *frm) {
     if (mpv->m2v_mode == 2) {
         return MPVM2V_DecodeFrm(mpv, sj, frm);
     }
-    nfrm = mpv->errinf.nfrm_dec;
+    n0c = mpv->errinf.x0c;
     n10 = mpv->errinf.x10;
     mpv->frm = *frm;
     MPVUMC_InitOutRfb(mpv);
@@ -77,7 +77,7 @@ Sint32 MPV_DecodeFrmSj(void *hn, SJ sj, MPV_FRM *frm) {
     ret = MPVHDEC_DecPicture(mpv, sj);
     MPVUMC_EndOfFrame(mpv);
     *frm->picatr = mpv->picatr;
-    frm->nfrm = mpv->errinf.nfrm_dec - nfrm;
+    frm->x28 = mpv->errinf.x0c - n0c;
     frm->x2c = mpv->errinf.x10 - n10;
     UTY_PopGqr(&gqr);
     return ret;

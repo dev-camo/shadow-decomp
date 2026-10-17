@@ -1127,6 +1127,18 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # NonMatching: one word in mpvhdec_DecSeqUdsc, the operand order of the position add
+            # (original `add r26,r24,r25`, buf + i; this source `add r26,r25,r24`).
+            Object(
+                NonMatching,
+                "CRI/mpv_hdec.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
             # Deferred inlining: the table generators are emitted in reverse order.
             Object(
                 Matching,

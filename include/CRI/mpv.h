@@ -30,17 +30,21 @@ typedef struct {
 CHECK_SIZEOF(MPVCMC_OUTBLK, 0x34);
 
 /* error record (MPVERR_InitErrInf clears all five words); in a handle's record the last two words
- * are picture counters of the header decoder, which MPV_DecodeFrmSj reports per call */
+ * are counters of the header decoder, which MPV_DecodeFrmSj reports per call: x0c counts finished
+ * pictures and pictures whose slice loop ends with mb_addr != mb_last, and has the handle's x13a0
+ * added after each picture; x10 counts finished pictures while cond[1] is set */
 typedef struct {
     void (*func)(void *obj, Sint32 code); /* 0x00 */
     void *obj;                            /* 0x04 */
     Sint32 code;                          /* 0x08 */
-    Sint32 nfrm_dec;                      /* 0x0C */
-    Sint32 x10;                           /* 0x10 pictures counted while cond[1] is set */
+    Sint32 x0c;                           /* 0x0C */
+    Sint32 x10;                           /* 0x10 */
 } MPVERR_INF;
 CHECK_SIZEOF(MPVERR_INF, 0x14);
 
-/* picture attributes (0x80 bytes; MPV_OBJ + 0x1D0, copied out by MPV_GetPicAtr) */
+/* picture attributes (0x80 bytes; MPV_OBJ + 0x1D0, copied out by MPV_GetPicAtr). x68 is set by
+ * each picture header from the handle's counters: x1398 << 16 for I and P pictures,
+ * (x1398 - 1) << 16 | x139c for other pictures; 0 after a GOP or sequence header. */
 typedef struct {
     Sint32 width;             /* 0x00 horizontal_size */
     Sint32 height;            /* 0x04 vertical_size */
@@ -81,7 +85,9 @@ typedef struct {
     Uint8 x62;                /* 0x62 */
     Uint8 x63;                /* 0x63 */
     Uint8 x64;                /* 0x64 */
-    Uint8 pad65[0x80 - 0x65]; /* 0x65 */
+    Uint8 pad65[3];           /* 0x65 */
+    Sint32 x68;               /* 0x68 picture number (see above) */
+    Uint8 pad6C[0x80 - 0x6C]; /* 0x6C */
 } MPV_PICATR;
 CHECK_SIZEOF(MPV_PICATR, 0x80);
 
@@ -92,7 +98,7 @@ typedef struct {
     Sint16 height;      /* 0x1E */
     Uint8 pad20[4];     /* 0x20 */
     MPV_PICATR *picatr; /* 0x24 */
-    Sint32 nfrm;        /* 0x28 */
+    Sint32 x28;         /* 0x28 MPVERR_INF.x0c counted during the call */
     Sint32 x2c;         /* 0x2C MPVERR_INF.x10 counted during the call */
 } MPV_FRM;
 CHECK_SIZEOF(MPV_FRM, 0x30);
@@ -135,7 +141,7 @@ typedef struct {
     Uint8 *iqm;     /* 0x20 quantiser matrix */
     Sint32 qscale;  /* 0x24 */
     Sint32 *dcpred; /* 0x28 intra DC predictor of the component */
-    void *dctbl;    /* 0x2C intra DC size table */
+    Sint8 *dctbl;   /* 0x2C intra DC size table (entries read unsigned) */
     Sint32 nintra;  /* 0x30 */
 } MPV_BLKPRM;
 CHECK_SIZEOF(MPV_BLKPRM, 0x34);
@@ -235,8 +241,8 @@ typedef struct MPV_OBJ {
     MPV_BLKDEC_FUNC nintra_func; /* 0x133C */
     Sint32 pad1340;              /* 0x1340 */
     Sint32 x1344;                /* 0x1344 copy of cond[7] */
-    void *dctbl_y;               /* 0x1348 */
-    void *dctbl_c;               /* 0x134C */
+    Sint8 *dctbl_y;              /* 0x1348 intra DC size tables */
+    Sint8 *dctbl_c;              /* 0x134C */
     void *m2v;                   /* 0x1350 */
     Sint32 hdrtype;              /* 0x1354 header being decoded: 1 sequence, 2 GOP, 3 picture */
     MPV_USRSJ usr[4];            /* 0x1358 */
@@ -244,8 +250,8 @@ typedef struct MPV_OBJ {
     Sint32 picusr_bufsiz;        /* 0x138C */
     Sint32 picusr_len;           /* 0x1390 */
     Sint32 pad1394;              /* 0x1394 */
-    Sint32 x1398;                /* 0x1398 */
-    Sint32 x139c;                /* 0x139C */
+    Sint32 x1398;                /* 0x1398 I/P pictures since the last GOP or sequence header */
+    Sint32 x139c;                /* 0x139C other pictures since then or the last I/P picture */
     Sint32 x13a0;                /* 0x13A0 */
 } MPV_OBJ;
 /* MPV_Init publishes this size (mpvlib_siz_mpvobj); handles are 0x13C0 apart. */
@@ -284,8 +290,22 @@ extern Uint32 *mpvvlc_run_level_0c;
 extern Uint32 *mpvvlc_run_level_1;
 extern Uint32 *mpvvlc_run_level_2;
 extern Uint32 *mpvvlc_run_level_4;
+/* mpv_vlc.c: intra DC size tables (8 bit and 11 bit DC precision) */
+extern Sint8 *mpvvlc_y_dcsiz;
+extern Sint8 *mpvvlc_c_dcsiz;
+extern Sint8 *mpvvlc2_y_dcsiz;
+extern Sint8 *mpvvlc2_c_dcsiz;
 
 Sint32 MPV_CheckDelim(void *ptr);
+/* MPV_CheckDelim start code classes */
+#define MPV_DLM_SLICE 0x01  /* any slice */
+#define MPV_DLM_SLICE1 0x02 /* the first slice (0x101) */
+#define MPV_DLM_PIC 0x04
+#define MPV_DLM_GOP 0x08
+#define MPV_DLM_EXT 0x10
+#define MPV_DLM_UD 0x20
+#define MPV_DLM_SEQ 0x40
+#define MPV_DLM_END 0x80
 Sint32 MPV_IsEmptyPpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb);
 Sint32 MPV_IsEmptyBpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb);
 Sint32 MPVLIB_CheckHn(MPV_OBJ *mpv);
@@ -296,15 +316,31 @@ Sint32 MPV_SkipFrmSj(void *hn, SJ sj);
 Sint32 MPV_DecodeFrmSj(void *hn, SJ sj, MPV_FRM *frm);
 void MPVFRM_Init(void);
 
-/* mpv_hdec.c (not yet decompiled) */
+/* mpv_hdec.c */
+void MPVHDEC_Init(void);
+void MPV_SetUsrSj(MPV mpv, Sint32 id, SJ sj, void (*func)(void *obj, Sint32 id), void *obj);
+void MPV_SetPicUsrBuf(MPV mpv, Uint8 *buf, Sint32 bufsiz);
+void MPV_GetPicUsr(MPV mpv, Uint8 **buf, Sint32 *len);
+Sint32 MPV_DecodePicAtrSj(void *hn, SJ sj);
+Sint32 MPV_DecodePicAtr(MPV mpv, SJCK *ck, Sint32 *used);
+Sint32 mpvhdec_DecShcSj(MPV mpv, SJ sj);
+Sint32 mpvhdec_DecPscSj(MPV mpv, SJ sj);
+Sint32 mpvhdec_AnalyUd(MPV mpv, Uint8 *buf, Sint32 len);
+Sint32 mpvhdec_DecSeqUdsc(MPV mpv, Char8 *buf, Sint32 len);
 Sint32 MPV_GoNextDelimSj(SJ sj);
+Sint32 MPVHDEC_DecPicture(MPV mpv, SJ sj);
 Sint32 MPV_MoveChunk(SJ sj, Sint32 id, Sint32 nbyte);
-Sint32 MPVHDEC_DecPicture(MPV_OBJ *mpv, SJ sj);
 
 /* mpv_umc.c (not yet decompiled) */
 void MPVUMC_SetGqr(void);
 void MPVUMC_InitOutRfb(MPV_OBJ *mpv);
 void MPVUMC_EndOfFrame(MPV_OBJ *mpv);
+void MPVUMC_BpicSkipped(MPV mpv);
+void MPVUMC_PpicSkipped(MPV mpv);
+void MPVUMC_BiDirect(MPV mpv);
+void MPVUMC_Backward(MPV mpv);
+void MPVUMC_Forward(MPV mpv);
+void MPVUMC_Intra(MPV mpv);
 
 /* mpv_dec.c */
 Sint32 MPVDEC_DecDpicMb(MPV mpv, SJ sj);
@@ -326,6 +362,16 @@ void MPVVLC_Init(Uint8 *vlc, MPV_IXA *ixa);
 
 /* mpv_m2v.c: MPEG-2 decoder stub */
 Sint32 MPVM2V_DecodeFrm(MPV_OBJ *mpv, SJ sj, MPV_FRM *frm);
+Sint32 MPVM2V_DecodePicAtr(MPV_OBJ *mpv, SJ sj);
+
+/* mpvabdec.c: block coefficient decoders */
+Sint32 MPVABDEC_NintraBlock(MPV mpv, MPV_BLKPRM *prm);
+Sint32 MPVABDEC_IntraBlock(MPV mpv, MPV_BLKPRM *prm);
+Sint32 MPVABDEC_IntraBlockDc11(MPV mpv, MPV_BLKPRM *prm);
+
+/* mpv_bdec.c: default intra quantiser matrix and zigzag scan */
+extern Uint8 mpvbdec_dfl_iqm[64];
+extern Sint8 mpvbdec_zigzag[64];
 
 /* mpv_cmc.c */
 extern void (*mpvcmc_oneref[8])(MPVMC *mc);

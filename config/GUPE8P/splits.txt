@@ -1144,6 +1144,11 @@ CRI/mpv_frm.c:
 CRI/mpv_get.c:
 	.text       start:0x803D7CAC end:0x803D7EC4
 
+CRI/mpv_hdec.c:
+	.text       start:0x803D7EC4 end:0x803D9E30
+	.rodata     start:0x80518398 end:0x805183BC
+	.bss        start:0x805C8D60 end:0x805C8E50
+
 CRI/mpv_vlc.c:
 	.text       start:0x803DB504 end:0x803DE58C
 	.rodata     start:0x80518480 end:0x80518530
