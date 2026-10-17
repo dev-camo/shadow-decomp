@@ -93,6 +93,19 @@ CHECK_SIZEOF(SkinGlobals, 0x40);
 
 extern SkinGlobals lbl_8056D708;
 
+/* The streams and sizes the vertex skinning kernels work on */
+typedef struct SkinKernelParams {
+    /* 0x00 */ void *dstPositions;
+    /* 0x04 */ void *dstNormals;
+    /* 0x08 */ void *srcPositions;
+    /* 0x0C */ void *srcNormals;
+    /* 0x10 */ RwInt32 positionSize; /* bytes per component */
+    /* 0x14 */ RwInt32 normalSize;
+    /* 0x18 */ RwInt32 nbtSize; /* bytes of a vertex's binormal and tangent, or 0 */
+    /* 0x1C */ RwInt32 numVertices;
+} SkinKernelParams;
+CHECK_SIZEOF(SkinKernelParams, 0x20);
+
 /* The header of an instanced vertex buffer: the GX draw sync token of its last use, then the
  * buffer's resource entry just before the 32-byte aligned vertices (inferred) */
 typedef struct SkinVertexBuffer {
@@ -142,6 +155,17 @@ RwInt32 fn_8044EE3C(const void *object, RwInt32 offset, RwInt32 size); /* atomic
 RwBool fn_80451D60(RwUInt32 flags);                                    /* opens the pipelines */
 RwBool fn_80451E0C(void);                                              /* closes the pipelines */
 RpAtomic *fn_80451E6C(RpAtomic *atomic, RwInt32 type);                 /* sets the skin pipeline */
+
+/* the skinning kernels (GameCube, hand-written assembly): the bone matrices, then the vertices with
+ * up to two, three or four weights, positions alone or with normals */
+void fn_80450D6C(RwMatrix *matrices, RwMatrix *skinToBone, RwMatrix *boneMatrices, RwMatrix *toSkin,
+                 RwUInt8 *boneIds, RwUInt32 numBoneIds);
+void fn_80450F68(RwMatrix *matrices, RpSkin *skin, SkinKernelParams *params);
+void fn_80451080(RwMatrix *matrices, RpSkin *skin, SkinKernelParams *params);
+void fn_80451254(RwMatrix *matrices, RpSkin *skin, SkinKernelParams *params);
+void fn_804513C4(RwMatrix *matrices, RpSkin *skin, SkinKernelParams *params);
+void fn_80451618(RwMatrix *matrices, RpSkin *skin, SkinKernelParams *params);
+void fn_804517C8(RwMatrix *matrices, RpSkin *skin, SkinKernelParams *params);
 
 #ifdef __cplusplus
 }
