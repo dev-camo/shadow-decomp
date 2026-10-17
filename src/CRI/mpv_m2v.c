@@ -2,8 +2,8 @@
  * every MPVM2V_* entry is a stub that fails (-1) or does nothing, so an MPEG-2 stream cannot be
  * decoded (m2v_mode 2 paths in mpv_frm / mpv_hdec).
  *
- * Source from the RE4 GameCube decompilation; MPVM2V_DecodeFrm is declared with the arguments
- * MPV_DecodeFrmSj passes. */
+ * Source from the RE4 GameCube decompilation; MPVM2V_DecodeFrm and MPVM2V_DecodePicAtr are declared
+ * with the arguments MPV_DecodeFrmSj and MPV_DecodePicAtrSj pass. */
 #include "CRI/mpv.h"
 
 /* No MPEG-2 decoder: -1. */
@@ -12,7 +12,7 @@ Sint32 MPVM2V_DecodeFrm(MPV_OBJ *mpv, SJ sj, MPV_FRM *frm) {
 }
 
 /* No MPEG-2 decoder: -1. */
-Sint32 MPVM2V_DecodePicAtr(void) {
+Sint32 MPVM2V_DecodePicAtr(MPV_OBJ *mpv, SJ sj) {
     return -1;
 }
 

@@ -22,6 +22,7 @@ size_t wcstombs(char *dest, const wchar_t *src, size_t max);
 unsigned long strtoul(const char *str, char **end, int base);
 void *bsearch(const void *key, const void *base, size_t num, size_t size,
               int (*compare)(const void *, const void *));
+int atoi(const char *str);
 
 #ifdef __cplusplus
 }
