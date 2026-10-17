@@ -6,16 +6,9 @@
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
 #include "Game/GadgetTypeInfo.h"
+#include "Game/UnkManager_800CB69C.h"
+#include "Game/fn_8006_resource_list.h"
 #include "layout_check.h"
-
-class UnkManager_800CB69C;
-
-extern "C" {
-/* Preloads a resource file (behaviour inferred). */
-void fn_8006B474(const char *fileName, int arg1);
-UnkManager_800CB69C *fn_800CB69C(void);
-u32 fn_8016904C(UnkManager_800CB69C *manager, u8 id);
-}
 
 class ElecCircuit : public Gadget {
   public:
@@ -107,8 +100,8 @@ void ElecCircuit::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 }
 
 void ElecCircuit::CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
-    fn_800C9F14(owner, &m_charInfo.px->m_position);
-    fn_800C9ED4(owner, &m_charInfo.px->m_rotation);
+    fn_800C9F14(owner, &m_charInfo->m_position);
+    fn_800C9ED4(owner, &m_charInfo->m_rotation);
     fn_800C9E60(owner, &field_0x3C);
 }
 
@@ -117,8 +110,8 @@ void ElecCircuit::UpdateModelMatrix() {
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &m_charInfo.px->m_position);
-        fn_8040B848(&matrix, m_charInfo.px->m_rotation.y);
+        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         m_model->fn_801633DC(&matrix);
     }
 }
