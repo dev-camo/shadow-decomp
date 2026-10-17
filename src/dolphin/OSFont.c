@@ -305,7 +305,7 @@ static void ReadROM(void *buf, int length, int offset) {
 static u32 ReadFont(void *img, u16 encode, void *fontData) {
     u32 size;
 #ifndef DEBUG
-    u32 padding[1];
+    u32 padding[1]; // keeps the 0x58-byte stack frame (0x50 without it)
 #endif
 
     if (encode == OS_FONT_ENCODE_SJIS) {

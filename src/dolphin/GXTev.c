@@ -346,7 +346,8 @@ void GXSetTevSwapModeTable(GXTevSwapSel table, GXTevColorChan red, GXTevColorCha
                            GXTevColorChan blue, GXTevColorChan alpha) {
     u32 *Kreg;
 #if !DEBUG
-    // not a real variable, but needed to match release
+    // Index of the table's first KSEL register. The release library computes it up front; the
+    // DEBUG form below indexes with table * 2 directly.
     int index = table * 2;
 #endif
 

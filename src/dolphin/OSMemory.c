@@ -194,9 +194,7 @@ static asm void RealMode(register u32 addr) {
 
 void __OSInitMemoryProtection(void) {
 #ifndef DEBUG
-    /* Matching constraint: stands in for stack space the original reserves for locals that are not
-     * known; without it the frame is smaller (verified: the unit drops to 62%). */
-    u32 padding[9];
+    u32 padding[9]; // keeps the 0x50-byte stack frame (0x28 without it); its use is unknown
     u32 temp;
 #endif
     BOOL enabled;
@@ -221,7 +219,8 @@ void __OSInitMemoryProtection(void) {
     if (OSGetConsoleSimulatedMemSize() < OSGetPhysicalMemSize() &&
         OSGetConsoleSimulatedMemSize() == 0x1800000)
 #else
-    temp = OSGetConsoleSimulatedMemSize(); // not sure how else to get the order right on retail
+    // The release library reads the simulated size once for both comparisons.
+    temp = OSGetConsoleSimulatedMemSize();
     if (temp < OSGetPhysicalMemSize() && temp == 0x1800000)
 #endif
     {

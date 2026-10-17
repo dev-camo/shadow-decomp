@@ -565,6 +565,7 @@ void GXSetTexCopyDst(u16 wd, u16 ht, GXTexFmt fmt, GXBool mipmap) {
 
     __GXData->cpTexZ = (fmt & _GX_TF_ZTF) == _GX_TF_ZTF;
     peTexFmtH = (peTexFmt >> 3) & 1;
+    // No effect on the result, but the release code's register use and scheduling depend on it.
     !peTexFmt;
     SET_REG_FIELD(1381, __GXData->cpTex, 1, 3, peTexFmtH);
     peTexFmt = peTexFmt & 7;
