@@ -62,6 +62,13 @@ extern Fn8040Matrix34 lbl_805E0720;
 
 #ifdef __cplusplus
 }
+
+/* Sets matrix to the identity rotation with the given translation (name inferred). Where a smart
+ * pointer's operator-> supplies the vector, the original calls that operator out of line, which
+ * happens for an argument of an inline call such as this wrapper. */
+inline void MakeTranslationMatrix(Fn8040Matrix34 *matrix, const Fn8040Vector3 &translation) {
+    fn_8040B034(matrix, &translation);
+}
 #endif
 
 #endif
