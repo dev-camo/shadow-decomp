@@ -1451,6 +1451,9 @@ rw/fn_8044E6BC.c:
 	.text       start:0x8044E6BC end:0x80450D6C
 	.bss        start:0x805E1560 end:0x805E1580
 
+rw/fn_80450D6C.c:
+	.text       start:0x80450D6C end:0x80451A6C
+
 rw/fn_80451A6C.c:
 	.text       start:0x80451A6C end:0x80451F48
 
