@@ -29,6 +29,7 @@ CHECK_SIZEOF(DCT_PA, 0x54);
 
 /* IDCT (not yet decompiled) */
 void DCT_FsriInitScanTbl(Sint8 *seq, Sint8 *scan);
+void DCT_FsriSetGqr(void);
 
 /* dct_ver.c */
 extern const Char8 DCT_version_str[];

@@ -1,6 +1,6 @@
 /* CRI UTY GameCube helpers (uty_ppc.c): save and restore of the graphics quantisation registers
- * GQR2..GQR7 around the paired-single decoder kernels (the frame decoder, fn_803D7B38), so the
- * game's own GQR setup survives a frame decode.
+ * GQR2..GQR7 around the paired-single decoder kernels (MPV_DecodeFrmSj), so the game's own GQR
+ * setup survives a frame decode.
  * The function names come from the symbols of the same CRI library in another GameCube title.
  */
 #include "CRI/uty.h"
