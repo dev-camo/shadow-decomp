@@ -155,8 +155,9 @@ void *fn_80448610(void *object, RwInt32 offset, RwInt32 size);
 RpAtomic *fn_80448CB0(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
 RpAtomic *fn_80448D04(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
 
-/* the particle kernels, by layout: matrices (with or without a center), the constant matrix, sizes
- * and rotations, or positions alone (GameCube, hand-written assembly) */
+/* the particle kernels (GameCube, hand-written assembly), in pairs without and with a center: a
+ * matrix per particle, the constant size (also used with the constant matrix), a size per particle,
+ * a rotation per particle with the constant size, and a rotation and a size per particle */
 void fn_8044920C(RwUInt16 count, RwUInt32 platFlags, RpPTankData *ptankGlobal);
 void fn_804495D0(RwUInt16 count, RwUInt32 platFlags, RpPTankData *ptankGlobal);
 void fn_80449994(RwUInt16 count, RwUInt32 platFlags, RpPTankData *ptankGlobal);

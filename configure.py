@@ -466,6 +466,7 @@ config.libs = [
                 Object(Matching, "rw/fn_80447598.c", cflags=[*cflags_game, "-inline noauto"]),
                 Object(Matching, "rw/fn_804485BC.c", cflags=[*cflags_game, "-inline noauto"]),
                 Object(Matching, "rw/fn_80448CB0.c", cflags=[*cflags_game, "-inline noauto"]),
+                Object(Matching, "rw/fn_8044920C.c", cflags=[*cflags_game, "-inline noauto"]),
                 Object(NonMatching, "rw/fn_8044BAB4.c", cflags=[*cflags_game, "-inline noauto"]),
                 Object(NonMatching, "rw/fn_8044CDC4.c", cflags=[*cflags_game, "-inline auto"]),
                 Object(NonMatching, "rw/fn_8044E6BC.c", cflags=[*cflags_game, "-inline auto"]),
