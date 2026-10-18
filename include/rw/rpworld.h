@@ -934,7 +934,7 @@ RpGameCubeVertexDescBuilder *fn_8046C94C(RpWorld *world, RpGameCubeBuiltStream *
 RpGameCubeVertexDescBuilder *fn_8046D2B8(RpWorld *world, RpWorldSector *sector);
 RwResEntry *fn_8046CB94(RpWorld *world, RpWorldSector *sector, void *owner, RwResEntry **ownerRef);
 RwResEntry *fn_8046D4C8(RpWorld *world, RpWorldSector *sector, void *owner, RwResEntry **ownerRef);
-RpAtomic *fn_804639AC(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh); /* atomic instance */
+void *fn_804639AC(void *object, RpGameCubeRenderMesh *renderMesh); /* atomic instance */
 RwBool fn_804647C8(void); /* the light plugin attachment (inferred) */
 
 /* creates an atomic all-in-one pipeline with the plugin's callbacks, which receive the atomic
