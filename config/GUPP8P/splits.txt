@@ -1004,6 +1004,12 @@ CRI/dct_ver.c:
 	.rodata     start:0x805192D8 end:0x80519330
 	.bss        start:0x805C5B48 end:0x805C5B50
 
+CRI/dct_fsri.c:
+	.text       start:0x803D3C5C end:0x803D4624
+	.rodata     start:0x80519330 end:0x80519388
+	.data       start:0x8056A0B8 end:0x8056A0E8
+	.bss        start:0x805C5B50 end:0x805C9D58
+
 CRI/mcp_not.c:
 	.text       start:0x803D4624 end:0x803D4644
 
