@@ -741,7 +741,11 @@ config.libs = [
                     "Game/fn_8040CF50.cpp",
                     cflags=cflags_game_vector_length,
                 ),
-                Object(NonMatching, "Game/fn_8040CF90.c"),
+                Object(
+                    Matching,
+                    "Game/fn_8040CF90.cpp",
+                    extra_cflags=["-Cpp_exceptions on"],
+                ),
                 Object(Matching, "Game/fn_8040AC3C.c"),
             ]
             if config.version == "GUPE8P"
