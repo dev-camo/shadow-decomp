@@ -235,7 +235,7 @@ Sint32 MPVDEC_DecBpicMb(MPV mpv, SJ sj) {
             break;
         }
         if (first == 0 && n > 1) {
-            mpv->skip_func(mpv);
+            mpv->skip_func(mpv, n);
             MPVDEC_RESET_DC(mpv);
         }
         MPVDEC_MBTYPE(mpv, mpvvlc_b_mbtype, 6);
@@ -383,7 +383,7 @@ Sint32 MPVDEC_DecPpicMb(MPV mpv, SJ sj) {
             break;
         }
         if (first == 0 && n > 1) {
-            mpv->skip_func(mpv);
+            mpv->skip_func(mpv, n);
             MPVDEC_ResetMv(&mpv->fwd);
             MPVDEC_ResetDc(mpv);
         }

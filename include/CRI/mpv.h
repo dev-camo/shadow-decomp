@@ -91,12 +91,21 @@ typedef struct {
 } MPV_PICATR;
 CHECK_SIZEOF(MPV_PICATR, 0x80);
 
-/* frame parameter block passed to MPV_DecodeFrmSj (0x30 bytes) */
+/* a frame's planes as mpv_umc.c addresses them: the two chroma planes, then luma, and the chroma
+ * and luma pitches in bytes (name inferred) */
 typedef struct {
-    Uint8 pad0[0x1C];   /* 0x00 */
-    Sint16 width;       /* 0x1C */
-    Sint16 height;      /* 0x1E */
-    Uint8 pad20[4];     /* 0x20 */
+    Uint8 *pln[3]; /* 0x00 */
+    Sint16 cpitch; /* 0x0C */
+    Sint16 ypitch; /* 0x0E */
+} MPV_RFB;
+CHECK_SIZEOF(MPV_RFB, 0x10);
+
+/* frame parameter block passed to MPV_DecodeFrmSj (0x30 bytes). The forward-predicted macroblocks
+ * read rfb[0], the backward-predicted ones rfb[1]; skipped P picture macroblocks are copied from
+ * rfb[0] to rfb[1]. */
+typedef struct {
+    MPV_RFB rfb[2];     /* 0x00 */
+    Uint8 *buf;         /* 0x20 output frame (MPVUMC_InitOutRfb lays out MPV_OBJ.out in it) */
     MPV_PICATR *picatr; /* 0x24 */
     Sint32 x28;         /* 0x28 MPVERR_INF.x0c counted during the call */
     Sint32 x2c;         /* 0x2C MPVERR_INF.x10 counted during the call */
@@ -112,6 +121,15 @@ CHECK_SIZEOF(MPV_RUNLEVEL, 0x8);
 
 typedef struct MPV_OBJ *MPV;
 
+/* buffers of the motion compensation work (mpvlib_InitHn; name inferred) */
+typedef struct {
+    Uint8 *clip;  /* 0x00 clip table zero point */
+    Sint16 *buf0; /* 0x04 the handle's mcbuf (IDCT output) */
+    Uint8 *work;  /* 0x08 the handle's work area (prediction) */
+    Uint8 *work2; /* 0x0C work + 0x180 (second prediction) */
+} MPVMC_WORK;
+CHECK_SIZEOF(MPVMC_WORK, 0x10);
+
 /* motion compensation work (MPV_OBJ + 0xCC, 0x54 bytes; mpv_mc.c / mpv_mcy.c / mpv_umc.c) */
 typedef struct MPVMC {
     void (*oneref08[4])(struct MPVMC *mc); /* 0x00 8x8 block: 1p, H2, V2, 4p */
@@ -123,10 +141,7 @@ typedef struct MPVMC {
     Uint8 *src2;                           /* 0x28 second reference row / block */
     Uint8 pad2C[8];                        /* 0x2C */
     void (*oneref16[4])(struct MPVMC *mc); /* 0x34 16x16 block */
-    Uint8 *clip;                           /* 0x44 clip table zero point (mpvlib_InitHn) */
-    Sint16 *buf0;                          /* 0x48 the handle's mcbuf */
-    Uint8 *work;                           /* 0x4C the handle's work area */
-    Uint8 *work2;                          /* 0x50 work + 0x180 */
+    MPVMC_WORK wk;                         /* 0x44 */
 } MPVMC;
 CHECK_SIZEOF(MPVMC, 0x54);
 
@@ -172,44 +187,44 @@ typedef struct {
 CHECK_SIZEOF(MPV_USRSJ, 0xC);
 
 typedef struct MPV_OBJ {
-    Uint32 bbuf;                 /* 0x000 bit reader state saved around the block decoders */
-    Uint32 nbuf;                 /* 0x004 */
-    Sint32 bitpos;               /* 0x008 */
-    Uint32 *bitptr;              /* 0x00C */
-    Uint32 *rl_8;                /* 0x010 run/level VLC tables (mpv_lib.c) */
-    Uint32 *rl_4;                /* 0x014 */
-    Uint32 *rl_2;                /* 0x018 */
-    Uint32 *rl_1;                /* 0x01C */
-    Uint32 *rl_0a;               /* 0x020 */
-    Uint32 *rl_0b;               /* 0x024 */
-    Uint32 *rl_0c;               /* 0x028 */
-    Sint8 *zigzag_tbl;           /* 0x02C */
-    Uint16 *bitmsk_tbl;          /* 0x030 */
-    Float32 *scale_tbl;          /* 0x034 */
-    Uint8 *group_tbl_p;          /* 0x038 */
-    void *rl_p;                  /* 0x03C */
-    Uint8 *clip_base;            /* 0x040 */
-    MPV_BLKPRM blkprm;           /* 0x044 */
-    DCT_PA dctpa;                /* 0x078 */
-    MPVMC mc;                    /* 0x0CC */
-    MPVCMC_OUTBLK ob_rt;         /* 0x120 */
-    MPVCMC_OUTBLK ob;            /* 0x154 */
-    Sint32 stat;                 /* 0x188 */
-    Sint32 x18c;                 /* 0x18C */
-    Sint32 cond[16];             /* 0x190 (cond[5] = mcflag) */
-    MPV_PICATR picatr;           /* 0x1D0 */
-    MPVERR_INF errinf;           /* 0x250 */
-    MPV_FRM frm;                 /* 0x264 */
-    Uint8 pad294[0x2A4 - 0x294]; /* 0x0294 */
-    Sint32 aspect;               /* 0x2A4 pel_aspect_ratio */
-    Sint32 bitrate;              /* 0x2A8 */
-    Sint32 vbv_size;             /* 0x2AC */
-    Sint32 constrained;          /* 0x2B0 constrained_parameters_flag */
-    Sint32 linkflg1;             /* 0x2B4 closed_gop */
-    Sint32 linkflg2;             /* 0x2B8 broken_link */
-    Sint32 vbv_delay;            /* 0x2BC */
+    Uint32 bbuf;         /* 0x000 bit reader state saved around the block decoders */
+    Uint32 nbuf;         /* 0x004 */
+    Sint32 bitpos;       /* 0x008 */
+    Uint32 *bitptr;      /* 0x00C */
+    Uint32 *rl_8;        /* 0x010 run/level VLC tables (mpv_lib.c) */
+    Uint32 *rl_4;        /* 0x014 */
+    Uint32 *rl_2;        /* 0x018 */
+    Uint32 *rl_1;        /* 0x01C */
+    Uint32 *rl_0a;       /* 0x020 */
+    Uint32 *rl_0b;       /* 0x024 */
+    Uint32 *rl_0c;       /* 0x028 */
+    Sint8 *zigzag_tbl;   /* 0x02C */
+    Uint16 *bitmsk_tbl;  /* 0x030 */
+    Float32 *scale_tbl;  /* 0x034 */
+    Uint8 *group_tbl_p;  /* 0x038 */
+    void *rl_p;          /* 0x03C */
+    Uint8 *clip_base;    /* 0x040 */
+    MPV_BLKPRM blkprm;   /* 0x044 */
+    DCT_PA dctpa;        /* 0x078 */
+    MPVMC mc;            /* 0x0CC */
+    MPVCMC_OUTBLK ob_rt; /* 0x120 */
+    MPVCMC_OUTBLK ob;    /* 0x154 */
+    Sint32 stat;         /* 0x188 */
+    Sint32 x18c;         /* 0x18C */
+    Sint32 cond[16];     /* 0x190 [3] diagonal half-pel by V2 (mpv_umc), [5] chroma (mpv_cmc) */
+    MPV_PICATR picatr;   /* 0x1D0 */
+    MPVERR_INF errinf;   /* 0x250 */
+    MPV_FRM frm;         /* 0x264 */
+    MPV_RFB out;         /* 0x294 output frame planes (MPVUMC_InitOutRfb) */
+    Sint32 aspect;       /* 0x2A4 pel_aspect_ratio */
+    Sint32 bitrate;      /* 0x2A8 */
+    Sint32 vbv_size;     /* 0x2AC */
+    Sint32 constrained;  /* 0x2B0 constrained_parameters_flag */
+    Sint32 linkflg1;     /* 0x2B4 closed_gop */
+    Sint32 linkflg2;     /* 0x2B8 broken_link */
+    Sint32 vbv_delay;    /* 0x2BC */
     Sint32 (*dec_mbs_func)(MPV mpv, SJ sj); /* 0x2C0 slice macroblock decoder of the picture type */
-    void (*skip_func)(MPV mpv);             /* 0x2C4 */
+    void (*skip_func)(MPV mpv, Sint32 n);   /* 0x2C4 n: macroblock address increment */
     Sint32 (*intra_blocks)(MPV mpv);        /* 0x2C8 */
     Sint32 (*nintra_blocks)(MPV mpv);       /* 0x2CC */
     void (*mc_intra_func)(MPV mpv);         /* 0x2D0 */
@@ -342,8 +357,8 @@ void MPVUMC_Finish(void);
 void MPVUMC_SetGqr(void);
 void MPVUMC_InitOutRfb(MPV_OBJ *mpv);
 void MPVUMC_EndOfFrame(MPV_OBJ *mpv);
-void MPVUMC_BpicSkipped(MPV mpv);
-void MPVUMC_PpicSkipped(MPV mpv);
+void MPVUMC_BpicSkipped(MPV mpv, Sint32 n);
+void MPVUMC_PpicSkipped(MPV mpv, Sint32 n);
 void MPVUMC_BiDirect(MPV mpv);
 void MPVUMC_Backward(MPV mpv);
 void MPVUMC_Forward(MPV mpv);

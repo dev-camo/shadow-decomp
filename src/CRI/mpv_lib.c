@@ -204,10 +204,10 @@ MPV mpvlib_InitHn(MPV mpv) {
     mpv->bitmsk_tbl = ixa->bitmsk;
     mpv->scale_tbl = ixa->scale;
     mpv->clip_base = mpv_clip_0_255_base;
-    mpv->mc.clip = mpv->clip_base;
-    mpv->mc.buf0 = mpv->mcbuf[0];
-    mpv->mc.work = mpv->work;
-    mpv->mc.work2 = mpv->mc.work + 0x180;
+    mpv->mc.wk.clip = mpv->clip_base;
+    mpv->mc.wk.buf0 = mpv->mcbuf[0];
+    mpv->mc.wk.work = mpv->work;
+    mpv->mc.wk.work2 = mpv->mc.wk.work + 0x180;
     mpv->tbl36c[0] = mpv->mcbuf[2];
     mpv->tbl36c[1] = mpv->mcbuf[3];
     mpv->tbl36c[2] = mpv->mcbuf[4];
