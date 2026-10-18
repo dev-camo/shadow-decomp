@@ -585,7 +585,7 @@ config.libs = [
                 Object(NonMatching, "rw/fn_8048B6AC.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8048D7C0.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8048D85C.c", cflags=cflags_game),
-                Object(NonMatching, "rw/fn_8049043C.c", cflags=cflags_game),
+                Object(Matching, "rw/fn_8049043C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80491AB4.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804939DC.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804951B8.c", cflags=cflags_game),
@@ -604,7 +604,7 @@ config.libs = [
                 Object(Matching, "rw/fn_8049F2A4.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049F3F8.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049F8AC.c", cflags=cflags_game),
-                Object(NonMatching, "rw/fn_8049FAFC.c", cflags=cflags_game),
+                Object(Matching, "rw/fn_8049FAFC.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804A076C.c", cflags=cflags_game),
                 # The original calls fn_804A2F24 from fn_804A457C: the default limit inlines it, an
                 # inline_max_size of 350 to 480 keeps the call.

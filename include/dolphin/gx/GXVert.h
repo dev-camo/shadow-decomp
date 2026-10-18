@@ -35,37 +35,37 @@ volatile PPCWGPipe GXWGFifo AT_ADDRESS(GXFIFO_ADDR);
 
 // external functions
 
-#define FUNC_1PARAM(name, T) void name##1##T(T x);
-#define FUNC_2PARAM(name, T) void name##2##T(T x, T y);
-#define FUNC_3PARAM(name, T) void name##3##T(T x, T y, T z);
-#define FUNC_4PARAM(name, T) void name##4##T(T x, T y, T z, T w);
-#define FUNC_INDEX8(name) void name##1x8(u8 x);
-#define FUNC_INDEX16(name) void name##1x16(u16 x);
+#define FUNC_1PARAM(name, T) void name##1##T(const T x);
+#define FUNC_2PARAM(name, T) void name##2##T(const T x, const T y);
+#define FUNC_3PARAM(name, T) void name##3##T(const T x, const T y, const T z);
+#define FUNC_4PARAM(name, T) void name##4##T(const T x, const T y, const T z, const T w);
+#define FUNC_INDEX8(name) void name##1x8(const u8 x);
+#define FUNC_INDEX16(name) void name##1x16(const u16 x);
 
 #else
 
 // inline functions
 
 #define FUNC_1PARAM(name, T)                                                                       \
-    static inline void name##1##T(T x) {                                                           \
+    static inline void name##1##T(const T x) {                                                     \
         GXWGFifo.T = x;                                                                            \
     }
 
 #define FUNC_2PARAM(name, T)                                                                       \
-    static inline void name##2##T(T x, T y) {                                                      \
+    static inline void name##2##T(const T x, const T y) {                                          \
         GXWGFifo.T = x;                                                                            \
         GXWGFifo.T = y;                                                                            \
     }
 
 #define FUNC_3PARAM(name, T)                                                                       \
-    static inline void name##3##T(T x, T y, T z) {                                                 \
+    static inline void name##3##T(const T x, const T y, const T z) {                               \
         GXWGFifo.T = x;                                                                            \
         GXWGFifo.T = y;                                                                            \
         GXWGFifo.T = z;                                                                            \
     }
 
 #define FUNC_4PARAM(name, T)                                                                       \
-    static inline void name##4##T(T x, T y, T z, T w) {                                            \
+    static inline void name##4##T(const T x, const T y, const T z, const T w) {                    \
         GXWGFifo.T = x;                                                                            \
         GXWGFifo.T = y;                                                                            \
         GXWGFifo.T = z;                                                                            \
@@ -73,12 +73,12 @@ volatile PPCWGPipe GXWGFifo AT_ADDRESS(GXFIFO_ADDR);
     }
 
 #define FUNC_INDEX8(name)                                                                          \
-    static inline void name##1x8(u8 x) {                                                           \
+    static inline void name##1x8(const u8 x) {                                                     \
         GXWGFifo.u8 = x;                                                                           \
     }
 
 #define FUNC_INDEX16(name)                                                                         \
-    static inline void name##1x16(u16 x) {                                                         \
+    static inline void name##1x16(const u16 x) {                                                   \
         GXWGFifo.u16 = x;                                                                          \
     }
 
