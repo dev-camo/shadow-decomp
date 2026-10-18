@@ -233,7 +233,8 @@ void fn_8046E594(RpGameCubeVertexDescBuilder *builder, void *displayListRecord,
     fn_8046E3E0(indexSource->indices[GX_VA_POS], numIndices, triStrip, stride, primitive, flag,
                 record->data);
     offset = 3;
-    for (attribute = GX_VA_PNMTXIDX; attribute <= GX_VA_TEX7; attribute++) {
+    /* the vertex attributes, which come before the array attributes */
+    for (attribute = GX_VA_PNMTXIDX; attribute < GX_POS_MTX_ARRAY; attribute++) {
         RwUInt8 *position = (RwUInt8 *)record->data + offset;
 
         switch (attribute) {
@@ -279,10 +280,10 @@ void fn_8046E594(RpGameCubeVertexDescBuilder *builder, void *displayListRecord,
                     RwInt32 count;
 
                     if ((vat >> 31) == 0) {
+                        count = 1;
                         fn_8046DA24(indexSource->indices[GX_VA_POS],
                                     indexSource->indices[attribute], numIndices, triStrip, stride,
                                     type, flag, position);
-                        count = 1;
                     } else {
                         count = 3;
                     }
