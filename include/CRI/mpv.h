@@ -351,7 +351,7 @@ Sint32 MPV_GoNextDelimSj(SJ sj);
 Sint32 MPVHDEC_DecPicture(MPV mpv, SJ sj);
 Sint32 MPV_MoveChunk(SJ sj, Sint32 id, Sint32 nbyte);
 
-/* mpv_umc.c (not yet decompiled) */
+/* mpv_umc.c */
 void MPVUMC_Init(void);
 void MPVUMC_Finish(void);
 void MPVUMC_SetGqr(void);
@@ -432,6 +432,10 @@ void MPVMC08_OneRef1p_TuneC(MPVMC *mc);
 void MPVMC08_OneRefH2_TuneC(MPVMC *mc);
 void MPVMC08_OneRefV2_TuneC(MPVMC *mc);
 void MPVMC08_OneRef4p_TuneC(MPVMC *mc);
+void MPVMC16_OneRef1p_TuneC(MPVMC *mc);
+void MPVMC16_OneRefH2_TuneC(MPVMC *mc);
+void MPVMC16_OneRefV2_TuneC(MPVMC *mc);
+void MPVMC16_OneRef4p_TuneC(MPVMC *mc);
 
 #define MPV_ERR_INVALID_HN 0xFF030200
 

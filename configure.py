@@ -1835,6 +1835,16 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "CRI/mpv_umc.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
                 "CRI/mpv_mcy.c",
                 extra_cflags=[
                     "-sdata 0",
