@@ -1,16 +1,15 @@
 /* CRI ADX critical section (adx_crs.c): the ADX layer's lock/unlock mapped onto the SVM lock
  * callbacks, plus the enter/leave hooks around the public ADXF/ADXT entries (empty here).
  *
- * Functions, order and variable names from The World Ends With You's CRI adx_crs.c; RE4's
- * Lock/Unlock bodies are the same. The file is compiled with deferred inlining, so the
- * functions are emitted in reverse order.
+ * Functions, order and variable names from The World Ends With You's CRI adx_crs.c. The file is
+ * compiled with deferred inlining, so the functions are emitted in reverse order.
  */
 #include "CRI/adx.h"
 #include "CRI/svm.h"
 
-/* volatile as in The World Ends With You's adx_crs.c (the counter is reloaded after each
- * update). */
-volatile Sint32 adxcrs_msk = 0;
+Sint32 adxcrs_msk = 0;
+/* volatile: ADXCRS_Init and ADXCRS_Finish reload the counter after updating it; without volatile
+ * ADXCRS_Init/ADXCRS_Finish shrink from 48 to 44/40 bytes. */
 volatile Sint32 adxcrs_cnt = 0;
 
 /* Counts an ADX user; the first one clears the interrupt mask. */
