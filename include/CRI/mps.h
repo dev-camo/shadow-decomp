@@ -23,7 +23,7 @@ typedef struct MPS_OBJ *MPS;
 typedef struct {
     Sint64 scr;      /* 0x00 */
     Sint32 rsv;      /* 0x08 */
-    Sint32 mux_rate; /* 0x0C (sfd_cre reads it) */
+    Sint32 mux_rate; /* 0x0C 22-bit pack-header mux rate in 50-byte/s units (-1: none seen) */
 } MPS_PACKHD;
 CHECK_SIZEOF(MPS_PACKHD, 0x10);
 

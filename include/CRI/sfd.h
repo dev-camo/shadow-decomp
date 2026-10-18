@@ -583,7 +583,7 @@ CHECK_SIZEOF(SFSEE_SYSHD, 0x168);
 /* system stream analysis kept in the seek work (sfd_mps.c), SFSEE_WORK + 0x8A0 */
 typedef struct {
     Sint32 analyzed;   /* 0x00 */
-    Sint32 ncount;     /* 0x04 picrate * 50 */
+    Sint32 ncount;     /* 0x04 byte rate: pack-header mux_rate (50-byte/s units) * 50 */
     Sint32 tscale;     /* 0x08 */
     Sint32 nvid;       /* 0x0C video streams of the system header */
     Sint32 naud;       /* 0x10 audio streams */
@@ -775,7 +775,7 @@ typedef struct SFD_OBJ {
     Sint32 x918;                   /* 0x0918 */
     Sint32 x91c;                   /* 0x091C */
     Sint32 picrate;                /* 0x920 frame rate type (index into SFTIM_prate, 0: unknown) */
-    Sint32 x924;                   /* 0x0924 */
+    Sint32 x924;                   /* 0x0924 last positive pack-header mux_rate (sfmps_ProcPrep) */
     Sint32 x928;                   /* 0x928 (1) */
     Sint32 x92c;                   /* 0x092C */
     Sint32 numelem_aud;            /* 0x930 copied from fhd after (re)processing */
