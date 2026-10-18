@@ -479,9 +479,8 @@ RwUInt16 *fn_8044F740(RpSkin *skin, RxVertexIndex *indices, RwUInt32 *vertexBone
         RwInt32 run;
 
         for (run = 0; run < numRuns; run++) {
-            SkinRLE *runBones = (skin->skinSplitData.meshRLE + run) + firstRun;
-            RwUInt8 start = runBones->start;
-            RwUInt8 length = runBones->length;
+            RwUInt8 start = (skin->skinSplitData.meshRLE + run + firstRun)->start;
+            RwUInt8 length = (skin->skinSplitData.meshRLE + run + firstRun)->length;
             RwUInt8 k;
 
             for (k = 0; k < length; k++) {
@@ -794,9 +793,8 @@ RwUInt16 *fn_8045066C(RpSkin *skin, RpMesh *mesh, RwInt32 meshIndex) {
         RwUInt32 run;
 
         for (run = 0; run < numRuns; run++) {
-            SkinRLE *runBones = (skin->skinSplitData.meshRLE + run) + firstRun;
-            RwUInt8 start = runBones->start;
-            RwUInt8 length = runBones->length;
+            RwUInt8 start = (skin->skinSplitData.meshRLE + run + firstRun)->start;
+            RwUInt8 length = (skin->skinSplitData.meshRLE + run + firstRun)->length;
             RwUInt8 k;
 
             for (k = 0; k < length; k++) {
