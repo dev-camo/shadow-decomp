@@ -18,8 +18,8 @@ RtFSManager lbl_805E2A40;
 RtFileSystem *lbl_805F1548;
 
 RwBool fn_80479A50(RwInt32 maxNbFS) {
-    lbl_805E2A40.maxNbFS = maxNbFS;
     lbl_805E2A40.nbFS = 0;
+    lbl_805E2A40.maxNbFS = maxNbFS;
     lbl_805E2A40.errorCallBack = NULL;
     lbl_805F1548 = NULL;
     lbl_805E2A40.fileSystems = NULL;
