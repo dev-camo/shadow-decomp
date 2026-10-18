@@ -91,28 +91,36 @@ RpWorldSector *fn_8045F390(RpWorldSector *sector) {
  * pipelines of their materials */
 RpWorld *fn_8045F458(RpWorld *world, RpBuildMesh *buildMesh, RpWorldSector *sector,
                      RpMaterial **materials) {
+    RwUInt16 pipelineIndex;
+    RwUInt16 rasterIndex;
+    RwUInt16 textureIndex;
+    RxPipeline *pipeline;
+    RwTexture *texture;
+    RpMaterial *material;
+    RpTriangle *triangle;
+    RwInt32 i;
+    RwTexture **textures;
+    RwRaster **rasters;
+    RxPipeline **pipelines;
+    RwUInt32 size;
+    RwUInt32 numMaterials = world->matList.numMaterials;
+    RpMeshHeader *mesh;
     RwUInt16 numTextures = 0;
     RwUInt16 numRasters = 0;
     RwUInt16 numPipelines = 0;
-    RpMeshHeader *mesh;
-    RwUInt32 numMaterials = world->matList.numMaterials;
+    RwRaster *raster;
 
     if (numMaterials != 0) {
-        RwUInt32 size = numMaterials * sizeof(void *);
-        RwTexture **textures = RwMalloc(size, rwMEMHINTDUR_FUNCTION | rwID_TEXTURE);
-        RwRaster **rasters = RwMalloc(size, rwMEMHINTDUR_FUNCTION | rwID_WORLDMODULE);
-        RxPipeline **pipelines = RwMalloc(size, rwMEMHINTDUR_FUNCTION | rwID_WORLDMODULE);
-        RwInt32 i;
+        size = numMaterials * sizeof(void *);
+        textures = RwMalloc(size, rwMEMHINTDUR_FUNCTION | rwID_TEXTURE);
+        rasters = RwMalloc(size, rwMEMHINTDUR_FUNCTION | rwID_WORLDMODULE);
+        pipelines = RwMalloc(size, rwMEMHINTDUR_FUNCTION | rwID_WORLDMODULE);
 
         for (i = 0; i < sector->numTriangles; i++) {
-            RpTriangle *triangle = &sector->triangles[i];
-            RpMaterial *material = materials[triangle->matIndex];
-            RwTexture *texture = material->texture;
-            RwRaster *raster = NULL;
-            RxPipeline *pipeline;
-            RwUInt16 textureIndex;
-            RwUInt16 rasterIndex;
-            RwUInt16 pipelineIndex;
+            triangle = &sector->triangles[i];
+            material = materials[triangle->matIndex];
+            texture = material->texture;
+            raster = NULL;
 
             for (textureIndex = 0; textureIndex < numTextures; textureIndex++) {
                 if (textures[textureIndex] == texture) {
@@ -120,7 +128,8 @@ RpWorld *fn_8045F458(RpWorld *world, RpBuildMesh *buildMesh, RpWorldSector *sect
                 }
             }
             if (textureIndex == numTextures) {
-                textures[numTextures++] = texture;
+                textures[textureIndex] = texture;
+                numTextures++;
             }
 
             if (texture != NULL) {
@@ -132,7 +141,8 @@ RpWorld *fn_8045F458(RpWorld *world, RpBuildMesh *buildMesh, RpWorldSector *sect
                 }
             }
             if (rasterIndex == numRasters) {
-                rasters[numRasters++] = raster;
+                rasters[rasterIndex] = raster;
+                numRasters++;
             }
 
             pipeline = material->pipeline;
@@ -142,7 +152,8 @@ RpWorld *fn_8045F458(RpWorld *world, RpBuildMesh *buildMesh, RpWorldSector *sect
                 }
             }
             if (pipelineIndex == numPipelines) {
-                pipelines[numPipelines++] = pipeline;
+                pipelines[pipelineIndex] = pipeline;
+                numPipelines++;
             }
 
             fn_8045C340(buildMesh, material, triangle->vertIndex[0], triangle->vertIndex[1],
@@ -168,48 +179,48 @@ RpWorld *fn_8045F458(RpWorld *world, RpBuildMesh *buildMesh, RpWorldSector *sect
     return world;
 }
 
-/* Releases a world sector's instance data, ties and plugin data */
-#define WORLDSECTORDEINIT(sector)                                                                  \
-    do {                                                                                           \
-        RwLLLink *link_;                                                                           \
-                                                                                                   \
-        if ((sector)->repEntry != NULL) {                                                          \
-            fn_8048071C((sector)->repEntry);                                                       \
-        }                                                                                          \
-        link_ = (sector)->collAtomicsInWorldSector.link.next;                                      \
-        while (link_ != &(sector)->collAtomicsInWorldSector.link) {                                \
-            RwLLLink *current_ = link_;                                                            \
-                                                                                                   \
-            link_ = link_->next;                                                                   \
-            fn_80460DF0((RpTie *)current_);                                                        \
-        }                                                                                          \
-        link_ = (sector)->lightsInWorldSector.link.next;                                           \
-        while (link_ != &(sector)->lightsInWorldSector.link) {                                     \
-            RwLLLink *current_ = link_;                                                            \
-                                                                                                   \
-            link_ = link_->next;                                                                   \
-            fn_80460D80((RpLightTie *)current_);                                                   \
-        }                                                                                          \
-        fn_80482144(&lbl_8056D880, (sector));                                                      \
-    } while (0)
-
-/* Destroys a sector tree whose sectors are part of the world's allocation */
+/* Destroys a sector tree whose sectors are part of the world's allocation.
+ * The sector release is written out here and in fn_8045F7D0: a shared macro or inline compiles
+ * fn_8045F7D0 differently (measured). */
 void fn_8045F6E0(RpSector *sector) {
-    switch (sector->type) {
-    case rpWORLDSECTORTYPE: {
-        RpWorldSector *worldSector = (RpWorldSector *)sector;
+    RpWorldSector *worldSector;
+    RwLLLink *link;
+    RwLLLink *current;
+    RwLLLink *end;
+    RpPlaneSector *planeSector;
 
-        WORLDSECTORDEINIT(worldSector);
+    switch (sector->type) {
+    case rpWORLDSECTORTYPE:
+        worldSector = (RpWorldSector *)sector;
+
+        /* releases the sector's instance data, ties and plugin data */
+        if (worldSector->repEntry != NULL) {
+            fn_8048071C(worldSector->repEntry);
+        }
+        link = worldSector->collAtomicsInWorldSector.link.next;
+        end = &worldSector->collAtomicsInWorldSector.link;
+        while (link != end) {
+            current = link;
+            link = link->next;
+            fn_80460DF0((RpTie *)current);
+        }
+        link = worldSector->lightsInWorldSector.link.next;
+        end = &worldSector->lightsInWorldSector.link;
+        while (link != end) {
+            current = link;
+            link = link->next;
+            fn_80460D80((RpLightTie *)current);
+        }
+        fn_80482144(&lbl_8056D880, worldSector);
         if (worldSector->mesh != NULL) {
             fn_8045C2D4(worldSector->mesh);
             worldSector->mesh = NULL;
         }
         break;
-    }
     case rpSECTORTYPEEMPTY:
         break;
-    default: {
-        RpPlaneSector *planeSector = (RpPlaneSector *)sector;
+    default:
+        planeSector = (RpPlaneSector *)sector;
 
         if (planeSector->leftSubTree != NULL) {
             fn_8045F6E0(planeSector->leftSubTree);
@@ -219,17 +230,40 @@ void fn_8045F6E0(RpSector *sector) {
         }
         break;
     }
-    }
 }
 
 /* Destroys a sector tree whose sectors and their data are separate allocations */
 void fn_8045F7D0(RpSector *sector) {
-    switch (sector->type) {
-    case rpWORLDSECTORTYPE: {
-        RpWorldSector *worldSector = (RpWorldSector *)sector;
-        RwInt32 i;
+    RpWorldSector *worldSector;
+    RwLLLink *link;
+    RwLLLink *current;
+    RwLLLink *end;
+    RwInt32 i;
+    RpPlaneSector *planeSector;
 
-        WORLDSECTORDEINIT(worldSector);
+    switch (sector->type) {
+    case rpWORLDSECTORTYPE:
+        worldSector = (RpWorldSector *)sector;
+
+        /* releases the sector's instance data, ties and plugin data */
+        if (worldSector->repEntry != NULL) {
+            fn_8048071C(worldSector->repEntry);
+        }
+        link = worldSector->collAtomicsInWorldSector.link.next;
+        end = &worldSector->collAtomicsInWorldSector.link;
+        while (link != end) {
+            current = link;
+            link = link->next;
+            fn_80460DF0((RpTie *)current);
+        }
+        link = worldSector->lightsInWorldSector.link.next;
+        end = &worldSector->lightsInWorldSector.link;
+        while (link != end) {
+            current = link;
+            link = link->next;
+            fn_80460D80((RpLightTie *)current);
+        }
+        fn_80482144(&lbl_8056D880, worldSector);
         if (worldSector->vertices != NULL) {
             RwFree(worldSector->vertices);
             worldSector->vertices = NULL;
@@ -258,12 +292,11 @@ void fn_8045F7D0(RpSector *sector) {
         }
         RwFree(worldSector);
         break;
-    }
     case rpSECTORTYPEEMPTY:
         RwFree(sector);
         break;
-    default: {
-        RpPlaneSector *planeSector = (RpPlaneSector *)sector;
+    default:
+        planeSector = (RpPlaneSector *)sector;
 
         if (planeSector->leftSubTree != NULL) {
             fn_8045F7D0(planeSector->leftSubTree);
@@ -275,6 +308,5 @@ void fn_8045F7D0(RpSector *sector) {
         planeSector->rightSubTree = NULL;
         RwFree(planeSector);
         break;
-    }
     }
 }
