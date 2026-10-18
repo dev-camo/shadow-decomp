@@ -163,6 +163,12 @@ RpMesh *fn_8045CBD4(RpMesh *mesh, RpMeshHeader *meshHeader, void *data) {
     RwUInt8 *used;
     RwUInt32 numTriangles = numIndices / 3;
     RxVertexIndex *indices = mesh->indices;
+    RxVertexIndex *copy;
+    RwUInt8 *clear;
+    RxVertexIndex *triangle;
+    RwUInt32 copySize;
+    RwUInt32 numDone;
+    RwUInt32 count;
 
     for (i = 0; i < numIndices; i++) {
         maxVertex |= indices[i];
@@ -170,31 +176,25 @@ RpMesh *fn_8045CBD4(RpMesh *mesh, RpMeshHeader *meshHeader, void *data) {
     usedSize = (maxVertex + 0x1F) >> 3;
     used = RwMalloc(usedSize, rwMEMHINTDUR_FUNCTION | rwID_MESHMODULE);
     if (used != NULL) {
-        RwUInt32 copySize = mesh->numIndices * sizeof(RxVertexIndex);
-        RxVertexIndex *copy = RwMalloc(copySize, rwMEMHINTDUR_FUNCTION | rwID_MESHMODULE);
+        copySize = mesh->numIndices * sizeof(RxVertexIndex);
+        copy = RwMalloc(copySize, rwMEMHINTDUR_FUNCTION | rwID_MESHMODULE);
 
         if (copy != NULL) {
-            RwUInt32 numDone;
-
             memcpy(copy, indices, copySize);
             numDone = 0;
             while (numDone < numTriangles) {
-                RwUInt8 *clear = used;
-                RwUInt32 count = usedSize;
-                RxVertexIndex *triangle;
+                clear = used;
+                count = usedSize;
 
                 while (count--) {
                     *clear++ = 0;
                 }
                 triangle = copy;
                 for (count = 0; count < numTriangles; count++) {
-                    RwInt32 vert0 = triangle[0];
-                    RwInt32 vert1 = triangle[1];
-                    RwInt32 vert2 = triangle[2];
-
-                    if ((vert0 & vert1 & vert2) != 0xFFFF && !VERTEXUSED(used, vert0) &&
-                        !VERTEXUSED(used, vert1) && !VERTEXUSED(used, vert2)) {
-                        VERTEXUSE(used, vert0);
+                    if ((triangle[0] & triangle[1] & triangle[2]) != 0xFFFF &&
+                        !VERTEXUSED(used, triangle[0]) && !VERTEXUSED(used, triangle[1]) &&
+                        !VERTEXUSED(used, triangle[2])) {
+                        VERTEXUSE(used, triangle[0]);
                         numDone++;
                         VERTEXUSE(used, triangle[1]);
                         VERTEXUSE(used, triangle[2]);
