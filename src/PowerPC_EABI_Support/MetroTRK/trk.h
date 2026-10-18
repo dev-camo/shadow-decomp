@@ -167,13 +167,13 @@ void *TRK_memset(void *dst, int val, size_t n);
 ////////////////////////////////////
 
 /////// INITIALIZE FUNCTIONS ///////
-DSError TRKInitializeEventQueue();
-DSError TRKInitializeMessageBuffers();
-DSError TRKInitializeDispatcher();
-void InitializeProgramEndTrap();
-DSError TRKInitializeSerialHandler();
-DSError TRKTerminateSerialHandler();
-DSError TRKInitializeTarget();
+DSError TRKInitializeEventQueue(void);
+DSError TRKInitializeMessageBuffers(void);
+DSError TRKInitializeDispatcher(void);
+void InitializeProgramEndTrap(void);
+DSError TRKInitializeSerialHandler(void);
+DSError TRKTerminateSerialHandler(void);
+DSError TRKInitializeTarget(void);
 ////////////////////////////////////
 
 ////////// EXI2 FUNCTIONS //////////

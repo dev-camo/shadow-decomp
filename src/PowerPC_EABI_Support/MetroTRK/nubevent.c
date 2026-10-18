@@ -2,7 +2,7 @@
 
 TRKEventQueue gTRKEventQueue;
 
-DSError TRKInitializeEventQueue() {
+DSError TRKInitializeEventQueue(void) {
     TRKInitializeMutex(&gTRKEventQueue);
     TRKAcquireMutex(&gTRKEventQueue);
     gTRKEventQueue.count = 0;

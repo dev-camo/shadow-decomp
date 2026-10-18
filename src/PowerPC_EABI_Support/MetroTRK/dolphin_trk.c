@@ -74,7 +74,7 @@ void __TRK_copy_vectors(void) {
     } while (i <= 14);
 }
 
-DSError TRKInitializeTarget() {
+DSError TRKInitializeTarget(void) {
     gTRKState.isStopped = TRUE;
     gTRKState.msr = __TRK_get_MSR();
     lc_base = 0xE0000000;
@@ -210,7 +210,7 @@ asm void InitMetroTRK(void) {
 	stw r3, 0(r1)
 	lis r3, gTRKCPUState@h
 	ori r3, r3, gTRKCPUState@l
-	stmw r0, ProcessorState_PPC.Default.GPR(r3) //Save the gprs
+	stmw r0, ProcessorState_PPC.Default.GPR(r3)
 	lwz r4, 0(r1)
 	addi r1, r1, 4
 	stw r1, ProcessorState_PPC.Default.GPR[1](r3)
@@ -225,12 +225,11 @@ asm void InitMetroTRK(void) {
 	ori r3, r4, (1 << (31 - 16))
 	xori r3, r3, (1 << (31 - 16))
 	mtmsr r3
-	mtsrr1 r4 //Copy msr to srr1
-	//Save misc registers to gTRKCPUState
+	mtsrr1 r4
 	bl TRKSaveExtended1Block
 	lis r3, gTRKCPUState@h
 	ori r3, r3, gTRKCPUState@l
-	lmw r0, ProcessorState_PPC.Default.GPR(r3) //Restore the gprs
+	lmw r0, ProcessorState_PPC.Default.GPR(r3)
 	//Reset IABR and DABR
 	li r0, 0
 	mtspr  0x3f2, r0
@@ -239,7 +238,7 @@ asm void InitMetroTRK(void) {
 	lis r1, _db_stack_addr@h
 	ori r1, r1, _db_stack_addr@l
 	mr r3, r5
-	bl InitMetroTRKCommTable //Initialize comm table
+	bl InitMetroTRKCommTable
 	/*
 	InitMetroTRKCommTable returns 1 for an unknown hardware id or when
 	the selected GDEV or AMC DDH transport reports a stub (Hu_IsStub,
@@ -250,17 +249,16 @@ asm void InitMetroTRK(void) {
 	cmpwi r3, 1
 	bne initCommTableSuccess
 	/*
-	BUG: The code probably originally reloaded gTRKCPUState here, but
-	as is it will read the returned value of InitMetroTRKCommTable
-	as a TRKCPUState struct pointer, causing the CPU to return to
-	a garbage code address.
+	BUG: r3 still holds InitMetroTRKCommTable's return value (1), not
+	gTRKCPUState, so the LR and GPR restore below read relative to address 1
+	and return to a garbage code address.
 	*/
 	lwz r4, ProcessorState_PPC.Default.LR(r3)
 	mtlr r4
-	lmw r0, ProcessorState_PPC.Default.GPR(r3) //Restore the gprs
+	lmw r0, ProcessorState_PPC.Default.GPR(r3)
 	blr
 initCommTableSuccess:
-	b TRK_main //Jump to TRK_main
+	b TRK_main
 	blr
 #endif // clang-format on
 }
@@ -272,7 +270,7 @@ asm void InitMetroTRK_BBA(void) {
 	stw r3, 0(r1)
 	lis r3, gTRKCPUState@h
 	ori r3, r3, gTRKCPUState@l
-	stmw r0, ProcessorState_PPC.Default.GPR(r3) //Save the gprs
+	stmw r0, ProcessorState_PPC.Default.GPR(r3)
 	lwz r4, 0(r1)
 	addi r1, r1, 4
 	stw r1, ProcessorState_PPC.Default.GPR[1](r3)
@@ -286,12 +284,11 @@ asm void InitMetroTRK_BBA(void) {
 	mfmsr r4
 	ori r3, r4, (1 << (31 - 16))
 	mtmsr r3
-	mtsrr1 r4 //Copy original msr to srr1
-	//Save misc registers to gTRKCPUState
+	mtsrr1 r4
 	bl TRKSaveExtended1Block
 	lis r3, gTRKCPUState@h
 	ori r3, r3, gTRKCPUState@l
-	lmw r0, ProcessorState_PPC.Default.GPR(r3) //Restore the gprs
+	lmw r0, ProcessorState_PPC.Default.GPR(r3)
 	//Reset IABR and DABR
 	li r0, 0
 	mtspr  0x3f2, r0
@@ -308,17 +305,16 @@ asm void InitMetroTRK_BBA(void) {
 	cmpwi r3, 1
 	bne initCommTableSuccess
 	/*
-	BUG: The code probably originally reloaded gTRKCPUState here, but
-	as is it will read the returned value of InitMetroTRKCommTable
-	as a TRKCPUState struct pointer, causing the CPU to return to
-	a garbage code address.
+	BUG: r3 still holds InitMetroTRKCommTable's return value (1), not
+	gTRKCPUState, so the LR and GPR restore below read relative to address 1
+	and return to a garbage code address.
 	*/
 	lwz r4, ProcessorState_PPC.Default.LR(r3)
 	mtlr r4
 	lmw r0, ProcessorState_PPC.Default.GPR(r3)
 	blr
 initCommTableSuccess:
-	b TRK_main //Jump to TRK_main
+	b TRK_main
 	blr
 #endif // clang-format on
 }
