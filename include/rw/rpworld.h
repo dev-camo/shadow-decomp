@@ -883,7 +883,7 @@ typedef struct RpGameCubeRenderMesh {
 CHECK_SIZEOF(RpGameCubeRenderMesh, 0x2C);
 
 typedef RpAtomic *(*RpGameCubeInstanceCallBack)(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
-typedef RpAtomic *(*RpGameCubeLightingCallBack)(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
+typedef void *(*RpGameCubeLightingCallBack)(void *object, RpGameCubeRenderMesh *renderMesh);
 typedef RpAtomic *(*RpGameCubeRenderCallBack)(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
 
 /* GameCube: a callback of an all-in-one pipeline node, for the atomic or world sector being
@@ -944,8 +944,7 @@ RxPipeline *fn_8046335C(RwUInt32 pluginID, RwUInt32 pluginData,
                         RpGameCubeInstanceCallBack reinstanceCallBack,
                         RpGameCubeLightingCallBack lightingCallBack,
                         RpGameCubeRenderCallBack renderCallBack);
-RpAtomic *fn_80463428(RpAtomic *atomic,
-                      RpGameCubeRenderMesh *renderMesh); /* the default lighting */
+void *fn_80463428(void *object, RpGameCubeRenderMesh *renderMesh); /* the default lighting */
 /* instances an atomic's vertices into its instanced data (inferred) */
 RpAtomic *fn_80463840(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
 RxNodeDefinition *fn_80463D1C(void); /* the atomic all-in-one node definition */

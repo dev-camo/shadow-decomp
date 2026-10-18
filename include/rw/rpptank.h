@@ -152,7 +152,7 @@ void *fn_804485BC(void *object, RwInt32 offset, RwInt32 size);
 void *fn_80448610(void *object, RwInt32 offset, RwInt32 size);
 
 /* the lighting and render callbacks of the tank pipeline (GameCube) */
-RpAtomic *fn_80448CB0(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
+void *fn_80448CB0(void *object, RpGameCubeRenderMesh *renderMesh);
 RpAtomic *fn_80448D04(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
 
 /* the particle kernels (GameCube, hand-written assembly), in pairs without and with a center: a
