@@ -29,7 +29,8 @@ RwInt32 fn_8046ACBC(const RpGameCubeVertexDescBuilder *builder) {
     RwInt32 attribute;
     RwInt32 stride = 0;
 
-    for (attribute = GX_VA_PNMTXIDX; attribute <= GX_VA_TEX7; attribute++) {
+    /* the vertex attributes, which come before the array attributes */
+    for (attribute = GX_VA_PNMTXIDX; attribute < GX_POS_MTX_ARRAY; attribute++) {
         switch (attribute) {
         case GX_VA_PNMTXIDX:
         case GX_VA_TEX0MTXIDX:
