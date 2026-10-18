@@ -88,7 +88,6 @@ RxPipelineNode *fn_8049B350(RxPipelineNode *node, RxPipeline *pipeline) {
         memset(node, 0, sizeof(RxPipelineNode));
     } else {
         RwInt32 index;
-        RwUInt32 i;
 
         if (node->initializationData != NULL) {
             RwFree(node->initializationData);
@@ -108,6 +107,7 @@ RxPipelineNode *fn_8049B350(RxPipelineNode *node, RxPipeline *pipeline) {
             RwUInt32 *nextOutputs = outputs + RXNODEMAXOUTPUTS;
             RxPipelineNodeTopSortData *topSortData;
             RxPipelineNodeTopSortData *nextTopSortData;
+            RwUInt32 i;
 
             for (i = index; i < pipeline->numNodes - 1; i++) {
                 memcpy(outputs, nextOutputs, RXNODEMAXOUTPUTS * sizeof(RwUInt32));
@@ -134,17 +134,14 @@ RxPipelineNode *fn_8049B350(RxPipelineNode *node, RxPipeline *pipeline) {
 
             /* outputs to the removed node now lead nowhere; later nodes moved down one */
             for (i = 0; i < pipeline->numNodes - 1; i++) {
-                RwUInt32 output;
                 RwUInt32 j;
 
                 for (j = 0; j < pipeline->nodes[i].numOutputs; j++) {
-                    output = pipeline->nodes[i].outputs[j];
-
-                    if (output >= index) {
-                        if (index == output) {
+                    if (pipeline->nodes[i].outputs[j] >= index) {
+                        if (index == pipeline->nodes[i].outputs[j]) {
                             pipeline->nodes[i].outputs[j] = (RwUInt32)-1;
                         } else {
-                            pipeline->nodes[i].outputs[j] = output - 1;
+                            pipeline->nodes[i].outputs[j]--;
                         }
                     }
                 }
