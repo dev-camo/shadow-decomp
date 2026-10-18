@@ -1,6 +1,6 @@
 /* RenderWare images: the image module, creating and destroying images and their pixels, masks,
- * copying and converting pixels, reading images along the image path, gamma correction and the
- * image and raster standard functions. The original file name is unknown. */
+ * copying and converting pixels, registering image file formats, reading images along the image
+ * path, gamma correction and the image and raster standard functions. Original file name unknown. */
 #include "rw/rwcore.h"
 #include <math.h>
 #include <string.h>
@@ -510,8 +510,61 @@ const RwChar *fn_80488B58(const RwChar *name) {
     return extension;
 }
 
+/* Registers the functions that read and write image files with an extension, adding the format
+ * if the extension is new; a NULL function keeps the one already registered (name and callback
+ * types inferred). Retail strips it, and nothing else adds to imageFormats, so retail registers
+ * no format and reading an image by extension finds none. The E3 2005 prototype (G9SJ8P, built
+ * 27 May 2005) has it at 0x803EC7E4, where its initialisation code registers readers for "bmp" and
+ * "png". */
+RwBool ImageRegisterFormat(const RwChar *extension, RwImage *(*imageRead)(const RwChar *imageName),
+                           RwImage *(*imageWrite)(RwImage *image, const RwChar *imageName)) {
+    rwImageFormat *format;
+    rwImageFormat *current;
+    RwChar lowerCaseExtension[rwIMAGEEXTENSIONLENGTH];
+
+    lowerCaseExtension[0] = '.';
+    rwstrncpy(&lowerCaseExtension[1], extension, rwIMAGEEXTENSIONLENGTH - 2);
+    lowerCaseExtension[rwIMAGEEXTENSIONLENGTH - 1] = '\0';
+    rwstrlwr(lowerCaseExtension);
+
+    format = NULL;
+    current = RWIMAGEGLOBAL(imageFormats);
+    while (current != NULL && format == NULL) {
+        if (rwstrcmp(current->lowerCaseExtension, lowerCaseExtension) == 0) {
+            format = current;
+        } else {
+            current = current->nextFormat;
+        }
+    }
+
+    if (format == NULL) {
+        format = (rwImageFormat *)RwFreeListAlloc(RWIMAGEGLOBAL(imageFormatFreeList),
+                                                  rwMEMHINTDUR_EVENT | rwID_IMAGEMODULE);
+        if (format == NULL) {
+            return FALSE;
+        }
+        memcpy(format->lowerCaseExtension, lowerCaseExtension, rwIMAGEEXTENSIONLENGTH);
+        format->upperCaseExtension[0] = '.';
+        rwstrncpy(&format->upperCaseExtension[1], extension, rwIMAGEEXTENSIONLENGTH - 2);
+        format->upperCaseExtension[rwIMAGEEXTENSIONLENGTH - 1] = '\0';
+        rwstrupr(format->upperCaseExtension);
+        format->imageRead = NULL;
+        format->imageWrite = NULL;
+        format->nextFormat = RWIMAGEGLOBAL(imageFormats);
+        RWIMAGEGLOBAL(imageFormats) = format;
+    }
+
+    if (imageRead != NULL) {
+        format->imageRead = imageRead;
+    }
+    if (imageWrite != NULL) {
+        format->imageWrite = imageWrite;
+    }
+    return TRUE;
+}
+
 /* Reads an image with the format registered for its extension, along the image path (inferred
- * helper; the original's copy is not in the game) */
+ * helper; the original's copy is not in the game, nor in the E3 prototype) */
 static RwImage *ImageRead(const RwChar *imageName) {
     const RwChar *fileName;
     const RwChar *separator;
