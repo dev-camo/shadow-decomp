@@ -499,7 +499,13 @@ s32 fn_8043FD70(GcaxPlayer *player);
 s32 fn_8043FDF8(GcaxPlayer *player, s32 bank, s32 song, s32 priority);
 void fn_8043FF5C(GcaxPlayer *player);
 
-/* Holds off the frame update while the caller changes shared state */
+/* The helper names below are inferred; only gcaxSndMalloc and gcaxNewAramBank are named by the
+ * library's messages.
+ *
+ * Holds off the frame update while the caller changes shared state. The E3 prototype keeps
+ * gcaxSndGetFreeVoice, gcaxSndCheckPlayer and the heap helpers out of line but expands the lock
+ * and unlock (e.g. in the frame update at 0x8037F09C), as it does the bank-offset and next-block
+ * accessors, which suggests macros or explicitly inline functions. */
 static inline void gcaxSndLock(void) {
     BOOL enabled = OSDisableInterrupts();
 
@@ -514,7 +520,10 @@ static inline void gcaxSndUnlock(void) {
     OSRestoreInterrupts(enabled);
 }
 
-/* Makes the whole heap one free block, ending in a used sentinel block. */
+/* Makes the whole heap one free block, ending in a used sentinel block. In the E3 prototype this
+ * and gcaxSndFindPrevBlock are out-of-line functions of gcaxSndMemory.c (0x8037B3AC, 0x8037B1E4),
+ * defined directly above their only callers fn_8043AEBC and fn_8043ACE8; moving them there would
+ * shift that file's GCAX_PANIC lines. */
 static inline void gcaxSndResetHeap(void) {
     BOOL enabled = OSDisableInterrupts();
     GcaxMemBlock *head = lbl_805F1404->heapHead;
@@ -530,7 +539,8 @@ static inline void gcaxSndResetHeap(void) {
     OSRestoreInterrupts(enabled);
 }
 
-/* The block after block in the heap. */
+/* The block after block in the heap. The E3 allocator (0x8037B24C) reads block->next directly;
+ * here, writing block->next instead of this call in gcaxSndMalloc swaps two registers. */
 static inline GcaxMemBlock *gcaxSndNextBlock(GcaxMemBlock *block) {
     return block->next;
 }

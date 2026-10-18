@@ -21,7 +21,8 @@ static s32 lbl_805F1408; /* the caller supplied the work area */
 GcaxWork *lbl_805F1404;
 static void *lbl_805F1400; /* the work area allocation */
 
-/* 0 for an active player, else an error code */
+/* 0 for an active player, else an error code. A separate function in the E3 2005 prototype
+ * (G9SJ8P) at 0x8037FFFC, called by the player entry points. */
 static inline s32 gcaxSndCheckPlayer(GcaxPlayer *player) {
     int i;
 
