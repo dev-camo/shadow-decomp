@@ -58,7 +58,7 @@ RwUInt32 fn_80483B38(const RwTexture *texture) {
 /* Writes a texture chunk: its flags, name and mask, and its plugins' data */
 const RwTexture *fn_80483BA0(const RwTexture *texture, RwStream *stream) {
     RwUInt32 flags;
-    RwUInt32 userMipmaps;
+    RwUInt8 userMipmaps;
 
     if (!fn_8047CEF0(stream, rwID_TEXTURE, fn_80483B38(texture), RW_STREAM_VERSION,
                      RW_STREAM_BUILD)) {
@@ -72,7 +72,7 @@ const RwTexture *fn_80483BA0(const RwTexture *texture, RwStream *stream) {
     } else {
         userMipmaps = 0;
     }
-    flags = (texture->filterAddressing & 0xFFFF) | ((userMipmaps << 16) & 0xFF0000);
+    flags = (texture->filterAddressing & 0xFFFF) | (userMipmaps << 16);
     fn_8047D158(&flags, sizeof(flags));
     if (!fn_80480ED0(stream, &flags, sizeof(flags))) {
         return NULL;
