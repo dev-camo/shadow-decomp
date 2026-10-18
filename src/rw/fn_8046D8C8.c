@@ -133,7 +133,7 @@ void fn_8046DA24(RxVertexIndex *stripIndices, RxVertexIndex *attributeIndices, R
 /* Ends the current strip at index i: writes its header */
 #define ENDSTRIPHEADER()                                                                           \
     do {                                                                                           \
-        RwUInt8 *header_ = data + (headers + written * stride);                                    \
+        RwUInt8 *header_ = data + headers + written * stride;                                      \
                                                                                                    \
         written += run + 2;                                                                        \
         header_[0] = primitive;                                                                    \
@@ -147,10 +147,10 @@ void fn_8046DA24(RxVertexIndex *stripIndices, RxVertexIndex *attributeIndices, R
  * each triangle strip or for the whole mesh */
 void fn_8046E3E0(RxVertexIndex *indices, RwUInt32 numIndices, RwInt32 triStrip, RwInt32 stride,
                  RwInt32 primitive, RwInt32 flag, RwUInt8 *data) {
-    RwInt32 numStrips = 0;
-    RwUInt32 headers = 0;
-    RwUInt32 written = 0;
     RwUInt32 run = 0;
+    RwUInt32 headers = 0;
+    RwInt32 numStrips = 0;
+    RwUInt32 written = 0;
     RwUInt32 i;
 
     if (triStrip) {
@@ -178,7 +178,7 @@ void fn_8046E3E0(RxVertexIndex *indices, RwUInt32 numIndices, RwInt32 triStrip, 
             }
         }
         if (run != 0) {
-            RwUInt8 *header = data + (numStrips * 3 + written * stride);
+            RwUInt8 *header = data + numStrips * 3 + written * stride;
 
             header[0] = primitive;
             *(RwUInt16 *)(header + 1) = run + 2;
