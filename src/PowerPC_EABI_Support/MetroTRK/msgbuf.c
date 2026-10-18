@@ -211,7 +211,7 @@ DSError TRKReadBuffer1_ui32(MessageBuffer *buffer, u32 *data) {
 
     u8 *bigEndianData;
     u8 *byteData;
-    u8 swapBuffer[sizeof(data)];
+    u8 swapBuffer[sizeof(*data)];
 
     if (gTRKBigEndian) {
         bigEndianData = (u8 *)data;
@@ -238,7 +238,7 @@ DSError TRKReadBuffer1_ui64(MessageBuffer *buffer, u64 *data) {
 
     u8 *bigEndianData;
     u8 *byteData;
-    u8 swapBuffer[sizeof(data)];
+    u8 swapBuffer[sizeof(*data)];
 
     if (gTRKBigEndian) {
         bigEndianData = (u8 *)data;

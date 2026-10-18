@@ -66,7 +66,7 @@ void TRKProcessInput(int bufferIdx) {
     TRKPostEvent(&event);
 }
 
-DSError TRKInitializeSerialHandler() {
+DSError TRKInitializeSerialHandler(void) {
     gTRKFramingState.msgBufID = -1;
     gTRKFramingState.receiveState = DSRECV_Wait;
     gTRKFramingState.isEscape = FALSE;
