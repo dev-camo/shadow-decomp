@@ -62,19 +62,21 @@ void *fn_8049B92C(RwUInt32 size) {
 }
 
 RwUInt32 fn_8049B9A4(RxPipeline *pipeline) {
-    RwUInt32 numNodes = pipeline->numNodes;
-    RwUInt32 numClusters = 0;
-    RwUInt32 next = 0;
+    RwUInt32 previous;
+    RwUInt32 next;
+    RwUInt32 numClusters;
+    RwUInt32 i;
+    RwUInt32 j;
+
+    numClusters = 0;
+    next = 0;
 
     /* count the distinct cluster definitions by finding them in increasing address order */
     for (;;) {
-        RwUInt32 previous = next;
-        RwUInt32 i;
-
+        previous = next;
         next = (RwUInt32)-1;
-        for (i = 0; i < numNodes; i++) {
+        for (i = 0; i < pipeline->numNodes; i++) {
             RxNodeDefinition *nodeDef = pipeline->nodes[i].nodeDef;
-            RwUInt32 j;
 
             for (j = 0; j < nodeDef->io.numClustersOfInterest; j++) {
                 RwUInt32 clusterDef = (RwUInt32)nodeDef->io.clustersOfInterest[j].clusterDef;
@@ -584,8 +586,8 @@ RxPipeline *fn_8049CCB8(RxPipeline *pipeline) {
 
     if (!pipeline->locked) {
         maxNodes = RXPIPELINEGLOBAL(maxNodesPerPipe);
-        size = maxNodes * sizeof(RxPipelineNode) + (maxNodes * RXNODEMAXOUTPUTS * sizeof(RwUInt32) +
-                                                    maxNodes * sizeof(RxPipelineNodeTopSortData));
+        size = maxNodes * sizeof(RxPipelineNode) + maxNodes * RXNODEMAXOUTPUTS * sizeof(RwUInt32) +
+               maxNodes * sizeof(RxPipelineNodeTopSortData);
 
         if (pipeline->nodes != NULL) {
             if (size > pipeline->superBlockSize && !PipelineSuperBlockRealloc(pipeline, size)) {
