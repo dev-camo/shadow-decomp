@@ -79,7 +79,9 @@ static inline void LightLoadDirectional(const RpLight *light, RwInt32 index) {
 /* Loads the world's directional lights with the given flags into the next hardware lights, and
  * adds its ambient lights to the ambient colour. Light directions and positions are transformed by
  * the current camera's view transform. */
-void fn_804641CC(RwUInt8 lightFlags, RpGameCubeRenderMesh *renderMesh) {
+void fn_804641CC(RwUInt32 lightFlags, RpGameCubeRenderMesh *renderMesh) {
+    /* RpLight flags are 8 bits wide */
+    RwUInt8 flagMask = lightFlags;
     RpWorld *world = lbl_805F15B4->curWorld;
     RwLLLink *link = world->directionalLightList.link.next;
     RwLLLink *end = &world->directionalLightList.link;
@@ -87,7 +89,7 @@ void fn_804641CC(RwUInt8 lightFlags, RpGameCubeRenderMesh *renderMesh) {
     while (link != end) {
         RpLight *light = LIGHTFROMWORLDLINK(link);
 
-        if (light != NULL && (light->object.flags & lightFlags)) {
+        if (light != NULL && (light->object.flags & flagMask)) {
             if (RpLightGetType(light) == rpLIGHTDIRECTIONAL) {
                 LightLoadDirectional(light, renderMesh->numLights);
                 renderMesh->lightMask |= 1 << renderMesh->numLights;
