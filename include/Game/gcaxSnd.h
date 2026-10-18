@@ -377,6 +377,10 @@ extern GcaxWork *lbl_805F1404;
 #define GCAX_KIND_MLTM 0x4D4C544D /* 'MLTM' */
 #define GCAX_KIND_MSBM 0x4D53424D /* 'MSBM' */
 
+/* Reports the source file and line, then hangs. The line is compiled into the code: the panics in
+ * gcaxSndMemory.c are on lines 174 and 194, the same lines as in the E3 2005 prototype (G9SJ8P).
+ * The messages format __LINE__ with %s ("... at %s:%s"), as the original does, so the number is
+ * passed where a string is expected; the format is kept to match. */
 #define GCAX_PANIC(message)                                                                        \
     do {                                                                                           \
         OSReport(message, __FILE__, __LINE__);                                                     \
