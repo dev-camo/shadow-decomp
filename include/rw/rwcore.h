@@ -315,6 +315,8 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
 #define rwstrchr(string, findThis) (lbl_805F15B4->stringFuncs.vecStrchr((string), (findThis)))
 #define rwstrcmp(string1, string2) (lbl_805F15B4->stringFuncs.vecStrcmp((string1), (string2)))
 #define rwstricmp(string1, string2) (lbl_805F15B4->stringFuncs.vecStricmp((string1), (string2)))
+#define rwstrupr(string) (lbl_805F15B4->stringFuncs.vecStrupr(string))
+#define rwstrlwr(string) (lbl_805F15B4->stringFuncs.vecStrlwr(string))
 #define rwsprintf lbl_805F15B4->stringFuncs.vecSprintf
 #define rwsscanf lbl_805F15B4->stringFuncs.vecSscanf
 #define RwRenderStateSet(state, value)                                                             \
@@ -1480,6 +1482,9 @@ RwImage *fn_80487FA8(RwImage *image); /* sets each pixel's alpha to its brightes
 RwImage *fn_80488088(RwImage *image, const RwImage *mask); /* applies a mask's alpha */
 const RwChar *
 fn_80488B58(const RwChar *name); /* the extension of the image file found for a name */
+/* registers an extension's read and write functions (name inferred; stripped from retail) */
+RwBool ImageRegisterFormat(const RwChar *extension, RwImage *(*imageRead)(const RwChar *imageName),
+                           RwImage *(*imageWrite)(RwImage *image, const RwChar *imageName));
 RwImage *fn_80488B94(const RwChar *imageName, const RwChar *maskName); /* reads a masked image */
 RwRGBA *fn_80489118(RwRGBA *rgbOut, RwUInt32 pixelValue, RwInt32 rasterFormat); /* a pixel's RGBA */
 RwImage *fn_804893B8(RwImage *destImage, const RwImage *sourceImage);           /* copy */
