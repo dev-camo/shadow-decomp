@@ -2,17 +2,19 @@
  * devices, a default device, file handles pairing a device table with the device's handle,
  * and the "DEV:path" name split.
  *
- * Bodies follow the RE4 GameCube decompilation of Ver.2.37. Only cvFsEntryErrFunc,
- * cvFsGetFileSize, cvFsGetStat, cvFsExecServer, cvFsStopTr, cvFsReqRd, cvFsSeek, cvFsTell,
- * cvFsClose, cvFsOpen, cvFsSetDefDev, cvFsAddDev and cvFsCallUsrErrFn are referenced and
- * survive linking; they are verified against this game. Every other function here
- * (initialisation, volumes, directories, option functions, write, the remaining queries and
- * the out-of-line copies of the static helpers) is stripped by the linker: their bodies are
- * reference-derived and unverified, and only the error literals and storage order they
- * produce are checked.
+ * Source from the RE4 GameCube decompilation. Only cvFsEntryErrFunc, cvFsGetFileSize,
+ * cvFsGetStat, cvFsExecServer, cvFsStopTr, cvFsReqRd, cvFsSeek, cvFsTell, cvFsClose, cvFsOpen,
+ * cvFsSetDefDev, cvFsAddDev and cvFsCallUsrErrFn are kept in the game. The other public
+ * functions (initialisation, volumes, directories, option functions, write and the remaining
+ * queries) are stripped, so their bodies are unknown; their error messages remain in .rodata,
+ * between those of the kept functions. MWCC places literals and .bss objects in order of first
+ * use, so never-called stand-ins at the stripped functions' positions refer to the messages in
+ * order and, in place of cvFsInit and cvFsFinish, to the .bss objects in storage order (storing
+ * the addresses keeps the references).
  *
- * Several functions test `dev == 0` after splitting a name into the local array `dev`. The test is
- * always false, but it is the original source and keeps its error message in .rodata order.
+ * cvFsGetFileSize and cvFsOpen test `dev == 0` after splitting a name into the local array `dev`.
+ * The test can never be true, but the game's code performs it (it compares the array's stack
+ * address with 0).
  */
 #include <string.h>
 #include <stdio.h>
@@ -45,27 +47,23 @@ Char8 cvfs_defdev[9];
 static CVFS_DEV cvfs_tbl[CVFS_MAX_DEV];
 CVFS_OBJ cvfs_obj[CVFS_MAX_HN];
 
+/* volatile: cvFsAddDev reads the build string pointer without using it; without volatile MWCC drops
+ * the load (cvFsAddDev 0x27C -> 0x278). */
 static const Char8 *const volatile cvfs_build = "\nCVFS/GC Ver.2.39 Build:Feb 28 2005 15:48:34\n";
 
 void cvFsCallUsrErrFn(void *obj, const Char8 *msg, void *hn);
 
-/* dead */
-void cvFsInit(void) {
-    cvfs_build;
-    cvfs_errfn = 0;
-    cvfs_errobj = 0;
-    if (cvfs_init_cnt == 0) {
-        add_dev_tmp[0] = '\0';
-        cvfs_defdev[0] = '\0';
-        memset(cvfs_tbl, 0, sizeof(cvfs_tbl));
-        memset(cvfs_obj, 0, sizeof(cvfs_obj));
-    }
-    cvfs_init_cnt++;
-}
-
-/* dead */
-void cvFsFinish(void) {
-    cvfs_init_cnt--;
+/* Stand-in for the stripped cvFsInit and cvFsFinish. MWCC places .bss objects in order of first
+ * reference, so this never-called function refers to them in storage order before any other code
+ * does. Storing the addresses keeps the references. */
+static void cvfs_BssOrder(void **out) {
+    out[0] = &cvfs_errfn;
+    out[1] = &cvfs_errobj;
+    out[2] = &cvfs_init_cnt;
+    out[3] = add_dev_tmp;
+    out[4] = cvfs_defdev;
+    out[5] = cvfs_tbl;
+    out[6] = cvfs_obj;
 }
 
 /* the user error callback */
@@ -101,26 +99,6 @@ static Sint32 cvfs_IsExistDev(const Char8 *name, Sint32 len) {
         if (strncmp(name, dev->name, len) == 0) {
             return 1;
         }
-    }
-    return 0;
-}
-
-/* the device of a name (0: the default device) */
-static CVFS_IF *cvFsGetDevIf(CVFS_DEV *tbl, const Char8 *name) {
-    Uint32 i;
-    Sint32 len;
-    CVFS_DEV *dev;
-
-    if (name == 0) {
-        name = cvfs_defdev;
-    }
-    len = strlen(name);
-    dev = tbl;
-    for (i = 0; i < CVFS_MAX_DEV; i++) {
-        if (strncmp(name, dev->name, len) == 0) {
-            return cvfs_tbl[i].vtbl;
-        }
-        dev++;
     }
     return 0;
 }
@@ -204,7 +182,7 @@ static void cvfs_GetDefDev(Char8 *dev) {
     }
 }
 
-/* The search loop of cvFsGetDevIf with the length computed by the caller. The original loads the
+/* Device search with the length computed by the caller. The original loads the
  * table base after the first strlen, so the name check and strlen stay in cvfs_ResolveDev and
  * `tbl = cvfs_tbl` follows them. */
 static CVFS_IF *cvfs_FindDev(CVFS_DEV *tbl, const Char8 *name, Sint32 len) {
@@ -264,389 +242,79 @@ static CVFS_IF *cvfs_ResolveDev(const Char8 *fname, Char8 *dev, Char8 *path) {
     return vtbl;
 }
 
-/* dead */
-void cvFsSetDefVol(const Char8 *devname, const Char8 *volname) {
-    CVFS_IF *vtbl;
-
-    if (devname == 0) {
-        cvfs_Error("cvFsSetDefVol #1:illegal device name");
-        return;
-    }
-    if (volname == 0) {
-        cvfs_Error("cvFsSetDefVol #2:illegal volume name");
-        return;
-    }
-    vtbl = cvfs_SearchDev(cvfs_tbl, devname);
-    if (vtbl == 0) {
-        cvfs_Error("cvFsSetDefVol #3:device not found");
-        return;
-    }
-    cvfs_OptFn(vtbl, 0, 1, (Sint32)volname, 0);
+/* Stand-in for the stripped cvFsSetDefVol, cvFsGetVolumeInfo, cvFsDelVolume, cvFsAddVolumeEx and
+ * cvFsSetCurVolume (see above). */
+static void cvfs_RodataOrderVolumes(const Char8 **out) {
+    out[0] = "cvFsSetDefVol #1:illegal device name";
+    out[1] = "cvFsSetDefVol #2:illegal volume name";
+    out[2] = "cvFsSetDefVol #3:device not found";
+    out[3] = "cvFsGetVolumeInfo #1:illegal device name";
+    out[4] = "cvFsGetVolumeInfo #2:illegal volume name";
+    out[5] = "cvFsGetVolumeInfo #3:device not found";
+    out[6] = "cvFsDelVolume #1:illegal device name";
+    out[7] = "cvFsDelVolume #2:illegal volume name";
+    out[8] = "cvFsDelVolume #3:device not found";
+    out[9] = "cvFsAddVolumeEx #1:illegal device name";
+    out[10] = "cvFsAddVolumeEx #2:illegal volume name";
+    out[11] = "cvFsAddVolumeEx #3:illegal image handle";
+    out[12] = "cvFsAddVolumeEx #3:device not found";
+    out[13] = "cvFsSetCurVolume #1:illegal device name";
+    out[14] = "cvFsSetCurVolume #2:illegal image handle";
+    out[15] = "cvFsSetCurVolume #3:device not found";
 }
 
-/* dead */
-Sint32 cvFsGetVolumeInfo(const Char8 *devname, const Char8 *volname, void *inf) {
-    CVFS_IF *vtbl;
-
-    if (devname == 0) {
-        cvfs_Error("cvFsGetVolumeInfo #1:illegal device name");
-        return 0;
-    }
-    if (volname == 0) {
-        cvfs_Error("cvFsGetVolumeInfo #2:illegal volume name");
-        return 0;
-    }
-    vtbl = cvfs_SearchDev(cvfs_tbl, devname);
-    if (vtbl == 0) {
-        cvfs_Error("cvFsGetVolumeInfo #3:device not found");
-        return 0;
-    }
-    return cvfs_OptFn(vtbl, 0, 2, (Sint32)volname, (Sint32)inf);
+/* Stand-in for the stripped cvFsOptFn2, cvFsOptFn1 and cvFsGetDevName (see above). */
+static void cvfs_RodataOrderOptions(const Char8 **out) {
+    out[0] = "cvFsOptFn2 #1:handle error";
+    out[1] = "cvFsOptFn2 #2:vtbl error";
+    out[2] = "cvFsOptFn1 #1:handle error";
+    out[3] = "cvFsOptFn1 #2:vtbl error";
+    out[4] = "cvFsGetDevName #1:vtbl error";
 }
 
-/* dead */
-void cvFsDelVolume(const Char8 *devname, const Char8 *volname) {
-    CVFS_IF *vtbl;
-
-    if (devname == 0) {
-        cvfs_Error("cvFsDelVolume #1:illegal device name");
-        return;
-    }
-    if (volname == 0) {
-        cvfs_Error("cvFsDelVolume #2:illegal volume name");
-        return;
-    }
-    vtbl = cvfs_SearchDev(cvfs_tbl, devname);
-    if (vtbl == 0) {
-        cvfs_Error("cvFsDelVolume #3:device not found");
-        return;
-    }
-    cvfs_OptFn(vtbl, 0, 3, (Sint32)volname, 0);
+/* Stand-in for the stripped cvFsDeleteFile, cvFsRemoveDir, cvFsMakeDir, cvFsGetMaxByteRate,
+ * cvFsIsExistFile and cvFsChangeDir (see above). */
+static void cvfs_RodataOrderFiles(const Char8 **out) {
+    out[0] = "cvFsDeleteFile #1:illegal file name";
+    out[1] = "cvFsDeleteFile #2:illegal device name";
+    out[2] = "cvFsDeleteFile #3:device not found";
+    out[3] = "cvFsDeleteFile #4:vtbl error";
+    out[4] = "cvFsRemoveDir #1:illegal directory name";
+    out[5] = "cvFsRemoveDir #2:illegal device name";
+    out[6] = "cvFsRemoveDir #3:device not found";
+    out[7] = "cvFsRemoveDir #4:vtbl error";
+    out[8] = "cvFsMakeDir #1:illegal directory name";
+    out[9] = "cvFsMakeDir #2:illegal device name";
+    out[10] = "cvFsMakeDir #3:device not found";
+    out[11] = "cvFsMakeDir #4:vtbl error";
+    out[12] = "cvFsGetMaxByteRate #1:handle error";
+    out[13] = "cvFsGetMaxByteRate #2:vtbl error";
+    out[14] = "cvFsIsExistFile #2:illegal device name";
+    out[15] = "cvFsIsExistFile #1:illegal file name";
+    out[16] = "cvFsIsExistFile #3:device not found";
+    out[17] = "cvFsIsExistFile #4:vtbl error";
+    out[18] = "cvFsChangeDir #1:illegal directory name";
+    out[19] = "cvFsChangeDir #2:illegal device name";
+    out[20] = "cvFsChangeDir #3:device not found";
+    out[21] = "cvFsChangeDir #4:vtbl error";
 }
 
-/* dead */
-void cvFsAddVolumeEx(const Char8 *devname, const Char8 *volname, void *img) {
-    CVFS_IF *vtbl;
-
-    if (devname == 0) {
-        cvfs_Error("cvFsAddVolumeEx #1:illegal device name");
-        return;
-    }
-    if (volname == 0) {
-        cvfs_Error("cvFsAddVolumeEx #2:illegal volume name");
-        return;
-    }
-    if (img == 0) {
-        cvfs_Error("cvFsAddVolumeEx #3:illegal image handle");
-        return;
-    }
-    vtbl = cvfs_SearchDev(cvfs_tbl, devname);
-    if (vtbl == 0) {
-        cvfs_Error("cvFsAddVolumeEx #3:device not found");
-        return;
-    }
-    cvfs_OptFn(vtbl, 0, 4, (Sint32)volname, (Sint32)img);
-}
-
-/* dead */
-void cvFsSetCurVolume(const Char8 *devname, void *img) {
-    CVFS_IF *vtbl;
-
-    if (devname == 0) {
-        cvfs_Error("cvFsSetCurVolume #1:illegal device name");
-        return;
-    }
-    if (img == 0) {
-        cvfs_Error("cvFsSetCurVolume #2:illegal image handle");
-        return;
-    }
-    vtbl = cvfs_SearchDev(cvfs_tbl, devname);
-    if (vtbl == 0) {
-        cvfs_Error("cvFsSetCurVolume #3:device not found");
-        return;
-    }
-    cvfs_OptFn(vtbl, 0, 5, (Sint32)img, 0);
-}
-
-/* dead */
-Sint32 cvFsOptFn2(CVFS_OBJ *obj, Sint32 fnid, Sint32 a, Sint32 b) {
-    if (obj == 0) {
-        cvfs_Error("cvFsOptFn2 #1:handle error");
-        return 0;
-    }
-    if (obj->vtbl->OptFn == 0) {
-        cvfs_Error("cvFsOptFn2 #2:vtbl error");
-        return 0;
-    }
-    return obj->vtbl->OptFn(obj->hn, fnid, a, b);
-}
-
-/* dead */
-Sint32 cvFsOptFn1(CVFS_OBJ *obj, Sint32 fnid, Sint32 a) {
-    if (obj == 0) {
-        cvfs_Error("cvFsOptFn1 #1:handle error");
-        return 0;
-    }
-    if (obj->vtbl->OptFn == 0) {
-        cvfs_Error("cvFsOptFn1 #2:vtbl error");
-        return 0;
-    }
-    return obj->vtbl->OptFn(obj->hn, fnid, a, 0);
-}
-
-/* dead */
-const Char8 *cvFsGetDevName(CVFS_OBJ *obj) {
-    Sint32 i;
-
-    if (obj == 0 || obj->vtbl == 0) {
-        cvfs_Error("cvFsGetDevName #1:vtbl error");
-        return 0;
-    }
-    for (i = 0; i < CVFS_MAX_DEV; i++) {
-        if (cvfs_tbl[i].vtbl == obj->vtbl) {
-            return cvfs_tbl[i].name;
-        }
-    }
-    return 0;
-}
-
-/* dead */
-Sint32 cvFsDeleteFile(const Char8 *fname) {
-    Char8 dev[CVFS_NAME_LEN];
-    Char8 path[CVFS_NAME_LEN];
-    CVFS_IF *vtbl;
-
-    if (fname == 0) {
-        cvfs_Error("cvFsDeleteFile #1:illegal file name");
-        return 0;
-    }
-    cvfs_SplitFname(fname, dev, path);
-    if (dev == 0) {
-        cvfs_Error("cvFsDeleteFile #2:illegal device name");
-        return 0;
-    }
-    vtbl = cvfs_ResolveDev(fname, dev, path);
-    if (vtbl == 0) {
-        cvfs_Error("cvFsDeleteFile #3:device not found");
-        return 0;
-    }
-    if (vtbl->x64 == 0) {
-        cvfs_Error("cvFsDeleteFile #4:vtbl error");
-        return 0;
-    }
-    return cvfs_OptFn(vtbl, 0, 10, (Sint32)path, 0);
-}
-
-/* dead */
-Sint32 cvFsRemoveDir(const Char8 *dname) {
-    Char8 dev[CVFS_NAME_LEN];
-    Char8 path[CVFS_NAME_LEN];
-    CVFS_IF *vtbl;
-
-    if (dname == 0) {
-        cvfs_Error("cvFsRemoveDir #1:illegal directory name");
-        return 0;
-    }
-    cvfs_SplitFname(dname, dev, path);
-    if (dev == 0) {
-        cvfs_Error("cvFsRemoveDir #2:illegal device name");
-        return 0;
-    }
-    vtbl = cvfs_ResolveDev(dname, dev, path);
-    if (vtbl == 0) {
-        cvfs_Error("cvFsRemoveDir #3:device not found");
-        return 0;
-    }
-    if (vtbl->x64 == 0) {
-        cvfs_Error("cvFsRemoveDir #4:vtbl error");
-        return 0;
-    }
-    return cvfs_OptFn(vtbl, 0, 11, (Sint32)path, 0);
-}
-
-/* dead */
-Sint32 cvFsMakeDir(const Char8 *dname) {
-    Char8 dev[CVFS_NAME_LEN];
-    Char8 path[CVFS_NAME_LEN];
-    CVFS_IF *vtbl;
-
-    if (dname == 0) {
-        cvfs_Error("cvFsMakeDir #1:illegal directory name");
-        return 0;
-    }
-    cvfs_SplitFname(dname, dev, path);
-    if (dev == 0) {
-        cvfs_Error("cvFsMakeDir #2:illegal device name");
-        return 0;
-    }
-    vtbl = cvfs_ResolveDev(dname, dev, path);
-    if (vtbl == 0) {
-        cvfs_Error("cvFsMakeDir #3:device not found");
-        return 0;
-    }
-    if (vtbl->x64 == 0) {
-        cvfs_Error("cvFsMakeDir #4:vtbl error");
-        return 0;
-    }
-    return cvfs_OptFn(vtbl, 0, 12, (Sint32)path, 0);
-}
-
-/* dead */
-Sint32 cvFsGetMaxByteRate(CVFS_OBJ *obj) {
-    if (obj == 0) {
-        cvfs_Error("cvFsGetMaxByteRate #1:handle error");
-        return 0;
-    }
-    if (obj->vtbl->OptFn == 0) {
-        cvfs_Error("cvFsGetMaxByteRate #2:vtbl error");
-        return 0;
-    }
-    return obj->vtbl->OptFn(obj->hn, 13, 0, 0);
-}
-
-/* dead */
-Sint32 cvFsIsExistFile(const Char8 *fname) {
-    Char8 dev[CVFS_NAME_LEN];
-    Char8 path[CVFS_NAME_LEN];
-    CVFS_IF *vtbl;
-
-    cvfs_SplitFname(fname, dev, path);
-    if (dev == 0) {
-        cvfs_Error("cvFsIsExistFile #2:illegal device name");
-        return 0;
-    }
-    if (fname == 0) {
-        cvfs_Error("cvFsIsExistFile #1:illegal file name");
-        return 0;
-    }
-    vtbl = cvfs_ResolveDev(fname, dev, path);
-    if (vtbl == 0) {
-        cvfs_Error("cvFsIsExistFile #3:device not found");
-        return 0;
-    }
-    if (vtbl->x64 == 0) {
-        cvfs_Error("cvFsIsExistFile #4:vtbl error");
-        return 0;
-    }
-    return cvfs_OptFn(vtbl, 0, 14, (Sint32)path, 0);
-}
-
-/* dead */
-Sint32 cvFsChangeDir(const Char8 *dname) {
-    Char8 dev[CVFS_NAME_LEN];
-    Char8 path[CVFS_NAME_LEN];
-    CVFS_IF *vtbl;
-
-    if (dname == 0) {
-        cvfs_Error("cvFsChangeDir #1:illegal directory name");
-        return 0;
-    }
-    cvfs_SplitFname(dname, dev, path);
-    if (dev == 0) {
-        cvfs_Error("cvFsChangeDir #2:illegal device name");
-        return 0;
-    }
-    vtbl = cvfs_ResolveDev(dname, dev, path);
-    if (vtbl == 0) {
-        cvfs_Error("cvFsChangeDir #3:device not found");
-        return 0;
-    }
-    if (vtbl->x64 == 0) {
-        cvfs_Error("cvFsChangeDir #4:vtbl error");
-        return 0;
-    }
-    return cvfs_OptFn(vtbl, 0, 15, (Sint32)path, 0);
-}
-
-/* dead */
-Sint32 cvFsGetNumTr(CVFS_OBJ *obj) {
-    if (obj == 0) {
-        cvfs_Error("cvFsGetNumTr #1:handle error");
-        return 0;
-    }
-    if (obj->vtbl->GetNumTr == 0) {
-        cvfs_Error("cvFsGetNumTr #2:vtbl error");
-        return 0;
-    }
-    return obj->vtbl->GetNumTr(obj->hn);
-}
-
-/* dead */
-void cvFsSetSctLen(CVFS_OBJ *obj, Sint32 sctlen) {
-    if (obj == 0) {
-        cvfs_Error("cvFsSetSctLen #3:handle error");
-        return;
-    }
-    if (obj->vtbl->SetSctLen == 0) {
-        cvfs_Error("cvFsSetSctLen #4:vtbl error");
-        return;
-    }
-    obj->vtbl->SetSctLen(obj->hn, sctlen);
-}
-
-/* dead */
-Sint32 cvFsGetSctLen(CVFS_OBJ *obj) {
-    if (obj == 0) {
-        cvfs_Error("cvFsGetSctLen #1:handle error");
-        return 0;
-    }
-    if (obj->vtbl->GetSctLen == 0) {
-        cvfs_Error("cvFsGetSctLen #2:vtbl error");
-        return 0;
-    }
-    return obj->vtbl->GetSctLen(obj->hn);
-}
-
-/* dead */
-Sint32 cvFsGetFreeSize(const Char8 *devname) {
-    CVFS_IF *vtbl;
-
-    vtbl = cvFsGetDevIf(cvfs_tbl, devname);
-    if (vtbl == 0) {
-        cvfs_Error("cvFsGetFreeSize #5:device not found");
-        return 0;
-    }
-    if (vtbl->x64 == 0) {
-        cvfs_Error("cvFsGetFreeSize #6:vtbl error");
-        return 0;
-    }
-    return cvfs_OptFn(vtbl, 0, 16, 0, 0);
-}
-
-/* dead */
-Sint32 cvFsGetFileSizeByHndl(CVFS_OBJ *obj) {
-    if (obj == 0) {
-        cvfs_Error("cvFsGetFileSizeByHndl #1:illegal file handle");
-        return 0;
-    }
-    return cvfs_OptFn(obj->vtbl, obj->hn, 17, 0, 0);
-}
-
-/* dead */
-Sint32 cvFsGetFileSizeEx(const Char8 *fname, Sint32 *size) {
-    Char8 dev[CVFS_NAME_LEN];
-    Char8 path[CVFS_NAME_LEN];
-    CVFS_IF *vtbl;
-
-    if (fname == 0) {
-        cvfs_Error("cvFsGetFileSizeEx #1:illegal file name");
-        return 0;
-    }
-    cvfs_SplitFname(fname, dev, path);
-    if (dev == 0) {
-        cvfs_Error("cvFsGetFileSizeEx #2:illegal device name");
-        return 0;
-    }
-    vtbl = cvfs_ResolveDev(fname, dev, path);
-    if (vtbl == 0) {
-        cvfs_Error("cvFsGetFileSizeEx #3:device not found");
-        return 0;
-    }
-    if (vtbl->x64 == 0) {
-        cvfs_Error("cvFsGetFileSizeEx #4:vtbl error");
-        return 0;
-    }
-    return cvfs_OptFn(vtbl, 0, 18, (Sint32)path, (Sint32)size);
+/* Stand-in for the stripped cvFsGetNumTr, cvFsSetSctLen, cvFsGetSctLen, cvFsGetFreeSize,
+ * cvFsGetFileSizeByHndl and cvFsGetFileSizeEx (see above). */
+static void cvfs_RodataOrderQueries(const Char8 **out) {
+    out[0] = "cvFsGetNumTr #1:handle error";
+    out[1] = "cvFsGetNumTr #2:vtbl error";
+    out[2] = "cvFsSetSctLen #3:handle error";
+    out[3] = "cvFsSetSctLen #4:vtbl error";
+    out[4] = "cvFsGetSctLen #1:handle error";
+    out[5] = "cvFsGetSctLen #2:vtbl error";
+    out[6] = "cvFsGetFreeSize #5:device not found";
+    out[7] = "cvFsGetFreeSize #6:vtbl error";
+    out[8] = "cvFsGetFileSizeByHndl #1:illegal file handle";
+    out[9] = "cvFsGetFileSizeEx #1:illegal file name";
+    out[10] = "cvFsGetFileSizeEx #2:illegal device name";
+    out[11] = "cvFsGetFileSizeEx #3:device not found";
+    out[12] = "cvFsGetFileSizeEx #4:vtbl error";
 }
 
 /* Installs the user error callback (func(obj, msg, hn)); ADXGC_SetupDvdFs installs
@@ -739,21 +407,10 @@ void cvFsStopTr(CVFS_OBJ *obj) {
     }
 }
 
-/* dead */
-Sint32 cvFsReqWr(CVFS_OBJ *obj, Sint32 nsct, void *buf) {
-    Sint32 ret;
-
-    if (obj == 0) {
-        cvfs_Error("cvFsReqWr #1:handle error");
-        return 0;
-    }
-    if (obj->vtbl->x64 != 0) {
-        ret = obj->vtbl->OptFn(obj->hn, 20, nsct, (Sint32)buf);
-    } else {
-        ret = 0;
-        cvfs_Error("cvFsReqWr #2:vtbl error");
-    }
-    return ret;
+/* Stand-in for the stripped cvFsReqWr (see above). */
+static void cvfs_RodataOrderReqWr(const Char8 **out) {
+    out[0] = "cvFsReqWr #1:handle error";
+    out[1] = "cvFsReqWr #2:vtbl error";
 }
 
 /* Requests `nsct` sectors into `buf` from the device; returns the sectors accepted (0 =
@@ -921,20 +578,9 @@ void cvFsSetDefDev(Char8 *devname) {
     }
 }
 
-/* dead */
-void cvFsDelDev(const Char8 *devname) {
-    Sint32 i;
-
-    if (devname == 0) {
-        cvfs_Error("cvFsDelDev #1:illegal device name");
-        return;
-    }
-    for (i = 0; i < CVFS_MAX_DEV; i++) {
-        if (strcmp(devname, cvfs_tbl[i].name) == 0) {
-            cvfs_tbl[i].vtbl = 0;
-            cvfs_tbl[i].name[0] = '\0';
-        }
-    }
+/* Stand-in for the stripped cvFsDelDev (see above). */
+static void cvfs_RodataOrderDelDev(const Char8 **out) {
+    out[0] = "cvFsDelDev #1:illegal device name";
 }
 
 /* Registers the device in the table unless its name is already there; 0 when the table is full.
