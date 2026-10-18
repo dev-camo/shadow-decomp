@@ -235,13 +235,13 @@ void *fn_80460C48(void *object, RwInt32 offset, RwInt32 size) {
 /* camera plugin copy: the copy joins the original's world */
 void *fn_80460CA4(void *dstObject, const void *srcObject, RwInt32 offset, RwInt32 size) {
     CameraExt *ext = CAMERAEXT(dstObject);
-    RpWorld *world = CAMERAEXT(srcObject)->world;
+    const CameraExt *srcExt = CAMERAEXT(srcObject);
 
     ext->frustumSectors = NULL;
     ext->space = 0;
     ext->numFrustumSectors = 0;
-    if (world != NULL) {
-        fn_80462130(world, dstObject);
+    if (srcExt->world != NULL) {
+        fn_80462130(srcExt->world, dstObject);
     }
     return dstObject;
 }
