@@ -185,51 +185,50 @@ RwStream *fn_80452228(RpUserDataArray *array, RwStream *stream) {
 }
 
 /* Frees the arrays of a user data list and empties it */
-#define USERDATALISTDESTROY(list)                                                                  \
-    do {                                                                                           \
-        RpUserDataArray *array;                                                                    \
-        RwChar **strings;                                                                          \
-        RwInt32 i;                                                                                 \
-        RwInt32 j;                                                                                 \
-                                                                                                   \
-        if ((list)->arrays != NULL) {                                                              \
-            for (i = 0; i < (list)->numElements; i++) {                                            \
-                array = &(list)->arrays[i];                                                        \
-                if (array->name != NULL) {                                                         \
-                    RwFree(array->name);                                                           \
-                    array->name = NULL;                                                            \
-                }                                                                                  \
-                if (array->format == rpSTRINGUSERDATA) {                                           \
-                    strings = array->data;                                                         \
-                    for (j = 0; j < array->numElements; j++) {                                     \
-                        if (*strings != NULL) {                                                    \
-                            RwFree(*strings);                                                      \
-                        }                                                                          \
-                        strings++;                                                                 \
-                    }                                                                              \
-                }                                                                                  \
-                if (array->data != NULL) {                                                         \
-                    RwFree(array->data);                                                           \
-                    array->data = NULL;                                                            \
-                }                                                                                  \
-            }                                                                                      \
-            RwFree((list)->arrays);                                                                \
-        }                                                                                          \
-        (list)->arrays = NULL;                                                                     \
-        (list)->numElements = 0;                                                                   \
-    } while (0)
+inline void UserDataListDestroy(RpUserDataList *list) {
+    RwChar **strings;
+    RpUserDataArray *array;
+    RwInt32 j;
+    RwInt32 i;
+
+    if (list->arrays != NULL) {
+        for (i = 0; i < list->numElements; i++) {
+            array = &list->arrays[i];
+            if (array->name != NULL) {
+                RwFree(array->name);
+                array->name = NULL;
+            }
+            if (array->format == rpSTRINGUSERDATA) {
+                strings = array->data;
+                for (j = 0; j < array->numElements; j++) {
+                    if (*strings != NULL) {
+                        RwFree(*strings);
+                    }
+                    strings++;
+                }
+            }
+            if (array->data != NULL) {
+                RwFree(array->data);
+                array->data = NULL;
+            }
+        }
+        RwFree(list->arrays);
+    }
+    list->arrays = NULL;
+    list->numElements = 0;
+}
 
 /* Copies a user data list over another, duplicating its names, data and strings */
 void fn_80452434(RpUserDataList *dst, const RpUserDataList *src) {
     const RpUserDataArray *srcArray;
     RpUserDataArray *dstArray;
     RwChar **srcStrings;
-    RwChar **dstStrings;
     RwInt32 dataSize;
     RwInt32 i;
     RwInt32 j;
+    RwChar **dstStrings;
 
-    USERDATALISTDESTROY(dst);
+    UserDataListDestroy(dst);
     dst->numElements = src->numElements;
     if (dst->numElements <= 0) {
         return;
@@ -281,7 +280,7 @@ void *fn_80452730(void *object, RwInt32 offset, RwInt32 size) {
 void *fn_80452744(void *object, RwInt32 offset, RwInt32 size) {
     RpUserDataList *list = USERDATALIST(object, offset);
 
-    USERDATALISTDESTROY(list);
+    UserDataListDestroy(list);
     return object;
 }
 
@@ -294,10 +293,10 @@ void *fn_80452860(void *dst, const void *src, RwInt32 offset, RwInt32 size) {
 /* object stream read: the number of arrays, then the arrays */
 RwStream *fn_80452898(RwStream *stream, RwInt32 length, void *object, RwInt32 offset,
                       RwInt32 size) {
-    RpUserDataList *list = USERDATALIST(object, offset);
     RwStream *arrayStream = stream;
     RwInt32 numElements;
     RwInt32 i;
+    RpUserDataList *list = USERDATALIST(object, offset);
 
     if (list != NULL && fn_8047D868(stream, &numElements, sizeof(RwInt32)) != NULL) {
         list->numElements = numElements;
@@ -339,8 +338,8 @@ RwStream *fn_8045294C(RwStream *stream, RwInt32 length, const void *object, RwIn
 /* The stream size of a user data array */
 inline RwInt32 UserDataArrayStreamGetSize(const RpUserDataArray *array) {
     RwChar **strings;
-    RwInt32 size = 0;
     RwInt32 i;
+    RwInt32 size = 0;
 
     if (array != NULL) {
         /* the name length, then the name with its terminator */
@@ -393,8 +392,8 @@ RwInt32 fn_80452A40(const void *object, RwInt32 offset, RwInt32 size) {
 }
 
 RwInt32 fn_80452B90(RpGeometry *geometry) {
-    RpUserDataList *list = USERDATALIST(geometry, lbl_805F1458);
     RwInt32 count = 0;
+    RpUserDataList *list = USERDATALIST(geometry, lbl_805F1458);
     RwInt32 i;
 
     for (i = 0; i < list->numElements; i++) {
@@ -415,8 +414,8 @@ RpUserDataArray *fn_80452BD8(RpGeometry *geometry, RwInt32 index) {
 }
 
 RwInt32 fn_80452C04(RpWorldSector *sector) {
-    RpUserDataList *list = USERDATALIST(sector, lbl_805F1460);
     RwInt32 count = 0;
+    RpUserDataList *list = USERDATALIST(sector, lbl_805F1460);
     RwInt32 i;
 
     for (i = 0; i < list->numElements; i++) {
