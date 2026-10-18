@@ -236,17 +236,16 @@ RwCamera *fn_80484AAC(RwCamera *camera) {
     RwMatrix *viewMatrix = &camera->viewMatrix;
     RwReal scale;
     RwReal shift;
-    RwV3d scaledAxis;
     RwV3d row;
 
     scale = -0.5f * camera->recipViewWindow.x;
+    row.x = ltm->right.x * scale;
+    row.y = ltm->right.y * scale;
+    row.z = ltm->right.z * scale;
     shift = 0.5f - scale * camera->viewOffset.x;
-    scaledAxis.x = ltm->right.x * scale;
-    scaledAxis.y = ltm->right.y * scale;
-    scaledAxis.z = ltm->right.z * scale;
-    row.x = ltm->at.x * shift + scaledAxis.x;
-    row.y = ltm->at.y * shift + scaledAxis.y;
-    row.z = ltm->at.z * shift + scaledAxis.z;
+    row.x += ltm->at.x * shift;
+    row.y += ltm->at.y * shift;
+    row.z += ltm->at.z * shift;
     viewMatrix->right.x = row.x;
     viewMatrix->up.x = row.y;
     viewMatrix->at.x = row.z;
@@ -254,13 +253,13 @@ RwCamera *fn_80484AAC(RwCamera *camera) {
         0.5f - (shift + (ltm->pos.x * row.x + ltm->pos.y * row.y + ltm->pos.z * row.z));
 
     scale = -0.5f * camera->recipViewWindow.y;
+    row.x = ltm->up.x * scale;
+    row.y = ltm->up.y * scale;
+    row.z = ltm->up.z * scale;
     shift = scale * camera->viewOffset.y + 0.5f;
-    scaledAxis.x = ltm->up.x * scale;
-    scaledAxis.y = ltm->up.y * scale;
-    scaledAxis.z = ltm->up.z * scale;
-    row.x = ltm->at.x * shift + scaledAxis.x;
-    row.y = ltm->at.y * shift + scaledAxis.y;
-    row.z = ltm->at.z * shift + scaledAxis.z;
+    row.x += ltm->at.x * shift;
+    row.y += ltm->at.y * shift;
+    row.z += ltm->at.z * shift;
     viewMatrix->right.y = row.x;
     viewMatrix->up.y = row.y;
     viewMatrix->at.y = row.z;
@@ -342,17 +341,16 @@ RwCamera *fn_80485124(RwCamera *camera) {
     RwMatrix *viewMatrix = &camera->viewMatrix;
     RwReal scale;
     RwReal shift;
-    RwV3d scaledAxis;
     RwV3d row;
 
     scale = -0.5f * camera->recipViewWindow.x;
+    row.x = ltm->right.x * scale;
+    row.y = ltm->right.y * scale;
+    row.z = ltm->right.z * scale;
     shift = -(scale * camera->viewOffset.x);
-    scaledAxis.x = ltm->right.x * scale;
-    scaledAxis.y = ltm->right.y * scale;
-    scaledAxis.z = ltm->right.z * scale;
-    row.x = ltm->at.x * shift + scaledAxis.x;
-    row.y = ltm->at.y * shift + scaledAxis.y;
-    row.z = ltm->at.z * shift + scaledAxis.z;
+    row.x += ltm->at.x * shift;
+    row.y += ltm->at.y * shift;
+    row.z += ltm->at.z * shift;
     viewMatrix->right.x = row.x;
     viewMatrix->up.x = row.y;
     viewMatrix->at.x = row.z;
@@ -361,12 +359,12 @@ RwCamera *fn_80485124(RwCamera *camera) {
 
     scale = -0.5f * camera->recipViewWindow.y;
     shift = scale * camera->viewOffset.y;
-    scaledAxis.x = ltm->up.x * scale;
-    scaledAxis.y = ltm->up.y * scale;
-    scaledAxis.z = ltm->up.z * scale;
-    row.x = ltm->at.x * shift + scaledAxis.x;
-    row.y = ltm->at.y * shift + scaledAxis.y;
-    row.z = ltm->at.z * shift + scaledAxis.z;
+    row.x = ltm->up.x * scale;
+    row.y = ltm->up.y * scale;
+    row.z = ltm->up.z * scale;
+    row.x += ltm->at.x * shift;
+    row.y += ltm->at.y * shift;
+    row.z += ltm->at.z * shift;
     viewMatrix->right.y = row.x;
     viewMatrix->up.y = row.y;
     viewMatrix->at.y = row.z;
