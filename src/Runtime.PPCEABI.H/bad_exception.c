@@ -1,18 +1,16 @@
-/* MSL C++ std::bad_exception::what() (inferred from the "bad_exception" string it returns and its
- * vtable slot). The function and string still carry per-region placeholder names. */
+/* MSL C++ std::bad_exception::what(), by its C++ link name (slot 3 of the vtable whose RTTI record
+ * names std::bad_exception). The returned "bad_exception" lies in a literal pool outside this unit
+ * that still carries per-region placeholder names. */
 #if defined(VERSION_GUPJ8P)
-#define BAD_EXCEPTION_WHAT fn_803A2F78
 #define BAD_EXCEPTION_NAME lbl_80514330
 #elif defined(VERSION_GUPP8P)
-#define BAD_EXCEPTION_WHAT fn_803A3988
 #define BAD_EXCEPTION_NAME lbl_80514DA8
 #else
-#define BAD_EXCEPTION_WHAT fn_803A2938
 #define BAD_EXCEPTION_NAME lbl_80513C90
 #endif
 
 extern const char BAD_EXCEPTION_NAME[];
 
-const char *BAD_EXCEPTION_WHAT(void) {
+const char *what__Q23std13bad_exceptionCFv(const void *self) {
     return BAD_EXCEPTION_NAME;
 }
