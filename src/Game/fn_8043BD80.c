@@ -99,7 +99,8 @@ static inline GcaxNode *gcaxSndNextRef(GcaxList *list, GcaxNode *node) {
 }
 
 /* Takes the next usable voice round-robin: a dropped voice that gets its AX voice back, or an idle
- * voice that still has one. NULL if there is none. */
+ * voice that still has one. NULL if there is none. A separate function in the E3 2005 prototype
+ * (G9SJ8P) at 0x8037E0D0, called from fn_8043D4D8's counterpart 0x8037DFC0. */
 static inline GcaxVoice *gcaxSndGetFreeVoice(void) {
     int i;
 
