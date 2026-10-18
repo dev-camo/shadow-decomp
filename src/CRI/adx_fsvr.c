@@ -3,8 +3,8 @@
  * callback (adxt_exec_fssvr) once per game frame; the phase counter adxt_fssvr_enter_cnt rejects
  * re-entry from a callback.
  *
- * Body from the RE4 GameCube decompilation. Ver.9.44 wraps it in ADXCRS_Enter/ADXCRS_Leave and runs
- * the CVFS server through adx_stmc.c's wrapper. */
+ * Body from the RE4 GameCube decompilation. The public entry wraps the worker in
+ * ADXCRS_Enter/ADXCRS_Leave, and the CVFS server runs through adx_stmc.c's fn_803BF934. */
 #include "CRI/adx.h"
 #include "CRI/adx_f.h"
 #include "CRI/adx_stm.h"

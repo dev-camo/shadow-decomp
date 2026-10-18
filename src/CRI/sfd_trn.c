@@ -4,8 +4,7 @@
  * (buffer n: in_tr writes, out_tr reads). SFTRN_CallTrSetup / CallTrtTrif dispatch the driver
  * functions by index.
  *
- * Source from the RE4 GameCube decompilation with this game's SFD_OBJ layout; this build adds
- * SFTRN_Finish (sftrn_CallFinish), not present in RE4.
+ * Source from the RE4 GameCube decompilation with this game's SFD_OBJ layout.
  */
 #include "CRI/sfd.h"
 
@@ -234,8 +233,7 @@ static Sint32 sftrn_CallInit(SFD_TR_IF **p, Sint32 ret) {
     return ret;
 }
 
-/* Calls Finish of every driver in a table until one fails (not in RE4; name inferred from
- * sftrn_CallInit). */
+/* Calls Finish of every driver in a table until one fails (name inferred from sftrn_CallInit). */
 static Sint32 sftrn_CallFinish(SFD_TR_IF **p, Sint32 ret) {
     SFD_TR_IF *trif;
     Sint32 i;
@@ -253,7 +251,7 @@ static Sint32 sftrn_CallFinish(SFD_TR_IF **p, Sint32 ret) {
     return ret;
 }
 
-/* Library shutdown of the transfer drivers (not in RE4; name inferred from SFTRN_Init). */
+/* Library shutdown of the transfer drivers (name inferred from SFTRN_Init). */
 Sint32 SFTRN_Finish(SFTRN_TRIF_TBL *tbl) {
     Sint32 ret;
 

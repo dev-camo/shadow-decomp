@@ -14,8 +14,7 @@ Sint32 SFVOM_AddRead(SFD sfd, void *frm, Sint32 arg) {
     return SFBUF_VfrmAddRead(sfd, sfd->tr[6].bufin, frm, arg);
 }
 
-/* SFD_GetFrm: in STBY/PLAYING asks the frame table for the oldest decoded frame (this game does not
- * apply RE4's SFTIM_IsGetFrmTime check here). */
+/* SFD_GetFrm: in STBY/PLAYING asks the frame table for the oldest decoded frame. */
 Sint32 SFVOM_GetRead(SFD sfd, void **frm, Sint32 arg) {
     Sint32 ret;
     Sint32 err;

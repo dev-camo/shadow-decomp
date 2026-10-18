@@ -20,8 +20,8 @@ typedef struct {
     Sint32 x0c;       /* 0x0C */
     Sint32 x10;       /* 0x10 */
     Sint32 x14;       /* 0x14 */
-    Sint32 getcnt;    /* 0x18 frames taken by SFD_GetFrm (this game only) */
-    Sint32 relcnt;    /* 0x1C frames returned by SFD_RelFrm (RE4: a "frame held" flag) */
+    Sint32 getcnt;    /* 0x18 frames taken by SFD_GetFrm */
+    Sint32 relcnt;    /* 0x1C frames returned by SFD_RelFrm */
     Sint32 bpa;       /* 0x20 buffering pause active */
     Sint32 nbpa;      /* 0x24 buffering pauses so far */
     Sint32 x28;       /* 0x28 */
@@ -38,11 +38,11 @@ CHECK_SIZEOF(SFPLY_PLYINF, 0xA8);
 #define SFPLY_IS_PLAYING(sfd)                                                                      \
     ((sfd)->stat == SFD_STAT_PLAYING && (sfd)->pause_sw != 1 && PLYINF(sfd)->bpa != 1)
 
-/* this game's Sofdec clock (sfd_ply time base; not RE4's UTY_GetTmr) */
+/* the player's 64-bit clock */
 extern Sint64 fn_803FEA5C(void);
-/* this game only: clock units per second for fn_803FEA5C (inferred) */
+/* clock units per second for fn_803FEA5C (inferred) */
 extern Sint64 fn_803FE96C(void);
-/* the timer is unusable (RE4 calls UTY_IsTmrVoid here; this game's version differs) */
+/* the timer is unusable (inferred) */
 extern Bool fn_80402510(void);
 
 void (*SFPLY_recordgetfrm)(SFD sfd, void *frm);
@@ -62,7 +62,7 @@ const Sint32 SFPLY_cond_dfl[101] = {
     0,      0,      0,        0,     0,      0,      0x5A5A5A5A, 0,  0, 0,
 };
 
-/* This game only: returns the pause switch (inferred) */
+/* Returns the pause switch (inferred). */
 Sint32 fn_803F94D8(SFD sfd) {
     if (SFLIB_CheckHn(sfd) != 0) {
         SFLIB_SetErr(0, 0xFF000141);
@@ -98,8 +98,8 @@ Sint32 SFD_AddSupply(SFD sfd, Sint32 adr, Sint32 nbyte) {
     return SFTRN_CallTrtTrif(sfd, 0, 10, adr, nbyte);
 }
 
-/* This game only: the first frame access claims sfd->x58 (0 -> 1); any other value is error
- * 0xFF000207 (inferred) */
+/* The first frame access claims sfd->x58 (0 -> 1); any other value is error 0xFF000207
+ * (inferred). */
 static inline Sint32 sfply_LockFrmAccess(SFD sfd) {
     if (sfd->x58 == 0) {
         sfd->x58 = 1;

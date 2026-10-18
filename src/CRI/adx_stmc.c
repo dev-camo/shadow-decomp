@@ -6,10 +6,9 @@
  * ADXT_ExecFsSvr until the request has settled. 40 controllers: 24 real-time (ADXT streams), 16
  * normal (ADXF files).
  *
- * Bodies from the RE4 GameCube decompilation; this build's structure follows The World Ends With
- * You's adx_stmc.c: public ADXSTM_* entries over adxstm_* workers, reference-counted init, the
- * TWEWY retry rule, a pause switch, SetSj/SetReqRdSize/Start2/BindFile, and the retry counter as
- * a word at 0x4C. The file is compiled with -inline noauto: only the `inline` helpers are expanded.
+ * Source from the RE4 GameCube decompilation, structured after The World Ends With You's
+ * adx_stmc.c (public ADXSTM_* entries over adxstm_* workers). The file is compiled with
+ * -inline noauto: only the `inline` helpers are expanded.
  */
 #include <string.h>
 
@@ -107,7 +106,7 @@ Sint32 ADXSTM_SetBufSize(ADXSTM stm, Sint32 min_nsct, Sint32 max_nsct) {
     return 1;
 }
 
-/* Runs one CVFS server pass (name unknown; TWEWY leaves it unnamed too). */
+/* Runs one CVFS server pass (name unknown). */
 void fn_803BF934(void) {
     cvFsExecServer();
 }

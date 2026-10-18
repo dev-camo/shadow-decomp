@@ -359,7 +359,7 @@ typedef struct {
 } SFMPV_PICUSR;
 CHECK_SIZEOF(SFMPV_PICUSR, 0x8);
 
-/* decoded frame object of the video driver (0xE8 bytes; RE4's is 0xE0) */
+/* decoded frame object of the video driver (0xE8 bytes) */
 typedef struct {
     Sint32 stat;          /* 0x00 */
     Sint32 lock;          /* 0x04 */
@@ -373,7 +373,7 @@ typedef struct {
     Sint32 x4c;           /* 0x4C ttu.val */
     Sint32 x50;           /* 0x50 ttu.val + concatenation time */
     SFMPV_PICUSR *picusr; /* 0x54 */
-    Sint32 x58;           /* 0x58 this game only (-1 when the frame is released for drawing) */
+    Sint32 x58;           /* 0x58 -1 when the frame is released for drawing */
     /* 0x5C: the MPV_PICATR of the picture (mpv.h), 0x80 bytes */
     Sint32 pa_width;          /* 0x5C */
     Sint32 pa_height;         /* 0x60 */
@@ -411,7 +411,7 @@ typedef struct {
     Sint8 pa_xbb;             /* 0xBF */
     Sint8 pa_xbc;             /* 0xC0 */
     Uint8 padc1[0xC4 - 0xC1]; /* 0xC1 */
-    Sint32 xc4;               /* 0xC4 last key compared by SFMPVF_HoldFrm (this game only) */
+    Sint32 xc4;               /* 0xC4 last key compared by SFMPVF_HoldFrm */
     Uint8 padc8[0xE0 - 0xC8]; /* 0xC8 */
     Sint64 pts;               /* 0xE0 */
 } SFMPV_FRM;
@@ -714,7 +714,7 @@ typedef struct {
 } SFTMR_TSUM;
 CHECK_SIZEOF(SFTMR_TSUM, 0x20);
 
-/* this game only: frame statistics of one play (sfd_ply.c; field meanings inferred from use) */
+/* frame statistics of one play (sfd_ply.c; field meanings inferred from use) */
 typedef struct {
     Sint64 t0;    /* 0x00 clock at the first SFD_GetFrm (fn_803FEA5C) */
     Sint64 t1;    /* 0x08 clock when the play ended */
@@ -755,14 +755,14 @@ typedef struct {
 CHECK_SIZEOF(SFMPS_WORK, 0x168);
 
 typedef struct SFD_OBJ {
-    SFD_CREPRM prm;   /* 0x00 */
-    Sint32 chg_flg;   /* 0x44 set after a control change */
-    Sint32 stat;      /* 0x48 */
-    Sint32 req;       /* 0x4C requested state (3 = standby, 4 = start) */
-    Sint32 pause_sw;  /* 0x50 */
-    Sint32 pause_cnt; /* 0x54 */
-    Sint32 x58;       /* 0x58 frame access claimed by SFD_GetFrm/SFD_RelFrm (this game only) */
-    Sint32 x5c;       /* 0x5C (this game only) */
+    SFD_CREPRM prm;                /* 0x00 */
+    Sint32 chg_flg;                /* 0x44 set after a control change */
+    Sint32 stat;                   /* 0x48 */
+    Sint32 req;                    /* 0x4C requested state (3 = standby, 4 = start) */
+    Sint32 pause_sw;               /* 0x50 */
+    Sint32 pause_cnt;              /* 0x54 */
+    Sint32 x58;                    /* 0x58 frame access claimed by SFD_GetFrm/SFD_RelFrm */
+    Sint32 x5c;                    /* 0x5C */
     Uint8 pad60[0x74 - 0x60];      /* 0x0060 */
     Sint32 pad74;                  /* 0x0074 */
     SFHDS_FHD fhd;                 /* 0x78 file header analysis */
@@ -810,7 +810,7 @@ typedef struct SFD_OBJ {
     Sint32 pad354c;                 /* 0x354C */
     SFSEE_HN see;                   /* 0x3550 (SFD_EntrySeek) */
     SFTMR_TSUM tsum[6];             /* 0x3560 server time statistics (tsum[5]: sfply_ExecOne) */
-    SFPLY_FRMSTAT frmstat;          /* 0x3620 (this game only) */
+    SFPLY_FRMSTAT frmstat;          /* 0x3620 */
 } SFD_OBJ;
 CHECK_SIZEOF(SFD_OBJ, 0x3640);
 /* Buffer n seen as the SFD object shifted by n buffers: the code adds n * sizeof(SFBUF_WORK) to the
@@ -1015,7 +1015,7 @@ void SFMPV_RestoreCond(SFD sfd, void *buf, Sint32 n);
 Sint32 SFD_SetUsrTimeFn(SFD sfd, SFTIM_FN fn);
 Sint32 SFD_SetExtClockFn(SFD sfd, SFTIM_FN fn, Sint32 wrap, void *obj);
 Sint32 SFD_SetUsrIsSkipFn(SFD sfd, Bool (*fn)());
-/* Signature from the RE4 decompilation of sfd_tim.c (same 0x18-byte function). */
+/* sfd_tim.c (not yet decompiled): parameters as its callers pass them. */
 Sint32 SFTIM_GetTime(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 Sint32 SFTIM_GetTimeSub(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 Bool SFTIM_IsStagnant(SFD sfd);
