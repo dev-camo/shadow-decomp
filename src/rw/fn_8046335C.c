@@ -251,8 +251,10 @@ RwBool fn_80463A5C(RxPipelineNode *self, const RxPipelineNodeParam *params) {
     renderMesh.nodeData = nodeData;
     if (!(geometry->flags & rpGEOMETRYNATIVE)) {
         RpMeshHeader *meshHeader;
+        /* the original tests the count as unsigned although the field is signed */
+        RwUInt32 numVertices = geometry->numVertices;
 
-        if (geometry->numVertices == 0) {
+        if (numVertices == 0) {
             return TRUE;
         }
         meshHeader = geometry->mesh;
