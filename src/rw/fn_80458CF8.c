@@ -316,14 +316,16 @@ RpGeometry *fn_804591C4(RpGeometry *geometry) {
 /* Creates a geometry: the format's flags and texture coordinate sets, and one allocation for the
  * geometry, its prelit colours, texture coordinates and triangles; then one morph target */
 RpGeometry *fn_80459464(RwInt32 numVertices, RwInt32 numTriangles, RwUInt32 format) {
-    RpGeometry *geometry;
+    RwUInt8 *data;
     RwUInt32 size;
     RwUInt32 numTexCoordSets;
-    RwUInt32 texCoordSetBits;
-    RwUInt32 flags;
     RwUInt32 native;
-    RwUInt8 *data;
+    RwUInt32 flags;
+    RwUInt32 formatFlags;
+    RwUInt32 texCoordSetBits;
+    RpGeometry *geometry;
     RwUInt32 i;
+    RwInt32 triangleIndex;
 
     if (numVertices < 0 || numVertices >= rpGEOMETRYMAXVERTICES || numTriangles < 0) {
         if (numVertices >= 0 && numVertices >= rpGEOMETRYMAXVERTICES) {
@@ -333,7 +335,7 @@ RpGeometry *fn_80459464(RwInt32 numVertices, RwInt32 numTriangles, RwUInt32 form
     }
 
     size = lbl_8056D810.sizeOfStruct;
-    flags = format & 0xFF;
+    formatFlags = format & 0xFF;
     texCoordSetBits = format & 0xFF0000;
     if (texCoordSetBits != 0) {
         numTexCoordSets = texCoordSetBits >> 16;
@@ -343,9 +345,9 @@ RpGeometry *fn_80459464(RwInt32 numVertices, RwInt32 numTriangles, RwUInt32 form
         numTexCoordSets = (format & rpGEOMETRYTEXTURED) ? 1 : 0;
     }
     /* the texture flags follow the number of sets */
-    flags &= ~(rpGEOMETRYTEXTURED | rpGEOMETRYTEXTURED2);
-    flags |=
-        numTexCoordSets == 1 ? rpGEOMETRYTEXTURED : (numTexCoordSets > 1 ? rpGEOMETRYTEXTURED2 : 0);
+    flags = (formatFlags & ~(rpGEOMETRYTEXTURED | rpGEOMETRYTEXTURED2)) |
+            (numTexCoordSets == 1 ? rpGEOMETRYTEXTURED
+                                  : (numTexCoordSets > 1 ? rpGEOMETRYTEXTURED2 : 0));
 
     native = format & rpGEOMETRYNATIVE;
     if (!native) {
@@ -399,8 +401,8 @@ RpGeometry *fn_80459464(RwInt32 numVertices, RwInt32 numTriangles, RwUInt32 form
         }
         if (numTriangles != 0) {
             geometry->triangles = (RpTriangle *)data;
-            for (i = 0; (RwInt32)i < numTriangles; i++) {
-                geometry->triangles[i].matIndex = 0xFFFF;
+            for (triangleIndex = 0; triangleIndex < numTriangles; triangleIndex++) {
+                geometry->triangles[triangleIndex].matIndex = 0xFFFF;
             }
         }
     }
