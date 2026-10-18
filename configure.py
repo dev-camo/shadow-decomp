@@ -1243,6 +1243,21 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # NonMatching: DCT_AcInit reaches its four double literals through one pooled .rodata
+            # base (the original loads each with its own lis/lfd pair, and its literal order is
+            # 0.5, int-to-double, 1/sqrt(8), pi/8): 59 words; the other functions match. The .bss
+            # puts dctac_version_dummy before dctac_f_const (first-reference order; the original
+            # stores it last).
+            Object(
+                NonMatching,
+                "CRI/dct_ac.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
             Object(
                 Matching,
                 "CRI/dct_ver.c",

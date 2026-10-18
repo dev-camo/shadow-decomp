@@ -999,6 +999,11 @@ CRI/sud_lib.c:
 	.rodata     start:0x80518EC0 end:0x80518F10
 	.bss        start:0x805C4EA8 end:0x805C4EB0
 
+CRI/dct_ac.c:
+	.text       start:0x803D386C end:0x803D3C48
+	.rodata     start:0x805192B0 end:0x805192D8
+	.bss        start:0x805C5740 end:0x805C5B48
+
 CRI/dct_ver.c:
 	.text       start:0x803D3C48 end:0x803D3C5C
 	.rodata     start:0x805192D8 end:0x80519330

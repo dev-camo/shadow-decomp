@@ -36,7 +36,7 @@ void DCT_FsriInitPa(DCT_PA *pa);
 void DCT_FsriInitScaleTbl(Float32 *tbl);
 void DCT_FsriInit(void);
 
-/* dct_ac.c (not yet decompiled): double-precision reference transform */
+/* dct_ac.c: double-precision reference transform */
 void DCT_AcInit(void);
 void DCT_AcIdctDouble(Float64 *in, Float64 *out);
 
