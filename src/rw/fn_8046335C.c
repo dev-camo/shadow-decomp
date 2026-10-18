@@ -212,7 +212,8 @@ RpAtomic *fn_80463840(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
 
 /* Creates the instanced data of an atomic's geometry, owned by the atomic when it has several
  * morph targets */
-RpAtomic *fn_804639AC(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
+void *fn_804639AC(void *object, RpGameCubeRenderMesh *renderMesh) {
+    RpAtomic *atomic = object;
     RpGeometry *geometry = atomic->geometry;
     void *owner;
     RwResEntry **ownerRef;
@@ -235,7 +236,7 @@ RpAtomic *fn_804639AC(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
         renderMesh->repEntry = fn_8046C0D4(geometry, owner, ownerRef);
     }
     geometry->lockedSinceLastInst = 0;
-    return atomic;
+    return object;
 }
 
 /* The atomic all-in-one node body: instances the atomic's geometry, or reinstances and reuses its
@@ -310,7 +311,7 @@ RwBool fn_80463A5C(RxPipelineNode *self, const RxPipelineNodeParam *params) {
 RwBool fn_80463CE0(RxPipelineNode *self) {
     RxGameCubeAllInOneData *nodeData = self->privateData;
 
-    nodeData->instanceCallBack = (RxGameCubeAllInOneCallBack)fn_804639AC;
+    nodeData->instanceCallBack = fn_804639AC;
     nodeData->reinstanceCallBack = (RxGameCubeAllInOneCallBack)fn_80463840;
     nodeData->lightingCallBack = (RxGameCubeAllInOneCallBack)fn_80463428;
     nodeData->renderCallBack = fn_80462914;

@@ -381,8 +381,9 @@ void fn_80463244(void) {
 }
 
 RwBool fn_80463298(void) {
-    void *pipeline = fn_8046335C(rwPLATFORMPIPELINEPLUGIN, 0, fn_804639AC, fn_80463840, fn_80463428,
-                                 (RpGameCubeRenderCallBack)fn_80462914);
+    void *pipeline =
+        fn_8046335C(rwPLATFORMPIPELINEPLUGIN, 0, (RpGameCubeInstanceCallBack)fn_804639AC,
+                    fn_80463840, fn_80463428, (RpGameCubeRenderCallBack)fn_80462914);
 
     if (pipeline != NULL) {
         RXPIPELINEGLOBAL(platformAtomicPipeline) = pipeline;
