@@ -597,17 +597,19 @@ CHECK_SIZEOF(SFSEE_SHDR, 0x198);
 /* seek support work supplied by the user through SFD_EntrySeek (sfd_see.c); the header analysis
  * results of the video / audio streams are kept here, followed by the user-set totals */
 typedef struct {
-    Sint32 analyzed;             /* 0x000 total time known */
-    Sint32 ncount;               /* 0x004 total time */
+    Sint32 analyzed; /* 0x000 header analysis done (sfsee_ExecHeadAnaly) */
+    /* rate from the header analysis (sfsee_ExecHeadAnaly): a byte rate with a system stream, else
+     * copied from vid_ncount/aud_ncount (meaning unverified); sfsee_CalcByteRate falls back to it */
+    Sint32 ncount;               /* 0x004 */
     Sint32 tscale;               /* 0x008 */
     SFHDS_FHD fhd;               /* 0x00C system header analysis */
     SFSEE_SHDR shdr;             /* 0x8A0 system stream analysis (sfd_mps.c), 0x198 bytes */
     Uint8 pada38[0xAD0 - 0xA38]; /* 0xA38 */
-    Sint32 vid_analyzed;         /* 0xAD0 video total time known (read when driver 2, video, runs) */
+    Sint32 vid_analyzed;         /* 0xAD0 video header analysed (driver 2) */
     Sint32 vid_ncount;           /* 0xAD4 */
     Sint32 vid_tscale;           /* 0xAD8 */
     Uint8 padadc[0xD0C - 0xADC]; /* 0xADC */
-    Sint32 aud_analyzed;         /* 0xD0C audio total time known (read when driver 3, audio, runs) */
+    Sint32 aud_analyzed;         /* 0xD0C audio header analysed (driver 3) */
     Sint32 aud_ncount;           /* 0xD10 */
     Sint32 aud_tscale;           /* 0xD14 */
     Uint8 padd18[0xDA8 - 0xD18]; /* 0xD18 */
@@ -870,25 +872,6 @@ typedef struct {
     Sint32 prm1;              /* 0x04 */
 } SFD_INIT_PRM;
 CHECK_SIZEOF(SFD_INIT_PRM, 0x8);
-
-/* creation information filled by SFD_AnalyCreInf (sfd_cre.c, 0x40 bytes) */
-typedef struct {
-    Sint8 creatable;        /* 0x00 a driver set or an irregular pack size */
-    Sint8 avail;            /* 0x01 a video or audio driver was found */
-    const SFD_TR_IF *strif; /* 0x04 system driver */
-    const SFD_TR_IF *vtrif; /* 0x08 video driver */
-    const SFD_TR_IF *atrif; /* 0x0C audio driver */
-    Sint32 packsiz;         /* 0x10 (-1: irregular) */
-    Sint32 picw;            /* 0x14 */
-    Sint32 pich;            /* 0x18 */
-    Sint32 bitrate;         /* 0x1C */
-    Sint32 picrate;         /* 0x20 */
-    Sint32 vbvsiz;          /* 0x24 */
-    Sint8 ach;              /* 0x28 */
-    Sint32 afreq;           /* 0x2C */
-    Sint32 rsv[4];          /* 0x30 */
-} SFD_CREINF;
-CHECK_SIZEOF(SFD_CREINF, 0x40);
 
 extern SFLIB_WORK SFLIB_libwork;
 
