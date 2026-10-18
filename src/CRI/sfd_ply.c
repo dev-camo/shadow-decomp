@@ -363,7 +363,7 @@ Sint32 SFD_Stop(SFD sfd) {
 }
 
 /* Requests playback (req START): the state machine goes PREP -> STBY -> PLAYING as the streams are
- * prepared. With cond 0x2F the Pro Logic II standby path is used instead. */
+ * prepared. With cond 0x2F equal to 1, only a standby request (SFPL2_Standby) is made instead. */
 Sint32 SFD_Start(SFD sfd) {
     Sint32 ret;
 
