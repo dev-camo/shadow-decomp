@@ -7,7 +7,11 @@
  * callback at 0x803C3980 compares it with the decoded data length.
  */
 #include "CRI/cri_xpt.h"
+#include "CRI/adx_amp.h"
+#include "CRI/adx_rna.h"
 #include "CRI/adx_sjd.h"
+#include "CRI/adx_stm.h"
+#include "CRI/lsc.h"
 #include "CRI/sj.h"
 #include "layout_check.h"
 
@@ -27,9 +31,9 @@ typedef struct {
     Sint8 stat;               /* 0x01 ADXT_ISTAT_* */
     Sint8 mode;               /* 0x02 input kind (0/1: file stream, 2: memory, 3: stream joint) */
     Sint8 maxnch;             /* 0x03 */
-    void *sjd;                /* 0x04 ADXSJD decoder */
-    void *stm;                /* 0x08 ADXSTM stream controller */
-    void *rna;                /* 0x0C ADXRNA renderer (SFADXT_Create copies it into SFAOAP.x00) */
+    ADXSJD sjd;               /* 0x04 decoder */
+    ADXSTM stm;               /* 0x08 stream controller */
+    AXRNA rna;                /* 0x0C renderer (fn_803EDD18 copies it into SFAOAP.x00) */
     SJ sjf;                   /* 0x10 file stream joint */
     SJ sji;                   /* 0x14 decoder input stream joint */
     SJ sjo[2];                /* 0x18 decoder output stream joints (one per channel) */
@@ -64,13 +68,13 @@ typedef struct {
     Sint8 x71;                /* 0x71 */
     Sint8 x72;                /* 0x72 pause state (ADXT_Pause) */
     Sint8 x73;                /* 0x73 */
-    void *amp;                /* 0x74 ADXAMP */
+    ADXAMP amp;               /* 0x74 */
     SJ sjx[2];                /* 0x78 extra stream joints destroyed with the handle */
     SJ sjy[2];                /* 0x80 */
     Sint32 timeofst;          /* 0x88 ADXT_SetTimeOfst */
     Sint32 lpendsct;          /* 0x8C loop end in sectors */
     Sint32 trapnsmpl;         /* 0x90 */
-    void *lsc;                /* 0x94 load scheduler handle */
+    LSC lsc;                  /* 0x94 load scheduler */
     Sint8 lnksw;              /* 0x98 link (concatenated file) switch */
     Uint8 pad99[0x9C - 0x99]; /* 0x99 */
     Uint32 x9c;               /* 0x9C time position at the last (re)start in adxt_time_unit units */

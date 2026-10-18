@@ -914,12 +914,12 @@ void adxt_Destroy(ADXT adxt) {
         adxt_Stop(adxt);
     }
     if (adxt->rna != 0) {
-        void *rna = adxt->rna;
+        AXRNA rna = adxt->rna;
         adxt->rna = 0;
         ADXRNA_Destroy(rna);
     }
     if (adxt->sjd != 0) {
-        void *sjd = adxt->sjd;
+        ADXSJD sjd = adxt->sjd;
         adxt->sjd = 0;
         ADXSJD_Destroy(sjd);
     }
@@ -930,7 +930,7 @@ void adxt_Destroy(ADXT adxt) {
         ADXSTM_Destroy(stm);
     }
     if (adxt->lsc != 0) {
-        void *lsc = adxt->lsc;
+        LSC lsc = adxt->lsc;
         adxt->lsc = 0;
         LSC_Destroy(lsc);
     }
@@ -958,7 +958,7 @@ void adxt_Destroy(ADXT adxt) {
         }
     }
     if (adxt->amp != 0) {
-        void *amp = adxt->amp;
+        ADXAMP amp = adxt->amp;
         adxt->amp = 0;
         ADXAMP_Destroy(amp);
     }
