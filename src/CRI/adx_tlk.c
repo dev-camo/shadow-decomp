@@ -3,13 +3,17 @@
  * queries, the sample-time bookkeeping used for the vsync-based time mode, silence insertion and
  * the header/end code tests.
  *
- * Bodies from the RE4 GameCube decompilation (Ver.9.31). Ver.9.44 wraps every public ADXT_* entry
- * in ADXCRS_Enter/ADXCRS_Leave around an adxt_* worker (the names in its error messages), adds
- * ADXT_StopWithoutLsc and ADXT_GetTimeReal (names from 3rd Strike's symbols; GetTimeReal inferred
- * from its 1/100 s result), the handle byte at 0xA9 that gates the header default volume and pan,
- * and the xc0 reset. The file is compiled with deferred inlining: .text is the reverse of this
- * file, the string literals follow codegen order and .bss is in reverse declaration order.
- * Functions whose public entry is unreferenced in this game are kept for their messages. */
+ * Source from the RE4 GameCube decompilation. Most public ADXT_* entries run an adxt_* worker (the
+ * names in its error messages) between ADXCRS_Enter and ADXCRS_Leave. ADXT_GetTimeReal's name is
+ * inferred. The file is compiled with deferred inlining: .text is the reverse of this file, the
+ * literals follow codegen order and .bss is in reverse declaration order.
+ *
+ * Several public entries are stripped from the game, so their bodies are unknown; only their
+ * error messages and constants remain in .rodata, between those of the kept functions. MWCC
+ * places literals in order of first use, so never-called stand-ins at their positions refer to
+ * them in that order (storing the values keeps the references). Because codegen runs backwards
+ * through the file, a stand-in for several adjacent entries lists the last entry's literals
+ * first. */
 #include <string.h>
 
 #include "CRI/adx.h"
@@ -40,6 +44,7 @@
     (adxt)->x9c = (Uint32)((Float32)adxt_time_unit * ((Float32)(nc) / (Float32)(ts)))
 
 /* (.bss is the reverse of this order) */
+/* used only by the stripped ADXT_GetMvTime; kept for the .bss layout */
 static Float32 adxt_mviop_f;
 Sint32 adxt_mviop_d;
 static Sint32 adxt_mvtmp_d;
@@ -68,43 +73,26 @@ Sint32 ADXT_GetNumChan(ADXT adxt);
 Sint32 ADXT_GetSfreq(ADXT adxt);
 Sint32 ADXT_GetOutPan(ADXT adxt, Sint32 ch);
 void ADXT_SetOutPan(ADXT adxt, Sint32 ch, Sint32 pan);
-Sint32 ADXT_GetOutBalance(ADXT adxt);
-void ADXT_SetOutBalance(ADXT adxt, Sint32 bal);
-Sint32 ADXT_GetNumSmplObuf(ADXT adxt);
 void ADXT_GetTime(ADXT adxt, Sint32 *ncount, Sint32 *tscale);
 void ADXT_SetLnkSw(ADXT adxt, Sint32 sw);
 void ADXT_Stop(ADXT adxt);
 void ADXT_Destroy(ADXT adxt);
 void ADXT_ExecServer(void);
 
-static inline void adxt_SetKeyString(ADXT adxt, Char8 *str);
 static inline Sint32 adxt_GetOutBalance(ADXT adxt);
 static inline void adxt_SetOutBalance(ADXT adxt, Sint32 bal);
 static inline Sint32 adxt_InsertSilence(ADXT adxt, Sint32 nch, Sint32 nsmpl);
-static inline Sint32 adxt_GetDecDtLen(ADXT adxt);
 static inline Sint32 adxt_GetDecNumSmpl(ADXT adxt);
 static inline void adxt_SetLnkSw(ADXT adxt, Sint32 sw);
 static inline void adxt_SetTimeOfst(ADXT adxt, Sint32 ofst);
 static inline Sint32 adxt_DiscardSmpl(ADXT adxt, Sint32 nsmpl);
 static inline void adxt_TermSupply(ADXT adxt);
-static inline Sint32 adxt_GetStatPause(ADXT adxt);
 static inline void adxt_Pause(ADXT adxt, Sint32 sw);
-static inline Bool adxt_IsReadyPlayStart(ADXT adxt);
-static inline void adxt_SetWaitPlayStart(ADXT adxt, Sint32 sw);
-static inline SJ adxt_GetInputSj(ADXT adxt);
-static inline void adxt_SetLpFlg(ADXT adxt, Sint32 flg);
-static inline Sint32 adxt_GetLpCnt(ADXT adxt);
 static inline void adxt_ClearErrCode(ADXT adxt);
 static inline Sint32 adxt_GetErrCode(ADXT adxt);
 static inline void adxt_ExecServer(void);
 static inline void adxt_SetAutoRcvr(ADXT adxt, Sint32 sw);
-static inline Bool adxt_IsCompleted(ADXT adxt);
-static inline Float32 adxt_GetIbufRemainTime(ADXT adxt);
 static inline Sint32 adxt_GetNumSmplObuf(ADXT adxt);
-static inline Sint32 adxt_GetNumSctIbuf(ADXT adxt);
-static inline void adxt_SetReloadSct(ADXT adxt, Sint32 nsct);
-static inline void adxt_ResetReloadTime(ADXT adxt);
-static inline void adxt_SetReloadTime(ADXT adxt, Float32 time);
 static inline void adxt_SetSvrFreq(ADXT adxt, Sint32 freq);
 static inline void adxt_SetDefSvrFreq(Sint32 freq);
 static inline Sint32 adxt_GetOutVol(ADXT adxt);
@@ -113,10 +101,7 @@ static inline Sint32 adxt_GetOutPan(ADXT adxt, Sint32 ch);
 static inline void adxt_SetOutPan(ADXT adxt, Sint32 ch, Sint32 pan);
 static inline Sint32 adxt_GetNumChan(ADXT adxt);
 static inline Sint32 adxt_GetSfreq(ADXT adxt);
-static inline Sint32 adxt_GetFmtBps(ADXT adxt);
-static inline Sint32 adxt_GetHdrLen(ADXT adxt);
 static inline Sint32 adxt_GetNumSmpl(ADXT adxt);
-static inline Float32 adxt_GetMvTime(ADXT adxt);
 static inline Sint32 adxt_GetTimeReal(ADXT adxt);
 void adxt_GetTime(ADXT adxt, Sint32 *ncount, Sint32 *tscale);
 static inline Sint32 adxt_GetStat(ADXT adxt);
@@ -261,22 +246,13 @@ static inline void adxt_get_smpl_time(ADXT adxt, Sint32 *ncount, Sint32 *tscale)
     }
 }
 
-/* Playback time in 1/100 s (name from 3rd Strike's symbols, inferred for this build). */
+/* Playback time in 1/100 s (name inferred). */
 static inline Sint32 adxt_GetTimeReal(ADXT adxt) {
     Sint32 nc;
     Sint32 ts;
 
     adxt_GetTime(adxt, &nc, &ts);
     return (Sint32)(100.0f * ((Float32)nc / (Float32)ts));
-}
-
-/* (public entry unreferenced in this game) movie synchronisation: the decoded position in 1/100
- * vsync units */
-static inline Float32 adxt_GetMvTime(ADXT adxt) {
-    adxt_mvtmp_d = adxt_vsync_cnt - adxt->startvsync;
-    adxt_mviop_d = adxt_mvtmp_d * 100;
-    adxt_mviop_f = (Float32)adxt_mviop_d / 100.0f;
-    return adxt_mviop_f;
 }
 
 /* Total sample count of the stream once the header is known (stat >= PREP), else 0. */
@@ -287,30 +263,6 @@ static inline Sint32 adxt_GetNumSmpl(ADXT adxt) {
     }
     if (adxt->stat >= ADXT_ISTAT_PREP) {
         return ADXSJD_GetTotalNumSmpl(adxt->sjd);
-    }
-    return 0;
-}
-
-/* (public entry unreferenced in this game) */
-static inline Sint32 adxt_GetHdrLen(ADXT adxt) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080822 adxt_GetHdrLen: parameter error");
-        return -1;
-    }
-    if (adxt->stat >= ADXT_ISTAT_PREP) {
-        return ADXSJD_GetHdrLen(adxt->sjd);
-    }
-    return 0;
-}
-
-/* (public entry unreferenced in this game) */
-static inline Sint32 adxt_GetFmtBps(ADXT adxt) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080821 adxt_GetFmtBps: parameter error");
-        return -1;
-    }
-    if (adxt->stat >= ADXT_ISTAT_PREP) {
-        return ADXSJD_GetFmtBps(adxt->sjd);
     }
     return 0;
 }
@@ -433,43 +385,6 @@ static inline void adxt_SetSvrFreq(ADXT adxt, Sint32 freq) {
     adxt_last_svrfreq = freq;
 }
 
-/* (public entry unreferenced in this game) reload threshold from a time in seconds */
-static inline void adxt_SetReloadTime(ADXT adxt, Float32 time) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080838 adxt_SetReloadTime: parameter error");
-        return;
-    }
-    adxt->reload_nsct = (Sint16)(time * (Float32)(ADXSJD_GetSfreq(adxt->sjd) * adxt->maxnch * 18 /
-                                                  32 / ADXT_SCT_SIZE));
-}
-
-/* (public entry unreferenced in this game) */
-static inline void adxt_ResetReloadTime(ADXT adxt) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E03111501 adxt_ResetReloadTime: parameter error");
-        return;
-    }
-    adxt->reload_nsct = (Sint16)(0.85f * (Float32)adxt->ibuf_nsct);
-}
-
-/* (public entry unreferenced in this game) */
-static inline void adxt_SetReloadSct(ADXT adxt, Sint32 nsct) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080839 adxt_SetReloadSct: parameter error");
-        return;
-    }
-    adxt->reload_nsct = nsct;
-}
-
-/* (public entry unreferenced in this game) */
-static inline Sint32 adxt_GetNumSctIbuf(ADXT adxt) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080834 adxt_GetNumSctIbuf: parameter error");
-        return -1;
-    }
-    return ADXSTM_GetNumSctIbuf(adxt->stm);
-}
-
 /* samples waiting in the first output stream joint (16-bit) */
 static inline Sint32 adxt_GetNumSmplObuf(ADXT adxt) {
     if (adxt == 0) {
@@ -478,39 +393,6 @@ static inline Sint32 adxt_GetNumSmplObuf(ADXT adxt) {
     }
     if (adxt->sjo[0] != 0) {
         return SJ_GetNumData(adxt->sjo[0], SJ_CK_DATA) / 2;
-    }
-    return 0;
-}
-
-/* (public entry unreferenced in this game) playback time left in the input buffer, in seconds */
-static inline Float32 adxt_GetIbufRemainTime(ADXT adxt) {
-    Float32 rtime = 0.0f;
-    Sint32 stat;
-    Sint32 nch;
-    Sint32 sfreq;
-
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080835 adxt_GetIbufRemainTime: parameter error");
-        return -1.0f;
-    }
-    stat = adxt_GetStat(adxt);
-    nch = adxt_GetNumChan(adxt);
-    sfreq = adxt_GetSfreq(adxt);
-    if (stat >= ADXT_ISTAT_PREP && nch > 0 && sfreq > 0) {
-        rtime = (Float32)(ADXSTM_GetNumSctIbuf(adxt->stm) * ADXT_SCT_SIZE / (nch * 18) * 32) /
-                (Float32)sfreq;
-    }
-    return rtime;
-}
-
-/* (public entry unreferenced in this game) */
-static inline Bool adxt_IsCompleted(ADXT adxt) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080802 adxt_IsCompleted: parameter error");
-        return 0;
-    }
-    if (adxt->stat == ADXT_STAT_PLAYEND) {
-        return 1;
     }
     return 0;
 }
@@ -565,51 +447,6 @@ static inline void adxt_ClearErrCode(ADXT adxt) {
     adxt->x6a = 0;
 }
 
-/* (public entry unreferenced in this game) */
-static inline Sint32 adxt_GetLpCnt(ADXT adxt) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080829 adxt_GetLpCnt: parameter error");
-        return -1;
-    }
-    return adxt->lpcnt;
-}
-
-/* (public entry unreferenced in this game) */
-static inline void adxt_SetLpFlg(ADXT adxt, Sint32 flg) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080828 adxt_SetLpFlg: parameter error");
-        return;
-    }
-    adxt->lpsw = flg;
-}
-
-/* (public entry unreferenced in this game) */
-static inline SJ adxt_GetInputSj(ADXT adxt) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080833 adxt_GetInputSj: parameter error");
-        return 0;
-    }
-    return adxt->sji;
-}
-
-/* (public entry unreferenced in this game) */
-static inline void adxt_SetWaitPlayStart(ADXT adxt, Sint32 sw) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080830 adxt_SetWaitPlayStart: parameter error");
-        return;
-    }
-    adxt->pausesw = sw;
-}
-
-/* (public entry unreferenced in this game) */
-static inline Bool adxt_IsReadyPlayStart(ADXT adxt) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080831 adxt_IsReadyPlayStart: parameter error");
-        return 0;
-    }
-    return adxt->x71;
-}
-
 /* Pause (sw 1) / resume (sw 0): stops or restarts the AX renderer voices and rebases the vsync time
  * position so ADXT_GetTime stays continuous. */
 static inline void adxt_Pause(ADXT adxt, Sint32 sw) {
@@ -642,15 +479,6 @@ static inline void adxt_Pause(ADXT adxt, Sint32 sw) {
         ADXT_SET_TIME_POS(adxt, nc, ts);
     }
     ADXCRS_Unlock();
-}
-
-/* (public entry unreferenced in this game) */
-static inline Sint32 adxt_GetStatPause(ADXT adxt) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080847 adxt_GetStatPause: parameter error");
-        return 0;
-    }
-    return adxt->x72;
 }
 
 /* Tells the decoder that no more input data will arrive (end of a memory / stream-joint source). */
@@ -703,15 +531,6 @@ static inline Sint32 adxt_GetDecNumSmpl(ADXT adxt) {
     return ADXSJD_GetDecNumSmpl(adxt->sjd);
 }
 
-/* (public entry unreferenced in this game) */
-static inline Sint32 adxt_GetDecDtLen(ADXT adxt) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E04041901 adxt_GetDecDtLen: parameter error");
-        return -1;
-    }
-    return ADXSJD_GetDecDtLen(adxt->sjd);
-}
-
 /* put nsmpl samples of zero ADX blocks (18 bytes per channel per 32 samples) in front of the
  * decoder input, in two pieces around the ring buffer wrap; returns the samples inserted */
 static inline Sint32 adxt_InsertSilence(ADXT adxt, Sint32 nch, Sint32 nsmpl) {
@@ -745,7 +564,7 @@ static inline Sint32 adxt_InsertSilence(ADXT adxt, Sint32 nch, Sint32 nsmpl) {
     return (n1 + n2) / blksz * 32;
 }
 
-/* (public entry unreferenced in this game) balance: -15..15, centred when the output is mono */
+/* balance: -15..15, centred when the output is mono */
 static inline void adxt_SetOutBalance(ADXT adxt, Sint32 bal) {
     if (adxt == 0) {
         ADXERR_CallErrFunc1("E02080870 adxt_SetOutBalance: parameter error");
@@ -765,22 +584,13 @@ static inline void adxt_SetOutBalance(ADXT adxt, Sint32 bal) {
     }
 }
 
-/* (public entry unreferenced in this game) */
+/* The balance last set with adxt_SetOutBalance. */
 static inline Sint32 adxt_GetOutBalance(ADXT adxt) {
     if (adxt == 0) {
         ADXERR_CallErrFunc1("E02080871 adxt_GetOutBalance: parameter error");
         return 0;
     }
     return adxt->outbal;
-}
-
-/* (public entry unreferenced in this game) */
-static inline void adxt_SetKeyString(ADXT adxt, Char8 *str) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080860 adxt_SetKeyString: parameter error");
-        return;
-    }
-    ADXSJD_SetKeyString(adxt->sjd, str);
 }
 
 ADXT ADXT_Create(Sint32 maxnch, void *work, Sint32 worksize) {
@@ -1107,15 +917,6 @@ Sint32 ADXT_GetTimeReal(ADXT adxt) {
     return ret;
 }
 
-Float32 ADXT_GetMvTime(ADXT adxt) {
-    Float32 ret;
-
-    ADXCRS_Enter();
-    ret = adxt_GetMvTime(adxt);
-    ADXCRS_Leave();
-    return ret;
-}
-
 Sint32 ADXT_GetNumSmpl(ADXT adxt) {
     Sint32 ret;
 
@@ -1125,22 +926,10 @@ Sint32 ADXT_GetNumSmpl(ADXT adxt) {
     return ret;
 }
 
-Sint32 ADXT_GetHdrLen(ADXT adxt) {
-    Sint32 ret;
-
-    ADXCRS_Enter();
-    ret = adxt_GetHdrLen(adxt);
-    ADXCRS_Leave();
-    return ret;
-}
-
-Sint32 ADXT_GetFmtBps(ADXT adxt) {
-    Sint32 ret;
-
-    ADXCRS_Enter();
-    ret = adxt_GetFmtBps(adxt);
-    ADXCRS_Leave();
-    return ret;
+/* Stand-in for the stripped ADXT_GetHdrLen and ADXT_GetFmtBps (see above). */
+static void adxt_RodataOrderHdr(const Char8 **msg) {
+    msg[0] = "E02080821 adxt_GetFmtBps: parameter error";
+    msg[1] = "E02080822 adxt_GetHdrLen: parameter error";
 }
 
 Sint32 ADXT_GetSfreq(ADXT adxt) {
@@ -1203,70 +992,25 @@ void ADXT_SetSvrFreq(ADXT adxt, Sint32 freq) {
     ADXCRS_Leave();
 }
 
-void ADXT_SetReloadTime(ADXT adxt, Float32 time) {
-    ADXCRS_Enter();
-    adxt_SetReloadTime(adxt, time);
-    ADXCRS_Leave();
-}
-
-void ADXT_ResetReloadTime(ADXT adxt) {
-    ADXCRS_Enter();
-    adxt_ResetReloadTime(adxt);
-    ADXCRS_Leave();
-}
-
-void ADXT_SetReloadSct(ADXT adxt, Sint32 nsct) {
-    ADXCRS_Enter();
-    adxt_SetReloadSct(adxt, nsct);
-    ADXCRS_Leave();
-}
-
-Sint32 ADXT_GetNumSctIbuf(ADXT adxt) {
-    Sint32 ret;
-
-    ADXCRS_Enter();
-    ret = adxt_GetNumSctIbuf(adxt);
-    ADXCRS_Leave();
-    return ret;
-}
-
-Sint32 ADXT_GetNumSmplObuf(ADXT adxt) {
-    Sint32 ret;
-
-    ADXCRS_Enter();
-    ret = adxt_GetNumSmplObuf(adxt);
-    ADXCRS_Leave();
-    return ret;
-}
-
-Float32 ADXT_GetIbufRemainTime(ADXT adxt) {
-    Float32 ret;
-
-    ADXCRS_Enter();
-    ret = adxt_GetIbufRemainTime(adxt);
-    ADXCRS_Leave();
-    return ret;
-}
-
-/* (public entry unreferenced in this game) */
-Bool ADXT_IsIbufSafety(ADXT adxt) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080836 ADXT_IsIbufSafety: parameter error");
-        return 0;
-    }
-    if (ADXSTM_GetNumSctIbuf(adxt->stm) >= adxt->reload_nsct) {
-        return 1;
-    }
-    return 0;
-}
-
-Bool ADXT_IsCompleted(ADXT adxt) {
-    Bool ret;
-
-    ADXCRS_Enter();
-    ret = adxt_IsCompleted(adxt);
-    ADXCRS_Leave();
-    return ret;
+/* Stand-in for the stripped ADXT_SetReloadTime, ADXT_ResetReloadTime, ADXT_SetReloadSct,
+ * ADXT_GetNumSctIbuf, ADXT_GetNumSmplObuf, ADXT_GetIbufRemainTime, ADXT_IsIbufSafety and
+ * ADXT_IsCompleted (see above). The adxt_GetStat, adxt_GetNumChan, adxt_GetSfreq and
+ * adxt_GetNumSmplObuf messages and the 0.0, -1.0 and 0.85 constants are first used here. */
+static void adxt_RodataOrderIbuf(const Char8 **msg, Float32 *val) {
+    msg[0] = "E02080802 adxt_IsCompleted: parameter error";
+    msg[1] = "E02080836 ADXT_IsIbufSafety: parameter error";
+    val[0] = 0.0f;
+    msg[2] = "E02080835 adxt_GetIbufRemainTime: parameter error";
+    val[1] = -1.0f;
+    msg[3] = "E02080814 adxt_GetStat: parameter error";
+    msg[4] = "E02080820 adxt_GetNumChan: parameter error";
+    msg[5] = "E02080819 adxt_GetSfreq: parameter error";
+    msg[6] = "E02080837 adxt_GetNumSmplObuf: parameter error";
+    msg[7] = "E02080834 adxt_GetNumSctIbuf: parameter error";
+    msg[8] = "E02080839 adxt_SetReloadSct: parameter error";
+    msg[9] = "E03111501 adxt_ResetReloadTime: parameter error";
+    val[2] = 0.85f;
+    msg[10] = "E02080838 adxt_SetReloadTime: parameter error";
 }
 
 void ADXT_SetAutoRcvr(ADXT adxt, Sint32 sw) {
@@ -1296,43 +1040,14 @@ void ADXT_ClearErrCode(ADXT adxt) {
     ADXCRS_Leave();
 }
 
-Sint32 ADXT_GetLpCnt(ADXT adxt) {
-    Sint32 ret;
-
-    ADXCRS_Enter();
-    ret = adxt_GetLpCnt(adxt);
-    ADXCRS_Leave();
-    return ret;
-}
-
-void ADXT_SetLpFlg(ADXT adxt, Sint32 flg) {
-    ADXCRS_Enter();
-    adxt_SetLpFlg(adxt, flg);
-    ADXCRS_Leave();
-}
-
-SJ ADXT_GetInputSj(ADXT adxt) {
-    SJ ret;
-
-    ADXCRS_Enter();
-    ret = adxt_GetInputSj(adxt);
-    ADXCRS_Leave();
-    return ret;
-}
-
-void ADXT_SetWaitPlayStart(ADXT adxt, Sint32 sw) {
-    ADXCRS_Enter();
-    adxt_SetWaitPlayStart(adxt, sw);
-    ADXCRS_Leave();
-}
-
-Bool ADXT_IsReadyPlayStart(ADXT adxt) {
-    Bool ret;
-
-    ADXCRS_Enter();
-    ret = adxt_IsReadyPlayStart(adxt);
-    ADXCRS_Leave();
-    return ret;
+/* Stand-in for the stripped ADXT_GetLpCnt, ADXT_SetLpFlg, ADXT_GetInputSj,
+ * ADXT_SetWaitPlayStart and ADXT_IsReadyPlayStart (see above). */
+static void adxt_RodataOrderPlayStart(const Char8 **msg) {
+    msg[0] = "E02080831 adxt_IsReadyPlayStart: parameter error";
+    msg[1] = "E02080830 adxt_SetWaitPlayStart: parameter error";
+    msg[2] = "E02080833 adxt_GetInputSj: parameter error";
+    msg[3] = "E02080828 adxt_SetLpFlg: parameter error";
+    msg[4] = "E02080829 adxt_GetLpCnt: parameter error";
 }
 
 void ADXT_Pause(ADXT adxt, Sint32 sw) {
@@ -1341,13 +1056,9 @@ void ADXT_Pause(ADXT adxt, Sint32 sw) {
     ADXCRS_Leave();
 }
 
-Sint32 ADXT_GetStatPause(ADXT adxt) {
-    Sint32 ret;
-
-    ADXCRS_Enter();
-    ret = adxt_GetStatPause(adxt);
-    ADXCRS_Leave();
-    return ret;
+/* Stand-in for the stripped ADXT_GetStatPause (see above). */
+static void adxt_RodataOrderStatPause(const Char8 **msg) {
+    msg[0] = "E02080847 adxt_GetStatPause: parameter error";
 }
 
 /* Pitch transpose is not supported by the AX renderer: no-op kept for the API. */
@@ -1392,22 +1103,10 @@ Sint32 ADXT_GetDecNumSmpl(ADXT adxt) {
     return ret;
 }
 
-Sint32 ADXT_GetDecDtLen(ADXT adxt) {
-    Sint32 ret;
-
-    ADXCRS_Enter();
-    ret = adxt_GetDecDtLen(adxt);
-    ADXCRS_Leave();
-    return ret;
-}
-
-/* Unreferenced, so the linker strips it. Only its parameter check is known (its message keeps the
- * .rodata order); what it registers is not reproduced. */
-void ADXT_SetCbDec(ADXT adxt, void (*func)(void *obj), void *obj) {
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E04041902 ADXT_SetCbDec: parameter error");
-        return;
-    }
+/* Stand-in for the stripped ADXT_GetDecDtLen and ADXT_SetCbDec (see above). */
+static void adxt_RodataOrderDecDtLen(const Char8 **msg) {
+    msg[0] = "E04041902 ADXT_SetCbDec: parameter error";
+    msg[1] = "E04041901 adxt_GetDecDtLen: parameter error";
 }
 
 /* True if `data` starts with an ADX header (magic 0x8000) whose info decodes; returns its length in
@@ -1457,21 +1156,6 @@ Sint32 ADXT_InsertSilence(ADXT adxt, Sint32 nch, Sint32 nsmpl) {
     return ret;
 }
 
-void ADXT_SetOutBalance(ADXT adxt, Sint32 bal) {
-    ADXCRS_Enter();
-    adxt_SetOutBalance(adxt, bal);
-    ADXCRS_Leave();
-}
-
-Sint32 ADXT_GetOutBalance(ADXT adxt) {
-    Sint32 ret;
-
-    ADXCRS_Enter();
-    ret = adxt_GetOutBalance(adxt);
-    ADXCRS_Leave();
-    return ret;
-}
-
 /* mono output switch: every live handle's pan and balance are re-applied */
 void ADXT_SetOutputMono(Sint32 flag) {
     Sint32 i;
@@ -1490,8 +1174,7 @@ void ADXT_SetOutputMono(Sint32 flag) {
     }
 }
 
-void ADXT_SetKeyString(ADXT adxt, Char8 *str) {
-    ADXCRS_Enter();
-    adxt_SetKeyString(adxt, str);
-    ADXCRS_Leave();
+/* Stand-in for the stripped ADXT_SetKeyString (see above). */
+static void adxt_RodataOrderKeyString(const Char8 **msg) {
+    msg[0] = "E02080860 adxt_SetKeyString: parameter error";
 }
