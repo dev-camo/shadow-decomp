@@ -8,6 +8,7 @@
 #include "CRI/sj.h"
 
 typedef struct AXRNA_OBJ *AXRNA;
+typedef struct RNARES_OBJ *RNARES; /* name inferred */
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,6 +35,18 @@ AXRNA ADXRNA_Create(SJ *sjo, Sint32 nch, void *work);
 void ADXRNA_EntryErrFunc(void (*func)(void *obj, Char8 *msg), void *obj);
 void ADXRNA_Finish(void);
 void ADXRNA_Init(void);
+
+/* rna_err.c */
+void RNAERR_CallErrFunc(Char8 *msg);
+void RNAERR_EntryErrFunc(void (*func)(void *obj, Char8 *msg), void *obj);
+
+/* rna_res.c: ARAM buffers of the AX renderer */
+Sint32 RNARES_GetBufSize(RNARES res);
+Uint32 RNARES_GetBuf(RNARES res);
+void RNARES_Destroy(RNARES res);
+RNARES RNARES_Create(void);
+void RNARES_Finish(void);
+void RNARES_Init(void);
 
 /* AX renderer */
 void AXRNA_SetAdjsfreqFlg(AXRNA rna, Sint32 flg);

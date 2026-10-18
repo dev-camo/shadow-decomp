@@ -2,6 +2,7 @@
  * error callback by ADXT_Init.
  * Bodies from the RE4 GameCube decompilation of the same file.
  */
+#include "CRI/adx_rna.h"
 #include "CRI/cri_xpt.h"
 #include <string.h>
 
