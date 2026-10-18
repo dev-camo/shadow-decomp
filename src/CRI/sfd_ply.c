@@ -80,7 +80,8 @@ Sint32 SFD_SetSupplySj(SFD sfd, SFBUF_SUP *sup) {
     return SFBUF_SetSupplySj(sfd, sup);
 }
 
-/* dead (inlined into sfply_ResetHn): writable region of the input buffer */
+/* Writable region of the input buffer. Stripped from the game; its copies inlined into
+ * sfply_ResetHn verify the body. */
 Sint32 SFD_GetSupplyInf(SFD sfd, SFBUF_RINF *inf) {
     if (SFLIB_CheckHn(sfd) != 0) {
         return SFLIB_SetErr(0, 0xFF000134);
@@ -88,7 +89,8 @@ Sint32 SFD_GetSupplyInf(SFD sfd, SFBUF_RINF *inf) {
     return SFTRN_CallTrtTrif(sfd, 0, 9, (Sint32)inf, 0);
 }
 
-/* dead (inlined into sfply_ResetHn) */
+/* Hands nbyte bytes at adr to the input driver (driver function 10). Stripped from the game; its
+ * copy inlined into sfply_ResetHn verifies the body. */
 Sint32 SFD_AddSupply(SFD sfd, Sint32 adr, Sint32 nbyte) {
     if (SFLIB_CheckHn(sfd) != 0) {
         return SFLIB_SetErr(0, 0xFF000135);
@@ -154,16 +156,13 @@ Sint32 SFD_GetFrm(SFD sfd, void **frm) {
     return ret;
 }
 
-/* dead (placed after SFD_GetFrm: .bss is in first-reference order, SFPLY_recordgetfrm comes
- * first): the handle control work size the last handle was created with */
-Sint32 SFPLY_GetLastHnCtrlWkSiz(void) {
-    return sfply_last_hnctrl_wksiz;
-}
-
-/* dead: PTS manager hooks */
-void SFPLY_SetPtsmFn(SFPLY_PTSINFO_FN setfn, SFPLY_PTSRESET_FN resetfn) {
-    SFPLY_SetPtsInfo = setfn;
-    SFPLY_ResetPtsm = resetfn;
+/* Stand-in for the stripped SFPLY_GetLastHnCtrlWkSiz and SFPLY_SetPtsmFn. MWCC places .bss objects
+ * in order of first reference; this never-called function refers to these three in storage order
+ * right after SFD_GetFrm's SFPLY_recordgetfrm. Storing the addresses keeps the references. */
+static void sfply_BssOrder(void **out) {
+    out[0] = &sfply_last_hnctrl_wksiz;
+    out[1] = &SFPLY_SetPtsInfo;
+    out[2] = &SFPLY_ResetPtsm;
 }
 
 /* Declares the input finished: sets the terminate flag on the input driver's output buffer so the

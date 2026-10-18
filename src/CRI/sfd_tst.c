@@ -60,12 +60,14 @@ Char8 *sftst_debout_round;
 Char8 *sftst_debout_write;
 SFTST sftst_last;
 
-/* debug log buffer (dead: keeps the .bss order siz, buf, round, write, last) */
-void SFTST_SetDebugOut(Char8 *buf, Sint32 siz) {
-    sftst_debout_siz = siz;
-    sftst_debout_buf = buf;
-    sftst_debout_round = buf;
-    sftst_debout_write = buf;
+/* Stand-in for the stripped SFTST_SetDebugOut. MWCC places .bss objects in order of first
+ * reference, so this never-called function refers to the debug log variables in storage order
+ * before any other code does. Storing the addresses keeps the references. */
+static void sftst_BssOrder(void **out) {
+    out[0] = &sftst_debout_siz;
+    out[1] = &sftst_debout_buf;
+    out[2] = &sftst_debout_round;
+    out[3] = &sftst_debout_write;
 }
 
 /* Clears the difference history and its index. */
