@@ -209,8 +209,8 @@ RwFreeList *fn_8047FF50(RwFreeList *freeList, void *mem) {
             bitmap[index >> 3] &= (RwUInt8) ~(RwUInt8)(0x80 >> (index - (index & ~7)));
 
             if (freeList->flags & rwFREELISTFLAG_FREEBLOCKS) {
-                RwUInt32 used = 0;
                 RwUInt32 i;
+                RwUInt32 used = 0;
 
                 for (i = 0; i < heapSize; i++) {
                     used += bitmap[i];
@@ -229,15 +229,14 @@ RwFreeList *fn_8047FF50(RwFreeList *freeList, void *mem) {
 
 /* Calls callBack on each entry in use */
 RwFreeList *fn_804800DC(RwFreeList *freeList, void (*callBack)(void *mem, void *data), void *data) {
-    RwUInt32 heapSize = freeList->heapSize;
     RwLLLink *block = freeList->blockList.link.next;
+    RwUInt32 heapSize = freeList->heapSize;
+    RwLLLink *end = &freeList->blockList.link;
 
-    while (block != &freeList->blockList.link) {
+    while (block != end) {
         RwUInt8 *blockBitmap = rwFREELISTBLOCKBITMAP(block);
-        RwUInt8 *bitmap = RwMalloc(heapSize, rwMEMHINTDUR_FUNCTION);
         RwLLLink *next;
-        RwUInt8 *bits;
-        RwUInt32 index;
+        RwUInt8 *bitmap = RwMalloc(heapSize, rwMEMHINTDUR_FUNCTION);
         RwUInt32 i;
 
         if (bitmap == NULL) {
@@ -247,27 +246,21 @@ RwFreeList *fn_804800DC(RwFreeList *freeList, void (*callBack)(void *mem, void *
         /* The callback may free entries, so a copy of the bitmap is walked */
         memcpy(bitmap, blockBitmap, heapSize);
         next = block->next;
-        bits = bitmap;
-        index = 0;
         for (i = 0; i < heapSize; i++) {
-            RwUInt8 byte = *bits;
+            RwUInt8 byte = bitmap[i];
 
             if (byte != 0) {
-                RwUInt32 entryIndex = index;
                 RwUInt32 bit;
 
                 for (bit = 0; bit < 8; bit++) {
                     if (byte & (RwUInt8)(0x80 >> bit)) {
                         callBack(
                             (void *)(rwFREELISTBLOCKENTRIES(block, heapSize, freeList->alignment) +
-                                     freeList->entrySize * entryIndex),
+                                     freeList->entrySize * (i * 8 + bit)),
                             data);
                     }
-                    entryIndex++;
                 }
             }
-            index += 8;
-            bits++;
         }
         RwFree(bitmap);
         block = next;
