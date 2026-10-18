@@ -29,7 +29,10 @@ CHECK_SIZEOF(CharInfo, 0x64);
 class UnkManager_80074194;
 
 extern "C" {
-/* Returns the manager, constructing it on first use (behaviour inferred). */
+/* Returns the manager (behaviour inferred): constructs a function-local static manager on first
+ * use, registers its destructor and caches its address in a static pointer. The E3 2005
+ * prototype (G9SJ8P) expands this sequence in its callers (62 copies), which suggests a header
+ * inline accessor. */
 UnkManager_80074194 *fn_80074194(void);
 /* Returns the listed character info nearest to position, or an empty pointer when the list is
  * empty (behaviour inferred). */
