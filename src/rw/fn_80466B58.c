@@ -115,34 +115,37 @@ RwUInt32 fn_80467BC8(void *data, RwV3d *normals, RwInt32 type, RwInt32 numVertic
     RwUInt32 size = 0;
     void *destination;
     RwInt32 i;
+    RwReal scale;
 
     switch (type) {
     case GX_U8:
     case GX_U16:
         break;
     case GX_S8:
+        scale = NORMALSCALES8;
         if (stride == 0) {
             stride = 3 * sizeof(RwInt8);
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwInt8 *)destination)[0] = normals->x * NORMALSCALES8;
-            ((RwInt8 *)destination)[1] = normals->y * NORMALSCALES8;
-            ((RwInt8 *)destination)[2] = normals->z * NORMALSCALES8;
+            ((RwInt8 *)destination)[0] = normals->x * scale;
+            ((RwInt8 *)destination)[1] = normals->y * scale;
+            ((RwInt8 *)destination)[2] = normals->z * scale;
             normals++;
             destination = (RwUInt8 *)destination + stride;
         }
         size = numVertices * 3;
         break;
     case GX_S16:
+        scale = NORMALSCALES16;
         if (stride == 0) {
             stride = 3 * sizeof(RwInt16);
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwInt16 *)destination)[0] = normals->x * NORMALSCALES16;
-            ((RwInt16 *)destination)[1] = normals->y * NORMALSCALES16;
-            ((RwInt16 *)destination)[2] = normals->z * NORMALSCALES16;
+            ((RwInt16 *)destination)[0] = normals->x * scale;
+            ((RwInt16 *)destination)[1] = normals->y * scale;
+            ((RwInt16 *)destination)[2] = normals->z * scale;
             normals++;
             destination = (RwUInt8 *)destination + stride;
         }
@@ -247,34 +250,37 @@ RwUInt32 fn_80468ADC(void *data, RwV3d *normals, RwInt32 type, RwInt32 numVertic
     RwUInt32 size = 0;
     void *destination;
     RwInt32 i;
+    RwReal scale;
 
     switch (type) {
     case GX_U8:
     case GX_U16:
         break;
     case GX_S8:
+        scale = NORMALSCALES8;
         if (stride == 0) {
             stride = 3 * sizeof(RwInt8);
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwInt8 *)destination)[0] = normals->x * NORMALSCALES8;
-            ((RwInt8 *)destination)[1] = normals->y * NORMALSCALES8;
-            ((RwInt8 *)destination)[2] = normals->z * NORMALSCALES8;
+            ((RwInt8 *)destination)[0] = normals->x * scale;
+            ((RwInt8 *)destination)[1] = normals->y * scale;
+            ((RwInt8 *)destination)[2] = normals->z * scale;
             normals++;
             destination = (RwUInt8 *)destination + stride;
         }
         size = numVertices * 3;
         break;
     case GX_S16:
+        scale = NORMALSCALES16;
         if (stride == 0) {
             stride = 3 * sizeof(RwInt16);
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwInt16 *)destination)[0] = normals->x * NORMALSCALES16;
-            ((RwInt16 *)destination)[1] = normals->y * NORMALSCALES16;
-            ((RwInt16 *)destination)[2] = normals->z * NORMALSCALES16;
+            ((RwInt16 *)destination)[0] = normals->x * scale;
+            ((RwInt16 *)destination)[1] = normals->y * scale;
+            ((RwInt16 *)destination)[2] = normals->z * scale;
             normals++;
             destination = (RwUInt8 *)destination + stride;
         }
