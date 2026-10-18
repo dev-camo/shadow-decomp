@@ -1181,6 +1181,21 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # NonMatching: MPVMC08_OneRefH2_TuneC, 251 words (0x35C bytes against 0x3EC). The
+            # original loads the masks once at entry, needs no stack frame, packs with 24 rlwimi
+            # and loads case 3's first word byte-reversed (lwbrx); this C has masks per case,
+            # saves r30/r31 and uses 16 rlwimi and no lwbrx. The original unrolls two rows per
+            # iteration in all four cases, this C in two of them.
+            Object(
+                NonMatching,
+                "CRI/mpv_mc.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
             # Deferred inlining: the table generators are emitted in reverse order.
             Object(
                 Matching,
