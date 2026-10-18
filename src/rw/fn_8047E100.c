@@ -411,13 +411,11 @@ RwMatrix *fn_8047EFC8(RwMatrix *matrix, const RwV3d *axis, RwReal angle, RwInt32
     RwReal radians = 0.017453292f * angle;
     RwReal recipLength = fn_80482394(axis->x * axis->x + axis->y * axis->y + axis->z * axis->z);
     RwV3d unitAxis;
-    RwReal sine;
 
     unitAxis.x = axis->x * recipLength;
     unitAxis.y = axis->y * recipLength;
     unitAxis.z = axis->z * recipLength;
-    sine = (RwReal)sin(radians);
-    fn_8047ECD4(matrix, &unitAxis, combine, 1.0f - (RwReal)cos(radians), sine);
+    fn_8047ECD4(matrix, &unitAxis, combine, 1.0f - (RwReal)cos(radians), (RwReal)sin(radians));
     return matrix;
 }
 
