@@ -84,15 +84,20 @@ RwInt32 fn_8045B7AC(RpMaterialList *matList, RpMaterial *material) {
         matList->numMaterials++;
         return matList->numMaterials - 1;
     } else {
+        /* the allocation calls state the size themselves: passing bytes to them compiles differently
+         * (measured: register assignment and the placement of a register move) */
         RwUInt32 bytes = (matList->space + rpMATERIALLISTGRANULARITY) * sizeof(RpMaterial *);
         RpMaterial **materials;
 
         if (matList->materials != NULL) {
-            materials = RwRealloc(matList->materials, bytes,
-                                  rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_EVENT | rwID_MATLIST);
+            materials =
+                RwRealloc(matList->materials,
+                          (matList->space + rpMATERIALLISTGRANULARITY) * sizeof(RpMaterial *),
+                          rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_EVENT | rwID_MATLIST);
         } else {
             materials =
-                RwMalloc(bytes, rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_EVENT | rwID_MATLIST);
+                RwMalloc((matList->space + rpMATERIALLISTGRANULARITY) * sizeof(RpMaterial *),
+                         rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_EVENT | rwID_MATLIST);
         }
         if (materials == NULL) {
             RWERROR((E_RW_NOMEM, bytes));
