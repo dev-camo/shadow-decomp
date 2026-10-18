@@ -1,6 +1,9 @@
 /* Two screen descriptions of the Chao::CSD library and the coordinate conversions between them.
  * The original file name is unknown and every name in this file is inferred from behaviour.
- * Definitions are in reverse address order (deferred inlining emits the last definition first). */
+ * Definitions are in reverse address order (deferred inlining emits the last definition first).
+ * In the E3 2005 prototype (G9SJ8P) SetScreenSize (0x80293BCC) has both size setters inlined,
+ * GetScaledScreenOffsetA (0x80293A50) has GetScreenOffsetA and ScaleByScreenA inlined, and none of
+ * these three helpers has a standalone copy. */
 #include "Game/CSD/Screen.h"
 #include <dolphin/types.h>
 #include "layout_check.h"
