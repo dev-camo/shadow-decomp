@@ -420,6 +420,7 @@ RwBool fn_804A5F08(void) {
 
 RpMTEffect *fn_804A5F48(RwUInt32 numTevStages, RwUInt32 numTexGens, RwUInt32 numTexMtx,
                         RwUInt32 numIndStages, RwUInt32 numIndMtx) {
+    RwInt32 tevStagesSize = numTevStages * sizeof(MTEffectGameCubeTevStage);
     RwInt32 texMtxSize = numTexMtx * sizeof(MTEffectGameCubeTexMtx);
     RwInt32 texGensSize = numTexGens * sizeof(MTEffectGameCubeTexGen);
     RwInt32 indMtxSize = numIndMtx * sizeof(MTEffectGameCubeIndMtx);
@@ -429,14 +430,10 @@ RpMTEffect *fn_804A5F48(RwUInt32 numTevStages, RwUInt32 numTexGens, RwUInt32 num
     RwUInt8 *arrays;
 
     size = sizeof(RpMTEffectGameCube) + texGensSize;
-    size = ALIGN4(size);
-    size += numTevStages * sizeof(MTEffectGameCubeTevStage);
-    size = ALIGN4(size);
-    size += indStagesSize;
-    size = ALIGN4(size);
-    size += texMtxSize;
-    size = ALIGN4(size);
-    size += indMtxSize;
+    size = ALIGN4(size) + tevStagesSize;
+    size = ALIGN4(size) + indStagesSize;
+    size = ALIGN4(size) + texMtxSize;
+    size = ALIGN4(size) + indMtxSize;
     size = ALIGN4(size);
     effect = RwMalloc(size, rwMEMHINT_GCNMTEFFECT);
     if (effect == NULL) {
