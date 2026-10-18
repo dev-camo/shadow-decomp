@@ -447,10 +447,11 @@ RwBool fn_8045459C(RtAnimAnimation *animation) {
     return TRUE;
 }
 
-void fn_80454618(RtAnimAnimation *animation) {
+RtAnimAnimation *fn_80454618(RtAnimAnimation *animation) {
     RpUVAnimCustomData *customData = animation->customData;
 
     customData->refCount++;
+    return animation;
 }
 
 /* Sets the material's UV channel matrices to the product of the transforms the playing animations'
