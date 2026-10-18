@@ -572,7 +572,9 @@ long double __strtold(int max_width, int (*ReadProc)(void *, int, int), void *Re
 }
 
 double strtod(const char *str, char **end) {
-    double value, abs_value;
+    // long double, like __strtold's result: with double locals the 0.0 below shares a different
+    // .sdata2 literal and the literal pool order changes.
+    long double value, abs_value;
     int count, overflow;
 
     __InStrCtrl isc;
@@ -586,7 +588,7 @@ double strtod(const char *str, char **end) {
 
     abs_value = fabs(value);
 
-    if (overflow)
+    if (overflow || (value != 0.0 && (abs_value < DBL_MIN || abs_value > DBL_MAX)))
         errno = ERANGE;
 
     return value;

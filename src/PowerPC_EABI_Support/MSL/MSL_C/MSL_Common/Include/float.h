@@ -38,6 +38,8 @@ extern int __float_huge[];
 extern int __float_max[];
 extern int __float_epsilon[];
 
+// Stripped from retail; only strtod uses it.
+extern int __double_min[];
 extern int __double_max[];
 extern int __double_huge[];
 
@@ -111,6 +113,7 @@ int __fpclassifyl(long double __value);
 #define DBL_MIN_10_EXP (-308)
 #define DBL_MAX_EXP 1024
 #define DBL_MAX_10_EXP 308
+#define DBL_MIN (*(double *)__double_min)
 #define DBL_MAX (*(double *)__double_max)
 
 #define LDBL_MANT_DIG 53
