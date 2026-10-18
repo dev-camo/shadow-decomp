@@ -2,8 +2,7 @@
  * A handle wraps a DVDFileInfo; reads are asynchronous sector requests polled to completion
  * by gcCiExecServer, one in flight across all handles.
  *
- * Names, types and layout follow the same CRI library version in the RE4 GameCube
- * decompilation (same build string version, error codes, function order and table).
+ * Names, types and layout from the RE4 GameCube decompilation.
  */
 #include <dolphin/dvd.h>
 #include <dolphin/os.h>
@@ -96,15 +95,13 @@ CVFS_IF gcg_ci_vtbl = {
     (Sint32 (*)(void *))gcCiGetNumTr,
 };
 
-/* Unreferenced, so the linker strips it from the executable. Body from RE4's gcci.c (not
- * verified against Shadow). MWCC places .bss objects in order of first reference; this is
- * the first function to touch the debug block, error object and error callback, and the
- * target's .bss order (which the match does verify) follows from it.
- */
-void gcCiInit(void) {
-    gcg_ci_debug.cbstat = 0;
-    gcg_ci_err_obj = 0;
-    gcg_ci_err_func = 0;
+/* Stand-in for the stripped gcCiInit. MWCC places .bss objects in order of first reference, so
+ * this never-called function refers to the debug block, error object and error callback in
+ * storage order before any other code does. Storing the addresses keeps the references. */
+static void gcci_BssOrder(void **out) {
+    out[0] = &gcg_ci_debug;
+    out[1] = &gcg_ci_err_obj;
+    out[2] = &gcg_ci_err_func;
 }
 
 /* Reports an error to the CVFS error callback with the offending handle. */
