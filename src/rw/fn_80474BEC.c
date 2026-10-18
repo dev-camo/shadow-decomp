@@ -151,9 +151,13 @@ Rt2dPath *fn_80475260(Rt2dPath *path) {
     RwReal sumX;
     RwReal sumY;
     RwReal scale;
+    RwReal dx;
+    RwReal dy;
 
     pos = first->pos;
-    if (0.0f != pos.y - last->pos.y || 0.0f != last->pos.x - pos.x) {
+    dy = pos.y - last->pos.y;
+    dx = last->pos.x - pos.x;
+    if (0.0f != dy || 0.0f != dx) {
         PATHADDLINE(path->curr, pos.x, pos.y);
         first = fn_8047DFAC(curr->points);
         last = fn_8047E0CC(curr->points, numPoints);
@@ -241,8 +245,8 @@ void fn_804754F4(Rt2dPath *path, RwV2d *bezier, RwInt32 depth) {
 
 /* Adds a subpath's points to a path, with its curves as lines */
 Rt2dPath *fn_804758C8(Rt2dPath *flat, Rt2dPath *path) {
-    rt2dPathNode *node;
     RwInt32 numPoints;
+    rt2dPathNode *node;
     RwInt32 i;
 
     lbl_805E1950.pixelSizeSq = fn_80474168();
