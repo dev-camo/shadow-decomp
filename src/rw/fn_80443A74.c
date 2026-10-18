@@ -321,9 +321,10 @@ static inline RpAtomic *DMorphAtomicCreateInterpolator(RpAtomic *atomic) {
  * stops it */
 RpAtomic *fn_804443A0(RpAtomic *atomic, RpDMorphAnimation *animation) {
     RpDMorphAtomic *dmorphAtomic = DMORPHATOMIC(atomic);
-    RwUInt32 i;
 
     if (animation == NULL) {
+        RwUInt32 i;
+
         if (dmorphAtomic->interpolator != NULL) {
             for (i = 0; i < fn_80443A54(atomic->geometry); i++) {
                 dmorphAtomic->interpolator->frames[i] = NULL;
@@ -331,6 +332,7 @@ RpAtomic *fn_804443A0(RpAtomic *atomic, RpDMorphAnimation *animation) {
             dmorphAtomic->interpolator->animation = NULL;
         }
     } else {
+        RwUInt32 i;
         RpDMorphInterpolator *interpolator;
         RwReal *values;
 
