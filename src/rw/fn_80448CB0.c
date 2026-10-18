@@ -8,15 +8,15 @@ static const GXColor lbl_805FB078 = {255, 255, 255, 255}; /* white */
 static const GXColor lbl_805FB07C = {0, 0, 0, 255};       /* black */
 
 /* The lighting callback of the tank pipeline: only tanks with normals are lit */
-RpAtomic *fn_80448CB0(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
+void *fn_80448CB0(void *object, RpGameCubeRenderMesh *renderMesh) {
     if ((renderMesh->geometryFlags & rpGEOMETRYNORMALS) == rpGEOMETRYNORMALS) {
-        fn_80463428(atomic, renderMesh);
+        fn_80463428(object, renderMesh);
     } else {
         renderMesh->lightMask = 0;
         renderMesh->hasAmbient = FALSE;
         renderMesh->numLights = 0;
     }
-    return atomic;
+    return object;
 }
 
 /* Draws the active particles of a tank as quads with its kernel (inferred) */

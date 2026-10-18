@@ -36,7 +36,7 @@ RxPipeline *fn_8046335C(RwUInt32 pluginID, RwUInt32 pluginData,
     node = fn_8049CFCC(pipeline, nodeDef->name, NULL, NULL);
     fn_80462BF0(node, (RxGameCubeAllInOneCallBack)instanceCallBack);
     fn_80462BFC(node, (RxGameCubeAllInOneCallBack)reinstanceCallBack);
-    fn_80462C08(node, (RxGameCubeAllInOneCallBack)lightingCallBack);
+    fn_80462C08(node, lightingCallBack);
     fn_80462C14(node, (RxGameCubeAllInOneCallBack)renderCallBack);
     return pipeline;
 }
@@ -45,7 +45,8 @@ RxPipeline *fn_8046335C(RwUInt32 pluginID, RwUInt32 pluginData,
  * light atomics, then by each local light that lights atomics in the sectors the atomic is in and
  * whose range reaches the atomic's bounding sphere, once per light. The ambient colour is clamped
  * to 1. */
-RpAtomic *fn_80463428(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
+void *fn_80463428(void *object, RpGameCubeRenderMesh *renderMesh) {
+    RpAtomic *atomic = object;
     RwUInt32 geometryFlags = atomic->geometry->flags;
 
     renderMesh->lightMask = 0;
@@ -108,7 +109,7 @@ RpAtomic *fn_80463428(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
             renderMesh->ambientColor.blue = 1.0f;
         }
     }
-    return atomic;
+    return object;
 }
 
 /* Writes the locked vertex streams of a geometry's first morph target into its instanced data, in
@@ -315,7 +316,7 @@ RwBool fn_80463CE0(RxPipelineNode *self) {
 
     nodeData->instanceCallBack = fn_804639AC;
     nodeData->reinstanceCallBack = (RxGameCubeAllInOneCallBack)fn_80463840;
-    nodeData->lightingCallBack = (RxGameCubeAllInOneCallBack)fn_80463428;
+    nodeData->lightingCallBack = fn_80463428;
     nodeData->renderCallBack = fn_80462914;
     return TRUE;
 }
