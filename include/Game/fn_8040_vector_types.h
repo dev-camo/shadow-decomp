@@ -54,6 +54,10 @@ float fn_8040CCEC(const Fn8040Vector2 *vector);
 float fn_8040CF50(const Fn8040Vector3 *vector);
 /* Squared length. */
 float fn_8040CF2C(Fn8040Vector3 *vector);
+/* Stores sin(angle) and cos(angle) through the two pointers. The E3 2005 prototype (G9SJ8P) calls
+ * sin and cos directly in fn_8040D044, so this is probably an inline helper whose out-of-line copy
+ * retail calls (inferred). */
+void fn_80031568(float *sine, float *cosine, float angle);
 /* destination = a - b (behaviour inferred). */
 void fn_8040CD74(Fn8040Vector3 *destination, const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 void fn_800091D0(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
