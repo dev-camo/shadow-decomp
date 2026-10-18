@@ -105,7 +105,7 @@ RxVertexIndex **fn_80465CDC(RpGameCubeStreamRemap *remaps, RxVertexIndex **indic
     if (remapped == NULL) {
         return NULL;
     }
-    memset(remapped, 0, headerSize);
+    memset(remapped, 0, numStreams * sizeof(RxVertexIndex *));
     offset = headerSize;
     for (i = 0; i < numStreams; i++) {
         remapped[i] = (RxVertexIndex *)((RwUInt8 *)remapped + offset);
