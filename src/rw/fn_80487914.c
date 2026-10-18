@@ -513,9 +513,8 @@ const RwChar *fn_80488B58(const RwChar *name) {
 /* Registers the functions that read and write image files with an extension, adding the format
  * if the extension is new; a NULL function keeps the one already registered (name and callback
  * types inferred). Retail strips it, and nothing else adds to imageFormats, so retail registers
- * no format and reading an image by extension finds none. The E3 2005 prototype (G9SJ8P, built
- * 27 May 2005) has it at 0x803EC7E4, where its initialisation code registers readers for "bmp" and
- * "png". */
+ * no format and reading an image by extension finds none. The E3 2005 prototype (G9SJ8P) has it
+ * at 0x803EC7E4, where its initialisation code registers readers for "bmp" and "png". */
 RwBool ImageRegisterFormat(const RwChar *extension, RwImage *(*imageRead)(const RwChar *imageName),
                            RwImage *(*imageWrite)(RwImage *image, const RwChar *imageName)) {
     rwImageFormat *format;
