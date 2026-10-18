@@ -15,7 +15,7 @@ extern "C" {
 typedef struct RtDict RtDict;
 
 /* The callbacks a schema has for its entries (inferred from the functions it is given) */
-typedef void (*RtDictEntryAddRefCallBack)(void *entry);
+typedef void *(*RtDictEntryAddRefCallBack)(void *entry);
 typedef RwBool (*RtDictEntryDestroyCallBack)(void *entry);
 typedef RwChar *(*RtDictEntryGetNameCallBack)(void *entry);
 typedef RwUInt32 (*RtDictEntryStreamGetSizeCallBack)(void *entry);

@@ -170,9 +170,12 @@ static inline void UVAnimLinearKeyFrameApply(RwMatrix *matrix, const RpUVAnimInt
 /* animations (inferred) */
 RtAnimAnimation *fn_8045449C(const RwChar *name, RwUInt32 numNodes, RwUInt32 numFrames,
                              RwReal duration, RwUInt32 *nodeToUVChannelMap, RwInt32 keyFrameType);
-RwBool fn_8045459C(RtAnimAnimation *animation);  /* release; destroys it with its last reference */
-void fn_80454618(RtAnimAnimation *animation);    /* add a reference */
-RwChar *fn_804548E4(RtAnimAnimation *animation); /* name */
+/* release; destroys it with its last reference */
+RwBool fn_8045459C(RtAnimAnimation *animation);
+/* add a reference; returns the animation */
+RtAnimAnimation *fn_80454618(RtAnimAnimation *animation);
+/* name */
+RwChar *fn_804548E4(RtAnimAnimation *animation);
 /* sets a keyframe from a transform matrix */
 RwBool fn_80453018(RtAnimAnimation *animation, RpUVAnimKeyFrame *keyFrame,
                    RpUVAnimKeyFrame *prevFrame, RwReal time, const RwMatrix *matrix);
