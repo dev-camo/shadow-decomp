@@ -1,11 +1,9 @@
-/* gcaxSndMemory.c (name from the panic messages): sound heap, ARAM banks and ARAM requests of Sega's
- * GameCube AX sound library, in reverse address order (deferred inlining). Names other than
- * gcaxSndMalloc and gcaxNewAramBank, which its messages name, are placeholders. */
+/* gcaxSndMemory.c (name from its panic messages): sound heap, ARAM banks and ARAM requests of
+ * Sega's GameCube AX sound library, in reverse address order (deferred inlining). */
 #include "Game/gcaxSnd.h"
 #include <string.h>
 
-/* Reserves size bytes (rounded up to 32) of the remaining ARAM for bank bank; returns 0, or -1
- * after a report for a bad bank number or too little ARAM. */
+/* Reserves size bytes (rounded up to 32) of the remaining ARAM for bank: 0, or -1 with a report. */
 int gcaxNewAramBank(int bank, u32 size) {
     u32 aligned = (size + 31) & ~31;
     int result = -1;
@@ -23,12 +21,10 @@ int gcaxNewAramBank(int bank, u32 size) {
     return result;
 }
 
-/* Loads a bank file (0x10-byte header, then MPBW and MPBP sections): the MPBW data goes to the bank's
- * ARAM range through an ARAM request, the MPBP data is copied into the sound heap. Returns the
- * request, or a negative error for a bad section or a full bank. A callback of -1 means none. */
+/* Loads a bank file: MPBW data to the bank's ARAM, MPBP data to the sound heap; request or < 0. */
 int fn_8043B05C(int bank, u8 *file, GcaxCallback callback, void *arg, int async) {
     GcaxFileHeader *param;
-    GcaxFileHeader *wave = (GcaxFileHeader *)(file + 0x10);
+    GcaxFileHeader *wave = (GcaxFileHeader *)(file + 0x10); /* after the file header */
     int request;
 
     if (wave->magic != GCAX_MAGIC || wave->kind != GCAX_KIND_MPBW) {
@@ -37,7 +33,7 @@ int fn_8043B05C(int bank, u8 *file, GcaxCallback callback, void *arg, int async)
     if (lbl_805F1404->aramBank[bank].size < wave->size) {
         return -2;
     }
-    if (callback == (GcaxCallback)-1) {
+    if (callback == (GcaxCallback)-1) { /* no callback */
         async = 0;
         callback = 0;
     }
@@ -95,6 +91,8 @@ void fn_8043AEBC(u8 *base, u32 size) {
     OSRestoreInterrupts(enabled);
 }
 
+static inline u32 gcaxSndGetFreeSize(void); /* free heap bytes (name inferred) */
+
 /* First-fit allocation of size bytes (rounded up to 32) from the sound heap; NULL on failure. */
 void *gcaxSndMalloc(u32 size) {
     GcaxMemBlock *block = lbl_805F1404->heapHead;
@@ -111,27 +109,13 @@ void *gcaxSndMalloc(u32 size) {
             }
         }
     }
-    /* report the total free memory; the message spells the function "gacxSndMalloc" */
-    {
-        u32 freeTotal = 0;
-        BOOL enabled2 = OSDisableInterrupts();
-        if (lbl_805F1404 != NULL && lbl_805F1404->heapHead != NULL) {
-            for (block = lbl_805F1404->heapHead; (next = block->next) != NULL; block = next) {
-                if (block->magic == GCAX_MEM_FREE) {
-                    freeTotal += (u32)next - (u32)block - sizeof(GcaxMemBlock);
-                }
-            }
-        }
-        OSRestoreInterrupts(enabled2);
-        OSReport("AX SDLIB: gacxSndMalloc(%d) failed (should not happen, rest=%d\n", size,
-                 freeTotal);
-    }
+    OSReport("AX SDLIB: gacxSndMalloc(%d) failed (should not happen, rest=%d\n", size,
+             gcaxSndGetFreeSize()); /* the message misspells the function name */
     OSRestoreInterrupts(enabled);
     return NULL;
 
 found:
-    /* split off the rest when it can hold another block */
-    if (avail > aligned + sizeof(GcaxMemBlock)) {
+    if (avail > aligned + sizeof(GcaxMemBlock)) { /* split when the rest can hold a block */
         GcaxMemBlock *rest = (GcaxMemBlock *)((u8 *)(block + 1) + aligned);
 
         rest->magic = GCAX_MEM_FREE;
@@ -162,6 +146,22 @@ void fn_8043ACE8(void *ptr) {
     OSRestoreInterrupts(enabled);
 }
 
+static inline u32 gcaxSndGetFreeSize(void) {
+    u32 freeTotal = 0;
+    BOOL enabled = OSDisableInterrupts();
+    GcaxMemBlock *block;
+
+    if (lbl_805F1404 != NULL && lbl_805F1404->heapHead != NULL) {
+        for (block = lbl_805F1404->heapHead; block->next != NULL; block = block->next) {
+            if (block->magic == GCAX_MEM_FREE) {
+                freeTotal += (u32)block->next - (u32)block - sizeof(GcaxMemBlock);
+            }
+        }
+    }
+    OSRestoreInterrupts(enabled);
+    return freeTotal;
+}
+
 /* ARQ completion: frees the request slot and calls its callback. */
 static void fn_8043AC4C(u32 request) {
     int i;
@@ -181,9 +181,9 @@ found:
     }
 }
 
-/* Claims a free ARAM request slot.
- * The slot stays busy until fn_8043AC4C sees its transfer complete. */
-static inline int gcaxSndGetFreeRequest(void) {
+/* Claims an ARAM request slot and posts the copy (name inferred); returns the busy slot. */
+static inline int gcaxSndPostRequest(u32 source, u32 dest, u32 length, GcaxCallback callback,
+                                     void *arg) {
     int i;
 
     for (i = 0; i < GCAX_ARQ_REQUESTS; i++) {
@@ -195,31 +195,26 @@ static inline int gcaxSndGetFreeRequest(void) {
 
 found:
     lbl_805F1404->requestBusy[i] = 1;
+    lbl_805F1404->requestCallback[i] = callback;
+    lbl_805F1404->requestCallbackArg[i] = arg;
+    ARQPostRequest(&lbl_805F1404->requests[i], lbl_805F1404->arqOwner, ARQ_TYPE_MRAM_TO_ARAM,
+                   ARQ_PRIORITY_HIGH, source, dest, length, fn_8043AC4C);
     return i;
 }
 
 /* Copies main memory to ARAM and waits until the transfer is done. */
 void fn_8043AB6C(u32 source, u32 dest, u32 length, GcaxCallback callback, void *arg) {
-    int i = gcaxSndGetFreeRequest();
+    int i = gcaxSndPostRequest(source, dest, length, callback, arg);
 
-    lbl_805F1404->requestCallback[i] = callback;
-    lbl_805F1404->requestCallbackArg[i] = arg;
-    ARQPostRequest(&lbl_805F1404->requests[i], lbl_805F1404->arqOwner, ARQ_TYPE_MRAM_TO_ARAM,
-                   ARQ_PRIORITY_HIGH, source, dest, length, fn_8043AC4C);
     while (lbl_805F1404->requestBusy[i] != 0) {
     }
 }
 
 /* Copies main memory to ARAM; waits for the transfer unless async. Returns the request slot. */
 int fn_8043AA7C(u32 source, u32 dest, u32 length, GcaxCallback callback, void *arg, int async) {
-    int i = gcaxSndGetFreeRequest();
-    volatile u8 *busy;
+    int i = gcaxSndPostRequest(source, dest, length, callback, arg);
+    volatile u8 *busy = &lbl_805F1404->requestBusy[i];
 
-    lbl_805F1404->requestCallback[i] = callback;
-    lbl_805F1404->requestCallbackArg[i] = arg;
-    ARQPostRequest(&lbl_805F1404->requests[i], lbl_805F1404->arqOwner, ARQ_TYPE_MRAM_TO_ARAM,
-                   ARQ_PRIORITY_HIGH, source, dest, length, fn_8043AC4C);
-    busy = &lbl_805F1404->requestBusy[i];
     if (!async) {
         while (*busy != 0) {
         }
