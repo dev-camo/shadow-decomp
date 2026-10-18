@@ -206,14 +206,18 @@ void fn_8046F208(RpGameCubeVertexDescBuilder *builder, RpGameCubeInstanceData *i
     instance->numVertexDescriptors = numDescriptors;
 }
 
-/* Writes texture coordinate set n's array with its component type and fixed point scale */
+/* Writes texture coordinate set n's array with its component type and fixed point scale. The
+ * component type is held in a byte, as the vertex format stores the component types
+ * (texCoordType); with a plain int the setup of the sets compiles to a different instruction order. */
 #define WRITETEXCOORDS(n, compType, scale)                                                         \
     do {                                                                                           \
         RwUInt32 type = (builder->vcd[1] >> (2 * (n))) & 3;                                        \
                                                                                                    \
         if (INDEXED(type)) {                                                                       \
+            RwUInt8 componentType = (compType);                                                    \
+                                                                                                   \
             fn_8046A270(instance->vertexDescriptors[numDescriptors].data, source->data[attribute], \
-                        (compType), source->numElements[attribute],                                \
+                        componentType, source->numElements[attribute],                             \
                         instance->vertexDescriptors[numDescriptors].stride, (scale));              \
             numDescriptors++;                                                                      \
         }                                                                                          \
