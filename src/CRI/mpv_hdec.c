@@ -21,6 +21,7 @@
 #define MPVHDEC_HDR_PIC 3
 
 typedef void (*MPVHDEC_MCFUNC)(MPV mpv);
+typedef void (*MPVHDEC_SKIPFUNC)(MPV mpv, Sint32 n);
 
 /* slice macroblock decoders by picture type */
 Sint32 (*const dec_mbs_func[5])(MPV mpv, SJ sj) = {
@@ -33,7 +34,7 @@ static MPVHDEC_MCFUNC mc_bidirect_func[2][5];
 MPVHDEC_MCFUNC mc_backward_func[2][5];
 MPVHDEC_MCFUNC mc_forward_func[2][5];
 static MPVHDEC_MCFUNC mc_intra_func[2][2][5];
-static MPVHDEC_MCFUNC skip_func[2][5];
+static MPVHDEC_SKIPFUNC skip_func[2][5];
 
 /* Stand-in for a function the linker stripped from the game; its body is unknown. MWCC lays out
  * .bss by first reference, so this never-called function refers to the tables in storage order

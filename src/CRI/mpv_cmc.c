@@ -22,7 +22,8 @@ void MPVCMC_SetCcnt(MPV_OBJ *mpv) {
     mpv->ob_rt.ccnt = ccnt;
 }
 
-/* The real-time output table: chroma count and the frame width/height as the block strides. */
+/* The real-time output table: chroma count and the chroma/luma pitches of frm.rfb[1] as the block
+ * strides. */
 void MPVCMC_InitMcOiRt(MPV_OBJ *mpv) {
     MPVCMC_OUTBLK *ob = &mpv->ob_rt;
     MPVCMC_REF *oi = ob->oi;
@@ -37,11 +38,11 @@ void MPVCMC_InitMcOiRt(MPV_OBJ *mpv) {
         ccnt = 4;
     }
     ob->ccnt = ccnt;
-    w = mpv->frm.width;
+    w = mpv->frm.rfb[1].cpitch;
     for (i = 0; i < 2; i++) {
         oi[i].n = w;
     }
-    h = mpv->frm.height;
+    h = mpv->frm.rfb[1].ypitch;
     for (i = 2; i < 6; i++) {
         oi[i].n = h;
     }
