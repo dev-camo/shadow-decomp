@@ -62,8 +62,9 @@ const Sint32 SFPLY_cond_dfl[101] = {
     0,      0,      0,        0,     0,      0,      0x5A5A5A5A, 0,  0, 0,
 };
 
-/* Returns the pause switch (inferred). */
-Sint32 fn_803F94D8(SFD sfd) {
+/* Returns the pause switch. Named by the error its only caller prints for any value other than
+ * 0 or 1: "Invalid value of SFD_GetPaStat". */
+Sint32 SFD_GetPaStat(SFD sfd) {
     if (SFLIB_CheckHn(sfd) != 0) {
         SFLIB_SetErr(0, 0xFF000141);
         return 0;
