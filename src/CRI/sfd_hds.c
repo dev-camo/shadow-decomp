@@ -307,7 +307,8 @@ Sint32 sfhds_SetHdrRaw(SFD sfd, Uint8 *data, Sint32 size) {
 }
 #pragma dont_inline off
 
-/* Whether the bytes are a Sofdec header packet (SFH_IsSfdHeader on a temporary analyser). */
+/* Whether the bytes are a Sofdec header packet (SFH_IsSfdHeader on a temporary analyser). Stripped
+ * from the game; its copy inlined into SFHDS_SetHdr verifies the body. */
 Bool SFHDS_IsSfdHeader(void *data, Sint32 size) {
     SFH sfh;
     Sint32 flag;

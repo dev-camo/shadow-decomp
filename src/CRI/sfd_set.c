@@ -24,15 +24,6 @@ Sint32 SFD_GetTrHn(SFD sfd, Sint32 strm, void **hn) {
     return 0;
 }
 
-/* Copy of the player information block (decoded/skipped picture counts, 64-bit stream counters). */
-Sint32 SFD_GetPlyInf(SFD sfd, SFD_PLYINF *inf) {
-    if (SFLIB_CheckHn(sfd) != 0) {
-        return SFLIB_SetErr(0, 0xFF000119);
-    }
-    *inf = sfd->plyinf;
-    return 0;
-}
-
 /* Raw condition read (no handle check). */
 Sint32 SFSET_GetCond(SFD sfd, Sint32 id) {
     return sfd->cond[id];

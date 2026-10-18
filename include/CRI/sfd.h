@@ -476,10 +476,8 @@ typedef struct {
 } SFMPV_WORK;
 CHECK_SIZEOF(SFMPV_WORK, 0x10A0);
 
-/* 0xA8-byte player information block returned by SFD_GetPlyInf; this game's block is 8 bytes longer
- * than RE4's: a frame counter is added at +0x18 (so RE4's fields from +0x18 sit 4 bytes later) and
- * the 64-bit counters from +0x30 are realigned 8 bytes later (sfd_ply.c SFPLY_PLYINF is the field
- * view) */
+/* 0xA8-byte player information block (SFD_OBJ + 0x950): cleared by sfply_InitHn and passed to the
+ * picture hooks (conditions 0x24/0x25); sfd_ply.c SFPLY_PLYINF is the field view */
 typedef struct {
     Sint32 raw[0x2A]; /* 0x00 */
 } SFD_PLYINF;
@@ -699,14 +697,13 @@ typedef struct {
 } SFPLY_PTSM;
 CHECK_SIZEOF(SFPLY_PTSM, 0xC);
 
-/* Optional PTS manager hooks (sfd_ply.c, set by SFPLY_SetPtsmFn). The system stream driver passes
- * the PTS of each packet for buffer 2 (the audio driver's input) to the info hook; when it returns -1
- * the packet is not written and stays unconsumed. */
+/* Optional PTS manager hooks (sfd_ply.c; nothing in the game sets them). The system stream driver
+ * passes the PTS of each packet for buffer 2 (the audio driver's input) to the info hook; when it
+ * returns -1 the packet is not written and stays unconsumed. */
 typedef Sint32 (*SFPLY_PTSINFO_FN)(SFPLY_PTSM *ptsm, SFPTS_ENT *ent);
 typedef void (*SFPLY_PTSRESET_FN)(SFPLY_PTSM *ptsm);
 extern SFPLY_PTSINFO_FN SFPLY_SetPtsInfo;
 extern SFPLY_PTSRESET_FN SFPLY_ResetPtsm;
-void SFPLY_SetPtsmFn(SFPLY_PTSINFO_FN setfn, SFPLY_PTSRESET_FN resetfn);
 
 /* server time statistics (sfd_tmr.c, 0x20 bytes) */
 typedef struct {
@@ -827,22 +824,22 @@ CHECK_SIZEOF(SFBUF_HN, 0x1384);
 
 #define SFBUF_GET_HN(sfd, n) ((SFBUF_HN *)((SFBUF_WORK *)(sfd) + (n)))
 
-/* 64-bit stream counters inside plyinf seen through a separate view: SFD_PLYINF itself has to stay
- * 4-byte aligned (SFD_GetPlyInf copies it with a lwz/stw loop). Offsets are RE4's + 8 (from the
- * RE4 sfd_mps/sfd_mpv accesses); not yet confirmed against this game's code. */
+/* 64-bit stream counters inside plyinf, seen through a view of the whole handle (SFD_PLYINF is a
+ * word array). s_flow, s_byte and s_skip are confirmed by sfd_mps.c; the video and audio counters
+ * are not yet used by any decompiled unit (unverified). */
 typedef struct {
     Uint8 pad0[0x988]; /* 0x000 */
     Sint64 s_flow;     /* 0x988 system stream ring: flow count (sfd_mps.c) */
     Sint64 s_byte;     /* 0x990 system stream bytes demultiplexed */
     Sint64 s_skip;     /* 0x998 system stream bytes skipped */
-    Sint64 v_flow;     /* 0x9A0 video input ring: flow count (sfd_mpv.c) */
-    Sint64 v_byte;     /* 0x9A8 video bytes handed to the decoder */
-    Sint64 v_skip;     /* 0x9B0 video bytes skipped up to a start code */
-    Sint64 a_in_wcnt;  /* 0x9B8 audio input ring: written */
-    Sint64 a_in_rcnt;  /* 0x9C0 audio input ring: read */
-    Sint64 a_byte;     /* 0x9C8 audio bytes handed to the decoder */
-    Sint64 a_sj_wcnt;  /* 0x9D0 decoder stream joint: written */
-    Sint64 a_sj_rcnt;  /* 0x9D8 decoder stream joint: read */
+    Sint64 v_flow;     /* 0x9A0 video input ring: flow count (inferred) */
+    Sint64 v_byte;     /* 0x9A8 video bytes handed to the decoder (inferred) */
+    Sint64 v_skip;     /* 0x9B0 video bytes skipped up to a start code (inferred) */
+    Sint64 a_in_wcnt;  /* 0x9B8 audio input ring: written (inferred) */
+    Sint64 a_in_rcnt;  /* 0x9C0 audio input ring: read (inferred) */
+    Sint64 a_byte;     /* 0x9C8 audio bytes handed to the decoder (inferred) */
+    Sint64 a_sj_wcnt;  /* 0x9D0 decoder stream joint: written (inferred) */
+    Sint64 a_sj_rcnt;  /* 0x9D8 decoder stream joint: read (inferred) */
 } SFD_CNT64;
 CHECK_SIZEOF(SFD_CNT64, 0x9E0);
 
@@ -941,7 +938,6 @@ Sint32 SFMPS_GetConcatCnt(SFD sfd);
 void SFSEE_InitHn(SFSEE_HN *see);
 void SFSEE_ExecServer(SFD sfd);
 void SFSEE_FixAvPlay(SFD sfd, Sint32 a, Sint32 b);
-Sint32 SFD_GetPlyInf(SFD sfd, SFD_PLYINF *inf);
 Sint32 SFD_TermSupply(SFD sfd);
 Sint32 SFD_SetCond(SFD sfd, Sint32 id, Sint32 val);
 Sint32 SFD_GetHnStat(SFD sfd);
