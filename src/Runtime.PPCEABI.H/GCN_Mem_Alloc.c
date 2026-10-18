@@ -1,4 +1,4 @@
-/* MSL runtime default-heap allocator (GCN_mem_alloc.c). */
+/* MSL runtime default-heap allocator (GCN_Mem_Alloc.c). */
 #include <dolphin/os.h>
 
 void __sys_free(void *ptr);
