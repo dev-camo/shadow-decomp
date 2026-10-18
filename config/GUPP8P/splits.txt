@@ -1086,6 +1086,11 @@ CRI/mpv_vlc.c:
 	.rodata     start:0x80519598 end:0x80519648
 	.bss        start:0x805CA388 end:0x805CB9E0
 
+CRI/mpv_umc.c:
+	.text       start:0x803DF5DC end:0x803E0B48
+	.rodata     start:0x80519648 end:0x80519650
+	.bss        start:0x805CB9E0 end:0x805CBA20
+
 CRI/mpv_mcy.c:
 	.text       start:0x803E0B48 end:0x803E1D30
 	.rodata     start:0x80519650 end:0x80519660
