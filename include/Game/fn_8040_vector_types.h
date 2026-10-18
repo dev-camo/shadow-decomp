@@ -47,8 +47,9 @@ extern float lbl_805FAD78;
 extern float lbl_805FAD80;
 extern Fn8040Vector3 lbl_805E07A0;
 
-float fn_8000FEE4(
-    float value); /* not yet decompiled; returns the square root (inferred from use) */
+/* Lengths of a 2D and a 3D vector, through MSL <cmath>'s inline std::sqrt(float). Retail calls the
+ * out-of-line copy of std::sqrt at 0x8000FEE4, which calls the copy of sqrtf at 0x8000FF04. The E3
+ * 2005 prototype (G9SJ8P) expands sqrtf inside both helpers instead. */
 float fn_8040CCEC(const Fn8040Vector2 *vector);
 float fn_8040CF50(const Fn8040Vector3 *vector);
 /* Squared length. */

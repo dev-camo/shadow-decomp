@@ -245,8 +245,8 @@ cflags_game = [
 ]
 
 # The MSL C, math and C++ library headers. The Elec and Chao::CSD C++ units (cflags_game_cpp,
-# cflags_csd) search them in place of include/libc; C game code and the fn_8040 C++ helpers
-# (cflags_game) keep the C declarations in include/libc.
+# cflags_csd) and the fn_8040 vector length helpers search them in place of include/libc; C game
+# code and the other fn_8040 C++ helpers (cflags_game) keep the C declarations in include/libc.
 msl_includes = [
     "-i src/PowerPC_EABI_Support",
     "-i src/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Include",
@@ -296,6 +296,19 @@ cflags_csd = [
     "-inline noauto,deferred,level=1",
     "-sdata 0",
     "-sdata2 0",
+]
+
+# The fn_8040 vector length helpers (C++ with exception tables) call std::sqrt(float) from MSL
+# <cmath>. One level of inlining keeps that call out of line, because std::sqrt's body calls the
+# inline sqrtf; plain -inline auto expands both into the helper. Each object also carries weak
+# copies of std::sqrt and sqrtf with their literals, which the link discards in favour of the
+# copies at 0x8000FEE4 and 0x8000FF04. The std::sqrt and sqrtf copies at those addresses match
+# <cmath> compiled with fp_contract on (cflags_base), so the helpers do not turn it off.
+cflags_game_vector_length = [
+    *cflags_base,
+    *msl_includes,
+    "-Cpp_exceptions on",
+    "-inline noauto,level=1",
 ]
 
 # Metrowerks library flags (the runtime units include the MSL and runtime headers)
@@ -683,8 +696,8 @@ config.libs = [
                 ),
                 Object(
                     Matching,
-                    "Game/fn_8040CCEC.c",
-                    extra_cflags=["-Cpp_exceptions on", "-fp_contract off"],
+                    "Game/fn_8040CCEC.cpp",
+                    cflags=cflags_game_vector_length,
                 ),
                 Object(Matching, "Game/fn_8040CCD4.c"),
                 Object(Matching, "Game/fn_8040D6F4.c"),
@@ -726,7 +739,7 @@ config.libs = [
                 Object(
                     Matching,
                     "Game/fn_8040CF50.cpp",
-                    extra_cflags=["-Cpp_exceptions on", "-fp_contract off"],
+                    cflags=cflags_game_vector_length,
                 ),
                 Object(NonMatching, "Game/fn_8040CF90.c"),
                 Object(Matching, "Game/fn_8040AC3C.c"),

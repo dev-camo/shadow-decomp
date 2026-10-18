@@ -1381,7 +1381,7 @@ Game/fn_8040CC6C.cpp:
 Game/fn_8040CCD4.c:
 	.text       start:0x8040CCD4 end:0x8040CCEC
 
-Game/fn_8040CCEC.c:
+Game/fn_8040CCEC.cpp:
 	extab       start:0x80005858 end:0x80005860
 	extabindex  start:0x8000779C end:0x800077A8
 	.text       start:0x8040CCEC end:0x8040CD20
