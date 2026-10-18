@@ -494,11 +494,8 @@ RwBool fn_80495C54(void *out, void *inOut, RwInt32 numIn) {
         raw = lockMode & rwRASTERLOCKRAW;
         if (!raw) {
             RwInt32 levelHeight = parent->height >> level;
-            RwInt32 height = 1;
+            RwInt32 height = levelHeight != 0 ? levelHeight : 1;
 
-            if (levelHeight != 0) {
-                height = levelHeight;
-            }
             rasterExt->lockBuffer = RwMalloc(stride * height, rwMEMHINT_RASTER);
             if (rasterExt->lockBuffer == NULL) {
                 return FALSE;
@@ -508,17 +505,8 @@ RwBool fn_80495C54(void *out, void *inOut, RwInt32 numIn) {
         if (parent == raster) {
             RwInt32 levelWidth = raster->width >> level;
             RwInt32 levelHeight = raster->height >> level;
-            RwInt32 width;
-            RwInt32 height;
-
-            width = 1;
-            if (levelWidth != 0) {
-                width = levelWidth;
-            }
-            height = 1;
-            if (levelHeight != 0) {
-                height = levelHeight;
-            }
+            RwInt32 width = levelWidth != 0 ? levelWidth : 1;
+            RwInt32 height = levelHeight != 0 ? levelHeight : 1;
             raster->originalWidth = raster->width;
             raster->originalHeight = raster->height;
             raster->width = width;
