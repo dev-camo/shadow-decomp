@@ -994,6 +994,11 @@ CRI/rna_err.c:
 CRI/rna_crs.c:
 	.text       start:0x803CEB80 end:0x803CEBC0
 
+CRI/rna_res.c:
+	.text       start:0x803D03E4 end:0x803D0814
+	.rodata     start:0x80518E70 end:0x80518EC0
+	.bss        start:0x805C4D10 end:0x805C4EA8
+
 CRI/sud_lib.c:
 	.text       start:0x803D0814 end:0x803D09CC
 	.rodata     start:0x80518EC0 end:0x80518F10
