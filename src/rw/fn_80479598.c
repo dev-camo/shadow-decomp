@@ -61,8 +61,8 @@ RwChar *fn_8047971C(RwChar *buffer, RwInt32 bufferSize, const RwChar *prefix, co
                     RwChar separator) {
     RwInt32 prefixLength = strlen(prefix);
     RwInt32 pathLength = strlen(path);
-    RwChar *out;
     const RwChar *in;
+    RwChar *out;
     RwInt32 i;
 
     if (prefixLength + pathLength > bufferSize - 1) {
@@ -73,10 +73,12 @@ RwChar *fn_8047971C(RwChar *buffer, RwInt32 bufferSize, const RwChar *prefix, co
     out = buffer + prefixLength;
     /* the path's terminator is copied too */
     for (i = 0; i <= pathLength; i++) {
-        if (*in == '/' || *in == '\\') {
+        RwChar character = *in;
+
+        if (character == '/' || character == '\\') {
             *out = separator;
         } else {
-            *out = *in;
+            *out = character;
         }
         out++;
         in++;
