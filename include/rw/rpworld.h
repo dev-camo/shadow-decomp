@@ -952,7 +952,7 @@ RxNodeDefinition *fn_80463D1C(void); /* the atomic all-in-one node definition */
 /* GameCube lights (inferred from their use) */
 /* loads the world's directional lights with the light flags into the mesh's hardware lights and
  * adds its ambient lights to the mesh's ambient colour */
-void fn_804641CC(RwUInt8 lightFlags, RpGameCubeRenderMesh *renderMesh);
+void fn_804641CC(RwUInt32 lightFlags, RpGameCubeRenderMesh *renderMesh);
 void fn_804643E8(RpLight *light, RpGameCubeRenderMesh *renderMesh); /* adds a light */
 
 /* GameCube instanced data (inferred from their use) */
