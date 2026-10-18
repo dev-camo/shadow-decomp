@@ -27,7 +27,10 @@ class Task {
 CHECK_SIZEOF(Task, 0x28);
 
 /* fn_8001C4F8 returns the task manager; fn_801EB304 returns its parent task for new tasks of the
- * given layer (behaviour inferred). */
+ * given layer (behaviour inferred). fn_8001C4F8 constructs a function-local static manager on the
+ * first call, registers its destructor and caches its address in a static pointer. The E3 2005
+ * prototype (G9SJ8P) expands this sequence in its callers (213 copies), which suggests a header
+ * inline accessor. */
 extern "C" {
 void *fn_8001C4F8(void);
 Task *fn_801EB304(void *manager, int index);
