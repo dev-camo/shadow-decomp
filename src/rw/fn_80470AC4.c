@@ -57,7 +57,7 @@ RwInt32 lbl_805F1538;
  * turn */
 Rt2dFont *fn_80470AC4(Rt2dFont *font, const RwChar *string, RwReal height, RwV2d *anchor,
                       Rt2dBrush *brush) {
-    const RwUInt8 *text = (const RwUInt8 *)string;
+    const RwUInt8 *text;
 
     if (font != NULL) {
         rt2dCharRect *charRects = fn_8047DFAC(font->charRects);
@@ -69,6 +69,7 @@ Rt2dFont *fn_80470AC4(Rt2dFont *font, const RwChar *string, RwReal height, RwV2d
         RwInt32 code;
 
         FONTCHARSETUP(font);
+        text = (const RwUInt8 *)string;
 
         fn_804747A0();
         fn_80474964(anchor->x, anchor->y);
@@ -706,6 +707,7 @@ Rt2dFont *fn_804724AC(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
     RwInt32 maxChars;
     RwInt32 numChars;
     RwInt32 rectOffset;
+    RwInt32 rectBytes;
     RwInt32 *codes;
     RwInt16 *map;
     rt2dCharRect *charRects;
@@ -722,6 +724,7 @@ Rt2dFont *fn_804724AC(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
     maxChars = font->numChars;
     numChars = 0;
     rectOffset = 0;
+    rectBytes = 0;
     if (maxChars == 0) {
         maxChars = 0x100;
     }
@@ -733,7 +736,6 @@ Rt2dFont *fn_804724AC(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
 
     if (rwsscanf(line, "%[^\n]", name) == 1) {
         RwInt32 codeOffset = 0;
-        RwInt32 rectBytes = 0;
         RwReal x3;
         RwReal x2;
         RwReal x1;
@@ -1064,11 +1066,13 @@ RwBool fn_80473260(void) {
     /* two triangles per character quad */
     index = lbl_805E1950.fontIndices;
     for (i = 0; i < rt2dFONTMAXQUADS * 4; i += 4) {
+        RwImVertexIndex third = (RwImVertexIndex)i + 3;
+
         index[0] = i;
         index[1] = (RwImVertexIndex)i + 2;
-        index[2] = (RwImVertexIndex)i + 3;
+        index[2] = third;
         index[3] = i;
-        index[4] = (RwImVertexIndex)i + 3;
+        index[4] = third;
         index[5] = (RwImVertexIndex)i + 1;
         index += 6;
     }
@@ -1120,15 +1124,16 @@ RwReal fn_8047353C(Rt2dFont *font) {
 RwReal fn_80473584(Rt2dFont *font, const RwChar *string, RwReal height) {
     RwReal width = 0.0f;
     rt2dCharRect *charRects = fn_8047DFAC(font->charRects);
-    RwInt32 charSize;
     RwUInt8 lowMask;
+    const RwUInt8 *p;
+    RwInt32 charSize;
+    RwInt32 lowShift;
     RwInt32 lowIndex;
     RwInt32 highShift;
-    RwInt32 lowShift;
     RwInt32 code;
-    const RwUInt8 *p = (const RwUInt8 *)string;
 
     FONTCHARSETUP(font);
+    p = (const RwUInt8 *)string;
     for (code = FONTCHARCODE(p); code > 0; code = FONTCHARCODE(p)) {
         RwInt32 index;
 
