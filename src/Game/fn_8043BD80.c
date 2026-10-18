@@ -93,11 +93,6 @@ static inline void *gcaxSndBankData(GcaxBankHeader *header, u32 word) {
     return (u8 *)header + GCAX_OFFSET(word);
 }
 
-/* The voice node after node in a note's voice list */
-static inline GcaxNode *gcaxSndNextRef(GcaxList *list, GcaxNode *node) {
-    return fn_8043B3DC(list, node);
-}
-
 /* Takes the next usable voice round-robin: a dropped voice that gets its AX voice back, or an idle
  * voice that still has one. NULL if there is none. A separate function in the E3 2005 prototype
  * (G9SJ8P) at 0x8037E0D0, called from fn_8043D4D8's counterpart 0x8037DFC0. */
@@ -642,7 +637,7 @@ void fn_8043C89C(GcaxList *voices, s32 bank, s32 program, s32 key, s32 velocity)
             for (j = 0; j < numRegions; j++) {
                 region = &regions[j];
                 if (region->keyMin <= key && key <= region->keyMax) {
-                    ref = gcaxSndNextRef(voices, ref);
+                    ref = fn_8043C10C(voices, ref);
                     if (ref != NULL && ref->data != NULL) {
                         fn_8043CA7C(bank, ref->data, &layers[i], header, region, key, curves,
                                     velocity);
@@ -899,10 +894,15 @@ GcaxNode *fn_8043C12C(GcaxList *voices, GcaxVoice *voice) {
     return ref;
 }
 
-/* The next voice reference of a note's voice list (see fn_8043B3DC). */
+/* The next voice reference of a note's voice list (see fn_8043B3DC). fn_8043C89C calls it directly:
+ * the E3 prototype makes that call out of line (0x8037D0F4); retail expands it there and keeps this
+ * copy. The unit inlines only explicit inline functions, so this one needs auto_inline (a file-wide
+ * auto_inline gives the same object). */
+#pragma auto_inline on
 GcaxNode *fn_8043C10C(GcaxList *voices, GcaxNode *ref) {
     return fn_8043B3DC(voices, ref);
 }
+#pragma auto_inline reset
 
 /* Destroys a voice reference: stops its AX voice and marks the voice free. */
 void fn_8043C084(GcaxNode *ref) {
