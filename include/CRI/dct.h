@@ -27,14 +27,18 @@ typedef struct {
 } DCT_PA;
 CHECK_SIZEOF(DCT_PA, 0x54);
 
-/* IDCT (not yet decompiled) */
+/* dct_fsri.c */
 void DCT_FsriTransCbp(DCT_PA *pa);
 void DCT_FsriTrans6Blk(DCT_PA *pa);
-void DCT_FsriInitScanTbl(Sint8 *seq, Sint8 *scan);
+void DCT_FsriInitScanTbl(const Sint8 *seq, Sint8 *scan);
 void DCT_FsriSetGqr(void);
 void DCT_FsriInitPa(DCT_PA *pa);
 void DCT_FsriInitScaleTbl(Float32 *tbl);
 void DCT_FsriInit(void);
+
+/* dct_ac.c (not yet decompiled): double-precision reference transform */
+void DCT_AcInit(void);
+void DCT_AcIdctDouble(Float64 *in, Float64 *out);
 
 /* dct_ver.c */
 extern const Char8 DCT_version_str[];
