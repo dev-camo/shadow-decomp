@@ -10,6 +10,10 @@
  * dynamic_cast or typeid naming that class, even inside an inline function that is never called;
  * the linker discards the unreferenced records and names but keeps the base lists.
  *
+ * Matching workaround: the three CastToTNumEdit* functions are never called. They stand in for the
+ * original's unknown inline functions so that the RTTI base lists and name strings are emitted.
+ * Revisit when the original inline functions or a real caller are found.
+ *
  * The names of the derived classes come from RTTI name strings that survive in the .rodata of
  * other files: 18 copies, each next to TNumEdit's in the order TNumEditHex, TNumEdit, TNumEditInt,
  * TNumEditFloat, which is the order in which the casts below first use a derived name and then its
@@ -18,7 +22,8 @@
  *
  * Three copies of TNumEdit's vtable, each pointing to a TNumEdit RTTI record, start with two null
  * slots (pure virtual functions) followed by two defined functions at different addresses in each
- * copy. The rest of the vtable and the class layout are not mapped. */
+ * copy. The rest of the vtable and the class layout are not mapped, so the classes have no size
+ * checks. */
 class TNumEdit {
   public:
     virtual void UnkSlot0() = 0;

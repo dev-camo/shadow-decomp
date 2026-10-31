@@ -1,5 +1,6 @@
-#ifndef FN_8040_VECTOR_TYPES_H
-#define FN_8040_VECTOR_TYPES_H
+#ifndef GAME_FN_8040_VECTOR_TYPES_H
+#define GAME_FN_8040_VECTOR_TYPES_H
+
 #include "layout_check.h"
 
 /* 2- and 3-float vectors used by the fn_8040xxxx vector helpers. Layouts come from their accesses;
@@ -325,14 +326,17 @@ extern "C" bool fn_8000B044(float value);
 /* Whether the point lies between the planes through the segment's ends (behaviour inferred). */
 extern "C" bool fn_8040FB88(const UnkSegment_80020A20 *segment, const Fn8040Vector3 *point);
 
-/* Sets matrix to the identity rotation with the given translation (name inferred). Where a smart
- * pointer's operator-> supplies the vector, the original calls that operator out of line, which
- * happens for an argument of an inline call such as this wrapper. */
+/* Matching workaround: MakeTranslationMatrix and AddVector are inline wrappers so that a smart
+ * pointer's operator-> supplying the vector is called out of line, as in the original; that
+ * happens for an argument of an inline call, whereas a direct call to the function expands it in
+ * place. The original inline functions are unknown. Revisit when they are identified.
+ *
+ * Sets matrix to the identity rotation with the given translation (name inferred). */
 inline void MakeTranslationMatrix(Fn8040Matrix34 *matrix, const Fn8040Vector3 &translation) {
     fn_8040B034(matrix, &translation);
 }
 
-/* result += value (name inferred): an inline wrapper of fn_8040CFF8 for the same reason. */
+/* result += value (name inferred): a wrapper of fn_8040CFF8 for the same reason (see above). */
 inline void AddVector(Fn8040Vector3 *result, const Fn8040Vector3 &value) {
     fn_8040CFF8(result, &value);
 }

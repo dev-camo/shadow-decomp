@@ -27,8 +27,11 @@ class UnkCallbackSlot_800F5980 {
   public:
     UnkCallbackSlot_800F5980 &fn_800F5980(const ColliDetectCallback &callback);
 
-    /* Clears the bits of mask in the flags word (name inferred). Called through this inline, the
-     * smart pointer's operator-> stays out of line, as in the original. */
+    /* Matching workaround: as in UnkEffect_80168C48::ClearFlags, calling this inline keeps the
+     * smart pointer's operator-> out of line, as in the original. The original accessor is
+     * unknown. Revisit when it is identified.
+     *
+     * Clears the bits of mask in the flags word (name inferred). */
     void ClearFlags(u32 mask) {
         m_flags &= ~mask;
     }
