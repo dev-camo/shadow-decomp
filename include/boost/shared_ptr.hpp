@@ -129,6 +129,9 @@ class shared_count {
 };
 CHECK_SIZEOF(boost::detail::shared_count, 0x4);
 
+/* Selects the shared_ptr constructor that casts the stored pointer with static_cast. */
+struct static_cast_tag {};
+
 } // namespace detail
 
 /* The copy constructor, assignment and destructor are the compiler-generated ones, which copy,
@@ -141,6 +144,10 @@ template <class T> class shared_ptr {
     template <class Y> explicit shared_ptr(const weak_ptr<Y> &r) : pn(r.pn) {
         px = r.px;
     }
+
+    template <class Y>
+    shared_ptr(const shared_ptr<Y> &r, detail::static_cast_tag)
+        : px(static_cast<T *>(r.px)), pn(r.pn) {}
 
     T *operator->() const {
         return px;
@@ -156,6 +163,11 @@ template <class T> class shared_ptr {
 
 template <class T, class U> inline bool operator==(const shared_ptr<T> &a, const shared_ptr<U> &b) {
     return a.get() == b.get();
+}
+
+/* Converts the stored pointer with static_cast, sharing the same reference count. */
+template <class T, class U> shared_ptr<T> static_pointer_cast(const shared_ptr<U> &r) {
+    return shared_ptr<T>(r, detail::static_cast_tag());
 }
 
 } // namespace boost

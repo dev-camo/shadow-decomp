@@ -33,6 +33,16 @@ struct UnkProbeNode_80021FE4 {
 };
 CHECK_SIZEOF(UnkProbeNode_80021FE4, 0x20);
 
+/* An iterator over the nodes of the list (behaviour inferred). It has a constructor because the
+ * postfix step returns the previous value through a hidden pointer, which MWCC does for a class
+ * with a constructor but not for a plain struct of one pointer. */
+struct UnkProbeIterator_80027374 {
+    UnkProbeIterator_80027374(UnkProbeNode_80021FE4 *start) : node(start) {}
+
+    /* 0x0 */ UnkProbeNode_80021FE4 *node;
+};
+CHECK_SIZEOF(UnkProbeIterator_80027374, 0x4);
+
 /* The list returned by fn_80021FE4. */
 class UnkProbeList_80021FE4 {
   public:
@@ -57,8 +67,11 @@ UnkWorld_80020D40 *fn_80020D40(void);
  * the world's collision tests (behaviour inferred; the arguments are not understood). */
 UnkProbeList_80021FE4 *fn_80021FE4(UnkWorld_80020D40 *world, const UnkSegment_80020A20 *segment,
                                    int flags, int arg3, int arg4, int arg5);
-/* Moves the iterator to the node's next pointer (behaviour inferred). */
-void fn_80027398(UnkProbeNode_80021FE4 **iterator);
+/* Moves the iterator to the next pointer of its node (behaviour inferred). */
+void fn_80027398(UnkProbeIterator_80027374 *iterator);
+/* The postfix form of the same step: returns the iterator's previous value (behaviour inferred
+ * from the stores in its body; arg1 is the dummy int of a postfix operator). */
+UnkProbeIterator_80027374 fn_80027374(UnkProbeIterator_80027374 *iterator, int arg1);
 /* The vector stored at 0xC of the hit (behaviour inferred). */
 Fn8040Vector3 *fn_8001E9BC(UnkProbeHit_8001E9BC *hit);
 /* A weak pointer to the object a node refers to, built from the weak pointer at the node's start

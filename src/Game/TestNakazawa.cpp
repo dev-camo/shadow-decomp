@@ -78,10 +78,10 @@ void TestNakazawa::Update(float dt) {
         UnkSegment_80020A20 probe(start, end);
         UnkProbeList_80021FE4 *hits = fn_80021FE4(fn_80020D40(), &probe, 1, 0, 0, 0);
         if (hits != 0) {
-            UnkProbeNode_80021FE4 *iterator = hits->fn_8001EE04();
+            UnkProbeIterator_80027374 iterator(hits->fn_8001EE04());
 
-            while (iterator != hits->fn_8001EDEC()) {
-                UnkProbeNode_80021FE4 *node = iterator;
+            while (iterator.node != hits->fn_8001EDEC()) {
+                UnkProbeNode_80021FE4 *node = iterator.node;
 
                 if (node != 0) {
                     boost::shared_ptr<UnkProbeTarget_800587A0> target =
