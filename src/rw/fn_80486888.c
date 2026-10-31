@@ -4,7 +4,7 @@
 #include "rw/rwcore.h"
 #include "layout_check.h"
 
-/* object type and free list ID */
+/* object type */
 #define rwFRAME 0
 
 /* The engine globals of the frame module */
