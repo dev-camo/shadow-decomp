@@ -11,13 +11,14 @@ namespace CSD {
 
 /* The library's interface to the target's files. Reads go through a directory the library keeps
  * (the base directory every name is relative to). The class name is inferred from the other
- * interfaces of the library (CPlatform, CMemoryAlloc). Its implementation has the vtable
- * 0x8055FBB0 and the interface's own is 0x8055FBC4: the two first slots are pure and the
- * destructor, declared third, is inline (its out-of-line copy for the interface's vtable is
- * 0x80362D54). The class has no base: both deleting destructors free through the global operator
- * delete, not CBase's, and 0x80362D54 destroys the directory with the string's destructor
- * (fn_80014EC0). Slot names are inferred from the implementation, which opens the file at the path
- * with fopen's mode "rb". Only the vtable pointer and the directory at 0x4 are mapped. */
+ * interfaces of the library (CPlatform, CMemoryAlloc). Its implementation, CFileSystemRW in
+ * csdTexListRW.cpp, has the vtable 0x8055FBB0 and the interface's own is 0x8055FBC4: the two first
+ * slots are pure and the destructor, declared third, is inline (its out-of-line copy for the
+ * interface's vtable is 0x80362D54). The class has no base: both deleting destructors free through
+ * the global operator delete, not CBase's, and 0x80362D54 destroys the directory with the string's
+ * destructor (fn_80014EC0). Slot names are inferred from the implementation, which opens the file
+ * at the path with fopen's mode "rb". Only the vtable pointer and the directory at 0x4 are
+ * mapped. */
 class CFileSystem {
   public:
     CFileSystem() : m_directory("") {}

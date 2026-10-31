@@ -7,8 +7,7 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* chunk and module IDs */
-#define rwID_TEXDICTIONARY 0x16
+/* module ID */
 #define rwID_TEXTUREMODULE 0x408
 
 /* object type */

@@ -53,6 +53,7 @@ typedef char RwChar;
 #define rwID_WORLD 0xB
 #define rwID_EXTENSION 0x3
 #define rwID_TEXTURE 0x6
+#define rwID_TEXDICTIONARY 0x16
 #define rwID_COREPLUGIN 0x1   /* the core's plugin ID, also used for its errors */
 #define rwCHUNKHEADERSIZE 12  /* the bytes of a chunk header in a stream */
 #define rwID_PIPEMODULE 0x409 /* the pipeline module's ID */
@@ -330,6 +331,8 @@ extern RwGlobals *lbl_805F15B4; /* the engine instance */
 #define RwRenderStateGet(state, value)                                                             \
     (lbl_805F15B4->dOpenDevice.fpRenderStateGet((state), (value)))
 #define RwIm2DGetNearScreenZ() (lbl_805F15B4->dOpenDevice.zBufferNear)
+#define RwIm2DRenderPrimitive(primType, vertices, numVertices)                                     \
+    (lbl_805F15B4->dOpenDevice.fpIm2DRenderPrimitive((primType), (vertices), (numVertices)))
 #define RwIm2DRenderIndexedPrimitive(primType, vertices, numVertices, indices, numIndices)         \
     (lbl_805F15B4->dOpenDevice.fpIm2DRenderIndexedPrimitive((primType), (vertices), (numVertices), \
                                                             (indices), (numIndices)))
