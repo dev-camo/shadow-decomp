@@ -719,10 +719,11 @@ config.libs = [
                 Object(Matching, "Game/fn_8040E310.c"),
                 Object(Matching, "Game/fn_8040D608.c"),
                 Object(Matching, "Game/fn_80411548.c"),
+                # Size-optimized like the game C++ units: the target saves r30/r31 with stmw/lmw.
                 Object(
-                    NonMatching,
+                    Matching,
                     "Game/fn_8041157C.c",
-                    extra_cflags=["-Cpp_exceptions on"],
+                    extra_cflags=["-Cpp_exceptions on", "-O4,s", "-use_lmw_stmw on"],
                 ),
                 Object(Matching, "Game/fn_8040CF2C.c"),
                 Object(Matching, "Game/fn_804202B8.c"),
