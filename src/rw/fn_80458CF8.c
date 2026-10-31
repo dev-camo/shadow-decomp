@@ -421,28 +421,42 @@ RpGeometry *fn_8045984C(RpGeometry *geometry) {
     return geometry;
 }
 
+/* Frees a geometry whose last reference has been dropped: the plugin data, the morph targets
+ * and the material list.
+ * Matching workaround: declared inline only so that no unused local copy remains; plain static
+ * leaves an extra 0xB8-byte local copy of this helper in the object (the final link strips the
+ * copy; only the object comparison differs). Revisit if the original helper form is found or an
+ * unused local copy becomes acceptable. */
+static inline RwBool GeometryAnnihilate(RpGeometry *geometry) {
+    /* the caller has dropped the last reference; it is raised again while the geometry is locked
+     * and torn down, and dropped before the free */
+    geometry->refCount++;
+    fn_8045916C(geometry, rpGEOMETRYLOCKALL);
+    fn_80482144(&lbl_8056D810, geometry);
+    if (geometry->morphTarget != NULL) {
+        RwFree(geometry->morphTarget);
+        geometry->morphTarget = NULL;
+    }
+    fn_8045B6F0(&geometry->matList);
+    geometry->refCount--;
+    RwFree(geometry);
+    return TRUE;
+}
+
 /* Releases a geometry; the last reference destroys it */
 RwBool fn_8045985C(RpGeometry *geometry) {
+    RwBool result = TRUE;
+
     if (geometry->refCount - 1 <= 0) {
         if (geometry->repEntry != NULL) {
             fn_8048071C(geometry->repEntry);
         }
-        /* as in the original, the reference count drops and comes back around locking */
         geometry->refCount--;
-        geometry->refCount++;
-        fn_8045916C(geometry, rpGEOMETRYLOCKALL);
-        fn_80482144(&lbl_8056D810, geometry);
-        if (geometry->morphTarget != NULL) {
-            RwFree(geometry->morphTarget);
-            geometry->morphTarget = NULL;
-        }
-        fn_8045B6F0(&geometry->matList);
+        result = GeometryAnnihilate(geometry);
+    } else {
         geometry->refCount--;
-        RwFree(geometry);
-        return TRUE;
     }
-    geometry->refCount--;
-    return TRUE;
+    return result;
 }
 
 /* plugin registration with geometries */
@@ -460,16 +474,9 @@ RwInt32 fn_8045998C(RwUInt32 pluginID, RwPluginDataChunkReadCallBack read,
 /* Reads a geometry: its header, prelit colours, texture coordinates and triangles (unless it is
  * native), its morph targets, its material list and plugin data, then builds its mesh */
 RpGeometry *fn_804599C8(RwStream *stream) {
-    RwUInt32 version;
-    GeometryChunk header;
-    MorphTargetChunk morphTargetHeader;
     RpGeometry *geometry;
-    RwUInt32 size;
-    RpMorphTarget *morphTarget;
-    RwUInt32 numTriangles;
-    StreamTriangle *triangles;
-    RwInt32 i;
-    RwInt32 target;
+    GeometryChunk header;
+    RwUInt32 version;
 
     if (!fn_8047CF50(stream, rwID_STRUCT, NULL, &version)) {
         return NULL;
@@ -494,7 +501,8 @@ RpGeometry *fn_804599C8(RwStream *stream) {
 
     if (!(geometry->flags & rpGEOMETRYNATIVE) && geometry->numVertices != 0) {
         if (header.format & rpGEOMETRYPRELIT) {
-            size = geometry->numVertices * sizeof(RwRGBA);
+            RwUInt32 size = geometry->numVertices * sizeof(RwRGBA);
+
             if (size != fn_80480D4C(stream, geometry->preLitLum, size)) {
                 fn_8045985C(geometry);
                 return NULL;
@@ -502,7 +510,9 @@ RpGeometry *fn_804599C8(RwStream *stream) {
         }
 
         if (geometry->numTexCoordSets > 0) {
-            size = geometry->numVertices * sizeof(RwTexCoords);
+            RwInt32 i;
+            const RwUInt32 size = geometry->numVertices * sizeof(RwTexCoords);
+
             for (i = 0; i < geometry->numTexCoordSets; i++) {
                 if (fn_8047D784(stream, (RwReal *)geometry->texCoords[i], size) == NULL) {
                     fn_8045985C(geometry);
@@ -512,6 +522,10 @@ RpGeometry *fn_804599C8(RwStream *stream) {
         }
 
         if (geometry->numTriangles != 0) {
+            StreamTriangle *triangles;
+            RwInt32 numTriangles;
+            RwUInt32 size;
+
             triangles = (StreamTriangle *)geometry->triangles;
             numTriangles = geometry->numTriangles;
             size = numTriangles * sizeof(RpTriangle);
@@ -520,7 +534,7 @@ RpGeometry *fn_804599C8(RwStream *stream) {
                 return NULL;
             }
             fn_8047D254(triangles, size);
-            for (i = numTriangles; i != 0; i--) {
+            while (numTriangles--) {
                 RwUInt32 word;
 
                 word = triangles->words[0];
@@ -534,35 +548,41 @@ RpGeometry *fn_804599C8(RwStream *stream) {
         }
     }
 
-    for (target = 0; target < geometry->numMorphTargets; target++) {
-        morphTarget = &geometry->morphTarget[target];
-        if (fn_80480D4C(stream, &morphTargetHeader, sizeof(morphTargetHeader)) !=
-            sizeof(morphTargetHeader)) {
-            fn_8045985C(geometry);
-            return NULL;
-        }
-        fn_8047D254(&morphTargetHeader, sizeof(morphTargetHeader));
-        morphTarget->boundingSphere = morphTargetHeader.boundingSphere;
+    {
+        RwInt32 i;
 
-        if (morphTargetHeader.pointsPresent && morphTargetHeader.normalsPresent) {
-            /* the normals follow the points */
-            if (fn_8047D784(stream, (RwReal *)morphTarget->verts,
-                            geometry->numVertices * (sizeof(RwV3d) * 2)) == NULL) {
+        for (i = 0; i < geometry->numMorphTargets; i++) {
+            MorphTargetChunk morphTargetHeader;
+            RpMorphTarget *morphTarget = &geometry->morphTarget[i];
+
+            if (fn_80480D4C(stream, &morphTargetHeader, sizeof(morphTargetHeader)) !=
+                sizeof(morphTargetHeader)) {
                 fn_8045985C(geometry);
                 return NULL;
             }
-        } else {
-            if (morphTargetHeader.pointsPresent &&
-                fn_8047D784(stream, (RwReal *)morphTarget->verts,
-                            geometry->numVertices * sizeof(RwV3d)) == NULL) {
-                fn_8045985C(geometry);
-                return NULL;
-            }
-            if (morphTargetHeader.normalsPresent &&
-                fn_8047D784(stream, (RwReal *)morphTarget->normals,
-                            geometry->numVertices * sizeof(RwV3d)) == NULL) {
-                fn_8045985C(geometry);
-                return NULL;
+            fn_8047D254(&morphTargetHeader, sizeof(morphTargetHeader));
+            morphTarget->boundingSphere = morphTargetHeader.boundingSphere;
+
+            if (morphTargetHeader.pointsPresent && morphTargetHeader.normalsPresent) {
+                /* the normals follow the points */
+                if (fn_8047D784(stream, (RwReal *)morphTarget->verts,
+                                geometry->numVertices * (sizeof(RwV3d) * 2)) == NULL) {
+                    fn_8045985C(geometry);
+                    return NULL;
+                }
+            } else {
+                if (morphTargetHeader.pointsPresent &&
+                    fn_8047D784(stream, (RwReal *)morphTarget->verts,
+                                geometry->numVertices * sizeof(RwV3d)) == NULL) {
+                    fn_8045985C(geometry);
+                    return NULL;
+                }
+                if (morphTargetHeader.normalsPresent &&
+                    fn_8047D784(stream, (RwReal *)morphTarget->normals,
+                                geometry->numVertices * sizeof(RwV3d)) == NULL) {
+                    fn_8045985C(geometry);
+                    return NULL;
+                }
             }
         }
     }
