@@ -1,3 +1,4 @@
+// Dolphin SDK DVD library: fatal error message.
 #include <dolphin.h>
 #include <dolphin/dvd.h>
 
@@ -14,7 +15,8 @@ const char *English = "\n\n\nAn error has occurred.\n"
                       "Nintendo GameCube Instruction Booklet\n"
                       "for further instructions.";
 
-// TODO: need solution to compile special characters in a cleaner way
+// The Latin-1 characters are written as \x escapes, and a literal is split after an escape when the
+// next character would otherwise be read as a further hex digit.
 const char *const Europe[6] = {
     {"\n\n\nAn error has occurred.\n"
      "Turn the power off and refer to the\n"

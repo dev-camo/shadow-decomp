@@ -1,3 +1,6 @@
+// Dolphin SDK DVD library: disc ID comparison.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: DVDGenerateDiskID.
 #include <dolphin.h>
 #include <dolphin/dvd.h>
 
@@ -16,7 +19,7 @@ static u32 strnlen(const char *str, u32 maxlen) {
 }
 
 int DVDCompareDiskID(const DVDDiskID *id1, const DVDDiskID *id2) {
-#ifdef DEBUG
+#if DEBUG
     const char *game1;
     const char *game2;
     const char *company1;

@@ -1,3 +1,7 @@
+// Dolphin SDK DVD library: low-level drive interface.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: DVDLowGetCoverStatus,
+// DVDLowSetResetCoverCallback.
 #include <dolphin.h>
 #include <dolphin/dvd.h>
 
@@ -24,18 +28,18 @@ static volatile BOOL LastCommandWasRead = FALSE;
 static volatile u32 NextCommandNumber = 0;
 
 typedef struct {
-    void *addr;
-    u32 length;
-    u32 offset;
+    /* 0x00 */ void *addr;
+    /* 0x04 */ u32 length;
+    /* 0x08 */ u32 offset;
 } DVDBuffer;
 CHECK_SIZEOF(DVDBuffer, 0xC);
 
 typedef struct {
-    s32 command;
-    void *address;
-    u32 length;
-    u32 offset;
-    DVDLowCallback callback;
+    /* 0x00 */ s32 command;
+    /* 0x04 */ void *address;
+    /* 0x08 */ u32 length;
+    /* 0x0C */ u32 offset;
+    /* 0x10 */ DVDLowCallback callback;
 } DVDCommand;
 CHECK_SIZEOF(DVDCommand, 0x14);
 
@@ -46,7 +50,6 @@ static OSAlarm AlarmForBreak;
 static DVDBuffer Prev;
 static DVDBuffer Curr;
 
-// prototypes
 static void Read(void *address, u32 length, u32 offset, DVDLowCallback callback);
 static void SetBreakAlarm(OSTime timeout);
 
@@ -187,13 +190,13 @@ static void AlarmHandlerForTimeout(OSAlarm *alarm, OSContext *context) {
     DVDLowCallback cb;
     OSContext exceptionContext;
 
-    __OSMaskInterrupts(0x400);
+    __OSMaskInterrupts(OS_INTERRUPTMASK_PI_DI);
     OSClearContext(&exceptionContext);
     OSSetCurrentContext(&exceptionContext);
     cb = Callback;
     Callback = NULL;
     if (cb) {
-        cb(0x10);
+        cb(16);
     }
 
     OSClearContext(&exceptionContext);
@@ -242,6 +245,8 @@ static BOOL HitCache(DVDBuffer *curr, DVDBuffer *prev) {
     u32 blockNumOfCurrStart = (curr->offset >> 15);
     u32 cacheBlockSize = AudioBufferOn() ? 5 : 15;
 
+    // The two tests are joined with ||, so this is true for almost every pair of blocks. Reproduced
+    // as is: HitCache is inlined into DVDLowRead, whose bytes contain both tests.
     if ((blockNumOfCurrStart > blockNumOfPrevEnd - 2) ||
         (blockNumOfCurrStart < blockNumOfPrevEnd + cacheBlockSize + 3)) {
         return TRUE;
@@ -314,8 +319,11 @@ BOOL DVDLowRead(void *addr, u32 length, u32 offset, DVDLowCallback callback) {
             if (!HitCache(&Curr, &Prev)) {
                 DoJustRead(addr, length, offset, callback);
             } else {
+                // Matching workaround: the (u32) cast changes no value. Without it the two block
+                // numbers swap registers in the srwi/cmplw sequence of the compiled DVDLowRead.
+                // Revisit when the original expression form is known.
                 blockNumOfPrevEnd = (u32)((Prev.offset + Prev.length - 1) >> 15) & 0x1FFFF;
-                blockNumOfCurrStart = (u32)((Curr.offset >> 15) & 0x1FFFF);
+                blockNumOfCurrStart = (Curr.offset >> 15) & 0x1FFFF;
                 if (blockNumOfPrevEnd == blockNumOfCurrStart ||
                     blockNumOfPrevEnd + 1 == blockNumOfCurrStart) {
                     diff = __OSGetSystemTime() - LastReadFinished;
@@ -425,7 +433,7 @@ BOOL DVDLowRequestAudioStatus(u32 subcmd, DVDLowCallback callback) {
 }
 
 BOOL DVDLowAudioBufferConfig(BOOL enable, u32 size, DVDLowCallback callback) {
-#ifdef DEBUG
+#if DEBUG
     u32 bufSize;
     u32 trigger;
 #endif
@@ -433,7 +441,7 @@ BOOL DVDLowAudioBufferConfig(BOOL enable, u32 size, DVDLowCallback callback) {
     Callback = callback;
     StopAtNextInt = FALSE;
 
-#ifdef DEBUG
+#if DEBUG
     bufSize = size & 0xF;
     trigger = (size >> 4) & 0xF;
     ASSERTLINE(1242, bufSize < 16);
