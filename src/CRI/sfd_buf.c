@@ -51,7 +51,7 @@ void SFBUF_GetFlowCnt(SJ sj, Sint32 *wcnt, Sint32 *rcnt) {
         *rcnt = SJRBF_GetFlowCnt(sj, 0, 1);
     } else if (sfbuf_IsSjmem(sj)) {
         *wcnt = SJMEM_GetBufSize(sj);
-        *rcnt = *wcnt - SJ_GetNumData(sj, 1);
+        *rcnt = *wcnt - SJ_GetNumData(sj, SJ_CK_DATA);
     } else {
         *wcnt = 0;
         *rcnt = 0;
@@ -92,7 +92,7 @@ static Sint32 sfbuf_RingGetDataSizHn(SFBUF_HN *hn) {
     len2 = 0;
     sj = hn->w.u.ring.sup.sj;
     if (hn->w.used != 0 && sj != 0) {
-        sfbuf_RingGetCk(sj, 1, &ck1, &ck2);
+        sfbuf_RingGetCk(sj, SJ_CK_DATA, &ck1, &ck2);
         len1 = ck1.len;
         len2 = ck2.len;
     }
@@ -181,7 +181,7 @@ Sint32 SFBUF_GetWTot(SFD sfd, Sint32 n) {
     wtot = hn->w.u.ring.wtot;
     rtot = hn->w.u.ring.rtot;
     if (wtot == 0 && rtot != 0) {
-        wtot = rtot + SJ_GetNumData(hn->w.u.ring.sup.sj, 1);
+        wtot = rtot + SJ_GetNumData(hn->w.u.ring.sup.sj, SJ_CK_DATA);
     }
     if (wtot < 0) {
         wtot = 0x7FFFFFFF;
@@ -223,10 +223,12 @@ void SFBUF_RingGetDlm(SFD sfd, Sint32 n, Uint8 **pos, Sint32 *len) {
     SFLIB_UnlockCs(&cs);
 }
 
-/* COMPILER-DIFF (AddRead/AddWrite): the bodies are inline helpers whose locals are declared in this
- * order, `ring` is reached through `wk`, and the delimiter check reads `ring->dlm_pos` inline; the
- * plain forms (bodies written in place, a one-step `ring` address, a `pos` local) compile
- * differently. */
+/* Matching workaround (AddRead/AddWrite): the bodies are inline helpers whose locals are declared
+ * in this order, `ring` is reached through `wk`, and the delimiter check reads `ring->dlm_pos`
+ * inline. With the bodies written in the public functions, SFBUF_RingAddRead differs by 134 words
+ * (572 bytes instead of 568) and SFBUF_RingAddWrite by 67 (300 instead of 296); with `ring` taken
+ * as `&hn->w.u.ring` they differ by 126 and 55 words. Revisit when the original helpers are
+ * known. */
 static inline Sint32 sfbuf_RingAddReadSub(SFD sfd, Sint32 n, Sint32 nbyte) {
     SJCK ck1;
     SJCK ckw;
@@ -249,19 +251,19 @@ static inline Sint32 sfbuf_RingAddReadSub(SFD sfd, Sint32 n, Sint32 nbyte) {
     } else if (wk->used == 0 || sj == 0) {
         ret = 0;
     } else {
-        SJ_GetChunk(sj, 1, nbyte, &ck);
-        SJ_PutChunk(sj, 0, &ck);
+        SJ_GetChunk(sj, SJ_CK_DATA, nbyte, &ck);
+        SJ_PutChunk(sj, SJ_CK_FREE, &ck);
         if (ck.len < nbyte) {
             rest = nbyte - ck.len;
-            SJ_GetChunk(sj, 1, rest, &ck2);
-            SJ_PutChunk(sj, 0, &ck2);
+            SJ_GetChunk(sj, SJ_CK_DATA, rest, &ck2);
+            SJ_PutChunk(sj, SJ_CK_FREE, &ck2);
             if (ck2.len < rest) {
                 ret = SFLIB_SetErr(sfd, 0xFF00040B);
             }
         }
         if (n == 1) {
             sj2 = ring->sup.sj;
-            sfbuf_RingGetCk(sj2, 1, &ck1, &ckw);
+            sfbuf_RingGetCk(sj2, SJ_CK_DATA, &ck1, &ckw);
             if ((ring->dlm_pos < ck1.data || ring->dlm_pos >= ck1.data + ck1.len) &&
                 (ring->dlm_pos < ckw.data || ring->dlm_pos >= ckw.data + ckw.len)) {
                 ring->dlm_pos = 0;
@@ -302,12 +304,12 @@ static inline Sint32 sfbuf_RingAddWriteSub(SFD sfd, Sint32 n, Sint32 nbyte) {
     } else if (wk->used == 0 || sj == 0) {
         ret = 0;
     } else {
-        SJ_GetChunk(sj, 0, nbyte, &ck);
-        SJ_PutChunk(sj, 1, &ck);
+        SJ_GetChunk(sj, SJ_CK_FREE, nbyte, &ck);
+        SJ_PutChunk(sj, SJ_CK_DATA, &ck);
         if (ck.len < nbyte) {
             rest = nbyte - ck.len;
-            SJ_GetChunk(sj, 0, rest, &ck2);
-            SJ_PutChunk(sj, 1, &ck2);
+            SJ_GetChunk(sj, SJ_CK_FREE, rest, &ck2);
+            SJ_PutChunk(sj, SJ_CK_DATA, &ck2);
             if (ck2.len < rest) {
                 ret = SFLIB_SetErr(sfd, 0xFF00040B);
             }
@@ -341,7 +343,7 @@ Sint32 SFBUF_RingGetRead(SFD sfd, Sint32 n, SFBUF_RINF *inf) {
     if (hn->w.used == 0 || sj == 0) {
         return 0;
     }
-    sfbuf_RingGetCk(sj, 1, &ck1, &ck2);
+    sfbuf_RingGetCk(sj, SJ_CK_DATA, &ck1, &ck2);
     inf->ck1.data = ck1.data;
     inf->ck1.len = ck1.len;
     inf->ck2.data = ck2.data;
@@ -368,7 +370,7 @@ Sint32 SFBUF_RingGetWrite(SFD sfd, Sint32 n, SFBUF_RINF *inf) {
     if (hn->w.used == 0 || sj == 0) {
         return 0;
     }
-    sfbuf_RingGetCk(sj, 0, &ck1, &ck2);
+    sfbuf_RingGetCk(sj, SJ_CK_FREE, &ck1, &ck2);
     inf->ck1.data = ck1.data;
     inf->ck1.len = ck1.len;
     inf->ck2.data = ck2.data;

@@ -1,7 +1,7 @@
 /* Sofdec video driver: decoded frame pool management (standby / reference / free frames). */
 #include "CRI/sfd.h"
 
-#define SFMPVF_MPV(sfd) ((SFMPV_WORK *)(sfd)->tr[2].hn)
+#define SFMPVF_MPV(sfd) ((SFMPV_WORK *)(sfd)->tr[SFMPV_TR].hn)
 
 /* frame `a` is displayed before frame `b` (a 0 `b` always loses) */
 static Bool sfmpvf_IsPrior(SFMPV_FRM *a, SFMPV_FRM *b) {
@@ -94,7 +94,9 @@ SFMPV_FRM *sfmpvf_ReferNextFrmReady(SFD sfd) {
     return frm;
 }
 
-/* the original did not inline sfmpvf_ReferNextFrmReady here */
+/* Matching workaround: #pragma dont_inline around SFD_IsNextFrmReady. Without it
+ * sfmpvf_ReferNextFrmReady is inlined into it (648 bytes instead of 96). Revisit when the original
+ * unit's inline settings are known. */
 #pragma dont_inline on
 /* Whether another decoded frame is already due (mwPlyGetCurFrm uses it to skip late frames). */
 Bool SFD_IsNextFrmReady(SFD sfd) {

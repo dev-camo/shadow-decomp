@@ -326,9 +326,12 @@ typedef struct {
 CHECK_SIZEOF(SFD_TR, 0x44);
 
 #define SFD_TR_NUM 9
-/* transfer driver slots of the ADX audio driver (sfd_adxt.c) and the auto-play audio output driver
+/* transfer driver slots of the video decoder (SFD_tr_vd_mpv), the ADX audio driver
+ * (sfd_adxt.c), the manual video output driver (sfd_vom.c) and the auto-play audio output driver
  * (sfd_aoap.c) */
+#define SFMPV_TR 2
 #define SFADXT_TR 3
+#define SFVOM_TR 6
 #define SFAOAP_TR 7
 #define SFD_COND_NUM 100
 
@@ -338,6 +341,7 @@ CHECK_SIZEOF(SFD_TR, 0x44);
 #define SFD_COND_PREPSIZE 0x16
 #define SFD_COND_VID_STMID 0x1D
 #define SFD_COND_AUD_STMID 0x1E
+#define SFD_COND_CONCAT 0x31 /* concatenated play (SFD_SetConcatPlay) */
 #define SFD_COND_STMID_STRICT 0x37
 #define SFD_COND_VID_SELECT 0x3B
 #define SFD_COND_HDRCB_FN 0x4B
@@ -407,7 +411,7 @@ CHECK_SIZEOF(SFMPV_PARA, 0x24);
 
 #define SFMPV_FRM_NUM 16
 
-/* video driver work (tr[2].hn, SFD_OBJ + 0x23A8, 0x10A0 bytes) */
+/* video driver work (tr[SFMPV_TR].hn, SFD_OBJ + 0x23A8, 0x10A0 bytes) */
 typedef struct {
     struct MPV_OBJ *mpv;          /* 0x000 */
     SFMPV_PARA para;              /* 0x004 */
@@ -506,7 +510,8 @@ typedef struct {
 CHECK_SIZEOF(SFBUF_RINF, 0x1C);
 
 /* creation parameters passed to SFTRN_InitHn: trif_tbl[n] is driver n's function table
- * (0 input, 1 system, 2 video, 3 audio, 4 video out, 5 audio out, 6/7 output, 8 user) */
+ * (0 input, 1 system, 2 video decoder, 3 audio decoder, 4/5 optional video/audio stage before the
+ * output, 6 video output, 7 audio output, 8 user output; see sftrn_BuildSystem) */
 typedef struct {
     SFD_TR_FUNC **trif_tbl; /* 0x00 */
 } SFTRN_PRM;
@@ -668,7 +673,7 @@ typedef struct {
 } SFADXT_PARA;
 CHECK_SIZEOF(SFADXT_PARA, 0x1C);
 
-/* ADX audio driver work (sfd_adxt.c, tr[3].hn), SFD_OBJ + 0x3448 */
+/* ADX audio driver work (sfd_adxt.c, tr[SFADXT_TR].hn), SFD_OBJ + 0x3448 */
 typedef struct {
     void *adxt;       /* 0x00 ADXT handle */
     SJ sj;            /* 0x04 ring buffer stream joint fed by the transfer */
@@ -808,16 +813,16 @@ typedef struct SFD_OBJ {
     Uint8 pad12F0[0x1310 - 0x12F0]; /* 0x12F0 */
     SFBUF_WORK buf[SFD_BUF_NUM];    /* 0x1310 */
     SFD_VFRM vfrm[SFD_VFRM_NUM];    /* 0x16B0 */
-    /* tr[2].hn = SFMPV_WORK *, tr[SFADXT_TR].hn = SFADXT_WORK *, tr[SFAOAP_TR].hn = SFAOAP *,
-     * tr[8].hn = SFUO *, tr[8].bufin = user-output SFBUF id */
+    /* tr[SFMPV_TR].hn = SFMPV_WORK *, tr[SFADXT_TR].hn = SFADXT_WORK *,
+     * tr[SFAOAP_TR].hn = SFAOAP *, tr[8].hn = SFUO *, tr[8].bufin = user-output SFBUF id */
     SFD_TR tr[SFD_TR_NUM];          /* 0x1F30 */
     Sint32 x2194;                   /* 0x2194 */
     SFMPS_WORK mps;                 /* 0x2198 system stream driver work (tr[1].hn) */
     Uint8 pad2300[0x23A8 - 0x2300]; /* 0x2300 */
-    SFMPV_WORK mpv;                 /* 0x23A8 video driver work (tr[2].hn) */
+    SFMPV_WORK mpv;                 /* 0x23A8 video driver work (tr[SFMPV_TR].hn) */
     SFADXT_WORK adxt;               /* 0x3448 */
     Uint8 pad3498[0x34FC - 0x3498]; /* 0x3498 */
-    SFAOAP aoap;                    /* 0x34FC (tr[7].hn) */
+    SFAOAP aoap;                    /* 0x34FC (tr[SFAOAP_TR].hn) */
     SFUO uo_tbl;                    /* 0x3518 */
     Sint32 x354c;                   /* 0x354C */
     SFSEE_HN see;                   /* 0x3550 (SFD_EntrySeek) */

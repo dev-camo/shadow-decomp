@@ -5,8 +5,8 @@
 #include "CRI/cri_xpt.h"
 #include "CRI/uty.h"
 
-/* (a * b) / c without intermediate overflow. When c is 0 the result is INT32_MAX if a and b have the
- * same sign bit (a ^ b >= 0) and INT32_MIN otherwise. */
+/* (a * b) / c without intermediate overflow. When c is 0 the result is INT32_MAX if a and b have
+ * the same sign bit (a ^ b >= 0) and INT32_MIN otherwise. */
 Sint32 UTY_MulDiv(Sint32 a, Sint32 b, Sint32 c) {
     if (c == 0) {
         if ((a ^ b) >= 0) {

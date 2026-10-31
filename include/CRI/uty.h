@@ -29,6 +29,9 @@ void UTY_MemsetDword(void *dst, Uint32 val, Uint32 ndw);
 /* muldiv.c: a * b / c with a 64-bit intermediate */
 Sint32 UTY_MulDiv(Sint32 a, Sint32 b, Sint32 c);
 
+/* muldivr.c: 64-bit a * b / c rounded to nearest */
+Sint64 UTY_MulDivRound64(Sint64 a, Sint64 b, Sint64 c);
+
 /* cmptime.c: compares cnt1/tscl1 with cnt2/tscl2 */
 Bool UTY_CmpTime(Sint32 cnt1, Sint32 tscl1, Sint32 cnt2, Sint32 tscl2);
 

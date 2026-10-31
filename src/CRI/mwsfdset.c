@@ -26,7 +26,9 @@ void MWSFD_SetCond(MWPLY mwply, Sint32 id, Sint32 val) {
     SFD_SetCond((mwply != 0) ? mwply->sfd : 0, id, val);
 }
 
-/* Refill limits (sectors) of the stream controller and the load scheduler. */
+/* Refill limits of the stream controller and the load scheduler. Both consumers use the values as
+ * byte counts (ADXSTM_SetBufSize, and LSC_SetFlowLimit checks them against the scheduler buffer
+ * size) although the parameters and MWPLY::flow_nsct are named for sectors. */
 void MWSFD_SetFlowLimit(MWPLY mwply, Sint32 min_nsct, Sint32 max_nsct) {
     MWSTM_SetFlowLimit(mwply->stm, min_nsct, max_nsct);
     MWSFLSC_SetFlowLimit(mwply, min_nsct);
@@ -48,7 +50,7 @@ Sint32 mwPlyGetStat(MWPLY mwply) {
     Sint32 sfdstat;
 
     if (MWSFD_IsEnableHndl(mwply) != TRUE) {
-        MWSFLIB_SetErrCode(-12);
+        MWSFLIB_SetErrCode(-0xC);
         MWSFSVM_Error("W2004 mwPlyGetStat: handle is invalid");
         return MWSFD_STAT_STOP;
     }
@@ -66,8 +68,10 @@ Sint32 mwPlyGetStat(MWPLY mwply) {
     return stat;
 }
 
-/* Audio volume (1/10 dB) of the main and the side audio stream. The handle is tested as void *
- * before the conversion (required: testing the converted MWPLY changes the register use). */
+/* Audio volume (1/10 dB) of the main and the side audio stream.
+ * Matching workaround: the handle is taken as void * and tested before the conversion to MWPLY.
+ * Testing the converted MWPLY changes mwPlySetOutVol by 28 words (120 bytes instead of 124) and
+ * mwPlyGetOutVol by 38 words. Revisit when the original public prototype is known. */
 void mwPlySetOutVol(void *hn, Sint32 vol) {
     MWPLY mwply = hn;
 
@@ -80,8 +84,8 @@ void mwPlySetOutVol(void *hn, Sint32 vol) {
 }
 
 /* Audio volume of the main audio stream, or the side stream's when the main volume is 0 (0 dB)
- * and the two differ (0 without an SFD handle). The handle is tested as void * as in
- * mwPlySetOutVol. */
+ * and the two differ (0 without an SFD handle). Matching workaround: the handle is taken as void *
+ * and tested before the conversion, as in mwPlySetOutVol. */
 Sint32 mwPlyGetOutVol(void *hn) {
     MWPLY mwply = hn;
     Sint32 vol;
@@ -105,9 +109,10 @@ Sint32 mwPlyGetOutVol(void *hn) {
     return sstvol;
 }
 
-/* The original pools mwPlyGetSfdHn's error text first. This never-called stand-in for a function
- * the linker stripped uses the same text and, defined last, is emitted first (reverse definition
- * order). Its body is unknown. */
+/* Matching workaround: order-only stand-in for a function the linker stripped (its body is
+ * unknown). The original pools mwPlyGetSfdHn's error text first; this never-called function uses
+ * the same text and, defined last, is emitted first (reverse definition order). Revisit when the
+ * stripped function is recovered. */
 static void mwsfdset_Stripped(void) {
     MWSFSVM_Error("E1122640: mwPlyGetSfdHn: handle is invalid.");
 }

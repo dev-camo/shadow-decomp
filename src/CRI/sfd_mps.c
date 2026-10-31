@@ -316,14 +316,17 @@ static void sfmps_ProcPrep(SFD sfd) {
         sfd->numelem_vid = wk->nvid;
     }
     wk = SFMPS_WK(sfd);
+    /* Auto-off: a stream with a zero bound in the system headers and nothing written to its
+     * buffer by the time the other stream's output driver is prepared is switched off (audio
+     * waits for the video output, video for the audio output). */
     if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) != 0 &&
         SFSET_GetCond(sfd, SFD_COND_AUDIO_AUTO_OFF) != 0 && SFBUF_GetWTot(sfd, 2) == 0 &&
-        wk->naud == 0 && SFTRN_GetPrepFlg(sfd, 6) != 0) {
+        wk->naud == 0 && SFTRN_GetPrepFlg(sfd, SFVOM_TR) != 0) {
         SFSET_SetCond(sfd, SFD_COND_AUDIO_ON, 0);
     }
     if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) != 0 &&
         SFSET_GetCond(sfd, SFD_COND_VIDEO_AUTO_OFF) != 0 && SFBUF_GetWTot(sfd, 1) == 0 &&
-        wk->nvid == 0 && SFTRN_GetPrepFlg(sfd, 7) != 0) {
+        wk->nvid == 0 && SFTRN_GetPrepFlg(sfd, SFAOAP_TR) != 0) {
         SFSET_SetCond(sfd, SFD_COND_VIDEO_ON, 0);
     }
     sfmps_ProcPrepSee(sfd);
@@ -977,8 +980,8 @@ static Sint32 sfmps_ExecServerLoop(SFD sfd, Sint32 *len) {
 }
 
 /* Demux pass: unless all outputs terminated, installs the user system-header callback (conds
- * SFD_COND_SYSFN/SYSOBJ) and runs the decode loop over the input ring, updating the 64-bit flow / byte / skip
- * counters and, in PREP, sfmps_ProcPrep. */
+ * SFD_COND_SYSFN/SYSOBJ) and runs the decode loop over the input ring, updating the 64-bit flow /
+ * byte / skip counters and, in PREP, sfmps_ProcPrep. */
 Sint32 sfmps_ExecServerSub(SFD sfd) {
     Sint32 term1, term2, term3;
     MPS mps;
@@ -996,8 +999,9 @@ Sint32 sfmps_ExecServerSub(SFD sfd) {
     return sfmps_ExecServerLoop(sfd, &len);
 }
 
-/* COMPILER-DIFF: sfmps_ExecServerSub is called out of line; without dont_inline MWCC inlines it
- * here. */
+/* Matching workaround: #pragma dont_inline around SFMPS_ExecServer. The original calls
+ * sfmps_ExecServerSub out of line; without the pragma it is inlined here (476 bytes instead of
+ * 32). Revisit when the original unit's inline settings are known. */
 #pragma dont_inline on
 /* Driver ExecServer (SFD_tr_sd_mps slot 2). */
 static Sint32 SFMPS_ExecServer(SFD sfd) {

@@ -95,7 +95,7 @@ struct MWPLY_OBJ {
     /* 0x1B8 */ Sint32 nsct;
     /* 0x1BC */ SJ sji;
     /* 0x1C0 */ Uint8 x1c0[0x1C8 - 0x1C0];
-    /* 0x1C8 */ Sint32 flow_nsct; /* the largest refill size (sectors) */
+    /* 0x1C8 */ Sint32 flow_nsct; /* flow limit in bytes, although named for sectors */
     /* 0x1CC */ Uint8 x1cc[0x280 - 0x1CC];
     /* 0x280 */ MWSST_OBJ sst;
     /* 0x298 */ Uint8 x298[0x2A8 - 0x298];

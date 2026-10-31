@@ -1870,7 +1870,10 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            # Deferred inlining: fn_803FE96C expands fn_803FEA5C, which is emitted after it.
+            # Matching workaround: -inline auto,deferred. fn_803FE96C expands fn_803FEA5C, which is
+            # emitted after it; without the flag the functions come out in source order (fn_803FEA5C
+            # at 0x0, the original has SFTMR_AddTsum there). Revisit when the library's real
+            # compiler flags are known.
             Object(
                 Matching,
                 "CRI/sfd_tmr.c",
@@ -2266,6 +2269,9 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # Matching workaround: -inline auto,deferred on mwsfdset.c and mwsfdsvr.c. Without it
+            # mwPlyGetSfdHn is 80 bytes instead of 84 (18 differing words) and mwSfdExecDecSvrHndl
+            # differs by 4 words. Revisit when the library's real compiler flags are known.
             Object(
                 Matching,
                 "CRI/mwsfdset.c",

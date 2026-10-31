@@ -39,7 +39,7 @@ static Sint32 mwsfd_StartStm(MWPLY mwply) {
     MWSTM_SetFileRange(mwply->stm, mwply->fname, mwply->dir, mwply->ofst, mwply->nsct);
     if (MWSTM_ReqStart(mwply->stm) == -1) {
         mwply->stat = MWSFD_STAT_ERROR;
-        MWSFLIB_SetErrCode(-102);
+        MWSFLIB_SetErrCode(-0x66);
         MWSFSVM_Error("E211141 MWSTM_ReqStart: can't start '%s'", mwply->fname);
         mwply->stm_start_req = 0;
         return -1;
@@ -232,8 +232,9 @@ Sint32 MWSFSVR_DecodeServer(void *obj) {
     return busy;
 }
 
-/* The three functions below are compiled without inlining: with it the handle step is inlined
- * into the decode server (0x1EC bytes instead of 0x114) and mwsfd_ExecSvrHndl into its caller. */
+/* Matching workaround: #pragma dont_inline around the handle step functions below. With
+ * inlining the handle step is expanded into the decode server (0x1EC bytes instead of 0x114) and
+ * mwsfd_ExecSvrHndl into its caller. Revisit when the original unit's inline settings are known. */
 #pragma dont_inline on
 /* Public entry of the handle step. */
 Sint32 mwPlyExecSvrHndl(MWPLY mwply) {
@@ -267,7 +268,8 @@ Sint32 mwSfdExecSvrHndl(MWPLY mwply) {
 
 /* One decode step of an in-use handle: SFD_ExecOne, then the player state machine unless the
  * player is stopped. Returns 1 while the SFD handle still has work. The handle is taken as void *
- * and converted (required: with an MWPLY parameter r30 and r31 swap). */
+ * and converted. Matching workaround: with an MWPLY parameter mwsfd_ExecSvrHndl differs by 14
+ * words (same size). Revisit when the original prototype is known. */
 static Sint32 mwsfd_ExecSvrHndl(void *obj) {
     MWPLY mwply;
     SFD sfd;
@@ -323,8 +325,9 @@ void mwsfd_SetSleepBdr(MWPLY mwply, Sint32 sw) {
 }
 
 /* Waits up to 10 vsyncs for the handle's server step to finish. The helper is inferred (it is
- * inlined and has no symbol); required: with the loop written inline in mwlSfdSleepDecSvr the
- * register allocation differs. */
+ * inlined and has no symbol). Matching workaround: with the loop written in mwlSfdSleepDecSvr
+ * that function is 224 bytes instead of 204 (53 differing words). Revisit when the original
+ * helper is known. */
 static void mwsfd_SleepLoop(MWPLY mwply) {
     Sint32 i;
 
@@ -352,8 +355,9 @@ void mwlSfdSleepDecSvr(MWPLY mwply) {
     }
 }
 
-/* Stand-in for a function the linker stripped from the game: its error text is the first literal
- * of the unit; its body is unknown. */
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game (its
+ * body is unknown); its error text is the first literal of the unit. Revisit when the stripped
+ * function is recovered. */
 static void mwsfdsvr_Stripped(void) {
     MWSFSVM_Error("E2011101: MWSFSVR_IsSvrBdrHndl: handle is invalid.");
 }

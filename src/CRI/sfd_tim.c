@@ -83,10 +83,11 @@ Bool SFTIM_IsVideoTerm(SFD sfd) {
     return UTY_CmpTime(vterm, unit, tim->cur, tim->cur_unit) != 0;
 }
 
-/* Order-only stand-in, not in the executable (dead): its int -> float conversion creates the unit's
- * 0x43300000_80000000 conversion constant before the 10000.0f literal of the helper below, which is
- * the .rodata order [double][10000.0f][-1.0f] (a literal is placed by creation order, not by first
- * use). */
+/* Matching workaround: literal-order device, not a recovered function (it is not in the executable
+ * and is unused). Its int -> float conversion creates the unit's 0x43300000_80000000 conversion
+ * constant before the 10000.0f literal of the helper below, giving the .rodata order
+ * [double][10000.0f][-1.0f] (a literal is placed by creation order, not by first use). Revisit
+ * when the function that converts an integer here is recovered. */
 static Float32 sftim_ConstOrder(Sint32 v) {
     return (Float32)v;
 }
@@ -283,7 +284,7 @@ static void sftim_Tc2Time59N(Sint32 prate, SFTIM_TC *tc, Sint32 *ncount, Sint32 
     frm = tc->frm + tc->frm2;
     *ncount = tc->min * (60000 * 60) + tc->hour * (60000 * 3600) + tc->sec * 60000 + frm * 1000 +
               tc->field * 500;
-    *tscale = 60000;
+    *tscale = 60000; /* original: overwritten by the next store */
     *tscale = prate;
 }
 
@@ -294,7 +295,7 @@ static void sftim_Tc2Time29N(Sint32 prate, SFTIM_TC *tc, Sint32 *ncount, Sint32 
     frm = tc->frm + tc->frm2;
     *ncount = tc->min * (30000 * 60) + tc->hour * (30000 * 3600) + tc->sec * 30000 + frm * 1000 +
               tc->field * 500;
-    *tscale = 30000;
+    *tscale = 30000; /* original: overwritten by the next store */
     *tscale = prate;
 }
 
@@ -305,7 +306,7 @@ void sftim_Tc2Time23N(Sint32 prate, SFTIM_TC *tc, Sint32 *ncount, Sint32 *tscale
     frm = tc->frm + tc->frm2;
     *ncount = tc->min * (24000 * 60) + tc->hour * (24000 * 3600) + tc->sec * 24000 + frm * 1000 +
               tc->field * 500;
-    *tscale = 24000;
+    *tscale = 24000; /* original: overwritten by the next store */
     *tscale = prate;
 }
 
@@ -400,7 +401,8 @@ Bool SFTIM_ChkRegularTime(SFD sfd, Sint32 *ncount, Sint32 *tscale) {
     Sint32 stat;
 
     stat = sfd->stat;
-    if (stat != 4 && stat != -4 && stat != 6 && stat != -6) {
+    if (stat != SFD_STAT_PLAYING && stat != -SFD_STAT_PLAYING && stat != SFD_STAT_PLAYEND &&
+        stat != -SFD_STAT_PLAYEND) {
         *ncount = -1;
         *tscale = 1;
         return FALSE;
@@ -410,7 +412,7 @@ Bool SFTIM_ChkRegularTime(SFD sfd, Sint32 *ncount, Sint32 *tscale) {
 
 /* Playing, not paused and not in a buffering pause. */
 static Bool sftim_IsClockRunning(SFD sfd) {
-    if (sfd->stat != 4) {
+    if (sfd->stat != SFD_STAT_PLAYING) {
         return FALSE;
     }
     if (sfd->pause_sw != 0) {
@@ -565,7 +567,7 @@ static Bool sftim_ChkStagnant(SFD sfd) {
     Sint32 unit;
 
     tim = SFD_TIM(sfd);
-    if (SFSET_GetCond(sfd, 6) == 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         return FALSE;
     }
     lim = SFSET_GetCond(sfd, 0x33);
@@ -604,7 +606,7 @@ static Bool sftim_IsVcntRunning(SFD sfd) {
     if (SFD_TIM(sfd)->vcnt == -1) {
         return FALSE;
     }
-    if (sfd->req != 4) {
+    if (sfd->req != SFD_REQ_START) {
         return FALSE;
     }
     return TRUE;
