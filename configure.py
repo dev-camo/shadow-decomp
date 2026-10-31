@@ -626,11 +626,12 @@ config.libs = [
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
                 # All 46 functions and every data section match. The implementation class's
                 # destructor is emitted right after boost::checked_delete, where the original
-                # has it between the implementation's Update and constructor. The original
-                # destructor is a weak symbol and checked_delete stays out of line, so it was an
-                # inline function, yet it sits where an out-of-line definition would go; an
-                # out-of-line definition there is global and inlines checked_delete, and no
-                # natural source form reproduced both.
+                # has it between the implementation's Update and constructor. That is where a
+                # plain destructor defined right after the constructor is emitted. With these
+                # flags checked_delete stays a separate function only when the destructor is an
+                # inline function, and an inline destructor (in the class or defined inline after
+                # the constructor) is emitted at its first use, after checked_delete. A plain
+                # destructor lets checked_delete be inlined into ~scoped_ptr.
                 Object(NonMatching, "Game/WeaponStickBase.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/TestNakazawa.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/BDTrue.cpp", cflags=cflags_game_cpp),
