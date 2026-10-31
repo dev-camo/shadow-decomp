@@ -3,7 +3,7 @@
 
 /* CRI ADXB: the ADX/WAV/AIFF/AU/AHX/SPSD block decoder object (adx_bsc.c, adx_b*.c) and the ADX
  * block expander handle it drives (adx_xpnd.c). Field names and offsets from the RE4 GameCube
- * decompilation; unknown fields are padded.
+ * decompilation; unknown fields are xNN placeholders or padNN gaps.
  */
 #include "CRI/cri_xpt.h"
 #include "CRI/sj.h"
@@ -43,7 +43,6 @@ typedef struct ADXPD_OBJ {
     Sint16 ext1;      /* 0x34 */
     Sint16 ext2;      /* 0x36 */
     Sint16 ext3;      /* 0x38 */
-    Sint16 pad3a;     /* 0x3A */
 } ADXPD_OBJ;
 CHECK_SIZEOF(ADXPD_OBJ, 0x3C);
 
@@ -74,7 +73,6 @@ typedef struct {
     Sint32 sfreq;                                              /* 0x14 */
     Sint32 total_nsmpl;                                        /* 0x18 */
     Sint16 x1c;                                                /* 0x1C */
-    Uint8 pad1e[2];                                            /* 0x1E */
     Sint32 x20;                                                /* 0x20 */
     Sint16 x24;                                                /* 0x24 */
     Sint16 x26;                                                /* 0x26 */
@@ -120,7 +118,6 @@ typedef struct {
     Uint8 ainf[16];    /* 0xC4 */
     Sint16 def_outvol; /* 0xD4 */
     Sint16 def_pan[2]; /* 0xD6 */
-    Uint8 padda[2];    /* 0xDA */
     void *xdc;         /* 0xDC (adx_sjd: pl2setsfreqfunc called when set) */
     Uint8 pade0[8];    /* 0xE0 */
     Sint32 cb_nbyte;   /* 0xE8 dec_nbyte at the last callback */
