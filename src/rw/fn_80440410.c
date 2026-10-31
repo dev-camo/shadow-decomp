@@ -451,7 +451,7 @@ typedef struct CollLine {
     /* 0x00 */ RwV3d start;
     /* 0x0C */ RwV3d delta;
     /* 0x18 */ RwV3d recip;
-    /* 0x24 */ RwV3d pad;
+    /* 0x24 */ RwV3d tolerance;
 } CollLine;
 CHECK_SIZEOF(CollLine, 0x30);
 
@@ -464,6 +464,7 @@ typedef struct CollWorldLineEntry {
 } CollWorldLineEntry;
 CHECK_SIZEOF(CollWorldLineEntry, 0xC);
 
+/* A line walk of a world's sector tree (inferred): the entries still to visit */
 typedef struct CollWorldLineIt {
     /* 0x000 */ CollLine line;
     /* 0x030 */ CollWorldLineEntry stack[65];
@@ -479,6 +480,7 @@ typedef struct CollTreeLineEntry {
 } CollTreeLineEntry;
 CHECK_SIZEOF(CollTreeLineEntry, 0xC);
 
+/* A line walk of a collision tree (inferred): the branches still to visit */
 typedef struct CollTreeLineIt {
     /* 0x000 */ RpCollTree *tree;
     /* 0x004 */ CollLine line;
@@ -498,7 +500,7 @@ static inline void CollWorldLineItNext(CollWorldLineIt *it) {
          * split's two extents widened by the tolerance */
         RwReal leftHi;
         RwReal rightLo;
-        RwReal pad;
+        RwReal tolerance;
         RwReal p0;
         RwReal p1;
         RwReal lineDelta;
@@ -508,9 +510,9 @@ static inline void CollWorldLineItNext(CollWorldLineIt *it) {
         lineDelta = RwV3dGetCoord(it->line.delta, plane->type);
         p1 = it->top->t1 * lineDelta + lineStart;
         p0 = it->top->t0 * lineDelta + lineStart;
-        pad = RwV3dGetCoord(it->line.pad, plane->type);
-        rightLo = plane->rightValue - pad;
-        leftHi = plane->leftValue + pad;
+        tolerance = RwV3dGetCoord(it->line.tolerance, plane->type);
+        rightLo = plane->rightValue - tolerance;
+        leftHi = plane->leftValue + tolerance;
 
         if (lineDelta > 0.0f) {
             if (rightLo > p1) {
@@ -573,15 +575,15 @@ void fn_80441188(RpWorld *world, RpIntersection *intersection,
     worldIt.line.recip.x = (0.0f != worldIt.line.delta.x) ? 1.0f / worldIt.line.delta.x : 0.0f;
     worldIt.line.recip.y = (0.0f != worldIt.line.delta.y) ? 1.0f / worldIt.line.delta.y : 0.0f;
     worldIt.line.recip.z = (0.0f != worldIt.line.delta.z) ? 1.0f / worldIt.line.delta.z : 0.0f;
-    worldIt.line.pad.x =
+    worldIt.line.tolerance.x =
         RwRealMax2(RwRealAbs(intersection->t.line.start.x), RwRealAbs(intersection->t.line.end.x));
-    worldIt.line.pad.y =
+    worldIt.line.tolerance.y =
         RwRealMax2(RwRealAbs(intersection->t.line.start.y), RwRealAbs(intersection->t.line.end.y));
-    worldIt.line.pad.z =
+    worldIt.line.tolerance.z =
         RwRealMax2(RwRealAbs(intersection->t.line.start.z), RwRealAbs(intersection->t.line.end.z));
-    worldIt.line.pad.x = 1e-6f * worldIt.line.pad.x;
-    worldIt.line.pad.y = 1e-6f * worldIt.line.pad.y;
-    worldIt.line.pad.z = 1e-6f * worldIt.line.pad.z;
+    worldIt.line.tolerance.x = 1e-6f * worldIt.line.tolerance.x;
+    worldIt.line.tolerance.y = 1e-6f * worldIt.line.tolerance.y;
+    worldIt.line.tolerance.z = 1e-6f * worldIt.line.tolerance.z;
 
     worldIt.stack[0].sector = world->rootSector;
     worldIt.stack[0].t0 = 0.0f;
@@ -612,7 +614,7 @@ void fn_80441188(RpWorld *world, RpIntersection *intersection,
         treeIt.line.start = worldIt.line.start;
         treeIt.line.delta = worldIt.line.delta;
         treeIt.line.recip = worldIt.line.recip;
-        treeIt.line.pad = worldIt.line.pad;
+        treeIt.line.tolerance = worldIt.line.tolerance;
         treeIt.stack[0].branch = &treeIt.root;
         treeIt.stack[0].t0 = worldIt.top->t0;
         treeIt.stack[0].t1 = worldIt.top->t1;
@@ -635,7 +637,7 @@ void fn_80441188(RpWorld *world, RpIntersection *intersection,
                 RwReal lineDelta;
                 RwReal p1;
                 RwReal p0;
-                RwReal pad;
+                RwReal tolerance;
                 RwReal rightLo;
                 RwReal leftHi;
                 RwReal recip;
@@ -646,9 +648,9 @@ void fn_80441188(RpWorld *world, RpIntersection *intersection,
                 lineDelta = RwV3dGetCoord(treeIt.line.delta, axis);
                 p1 = curr->t1 * lineDelta + lineStart;
                 p0 = curr->t0 * lineDelta + lineStart;
-                pad = RwV3dGetCoord(treeIt.line.pad, axis);
-                rightLo = split->right.value - pad;
-                leftHi = split->left.value + pad;
+                tolerance = RwV3dGetCoord(treeIt.line.tolerance, axis);
+                rightLo = split->right.value - tolerance;
+                leftHi = split->left.value + tolerance;
 
                 if (lineDelta > 0.0f) {
                     if (rightLo > p1) {
@@ -808,6 +810,7 @@ typedef struct CollTreeBoxEntry {
 } CollTreeBoxEntry;
 CHECK_SIZEOF(CollTreeBoxEntry, 0x8);
 
+/* A box walk of a collision tree (inferred) */
 typedef struct CollTreeBoxIt {
     /* 0x000 */ RpCollTree *tree;
     /* 0x004 */ RwBBox box;     /* the branches that meet this box are visited */
