@@ -45,8 +45,13 @@ class GadgetModelInfo {
 
     void fn_8016108C();
     void fn_801604FC();
-    /* The four methods returning bool report success (behaviour inferred). */
+    /* Looks for the entry of the list at 0x58 whose info word at 0x18 equals arg0; when there is
+     * one, passes the entry's word at 0xC to fn_80417568 with the low 16 bits of its word at 0x1C
+     * and returns true, otherwise false (behaviour inferred). */
     bool fn_80160B18(int arg0);
+    /* Finds the first entry whose id word equals arg0 in a table of the object at 0x30 and
+     * returns fn_80160C90's result for its index, or false when there is none (behaviour
+     * inferred). */
     bool fn_80160C28(int arg0);
     void fn_80161880();
     /* Passes the three floats to a virtual method of each part whose id equals arg0 (behaviour
@@ -56,6 +61,9 @@ class GadgetModelInfo {
     bool fn_80161F08(const char *nodeName, const boost::weak_ptr<CharInfo> &info);
     void fn_80162804();
     void fn_80160670(int arg0);
+    /* Finds the first entry whose id word equals arg0 in another table of the object at 0x30 and
+     * returns fn_80162AD0's result for its index and arg1, or false when there is none (behaviour
+     * inferred). */
     bool fn_80162A68(int arg0, int arg1);
     void fn_80162EF4();
     /* Advances the model by dt (decrements its timers; behaviour inferred). */
@@ -65,7 +73,8 @@ class GadgetModelInfo {
 
     /* Looks for the entry of the list at 0x58 whose info word at 0x18 equals arg0; when there is
      * one, passes the entry's word at 0xC to fn_80417568 with (u16)(arg1 + the entry's word at
-     * 0x1C - 1) and returns true, otherwise false (behaviour inferred; the meaning of the arguments is unknown). */
+     * 0x1C - 1) and returns true, otherwise false (behaviour inferred; the meaning of the
+     * arguments is unknown). */
     bool fn_80160A84(int arg0, int arg1);
     /* Sets a motion control work flag of each entry of the list at 0x58 (behaviour inferred from
      * its call of stMtnControlWorkFlag with 0, 11, 0). */
