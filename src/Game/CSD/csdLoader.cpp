@@ -190,7 +190,7 @@ void ResolveProject(ProjectData **project, void *file) {
         } else {
             size = chunk[1];
         }
-        /* Two separate additions: combining them changes the code. */
+        /* Next chunk: the size excludes the 8-byte tag and size header. */
         body += size;
         body += 8;
     }
@@ -441,7 +441,6 @@ void DrawQuadElement(const SceneData *scene, const ElementData *element,
     if (entry->textures != NULL) {
         GetRenderState().SetTexture(texList, entry->textures[0]);
     }
-    /* SetField0x30 takes the member, not the local: passing the local changes the code. */
     GetRenderState().SetField0x30(entry->channels.named.field_0x30);
     SetElementState(element, entry);
     if (entry->textures != NULL) {
@@ -592,8 +591,9 @@ void UpdatePalette(MotionPalette *palette, const SceneData *scene, const SceneMo
         }
         palette->field_0x8 = 1;
 
-        /* The two loops differ only in the motion passed on. The original has both: a single loop
-         * that selects each layer's motion compiles to 199 words, where the original has 243. */
+        /* Matching workaround: the two loops differ only in the motion passed on. A single loop
+         * that selects each layer's motion compiles 44 words shorter than the original, which has
+         * both loops. Revisit if UpdatePalette matches in another shape. */
         if (motion != NULL) {
             for (int i = 0; i < scene->layerCount; i++) {
                 const LayerData *source = &scene->layers[i];
@@ -699,8 +699,9 @@ static void UpdateEntries(MotionPaletteLayer *layer, int index, const LayerData 
             entry->flags |= ENTRY_SUBTREE_SET;
         } else {
             entry->flags &= ~ENTRY_SUBTREE_SET;
-            /* The original has these five words, which clear the same flag of the same entry
-             * again; the source form of this repeated clear is not known. */
+            /* Matching workaround: the original has these five words, which clear the same flag
+             * of the same entry again. The source form of this repeated clear is not known; revisit
+             * if the inline function or macro that produces it is found. */
             if (parent != NULL) {
                 entry->flags &= ~ENTRY_SUBTREE_SET;
             }
@@ -835,6 +836,16 @@ static void EvaluateChannels(MotionPaletteEntry *entry, const ElementData *eleme
     }
 }
 
+/* Returns the aspect ratio the scene was authored for: the version 0 default of 4:3, or the stored
+ * one (name inferred). */
+static inline f32 GetSceneAspect(const SceneData *scene) {
+    f32 aspect = 1.3333f;
+    if (scene->version >= 1) {
+        aspect = scene->aspect;
+    }
+    return aspect;
+}
+
 /* Applies what changed to the entry: builds the matrix from the translation, rotation and scale
  * channels, and updates the hidden state and the tint (combined with the parent's as the element
  * asks) and the colours of the vertices. */
@@ -849,10 +860,7 @@ static void UpdateEntryTransform(MotionPaletteEntry *entry, const ElementData *e
 
         ScaleByScreenA(&x, &y);
 
-        f32 aspect = 1.3333f;
-        if (scene->version >= 1) {
-            aspect = scene->aspect;
-        }
+        f32 aspect = GetSceneAspect(scene);
         f32 screenAspect = GetScreenAspectB();
         y *= screenAspect / aspect;
 
@@ -984,7 +992,11 @@ static void UpdateEntryTransform(MotionPaletteEntry *entry, const ElementData *e
 /* Sets the colour of the four corners of every quad of an entry to the entry's corner colours.
  * Entries without textures are read with a 0xC vertex stride (PlainVertex, inferred).
  * UpdateEntry expands this function in place; the out-of-line copy remains because other code
- * calls it. */
+ * calls it.
+ *
+ * Matching workaround: auto_inline reproduces that expansion with the out-of-line copy kept (the
+ * same device as the recursion in csdAccess.cpp). Revisit if the original's inline helpers that
+ * UpdateEntry uses are found. */
 #pragma auto_inline on
 void SetEntryColors(MotionPaletteEntry *entry) {
     if (entry->textures != NULL) {
@@ -1045,10 +1057,7 @@ void TintEntryColors(MotionPaletteEntry *entry) {
 }
 
 void ApplyScreenAspect(MotionPaletteEntry *entry, const SceneData *scene) {
-    f32 aspect = 1.3333f;
-    if (scene->version >= 1) {
-        aspect = scene->aspect;
-    }
+    f32 aspect = GetSceneAspect(scene);
     aspect /= GetScreenAspectB();
 
     f32 offsetX;
@@ -1387,7 +1396,9 @@ static void InterpolateColor(u32 *out, const Keyframe *first, const Keyframe *se
         result.channel[i] =
             firstColor.channel[i] * (1.0f - weight) + secondColor.channel[i] * weight;
     }
-    /* The copy is kept: reading result directly changes the code. */
+    /* Matching workaround: the original stores the blended colour to an extra stack slot before
+     * *out. Copying result into a local first reproduces that store; reading result directly
+     * omits it. Revisit if the by-value helper that returns the blended colour is found. */
     ColorBytes blended = result;
     *out = blended.packed;
 }
