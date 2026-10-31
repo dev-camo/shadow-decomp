@@ -309,6 +309,9 @@ dolphin/CARDUnlock.c:
 	.data       start:0x80568380 end:0x805684E0 align:32
 	.sdata      start:0x805EECD0 end:0x805EECD8
 
+dolphin/CARDNet.c:
+	.sdata      start:0x805EECD8 end:0x805EECE0
+
 dolphin/CARDRdwr.c:
 	.text       start:0x8038F490 end:0x8038F720
 
@@ -327,6 +330,9 @@ dolphin/CARDMount.c:
 
 dolphin/CARDFormat.c:
 	.text       start:0x80391780 end:0x80391F64
+
+dolphin/CARDOpen.c:
+	.text       start:0x80391F64 end:0x80392550
 
 dolphin/CARDCreate.c:
 	.text       start:0x80392550 end:0x803928A0

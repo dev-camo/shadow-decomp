@@ -8,6 +8,11 @@
 extern "C" {
 #endif
 
+// CARDStatEx: not linked into this game. Only CARDNet.c's attribute functions call these, and
+// the linker drops those functions.
+s32 __CARDGetStatusEx(s32 chan, s32 fileNo, CARDDir *dirent);
+s32 __CARDSetStatusExAsync(s32 chan, s32 fileNo, CARDDir *dirent, CARDCallback callback);
+
 // CARDUnlock
 s32 __CARDUnlock(s32 chan, u8 flashID[12]);
 
@@ -20,6 +25,7 @@ s32 __CARDWrite(s32 chan, u32 addr, s32 length, void *dst, CARDCallback callback
 
 // CARDOpen
 BOOL __CARDCompareFileName(CARDDir *ent, const char *fileName);
+s32 __CARDAccess(CARDControl *card, CARDDir *ent);
 s32 __CARDGetFileNo(CARDControl *card, const char *fileName, s32 *pfileNo);
 BOOL __CARDIsOpened(CARDControl *card, s32 fileNo);
 s32 __CARDIsWritable(CARDControl *card, CARDDir *ent);
@@ -27,6 +33,9 @@ s32 __CARDIsReadable(CARDControl *card, CARDDir *ent);
 
 // CARDNet
 extern u16 __CARDVendorID;
+extern u8 __CARDPermMask;
+int __CARDEnableGlobal(BOOL enable);
+int __CARDEnableCompany(BOOL enable);
 
 // CARDMount
 void __CARDMountCallback(s32 chan, s32 result);
