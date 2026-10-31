@@ -370,50 +370,41 @@ RwMatrix *fn_8047ECD4(RwMatrix *matrix, const RwV3d *unitAxis, RwInt32 combine,
                       RwReal oneMinusCosine, RwReal sine) {
     RwMatrix rotation;
     RwMatrix result;
-    RwReal x = unitAxis->x;
-    RwReal y = unitAxis->y;
-    RwReal z = unitAxis->z;
+    RwV3d diagonal;
+    RwV3d symmetric;
+    RwV3d antisymmetric;
 
-    /* the products are kept apart so that none fuses into a multiply-add */
-    RwReal xx;
-    RwReal yy;
-    RwReal zz;
-    RwReal yz;
-    RwReal zx;
-    RwReal xy;
-    RwReal sineTerm;
+    diagonal.x = 1.0f - unitAxis->x * unitAxis->x;
+    diagonal.y = 1.0f - unitAxis->y * unitAxis->y;
+    diagonal.z = 1.0f - unitAxis->z * unitAxis->z;
+    diagonal.x *= oneMinusCosine;
+    diagonal.y *= oneMinusCosine;
+    diagonal.z *= oneMinusCosine;
 
-    xx = x * x;
-    yy = y * y;
-    zz = z * z;
-    xx = 1.0f - xx;
-    yy = 1.0f - yy;
-    zz = 1.0f - zz;
-    yz = y * z;
-    zx = z * x;
-    xy = x * y;
-    xx *= oneMinusCosine;
-    yy *= oneMinusCosine;
-    zz *= oneMinusCosine;
-    rotation.right.x = 1.0f - xx;
-    rotation.up.y = 1.0f - yy;
-    rotation.at.z = 1.0f - zz;
-    yz *= oneMinusCosine;
-    sineTerm = x * sine;
-    rotation.up.z = yz + sineTerm;
-    rotation.at.y = yz - sineTerm;
-    zx *= oneMinusCosine;
-    sineTerm = y * sine;
-    rotation.right.z = zx - sineTerm;
-    rotation.at.x = zx + sineTerm;
-    xy *= oneMinusCosine;
-    sineTerm = z * sine;
-    rotation.right.y = xy + sineTerm;
-    rotation.up.x = xy - sineTerm;
-    rotation.flags = rwMATRIXTYPEORTHONORMAL;
+    symmetric.x = unitAxis->y * unitAxis->z;
+    symmetric.y = unitAxis->z * unitAxis->x;
+    symmetric.z = unitAxis->x * unitAxis->y;
+    symmetric.x *= oneMinusCosine;
+    symmetric.y *= oneMinusCosine;
+    symmetric.z *= oneMinusCosine;
+
+    antisymmetric.x = unitAxis->x * sine;
+    antisymmetric.y = unitAxis->y * sine;
+    antisymmetric.z = unitAxis->z * sine;
+
+    rotation.right.x = 1.0f - diagonal.x;
+    rotation.right.y = symmetric.z + antisymmetric.z;
+    rotation.right.z = symmetric.y - antisymmetric.y;
+    rotation.up.x = symmetric.z - antisymmetric.z;
+    rotation.up.y = 1.0f - diagonal.y;
+    rotation.up.z = symmetric.x + antisymmetric.x;
+    rotation.at.x = symmetric.y + antisymmetric.y;
+    rotation.at.y = symmetric.x - antisymmetric.x;
+    rotation.at.z = 1.0f - diagonal.z;
     rotation.pos.x = 0.0f;
     rotation.pos.y = 0.0f;
     rotation.pos.z = 0.0f;
+    rotation.flags = rwMATRIXTYPEORTHONORMAL;
 
     switch (combine) {
     case rwCOMBINEREPLACE:
