@@ -6,12 +6,11 @@
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/SharedConstants.h"
+#include "Game/UnkHandleBTarget_8015BE64.h"
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include <cstring>
 #include "layout_check.h"
-
-class UnkHandleBTarget_8015BE64;
 
 struct RwFrame;
 struct RwMatrix;
@@ -19,7 +18,6 @@ struct RwMatrix;
 extern "C" {
 RwMatrix *RwFrameGetLTM(RwFrame *frame);
 void fn_800635A4(void *dst, RwMatrix *matrix);
-void fn_8015BE64(UnkHandleBTarget_8015BE64 *target);
 }
 
 /* fn_802C7FC0 to fn_802C8068 precede the gadget in this unit. Their owning class and real (C++)
