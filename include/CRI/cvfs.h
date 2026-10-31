@@ -18,6 +18,10 @@ typedef CVFS_IF *(*CVFS_GETIFFN)(void);
 #define CVFS_SEEK_CUR 1
 #define CVFS_SEEK_END 2
 
+/* cvFsGetStat results */
+#define CVFS_STAT_COMPLETE 1
+#define CVFS_STAT_ERROR 3
+
 /* device interface table: every device (mfci.c, gcci.c) fills one, and cri_cvfs.c calls through
  * it */
 struct CVFS_IF {

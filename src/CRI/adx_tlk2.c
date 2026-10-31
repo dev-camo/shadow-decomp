@@ -71,6 +71,6 @@ static inline void adxt_StartFnameRange(ADXT adxt, Char8 *fname, void *dir, Sint
 /* Starts a whole named file. */
 void ADXT_StartFname(ADXT adxt, Char8 *fname) {
     ADXCRS_Enter();
-    adxt_StartFnameRange(adxt, fname, 0, 0, 0xFFFFF);
+    adxt_StartFnameRange(adxt, fname, 0, 0, ADXSTM_NSCT_INF);
     ADXCRS_Leave();
 }

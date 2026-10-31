@@ -18,7 +18,7 @@ void ADXT_EntryFname(ADXT adxt, Char8 *fname) {
     lsc = adxt->lsc;
     if (adxt == 0) {
         ADXERR_CallErrFunc1("E02080848 adxt_EntryFnameRange: parameter error");
-    } else if (LSC_EntryFileRange(lsc, fname, 0, 0, 0xFFFFF) < 0) {
+    } else if (LSC_EntryFileRange(lsc, fname, 0, 0, ADXSTM_NSCT_INF) < 0) {
         ADXERR_CallErrFunc2("E4063001:Can't entry file ", fname);
     }
     ADXCRS_Leave();
