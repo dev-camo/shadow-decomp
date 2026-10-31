@@ -1310,6 +1310,9 @@ CRI/mwsfdsst.c:
 	.text       start:0x80408688 end:0x80408CC0
 	.data       start:0x8056A4B0 end:0x8056A4B8
 
+CRI/fn_80408680.c:
+	.text       start:0x80408CC0 end:0x80408D80
+
 CRI/cftyp422_ppc.c:
 	.text       start:0x80408D80 end:0x8040A45C
 	.rodata     start:0x8051A890 end:0x8051A8E0

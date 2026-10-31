@@ -2173,6 +2173,16 @@ config.libs = [
                     "-inline auto,deferred",
                 ],
             ),
+            Object(
+                Matching,
+                "CRI/fn_80408680.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
             # Deferred inlining: MWCC emits the functions (and lays out .bss) in reverse order.
             Object(
                 NonMatching,

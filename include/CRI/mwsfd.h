@@ -8,6 +8,7 @@
 #include "CRI/cri_xpt.h"
 #include "CRI/lsc.h"
 #include "CRI/sfd.h"
+#include "CRI/sfx.h"
 #include "CRI/sj.h"
 #include "layout_check.h"
 
@@ -80,7 +81,9 @@ struct MWPLY_OBJ {
     /* 0x070 */ Sint8 linkstm;     /* concatenated play is on */
     /* 0x071 */ Sint8 linkstm_req; /* end of the linked streams requested */
     /* 0x072 */ Sint8 pause_flg;
-    /* 0x073 */ Uint8 x73[0x1A4 - 0x73];
+    /* 0x073 */ Uint8 x73[0xA8 - 0x73];
+    /* 0x0A8 */ SFX_OBJ *sfx; /* the frame converter handle */
+    /* 0x0AC */ Uint8 xac[0x1A4 - 0xAC];
     /* 0x1A4 */ const Char8 *fname;
     /* 0x1A8 */ Sint32 x1a8;
     /* 0x1AC */ Sint32 stm_start_req; /* start the file stream on the next server step */
@@ -164,6 +167,12 @@ MWSFD_LIBWORK *MWSFLIB_GetLibWorkPtr(void);
 
 /* other units of the player used by mwsfdlib.c */
 void mwSfdDestroy(MWPLY mwply);
+/* Converts the frame frm into buf with cnvfn, which it registers with SFX_SetCnvFn (mwsfd internal,
+ * not sourced). It reads the frame size from frm (offsets 0xC and 0x10) and passes buf to
+ * sfxcnv_MakeDstFrm. The frame record's type is not yet known; the RE4 player's ARGB8888 entry
+ * takes a frame record (MWS_FRM *) and an output buffer in these positions. */
+void fn_804035A8(MWPLY mwply, void *frm, Uint8 *buf, SFX_CNVFN cnvfn);
+void fn_80408680(MWPLY mwply, void *frm, Uint8 *buf); /* fn_80408680.c */
 void MWSFSFX_Init(void);
 void MWSFSFX_Finish(void); /* inferred name: the counterpart of MWSFSFX_Init */
 void MWSFSVR_SetMwsfdSvrFlg(Sint32 flg);
