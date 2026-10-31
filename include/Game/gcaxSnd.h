@@ -196,9 +196,13 @@ typedef struct GcaxNote {
 } GcaxNote;
 CHECK_SIZEOF(GcaxNote, 0x14);
 
+/* Bit of GcaxChannel.flags set while the sustain pedal (MIDI controller 0x40) is down. The name
+ * is inferred. */
+#define GCAX_CHANNEL_SUSTAIN 0x1
+
 /* MIDI channel state of a player (0x48 bytes). */
 typedef struct GcaxChannel {
-    /* 0x00 */ u32 flags; /* bit 0: sustain pedal */
+    /* 0x00 */ u32 flags; /* GCAX_CHANNEL_SUSTAIN */
     /* 0x04 */ u32 field_0x4;
     /* 0x08 */ s32 bank;
     /* 0x0C */ s32 program;
@@ -221,6 +225,15 @@ CHECK_SIZEOF(GcaxChannel, 0x48);
 
 #define GCAX_PLAYERS 8
 #define GCAX_LOADS 64
+
+/* Bits of GcaxPlayer.flags and GcaxPlayer.state. All four names are inferred from behaviour:
+ * IN_USE is set and cleared when a player is allocated and freed, PAUSED by pause and resume,
+ * SEQUENCE when a sequence starts, and DROP_NOTES from gcaxSndNoteOff, where a note-off drops the
+ * notes at once instead of releasing them. */
+#define GCAX_PLAYER_IN_USE 0x80000000
+#define GCAX_PLAYER_DROP_NOTES 0x40000000
+#define GCAX_PLAYER_PAUSED 0x1
+#define GCAX_PLAYER_SEQUENCE 0x2
 
 /* A bank file load request (0x14 bytes). */
 typedef struct GcaxLoad {
@@ -271,8 +284,8 @@ CHECK_SIZEOF(GcaxSequence, 0x58);
 
 /* A MIDI sequence player; only the members used so far are mapped. */
 typedef struct GcaxPlayer {
-    /* 0x0000 */ s32 flags; /* bit 31: in use */
-    /* 0x0004 */ u32 state; /* bit 0: paused, bit 1: playing a sequence */
+    /* 0x0000 */ s32 flags; /* GCAX_PLAYER_IN_USE, GCAX_PLAYER_DROP_NOTES */
+    /* 0x0004 */ u32 state; /* GCAX_PLAYER_PAUSED, GCAX_PLAYER_SEQUENCE */
     /* 0x0008 */ f32 volume;
     /* 0x000C */ f32 field_0xC;
     /* 0x0010 */ f32 field_0x10;

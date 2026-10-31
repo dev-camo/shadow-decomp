@@ -23,11 +23,11 @@ static inline void gcaxSndResetChannel(GcaxPlayer *player, int channel) {
 }
 
 /* Releases the notes of a key on a channel, unless the channel's sustain pedal is down. A player
- * with flag bit 30 drops the notes at once instead. */
+ * with GCAX_PLAYER_DROP_NOTES drops the notes at once instead. */
 static inline void gcaxSndNoteOff(GcaxPlayer *player, u8 channel, u8 key) {
     GcaxNode *node;
 
-    if (player->channels[channel].flags & 0x1) {
+    if (player->channels[channel].flags & GCAX_CHANNEL_SUSTAIN) {
         return;
     }
     for (node = NULL; (node = fn_8043B8F0(&player->notes, node)) != NULL;) {
@@ -36,7 +36,7 @@ static inline void gcaxSndNoteOff(GcaxPlayer *player, u8 channel, u8 key) {
         if (note == NULL || note->channel != channel || note->key != key) {
             continue;
         }
-        if (player->flags & 0x40000000) {
+        if (player->flags & GCAX_PLAYER_DROP_NOTES) {
             fn_8043B868(&player->notes, node);
         } else {
             GcaxNode *ref;
@@ -80,7 +80,7 @@ GcaxPlayer *fn_8043E0E8(void) {
     int i;
 
     for (i = 0; i < GCAX_PLAYERS; i++) {
-        if (!(lbl_805F1404->players[i].flags & 0x80000000)) {
+        if (!(lbl_805F1404->players[i].flags & GCAX_PLAYER_IN_USE)) {
             goto found;
         }
     }
@@ -90,7 +90,7 @@ GcaxPlayer *fn_8043E0E8(void) {
 found:
     player = &lbl_805F1404->players[i];
     memset(player, 0, sizeof(GcaxPlayer));
-    player->flags |= 0x80000000;
+    player->flags |= GCAX_PLAYER_IN_USE;
     player->volume = 0.0f;
     player->field_0xC = 0.0f;
     player->pitchScale = 1.0f;
@@ -114,7 +114,7 @@ void fn_8043E088(GcaxPlayer *player) {
         fn_8043B840(&player->notes);
         player->notes.head = NULL;
     }
-    player->flags &= ~0x80000000;
+    player->flags &= ~GCAX_PLAYER_IN_USE;
     OSRestoreInterrupts(enabled);
 }
 
@@ -234,9 +234,9 @@ void fn_8043DB08(GcaxPlayer *player, u8 channel, u8 control, u8 value) {
     case 0x40:
         /* sustain pedal */
         if ((value & 0x7Fu) >= 64) {
-            player->channels[channel].flags |= 0x1;
+            player->channels[channel].flags |= GCAX_CHANNEL_SUSTAIN;
         } else {
-            player->channels[channel].flags &= ~0x1;
+            player->channels[channel].flags &= ~GCAX_CHANNEL_SUSTAIN;
         }
         break;
     case 0x79:
@@ -256,7 +256,7 @@ void fn_8043DAE4(GcaxPlayer *player, u8 channel, u16 bend) {
 void fn_8043DAB0(GcaxPlayer *player) {
     int i;
 
-    if (!(player->flags & 0x80000000)) {
+    if (!(player->flags & GCAX_PLAYER_IN_USE)) {
         return;
     }
     for (i = 0; i < GCAX_CHANNELS; i++) {
@@ -268,7 +268,7 @@ void fn_8043DAB0(GcaxPlayer *player) {
 void fn_8043DA0C(GcaxPlayer *player) {
     GcaxNode *node;
 
-    if (!(player->flags & 0x80000000)) {
+    if (!(player->flags & GCAX_PLAYER_IN_USE)) {
         return;
     }
     for (node = NULL; (node = fn_8043B8F0(&player->notes, node)) != NULL;) {
