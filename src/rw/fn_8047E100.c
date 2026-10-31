@@ -167,26 +167,30 @@ RwReal fn_8047E704(const RwMatrix *matrix) {
 
 /* The sum of the squared dot products of the matrix's axes */
 RwReal fn_8047E750(const RwMatrix *matrix) {
-    RwReal upAt =
-        matrix->up.x * matrix->at.x + matrix->up.y * matrix->at.y + matrix->up.z * matrix->at.z;
-    RwReal atRight = matrix->at.x * matrix->right.x + matrix->at.y * matrix->right.y +
-                     matrix->at.z * matrix->right.z;
-    RwReal rightUp = matrix->right.x * matrix->up.x + matrix->right.y * matrix->up.y +
-                     matrix->right.z * matrix->up.z;
+    const RwV3d *right = &matrix->right;
+    const RwV3d *up = &matrix->up;
+    const RwV3d *at = &matrix->at;
+    RwV3d dot;
 
-    return upAt * upAt + atRight * atRight + rightUp * rightUp;
+    dot.x = up->x * at->x + up->y * at->y + up->z * at->z;
+    dot.y = at->x * right->x + at->y * right->y + at->z * right->z;
+    dot.z = right->x * up->x + right->y * up->y + right->z * up->z;
+
+    return dot.x * dot.x + dot.y * dot.y + dot.z * dot.z;
 }
 
 /* The sum of the squared errors of the matrix's axis lengths squared from one */
 RwReal fn_8047E7A8(const RwMatrix *matrix) {
-    RwReal rightError = matrix->right.x * matrix->right.x + matrix->right.y * matrix->right.y +
-                        matrix->right.z * matrix->right.z - 1.0f;
-    RwReal upError = matrix->up.x * matrix->up.x + matrix->up.y * matrix->up.y +
-                     matrix->up.z * matrix->up.z - 1.0f;
-    RwReal atError = matrix->at.x * matrix->at.x + matrix->at.y * matrix->at.y +
-                     matrix->at.z * matrix->at.z - 1.0f;
+    const RwV3d *right = &matrix->right;
+    const RwV3d *up = &matrix->up;
+    const RwV3d *at = &matrix->at;
+    RwV3d error;
 
-    return rightError * rightError + upError * upError + atError * atError;
+    error.x = right->x * right->x + right->y * right->y + right->z * right->z - 1.0f;
+    error.y = up->x * up->x + up->y * up->y + up->z * up->z - 1.0f;
+    error.z = at->x * at->x + at->y * at->y + at->z * at->z - 1.0f;
+
+    return error.x * error.x + error.y * error.y + error.z * error.z;
 }
 
 void *fn_8047E828(void *instance, RwInt32 offset, RwInt32 size) {
@@ -220,40 +224,63 @@ RwBool fn_8047E960(const RwMatrixTolerance *tolerance) {
     return TRUE;
 }
 
+/* The deviation of a matrix from the identity (inferred): the squared deviations of each axis and
+ * of the position, summed */
+static inline RwReal MatrixIdentityError(const RwMatrix *matrix) {
+    const RwV3d *right = &matrix->right;
+    const RwV3d *up = &matrix->up;
+    const RwV3d *at = &matrix->at;
+    const RwV3d *pos = &matrix->pos;
+    RwReal rightError;
+    RwReal upError;
+    RwReal atError;
+    RwReal posError;
+
+    rightError = right->x - 1.0f;
+    rightError = rightError * rightError + right->y * right->y + right->z * right->z;
+
+    upError = up->y - 1.0f;
+    upError = up->x * up->x + upError * upError + up->z * up->z;
+
+    atError = at->z - 1.0f;
+    atError = at->x * at->x + at->y * at->y + atError * atError;
+
+    posError = pos->x * pos->x + pos->y * pos->y + pos->z * pos->z;
+
+    return rightError + upError + atError + posError;
+}
+
 /* Sets a matrix's normal, orthogonal and identity flags from its errors */
 RwMatrix *fn_8047E990(RwMatrix *matrix, const RwMatrixTolerance *tolerance) {
-    RwBool isIdentity = FALSE;
+    RwUInt32 flags;
     RwBool isNormal;
     RwBool isOrthogonal;
-    RwUInt32 flags;
+    RwBool isIdentity;
 
     if (tolerance == NULL) {
         tolerance = &RWMATRIXGLOBAL(tolerance);
     }
+
     isNormal = tolerance->Normal >= fn_8047E7A8(matrix);
     isOrthogonal = tolerance->Orthogonal >= fn_8047E750(matrix);
-    if (isNormal && isOrthogonal) {
-        RwReal rightX = matrix->right.x - 1.0f;
-        RwReal upY = matrix->up.y - 1.0f;
-        RwReal atZ = matrix->at.z - 1.0f;
-        /* each axis's and the position's squared deviation is summed on its own, then the four
-         * sums are added; the grouping fixes the rounding the identity test sees */
-        RwReal identityError =
-            (rightX * rightX + matrix->right.y * matrix->right.y +
-             matrix->right.z * matrix->right.z) +
-            (matrix->up.x * matrix->up.x + upY * upY + matrix->up.z * matrix->up.z) +
-            (matrix->at.x * matrix->at.x + matrix->at.y * matrix->at.y + atZ * atZ) +
-            (matrix->pos.x * matrix->pos.x + matrix->pos.y * matrix->pos.y +
-             matrix->pos.z * matrix->pos.z);
+    isIdentity = isNormal && isOrthogonal && tolerance->Identity >= MatrixIdentityError(matrix);
 
-        if (tolerance->Identity >= identityError) {
-            isIdentity = TRUE;
-        }
-    }
     flags = matrix->flags;
-    flags = isNormal ? (flags | 0x1) : (flags & ~0x1);
-    flags = isOrthogonal ? (flags | 0x2) : (flags & ~0x2);
-    flags = isIdentity ? (flags | rwMATRIXINTERNALIDENTITY) : (flags & ~rwMATRIXINTERNALIDENTITY);
+    if (isNormal) {
+        flags |= rwMATRIXTYPENORMAL;
+    } else {
+        flags &= ~rwMATRIXTYPENORMAL;
+    }
+    if (isOrthogonal) {
+        flags |= rwMATRIXTYPEORTHOGONAL;
+    } else {
+        flags &= ~rwMATRIXTYPEORTHOGONAL;
+    }
+    if (isIdentity) {
+        flags |= rwMATRIXINTERNALIDENTITY;
+    } else {
+        flags &= ~rwMATRIXINTERNALIDENTITY;
+    }
     matrix->flags = flags;
     return matrix;
 }
