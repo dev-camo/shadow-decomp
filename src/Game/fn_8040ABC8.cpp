@@ -116,7 +116,8 @@ void *Heap::Alloc(u32 size) {
             if (blockSize == block->size) {
                 previous->next = block->next;
             } else {
-                // Not block->Offset(): that form gives the registers a different allocation here.
+                // Matching workaround: not block->Offset(). That form gives the registers a
+                // different allocation here; revisit if the registers are matched another way.
                 HeapBlock *rest =
                     reinterpret_cast<HeapBlock *>(reinterpret_cast<char *>(block) + blockSize);
                 rest->next = block->next;

@@ -95,9 +95,11 @@ class CityLaser {
      * beam's probe and the bomb placement radius) (name inferred). */
     void DrawRange();
 
-    /* Creates a CommonBomb task with this laser's mask at position (name inferred). Through this
-     * inline function a character info's position is read through the out-of-line operator->, as
-     * in the original. */
+    /* Creates a CommonBomb task with this laser's mask at position (name inferred).
+     *
+     * Matching workaround: SpawnBomb exists only as an inline member so that the caller's character
+     * info position is read through the out-of-line operator->, as in the original. Revisit if
+     * the original's helper is found. */
     void SpawnBomb(const Fn8040Vector3 *position) {
         fn_801DD0BC(position, 1, m_config->bombFlags, 1.0f);
     }
