@@ -1,5 +1,6 @@
 #include <string.h>
 #include "layout_check.h"
+#include "CRI/uty.h"
 
 /* One table record as this function reads it: a 12-byte key and a word. The record's real type and
  * the rest of its layout are unknown. */

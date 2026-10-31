@@ -1310,6 +1310,16 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            Object(
+                Matching,
+                "CRI/uty_tmr.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
             # NonMatching: RNARES_Init, 29 words: register allocation only (the buffer offset and
             # the 0x1000 size constant swap r4 and r5 in the copy loop).
             Object(

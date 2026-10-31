@@ -2,6 +2,7 @@
  * SFD_ExecOne (stop -> prep -> standby -> play), the buffering pause and the reset that re-creates
  * a handle in place while keeping the user's settings. */
 #include "CRI/sfd.h"
+#include "CRI/uty.h"
 #include "layout_check.h"
 
 #define SFD_HN_MAX 8
@@ -42,8 +43,6 @@ CHECK_SIZEOF(SFPLY_PLYINF, 0xA8);
 extern Sint64 fn_803FEA5C(void);
 /* clock units per second for fn_803FEA5C (inferred) */
 extern Sint64 fn_803FE96C(void);
-/* the timer is unusable (inferred) */
-extern Bool fn_80402510(void);
 
 void (*SFPLY_recordgetfrm)(SFD sfd, void *frm);
 Sint32 sfply_last_hnctrl_wksiz;
@@ -943,7 +942,7 @@ static Sint32 sfply_StatPrep(SFD sfd) {
     case 3:
         mode = SFSET_GetCond(sfd, 0x19);
         if (mode == 0) {
-            if (fn_80402510() || SFSET_GetCond(sfd, 0x48) == 0) {
+            if (UTY_IsTmrVoid() || SFSET_GetCond(sfd, 0x48) == 0) {
                 mode = 3;
             }
         }
