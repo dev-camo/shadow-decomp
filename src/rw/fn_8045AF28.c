@@ -56,13 +56,11 @@ RwStream *fn_8045AF28(RwStream *stream, RwInt32 length, void *object, RwInt32 of
 RwStream *fn_8045AFA4(RwStream *stream, RwInt32 length, const void *object, RwInt32 offset,
                       RwInt32 size) {
     const RpMaterial *material = object;
-    const RxPipeline *pipeline = material->pipeline;
 
-    if (fn_8047D458(stream, (RwInt32 *)&pipeline->pluginId, sizeof(RwInt32)) == NULL) {
+    if (fn_8047D458(stream, (RwInt32 *)&material->pipeline->pluginId, sizeof(RwInt32)) == NULL) {
         return NULL;
     }
-    pipeline = material->pipeline;
-    if (fn_8047D458(stream, (RwInt32 *)&pipeline->pluginData, sizeof(RwInt32)) != NULL) {
+    if (fn_8047D458(stream, (RwInt32 *)&material->pipeline->pluginData, sizeof(RwInt32)) != NULL) {
         return stream;
     }
     return NULL;
