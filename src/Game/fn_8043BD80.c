@@ -2,6 +2,7 @@
  * and mix, and voice allocation. The original file name is unknown. Definitions are in reverse
  * address order (deferred inlining). */
 #include "Game/gcaxSnd.h"
+#include <dolphin/mix.h>
 #include <math.h>
 #include <string.h>
 
@@ -122,25 +123,24 @@ static inline GcaxVoice *gcaxSndGetFreeVoice(void) {
     return NULL;
 }
 
-/* Adds the attenuation for a 0-15 level (0 is silence) to db */
-#define GCAX_ADD_LEVEL_DB(db, level)                                                               \
-    do {                                                                                           \
-        s32 index_ = (level) << 2;                                                                 \
-        s32 step_;                                                                                 \
-                                                                                                   \
-        if (index_ < 0) {                                                                          \
-            index_ = 0;                                                                            \
-        }                                                                                          \
-        if (index_ > 63) {                                                                         \
-            index_ = 63;                                                                           \
-        }                                                                                          \
-        step_ = lbl_8056D238[index_];                                                              \
-        if (step_ == 0) {                                                                          \
-            (db) += -96.0f;                                                                        \
-        } else {                                                                                   \
-            (db) += (f32)(-(15 - step_) * 3);                                                      \
-        }                                                                                          \
-    } while (0)
+/* Adds the attenuation for a 0-15 level (0 is silence) to *db. The name is inferred. */
+static inline void gcaxSndAddLevelDb(f32 *db, s32 level) {
+    s32 index = level << 2;
+    s32 step;
+
+    if (index < 0) {
+        index = 0;
+    }
+    if (index > 63) {
+        index = 63;
+    }
+    step = lbl_8056D238[index];
+    if (step == 0) {
+        *db += -96.0f;
+    } else {
+        *db += (f32)(-(15 - step) * 3);
+    }
+}
 
 /* AX drop callback: stops the dropped voice and tries to acquire a replacement AX voice. */
 void fn_8043D6FC(void *arg) {
@@ -291,21 +291,22 @@ f32 fn_8043D318(s32 steps) {
 }
 
 /* Applies a pitch bend in 1/8191 semitones to a sample-rate ratio; returns the ratio as AX's
- * 16.16 source ratio: below 0x200 becomes 0x200 and above 0x40000 becomes 0x3FFFF (0x40000 itself is
- * kept). */
-u32 fn_8043D20C(s32 cents, f32 base) {
+ * 16.16 source ratio: below 0x200 becomes 0x200 and above 0x40000 becomes 0x3FFFF (0x40000
+ * itself is kept). fn_8043C170 divides by 8192 where this function divides by 8191 and 8190;
+ * the divisors are the original's. */
+u32 fn_8043D20C(s32 bendUnits, f32 base) {
     f32 ratio = 1.0f;
     int semitones;
     int down = 0;
     int fine;
     u32 result;
 
-    if (cents < 0) {
+    if (bendUnits < 0) {
         down = 1;
-        cents = -cents;
+        bendUnits = -bendUnits;
     }
-    semitones = cents / 8191;
-    fine = ((cents % 8191) << 7) / 8190;
+    semitones = bendUnits / 8191;
+    fine = ((bendUnits % 8191) << 7) / 8190;
     while (semitones >= 12) {
         ratio *= 2.0;
         semitones -= 12;
@@ -346,9 +347,9 @@ void fn_8043CA7C(s32 bank, GcaxVoice *voice, GcaxLayer *layer, GcaxBankHeader *h
     GcaxSample *sample;
     int channel;
     u8 *curve;
-    s32 cents;
+    s32 bendUnits;
     u32 ratio;
-    f64 log2;
+    f64 log10Of2;
     s32 rate;
     s32 octave;
     s32 shift;
@@ -400,13 +401,13 @@ void fn_8043CA7C(s32 bank, GcaxVoice *voice, GcaxLayer *layer, GcaxBankHeader *h
     voice->pitchRatio = fn_8043D3BC(region->rootKey, region->fineTune, key);
     voice->bendRangeUp = layer->bendRangeUp;
     voice->bendRangeDown = layer->bendRangeDown;
-    cents = player->channels[channel].pitchBendOffset;
-    if (cents >= 0) {
-        cents *= voice->bendRangeUp;
+    bendUnits = player->channels[channel].pitchBendOffset;
+    if (bendUnits >= 0) {
+        bendUnits *= voice->bendRangeUp;
     } else {
-        cents *= voice->bendRangeDown;
+        bendUnits *= voice->bendRangeDown;
     }
-    ratio = fn_8043D20C(cents, voice->pitchRatio);
+    ratio = fn_8043D20C(bendUnits, voice->pitchRatio);
     voice->field_0xDC = region->field_0xE;
     voice->field_0xE0 = region->field_0xF;
     voice->src.ratioHi = ratio >> 16;
@@ -418,9 +419,9 @@ void fn_8043CA7C(s32 bank, GcaxVoice *voice, GcaxLayer *layer, GcaxBankHeader *h
     voice->src.last_samples[3] = 0;
 
     /* envelope times scale with the playback rate's octave */
-    log2 = log10(2.0);
+    log10Of2 = log10(2.0);
     rate = (s32)(32000.0f * ((f32)ratio / 65536.0f) + 0.5f);
-    octave = (s32)(log10(rate / 172.265625) / log2);
+    octave = (s32)(log10(rate / 172.265625) / log10Of2);
     shift = (octave - 8) & 0xF;
     octaveBase = 172.265625 / pow(2.0, -octave);
     fraction = (s32)(1024.0 * (rate - octaveBase) / octaveBase);
@@ -510,7 +511,7 @@ void fn_8043CA7C(s32 bank, GcaxVoice *voice, GcaxLayer *layer, GcaxBankHeader *h
         voice->adpcmLoop.loop_yn1 = sample->loopYn1;
         voice->adpcmLoop.loop_yn2 = sample->loopYn2;
         AXSetVoiceAddr(voice->vpb, &voice->addr);
-        AXSetVoiceSrcType(voice->vpb, 1);
+        AXSetVoiceSrcType(voice->vpb, AX_SRC_TYPE_LINEAR);
         AXSetVoiceSrc(voice->vpb, &voice->src);
         AXSetVoiceAdpcm(voice->vpb, &voice->adpcm);
         AXSetVoiceAdpcmLoop(voice->vpb, &voice->adpcmLoop);
@@ -539,7 +540,7 @@ void fn_8043CA7C(s32 bank, GcaxVoice *voice, GcaxLayer *layer, GcaxBankHeader *h
         voice->addr.currentAddressHi = current >> 17;
         voice->addr.currentAddressLo = current >> 1;
         AXSetVoiceAddr(voice->vpb, &voice->addr);
-        AXSetVoiceSrcType(voice->vpb, 1);
+        AXSetVoiceSrcType(voice->vpb, AX_SRC_TYPE_LINEAR);
         AXSetVoiceSrc(voice->vpb, &voice->src);
         fn_8043C2A4(voice, player);
         AXSetVoiceState(voice->vpb, 1);
@@ -564,7 +565,7 @@ void fn_8043CA7C(s32 bank, GcaxVoice *voice, GcaxLayer *layer, GcaxBankHeader *h
         voice->addr.currentAddressHi = current >> 16;
         voice->addr.currentAddressLo = current;
         AXSetVoiceAddr(voice->vpb, &voice->addr);
-        AXSetVoiceSrcType(voice->vpb, 1);
+        AXSetVoiceSrcType(voice->vpb, AX_SRC_TYPE_LINEAR);
         AXSetVoiceSrc(voice->vpb, &voice->src);
         fn_8043C2A4(voice, player);
         AXSetVoiceState(voice->vpb, 1);
@@ -610,7 +611,11 @@ int fn_8043C9D0(s32 bank, s32 program, s32 key) {
     return count;
 }
 
-/* Starts the note's voices, one per region of program in bank whose key range holds key. */
+/* Starts the note's voices, one per region of program in bank whose key range holds key.
+ *
+ * Not matching yet (the unit stays NonMatching): 9 of the function's 77 words differ, only in
+ * registers (r15-r18: the layer and region pointers and ref, including the li of ref = NULL); the
+ * opcodes are identical. */
 void fn_8043C89C(GcaxList *voices, s32 bank, s32 program, s32 key, s32 velocity) {
     GcaxRegion *region;
     GcaxBankHeader *header = (GcaxBankHeader *)lbl_805F1404->bankData[bank].addr;
@@ -652,8 +657,10 @@ void fn_8043C89C(GcaxList *voices, s32 bank, s32 program, s32 key, s32 velocity)
  * envelope, and the library's mono/aux settings, and sends it to AX. */
 void fn_8043C2A4(GcaxVoice *voice, GcaxPlayer *player) {
     int channel;
-    s32 level;     /* volume, then table index, then attenuation in 0.375 dB steps */
-    s32 noteLevel; /* voice velocity and level */
+    s32 volume;      /* channel volume times expression, 0-127 */
+    s32 level;       /* table index: player volume plus the note level, 0-255 */
+    s32 attenuation; /* in 0.375 dB steps */
+    s32 noteLevel;   /* voice velocity and level */
     f32 db;
     f32 gain;
     s32 pan;
@@ -690,15 +697,16 @@ void fn_8043C2A4(GcaxVoice *voice, GcaxPlayer *player) {
 
     /* channel volume and expression, voice velocity and level, player volume: an attenuation in
      * 0.375 dB steps */
-    level = (player->channels[channel].volume + 1) * (player->channels[channel].expression + 1) - 1;
-    level /= 128;
-    if (level < 0) {
-        level = 0;
+    volume =
+        (player->channels[channel].volume + 1) * (player->channels[channel].expression + 1) - 1;
+    volume /= 128;
+    if (volume < 0) {
+        volume = 0;
     }
-    if (level > 127) {
-        level = 127;
+    if (volume > 127) {
+        volume = 127;
     }
-    noteLevel = (level + 1) * voice->velocity;
+    noteLevel = (volume + 1) * voice->velocity;
     noteLevel = (noteLevel * (256 - voice->field_0x28) - 1) >> 14 & 0xFF;
     level = (s32)(255.0f * player->volume);
     level += noteLevel;
@@ -708,35 +716,35 @@ void fn_8043C2A4(GcaxVoice *voice, GcaxPlayer *player) {
     if (level > 255) {
         level = 255;
     }
-    level = lbl_8056D098[level] - 3;
-    if (level > 255) {
-        level = 255;
+    attenuation = lbl_8056D098[level] - 3;
+    if (attenuation > 255) {
+        attenuation = 255;
     }
     db = 0.0f;
-    GCAX_ADD_LEVEL_DB(db, voice->field_0x20);
+    gcaxSndAddLevelDb(&db, voice->field_0x20);
     db += lbl_805F1404->field_0x2C;
-    if (level & 0x1) {
+    if (attenuation & 0x1) {
         db += -0.375f;
     }
-    if (level & 0x2) {
+    if (attenuation & 0x2) {
         db += -0.75f;
     }
-    if (level & 0x4) {
+    if (attenuation & 0x4) {
         db += -1.5f;
     }
-    if (level & 0x8) {
+    if (attenuation & 0x8) {
         db += -3.0f;
     }
-    if (level & 0x10) {
+    if (attenuation & 0x10) {
         db += -6.0f;
     }
-    if (level & 0x20) {
+    if (attenuation & 0x20) {
         db += -12.0f;
     }
-    if (level & 0x40) {
+    if (attenuation & 0x40) {
         db += -24.0f;
     }
-    if (level & 0x80) {
+    if (attenuation & 0x80) {
         db += -48.0f;
     }
     db += voice->envGain;
@@ -805,7 +813,7 @@ void fn_8043C2A4(GcaxVoice *voice, GcaxPlayer *player) {
         sendScale = 1.0f;
     }
     db = 0.0f;
-    GCAX_ADD_LEVEL_DB(db, voice->field_0xE0);
+    gcaxSndAddLevelDb(&db, voice->field_0xE0);
     send = sendScale * fn_8043B3A0(db) + player->field_0x3C;
     if (send < 0.0f) {
         send = 0.0f;
@@ -815,6 +823,7 @@ void fn_8043C2A4(GcaxVoice *voice, GcaxPlayer *player) {
     }
     sendL = gainA * send;
     sendR = gainB * send;
+    /* the original stores the aux A send here and again in the auxMix == 0 branch below */
     voice->mix.vAuxAL = 32768.0f * sendL;
     voice->mix.vAuxAR = 32768.0f * sendR;
     if (lbl_805F1404->auxMix == 0) {
@@ -837,7 +846,7 @@ void fn_8043C2A4(GcaxVoice *voice, GcaxPlayer *player) {
 /* Applies a pitch bend (in units of 1/8192 semitone per bend-range step) and a pitch scale to
  * a voice's sample rate. */
 void fn_8043C170(GcaxVoice *voice, s32 bend, f32 scale) {
-    s32 cents;
+    s32 bendUnits;
     s32 amount;
     f32 ratio;
     f32 srcRatio;
@@ -846,16 +855,16 @@ void fn_8043C170(GcaxVoice *voice, s32 bend, f32 scale) {
     int fine;
 
     if (bend >= 0) {
-        cents = bend * voice->bendRangeUp;
+        bendUnits = bend * voice->bendRangeUp;
     } else {
-        cents = bend * voice->bendRangeDown;
+        bendUnits = bend * voice->bendRangeDown;
     }
     ratio = 1.0f;
-    amount = cents;
+    amount = bendUnits;
     down = 0;
-    if (cents < 0) {
+    if (bendUnits < 0) {
         down = 1;
-        amount = -cents;
+        amount = -bendUnits;
     }
     semitones = amount / 8192;
     fine = ((amount % 8192) << 7) / 8192;
@@ -896,8 +905,12 @@ GcaxNode *fn_8043C12C(GcaxList *voices, GcaxVoice *voice) {
 
 /* The next voice reference of a note's voice list (see fn_8043B3DC). fn_8043C89C calls it directly:
  * the E3 prototype makes that call out of line (0x8037D0F4); retail expands it there and keeps this
- * copy. The unit inlines only explicit inline functions, so this one needs auto_inline (a file-wide
- * auto_inline gives the same object). */
+ * copy.
+ *
+ * Matching workaround: the unit inlines only explicit inline functions, so this wrapper needs
+ * auto_inline to be expanded into fn_8043C89C while its own copy stays (a file-wide auto_inline
+ * gives the same object). Revisit when the original's inline settings for this unit, or the real
+ * form of the wrapper, are known. */
 #pragma auto_inline on
 GcaxNode *fn_8043C10C(GcaxList *voices, GcaxNode *ref) {
     return fn_8043B3DC(voices, ref);
