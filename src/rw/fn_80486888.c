@@ -75,13 +75,9 @@ RwFrame *fn_80486AA4(RwFrame *oldFrame, RwFrame *root) {
         root = newFrame;
     }
 
-    newFrame->object.type = oldFrame->object.type;
-    newFrame->object.subType = oldFrame->object.subType;
-    newFrame->object.flags = oldFrame->object.flags;
-    newFrame->object.privateFlags = oldFrame->object.privateFlags;
-    newFrame->object.parent = NULL;
+    RWOBJECTCOPY(&newFrame->object, &oldFrame->object);
     rwLinkListInitialize(&newFrame->objectList);
-    newFrame->object.parent = NULL;
+    newFrame->object.parent = NULL; /* stored again, as in the original */
     newFrame->modelling = oldFrame->modelling;
     newFrame->child = NULL;
     newFrame->next = NULL;
@@ -147,11 +143,7 @@ RwFrame *fn_80486D00(void) {
         return NULL;
     }
 
-    frame->object.type = rwFRAME;
-    frame->object.subType = 0;
-    frame->object.flags = 0;
-    frame->object.privateFlags = 0;
-    frame->object.parent = NULL;
+    RWOBJECTINITIALIZE(&frame->object, rwFRAME, 0);
     rwLinkListInitialize(&frame->objectList);
 
     frame->modelling.flags = rwMATRIXTYPEORTHONORMAL;

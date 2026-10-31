@@ -483,11 +483,7 @@ RpWorld *fn_804556F4(RwStream *stream) {
     memset(world, 0, size);
     memory = (RwUInt8 *)world + lbl_8056D898.sizeOfStruct;
 
-    world->object.type = rpWORLD;
-    world->object.subType = 0;
-    world->object.flags = 0;
-    world->object.privateFlags = 0;
-    world->object.parent = NULL;
+    RWOBJECTINITIALIZE(&world->object, rpWORLD, 0);
     world->object.privateFlags = rpWORLDSINGLEMALLOC;
     fn_8045FCFC(world, size);
 

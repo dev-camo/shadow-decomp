@@ -346,11 +346,7 @@ RpGeometry *fn_80459464(RwInt32 numVertices, RwInt32 numTriangles, RwUInt32 form
 
     geometry->morphTarget = NULL;
     geometry->numMorphTargets = 0;
-    geometry->object.type = rpGEOMETRY;
-    geometry->object.subType = 0;
-    geometry->object.flags = 0;
-    geometry->object.privateFlags = 0;
-    geometry->object.parent = NULL;
+    RWOBJECTINITIALIZE(&geometry->object, rpGEOMETRY, 0);
     geometry->repEntry = NULL;
     geometry->lockedSinceLastInst = 0;
     geometry->refCount = 1;

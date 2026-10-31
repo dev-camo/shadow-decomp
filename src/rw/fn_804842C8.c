@@ -577,11 +577,7 @@ RwCamera *fn_80485A58(void) {
     if (camera == NULL) {
         return NULL;
     }
-    camera->object.type = rwCAMERA;
-    camera->object.subType = 0;
-    camera->object.flags = 0;
-    camera->object.privateFlags = 0;
-    camera->object.parent = NULL;
+    RWOBJECTINITIALIZE(&camera->object, rwCAMERA, 0);
     camera->sync = fn_8048528C;
     camera->beginUpdate = fn_80485354;
     camera->endUpdate = fn_804852F0;

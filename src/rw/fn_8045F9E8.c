@@ -279,11 +279,7 @@ RpWorld *fn_80460138(RwBBox *boundingBox) {
         RPWORLDERROR((E_RW_NOMEM, lbl_8056D898.sizeOfStruct));
         return NULL;
     }
-    world->object.type = rpWORLD;
-    world->object.subType = 0;
-    world->object.flags = 0;
-    world->object.privateFlags = 0;
-    world->object.parent = NULL;
+    RWOBJECTINITIALIZE(&world->object, rpWORLD, 0);
     fn_8045B788(&world->matList);
     world->renderOrder = rpWORLDRENDERBACK2FRONT;
     world->flags = 0;

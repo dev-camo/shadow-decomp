@@ -160,11 +160,7 @@ RpLight *fn_8045AD34(RwInt32 type) {
     if (light == NULL) {
         return NULL;
     }
-    light->object.type = rpLIGHT;
-    light->object.subType = type;
-    light->object.flags = 0;
-    light->object.privateFlags = 0;
-    light->object.parent = NULL;
+    RWOBJECTINITIALIZE(&light->object, rpLIGHT, type);
     light->sync = fn_8045A780;
     light->radius = 0.0f;
     light->minusCosAngle = 0.0f;

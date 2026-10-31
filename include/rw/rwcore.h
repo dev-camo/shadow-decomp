@@ -597,6 +597,26 @@ typedef struct RwObject {
 } RwObject;
 CHECK_SIZEOF(RwObject, 0x8);
 
+/* Initialises an object header: its type and subtype, no flags and no parent */
+#define RWOBJECTINITIALIZE(object, objectType, objectSubType)                                      \
+    do {                                                                                           \
+        (object)->type = (objectType);                                                             \
+        (object)->subType = (objectSubType);                                                       \
+        (object)->flags = 0;                                                                       \
+        (object)->privateFlags = 0;                                                                \
+        (object)->parent = NULL;                                                                   \
+    } while (0)
+
+/* Copies an object header's type, subtype and flags; the copy has no parent */
+#define RWOBJECTCOPY(dst, src)                                                                     \
+    do {                                                                                           \
+        (dst)->type = (src)->type;                                                                 \
+        (dst)->subType = (src)->subType;                                                           \
+        (dst)->flags = (src)->flags;                                                               \
+        (dst)->privateFlags = (src)->privateFlags;                                                 \
+        (dst)->parent = NULL;                                                                      \
+    } while (0)
+
 /* A matrix: three axes and a position (0x40 bytes) */
 typedef struct RwMatrix {
     /* 0x00 */ RwV3d right;

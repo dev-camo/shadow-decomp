@@ -632,11 +632,7 @@ RwTexDictionary *fn_8048CA64(void) {
     if (dict == NULL) {
         return NULL;
     }
-    dict->object.type = rwTEXDICTIONARY;
-    dict->object.subType = 0;
-    dict->object.flags = 0;
-    dict->object.privateFlags = 0;
-    dict->object.parent = NULL;
+    RWOBJECTINITIALIZE(&dict->object, rwTEXDICTIONARY, 0);
     rwLinkListAddLLLink(&RWTEXTUREGLOBAL(texDictList), &dict->lInInstance);
     rwLinkListInitialize(&dict->texturesInDict);
     fn_8048209C(&lbl_8056E048, dict);
