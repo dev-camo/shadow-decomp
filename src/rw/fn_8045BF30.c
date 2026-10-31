@@ -243,10 +243,7 @@ RwStream *fn_8045C56C(const RpMeshHeader *meshHeader, const void *object, RwStre
             while (remaining != 0) {
                 RwUInt32 i;
 
-                count = rpMESHINDEXBUFFERSIZE;
-                if (remaining < rpMESHINDEXBUFFERSIZE) {
-                    count = remaining;
-                }
+                count = (remaining < rpMESHINDEXBUFFERSIZE) ? remaining : rpMESHINDEXBUFFERSIZE;
                 for (i = 0; i < count; i++) {
                     buffer[i] = *indices++;
                 }
@@ -311,10 +308,7 @@ RpMeshHeader *fn_8045C770(RwStream *stream, const void *object, const RpMaterial
                 while (remaining != 0) {
                     RwUInt32 *source = buffer;
 
-                    count = rpMESHINDEXBUFFERSIZE;
-                    if (remaining < rpMESHINDEXBUFFERSIZE) {
-                        count = remaining;
-                    }
+                    count = (remaining < rpMESHINDEXBUFFERSIZE) ? remaining : rpMESHINDEXBUFFERSIZE;
                     if (fn_8047D868(stream, (RwInt32 *)source, count * sizeof(RwUInt32)) == NULL) {
                         return NULL;
                     }
