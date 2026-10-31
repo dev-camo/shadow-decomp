@@ -100,25 +100,29 @@ RxPipelineNode *fn_8049B350(RxPipelineNode *node, RxPipeline *pipeline) {
         }
 
         /* close the gap in the node array and in the output and top-sort arrays behind it */
-        index = node - pipeline->nodes;
-        if (index < pipeline->numNodes - 1) {
-            RwUInt32 maxNodes = RXPIPELINEGLOBAL(maxNodesPerPipe);
-            RwUInt32 *outputs = (RwUInt32 *)(pipeline->nodes + maxNodes) + index * RXNODEMAXOUTPUTS;
-            RwUInt32 *nextOutputs = outputs + RXNODEMAXOUTPUTS;
+        index = node - &pipeline->nodes[0];
+        if ((RwUInt32)index < pipeline->numNodes - 1) {
             RxPipelineNodeTopSortData *topSortData;
             RxPipelineNodeTopSortData *nextTopSortData;
+            RwUInt32 *output;
+            RwUInt32 *nextOutput;
             RwUInt32 i;
+            RwUInt32 j;
 
+            output = (RwUInt32 *)&pipeline->nodes[RXPIPELINEGLOBAL(maxNodesPerPipe)];
+            output += RXNODEMAXOUTPUTS * index;
+            nextOutput = output + RXNODEMAXOUTPUTS;
             for (i = index; i < pipeline->numNodes - 1; i++) {
-                memcpy(outputs, nextOutputs, RXNODEMAXOUTPUTS * sizeof(RwUInt32));
-                outputs = nextOutputs;
-                nextOutputs += RXNODEMAXOUTPUTS;
+                memcpy(output, nextOutput, sizeof(RwUInt32) * RXNODEMAXOUTPUTS);
+                output = nextOutput;
+                nextOutput += RXNODEMAXOUTPUTS;
             }
 
             /* the top-sort entries move from the first one on, not from the node's own */
-            maxNodes = RXPIPELINEGLOBAL(maxNodesPerPipe);
-            topSortData = (RxPipelineNodeTopSortData *)((RwUInt32 *)(pipeline->nodes + maxNodes) +
-                                                        maxNodes * RXNODEMAXOUTPUTS);
+            output = (RwUInt32 *)&pipeline->nodes[RXPIPELINEGLOBAL(maxNodesPerPipe)];
+            topSortData =
+                (RxPipelineNodeTopSortData *)(output +
+                                              RXNODEMAXOUTPUTS * RXPIPELINEGLOBAL(maxNodesPerPipe));
             nextTopSortData = topSortData + 1;
             for (i = index; i < pipeline->numNodes - 1; i++) {
                 memcpy(topSortData, nextTopSortData, sizeof(RxPipelineNodeTopSortData));
@@ -134,11 +138,9 @@ RxPipelineNode *fn_8049B350(RxPipelineNode *node, RxPipeline *pipeline) {
 
             /* outputs to the removed node now lead nowhere; later nodes moved down one */
             for (i = 0; i < pipeline->numNodes - 1; i++) {
-                RwUInt32 j;
-
                 for (j = 0; j < pipeline->nodes[i].numOutputs; j++) {
-                    if (pipeline->nodes[i].outputs[j] >= index) {
-                        if (index == pipeline->nodes[i].outputs[j]) {
+                    if (pipeline->nodes[i].outputs[j] >= (RwUInt32)index) {
+                        if (pipeline->nodes[i].outputs[j] == (RwUInt32)index) {
                             pipeline->nodes[i].outputs[j] = (RwUInt32)-1;
                         } else {
                             pipeline->nodes[i].outputs[j]--;
