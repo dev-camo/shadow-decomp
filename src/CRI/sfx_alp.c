@@ -1,6 +1,7 @@
 /* Sofdec SFX alpha tables (sfx_alp.c, SFXA): per-converter alpha settings, either three fixed
  * alpha levels or an alpha ramp over a luma range, and the calls that build the ARGB8888
- * conversion tables from them through the table makers registered in the object.
+ * conversion tables from them through the table makers stored in the object (set with
+ * SFX_SetMakeAlp3110Fn, SFX_SetMakeAlp3211Fn and SFX_SetMakeLumiFn).
  *
  * Function names follow the RE4 GameCube decompilation of the same file.
  */
