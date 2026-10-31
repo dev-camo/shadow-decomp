@@ -310,7 +310,8 @@ u32 OSGetSoundMode(void) {
 void OSSetSoundMode(u32 mode) {
     OSSram *sram;
     // Matching workaround: unused local that keeps the original 0x20-byte stack frame (0x18 without
-    // it, 7 differing words); the public dolsdk2004 SDK decompilation uses the same form. Revisit
+    // it, 7 differing words). The release build reserves this slot, most likely for a local that
+    // the original used only in debug-build code, which the release build compiles out. Revisit
     // when the original locals are known.
     int unused;
 
@@ -339,7 +340,8 @@ u32 OSGetProgressiveMode(void) {
 
 void OSSetProgressiveMode(u32 on) {
     // Matching workaround: frame padding that keeps the original 0x20-byte stack frame (0x18
-    // without it, 7 differing words); the public dolsdk2004 SDK decompilation uses the same form.
+    // without it, 7 differing words). The release build reserves this slot, most likely for a local
+    // that the original used only in debug-build code, which the release build compiles out.
     // Revisit when the original locals are known.
 #ifndef DEBUG
     u32 padding[1];
@@ -447,7 +449,8 @@ u32 OSGetEuRgb60Mode(void) {
 
 void OSSetEuRgb60Mode(u32 on) {
     // Matching workaround: frame padding that keeps the original 0x20-byte stack frame (0x18
-    // without it, 7 differing words); the public dolsdk2004 SDK decompilation uses the same form.
+    // without it, 7 differing words). The release build reserves this slot, most likely for a local
+    // that the original used only in debug-build code, which the release build compiles out.
     // Revisit when the original locals are known.
 #ifndef DEBUG
     u32 padding[1];
@@ -503,7 +506,8 @@ u16 OSGetGbsMode(void) {
 
 void OSSetGbsMode(u16 mode) {
     // Matching workaround: frame padding that keeps the original 0x20-byte stack frame (0x18
-    // without it, 7 differing words); the public dolsdk2004 SDK decompilation uses the same form.
+    // without it, 7 differing words). The release build reserves this slot, most likely for a local
+    // that the original used only in debug-build code, which the release build compiles out.
     // Revisit when the original locals are known.
 #ifndef DEBUG
     u32 padding[1];

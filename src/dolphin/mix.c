@@ -149,8 +149,8 @@ static int __MIXClampPan(int pan);
 // Matching workaround: the parameter is copied into a local. Without the copy MIXInitChannel and
 // MIXUpdateSettings, which inline this function 43 times each, have 0x38- and 0x18-byte stack
 // frames instead of the original 0xE8 and 0xC0 (11 and 5 differing words); a u16 or int result
-// local or a table pointer local does not restore them. The public dolsdk2004 SDK decompilation
-// uses the same form. Revisit when the original body is known.
+// local or a table pointer local does not restore them, so the original most likely worked on a
+// local copy of the parameter as written here. Revisit when the original body is known.
 static u16 __MIXGetVolume(int db_) {
     int db = db_;
     if (db <= -0x388) {

@@ -17,7 +17,8 @@ int __DSP_rude_task_pending;
 
 void __DSPHandler(__OSInterrupt intr, OSContext *context) {
     // Matching workaround: unused storage that keeps the original 0x2E8-byte stack frame (0x2E0
-    // without it, 5 differing words); the public dolsdk2004 SDK decompilation uses the same form.
+    // without it, 5 differing words). The release build reserves this slot, most likely for a local
+    // that the original used only in debug-build code, which the release build compiles out.
     // Revisit when the original locals are known.
     u8 unused[4];
     OSContext exceptionContext;
@@ -232,9 +233,9 @@ void __DSP_exec_task(DSPTaskInfo *curr, DSPTaskInfo *next) {
 
 void __DSP_boot_task(DSPTaskInfo *task) {
     // Matching workaround: volatile so that the received mail is stored to the stack as in the
-    // original (a plain u32 drops that store, one word shorter); the public dolsdk2004 SDK
-    // decompilation uses the same form. Revisit when the original release-build use of mail is
-    // known.
+    // original (a plain u32 drops that store, one word shorter). The original most likely kept mail
+    // in memory for the debug-build assert that prints it; the release build compiles the assert
+    // out but keeps the store. Revisit when the original release-build use of mail is known.
     volatile u32 mail;
 
     ASSERTMSGLINE(634, task != NULL, "__DSP_boot_task(): NULL task!\n");

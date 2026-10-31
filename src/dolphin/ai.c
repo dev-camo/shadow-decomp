@@ -348,7 +348,8 @@ static void __AI_SRC_INIT(void) {
     OSTime rising_48khz = 0;
     OSTime diff = 0;
     // Matching workaround: unused local that keeps the original 0x30-byte stack frame (0x28 without
-    // it); the public dolsdk2004 SDK decompilation uses the same form. Revisit when the original
+    // it). The release build reserves this slot, most likely for a local that the original used
+    // only in debug-build code, which the release build compiles out. Revisit when the original
     // locals are known.
     OSTime t1 = 0;
     OSTime temp;
