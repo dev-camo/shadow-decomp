@@ -8,7 +8,9 @@
  * unknown). More than 400 functions across the game read it. Only the word at 0xAC is mapped. */
 struct UnkGlobal_8057D6A0 {
     /* 0x00 */ u8 field_0x0[0xAC];
-    /* 0xAC */ s32 field_0xAC; /* ThreatObjHolder compares it with 9 to pick its model table */
+    /* ThreatObjHolder compares it with 9 to pick its model table, and FallBuildingHolder's load
+     * hook with 12 and 5 to limit the building type. */
+    /* 0xAC */ s32 field_0xAC;
     /* 0xB0 */ u8 field_0xB0[0x150 - 0xB0];
 };
 CHECK_SIZEOF(UnkGlobal_8057D6A0, 0x150);
