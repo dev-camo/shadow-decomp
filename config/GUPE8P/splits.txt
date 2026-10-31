@@ -1394,6 +1394,10 @@ Game/fn_8040307C.c:
 Game/fn_804030A8.c:
 	.text       start:0x804030A8 end:0x804030F8
 
+CRI/mwsfdsvm.c:
+	.text       start:0x804030F8 end:0x80403398
+	.bss        start:0x805DD6F8 end:0x805DD808
+
 CRI/mwstm.c:
 	.text       start:0x80403398 end:0x8040350C
 

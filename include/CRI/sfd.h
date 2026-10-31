@@ -149,7 +149,7 @@ typedef struct {
     Sint32 x2c4;          /* 0x2C4 last frame decision */
     Float32 x2c8;         /* 0x2C8 (-1.0) frame time (ft) of the last decided frame */
     /* volatile: written on another thread. SFD_VbIn runs as an SVM vsync server (the MW player
-     * registers fn_80407C9C with SVM_SVTYPE_VSYNC), i.e. on the ADXM vsync thread; there
+     * registers fn_80407C9C with MWSFSVM_EntryIdVfunc), i.e. on the ADXM vsync thread; there
      * sftim_VbInHn updates vcnt and chg_base, and ext_last through clock source 5
      * (sftim_GetTimeExtClock), while the server step reads them. */
     volatile Sint32 vcnt;     /* 0x2CC (-1) vsync count while requested */
