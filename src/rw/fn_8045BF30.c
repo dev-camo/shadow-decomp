@@ -3,16 +3,6 @@
 #include "rw/rpworld.h"
 #include "layout_check.h"
 
-/* Reports an error: the arguments are the error code and its parameters */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* how many indices are converted through the stack buffer at a time */
 #define rpMESHINDEXBUFFERSIZE 256
 
@@ -119,7 +109,7 @@ RpBuildMesh *fn_8045C144(RwUInt32 numTriangles) {
                 RwMalloc(bytes, rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_EVENT | rwID_MESHMODULE);
             if (buildMesh->meshTriangles == NULL) {
                 RwFreeListFree(lbl_805EDDC0.buildMeshFreeList, buildMesh);
-                RWERROR((E_RW_NOMEM, bytes));
+                RPWORLDERROR((E_RW_NOMEM, bytes));
                 return NULL;
             }
             buildMesh->triangleBufferSize = numTriangles;
@@ -129,7 +119,7 @@ RpBuildMesh *fn_8045C144(RwUInt32 numTriangles) {
         }
         return buildMesh;
     }
-    RWERROR((E_RW_NOMEM, sizeof(RpBuildMesh)));
+    RPWORLDERROR((E_RW_NOMEM, sizeof(RpBuildMesh)));
     return NULL;
 }
 
@@ -167,7 +157,7 @@ RpBuildMesh *fn_8045C340(RpBuildMesh *buildMesh, RpMaterial *material, RwUInt16 
                 RwMalloc(bytes, rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_EVENT | rwID_MESHMODULE);
         }
         if (triangles == NULL) {
-            RWERROR((E_RW_NOMEM, bytes));
+            RPWORLDERROR((E_RW_NOMEM, bytes));
             return NULL;
         }
         buildMesh->meshTriangles = triangles;

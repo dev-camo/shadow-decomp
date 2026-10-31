@@ -11,16 +11,6 @@
 #define E_RW_ERROR16 0x80000016      /* an engine error code; its name is unknown */
 #define E_RP_WORLD_CLUMPNOTINWORLD 4 /* the world plugin's error code (inferred) */
 
-/* Reports an error: the arguments are the error code and its parameters */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* how many sectors a camera's frustum sector list grows by */
 #define rpFRUSTUMSECTORGRANULARITY 50
 
@@ -458,7 +448,7 @@ RpLight *fn_804612A8(RpLight *light) {
             } while (depth >= 0);
         }
     } else {
-        RWERROR((E_RW_ERROR16));
+        RPWORLDERROR((E_RW_ERROR16));
     }
     return light;
 }
@@ -506,7 +496,7 @@ static inline RwBool FrustumSectorsAddSpace(CameraExt *ext, RwInt32 amount) {
         ext->space += amount;
         return TRUE;
     }
-    RWERROR((E_RW_NOMEM, bytes));
+    RPWORLDERROR((E_RW_NOMEM, bytes));
     return FALSE;
 }
 
@@ -861,7 +851,7 @@ RpWorld *fn_804623EC(RpWorld *world, RpClump *clump) {
         ext->world = NULL;
         return world;
     }
-    RWERROR((E_RP_WORLD_CLUMPNOTINWORLD));
+    RPWORLDERROR((E_RP_WORLD_CLUMPNOTINWORLD));
     return NULL;
 }
 

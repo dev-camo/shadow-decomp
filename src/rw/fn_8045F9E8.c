@@ -7,16 +7,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* Reports an error: the arguments are the error code and its parameters */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* An entry in the world module's list of worlds: a world and the size of its allocation */
 typedef struct WorldListEntry {
     /* 0x0 */ RpWorld *world;
@@ -293,7 +283,7 @@ RpWorld *fn_80460138(RwBBox *boundingBox) {
     RpWorldSector *sector;
 
     if (world == NULL) {
-        RWERROR((E_RW_NOMEM, lbl_8056D898.sizeOfStruct));
+        RPWORLDERROR((E_RW_NOMEM, lbl_8056D898.sizeOfStruct));
         return NULL;
     }
     world->object.type = rpWORLD;
@@ -308,7 +298,7 @@ RpWorld *fn_80460138(RwBBox *boundingBox) {
     sector = RwMalloc(lbl_8056D880.sizeOfStruct, rwMEMHINTDUR_EVENT | rwID_WORLD);
     if (sector == NULL) {
         /* the original reports the size of a pointer */
-        RWERROR((E_RW_NOMEM, sizeof(RpWorldSector *)));
+        RPWORLDERROR((E_RW_NOMEM, sizeof(RpWorldSector *)));
         RwFree(world);
         return NULL;
     }

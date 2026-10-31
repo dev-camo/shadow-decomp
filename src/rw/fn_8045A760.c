@@ -6,16 +6,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* Reports an error: the arguments are the error code and its parameters */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* the first stream version that stores minusCosAngle itself (inferred) */
 #define rwSTREAMLIGHTCONEVERSION 0x30300
 
@@ -160,7 +150,7 @@ RpLight *fn_8045AB1C(RwStream *stream) {
         }
         return light;
     }
-    RWERROR((E_RW_BADVERSION));
+    RPWORLDERROR((E_RW_BADVERSION));
     return NULL;
 }
 

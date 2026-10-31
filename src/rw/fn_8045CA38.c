@@ -5,16 +5,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* Reports an error: the arguments are the error code and its parameters */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* The first trial at which the strip builder commits polygons; earlier trials only test them */
 #define rpTRISTRIPCOMMIT 4
 
@@ -1045,7 +1035,7 @@ RpMeshHeader *fn_8045EF64(RpBuildMesh *buildMesh, void *data) {
         meshHeader = fn_8045BF30(size);
         if (meshHeader == NULL) {
             RwFree(sorted);
-            RWERROR((E_RW_NOMEM, size));
+            RPWORLDERROR((E_RW_NOMEM, size));
             return NULL;
         }
         meshHeader->flags = 0;
@@ -1081,7 +1071,7 @@ RpMeshHeader *fn_8045EF64(RpBuildMesh *buildMesh, void *data) {
         RwFree(sorted);
         return meshHeader;
     }
-    RWERROR((E_RW_NOMEM, buildMesh->numTriangles * sizeof(RpBuildMeshTriangle *)));
+    RPWORLDERROR((E_RW_NOMEM, buildMesh->numTriangles * sizeof(RpBuildMeshTriangle *)));
     return NULL;
 }
 

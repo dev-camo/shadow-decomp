@@ -32,6 +32,9 @@ extern "C" {
 /* the world plugin's ID, also used for its errors and its default pipelines (inferred) */
 #define rwID_WORLDPLUGIN 2
 
+/* Reports an error of the world plugin; args is the parenthesized error code and its arguments */
+#define RPWORLDERROR(args) RWERRORPLUGIN(rwID_WORLDPLUGIN, args)
+
 /* the deepest sector tree that the tree walks handle */
 #define rpWORLDMAXBSPDEPTH 64
 

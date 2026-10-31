@@ -9,16 +9,6 @@
  * whose meaning is not established */
 #define NATIVEDATASIZE(repEntry) ((repEntry)->size - 7)
 
-/* Reports an error of the native data; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* Reads an object's instanced data from its native data chunk into a new resource entry: the
  * header, then the vertex data aligned to 32 bytes, whose offsets are turned back into pointers.
  * Returns the object, or NULL on failure. */
@@ -37,7 +27,7 @@ void *fn_80464A94(RwStream *stream, void *object, RwResEntry **repEntryRef, RwUI
         return NULL;
     }
     if (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION) {
-        RWERROR((E_RW_BADVERSION));
+        RPWORLDERROR((E_RW_BADVERSION));
         return NULL;
     }
     if (fn_8047D868(stream, &platform, sizeof(platform)) == NULL) {
