@@ -2,7 +2,6 @@
 
 #include "__card.h"
 
-// prototypes
 static void BlockReadCallback(s32 chan, s32 result);
 static void BlockWriteCallback(s32 chan, s32 result);
 

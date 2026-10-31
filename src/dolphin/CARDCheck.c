@@ -3,7 +3,6 @@
 #include "__os.h"
 #include "__card.h"
 
-// prototypes
 static s32 VerifyID(CARDControl *card);
 static s32 VerifyDir(CARDControl *card, int *pcurrent);
 static s32 VerifyFAT(CARDControl *card, int *pcurrent);

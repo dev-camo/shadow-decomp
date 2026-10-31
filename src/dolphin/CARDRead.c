@@ -4,7 +4,6 @@
 
 #define TRUNC(n, a) (((u32)(n)) & ~((a) - 1))
 
-// prototypes
 static void ReadCallback(s32 chan, s32 result);
 
 s32 __CARDSeek(CARDFileInfo *fileInfo, s32 length, s32 offset, CARDControl **pcard) {

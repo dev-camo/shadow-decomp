@@ -2,9 +2,6 @@
 
 #include "__card.h"
 
-// prototypes
-static void DeleteCallback(s32 chan, s32 result);
-
 static void DeleteCallback(s32 chan, s32 result) {
     CARDControl *card;
     CARDCallback callback;

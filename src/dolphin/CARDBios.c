@@ -18,7 +18,6 @@ static u16 __CARDFastMode;
 
 DVDDiskID __CARDDiskNone;
 
-// prototypes
 static void TimeoutHandler(OSAlarm *alarm, OSContext *context);
 static void SetupTimeoutAlarm(CARDControl *card);
 static s32 Retry(s32 chan);
