@@ -36,7 +36,7 @@ found:
 
 /* Ends the player's sequence: silences its notes and clears the sequence state */
 static inline void gcaxSndEndSequence(GcaxPlayer *player) {
-    player->state &= ~0x2;
+    player->state &= ~GCAX_PLAYER_SEQUENCE;
     if (player->notes.head != NULL) {
         fn_8043B840(&player->notes);
         player->notes.head = NULL;
@@ -52,13 +52,13 @@ void fn_8043FF5C(GcaxPlayer *player) {
     s32 delta;
     f32 frameTicks;
 
-    if (!(player->flags & 0x80000000)) {
+    if (!(player->flags & GCAX_PLAYER_IN_USE)) {
         return;
     }
-    if (!(player->state & 0x2)) {
+    if (!(player->state & GCAX_PLAYER_SEQUENCE)) {
         return;
     }
-    if (player->state & 0x1) {
+    if (player->state & GCAX_PLAYER_PAUSED) {
         return;
     }
     cursor = player->seq.cursor;
@@ -186,7 +186,7 @@ s32 fn_8043FDF8(GcaxPlayer *player, s32 bank, s32 song, s32 priority) {
     u8 *file;
     GcaxSequence *seq;
 
-    if (!(player->flags & 0x80000000)) {
+    if (!(player->flags & GCAX_PLAYER_IN_USE)) {
         return -1;
     }
     table = (u32 *)lbl_805F1404->soundData[bank].addr;
@@ -208,7 +208,7 @@ found:
     }
     enabled = OSDisableInterrupts();
     player->state = 0;
-    player->state |= 0x2;
+    player->state |= GCAX_PLAYER_SEQUENCE;
     if (player->notes.head != NULL) {
         fn_8043B840(&player->notes);
         player->notes.head = NULL;
@@ -231,7 +231,7 @@ found:
 s32 fn_8043FD70(GcaxPlayer *player) {
     BOOL enabled;
 
-    if (!(player->flags & 0x80000000)) {
+    if (!(player->flags & GCAX_PLAYER_IN_USE)) {
         return -1;
     }
     enabled = OSDisableInterrupts();
@@ -244,14 +244,14 @@ s32 fn_8043FD70(GcaxPlayer *player) {
 void fn_8043FC98(GcaxPlayer *player) {
     BOOL enabled;
 
-    if (!(player->flags & 0x80000000)) {
+    if (!(player->flags & GCAX_PLAYER_IN_USE)) {
         return;
     }
     enabled = OSDisableInterrupts();
     gcaxSndLock();
-    if (!(player->state & 0x1)) {
+    if (!(player->state & GCAX_PLAYER_PAUSED)) {
         player->pauseTime = lbl_805F1404->time;
-        player->state |= 0x1;
+        player->state |= GCAX_PLAYER_PAUSED;
         if (player->notes.head != NULL) {
             if (lbl_805F1404->field_0x44 == 1) {
                 fn_8043B6D0(&player->notes);
@@ -269,21 +269,21 @@ void fn_8043FC98(GcaxPlayer *player) {
 void fn_8043FB58(GcaxPlayer *player) {
     BOOL enabled;
 
-    if (!(player->flags & 0x80000000)) {
+    if (!(player->flags & GCAX_PLAYER_IN_USE)) {
         return;
     }
     enabled = OSDisableInterrupts();
     gcaxSndLock();
-    if (!(player->state & 0x2)) {
-        player->state &= ~0x1;
+    if (!(player->state & GCAX_PLAYER_SEQUENCE)) {
+        player->state &= ~GCAX_PLAYER_PAUSED;
         gcaxSndUnlock();
         OSRestoreInterrupts(enabled);
         return;
     }
-    if (player->state & 0x1) {
+    if (player->state & GCAX_PLAYER_PAUSED) {
         player->seq.startTime += lbl_805F1404->time - player->pauseTime;
         player->seq.lastTime += lbl_805F1404->time - player->pauseTime;
-        player->state &= ~0x1;
+        player->state &= ~GCAX_PLAYER_PAUSED;
         if (lbl_805F1404->field_0x44 == 1) {
             fn_8043B794(&player->notes);
         }

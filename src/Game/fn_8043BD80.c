@@ -665,7 +665,7 @@ void fn_8043C2A4(GcaxVoice *voice, GcaxPlayer *player) {
     f32 sendL;
     f32 sendR;
 
-    if (!(player->flags & 0x80000000)) {
+    if (!(player->flags & GCAX_PLAYER_IN_USE)) {
         return;
     }
     channel = voice->note->channel;

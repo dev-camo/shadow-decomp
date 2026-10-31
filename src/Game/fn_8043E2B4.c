@@ -672,7 +672,7 @@ void fn_8043E494(void) {
     lbl_805F1404->numNotes = fn_8043BB18();
     lbl_805F1404->numVoices = fn_8043D49C();
     for (i = 0; i < GCAX_PLAYERS; i++) {
-        if (lbl_805F1404->players[i].flags & 0x80000000) {
+        if (lbl_805F1404->players[i].flags & GCAX_PLAYER_IN_USE) {
             fn_8043FF5C(&lbl_805F1404->players[i]);
             fn_8043DD14(&lbl_805F1404->players[i]);
         }
