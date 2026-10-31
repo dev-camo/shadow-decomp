@@ -1932,7 +1932,8 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            # Deferred inlining: MWCC emits the functions (and lays out .bss) in reverse order.
+            # Matching workaround: -inline auto,deferred. MWCC then emits the functions (and lays out .bss) in
+            # reverse order, as the original has them; revisit when the original unit's flags are found.
             Object(
                 Matching,
                 "CRI/adx_crs.c",
@@ -2057,10 +2058,25 @@ config.libs = [
             Object(
                 Matching,
                 "CRI/adx_fini.c",
-                extra_cflags=["-sdata 0", "-sdata2 0", "-str readonly"],
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
             ),
-            Object(Matching, "CRI/adx_fcch.c", extra_cflags=["-sdata 0"]),
-            # Only functions declared inline are expanded (-inline noauto).
+            Object(
+                Matching,
+                "CRI/adx_fcch.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            # Matching workaround: -inline noauto, so only the functions declared inline are expanded; revisit
+            # when the original unit's flags are found.
             Object(
                 Matching,
                 "CRI/adx_fs.c",
@@ -2092,7 +2108,8 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            # Deferred inlining: MWCC emits the functions (and lays out .bss) in reverse order.
+            # Matching workaround: -inline auto,deferred. MWCC then emits the functions (and lays out .bss) in
+            # reverse order, as the original has them; revisit when the original unit's flags are found.
             Object(
                 Matching,
                 "CRI/adx_lsc.c",
@@ -2114,7 +2131,8 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            # -inline noauto: only the helpers declared inline are expanded.
+            # Matching workaround: -inline noauto, so only the helpers declared inline are expanded; revisit
+            # when the original unit's flags are found.
             Object(
                 Matching,
                 "CRI/adx_stmc.c",
@@ -2126,7 +2144,8 @@ config.libs = [
                     "-inline noauto",
                 ],
             ),
-            # Deferred inlining: MWCC emits the functions (and lays out .bss) in reverse order.
+            # Matching workaround: -inline auto,deferred. MWCC then emits the functions (and lays out .bss) in
+            # reverse order, as the original has them; revisit when the original unit's flags are found.
             Object(
                 Matching,
                 "CRI/adx_tlk.c",
@@ -2138,7 +2157,8 @@ config.libs = [
                     "-inline auto,deferred",
                 ],
             ),
-            # Deferred inlining: MWCC emits the functions (and lays out .bss) in reverse order.
+            # Matching workaround: -inline auto,deferred. MWCC then emits the functions (and lays out .bss) in
+            # reverse order, as the original has them; revisit when the original unit's flags are found.
             Object(
                 Matching,
                 "CRI/adx_tlk2.c",
@@ -2170,7 +2190,8 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            # Deferred inlining: MWCC emits the functions (and lays out .bss) in reverse order.
+            # Matching workaround: -inline auto,deferred. MWCC then emits the functions (and lays out .bss) in
+            # reverse order, as the original has them; revisit when the original unit's flags are found.
             Object(
                 Matching,
                 "CRI/adx_sjd.c",
@@ -2254,7 +2275,8 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            # Deferred inlining: MWCC emits the functions (and lays out .bss) in reverse order.
+            # Matching workaround: -inline auto,deferred. MWCC then emits the functions (and lays out .bss) in
+            # reverse order, as the original has them; revisit when the original unit's flags are found.
             Object(
                 NonMatching,
                 "CRI/cftyp422_ppc.c",
@@ -2589,7 +2611,8 @@ config.libs = [
             ),
             Object(Matching, "CRI/lsc_err.c", extra_cflags=["-sdata 0"]),
             Object(Matching, "CRI/lsc_crs.c"),
-            # Deferred inlining: MWCC emits the functions (and lays out .bss) in reverse order.
+            # Matching workaround: -inline auto,deferred. MWCC then emits the functions (and lays out .bss) in
+            # reverse order, as the original has them; revisit when the original unit's flags are found.
             Object(
                 Matching,
                 "CRI/lsc.c",
