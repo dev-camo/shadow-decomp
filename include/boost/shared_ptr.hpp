@@ -1,6 +1,7 @@
 #ifndef BOOST_SHARED_PTR_HPP
 #define BOOST_SHARED_PTR_HPP
 #include "layout_check.h"
+#include <exception>
 
 /* The boost smart pointers the game uses (its RTTI names boost::detail::sp_counted_base and
  * boost::checked_deleter<...>), written in the style of boost 1.32 with the single-threaded
@@ -14,7 +15,23 @@ class type_info;
 }
 
 namespace boost {
+template <class T> class weak_ptr;
+
+/* The game is built without exceptions: it supplies its own throw_exception, which returns, and
+ * the code after each call carries on. */
+void throw_exception(const std::exception &e);
+
+/* The exception for a shared_ptr made from a weak_ptr whose object is gone. */
+class bad_weak_ptr : public std::exception {
+  public:
+    virtual const char *what() const {
+        return "boost::bad_weak_ptr";
+    }
+};
+CHECK_SIZEOF(boost::bad_weak_ptr, 0x4);
+
 namespace detail {
+class weak_count;
 
 /* The control block shared by the shared_ptr and weak_ptr instances that refer to one object. The
  * object is disposed of when the last shared reference goes, and the block destroys itself when the
@@ -45,6 +62,18 @@ class sp_counted_base {
         }
     }
 
+    long use_count() const {
+        return use_count_;
+    }
+
+    /* Takes a shared reference for a shared_ptr made from a weak_ptr. */
+    void add_ref_lock() {
+        if (use_count_ == 0) {
+            boost::throw_exception(bad_weak_ptr());
+        }
+        ++use_count_;
+    }
+
     void weak_add_ref() {
         ++weak_count_;
     }
@@ -65,6 +94,9 @@ CHECK_SIZEOF(boost::detail::sp_counted_base, 0xC);
 class shared_count {
   public:
     shared_count() : pi_(0) {}
+
+    /* Takes a shared reference from a weak one; defined after weak_count. */
+    shared_count(const weak_count &r);
 
     shared_count(const shared_count &r) : pi_(r.pi_) {
         if (pi_ != 0) {
@@ -105,6 +137,11 @@ template <class T> class shared_ptr {
   public:
     shared_ptr() : px(0), pn() {}
 
+    /* A shared pointer to the object a weak pointer refers to. */
+    template <class Y> explicit shared_ptr(const weak_ptr<Y> &r) : pn(r.pn) {
+        px = r.px;
+    }
+
     T *operator->() const {
         return px;
     }
@@ -116,6 +153,10 @@ template <class T> class shared_ptr {
     /* 0x0 */ T *px;
     /* 0x4 */ detail::shared_count pn;
 };
+
+template <class T, class U> inline bool operator==(const shared_ptr<T> &a, const shared_ptr<U> &b) {
+    return a.get() == b.get();
+}
 
 } // namespace boost
 

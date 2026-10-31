@@ -2,6 +2,13 @@
 #define MSL_UTILITY_H_
 
 namespace std {
+template <class T>
+inline void swap(T &a, T &b) {
+    T tmp = a;
+    a = b;
+    b = tmp;
+}
+
 template <class T1, class T2>
 struct pair {
     T1 first;

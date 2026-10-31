@@ -2,6 +2,7 @@
 #define BOOST_WEAK_PTR_HPP
 
 #include "boost/shared_ptr.hpp"
+#include <utility>
 #include "layout_check.h"
 
 /* The boost weak pointer the game uses, in the same style as shared_ptr.hpp. */
@@ -57,9 +58,28 @@ class weak_count {
         return *this;
     }
 
+    long use_count() const {
+        return pi_ != 0 ? pi_->use_count() : 0;
+    }
+
+    void swap(weak_count &r) {
+        sp_counted_base *tmp = r.pi_;
+
+        r.pi_ = pi_;
+        pi_ = tmp;
+    }
+
     sp_counted_base *pi_;
 };
 CHECK_SIZEOF(boost::detail::weak_count, 0x4);
+
+inline shared_count::shared_count(const weak_count &r) : pi_(r.pi_) {
+    if (pi_ != 0) {
+        pi_->add_ref_lock();
+    } else {
+        boost::throw_exception(bad_weak_ptr());
+    }
+}
 
 } // namespace detail
 
@@ -74,6 +94,20 @@ template <class T> class weak_ptr {
         px = r.px;
         pn = r.pn;
         return *this;
+    }
+
+    bool expired() const {
+        return pn.use_count() == 0;
+    }
+
+    /* Releases the weak reference. */
+    void reset() {
+        weak_ptr().swap(*this);
+    }
+
+    void swap(weak_ptr &other) {
+        std::swap(px, other.px);
+        pn.swap(other.pn);
     }
 
     /* A shared pointer to the object, or an empty one once the object has been released. Declared

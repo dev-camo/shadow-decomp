@@ -60,6 +60,8 @@ float fn_8040CF2C(Fn8040Vector3 *vector);
 void fn_80031568(float *sine, float *cosine, float angle);
 /* destination = a - b (behaviour inferred). */
 void fn_8040CD74(Fn8040Vector3 *destination, const Fn8040Vector3 *a, const Fn8040Vector3 *b);
+/* result += value (behaviour inferred). */
+void fn_8040CFF8(Fn8040Vector3 *result, const Fn8040Vector3 *value);
 void fn_800091D0(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
 void fn_800091EC(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
 void fn_80008E1C(Fn8040Vector3 *vector, float x, float y, float z);
@@ -89,6 +91,11 @@ extern Fn8040Matrix34 lbl_805E0720;
  * happens for an argument of an inline call such as this wrapper. */
 inline void MakeTranslationMatrix(Fn8040Matrix34 *matrix, const Fn8040Vector3 &translation) {
     fn_8040B034(matrix, &translation);
+}
+
+/* result += value (name inferred): an inline wrapper of fn_8040CFF8 for the same reason. */
+inline void AddVector(Fn8040Vector3 *result, const Fn8040Vector3 &value) {
+    fn_8040CFF8(result, &value);
 }
 #endif
 

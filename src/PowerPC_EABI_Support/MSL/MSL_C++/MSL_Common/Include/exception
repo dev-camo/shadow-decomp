@@ -1,0 +1,19 @@
+#ifndef MSL_EXCEPTION_H_
+#define MSL_EXCEPTION_H_
+
+namespace std {
+
+/* The base class of the library's exceptions. The constructor, destructor and what() are all
+ * inline, so every unit that needs the vtable emits its own weak copies of them. */
+class exception {
+  public:
+    exception() {}
+    virtual ~exception() {}
+    virtual const char *what() const {
+        return "exception";
+    }
+};
+
+} // namespace std
+
+#endif
