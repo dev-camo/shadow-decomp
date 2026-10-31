@@ -451,7 +451,7 @@ int OSCreateThread(OSThread *thread, void *(*func)(void *), void *param, void *s
     }
     enabled = OSDisableInterrupts();
 
-    if (__OSErrorTable[16] != NULL) {
+    if (__OSErrorTable[__OS_EXCEPTION_FLOATING_POINT_EXCEPTION] != NULL) {
         thread->context.srr1 |= 0x900;
         thread->context.state |= 1;
         thread->context.fpscr = (__OSFpscrEnableBits & 0xf8) | 4;

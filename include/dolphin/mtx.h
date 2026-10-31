@@ -85,7 +85,6 @@ void PSMTXReflect(Mtx m, const Vec *p, const Vec *n);
 #define MTXConcat C_MTXConcat
 #define MTXInverse C_MTXInverse
 #define MTXTranspose C_MTXTranspose
-#define MTXInverse C_MTXInverse
 #define MTXInvXpose C_MTXInvXpose
 #define MTXRotRad C_MTXRotRad
 #define MTXRotTrig C_MTXRotTrig
@@ -102,7 +101,6 @@ void PSMTXReflect(Mtx m, const Vec *p, const Vec *n);
 #define MTXConcat PSMTXConcat
 #define MTXInverse PSMTXInverse
 #define MTXTranspose PSMTXTranspose
-#define MTXInverse PSMTXInverse
 #define MTXInvXpose PSMTXInvXpose
 #define MTXRotRad PSMTXRotRad
 #define MTXRotTrig PSMTXRotTrig
@@ -248,8 +246,8 @@ void PSMTXReorder(const Mtx src, ROMtx dest);
 void PSMTXROMultVecArray(const ROMtx m, const Vec *srcBase, Vec *dstBase, u32 count);
 void PSMTXROSkin2VecArray(const ROMtx m0, const ROMtx m1, const f32 *wtBase, const Vec *srcBase,
                           Vec *dstBase, u32 count);
-void PSMTXROMultS16VecArray(const Mtx m, const S16Vec *srcBase, Vec *dstBase, u32 count);
-void PSMTXMultS16VecArray(const ROMtx *m, const S16Vec *srcBase, Vec *dstBase, u32 count);
+void PSMTXROMultS16VecArray(const ROMtx m, const S16Vec *srcBase, Vec *dstBase, u32 count);
+void PSMTXMultS16VecArray(const Mtx m, const S16Vec *srcBase, Vec *dstBase, u32 count);
 
 // MTXSTACK
 void MTXInitStack(MTXStack *sPtr, u32 numMtx);

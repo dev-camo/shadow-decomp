@@ -23,8 +23,6 @@ volatile u32 __AIRegs[8] AT_ADDRESS(0xCC006C00);
 #define __AIRegs ((volatile u32 *)0xCC006C00)
 #endif
 
-// Offsets for __VIRegs
-
 // offsets for __VIRegs[i]
 #define VI_VERT_TIMING (0)
 #define VI_DISP_CONFIG (1)

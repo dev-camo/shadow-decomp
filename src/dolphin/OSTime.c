@@ -3,6 +3,22 @@
 
 #include "__os.h"
 
+#define USEC_MAX 1000
+#define MSEC_MAX 1000
+#define MONTH_MAX 12
+#define WEEK_DAY_MAX 7
+#define YEAR_DAY_MAX 365
+
+#define SECS_IN_MIN 60
+#define SECS_IN_HOUR (SECS_IN_MIN * 60)
+#define SECS_IN_DAY (SECS_IN_HOUR * 24)
+#define SECS_IN_YEAR (SECS_IN_DAY * 365)
+
+/* Days from 0000-01-01 to 2000-01-01 (730485), the epoch of the OS time base. */
+#define BIAS 0xB2575
+
+#define __OSSystemTime ((OSTime *)0x800030D8)
+
 // End of each month in standard year
 static int YearDays[MONTH_MAX] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
 // End of each month in leap year
@@ -198,7 +214,7 @@ OSTime OSCalendarTimeToTicks(OSCalendarTime *td) {
     secs = (OSTime)SECS_IN_YEAR * year +
            (OSTime)SECS_IN_DAY * (GetLeapDays(year) + GetYearDays(year, mon) + td->mday - 1) +
            (OSTime)SECS_IN_HOUR * td->hour + (OSTime)SECS_IN_MIN * td->min + td->sec -
-           (OSTime)0xEB1E1BF80ULL;
+           (OSTime)SECS_IN_DAY * BIAS;
 
     return OS_SEC_TO_TICKS(secs) + OS_MSEC_TO_TICKS((OSTime)td->msec) +
            OS_USEC_TO_TICKS((OSTime)td->usec);

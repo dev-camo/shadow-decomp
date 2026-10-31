@@ -3,6 +3,7 @@
 
 #include <dolphin/os.h>
 #include <dolphin/dsp.h>
+#include <dolphin/exi.h>
 #include <dolphin/dvd.h>
 #include "layout_check.h"
 
@@ -237,12 +238,6 @@ extern u32 __CARDFreq;
 #define CARDFreq EXI_FREQ_16M
 #endif
 
-void CARDInit(void);
-s32 CARDGetResultCode(s32 chan);
-s32 CARDCheckAsync(s32 chan, CARDCallback callback);
-s32 CARDFreeBlocks(s32 chan, s32 *byteNotUsed, s32 *filesNotUsed);
-s32 CARDRenameAsync(s32 chan, const char *oldName, const char *newName, CARDCallback callback);
-
 // CARDBios
 void CARDInit(void);
 s32 CARDGetResultCode(s32 chan);
@@ -316,6 +311,7 @@ s32 CARDRead(CARDFileInfo *fileInfo, void *buf, s32 length, s32 offset);
 s32 CARDCancel(CARDFileInfo *fileInfo);
 
 // CARDRename
+s32 CARDRenameAsync(s32 chan, const char *oldName, const char *newName, CARDCallback callback);
 s32 CARDRename(s32 chan, const char *oldName, const char *newName);
 
 // CARDStat

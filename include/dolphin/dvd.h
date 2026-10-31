@@ -8,7 +8,9 @@
 extern "C" {
 #endif
 
-// Unlike ASSERTMSGLINE, these checks are compiled into release builds too.
+// Unlike ASSERTMSGLINE, these checks are compiled into release builds too. They stay a bare `if`
+// statement: wrapping them in do { } while (0) renumbers the compiler's @NN local labels in dvd.o
+// and dvdfs.o, which the original objects do not have. Do not follow them with an `else`.
 #define DVD_ASSERTMSGLINE(line, cond, msg)                                                         \
     if (!(cond))                                                                                   \
     OSPanic(__FILE__, line, msg)
@@ -42,10 +44,9 @@ extern "C" {
 
 #define DVD_MIN_TRANSFER_SIZE 32
 
-// could be bitfields
+// DVD interrupt types
 #define DVD_INTTYPE_TC 1
 #define DVD_INTTYPE_DE 2
-// unk type 3
 #define DVD_INTTYPE_CVR 4
 
 // DVD Commands

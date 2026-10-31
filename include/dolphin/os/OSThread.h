@@ -110,7 +110,7 @@ void *OSGetThreadSpecific(s32 index);
 
 OSSwitchThreadCallback OSSetSwitchThreadCallback(OSSwitchThreadCallback callback);
 
-#define IsSuspended(suspend) (suspend > 0)
+#define IsSuspended(suspend) ((suspend) > 0)
 
 #ifdef __cplusplus
 }
