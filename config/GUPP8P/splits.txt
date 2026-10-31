@@ -894,6 +894,12 @@ CRI/adx_xpnd.c:
 	.text       start:0x803C4CA4 end:0x803C5118
 	.bss        start:0x805AC648 end:0x805ACA10
 
+CRI/adx_mgc.c:
+	.text       start:0x803C5118 end:0x803C5750
+	.rodata     start:0x80516A68 end:0x80516AD0
+	.data       start:0x80569D20 end:0x80569D40
+	.bss        start:0x805ACA10 end:0x805B46C8
+
 CRI/adx_sugc.c:
 	.text       start:0x803C5750 end:0x803C5834
 	.rodata     start:0x80516AD0 end:0x80516B18

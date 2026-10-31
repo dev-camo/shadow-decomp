@@ -15,11 +15,6 @@
 #define SVM_MAX_SVR_FUNC 6
 #define SVM_ERR_MSG_LEN 128
 
-#define SVM_SVTYPE_VSYNC 2
-#define SVM_SVTYPE_FS 4
-#define SVM_SVTYPE_MAIN 5
-#define SVM_SVTYPE_MWIDLE 6
-
 typedef struct {
     Sint32 (*func)(void *obj); /* 0x00 */
     void *obj;                 /* 0x04 */

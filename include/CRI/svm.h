@@ -4,6 +4,12 @@
 /* CRI server manager (svm.c) public interface. */
 #include "CRI/cri_xpt.h"
 
+/* server types (svtype) */
+#define SVM_SVTYPE_VSYNC 2
+#define SVM_SVTYPE_FS 4
+#define SVM_SVTYPE_MAIN 5
+#define SVM_SVTYPE_MWIDLE 6
+
 #ifdef __cplusplus
 extern "C" {
 #endif
