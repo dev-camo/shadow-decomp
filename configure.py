@@ -691,9 +691,7 @@ config.libs = [
                     extra_cflags=["-sdata 0", "-use_lmw_stmw on"],
                 ),
                 # CRI middleware units named after their original source files.
-                Object(Matching, "Game/fn_80403054.c"),
                 Object(Matching, "Game/fn_804030A8.c"),
-                Object(Matching, "Game/fn_80403058.c"),
                 Object(Matching, "Game/fn_8040307C.c"),
                 Object(Matching, "Game/fn_8040350C.c"),
                 Object(Matching, "Game/fn_80403E44.c"),
@@ -1754,6 +1752,16 @@ config.libs = [
                     "-str readonly",
                     "-use_lmw_stmw on",
                     "-inline auto,deferred",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/mwsfdrsc.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
                 ],
             ),
             Object(
