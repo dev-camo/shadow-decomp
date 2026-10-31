@@ -1457,6 +1457,16 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "CRI/sfx_zmv.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
                 "CRI/sud_lib.c",
                 extra_cflags=[
                     "-sdata 0",

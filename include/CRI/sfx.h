@@ -27,6 +27,20 @@ typedef struct {
     SFX_PLN pln[3]; /* 0x04 */
 } SFX_FRM;
 
+/* The Z conversion object (sfx_zmv.c). */
+typedef struct SFXZ_OBJ SFXZ_OBJ;
+
+/* sfx_lib.c */
+Sint32 SFX_GetCcirFx(void);
+
+/* sfx_zmv.c */
+void SFXZ_SetTagInf(SFXZ_OBJ *sfxz, Uint8 *tag_ptr, Sint32 tag_len);
+void SFXZ_MakeCnvZTbl(SFXZ_OBJ *sfxz, Sint32 frmno, void *tbl);
+void SFXZ_Destroy(SFXZ_OBJ *sfxz);
+SFXZ_OBJ *SFXZ_Create(void);
+void SFXZ_Finish(void); /* name inferred: the counterpart of SFXZ_Init */
+void SFXZ_Init(void);
+
 #ifdef __cplusplus
 }
 #endif
