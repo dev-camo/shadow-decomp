@@ -101,11 +101,6 @@ __declspec(weak) void InitMetroTRK_BBA(void);
 
 __declspec(section ".init") void __start(void);
 
-__declspec(section ".init") void __copy_rom_section(void *dst, const void *src, u32 size);
-__declspec(section ".init") void __init_bss_section(void *dst, u32 size);
-__declspec(section ".init") extern void __init_registers(void);
-__declspec(section ".init") extern void __init_data(void);
-
 // time.dolphin
 OSTime __get_clock(void);
 u32 __get_time(void);

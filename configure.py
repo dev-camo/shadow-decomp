@@ -1176,6 +1176,8 @@ config.libs = [
             Object(Matching, "dolphin/OSMutex.c"),
             Object(Matching, "dolphin/OSThread.c"),
             Object(Matching, "dolphin/OSTime.c"),
+            Object(Matching, "dolphin/__start.c"),
+            Object(Matching, "dolphin/__ppc_eabi_init.c"),
         ],
     ),
     DolphinLib(
