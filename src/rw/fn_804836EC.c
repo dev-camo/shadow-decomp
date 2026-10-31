@@ -2,16 +2,6 @@
 #include "rw/rwcore.h"
 #include "layout_check.h"
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* A frame's stream data (0x38 bytes) */
 typedef struct rwStreamFrame {
     /* 0x00 */ RwV3d right;
@@ -62,7 +52,7 @@ RwFrameList *fn_80483774(RwStream *stream, RwFrameList *frameList) {
         frameList->frames =
             RwMalloc(numFrames * sizeof(RwFrame *), rwMEMHINTDUR_EVENT | rwID_FRAMELIST);
         if (frameList->frames == NULL) {
-            RWERROR((E_RW_NOMEM, numFrames * sizeof(RwFrame *)));
+            RWERRORCORE((E_RW_NOMEM, numFrames * sizeof(RwFrame *)));
             return NULL;
         }
 
@@ -106,7 +96,7 @@ RwFrameList *fn_80483774(RwStream *stream, RwFrameList *frameList) {
             }
         }
     } else {
-        RWERROR((E_RW_BADVERSION));
+        RWERRORCORE((E_RW_BADVERSION));
         return NULL;
     }
 

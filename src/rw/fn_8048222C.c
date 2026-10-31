@@ -4,16 +4,6 @@
 #include <math.h>
 #include "layout_check.h"
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* Each table has an entry for each of the 4096 values the top 11 mantissa bits and the lowest
  * exponent bit can take; an entry is the mantissa and the low exponent bits of the result */
 #define rwSQRTTABLEENTRIES 0x1000
@@ -41,7 +31,7 @@ RwReal fn_8048222C(RwV3d *out, const RwV3d *in) {
     out->y = in->y * recip;
     out->z = in->z * recip;
     if (length <= 0.0f) {
-        RWERROR((E_RW_ZEROLENGTH));
+        RWERRORCORE((E_RW_ZEROLENGTH));
     }
     return length;
 }
@@ -208,7 +198,7 @@ static inline RwBool VectorSqrtTableCreate(void) {
     RwInt32 i;
 
     if (table == NULL) {
-        RWERROR((E_RW_NOMEM, rwSQRTTABLESIZE));
+        RWERRORCORE((E_RW_NOMEM, rwSQRTTABLESIZE));
         return FALSE;
     }
 
@@ -246,7 +236,7 @@ static inline RwBool VectorInvSqrtTableCreate(void) {
     RwInt32 i;
 
     if (table == NULL) {
-        RWERROR((E_RW_NOMEM, rwSQRTTABLESIZE));
+        RWERRORCORE((E_RW_NOMEM, rwSQRTTABLESIZE));
         return FALSE;
     }
 

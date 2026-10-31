@@ -8,16 +8,6 @@
 /* The bytes converted at a time when writing */
 #define rwSTREAMCONVERTBUFFER 0x100
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* A chunk header as it is stored in a stream */
 typedef struct rwChunkHeader {
     RwUInt32 type;
@@ -122,7 +112,7 @@ RwBool fn_8047CDB4(RwStream *stream, RwUInt32 *type, RwUInt32 *length, RwUInt32 
      * original (0x134 against 0x13C). Revisit when the original form of the check is found. */
     readOk = fn_80480D4C(stream, &header, sizeof(header)) == sizeof(header);
     if (!readOk) {
-        RWERROR((E_RW_READ));
+        RWERRORCORE((E_RW_READ));
         return FALSE;
     }
     fn_8047D254(&header, sizeof(header));
@@ -165,11 +155,11 @@ RwInt32 fn_8047CF50(RwStream *stream, RwUInt32 type, RwUInt32 *lengthOut, RwUInt
     while (fn_8047CDB4(stream, &readType, &length, &version, NULL)) {
         if (readType == type) {
             if (version < rwLIBRARYBASEVERSION) {
-                RWERROR((E_RW_BADVERSION));
+                RWERRORCORE((E_RW_BADVERSION));
                 return FALSE;
             }
             if (version > RW_STREAM_VERSION) {
-                RWERROR((E_RW_BADVERSION));
+                RWERRORCORE((E_RW_BADVERSION));
                 return FALSE;
             }
             if (lengthOut != NULL) {
@@ -290,7 +280,7 @@ RwStream *fn_8047D560(RwStream *stream, const RwInt16 *ints, RwUInt32 size) {
 
 RwStream *fn_8047D684(RwStream *stream, RwInt16 *ints, RwUInt32 size) {
     if (fn_80480D4C(stream, ints, size) == 0) {
-        RWERROR((E_RW_READ));
+        RWERRORCORE((E_RW_READ));
         return NULL;
     }
     fn_8047D2C4(ints, size);
@@ -299,7 +289,7 @@ RwStream *fn_8047D684(RwStream *stream, RwInt16 *ints, RwUInt32 size) {
 
 RwStream *fn_8047D784(RwStream *stream, RwReal *reals, RwUInt32 size) {
     if (fn_80480D4C(stream, reals, size) == 0) {
-        RWERROR((E_RW_READ));
+        RWERRORCORE((E_RW_READ));
         return NULL;
     }
     fn_8047D254(reals, size);
@@ -308,7 +298,7 @@ RwStream *fn_8047D784(RwStream *stream, RwReal *reals, RwUInt32 size) {
 
 RwStream *fn_8047D868(RwStream *stream, RwInt32 *ints, RwUInt32 size) {
     if (fn_80480D4C(stream, ints, size) == 0) {
-        RWERROR((E_RW_READ));
+        RWERRORCORE((E_RW_READ));
         return NULL;
     }
     fn_8047D254(ints, size);

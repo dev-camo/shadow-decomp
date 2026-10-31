@@ -7,16 +7,6 @@
 /* The size a memory stream's block starts at and grows by at least */
 #define rwSTREAMSTREAMBLOCKSIZE 512
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 #define RWSTREAMGLOBAL(var)                                                                        \
     (RWPLUGINOFFSET(rwStreamGlobals, lbl_805F15B4, lbl_805F1580.globalsOffset)->var)
 
@@ -63,9 +53,9 @@ RwUInt32 fn_80480D4C(RwStream *stream, void *buffer, RwUInt32 length) {
 
         if (bytesRead != length) {
             if (fn_8047A650(fp)) {
-                RWERROR((E_RW_ENDOFSTREAM));
+                RWERRORCORE((E_RW_ENDOFSTREAM));
             } else {
-                RWERROR((E_RW_READ));
+                RWERRORCORE((E_RW_READ));
             }
         }
         return bytesRead;
@@ -75,7 +65,7 @@ RwUInt32 fn_80480D4C(RwStream *stream, void *buffer, RwUInt32 length) {
 
         if (length > available) {
             length = available;
-            RWERROR((E_RW_ENDOFSTREAM));
+            RWERRORCORE((E_RW_ENDOFSTREAM));
         }
         memcpy(buffer, stream->Type.memory.memBlock + stream->Type.memory.position, length);
         stream->Type.memory.position += length;
@@ -84,7 +74,7 @@ RwUInt32 fn_80480D4C(RwStream *stream, void *buffer, RwUInt32 length) {
     case rwSTREAMCUSTOM:
         return stream->Type.custom.sfnread(stream->Type.custom.data, buffer, length);
     default:
-        RWERROR((E_RW_BADSTREAMTYPE));
+        RWERRORCORE((E_RW_BADSTREAMTYPE));
         return 0;
     }
 }
@@ -97,7 +87,7 @@ RwStream *fn_80480ED0(RwStream *stream, const void *buffer, RwUInt32 length) {
         RwUInt32 bytesWritten = fn_8047A428(buffer, 1, length, stream->Type.fpFile);
 
         if (bytesWritten != length) {
-            RWERROR((E_RW_WRITE));
+            RWERRORCORE((E_RW_WRITE));
             return NULL;
         }
         return stream;
@@ -107,7 +97,7 @@ RwStream *fn_80480ED0(RwStream *stream, const void *buffer, RwUInt32 length) {
             stream->Type.memory.memBlock =
                 RwMalloc(rwSTREAMSTREAMBLOCKSIZE, rwMEMHINTDUR_EVENT | rwID_STREAMMODULE);
             if (stream->Type.memory.memBlock == NULL) {
-                RWERROR((E_RW_NOMEM, rwSTREAMSTREAMBLOCKSIZE));
+                RWERRORCORE((E_RW_NOMEM, rwSTREAMSTREAMBLOCKSIZE));
                 return NULL;
             }
             stream->Type.memory.nSize = rwSTREAMSTREAMBLOCKSIZE;
@@ -122,7 +112,7 @@ RwStream *fn_80480ED0(RwStream *stream, const void *buffer, RwUInt32 length) {
             memBlock = RwRealloc(stream->Type.memory.memBlock, newSize,
                                  rwMEMHINTDUR_EVENT | rwMEMHINTFLAG_RESIZABLE | rwID_STREAMMODULE);
             if (memBlock == NULL) {
-                RWERROR((E_RW_NOMEM, newSize - stream->Type.memory.nSize));
+                RWERRORCORE((E_RW_NOMEM, newSize - stream->Type.memory.nSize));
                 return NULL;
             }
             stream->Type.memory.memBlock = memBlock;
@@ -137,7 +127,7 @@ RwStream *fn_80480ED0(RwStream *stream, const void *buffer, RwUInt32 length) {
         }
         return NULL;
     default:
-        RWERROR((E_RW_BADSTREAMTYPE));
+        RWERRORCORE((E_RW_BADSTREAMTYPE));
         return NULL;
     }
 }
@@ -155,7 +145,7 @@ RwStream *fn_804810FC(RwStream *stream, RwUInt32 offset) {
 
         if (fn_8047A470(fp, offset, 1)) {
             if (fn_8047A650(fp)) {
-                RWERROR((E_RW_ENDOFSTREAM));
+                RWERRORCORE((E_RW_ENDOFSTREAM));
             }
             return NULL;
         }
@@ -164,7 +154,7 @@ RwStream *fn_804810FC(RwStream *stream, RwUInt32 offset) {
     case rwSTREAMMEMORY:
         if (stream->Type.memory.position + offset > stream->Type.memory.nSize) {
             stream->Type.memory.position = stream->Type.memory.nSize;
-            RWERROR((E_RW_ENDOFSTREAM));
+            RWERRORCORE((E_RW_ENDOFSTREAM));
             return NULL;
         }
         stream->Type.memory.position += offset;
@@ -175,7 +165,7 @@ RwStream *fn_804810FC(RwStream *stream, RwUInt32 offset) {
         }
         return NULL;
     default:
-        RWERROR((E_RW_BADSTREAMTYPE));
+        RWERRORCORE((E_RW_BADSTREAMTYPE));
         return NULL;
     }
 }
@@ -208,7 +198,7 @@ RwBool fn_8048124C(RwStream *stream, void *data) {
         result = TRUE;
         break;
     default:
-        RWERROR((E_RW_BADSTREAMTYPE));
+        RWERRORCORE((E_RW_BADSTREAMTYPE));
         return FALSE;
     }
 
@@ -243,7 +233,7 @@ static inline RwStream *StreamOpenMemory(RwStream *stream, RwInt32 accessType,
         result = stream;
         break;
     default:
-        RWERROR((E_RW_BADACCESSTYPE));
+        RWERRORCORE((E_RW_BADACCESSTYPE));
         break;
     }
     return result;
@@ -285,14 +275,14 @@ static inline RwStream *StreamInitialize(RwStream *stream, RwInt32 type, RwInt32
             fp = fn_8047A178(data, "ab");
             break;
         default:
-            RWERROR((E_RW_BADACCESSTYPE));
+            RWERRORCORE((E_RW_BADACCESSTYPE));
             break;
         }
         if (fp != NULL) {
             stream->Type.fpFile = fp;
             result = stream;
         } else {
-            RWERROR((E_RW_FILEOPEN, data));
+            RWERRORCORE((E_RW_FILEOPEN, data));
         }
         break;
     }
@@ -304,7 +294,7 @@ static inline RwStream *StreamInitialize(RwStream *stream, RwInt32 type, RwInt32
         result = stream;
         break;
     default:
-        RWERROR((E_RW_BADSTREAMTYPE));
+        RWERRORCORE((E_RW_BADSTREAMTYPE));
         break;
     }
     return result;

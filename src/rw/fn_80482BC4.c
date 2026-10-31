@@ -13,16 +13,6 @@
  * terminator (inferred). Nothing in the game allocates from the list. */
 #define rwCHUNKGROUPENTRYSIZE 0x21
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* The engine globals of the chunk group module */
 typedef struct rwChunkGroupGlobals {
     /* 0x0 */ RwFreeList *freeList;
@@ -214,7 +204,7 @@ static inline RwChar *StringReadNarrow(RwChar *string, RwStream *stream, RwUInt3
     if (string == NULL) {
         string = RwMalloc(length, rwMEMHINTDUR_EVENT | rwID_STRING);
         if (string == NULL) {
-            RWERROR((E_RW_NOMEM, length));
+            RWERRORCORE((E_RW_NOMEM, length));
             return NULL;
         }
     }
@@ -248,7 +238,7 @@ static inline RwChar *StringReadUnicode(RwChar *string, RwStream *stream, RwUInt
     if (string == NULL) {
         string = RwMalloc(length, rwMEMHINTDUR_EVENT | rwID_STRING);
         if (string == NULL) {
-            RWERROR((E_RW_NOMEM, length));
+            RWERRORCORE((E_RW_NOMEM, length));
             return NULL;
         }
         allocated = TRUE;
@@ -289,7 +279,7 @@ RwChar *fn_80483060(RwChar *string, RwStream *stream) {
         const RwBool versionOK = version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION;
 
         if (!versionOK) {
-            RWERROR((E_RW_BADVERSION));
+            RWERRORCORE((E_RW_BADVERSION));
             return NULL;
         }
         if (type == rwID_STRING) {

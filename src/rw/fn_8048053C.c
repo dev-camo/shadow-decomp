@@ -2,16 +2,6 @@
  * freed least recently used first when the heap is full. The original file name is unknown. */
 #include "rw/rwcore.h"
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 RwModuleInfo lbl_805F1578;
 
 /* Initializes the module's globals at offset in the engine (inferred): creates the heap, unless
@@ -23,12 +13,12 @@ static inline RwResourcesGlobals *ResourcesInit(RwInt32 offset) {
     if (heapSize != 0) {
         globals->memHeap = RwMalloc(heapSize, rwMEMHINTDUR_GLOBAL | rwID_RESOURCESMODULE);
         if (globals->memHeap == NULL) {
-            RWERROR((E_RW_NOMEM, heapSize));
+            RWERRORCORE((E_RW_NOMEM, heapSize));
             return NULL;
         }
         if (!fn_80482984(globals->memHeap, heapSize)) {
             RwFree(globals->memHeap);
-            RWERROR((E_RW_RESOURCEENTRYALLOC, 0));
+            RWERRORCORE((E_RW_RESOURCEENTRYALLOC, 0));
             return NULL;
         }
     } else {
@@ -175,7 +165,7 @@ RwResEntry *fn_80480878(void *owner, RwResEntry **ownerRef, RwInt32 size,
     if (ownerRef != NULL) {
         *ownerRef = NULL;
     }
-    RWERROR((E_RW_RESOURCEENTRYALLOC, size));
+    RWERRORCORE((E_RW_RESOURCEENTRYALLOC, size));
     return NULL;
 }
 

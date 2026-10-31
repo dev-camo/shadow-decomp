@@ -3,16 +3,6 @@
 #include "rw/rwcore.h"
 #include "layout_check.h"
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* The engine globals of the camera module */
 typedef struct rwCameraGlobals {
     /* 0x0 */ RwFreeList *cameraFreeList;
@@ -534,7 +524,7 @@ RwCamera *fn_8048584C(RwCamera *camera, RwInt32 projection) {
         CameraUpdateZShiftScale(camera);
         return camera;
     default:
-        RWERROR((E_RW_BADPARAM, "Invalid projection type specified"));
+        RWERRORCORE((E_RW_BADPARAM, "Invalid projection type specified"));
         return NULL;
     }
 }
