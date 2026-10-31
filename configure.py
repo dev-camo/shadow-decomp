@@ -2684,7 +2684,16 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            Object(Matching, "CRI/sj_crs.c", extra_cflags=["-sdata 0"]),
+            Object(
+                Matching,
+                "CRI/sj_crs.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
             # The two-part error messages need the readonly string pool.
             Object(
                 Matching,
@@ -2706,9 +2715,36 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            Object(Matching, "CRI/sj_uni.c", extra_cflags=["-sdata 0"]),
-            Object(Matching, "CRI/sj_utl.c", extra_cflags=["-use_lmw_stmw on"]),
-            Object(Matching, "CRI/sj_err.c"),
+            Object(
+                Matching,
+                "CRI/sj_uni.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/sj_utl.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/sj_err.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
             Object(
                 Matching,
                 "CRI/svm.c",

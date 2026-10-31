@@ -4,15 +4,11 @@
 
 #include "CRI/sj.h"
 
-/* Inferred raw counter view; the original C type is unknown.
- * An explicit zero definition preserves MWCC's BSS symbol order.
- */
-unsigned int sjuni_init_cnt = 0;
+Sint32 sjuni_init_cnt;
 
-/* Observed clearing covers 0xC00 bytes. Preserve the four remaining
- * allocation bytes without asserting original pool or slot types.
- */
-unsigned char sjuni_obj[0xC00 + 4];
+/* The object is 0xC04 bytes in the original (its symbol extent); the init and finish functions
+ * clear the first 0xC00. */
+Uint8 sjuni_obj[0xC00 + 4];
 
 void SJUNI_Finish(void) {
     SJCRS_Lock();
@@ -26,7 +22,7 @@ void SJUNI_Finish(void) {
 void SJUNI_Init(void) {
     SJCRS_Init();
     SJCRS_Lock();
-    if ((int)sjuni_init_cnt == 0) {
+    if (sjuni_init_cnt == 0) {
         memset(&sjuni_obj, 0, 0xC00);
     }
     sjuni_init_cnt++;

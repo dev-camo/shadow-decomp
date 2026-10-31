@@ -3,143 +3,33 @@
 
 #include "CRI/sj.h"
 
-/* Inferred word lookup backing; original C type identity is unknown.
- * ASCII hexadecimal digits map to their numeric values; other entries are zero.
- */
-unsigned int sj_hexstr_to_val_tbl[112] = {
-    /* 0x00..0x0F */
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    /* 0x10..0x1F */
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    /* 0x20..0x2F */
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    /* 0x30..0x3F */
-    0,
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    /* 0x40..0x4F */
-    0,
-    10,
-    11,
-    12,
-    13,
-    14,
-    15,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    /* 0x50..0x5F */
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    /* 0x60..0x6F */
-    0,
-    10,
-    11,
-    12,
-    13,
-    14,
-    15,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+/* ASCII hexadecimal digits map to their numeric values ('0'..'9' to 0..9, 'A'..'F' and 'a'..'f' to
+ * 10..15); all other entries are zero. The table has 112 entries, so characters above 'o' are not
+ * covered. */
+// clang-format off
+Uint32 sj_hexstr_to_val_tbl[112] = {
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  /* 0x00..0x0F */
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  /* 0x10..0x1F */
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  /* 0x20..0x2F */
+     0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  0,  0,  0,  0,  0,  0,  /* 0x30..0x3F */
+     0, 10, 11, 12, 13, 14, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,  /* 0x40..0x4F */
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  /* 0x50..0x5F */
+     0, 10, 11, 12, 13, 14, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,  /* 0x60..0x6F */
 };
+// clang-format on
 
 /* Reads a record length through the hex lookup table (inferred helper name). The original uses
  * signed byte indices without a range check. */
-static inline unsigned int read_length(const signed char *record) {
-    unsigned int length;
+static inline Uint32 read_length(const Sint8 *record) {
+    Uint32 length;
 
-    length = sj_hexstr_to_val_tbl[(int)record[8]];
-    length = (length << 4) + sj_hexstr_to_val_tbl[(int)record[9]];
-    length = (length << 4) + sj_hexstr_to_val_tbl[(int)record[10]];
-    length = (length << 4) + sj_hexstr_to_val_tbl[(int)record[11]];
-    length = (length << 4) + sj_hexstr_to_val_tbl[(int)record[12]];
-    length = (length << 4) + sj_hexstr_to_val_tbl[(int)record[13]];
-    length = (length << 4) + sj_hexstr_to_val_tbl[(int)record[14]];
+    length = sj_hexstr_to_val_tbl[record[8]];
+    length = (length << 4) + sj_hexstr_to_val_tbl[record[9]];
+    length = (length << 4) + sj_hexstr_to_val_tbl[record[10]];
+    length = (length << 4) + sj_hexstr_to_val_tbl[record[11]];
+    length = (length << 4) + sj_hexstr_to_val_tbl[record[12]];
+    length = (length << 4) + sj_hexstr_to_val_tbl[record[13]];
+    length = (length << 4) + sj_hexstr_to_val_tbl[record[14]];
     return length;
 }
 
@@ -157,13 +47,13 @@ Sint8 *SJ_SearchTag(SJCK *cki, Char8 *kw, Char8 *endkw, SJCK *cko) {
     while (cursor < end) {
         if (strncmp((const char *)cursor, kw, 7) == 0) {
             cko->data = cursor + 0x10;
-            cko->len = read_length((const signed char *)cursor);
+            cko->len = read_length((const Sint8 *)cursor);
             break;
         }
         if (endkw != 0 && strncmp((const char *)cursor, endkw, 7) == 0) {
             return 0;
         }
-        cursor += read_length((const signed char *)cursor) + 0x10;
+        cursor += read_length((const Sint8 *)cursor) + 0x10;
     }
     if (cursor < end) {
         return (Sint8 *)cursor;
