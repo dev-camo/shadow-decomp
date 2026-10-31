@@ -170,8 +170,10 @@ RpWorld *fn_8045F458(RpWorld *world, RpBuildMesh *buildMesh, RpWorldSector *sect
 }
 
 /* Destroys a sector tree whose sectors are part of the world's allocation.
- * The sector release is written out here and in fn_8045F7D0: a shared macro or inline compiles
- * fn_8045F7D0 differently (measured). */
+ *
+ * Matching workaround: the sector release is written out here and in fn_8045F7D0 instead of
+ * sharing a macro or an inline, which compiles fn_8045F7D0 differently (measured). Revisit when
+ * the original's release helper is found. */
 void fn_8045F6E0(RpSector *sector) {
     RpWorldSector *worldSector;
     RwLLLink *link;

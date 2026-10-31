@@ -67,8 +67,10 @@ RwInt32 fn_8045B7AC(RpMaterialList *matList, RpMaterial *material) {
         matList->numMaterials++;
         return matList->numMaterials - 1;
     } else {
-        /* the allocation calls state the size themselves: passing bytes to them compiles differently
-         * (measured: register assignment and the placement of a register move) */
+        /* Matching workaround: the allocation calls below repeat the size expression instead of
+         * passing bytes (which only the error report uses). Passing bytes changes the register
+         * assignment and the placement of a register move in this function. Revisit when the
+         * original's allocation form is found. */
         RwUInt32 bytes = (matList->space + rpMATERIALLISTGRANULARITY) * sizeof(RpMaterial *);
         RpMaterial **materials;
 
