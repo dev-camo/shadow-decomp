@@ -30,6 +30,25 @@ static void InterpolateLinear(u32 *out, const Keyframe *first, const Keyframe *s
 static void InterpolateColor(u32 *out, const Keyframe *first, const Keyframe *second, f32 frame);
 static void InterpolateHermite(u32 *out, const Keyframe *first, const Keyframe *second, f32 frame);
 static void HoldKeyValue(u32 *out, const Keyframe *first, const Keyframe *second, f32 frame);
+static void UpdateEntries(MotionPaletteLayer *layer, int index, const LayerData *source,
+                          const LayerMotion *motion, const FontList *fonts,
+                          MotionPaletteEntry *parent, const SceneData *scene, u32 flags, int depth,
+                          f32 frame, f32 frameStep);
+static void UpdateEntry(MotionPaletteEntry *entry, const ElementData *element,
+                        const ChannelAnimation *animation, const MotionPaletteEntry *parent,
+                        const SceneData *scene, u32 flags, f32 frame, f32 frameStep);
+static void EvaluateChannels(MotionPaletteEntry *entry, const ElementData *element,
+                             const ChannelAnimation *animation, const SceneData *scene, f32 frame,
+                             f32 frameStep);
+static void UpdateEntryTransform(MotionPaletteEntry *entry, const ElementData *element,
+                                 const MotionPaletteEntry *parent, const SceneData *scene);
+
+/* A colour as four channel bytes. */
+union ColorBytes {
+    u32 packed;
+    u8 channel[4];
+};
+CHECK_SIZEOF(Chao::CSD::ColorBytes, 0x4);
 
 /* Passes an element's filtering, addressing, blending and state at 0x24 to the render state. */
 static inline void SetElementState(const ElementData *element, MotionPaletteEntry *entry) {
@@ -101,10 +120,10 @@ static void NormalizeLayer(LayerData *layer) {
 
         if (!(element->flags & 0xD000)) {
             if (element->flags & 0x1) {
-                element->flags |= 0x300;
+                element->flags |= ELEMENT_TRANSLATE_MASK;
             }
             if (element->flags & 0x4) {
-                element->flags |= 0xC00;
+                element->flags |= ELEMENT_SCALE_MASK;
             }
         }
     }
@@ -421,13 +440,13 @@ static void TransformPoint(f32 *out, const Matrix *matrix, const f32 *point) {
 
 void DrawQuadElement(const SceneData *scene, const ElementData *element,
                      const RCPtr<CTexList> &texList, MotionPaletteEntry *entry) {
-    s32 *values = entry->field_0x58;
+    s32 *values = entry->channels.named.field_0x30;
 
     if (entry->textures != NULL) {
         GetRenderState().SetTexture(texList, entry->textures[0]);
     }
     /* SetField0x30 takes the member, not the local: passing the local changes the code. */
-    GetRenderState().SetField0x30(entry->field_0x58);
+    GetRenderState().SetField0x30(entry->channels.named.field_0x30);
     SetElementState(element, entry);
     if (entry->textures != NULL) {
         GetRenderState().SetTextured(1);
@@ -446,7 +465,7 @@ void DrawTextElement(const SceneData *scene, const ElementData *element,
     if (entry->textures == NULL) {
         return;
     }
-    s32 *values = entry->field_0x58;
+    s32 *values = entry->channels.named.field_0x30;
 
     GetRenderState().SetField0x30(values);
     SetElementState(element, entry);
@@ -496,6 +515,134 @@ static void SwapBytes(void *data, int size) {
     }
 }
 
+/* The kinds of change UpdatePalette finds, as the flags it passes to UpdateEntries (names
+ * inferred). The screen checks clear UPDATE_NONE. */
+enum PaletteUpdate {
+    UPDATE_NONE = 1,
+    UPDATE_VALUES = 2, /* all channels are evaluated again */
+    UPDATE_PARENT = 4, /* the parent entry changed or has changes to apply */
+    UPDATE_SCREEN = 8  /* the screen changed: the entries are rebuilt */
+};
+
+void UpdatePalette(MotionPalette *palette, const SceneData *scene, const SceneMotion *motion,
+                   f32 frame, const FontList *fonts, MotionPaletteEntry *parent) {
+    if (frame < 0.0f) {
+        frame = 0.0f;
+    }
+    f32 frameStep = frame - palette->lastFrame;
+
+    /* What changed since the last update. */
+    s32 changes = 0;
+    if (palette->lastMotion != motion || palette->lastFonts != fonts) {
+        changes |= UPDATE_VALUES;
+    } else if (frameStep == 0.0f && palette->field_0x30 == 0) {
+        changes |= UPDATE_NONE;
+    }
+    palette->field_0x30 = 0;
+
+    f32 width;
+    f32 height;
+    GetScreenSizeA(&width, &height);
+    if (width != palette->screenSizeA[0] || height != palette->screenSizeA[1]) {
+        palette->screenSizeA[0] = width;
+        palette->screenSizeA[1] = height;
+        changes |= UPDATE_SCREEN;
+        changes &= ~UPDATE_NONE;
+        changes |= UPDATE_VALUES;
+    }
+
+    GetScreenSizeB(&width, &height);
+    if (width != palette->screenSizeB[0] || height != palette->screenSizeB[1]) {
+        palette->screenSizeB[0] = width;
+        palette->screenSizeB[1] = height;
+        changes |= UPDATE_SCREEN;
+        changes &= ~UPDATE_NONE;
+        changes |= UPDATE_VALUES;
+    }
+
+    f32 offsetX;
+    f32 offsetY;
+    GetScaledScreenOffsetA(&offsetX, &offsetY);
+    if (offsetX != palette->screenOffsetA[0] || offsetY != palette->screenOffsetA[1]) {
+        palette->screenOffsetA[0] = offsetX;
+        palette->screenOffsetA[1] = offsetY;
+        changes |= UPDATE_SCREEN;
+        changes &= ~UPDATE_NONE;
+        changes |= UPDATE_VALUES;
+    }
+
+    if (palette->lastParent != parent || (parent != NULL && (parent->flags & ENTRY_APPLY))) {
+        changes |= UPDATE_PARENT;
+    }
+    /* A step against the direction of the last one. */
+    if (frameStep * palette->lastFrameStep < 0.0f) {
+        changes |= UPDATE_VALUES;
+    }
+
+    palette->lastFrame = frame;
+    palette->lastMotion = motion;
+    palette->lastFonts = fonts;
+    if (frameStep != 0.0f) {
+        palette->lastFrameStep = frameStep;
+    }
+    palette->lastParent = parent;
+
+    if ((changes & UPDATE_PARENT) ||
+        (!(changes & UPDATE_NONE) && ((changes & UPDATE_VALUES) || palette->field_0x8 == 0))) {
+        s32 parentFlags = 0;
+        if (parent != NULL) {
+            parentFlags = parent->flags;
+            PushMatrix(&parent->matrix);
+        }
+        palette->field_0x8 = 1;
+
+        /* The two loops differ only in the motion passed on. The original has both: a single loop
+         * that selects each layer's motion compiles to 199 words, where the original has 243. */
+        if (motion != NULL) {
+            for (int i = 0; i < scene->layerCount; i++) {
+                const LayerData *source = &scene->layers[i];
+                MotionPaletteLayer *layer = &palette->layers[i];
+                s32 rootIndex = source->rootIndex;
+
+                if (rootIndex >= 0) {
+                    if ((changes & UPDATE_PARENT) || (changes & UPDATE_VALUES) ||
+                        (!(changes & UPDATE_NONE) && layer->field_0x8 == 0)) {
+                        layer->field_0x8 = 1;
+                        UpdateEntries(layer, rootIndex, source, &motion->layers[i], fonts, parent,
+                                      scene, changes, 0, frame, frameStep);
+                    }
+                }
+                if (palette->layers[i].field_0x8 == 0) {
+                    palette->field_0x8 = 0;
+                }
+            }
+        } else {
+            for (int i = 0; i < scene->layerCount; i++) {
+                const LayerData *source = &scene->layers[i];
+                MotionPaletteLayer *layer = &palette->layers[i];
+                s32 rootIndex = source->rootIndex;
+
+                if (rootIndex >= 0) {
+                    if ((changes & UPDATE_PARENT) || (changes & UPDATE_VALUES) ||
+                        (!(changes & UPDATE_NONE) && layer->field_0x8 == 0)) {
+                        layer->field_0x8 = 1;
+                        UpdateEntries(layer, rootIndex, source, NULL, fonts, parent, scene, changes,
+                                      0, frame, frameStep);
+                    }
+                }
+                if (palette->layers[i].field_0x8 == 0) {
+                    palette->field_0x8 = 0;
+                }
+            }
+        }
+
+        if (parent != NULL) {
+            parent->flags = parentFlags;
+            PopMatrix();
+        }
+    }
+}
+
 int FindSceneNameIndex(const SceneData *scene, const char *name) {
     NameEntry key;
     key.name = name;
@@ -509,30 +656,357 @@ int FindSceneNameIndex(const SceneData *scene, const char *name) {
     return -1;
 }
 
+/* Updates the entry of an element, then its children and its next sibling. Flags are those of
+ * UpdatePalette; depth is the number of ancestors below the palette's parent. */
+static void UpdateEntries(MotionPaletteLayer *layer, int index, const LayerData *source,
+                          const LayerMotion *motion, const FontList *fonts,
+                          MotionPaletteEntry *parent, const SceneData *scene, u32 flags, int depth,
+                          f32 frame, f32 frameStep) {
+    MotionPaletteEntry *entry = &layer->entries[index];
+
+    if (depth > 0) {
+        entry->parent = parent;
+    } else {
+        entry->parent = NULL;
+    }
+
+    if (flags & UPDATE_SCREEN) {
+        BuildEntry(&layer->entries[index], source->elements[index], scene, fonts);
+        layer->entries[index].flags = 0;
+    }
+    if (flags & UPDATE_VALUES) {
+        layer->entries[index].flags = 0;
+    }
+
+    int settled = 0;
+    if (parent != NULL && (parent->flags & ENTRY_APPLY)) {
+        /* The changes of the parent apply to its children. */
+        entry->flags &= ~kEntryChangeMask;
+        entry->flags |= parent->flags & kEntryChangeMask;
+    } else if (entry->flags & ENTRY_SUBTREE_SET) {
+        settled = 1;
+    } else {
+        entry->flags &= ~kEntryChangeMask;
+    }
+
+    if (!settled) {
+        PushMatrix(&layer->entries[index].matrix);
+        if (motion != NULL) {
+            UpdateEntry(&layer->entries[index], source->elements[index], &motion->entries[index],
+                        parent, scene, flags, frame, frameStep);
+        } else {
+            UpdateEntry(&layer->entries[index], source->elements[index], NULL, parent, scene, flags,
+                        frame, frameStep);
+        }
+
+        if (entry->flags & ENTRY_ALL_CHANNELS_SET) {
+            entry->flags |= ENTRY_SUBTREE_SET;
+        } else {
+            entry->flags &= ~ENTRY_SUBTREE_SET;
+            /* The original has these five words, which clear the same flag of the same entry
+             * again; the source form of this repeated clear is not known. */
+            if (parent != NULL) {
+                entry->flags &= ~ENTRY_SUBTREE_SET;
+            }
+        }
+
+        int child = source->links[index].child;
+        if (child >= 0) {
+            UpdateEntries(layer, child, source, motion, fonts, entry, scene, flags, depth + 1,
+                          frame, frameStep);
+        }
+
+        if (!(entry->flags & ENTRY_SUBTREE_SET)) {
+            if (parent != NULL) {
+                parent->flags &= ~ENTRY_SUBTREE_SET;
+            }
+            layer->field_0x8 = 0;
+        }
+        PopMatrix();
+    }
+
+    int next = source->links[index].next;
+    if (next >= 0) {
+        UpdateEntries(layer, next, source, motion, fonts, parent, scene, flags, depth, frame,
+                      frameStep);
+    }
+    entry->field_0x140 = 1;
+}
+
+/* Evaluates the entry's channels at a frame, and applies what changed. Flags are those of
+ * UpdatePalette. */
+static void UpdateEntry(MotionPaletteEntry *entry, const ElementData *element,
+                        const ChannelAnimation *animation, const MotionPaletteEntry *parent,
+                        const SceneData *scene, u32 flags, f32 frame, f32 frameStep) {
+    if (entry->vertices == NULL) {
+        return;
+    }
+    if (element->field_0x8 == 0) {
+        return;
+    }
+
+    if (!(flags & UPDATE_NONE) && !(entry->flags & ENTRY_ALL_CHANNELS_SET)) {
+        s32 oldFlags = entry->flags;
+        s32 oldHidden = entry->channels.named.hidden;
+        u32 oldTint = entry->channels.named.tint;
+        int colorsSet = (oldFlags & ENTRY_COLOR_CHANNELS) == ENTRY_COLOR_CHANNELS;
+        f32 oldPattern = entry->channels.named.pattern;
+
+        EvaluateChannels(entry, element, animation, scene, frame, frameStep);
+
+        if (!(oldFlags & ENTRY_TRANSFORM_SET)) {
+            entry->flags |= ENTRY_APPLY | ENTRY_MATRIX_CHANGED;
+        }
+        if (oldHidden != entry->channels.named.hidden) {
+            entry->flags |= ENTRY_APPLY | ENTRY_HIDDEN_CHANGED;
+        }
+        if (oldTint != entry->channels.named.tint) {
+            entry->flags |= ENTRY_APPLY | ENTRY_TINT_CHANGED;
+        }
+        if (oldPattern != entry->channels.named.pattern) {
+            SetEntryPattern(entry, element, scene);
+        }
+
+        if (!colorsSet) {
+            SetEntryColors(entry);
+            entry->flags |= ENTRY_APPLY | ENTRY_TINT_CHANGED;
+        }
+    }
+
+    if (entry->flags & ENTRY_APPLY) {
+        UpdateEntryTransform(entry, element, parent, scene);
+    }
+}
+
+/* Sets the entry's channel values. The entry's own values always apply; otherwise a channel that
+ * is not final yet comes from the animation track (evaluated at the frame) or from the element's
+ * values (the library defaults for channels the element does not store). The scene is unused. */
+static void EvaluateChannels(MotionPaletteEntry *entry, const ElementData *element,
+                             const ChannelAnimation *animation, const SceneData *scene, f32 frame,
+                             f32 frameStep) {
+    u32 bit;
+    u32 *values = entry->channels.raw;
+    int track = 0;
+    s32 remaining = ENTRY_CHANNELS_MASK;
+    int channel;
+
+    for (channel = 0; channel < kEntryChannelCount; channel++) {
+        bit = 1 << channel;
+
+        if (entry->field_0x74 & bit) {
+            values[channel] = entry->field_0x78[channel];
+            entry->flags |= bit;
+            if (animation != NULL && (animation->channelMask & bit)) {
+                track++;
+            }
+        } else if (animation != NULL && (animation->channelMask & bit)) {
+            if (!(entry->flags & bit)) {
+                int running = 1;
+                u32 value;
+
+                EvaluateTrack(&value, &animation->tracks[track], channel, frame, frameStep,
+                              &running);
+                values[channel] = value;
+                if (running == 0) {
+                    entry->flags |= bit;
+                }
+            }
+            track++;
+        } else if (!(entry->flags & bit)) {
+            if (element->channelMask == GetFullChannelMask()) {
+                values[channel] = element->channelValues[channel];
+            } else {
+                u32 value;
+
+                GetChannelValue(&value, channel, element->channelMask, element->channelValues);
+                values[channel] = value;
+            }
+            entry->flags |= bit;
+        }
+
+        remaining &= ~bit;
+        if (remaining == (remaining & (entry->flags & ENTRY_CHANNELS_MASK))) {
+            break;
+        }
+    }
+
+    if (!(entry->flags & ENTRY_TRANSFORM_SET) &&
+        (entry->flags & ENTRY_TRANSFORM_CHANNELS) == ENTRY_TRANSFORM_CHANNELS) {
+        entry->flags |= ENTRY_TRANSFORM_SET;
+    }
+    if ((entry->flags & ENTRY_CHANNELS_MASK) == ENTRY_CHANNELS_MASK) {
+        entry->flags |= ENTRY_ALL_CHANNELS_SET;
+    }
+}
+
+/* Applies what changed to the entry: builds the matrix from the translation, rotation and scale
+ * channels, and updates the hidden state and the tint (combined with the parent's as the element
+ * asks) and the colours of the vertices. */
+static void UpdateEntryTransform(MotionPaletteEntry *entry, const ElementData *element,
+                                 const MotionPaletteEntry *parent, const SceneData *scene) {
+    u32 flags = element->flags;
+
+    if (entry->flags & ENTRY_MATRIX_CHANGED) {
+        Matrix *matrix = GetTopMatrix();
+        f32 x = entry->channels.named.translateX;
+        f32 y = entry->channels.named.translateY;
+
+        ScaleByScreenA(&x, &y);
+
+        f32 aspect = 1.3333f;
+        if (scene->version >= 1) {
+            aspect = scene->aspect;
+        }
+        f32 screenAspect = GetScreenAspectB();
+        y *= screenAspect / aspect;
+
+        switch (flags & ELEMENT_TRANSLATE_MASK) {
+        case ELEMENT_TRANSLATE_MASK:
+            TranslateMatrix(x, y);
+            break;
+        case ELEMENT_TRANSLATE_X:
+            TranslateMatrixX(x, y);
+            break;
+        case ELEMENT_TRANSLATE_Y:
+            TranslateMatrixY(x, y);
+            break;
+        case 0:
+            SetMatrixTranslation(x, y);
+            break;
+        }
+
+        if (!(flags & ELEMENT_FLAG_0x2)) {
+            matrix->m[0] = matrix->sub0->m[0];
+            matrix->m[1] = matrix->sub0->m[1];
+            matrix->m[3] = matrix->sub0->m[3];
+            matrix->m[4] = matrix->sub0->m[4];
+            matrix->sub1->m[0] = 1.0f;
+            matrix->sub1->m[1] = 0.0f;
+            matrix->sub1->m[3] = 0.0f;
+            matrix->sub1->m[4] = 1.0f;
+        }
+
+        /* The scale of the parent that is applied after the entry's own (inferred from the
+         * ScaleMatrix calls below). */
+        f32 parentScaleX = 1.0f;
+        f32 parentScaleY = 1.0f;
+        int applyParentScale = 0;
+        switch (flags & ELEMENT_SCALE_MASK) {
+        case ELEMENT_FLAG_0x400:
+            if (!(flags & ELEMENT_FLAG_0x2)) {
+                matrix->m[1] = 0.0f;
+                matrix->m[3] = 0.0f;
+                matrix->m[4] = 1.0f;
+                matrix->sub0->m[1] = 0.0f;
+                matrix->sub0->m[3] = 0.0f;
+                matrix->sub0->m[4] = 1.0f;
+            } else {
+                applyParentScale = 1;
+                matrix->m[0] = matrix->sub1->m[0];
+                matrix->m[1] = matrix->sub1->m[1];
+                matrix->m[3] = matrix->sub1->m[3];
+                matrix->m[4] = matrix->sub1->m[4];
+                matrix->sub0->m[4] = 1.0f;
+                parentScaleX = matrix->sub0->m[0];
+            }
+            break;
+        case ELEMENT_FLAG_0x800:
+            if (!(flags & ELEMENT_FLAG_0x2)) {
+                matrix->m[0] = 1.0f;
+                matrix->m[1] = 0.0f;
+                matrix->m[3] = 0.0f;
+                matrix->sub0->m[0] = 1.0f;
+                matrix->sub0->m[1] = 0.0f;
+                matrix->sub0->m[3] = 0.0f;
+            } else {
+                applyParentScale = 1;
+                matrix->m[0] = matrix->sub1->m[0];
+                matrix->m[1] = matrix->sub1->m[1];
+                matrix->m[3] = matrix->sub1->m[3];
+                matrix->m[4] = matrix->sub1->m[4];
+                matrix->sub0->m[0] = 1.0f;
+                parentScaleY = matrix->sub0->m[4];
+            }
+            break;
+        case 0:
+            if (!(flags & ELEMENT_FLAG_0x2)) {
+                matrix->m[0] = 1.0f;
+                matrix->m[1] = 0.0f;
+                matrix->m[3] = 0.0f;
+                matrix->m[4] = 1.0f;
+                matrix->sub0->m[0] = 1.0f;
+                matrix->sub0->m[1] = 0.0f;
+                matrix->sub0->m[3] = 0.0f;
+                matrix->sub0->m[4] = 1.0f;
+            } else {
+                matrix->m[0] = matrix->sub1->m[0];
+                matrix->m[1] = matrix->sub1->m[1];
+                matrix->m[3] = matrix->sub1->m[3];
+                matrix->m[4] = matrix->sub1->m[4];
+                matrix->sub0->m[0] = 1.0f;
+                matrix->sub0->m[1] = 0.0f;
+                matrix->sub0->m[3] = 0.0f;
+                matrix->sub0->m[4] = 1.0f;
+            }
+            break;
+        }
+
+        UseTopMatrixAsSource();
+        RotateMatrix(entry->channels.named.rotation);
+        ScaleMatrix(entry->channels.named.scaleX, entry->channels.named.scaleY);
+        if (applyParentScale) {
+            ScaleMatrix(parentScaleX, parentScaleY);
+        }
+        ApplyScreenAspect(entry, scene);
+    }
+
+    if (entry->flags & ENTRY_HIDDEN_CHANGED) {
+        entry->field_0x20 = entry->channels.named.hidden;
+        if (parent != NULL && (flags & ELEMENT_COMBINE_HIDDEN)) {
+            entry->field_0x20 = entry->channels.named.hidden | parent->field_0x20;
+        }
+    }
+
+    if (entry->flags & ENTRY_TINT_CHANGED) {
+        entry->field_0x24 = entry->channels.named.tint;
+        if (parent != NULL && (flags & ELEMENT_COMBINE_TINT)) {
+            ColorBytes own;
+            ColorBytes inherited;
+            ColorBytes combined;
+
+            own.packed = entry->channels.named.tint;
+            inherited.packed = parent->field_0x24;
+            for (int i = 0; i < 4; i++) {
+                combined.channel[i] = own.channel[i] * inherited.channel[i] / 255;
+            }
+            entry->field_0x24 = combined.packed;
+        }
+        TintEntryColors(entry);
+    }
+}
+
 /* Sets the colour of the four corners of every quad of an entry to the entry's corner colours.
- * Entries without textures are read with a 0xC vertex stride (PlainVertex, inferred). */
+ * Entries without textures are read with a 0xC vertex stride (PlainVertex, inferred).
+ * UpdateEntry expands this function in place; the out-of-line copy remains because other code
+ * calls it. */
+#pragma auto_inline on
 void SetEntryColors(MotionPaletteEntry *entry) {
     if (entry->textures != NULL) {
         for (int quad = 0; quad < entry->quadCount; quad++) {
             for (int corner = 0; corner < 4; corner++) {
-                entry->vertices[quad * 4 + corner].color = entry->colors[corner];
+                entry->vertices[quad * 4 + corner].color = entry->channels.named.colors[corner];
             }
         }
     } else {
         for (int quad = 0; quad < entry->quadCount; quad++) {
             for (int corner = 0; corner < 4; corner++) {
                 reinterpret_cast<PlainVertex *>(entry->vertices)[quad * 4 + corner].color =
-                    entry->colors[corner];
+                    entry->channels.named.colors[corner];
             }
         }
     }
 }
-
-union ColorBytes {
-    u32 packed;
-    u8 channel[4];
-};
-CHECK_SIZEOF(Chao::CSD::ColorBytes, 0x4);
+#pragma auto_inline reset
 
 /* Sets the draw colour of every vertex of an entry to the vertex colour with each channel scaled by
  * the same channel of the word at 0x24 of the entry (field_0x24, used as four channel bytes), as a
@@ -574,10 +1048,10 @@ void TintEntryColors(MotionPaletteEntry *entry) {
     }
 }
 
-void ApplyScreenAspect(MotionPaletteEntry *entry, const ElementData *element) {
+void ApplyScreenAspect(MotionPaletteEntry *entry, const SceneData *scene) {
     f32 aspect = 1.3333f;
-    if (element->field_0x0 >= 1) {
-        aspect = element->aspect;
+    if (scene->version >= 1) {
+        aspect = scene->aspect;
     }
     aspect /= GetScreenAspectB();
 
@@ -615,6 +1089,137 @@ void ApplyScreenAspect(MotionPaletteEntry *entry, const ElementData *element) {
                 vertex++;
             }
         }
+    }
+}
+
+/* Sets the texture region of a type 1 element's quad from the entry's pattern: the glyph of the
+ * pattern, or the blend of the glyphs of two patterns, with the element's flips applied. The quad
+ * is given the layout of a textured quad if it was not one. */
+void SetEntryPattern(MotionPaletteEntry *entry, const ElementData *element,
+                     const SceneData *scene) {
+    if (element->type != 1) {
+        return;
+    }
+
+    int pattern;
+    int nextPattern;
+    f32 blend;
+    const GlyphData *glyph = NULL;
+    TexCoord texCoords[2];
+
+    UnpackPatternBlend(&pattern, &nextPattern, &blend, entry->channels.named.pattern);
+    if (pattern >= 0 && pattern < element->patternCount && element->patterns[pattern] >= 0) {
+        glyph = &scene->glyphs[element->patterns[pattern]];
+        if (blend != 0.0f || nextPattern < element->patternCount) {
+            const GlyphData *next = &scene->glyphs[element->patterns[nextPattern]];
+
+            for (int i = 0; i < 2; i++) {
+                texCoords[i].u = glyph->corner[i].u * (1.0f - blend) + next->corner[i].u * blend;
+                texCoords[i].v = glyph->corner[i].v * (1.0f - blend) + next->corner[i].v * blend;
+            }
+        } else {
+            texCoords[0].u = glyph->corner[0].u;
+            texCoords[0].v = glyph->corner[0].v;
+            texCoords[1].u = glyph->corner[1].u;
+            texCoords[1].v = glyph->corner[1].v;
+        }
+    }
+    if (glyph != NULL) {
+        if (element->fn_80361708()) {
+            f32 swap = texCoords[0].u;
+            texCoords[0].u = texCoords[1].u;
+            texCoords[1].u = swap;
+        }
+        if (element->fn_803616FC()) {
+            f32 swap = texCoords[0].v;
+            texCoords[0].v = texCoords[1].v;
+            texCoords[1].v = swap;
+        }
+
+        if (entry->vertices == NULL) {
+            entry->vertices = entry->quadVertices;
+            entry->drawVertices = entry->quadDrawVertices;
+            entry->textures = &entry->quadTexture;
+            entry->ownsVertices = 0;
+            entry->quadCount = 1;
+        } else if (entry->textures == NULL) {
+            /* The quad has the layout of a quad without textures: move its vertices. */
+            PlainVertex drawCopy[4];
+            PlainVertex vertexCopy[4];
+            PlainVertex *vertices = reinterpret_cast<PlainVertex *>(entry->vertices);
+            PlainVertex *drawVertices = reinterpret_cast<PlainVertex *>(entry->drawVertices);
+
+            for (int i = 0; i < 4; i++) {
+                vertexCopy[i] = vertices[i];
+                drawCopy[i] = drawVertices[i];
+            }
+            if (entry->ownsVertices) {
+                Free(entry->vertices);
+                Free(entry->drawVertices);
+            }
+            entry->vertices = entry->quadVertices;
+            entry->drawVertices = entry->quadDrawVertices;
+            entry->textures = &entry->quadTexture;
+            for (int i = 0; i < 4; i++) {
+                entry->vertices[i].x = vertexCopy[i].x;
+                entry->vertices[i].y = vertexCopy[i].y;
+                entry->vertices[i].color = vertexCopy[i].color;
+                entry->drawVertices[i].x = drawCopy[i].x;
+                entry->drawVertices[i].y = drawCopy[i].y;
+                entry->drawVertices[i].color = drawCopy[i].color;
+            }
+            entry->ownsVertices = 0;
+        }
+
+        *entry->textures = glyph->texture;
+        entry->vertices[0].u = texCoords[0].u;
+        entry->vertices[0].v = texCoords[0].v;
+        entry->vertices[1].u = texCoords[0].u;
+        entry->vertices[1].v = texCoords[1].v;
+        entry->vertices[2].u = texCoords[1].u;
+        entry->vertices[2].v = texCoords[0].v;
+        entry->vertices[3].u = texCoords[1].u;
+        entry->vertices[3].v = texCoords[1].v;
+        for (int i = 0; i < 4; i++) {
+            entry->drawVertices[i].u = entry->vertices[i].u;
+            entry->drawVertices[i].v = entry->vertices[i].v;
+        }
+    } else if (entry->vertices == NULL) {
+        entry->vertices = entry->quadVertices;
+        entry->drawVertices = entry->quadDrawVertices;
+        entry->textures = NULL;
+        entry->ownsVertices = 0;
+        entry->quadCount = 1;
+    } else if (entry->textures != NULL) {
+        /* The quad has the layout of a textured quad: move its vertices. */
+        Vertex drawCopy[4];
+        Vertex vertexCopy[4];
+
+        if (entry->ownsVertices) {
+            Free(entry->textures);
+        }
+        entry->textures = NULL;
+        for (int i = 0; i < 4; i++) {
+            vertexCopy[i] = entry->vertices[i];
+            drawCopy[i] = entry->drawVertices[i];
+        }
+        if (entry->ownsVertices) {
+            Free(entry->vertices);
+            Free(entry->drawVertices);
+        }
+        entry->vertices = entry->quadVertices;
+        entry->drawVertices = entry->quadDrawVertices;
+        PlainVertex *vertices = reinterpret_cast<PlainVertex *>(entry->vertices);
+        PlainVertex *drawVertices = reinterpret_cast<PlainVertex *>(entry->drawVertices);
+        for (int i = 0; i < 4; i++) {
+            vertices[i].x = vertexCopy[i].x;
+            vertices[i].y = vertexCopy[i].y;
+            vertices[i].color = vertexCopy[i].color;
+            drawVertices[i].x = drawCopy[i].x;
+            drawVertices[i].y = drawCopy[i].y;
+            drawVertices[i].color = drawCopy[i].color;
+        }
+        entry->ownsVertices = 0;
     }
 }
 

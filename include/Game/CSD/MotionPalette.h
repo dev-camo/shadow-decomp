@@ -41,35 +41,56 @@ struct PlainVertex {
 CHECK_SIZEOF(Chao::CSD::PlainVertex, 0xC);
 
 /* File data of one element of a scene layer. Type 0 and 1 elements are single quads, type 2
- * elements draw their text with a font. The aspect (name inferred: ApplyScreenAspect defaults to
- * 1.3333 and divides by the screen's aspect ratio) is used only when field_0x0 is at
- * least 1. */
+ * elements draw their text with a font. A type 1 element picks the texture region of its quad from
+ * a table of patterns (names inferred from SetEntryPattern in csdLoader.cpp): the table has
+ * patternCount glyph indices (-1 for none) into the scene's glyphs. The element's stored channel
+ * values (names inferred from EvaluateChannels in csdLoader.cpp, which reads them through
+ * GetChannelValue) have one word for each set bit of channelMask, in channel order; when the mask
+ * is full, EvaluateChannels indexes the 15 words by channel directly. */
 struct ElementData {
     /* 0x00 */ s32 field_0x0;
     /* 0x04 */ s32 type;
     /* 0x08 */ u32 field_0x8;
     /* 0x0C */ f32 corners[4][2];
-    /* 0x2C */ u32 field_0x2C;
-    /* 0x30 */ u32 field_0x30;
+    /* 0x2C */ u32 channelMask;
+    /* 0x30 */ const u32 *channelValues;
     /* 0x34 */ u32 flags;
     /* 0x38 */ u32 packed;
-    /* 0x3C */ u32 field_0x3C;
-    /* 0x40 */ f32 aspect;
+    /* 0x3C */ s32 patternCount;
+    /* 0x40 */ const s32 *patterns;
     /* 0x44 */ const char *text;
     /* 0x48 */ const char *fontName;
     /* 0x4C */ f32 charSpacing;
 
-    /* Fields of the packed word (placeholder names: their meaning is unknown). */
-    u32 fn_803616E4() const;
-    u32 fn_803616F0() const;
-    u32 fn_803616FC() const;
-    u32 fn_80361708() const;
-    u32 fn_80361714() const;
-    u32 fn_80361720() const;
-    u32 fn_8036172C() const;
+    /* Fields of the packed word (placeholder names: their meaning is unknown). SetEntryPattern
+     * swaps the u corners of a pattern when fn_80361708 is set and the v corners when
+     * fn_803616FC is set (a horizontal and a vertical flip, inferred). */
+    int fn_803616E4() const;
+    int fn_803616F0() const;
+    int fn_803616FC() const;
+    int fn_80361708() const;
+    int fn_80361714() const;
+    int fn_80361720() const;
+    int fn_8036172C() const;
 };
 /* Only the members up to 0x50 are known. */
 CHECK_SIZEOF(Chao::CSD::ElementData, 0x50);
+
+/* Bits of ElementData::flags that the update code of csdLoader.cpp tests (names inferred;
+ * meanings that are not clear keep the value). The translation bits select which coordinates of
+ * the entry's translation the matrix stack transforms, and the scale bits (ELEMENT_FLAG_0x400,
+ * ELEMENT_FLAG_0x800) select how the entry's scale combines with its parent's. */
+enum ElementFlags {
+    ELEMENT_FLAG_0x2 = 0x2,
+    ELEMENT_COMBINE_TINT = 0x8,    /* the tint is the parent's scaled by the entry's */
+    ELEMENT_COMBINE_HIDDEN = 0x10, /* the entry is hidden when its parent is */
+    ELEMENT_TRANSLATE_X = 0x100,
+    ELEMENT_TRANSLATE_Y = 0x200,
+    ELEMENT_TRANSLATE_MASK = 0x300,
+    ELEMENT_FLAG_0x400 = 0x400,
+    ELEMENT_FLAG_0x800 = 0x800,
+    ELEMENT_SCALE_MASK = 0xC00
+};
 
 /* The element tree of a layer: indices of the first child and the next sibling, -1 for none. */
 struct ElementLink {
@@ -87,13 +108,18 @@ struct LayerData {
 };
 CHECK_SIZEOF(Chao::CSD::LayerData, 0x10);
 
-/* A texture region of a font glyph: texture index and texture coordinates. */
+/* A texture coordinate. */
+struct TexCoord {
+    /* 0x00 */ f32 u;
+    /* 0x04 */ f32 v;
+};
+CHECK_SIZEOF(Chao::CSD::TexCoord, 0x8);
+
+/* A texture region of a font glyph or of a pattern: texture index and the coordinates of two
+ * opposite corners. */
 struct GlyphData {
     /* 0x00 */ s32 texture;
-    /* 0x04 */ f32 u0;
-    /* 0x08 */ f32 v0;
-    /* 0x0C */ f32 u1;
-    /* 0x10 */ f32 v1;
+    /* 0x04 */ TexCoord corner[2];
 };
 CHECK_SIZEOF(Chao::CSD::GlyphData, 0x14);
 
@@ -113,9 +139,13 @@ struct NodeEntry {
 };
 CHECK_SIZEOF(Chao::CSD::NodeEntry, 0xC);
 
-/* File data of a scene (only the members used by the CSD code so far). */
+/* File data of a scene (only the members used by the CSD code so far). The aspect (name inferred:
+ * the entry transform divides the screen's aspect ratio by it, ApplyScreenAspect divides it by
+ * the screen's) is present only when the version (name inferred from that test) is at least 1;
+ * otherwise they use 1.3333. */
 struct SceneData {
-    /* 0x00 */ u8 field_0x0[0x18];
+    /* 0x00 */ s32 version;
+    /* 0x04 */ u8 field_0x4[0x14];
     /* 0x18 */ TextureSize *textureSizes;
     /* 0x1C */ u32 field_0x1C;
     /* 0x20 */ GlyphData *glyphs;
@@ -126,9 +156,10 @@ struct SceneData {
     /* 0x34 */ s32 nameCount;
     /* 0x38 */ u32 field_0x38;
     /* 0x3C */ NameEntry *names;
+    /* 0x40 */ f32 aspect;
 };
-/* Only the members up to 0x40 are known. */
-CHECK_SIZEOF(Chao::CSD::SceneData, 0x40);
+/* Only the members up to 0x44 are known. */
+CHECK_SIZEOF(Chao::CSD::SceneData, 0x44);
 
 /* A character code and its glyph index, sorted by code. */
 struct FontCharacter {
@@ -154,26 +185,65 @@ CHECK_SIZEOF(Chao::CSD::FontList, 0xC);
 struct MotionPalette;
 struct MotionPaletteLayer;
 
+/* The number of animated values of an element. Each is a word, selected by a channel number. */
+const int kEntryChannelCount = 15;
+
+/* The animated values of an entry, as named values and as words by channel number. The meanings
+ * are inferred from how the update code of csdLoader.cpp uses them: the entry's matrix is built
+ * from the translation, rotation and scale, field_0x20 and field_0x24 follow hidden and tint,
+ * and the pattern selects the texture region of a quad. */
+struct EntryChannelValues {
+    /* 0x00 */ s32 hidden;        /* channel 0 */
+    /* 0x04 */ f32 translateX;    /* channel 1 */
+    /* 0x08 */ f32 translateY;    /* channel 2 */
+    /* 0x0C */ f32 rotation;      /* channel 3 */
+    /* 0x10 */ f32 scaleX;        /* channel 4 */
+    /* 0x14 */ f32 scaleY;        /* channel 5 */
+    /* 0x18 */ f32 pattern;       /* channel 6 */
+    /* 0x1C */ u32 tint;          /* channel 7 */
+    /* 0x20 */ u32 colors[4];     /* channels 8 to 11 */
+    /* 0x30 */ s32 field_0x30[3]; /* channels 12 to 14 */
+};
+CHECK_SIZEOF(Chao::CSD::EntryChannelValues, 0x3C);
+
+union EntryChannels {
+    EntryChannelValues named;
+    u32 raw[kEntryChannelCount];
+};
+CHECK_SIZEOF(Chao::CSD::EntryChannels, 0x3C);
+
+/* Bits of MotionPaletteEntry::flags (names inferred from the update code of csdLoader.cpp). The
+ * bit of each channel number (the low 15 bits) is set once the channel's value is final. */
+enum EntryFlags {
+    ENTRY_TRANSFORM_CHANNELS = 0x3E, /* channels 1 to 5 */
+    ENTRY_TINT_CHANNEL = 0x80,       /* channel 7 */
+    ENTRY_COLOR_CHANNELS = 0xF00,    /* channels 8 to 11 */
+    ENTRY_CHANNELS_MASK = 0x7FFF,
+    ENTRY_APPLY = 0x8000,             /* a value changed and has to be applied */
+    ENTRY_MATRIX_CHANGED = 0x10000,   /* with ENTRY_APPLY: rebuild the matrix */
+    ENTRY_HIDDEN_CHANGED = 0x20000,   /* with ENTRY_APPLY: update field_0x20 */
+    ENTRY_TINT_CHANGED = 0x40000,     /* with ENTRY_APPLY: update field_0x24 */
+    ENTRY_ALL_CHANNELS_SET = 0x80000, /* all 15 channels are final */
+    ENTRY_SUBTREE_SET = 0x100000,     /* the entry and its children are final */
+    ENTRY_TRANSFORM_SET = 0x200000    /* channels 1 to 5 (the transform) are final */
+};
+const s32 kEntryChangeMask =
+    ENTRY_APPLY | ENTRY_MATRIX_CHANGED | ENTRY_HIDDEN_CHANGED | ENTRY_TINT_CHANGED;
+
 /* The runtime state of one element. Quad elements keep their vertices inline; text elements
  * allocate four vertices of each kind and one texture index per character. */
 struct MotionPaletteEntry {
     /* 0x00 */ Matrix matrix;
     /* 0x20 */ s32 field_0x20;
     /* 0x24 */ u32 field_0x24;
-    /* 0x28 */ u8 field_0x28[0x38 - 0x28];
-    /* 0x38 */ f32 field_0x38;
-    /* 0x3C */ f32 field_0x3C;
-    /* 0x40 */ f32 field_0x40;
-    /* 0x44 */ s32 field_0x44;
-    /* 0x48 */ u32 colors[4];
-    /* 0x58 */ s32 field_0x58[3];
+    /* 0x28 */ EntryChannels channels;
     /* 0x64 */ const char *text;
     /* 0x68 */ const char *fontName;
     /* 0x6C */ f32 textWidth;
     /* 0x70 */ f32 charSpacing;
     /* 0x74 */ u32 field_0x74;
-    /* 0x78 */ void *field_0x78;
-    /* 0x7C */ u32 flags;
+    /* 0x78 */ u32 *field_0x78;
+    /* 0x7C */ s32 flags;
     /* 0x80 */ MotionPaletteEntry *parent;
     /* 0x84 */ MotionPaletteLayer *layer;
     /* 0x88 */ s32 quadCount;
@@ -196,20 +266,24 @@ struct MotionPaletteLayer {
 };
 CHECK_SIZEOF(Chao::CSD::MotionPaletteLayer, 0x10);
 
-/* A palette is allocated in one block: this header, its layers, then every layer's entries. */
+struct SceneMotion;
+
+/* A palette is allocated in one block: this header, its layers, then every layer's entries. The
+ * values the palette was last updated with (frame, parent, motion and fonts) are kept to tell
+ * what changed (names inferred from UpdatePalette in csdLoader.cpp). */
 struct MotionPalette {
     /* 0x00 */ s32 layerCount;
     /* 0x04 */ MotionPaletteLayer *layers;
     /* 0x08 */ s32 field_0x8;
-    /* 0x0C */ f32 field_0xC;
-    /* 0x10 */ f32 field_0x10;
-    /* 0x14 */ u32 field_0x14;
+    /* 0x0C */ f32 lastFrame;
+    /* 0x10 */ f32 lastFrameStep;
+    /* 0x14 */ const MotionPaletteEntry *lastParent;
     /* 0x18 */ f32 screenSizeA[2];
     /* 0x20 */ f32 screenSizeB[2];
     /* 0x28 */ f32 screenOffsetA[2];
     /* 0x30 */ s32 field_0x30;
-    /* 0x34 */ u32 field_0x34;
-    /* 0x38 */ u32 field_0x38;
+    /* 0x34 */ const SceneMotion *lastMotion;
+    /* 0x38 */ const FontList *lastFonts;
     /* 0x3C */ MatrixValue *matrixPool;
 };
 CHECK_SIZEOF(Chao::CSD::MotionPalette, 0x40);

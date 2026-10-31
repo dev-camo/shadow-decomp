@@ -47,6 +47,28 @@ CHECK_SIZEOF(Chao::CSD::KeyTrack, 0xC);
  * the last key). */
 enum KeyTrackLoopMode { KEYTRACK_LOOP = 2 };
 
+/* The keys of the channels of one element, for the channels of a mask: one track for each bit of
+ * the mask, in channel order (names inferred from UpdateEntry and EvaluateChannels). */
+struct ChannelAnimation {
+    /* 0x00 */ u32 channelMask;
+    /* 0x04 */ KeyTrack *tracks;
+};
+CHECK_SIZEOF(Chao::CSD::ChannelAnimation, 0x8);
+
+/* The animation of a scene's layer: one ChannelAnimation for each element. */
+struct LayerMotion {
+    /* 0x00 */ u32 field_0x0;
+    /* 0x04 */ ChannelAnimation *entries;
+};
+CHECK_SIZEOF(Chao::CSD::LayerMotion, 0x8);
+
+/* The animation of a scene: one LayerMotion for each layer. */
+struct SceneMotion {
+    /* 0x00 */ u32 field_0x0;
+    /* 0x04 */ LayerMotion *layers;
+};
+CHECK_SIZEOF(Chao::CSD::SceneMotion, 0x8);
+
 /* A frame time of a pattern (sprite frame) animation packs two pattern indices and the blend
  * between them: the integer part is the index of the first pattern plus 10000 times the index of
  * the second, the fraction is the weight of the second. A first index above 10000 is an error
@@ -91,10 +113,14 @@ void DrawTextElement(const SceneData *scene, const ElementData *element,
  * meaning is not known). */
 int FindSceneNameIndex(const SceneData *scene, const char *name);
 
+/* Sets the texture region of a type 1 element's quad from the entry's pattern (called by code
+ * outside csdLoader.cpp; name inferred). */
+void SetEntryPattern(MotionPaletteEntry *entry, const ElementData *element, const SceneData *scene);
+
 /* Rescales an entry's vertices for the screen: each is transformed by the entry's matrix into the
- * drawing vertices, with the y coordinates adjusted by the element's aspect ratio relative to the
+ * drawing vertices, with the y coordinates adjusted by the scene's aspect ratio relative to the
  * screen's and the whole offset by the screen's scaled offset (name inferred). */
-void ApplyScreenAspect(MotionPaletteEntry *entry, const ElementData *element);
+void ApplyScreenAspect(MotionPaletteEntry *entry, const SceneData *scene);
 
 /* Evaluates a channel's track at a frame and stores the raw value in *out: the last or first
  * key's value outside the keys, otherwise what the channel number selects (channels 1 to 5
@@ -104,6 +130,13 @@ void ApplyScreenAspect(MotionPaletteEntry *entry, const ElementData *element);
  * the speed is positive, or before the first key while it is negative (names inferred). */
 void EvaluateTrack(u32 *out, const KeyTrack *track, int channel, f32 frame, f32 speed,
                    int *running);
+
+/* Brings a palette's entries to the state of a frame of the scene's animation. The motion may be
+ * null (the channels then come from the entry's own values or the element's values), the parent
+ * entry is the one the scene is drawn under. The palette remembers its last frame, parent, motion
+ * and fonts and skips the update when nothing changed (names inferred). */
+void UpdatePalette(MotionPalette *palette, const SceneData *scene, const SceneMotion *motion,
+                   f32 frame, const FontList *fonts, MotionPaletteEntry *parent);
 
 /* ResolveProject, then NormalizeProject on the result. */
 void LoadProject(ProjectData **project, void *file);

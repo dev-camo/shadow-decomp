@@ -10,8 +10,6 @@
 namespace Chao {
 namespace CSD {
 
-static const int kChannelCount = 15;
-
 /* The default value of a channel, an integer or a float (zero until SetUpChannelDefaults). */
 class ChannelValue {
   public:
@@ -26,7 +24,7 @@ class ChannelValue {
 CHECK_SIZEOF(ChannelValue, 0x4);
 
 static int s_defaultsReady;
-static ChannelValue s_defaults[kChannelCount];
+static ChannelValue s_defaults[kEntryChannelCount];
 
 /* The last request of FindStoredIndex: the number of stored channels below the channel, for the
  * mask. A request for the same mask and the same or a later channel resumes counting there. */
@@ -64,7 +62,7 @@ static inline void SetUpChannelDefaults() {
     s_defaults[13].asInt = 0;
     s_defaults[14].asInt = 0;
     s_defaultsReady = 1;
-    for (int channel = 0; channel < kChannelCount; channel++) {
+    for (int channel = 0; channel < kEntryChannelCount; channel++) {
         s_fullChannelMask |= 1 << channel;
     }
 }
@@ -86,7 +84,7 @@ static inline int FindStoredIndex(int channel, u32 channelMask) {
         index = s_cachedCount;
         bit = s_cachedChannel;
     }
-    for (; bit < kChannelCount; bit++) {
+    for (; bit < kEntryChannelCount; bit++) {
         if (bit == channel) {
             s_cachedCount = index;
             s_cachedChannel = channel;
@@ -128,11 +126,12 @@ void ResetEntry(MotionPaletteEntry *entry) {
     memset(entry, 0, sizeof(MotionPaletteEntry));
     SetMatrixIdentity(&entry->matrix);
     entry->field_0x24 = -1;
-    entry->field_0x38 = 1.0f;
-    entry->field_0x3C = 1.0f;
-    entry->field_0x40 = -100000.0f;
-    entry->field_0x44 = -1;
-    entry->colors[0] = entry->colors[1] = entry->colors[2] = entry->colors[3] = -1;
+    EntryChannelValues &values = entry->channels.named;
+    values.scaleX = 1.0f;
+    values.scaleY = 1.0f;
+    values.pattern = -100000.0f;
+    values.tint = -1;
+    values.colors[0] = values.colors[1] = values.colors[2] = values.colors[3] = -1;
     entry->textWidth = -1.0f;
     entry->charSpacing = -1000000.0f;
 }
