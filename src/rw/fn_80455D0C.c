@@ -674,13 +674,14 @@ static inline RpAtomic *ClumpCloneAtomic(RpAtomic *atomic, void *data) {
         return NULL;
     }
     frame = atomic->object.parent;
-    if (frame == NULL) {
+    if (frame != NULL) {
+        /* the clone of the atomic's frame, which the cloned hierarchy keeps in its root */
+        fn_80458CBC(newAtomic, frame->root);
+    } else {
         fn_80456FD8(newAtomic);
         RWERROR((E_RW_ATOMICNOFRAME));
         return NULL;
     }
-    /* the clone of the atomic's frame, which the cloned hierarchy keeps in its root */
-    fn_80458CBC(newAtomic, frame->root);
     fn_80457608(cloneData->newClump, newAtomic);
     return atomic;
 }
