@@ -5,6 +5,9 @@
 
 #include "__gx.h"
 
+// GXCompressZ16 and GXDecompressZ16 have no symbol in the final binary: the linker stripped
+// them, so no original bytes exist to check them against.
+
 static GXDrawSyncCallback TokenCB;
 static GXDrawDoneCallback DrawDoneCB;
 static u8 DrawDone;
@@ -272,9 +275,9 @@ void GXPeekARGB(u16 x, u16 y, u32 *color) {
 void GXPokeARGB(u16 x, u16 y, u32 color) {
     u32 addr = (u32)OSPhysicalToUncached(0x08000000);
 
-    SET_REG_FIELD(0x322, addr, 10, 2, x);
-    SET_REG_FIELD(0x323, addr, 10, 12, y);
-    SET_REG_FIELD(0x323, addr, 2, 22, 0);
+    SET_REG_FIELD(802, addr, 10, 2, x);
+    SET_REG_FIELD(803, addr, 10, 12, y);
+    SET_REG_FIELD(803, addr, 2, 22, 0);
     *(u32 *)addr = color;
 }
 
@@ -356,11 +359,11 @@ static void GXFinishInterruptHandler(__OSInterrupt interrupt, OSContext *context
 
 void __GXPEInit(void) {
     u32 reg;
-    __OSSetInterruptHandler(0x12, GXTokenInterruptHandler);
-    __OSSetInterruptHandler(0x13, GXFinishInterruptHandler);
+    __OSSetInterruptHandler(__OS_INTERRUPT_PI_PE_TOKEN, GXTokenInterruptHandler);
+    __OSSetInterruptHandler(__OS_INTERRUPT_PI_PE_FINISH, GXFinishInterruptHandler);
     OSInitThreadQueue(&FinishQueue);
-    __OSUnmaskInterrupts(0x2000);
-    __OSUnmaskInterrupts(0x1000);
+    __OSUnmaskInterrupts(OS_INTERRUPTMASK_PI_PE_TOKEN);
+    __OSUnmaskInterrupts(OS_INTERRUPTMASK_PI_PE_FINISH);
     reg = GX_GET_PE_REG(5);
     SET_REG_FIELD(0, reg, 1, 2, 1);
     SET_REG_FIELD(0, reg, 1, 3, 1);
@@ -374,12 +377,7 @@ u32 GXCompressZ16(u32 z24, GXZFmt16 zfmt) {
     u32 z24n;
     s32 exp;
     s32 shift;
-#if DEBUG
-#define temp exp
-#else
     s32 temp;
-    u8 unused[4];
-#endif
 
     z24n = ~(z24 << 8);
     temp = __cntlzw(z24n);
@@ -398,7 +396,7 @@ u32 GXCompressZ16(u32 z24, GXZFmt16 zfmt) {
         } else {
             shift = 9 - exp;
         }
-        z16 = ((z24 >> shift) & 0x3FFF & ~0xFFFFC000) | (exp << 14);
+        z16 = ((z24 >> shift) & 0x3FFF) | (exp << 14);
         break;
     case GX_ZC_MID:
         if (temp > 7) {
@@ -411,7 +409,7 @@ u32 GXCompressZ16(u32 z24, GXZFmt16 zfmt) {
         } else {
             shift = 10 - exp;
         }
-        z16 = ((z24 >> shift) & 0x1FFF & ~0xFFFFE000) | (exp << 13);
+        z16 = ((z24 >> shift) & 0x1FFF) | (exp << 13);
         break;
     case GX_ZC_FAR:
         if (temp > 12) {
@@ -424,7 +422,7 @@ u32 GXCompressZ16(u32 z24, GXZFmt16 zfmt) {
         } else {
             shift = 11 - exp;
         }
-        z16 = ((z24 >> shift) & 0xFFF & ~0xFFFFF000) | (exp << 12);
+        z16 = ((z24 >> shift) & 0xFFF) | (exp << 12);
         break;
     default:
         OSPanic(__FILE__, 1004, "GXCompressZ16: Invalid Z format\n");
