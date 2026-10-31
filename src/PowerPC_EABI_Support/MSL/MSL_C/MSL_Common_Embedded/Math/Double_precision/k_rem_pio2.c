@@ -129,8 +129,7 @@
 #include "fdlibm.h"
 
 #ifdef __STDC__
-static const int init_jk[] = {2, 3, 4, 6};
-/* initial value for jk */ /*- cc 020130 -*/
+static const int init_jk[] = {2, 3, 4, 6}; /* initial value for jk */ /*- cc 020130 -*/
 #else
 static int init_jk[] = {2, 3, 4, 6}; /*- cc 020130 -*/
 #endif

@@ -3,6 +3,9 @@
 
 #undef __va_arg
 
+/* type is the _var_arg_typeof code of the argument. Inferred from the code below: 3 is double (taken
+ * from the floating-point registers), 2 is a 64-bit integer (an even register pair), 0 is an
+ * argument passed by reference (the slot holds its address), and any other code is a 4-byte value. */
 void *__va_arg(_va_list_struct *list, int type) {
     char *addr;
     char *reg = &(list->gpr);
@@ -38,7 +41,7 @@ void *__va_arg(_va_list_struct *list, int type) {
     } else {
         *reg = 8;
         addr = list->input_arg_area;
-        addr = (char *)(((uintptr_t)(addr) + ((size)-1)) & ~((size)-1));
+        addr = (char *)(((uintptr_t)addr + (size - 1)) & ~(size - 1));
         list->input_arg_area = addr + size;
     }
 

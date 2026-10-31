@@ -31,8 +31,8 @@ static inline void InitDefaultHeap(void) {
         arena_hi = OSGetArenaHi();
         arena_lo = OSInitAlloc(arena_lo, arena_hi, 1);
         OSSetArenaLo(arena_lo);
-        arena_lo = (void *)(((unsigned int)arena_lo + 0x1F) & ~0x1F);
-        arena_hi = (void *)((unsigned int)arena_hi & ~0x1F);
+        arena_lo = (void *)OSRoundUp32B(arena_lo);
+        arena_hi = (void *)OSRoundDown32B(arena_hi);
         heap = OSCreateHeap(arena_lo, arena_hi);
         OSSetCurrentHeap(heap);
         OSSetArenaLo(arena_hi);

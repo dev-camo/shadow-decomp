@@ -20,16 +20,21 @@
 extern __mem_pool ALLOCATOR_STATE;
 extern unsigned char ALLOCATOR_INITIALIZED;
 
-void *calloc(unsigned long count, unsigned long size) {
-    void *ptr;
-
-    __begin_critical_region(malloc_pool_access);
+/* Returns the malloc pool, clearing it on first use (MSL's get_malloc_pool). */
+static inline __mem_pool *get_malloc_pool(void) {
     if (ALLOCATOR_INITIALIZED == 0) {
         memset(&ALLOCATOR_STATE, 0, sizeof(__mem_pool_obj));
         ALLOCATOR_INITIALIZED = 1;
     }
 
-    ptr = __pool_alloc_clear(&ALLOCATOR_STATE, size * count);
+    return &ALLOCATOR_STATE;
+}
+
+void *calloc(unsigned long count, unsigned long size) {
+    void *ptr;
+
+    __begin_critical_region(malloc_pool_access);
+    ptr = __pool_alloc_clear(get_malloc_pool(), size * count);
     __end_critical_region(malloc_pool_access);
     return ptr;
 }
@@ -38,24 +43,14 @@ void *realloc(void *ptr, unsigned long size) {
     void *result;
 
     __begin_critical_region(malloc_pool_access);
-    if (ALLOCATOR_INITIALIZED == 0) {
-        memset(&ALLOCATOR_STATE, 0, sizeof(__mem_pool_obj));
-        ALLOCATOR_INITIALIZED = 1;
-    }
-
-    result = __pool_realloc(&ALLOCATOR_STATE, ptr, size);
+    result = __pool_realloc(get_malloc_pool(), ptr, size);
     __end_critical_region(malloc_pool_access);
     return result;
 }
 
 void free(void *ptr) {
     __begin_critical_region(malloc_pool_access);
-    if (ALLOCATOR_INITIALIZED == 0) {
-        memset(&ALLOCATOR_STATE, 0, sizeof(__mem_pool_obj));
-        ALLOCATOR_INITIALIZED = 1;
-    }
-
-    __pool_free(&ALLOCATOR_STATE, ptr);
+    __pool_free(get_malloc_pool(), ptr);
     __end_critical_region(malloc_pool_access);
 }
 
@@ -63,12 +58,7 @@ void *malloc(unsigned long size) {
     void *ptr;
 
     __begin_critical_region(malloc_pool_access);
-    if (ALLOCATOR_INITIALIZED == 0) {
-        memset(&ALLOCATOR_STATE, 0, sizeof(__mem_pool_obj));
-        ALLOCATOR_INITIALIZED = 1;
-    }
-
-    ptr = __pool_alloc(&ALLOCATOR_STATE, size);
+    ptr = __pool_alloc(get_malloc_pool(), size);
     __end_critical_region(malloc_pool_access);
     return ptr;
 }

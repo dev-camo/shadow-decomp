@@ -30,11 +30,20 @@ CHECK_SIZEOF(__bss_init_info, 0x8);
 
 extern __bss_init_info _bss_init_info[];
 
+/* One entry of the executable's exception index table (see register_fragment.c). */
+typedef struct ExceptionIndex {
+    /* 0x00 */ unsigned int start;
+    /* 0x04 */ unsigned int size_and_flags;
+    /* 0x08 */ unsigned int exception_table;
+} ExceptionIndex;
+CHECK_SIZEOF(ExceptionIndex, 0xC);
+
+/* A module's exception index and the code range it covers; the table ends with a text_size of 0. */
 typedef struct __eti_init_info {
-    void *eti_start;
-    void *eti_end;
-    void *code_start;
-    unsigned long code_size;
+    /* 0x00 */ ExceptionIndex *index_begin;
+    /* 0x04 */ ExceptionIndex *index_end;
+    /* 0x08 */ char *text_start;
+    /* 0x0C */ unsigned int text_size;
 } __eti_init_info;
 CHECK_SIZEOF(__eti_init_info, 0x10);
 

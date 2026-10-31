@@ -3,8 +3,8 @@
 #include "layout_check.h"
 
 /* Types and helpers of MSL alloc.c, shared by the units this project splits it into (calloc.c,
- * allocator_core.c, allocator_release.c). Layouts and macro names follow the MSL alloc.c in the
- * Twilight Princess decompilation. */
+ * allocator_core.c, allocator_release.c). Layouts and macro names follow MSL's alloc.c; the layouts are
+ * checked with CHECK_SIZEOF against the game's allocations. */
 
 typedef struct Block {
     struct Block *prev;     /* 0x00 */

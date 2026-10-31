@@ -1,20 +1,7 @@
 /* CodeWarrior runtime exception-table fragments (MSL Gecko_ExceptionPPC.cp): registration of the
  * executable's exception index and the lookup of a PC's exception record. Nonmatching research. */
-typedef struct ExceptionIndex {
-    /* 0x00 */ unsigned int start;
-    /* 0x04 */ unsigned int size_and_flags;
-    /* 0x08 */ unsigned int exception_table;
+#include "NMWException.h"
 #include "layout_check.h"
-} ExceptionIndex;
-CHECK_SIZEOF(ExceptionIndex, 0xC);
-
-struct __eti_init_info {
-    /* 0x00 */ ExceptionIndex *index_begin;
-    /* 0x04 */ ExceptionIndex *index_end;
-    /* 0x08 */ char *text_start;
-    /* 0x0C */ unsigned int text_size;
-};
-CHECK_SIZEOF(struct __eti_init_info, 0x10);
 
 /* registered exception-table fragment (names from MSL's Gecko_ExceptionPPC.cp) */
 typedef struct ProcessInfo {
@@ -133,7 +120,10 @@ void FIND_EXCEPTION_FRAGMENT(char *pc, FragmentInfo *info) {
     info->relative_base = (void *)(unsigned int)search_info->relative_base;
     info->toc = search_info->toc;
     pc_offset = (unsigned int)pc - search_info->address_base;
-    /* This spelling gives MWCC the original single top-of-loop exit test. */
+    /* Matching workaround: for (;;) with a break instead of while (low <= high). The break form gives
+     * MWCC the original single top-of-loop exit test; the while loop makes this unit's .text 0x274
+     * bytes instead of 0x26C and raises the differing instruction lines from 101 to 116. Revisit when
+     * the original loop form is known. */
     for (;;) {
         if (low > high) {
             break;
