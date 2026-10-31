@@ -26,9 +26,21 @@ static const Char8 mwsfd_ver_str[] = "\nMWSFD/GC Ver.3.50 Build:Feb 28 2005 19:3
 
 /* driver table of the SFD core, in driver order (the unused slots are 0) */
 static const SFD_TR_IF *const mwsfd_trentry[15] = {
-    &SFD_tr_in_mem,    &SFD_tr_sd_mps, &SFD_tr_vd_mpv, &SFD_tr_vo_manu, &SFD_tr_ad_adxt,
-    &SFD_tr_ao_auto_p, &SFD_tr_uo,     0,              0,               0,
-    0,                 0,              0,              0,               0,
+    &SFD_tr_in_mem,
+    &SFD_tr_sd_mps,
+    &SFD_tr_vd_mpv,
+    &SFD_tr_vo_manu,
+    &SFD_tr_ad_adxt,
+    &SFD_tr_ao_auto_p,
+    &SFD_tr_uo,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
 };
 
 /* The driver table is read through SFTRN_TRIF_TBL, the type of SFD_INIT_PRM.trif_tbl; the cast
@@ -213,12 +225,12 @@ static void mwsflib_SetLibPrm(MWSFD_LIBWORK *lw, MWSFD_INIT_PRM *prm) {
         lw->vfreq = prm->vfreq;
         lw->x08 = prm->x04;
         lw->nfrm_pool = prm->nfrm_pool;
-        lw->x10 = prm->x0c;
+        lw->main_decode = prm->x0c;
     } else {
         lw->vfreq = 59.94f;
         lw->x08 = 1;
         lw->nfrm_pool = 1;
-        lw->x10 = 0;
+        lw->main_decode = 0;
     }
 }
 
@@ -270,7 +282,7 @@ void mwPlyInitSfdFx(MWSFD_INIT_PRM *iprm) {
         lw = &mwsfd_libwork;
         memset(lw, 0, sizeof(MWSFD_LIBWORK));
         MWSFSVR_SetMwsfdSvrFlg(0);
-        lw->x5c = 0;
+        lw->vsync_flg = 0;
         mwsflib_SetLibPrm(&mwsfd_libwork, pprm);
         lw->use_picusr = 1;
         lw->pause_bdr = 0;

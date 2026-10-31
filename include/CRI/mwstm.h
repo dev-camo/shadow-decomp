@@ -11,7 +11,7 @@ extern "C" {
 
 Sint32 MWSTM_GetStat(ADXSTM stm);
 void MWSTM_ReqStop(ADXSTM stm);
-void MWSTM_ReqStart(ADXSTM stm);
+Sint32 MWSTM_ReqStart(ADXSTM stm);
 void MWSTM_SetFileRange(ADXSTM stm, const Char8 *fname, void *dir, Sint32 ofst, Sint32 nsct);
 void MWSTM_Destroy(ADXSTM stm);
 ADXSTM MWSTM_Create(SJ sj);

@@ -18,6 +18,9 @@ void ADXCRS_Unlock(void);
 void ADXCRS_Enter(void);
 void ADXCRS_Leave(void);
 
+/* adx_mgc.c */
+void ADXM_WaitVsync(void);
+
 /* adx_errs.c */
 void ADXERR_ItoA2(Sint32 a, Sint32 b, Char8 *str, Sint32 len);
 void ADXERR_CallErrFunc2(const Char8 *msg1, const Char8 *msg2);

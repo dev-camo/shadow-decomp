@@ -16,9 +16,9 @@ void MWSTM_ReqStop(ADXSTM stm) {
     ADXSTM_ReleaseFileNw(stm);
 }
 
-/* Starts streaming the bound range. */
-void MWSTM_ReqStart(ADXSTM stm) {
-    ADXSTM_Start(stm);
+/* Starts streaming the bound range; the player treats a result of -1 as a refusal. */
+Sint32 MWSTM_ReqStart(ADXSTM stm) {
+    return ADXSTM_Start(stm);
 }
 
 /* Unbinds, binds the new file range (no-wait) and sets the end-of-stream at its length. */
