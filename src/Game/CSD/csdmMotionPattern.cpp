@@ -6,7 +6,7 @@
  * Every setter allocates the entry's overrides block when it is the first to need it. The
  * allocation lines differ between the setters (the original passes a different __LINE__ in
  * each), so the setters repeat that code instead of sharing a helper. */
-#include "Game/CSD/csdm.h"
+#include "Game/CSD/csdmScene.h"
 #include "Game/CSD/Matrix.h"
 #include "Game/CSD/Screen.h"
 #include "Game/CSD/csdAccess.h"

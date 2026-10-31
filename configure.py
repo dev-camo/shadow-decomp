@@ -935,6 +935,21 @@ config.libs = [
                 # MatrixValue, which the link discards. Its .bss holds the free release policy as
                 # one byte, where the game's symbol spans the 8 bytes up to the next one.
                 Object(NonMatching, "Game/CSD/csdmMotionPattern.cpp", cflags=cflags_csd),
+                # The node of a scene element: the handle of its file data (constructor, destructor,
+                # Clear, Attach and Copy), the accessors that forward to its CMotionPattern (hidden
+                # flag, translation, rotation, scale, pattern, tint, colours and user values), the
+                # channel defaults and the node's copy of the fonts. 32 of the unit's 97 functions are
+                # sourced, and each has the original's instructions and relocation targets
+                # (SetTranslateX, SetTranslateY and SetPattern use a differently named label for their
+                # float literal). The other 65 are not sourced: the node's constructor and destructor,
+                # the loop over a map of other nodes that sets the pattern's values from them, and
+                # the containers and RCPtr instances they need. The unit's .rodata and .data are
+                # incomplete for the same reason, and it emits weak copies of
+                # RCPtr<unsigned char>::Reset, the RCObject<unsigned char> constructor and vtable and
+                # CMemoryAlloc::AllocObject, which the link discards, and a local instance of the
+                # delete-policy Assign (0x1C0 bytes) that only the weak Reset calls (the original
+                # unit has no such function).
+                Object(NonMatching, "Game/CSD/csdmNode.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/fn_80008D48.c"),
                 Object(Matching, "Game/fn_80008DA4.c"),
                 Object(Matching, "Game/fn_80008E1C.c"),
