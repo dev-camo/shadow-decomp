@@ -45,6 +45,7 @@ class UnkProbeTarget_800587A0 {
 };
 
 class UnkWorld_80021B08;
+class UnkAttack_8005A840;
 
 extern "C" {
 /* The single world object that owns the probes, constructed on first use (behaviour inferred). */
@@ -64,6 +65,12 @@ boost::shared_ptr<UnkProbeTarget_800587A0> fn_800C7A84(UnkWorld_80021B08 *world,
 /* The character info that the probe belongs to, or an empty pointer (behaviour inferred). */
 boost::weak_ptr<CharInfo> fn_800C4568(UnkWorld_80021B08 *world,
                                       boost::weak_ptr<UnkProbeTarget_800587A0> target);
+/* Tests the attack along the segment and returns a newly allocated list of what it met, or 0
+ * (behaviour inferred); arg2 and the four further arguments are passed on and are not
+ * understood. */
+UnkProbeList_80021FE4 *fn_800C5D74(UnkWorld_80021B08 *world, const UnkSegment_80020A20 *segment,
+                                   int arg2, int arg3, int arg4, int arg5, int arg6,
+                                   boost::weak_ptr<UnkAttack_8005A840> attack);
 }
 
 #endif

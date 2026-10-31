@@ -25,9 +25,14 @@ Game/fn_80008E1C.c:
 Game/fn_800091D0.c:
 	.text       start:0x800091D0 end:0x80009208
 
-Game/fn_80068A3C.c:
-	.text       start:0x80068A3C end:0x80068A48
+Game/WeaponStickBase.cpp:
+	.text       start:0x80067870 end:0x80068A48
 	.ctors      start:0x804A9C7C end:0x804A9C80
+	.rodata     start:0x804AE598 end:0x804AE6C0
+	.data       start:0x8051F7B0 end:0x8051F810
+	.sdata      start:0x805E3DC8 end:0x805E3DE0
+	.sbss       start:0x805EE2D0 end:0x805EE2E8
+	.sdata2     start:0x805F2208 end:0x805F2230
 
 Game/TornadoCollision.cpp:
 	.text       start:0x800DF4E8 end:0x800DFBAC

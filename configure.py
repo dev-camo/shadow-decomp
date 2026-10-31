@@ -617,6 +617,14 @@ config.libs = [
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitEntrance.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
+                # All 46 functions and every data section match. The implementation class's
+                # destructor is emitted right after boost::checked_delete, where the original
+                # has it between the implementation's Update and constructor. The original
+                # destructor is a weak symbol and checked_delete stays out of line, so it was an
+                # inline function, yet it sits where an out-of-line definition would go; an
+                # out-of-line definition there is global and inlines checked_delete, and no
+                # natural source form reproduced both.
+                Object(NonMatching, "Game/WeaponStickBase.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/TestNakazawa.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/BDTrue.cpp", cflags=cflags_game_cpp),
                 # Every function, the data and all relocations match except ProcessHits, which is
@@ -704,7 +712,6 @@ config.libs = [
                 Object(Matching, "Game/fn_80406B70.c"),
                 Object(Matching, "Game/fn_80407920.c"),
                 Object(Matching, "Game/fn_80407930.c"),
-                Object(Matching, "Game/fn_80068A3C.c"),
                 Object(Matching, "Game/fn_804110EC.c"),
                 Object(Matching, "Game/fn_804212F4.c"),
                 Object(Matching, "Game/fn_8040E048.c"),
