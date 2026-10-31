@@ -59,7 +59,7 @@ void fn_8048B208(RwFrame *root) {
     RwUInt8 flags = root->object.privateFlags;
 
     if (flags & rwFRAMEPRIVATEHIERARCHYSYNCLTM) {
-        RwInt32 rootFlags = flags & rwFRAMEPRIVATESUBTREESYNCLTM;
+        RwUInt8 rootFlags = flags & rwFRAMEPRIVATESUBTREESYNCLTM;
 
         /* The root's LTM is its modelling matrix */
         if (rootFlags) {
