@@ -789,8 +789,8 @@ static void EvaluateChannels(MotionPaletteEntry *entry, const ElementData *eleme
     for (channel = 0; channel < kEntryChannelCount; channel++) {
         bit = 1 << channel;
 
-        if (entry->field_0x74 & bit) {
-            values[channel] = entry->field_0x78[channel];
+        if (entry->overrideMask & bit) {
+            values[channel] = entry->overrides[channel].bits;
             entry->flags |= bit;
             if (animation != NULL && (animation->channelMask & bit)) {
                 track++;
@@ -844,8 +844,8 @@ static void UpdateEntryTransform(MotionPaletteEntry *entry, const ElementData *e
 
     if (entry->flags & ENTRY_MATRIX_CHANGED) {
         Matrix *matrix = GetTopMatrix();
-        f32 x = entry->channels.named.translateX;
-        f32 y = entry->channels.named.translateY;
+        f32 x = entry->channels.named.translate.x;
+        f32 y = entry->channels.named.translate.y;
 
         ScaleByScreenA(&x, &y);
 
@@ -949,7 +949,7 @@ static void UpdateEntryTransform(MotionPaletteEntry *entry, const ElementData *e
 
         UseTopMatrixAsSource();
         RotateMatrix(entry->channels.named.rotation);
-        ScaleMatrix(entry->channels.named.scaleX, entry->channels.named.scaleY);
+        ScaleMatrix(entry->channels.named.scale.x, entry->channels.named.scale.y);
         if (applyParentScale) {
             ScaleMatrix(parentScaleX, parentScaleY);
         }

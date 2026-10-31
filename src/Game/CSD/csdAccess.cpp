@@ -127,8 +127,8 @@ void ResetEntry(MotionPaletteEntry *entry) {
     SetMatrixIdentity(&entry->matrix);
     entry->field_0x24 = -1;
     EntryChannelValues &values = entry->channels.named;
-    values.scaleX = 1.0f;
-    values.scaleY = 1.0f;
+    values.scale.x = 1.0f;
+    values.scale.y = 1.0f;
     values.pattern = -100000.0f;
     values.tint = -1;
     values.colors[0] = values.colors[1] = values.colors[2] = values.colors[3] = -1;

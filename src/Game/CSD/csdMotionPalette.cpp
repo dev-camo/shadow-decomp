@@ -396,9 +396,9 @@ void ReleasePalette(MotionPalette *palette) {
             MotionPaletteEntry *entry = &palette->layers[i].entries[j];
             entry->matrix.sub1 = NULL;
             entry->matrix.sub0 = NULL;
-            if (entry->field_0x78 != NULL) {
-                Free(entry->field_0x78);
-                entry->field_0x78 = NULL;
+            if (entry->overrides != NULL) {
+                Free(entry->overrides);
+                entry->overrides = NULL;
             }
             if (entry->ownsVertices && entry->vertices != NULL) {
                 Free(entry->vertices);
@@ -415,9 +415,9 @@ void ReleasePalette(MotionPalette *palette) {
 void ReleaseEntry(MotionPaletteEntry *entry) {
     entry->matrix.sub1 = NULL;
     entry->matrix.sub0 = NULL;
-    if (entry->field_0x78 != NULL) {
-        Free(entry->field_0x78);
-        entry->field_0x78 = NULL;
+    if (entry->overrides != NULL) {
+        Free(entry->overrides);
+        entry->overrides = NULL;
     }
     if (entry->ownsVertices && entry->vertices != NULL) {
         Free(entry->vertices);

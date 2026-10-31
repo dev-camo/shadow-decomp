@@ -20,6 +20,13 @@ struct NameEntry {
 };
 CHECK_SIZEOF(Chao::CSD::NameEntry, 0x8);
 
+/* Two floats that travel together: a translation or a scale (name inferred). */
+struct Vector2 {
+    /* 0x00 */ f32 x;
+    /* 0x04 */ f32 y;
+};
+CHECK_SIZEOF(Chao::CSD::Vector2, 0x8);
+
 /* A quad corner: position, colour and texture coordinates. */
 struct Vertex {
     /* 0x00 */ f32 x;
@@ -194,17 +201,40 @@ const int kEntryChannelCount = 15;
  * and the pattern selects the texture region of a quad. */
 struct EntryChannelValues {
     /* 0x00 */ s32 hidden;        /* channel 0 */
-    /* 0x04 */ f32 translateX;    /* channel 1 */
-    /* 0x08 */ f32 translateY;    /* channel 2 */
+    /* 0x04 */ Vector2 translate; /* channels 1 and 2 */
     /* 0x0C */ f32 rotation;      /* channel 3 */
-    /* 0x10 */ f32 scaleX;        /* channel 4 */
-    /* 0x14 */ f32 scaleY;        /* channel 5 */
+    /* 0x10 */ Vector2 scale;     /* channels 4 and 5 */
     /* 0x18 */ f32 pattern;       /* channel 6 */
     /* 0x1C */ u32 tint;          /* channel 7 */
     /* 0x20 */ u32 colors[4];     /* channels 8 to 11 */
     /* 0x30 */ s32 field_0x30[3]; /* channels 12 to 14 */
 };
 CHECK_SIZEOF(Chao::CSD::EntryChannelValues, 0x3C);
+
+/* The channel numbers (the bit of a channel is 1 << number in the masks below). The names are
+ * inferred from EntryChannelValues. */
+enum EntryChannel {
+    CHANNEL_HIDDEN = 0,
+    CHANNEL_TRANSLATE_X = 1,
+    CHANNEL_TRANSLATE_Y = 2,
+    CHANNEL_ROTATION = 3,
+    CHANNEL_SCALE_X = 4,
+    CHANNEL_SCALE_Y = 5,
+    CHANNEL_PATTERN = 6,
+    CHANNEL_TINT = 7,
+    CHANNEL_COLOR_0 = 8,
+    CHANNEL_FIELD_0x30 = 12
+};
+
+/* A channel value as the word it is stored in (the type depends on the channel). An entry's
+ * override block is an array of these indexed by EntryChannel, with the layout of
+ * EntryChannels. */
+union ChannelWord {
+    s32 integer;
+    u32 bits;
+    f32 number;
+};
+CHECK_SIZEOF(Chao::CSD::ChannelWord, 0x4);
 
 union EntryChannels {
     EntryChannelValues named;
@@ -230,8 +260,19 @@ enum EntryFlags {
 const s32 kEntryChangeMask =
     ENTRY_APPLY | ENTRY_MATRIX_CHANGED | ENTRY_HIDDEN_CHANGED | ENTRY_TINT_CHANGED;
 
+/* The screen description an entry without quads was last brought up to date with (inferred from
+ * CMotionPattern::UpdateTransform, csdmMotionPattern.cpp): both sizes and the scaled offset, in
+ * the order GetScreenSizeA, GetScreenSizeB and GetScaledScreenOffsetA return them. */
+struct ScreenState {
+    /* 0x00 */ f32 sizeA[2];
+    /* 0x08 */ f32 sizeB[2];
+    /* 0x10 */ f32 offsetA[2];
+};
+CHECK_SIZEOF(Chao::CSD::ScreenState, 0x18);
+
 /* The runtime state of one element. Quad elements keep their vertices inline; text elements
- * allocate four vertices of each kind and one texture index per character. */
+ * allocate four vertices of each kind and one texture index per character. An entry that has no
+ * quads keeps a ScreenState in the same slot. */
 struct MotionPaletteEntry {
     /* 0x00 */ Matrix matrix;
     /* 0x20 */ s32 field_0x20;
@@ -241,13 +282,16 @@ struct MotionPaletteEntry {
     /* 0x68 */ const char *fontName;
     /* 0x6C */ f32 textWidth;
     /* 0x70 */ f32 charSpacing;
-    /* 0x74 */ u32 field_0x74;
-    /* 0x78 */ u32 *field_0x78;
+    /* 0x74 */ u32 overrideMask;
+    /* 0x78 */ ChannelWord *overrides;
     /* 0x7C */ s32 flags;
     /* 0x80 */ MotionPaletteEntry *parent;
     /* 0x84 */ MotionPaletteLayer *layer;
     /* 0x88 */ s32 quadCount;
-    /* 0x8C */ Vertex *vertices;
+    union {
+        /* 0x8C */ Vertex *vertices;
+        /* 0x8C */ ScreenState *screenState;
+    };
     /* 0x90 */ Vertex *drawVertices;
     /* 0x94 */ s32 *textures;
     /* 0x98 */ Vertex quadVertices[4];

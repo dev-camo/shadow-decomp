@@ -869,6 +869,27 @@ config.libs = [
                 # vtable (the original unit has no .data), which the link discards in favour of the
                 # game's copy.
                 Object(NonMatching, "Game/CSD/csdmMotionPalette.cpp", cflags=cflags_csd),
+                # The accessors that override the animated values of an element's entry
+                # (CMotionPattern), its constructor and Copy, and UpdateTransform. 32 of 32
+                # functions are sourced. 9 have identical instructions; 13 differ only in the
+                # __LINE__ passed by their allocations (one word each, two in UpdateTransform; the
+                # original's lines run from 54 to 1067 in a file far longer than this one). The
+                # holder Assign for the free and function release policies (112 words, the
+                # original's 115) shows the difference described for csdLoader.cpp. Six getters
+                # (GetHidden, GetRotation, GetTint, GetPattern, GetValue and GetColor) differ in the
+                # order of two prologue instructions (the original loads the entry pointer before it
+                # saves the link register; 2 words each). GetValue and GetColor also swap the
+                # registers of the channel bit and the mask (6 words each in all). GetTranslation
+                # and GetScale (49 words, the original's 45) copy their result through the float
+                # registers where the original uses the integer ones. The .rodata holds the same
+                # four strings in a different order (the original has the holder's error text
+                # first). The unit also emits weak copies of the CMotionPattern destructor
+                # (identical to the game's copy, which comes from csdmScene.cpp),
+                # RCObject<unsigned char>::SetRelease, CMemoryAlloc::AllocObject and
+                # CMemoryAlloc::FreeObject and of the RCObject vtables for unsigned char and
+                # MatrixValue, which the link discards. Its .bss holds the free release policy as
+                # one byte, where the game's symbol spans the 8 bytes up to the next one.
+                Object(NonMatching, "Game/CSD/csdmMotionPattern.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/fn_80008D48.c"),
                 Object(Matching, "Game/fn_80008DA4.c"),
                 Object(Matching, "Game/fn_80008E1C.c"),
