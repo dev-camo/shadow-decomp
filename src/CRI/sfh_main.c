@@ -99,8 +99,10 @@ static const Char8 *sfhlib_version_dummy;
 #define SWAP32(x)                                                                                  \
     (((x) << 24) | (((x) << 8) & 0x00FF0000) | (((x) >> 8) & 0x0000FF00) | (((x) >> 24) & 0xFF))
 
-/* Picture rate code (1..8) -> frame rate x1000 (23976 .. 60000); 0 for unknown. */
-Sint32 getPicRate(Uint32 code) {
+/* Picture rate code (1..8) -> frame rate x1000 (23976 .. 60000); 0 for unknown. Not an
+ * exported symbol of the original (its bytes exist only inlined into SFH_AnlyElemPicRate), so
+ * the name is inferred. */
+static Sint32 getPicRate(Uint32 code) {
     switch (code) {
     case 1:
         return 23976;
@@ -122,6 +124,9 @@ Sint32 getPicRate(Uint32 code) {
         return 0;
     }
 }
+
+/* The sfh_* static helpers below are named from what they do; their original names are not
+ * known. */
 
 /* The handle has a validated header (SFH_IsSfdHeader succeeded). */
 static Bool sfh_IsValid(SFH sfh) {
@@ -248,8 +253,7 @@ static Sint32 sfh_Atoi(const Char8 **pp) {
         if (!sfh_IsDigit(c)) {
             break;
         }
-        num = num * 10 + c;
-        num -= '0';
+        num = num * 10 + (c - '0');
         p++;
     }
     *pp = p;
@@ -452,7 +456,7 @@ Bool SFH_AnlyElemPicSz(SFH sfh, Uint8 id, Sint32 *width, Sint32 *height) {
 /* Video element: bit rate (little-endian 16-bit). */
 Bool SFH_AnlyElemBitRate(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
-    Sint32 rate, tmp;
+    Sint32 rate;
 
     *val = 0;
     elem = sfh_GetElem(sfh, id);
@@ -462,14 +466,16 @@ Bool SFH_AnlyElemBitRate(SFH sfh, Uint8 id, Sint32 *val) {
     if (sfh_GetStmType(id) != SFH_STM_VID) {
         return FALSE;
     }
-    /* 16-bit swap written with a (Uint8) cast rather than SWAP16's `& 0xFF` mask */
+    /* The swapped value is converted to Sint16 before widening, so it is sign-extended and the
+     * "unknown" test against 0xFFFF below can never succeed. The original compiles the same dead
+     * test (extsh, then cmplwi against 0xFFFF). The high byte is taken with a (Uint8) cast: the
+     * `& 0xFF` mask of SWAP16 changes the object. */
     rate = (Sint16)(Uint16)(((SFH_ELEM_BITRATE(elem) & 0xFF) << 8) |
                             (Uint8)(SFH_ELEM_BITRATE(elem) >> 8));
-    tmp = rate;
     if (rate == 0xFFFF) {
-        tmp = 0;
+        rate = 0;
     }
-    *val = tmp;
+    *val = rate;
     return TRUE;
 }
 

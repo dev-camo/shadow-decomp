@@ -9,7 +9,7 @@
 
 #include "CRI/uty.h"
 
-/* Time base registers read until the upper word is stable. */
+/* Time base register numbers (SPRs) read by UTY_GetTmr. */
 #define UTYTMR_TBU 269
 #define UTYTMR_TBL 268
 
@@ -31,7 +31,8 @@ Bool UTY_IsTmrVoid(void) {
     return FALSE;
 }
 
-/* Current time base value (0 when not initialised or void). */
+/* Current time base value (0 when not initialised or void). The upper word is read twice and the
+ * read repeated until both reads agree, so a carry from the lower word cannot give a torn value. */
 Sint64 UTY_GetTmr(void) {
     register Uint32 hi;
     register Uint32 lo;
