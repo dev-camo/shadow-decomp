@@ -19,9 +19,15 @@ class CharInfo {
     /* 0x30 */ s32 field_0x30; /* the rotation order passed to fn_8001E070 (inferred) */
     /* 0x34 */ u32 field_0x34;
 
+    /* Stores arg0 at 0x50 (behaviour inferred). Callers pass various small constants, for example
+     * 1, 5, 0x33 and 0xAC directly and 0x58 to 0x8C through the gadget character info factories,
+     * which may be ids. */
+    CharInfo(int arg0);
     virtual ~CharInfo();
 
-    /* 0x3C */ u8 field_0x3C[0x64 - 0x3C];
+    /* 0x3C */ u8 field_0x3C[0x5C - 0x3C];
+    /* 0x5C */ s32 field_0x5C;         /* cleared by the constructor */
+    /* 0x60 */ const void *field_0x60; /* the constructor stores a data address here */
 };
 CHECK_SIZEOF(CharInfo, 0x64);
 
