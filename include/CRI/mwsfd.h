@@ -94,7 +94,7 @@ typedef struct {
     /* 0x24 */ Sint32 svr_bdr; /* a handle is sleeping at the idle border */
     /* 0x28 */ Uint8 x28[0x38 - 0x28];
     /* 0x38 */ Sint32 use_picusr; /* picture user data is captured */
-    /* 0x3C */ Sint32 pause_bdr; /* pausing waits for the decode server border */
+    /* 0x3C */ Sint32 pause_bdr;  /* pausing waits for the decode server border */
     /* 0x40 */ Uint8 x40[0x58 - 0x40];
     /* 0x58 */ Sint32 svr_flg; /* decode server running */
     /* 0x5C */ Sint32 x5c;
@@ -140,6 +140,10 @@ void mwsfd_SetSleepBdr(MWPLY mwply, Sint32 sw); /* inferred name */
 Sint32 MWSFSVR_VsyncThrdProc(void *obj);
 Sint32 MWSFSVR_MainThrdProc(void *obj);
 Sint32 MWSFSVR_IdleThrdProc(void *obj);
+
+/* mwsfdsl.c */
+void MWSFLSC_SetFlowLimit(MWPLY mwply, Sint32 nsct);
+Bool MWSFLSC_IsFsStatErr(LSC lsc);
 
 /* mwsfdrna.c */
 Sint32 MWSFRNA_GetOutVol(MWPLY mwply);

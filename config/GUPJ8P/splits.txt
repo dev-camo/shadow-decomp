@@ -1248,6 +1248,9 @@ CRI/mwsfdrna.c:
 CRI/mwsfdrsc.c:
 	.text       start:0x80403694 end:0x8040369C
 
+CRI/mwsfdsl.c:
+	.text       start:0x804036BC end:0x80403714
+
 CRI/mwsfdsvm.c:
 	.text       start:0x80403714 end:0x804039D8
 	.bss        start:0x805DDD18 end:0x805DDE28

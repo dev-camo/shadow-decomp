@@ -738,8 +738,6 @@ config.libs = [
                     extra_cflags=["-sdata 0", "-use_lmw_stmw on"],
                 ),
                 # CRI middleware units named after their original source files.
-                Object(Matching, "Game/fn_804030A8.c"),
-                Object(Matching, "Game/fn_8040307C.c"),
                 Object(Matching, "Game/fn_80403E44.c"),
                 Object(Matching, "Game/fn_80406EBC.c"),
                 # Target addresses the conversion constants through .rodata.
@@ -1850,6 +1848,16 @@ config.libs = [
             Object(
                 Matching,
                 "CRI/mwsfdlib.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/mwsfdsl.c",
                 extra_cflags=[
                     "-sdata 0",
                     "-sdata2 0",
