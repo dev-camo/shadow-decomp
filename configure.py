@@ -615,15 +615,7 @@ config.libs = [
                 Object(NonMatching, "rw/fn_804A90F8.c", cflags=cflags_game),
                 Object(Matching, "Game/BackDrop.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
-                # All 42 functions are instruction-identical except seven displacements in the
-                # constructor, which address the unit's .data. The original .data starts with 0x30
-                # bytes (four base lists naming TNumEdit and
-                # SonicteamUSA::System::CharaColli::CharaColliBase) that this source does not
-                # produce, and the same classes also have 16 bytes of RTTI records in .sdata and
-                # 0x40 bytes of name strings in .rodata. No code in the unit uses them and their
-                # classes are unknown. The .sdata2 offsets also differ by 0x10, because the
-                # candidate emits dead weak sqrtf doubles.
-                Object(NonMatching, "Game/ElecCircuitEntrance.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/ElecCircuitEntrance.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/TestNakazawa.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/BDTrue.cpp", cflags=cflags_game_cpp),

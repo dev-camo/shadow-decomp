@@ -8,6 +8,11 @@
  * boost::bind(&ElecCircuitEntrance::method, this, _1); their manager, invoker and copy functions
  * come from the boost headers. */
 #include <cmath>
+/* The RTTI data of TNumEdit.h comes before that of CharaColliBase.h at the start of the unit's
+ * .data, .sdata and .rodata, so TNumEdit.h is included before CharaColliBase.h (alphabetical
+ * order would reverse them). */
+#include "Game/TNumEdit.h"
+#include "Game/CharaColliBase.h"
 #include "Game/CharCommand.h"
 #include "Game/CharInfo.h"
 #include "Game/Gadget.h"
@@ -16,6 +21,7 @@
 #include "Game/SharedConstants.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
 #include "Game/UnkManager_800CB69C.h"
+#include "Game/UnkProbeTarget_800587A0.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"
@@ -80,19 +86,6 @@ bool fn_8001CDA0(UnkCollision_8001B494 *collision, UnkContactQuery_80019224 *que
                  GadgetCharInfo *charInfo, const Fn8040Vector3 *direction, int *result, int arg6,
                  int arg7);
 bool fn_800B78B0(const boost::shared_ptr<CharInfo> &charInfo);
-}
-
-/* The manager that fn_80021B08 returns, and the call that creates a probe in it (placeholder
- * names; the arguments are not understood). */
-class UnkManager_80021B08;
-
-extern "C" {
-UnkManager_80021B08 *fn_80021B08(void);
-boost::shared_ptr<UnkProbeTarget_800587A0> fn_800C7A84(UnkManager_80021B08 *manager,
-                                                       const boost::weak_ptr<CharInfo> &owner,
-                                                       float arg2, float arg3, int arg4, int arg5,
-                                                       int arg6, const Fn8040Vector3 *arg7,
-                                                       const Fn8040Vector3 *arg8, int arg9);
 }
 
 /* What the contact callback receives: the gadget's character info and the gadget itself
