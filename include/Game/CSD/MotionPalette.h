@@ -30,6 +30,16 @@ struct Vertex {
 };
 CHECK_SIZEOF(Chao::CSD::Vertex, 0x14);
 
+/* A quad corner without texture coordinates: the layout of the vertices of an entry whose textures
+ * pointer is null (inferred from the 0xC stride the colour functions of csdLoader.cpp use when
+ * textures is null). */
+struct PlainVertex {
+    /* 0x00 */ f32 x;
+    /* 0x04 */ f32 y;
+    /* 0x08 */ u32 color;
+};
+CHECK_SIZEOF(Chao::CSD::PlainVertex, 0xC);
+
 /* File data of one element of a scene layer. Type 0 and 1 elements are single quads, type 2
  * elements draw their text with a font. */
 struct ElementData {
@@ -143,7 +153,7 @@ struct MotionPaletteLayer;
 struct MotionPaletteEntry {
     /* 0x00 */ Matrix matrix;
     /* 0x20 */ u8 field_0x20[0x24 - 0x20];
-    /* 0x24 */ s32 field_0x24;
+    /* 0x24 */ u32 field_0x24;
     /* 0x28 */ u8 field_0x28[0x38 - 0x28];
     /* 0x38 */ f32 field_0x38;
     /* 0x3C */ f32 field_0x3C;
