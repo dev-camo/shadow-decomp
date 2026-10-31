@@ -28,7 +28,7 @@ RwInt32 lbl_805EDE6C = 1;  /* blocks to preallocate of the 8-byte objects */
 
 /* Reads a subpath's points after its stream header, then the subpaths that follow it */
 Rt2dPath *fn_80476ABC(Rt2dPath *path, rt2dStreamPath *header, RwStream *stream) {
-    void *points;
+    rt2dPathNode *points;
     RwInt32 i;
     Rt2dPath *subpath;
 
@@ -36,7 +36,7 @@ Rt2dPath *fn_80476ABC(Rt2dPath *path, rt2dStreamPath *header, RwStream *stream) 
     path->curr = path;
     path->numPoints = header->numPoints;
     path->closed = header->flags & rt2dSTREAMPATHCLOSED;
-    path->flat = (header->flags >> 1) & 1;
+    path->flat = (header->flags & rt2dSTREAMPATHFLAT) != 0;
     path->field_0x10 = header->inset;
     points = RwMalloc(path->numPoints * sizeof(rt2dPathNode), rwMEMHINTDUR_EVENT | RT2DPATHMEMID);
     if (points == NULL) {
@@ -50,7 +50,11 @@ Rt2dPath *fn_80476ABC(Rt2dPath *path, rt2dStreamPath *header, RwStream *stream) 
         fn_8047D158(points, path->numPoints * sizeof(rt2dPathNode));
     }
     for (i = 0; i < header->numPoints; i++) {
-        /* the original converts each point's reals here, which needs no code on this platform */
+        rt2dPathNode *node = &points[i];
+
+        RwMemFloat32ToReal(&node->pos, sizeof(node->pos));
+        RwMemFloat32ToReal(&node->normal, sizeof(node->normal));
+        RwMemFloat32ToReal(&node->dist, sizeof(node->dist));
     }
     path->points = points;
     if (header->flags & rt2dSTREAMPATHNEXT) {
@@ -66,17 +70,23 @@ Rt2dPath *fn_80476ABC(Rt2dPath *path, rt2dStreamPath *header, RwStream *stream) 
     return path;
 }
 
+/* Reads a path and the subpaths that follow it from a stream,
+ * discarding the new path if reading fails */
 Rt2dPath *fn_80476C4C(RwStream *stream) {
-    Rt2dPath *path = fn_80476490();
-    Rt2dPath *result = path;
+    Rt2dPath *result;
+    Rt2dPath *path;
     rt2dStreamPath header;
 
+    path = fn_80476490();
+    result = path;
     if (fn_80480D4C(stream, &header, sizeof(header)) != sizeof(header)) {
         result = NULL;
     } else {
         fn_8047D254(&header, sizeof(header));
-        if (header.type == 1) {
+        switch (header.type) {
+        case 1:
             result = fn_80476ABC(path, &header, stream);
+            break;
         }
     }
     if (result == NULL) {

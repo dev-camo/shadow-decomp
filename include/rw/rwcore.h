@@ -1200,6 +1200,8 @@ void *fn_8047D158(void *mem, RwUInt32 size);
 void *fn_8047D1C8(void *mem, RwUInt32 size);
 void *fn_8047D254(void *mem, RwUInt32 size);
 void *fn_8047D2C4(void *mem, RwUInt32 size);
+/* Converts reals read from a stream to the engine real type, which already is a 32-bit float */
+#define RwMemFloat32ToReal(mem, size) (mem)
 RwStream *fn_8047D350(RwStream *stream, const RwReal *reals, RwUInt32 size);
 RwStream *fn_8047D458(RwStream *stream, const RwInt32 *ints, RwUInt32 size);
 RwStream *fn_8047D560(RwStream *stream, const RwInt16 *ints, RwUInt32 size);
