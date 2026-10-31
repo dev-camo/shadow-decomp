@@ -133,13 +133,13 @@ RwStream *fn_8044E89C(RwStream *stream, RpGeometry *geometry) {
 
 /* Reads a native skin; its byte weights and indices, matrices and used bones share one block */
 RwStream *fn_8044EAD0(RwStream *stream, RpGeometry *geometry) {
-    RwInt32 platform;
-    RwUInt32 counts;
-    RwUInt32 length;
     RwUInt32 version;
+    RwUInt32 length;
+    RwUInt32 counts;
+    RwInt32 platform;
     RwError error;
-    RpSkin *skin;
     RwInt32 numVertices;
+    RpSkin *skin;
 
     if (!fn_8047CF50(stream, rwID_STRUCT, &length, &version)) {
         return NULL;
