@@ -613,7 +613,7 @@ static Bool sfply_IsBpaOn(SFD sfd) {
     if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 1 && SFBUF_RingGetDataSiz(sfd, 2) > 0) {
         return 0;
     }
-    if (SFTRN_IsSetup(sfd, 1) && SFBUF_RingGetDataSiz(sfd, 0) > 0) {
+    if (SFTRN_IsSetup(sfd, SFMPS_TR) && SFBUF_RingGetDataSiz(sfd, 0) > 0) {
         return 0;
     }
     if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 1) {

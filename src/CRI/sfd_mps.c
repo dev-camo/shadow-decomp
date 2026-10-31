@@ -1,7 +1,7 @@
-/* CRI Sofdec: MPEG system stream driver (sfd_mps.c). Transfer driver 1: takes the muxed stream out
- * of ring buffer 0, demultiplexes it through an MPS handle and copies the packet payloads into the
- * video (buf 1), audio (buf 2) and private/user-output (buf 7) buffers or user element stream
- * joints.
+/* CRI Sofdec: MPEG system stream driver (sfd_mps.c). Transfer driver SFMPS_TR: takes the muxed
+ * stream out of ring buffer 0, demultiplexes it through an MPS handle and copies the packet
+ * payloads into the video (buf 1), audio (buf 2) and private/user-output (buf 7) buffers or user
+ * element stream joints.
  *
  * Bodies from the RE4 GameCube decompilation; this game's buffer view starts at 0x1310. */
 #include "CRI/cri_xpt.h"
@@ -9,7 +9,6 @@
 #include "CRI/mps.h"
 #include "CRI/sj.h"
 
-#define SFMPS_TR 1
 #define SFMPS_NUM_HN 8
 #define SFMPS_WORK_MAX 0x200
 
@@ -1003,7 +1002,7 @@ Sint32 sfmps_ExecServerSub(SFD sfd) {
  * sfmps_ExecServerSub out of line; without the pragma it is inlined here (476 bytes instead of
  * 32). Revisit when the original unit's inline settings are known. */
 #pragma dont_inline on
-/* Driver ExecServer (SFD_tr_sd_mps slot 2). */
+/* Driver ExecServer (SFD_tr_sd_mps interface entry 2). */
 static Sint32 SFMPS_ExecServer(SFD sfd) {
     return sfmps_ExecServerSub(sfd);
 }

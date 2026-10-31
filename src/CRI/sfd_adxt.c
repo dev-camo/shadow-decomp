@@ -1,7 +1,7 @@
-/* CRI Sofdec ADX audio driver (sfd_adxt.c, SFD_tr_ad_adxt, driver slot 3): feeds the demuxed ADX
- * stream into an ADXT handle through a ring-buffer stream joint, skipping the silence / header the
- * muxer inserted and aligning the audio start to the video start; the ADXT playback time drives the
- * player clock (sfadxt_GetTime).
+/* CRI Sofdec ADX audio driver (sfd_adxt.c, SFD_tr_ad_adxt, driver slot SFADXT_TR): feeds the
+ * demuxed ADX stream into an ADXT handle through a ring-buffer stream joint, skipping the silence /
+ * header the muxer inserted and aligning the audio start to the video start; the ADXT playback time
+ * drives the player clock (sfadxt_GetTime).
  *
  * Names and structure follow the RE4 GameCube decompilation of the same file. The static inline
  * helpers are all expanded into their callers in this executable.

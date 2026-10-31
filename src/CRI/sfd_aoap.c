@@ -1,7 +1,7 @@
-/* CRI Sofdec "auto-play" audio output driver (sfd_aoap.c, SFD_tr_ao_auto_p, driver slot 7): the
- * audio decoder (ADXT driver, slot 3) plays by itself, so this output driver only relays
- * start/stop/pause/standby to it and exposes the volume (SFD_GetOutVol / SFD_SetOutVol) through
- * the callback block the ADXT driver fills in (SFAOAP).
+/* CRI Sofdec "auto-play" audio output driver (sfd_aoap.c, SFD_tr_ao_auto_p, driver slot
+ * SFAOAP_TR): the audio decoder (ADXT driver, slot SFADXT_TR) plays by itself, so this output
+ * driver only relays start/stop/pause/standby to it and exposes the volume (SFD_GetOutVol /
+ * SFD_SetOutVol) through the callback block the ADXT driver fills in (SFAOAP).
  *
  * Source adapted from the RE4 GameCube decompilation with this game's SFD_OBJ layout. */
 #include "CRI/sfd.h"
@@ -42,7 +42,7 @@ static Sint32 sfaoap_ChkRet(Sint32 r) {
     return ret;
 }
 
-/* Pauses/resumes the audio decoder driver (slot 3, fn 8) when audio is on. */
+/* Pauses/resumes the audio decoder driver (slot SFADXT_TR, fn 8) when audio is on. */
 Sint32 SFAOAP_Pause(SFD sfd, Sint32 sw) {
     if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         return 0;

@@ -1,4 +1,4 @@
-/* CRI Sofdec manual video output driver (sfd_vom.c, SFD_tr_vo_manu, driver slot 6): the
+/* CRI Sofdec manual video output driver (sfd_vom.c, SFD_tr_vo_manu, driver slot SFVOM_TR): the
  * application pulls frames itself (SFD_GetFrm / SFD_RelFrm). GetRead forwards to the frame table
  * buffer for the next decoded frame (in STBY/PLAYING only; no time check here), AddRead returns it
  * to the video decoder's pool. */
@@ -19,7 +19,7 @@ Sint32 SFVOM_GetRead(SFD sfd, void **frm, Sint32 arg) {
     Sint32 ret;
     Sint32 err;
 
-    if ((Uint32)(sfd->stat - 3) > 1) {
+    if ((Uint32)(sfd->stat - SFD_STAT_STBY) > SFD_STAT_PLAYING - SFD_STAT_STBY) {
         *frm = 0;
         return 0;
     }
