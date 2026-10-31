@@ -88,11 +88,11 @@ Sint32 SJMEM_GetBufSize(SJ handle) {
     return ret;
 }
 
-/* Matching workaround: order-only stand-in for a function the linker stripped from the game; its
- * body is unknown. Its two error codes remain in .rodata between those of the functions around
- * it; this never-called function refers to them in that order. Storing the addresses keeps the
- * references. Revisit when the stripped function's real body is found.
- */
+/* Matching workaround: stand-in for a function the linker stripped from the game. The body is not
+ * the original's. Its error codes E2004090249 and E2004090250 fall in the numbering gap between
+ * those of the surviving functions and no surviving function uses them; storing the addresses
+ * keeps the references. Without it these literals are missing from .rodata (measured by compiling
+ * without it). Revisit when the stripped code is known. */
 static void sjmem_RodataOrder(const Char8 **out) {
     out[0] = "E2004090249";
     out[1] = "E2004090250";

@@ -60,20 +60,20 @@ SvmSvrFunc svm_svr_ftbl[SVM_MAX_SVTYPE][SVM_MAX_SVR_FUNC];
 Sint32 svm_svr_exec_flag[SVM_MAX_SVTYPE];
 Sint32 svm_exec_cnt[SVM_MAX_SVTYPE];
 
-/* Matching workaround: order-only stand-ins (svm_BssOrderHooks, svm_BssOrderTables,
- * svm_RodataOrderExecId and svm_RodataOrderSpace below). Several functions of this file are
- * stripped from the game, so their bodies are unknown. MWCC lays out .bss by first reference and
- * .rodata literals by first use, so these never-called functions refer to what the stripped ones
- * left in the object, at their positions: a 32-byte static buffer (invented storage, sized to
- * fill the .bss gap before the vsync-wait hooks), the hooks and server tables, and three
- * literals. Revisit when the stripped functions' real bodies, or another cause of this layout,
- * are found.
+/* Matching workaround: stand-ins (svm_BssOrderHooks, svm_BssOrderTables, svm_RodataOrderExecId
+ * and svm_RodataOrderSpace below). Several functions of this file are stripped from the game, so
+ * their bodies are unknown. MWCC lays out .bss by first reference and .rodata literals by first
+ * use, so these never-called functions refer to what the stripped ones left in the object, at
+ * their positions: a 32-byte static buffer (invented storage, sized to fill the .bss gap before
+ * the vsync-wait hooks), the hooks, and three literals. Revisit when the stripped functions' real
+ * bodies, or another cause of this layout, are found.
  */
 
-/* Matching workaround: stand-in for the stripped functions before svm_call_err1 (see above): the
- * static buffer at .bss 0x0C, then the vsync-wait hooks and the test-and-set hook. Storing the
- * addresses keeps the references.
- */
+/* Matching workaround: stand-in for the stripped functions before svm_call_err1. The body is not
+ * the original's. It refers to the static buffer at .bss 0x0C, then the vsync-wait hooks and the
+ * test-and-set hook; storing the addresses keeps the references. Without it the .bss objects land
+ * in the first-reference order of the surviving functions and the code that pools their addresses
+ * changes (measured by compiling without it). Revisit when the stripped code is known. */
 static void svm_BssOrderHooks(void **out) {
     static Char8 buf[32];
 
@@ -118,13 +118,13 @@ static void svm_lock(void) {
     }
 }
 
-/* Matching workaround: as above. Stand-in for the stripped functions before svm_exec_svr: the
- * border hooks and the server table, in storage order. Storing the addresses keeps the
- * references.
- */
+/* Matching workaround: stand-in for the stripped functions before svm_exec_svr. The body is not
+ * the original's. It refers to the border hooks before the code that follows does; storing the
+ * addresses keeps the references. Without it the .bss objects land in the first-reference order of
+ * the surviving functions and the code that pools their addresses changes (measured by compiling
+ * without it). Revisit when the stripped code is known. */
 static void svm_BssOrderTables(void **out) {
     out[0] = svm_goto_border_func;
-    out[1] = svm_svr_ftbl;
 }
 
 /* Runs the callbacks of one server type in order and counts the pass. */
@@ -245,10 +245,11 @@ void SVM_SetCbBdr(Sint32 svtype, void (*func)(void *obj), void *obj) {
     svm_unlock();
 }
 
-/* Matching workaround: as above. Stand-in for the stripped functions before SVM_SetCbSvrId.
- * Their parameter messages, which name SVM_ExecSvrFuncId, remain in .rodata. Storing the
- * addresses keeps the references.
- */
+/* Matching workaround: stand-in for the stripped functions before SVM_SetCbSvrId. The body is not
+ * the original's. The stripped functions' parameter messages name SVM_ExecSvrFuncId, which has no
+ * code in this unit, and no surviving function uses them; storing the addresses keeps the
+ * references. Without it these literals are missing from .rodata (measured by compiling without
+ * it). Revisit when the stripped code is known. */
 static void svm_RodataOrderExecId(const Char8 **out) {
     out[0] = "1071301:SVM_ExecSvrFuncId:illegal id";
     out[1] = "1071302:SVM_ExecSvrFuncId:illegal svtype";
@@ -348,9 +349,10 @@ void SVM_CallErr(Char8 *fmt, ...) {
     }
 }
 
-/* Matching workaround: as above. Stand-in for the stripped function before SVM_Unlock; its " "
- * literal remains last in .rodata. Storing the address keeps the reference.
- */
+/* Matching workaround: stand-in for the stripped function before SVM_Unlock. The body is not the
+ * original's. No surviving function uses its " " literal, which stays last in .rodata; storing the
+ * address keeps the reference. Without it the literal is missing from .rodata (measured by
+ * compiling without it). Revisit when the stripped code is known. */
 static void svm_RodataOrderSpace(const Char8 **out) {
     out[0] = " ";
 }

@@ -171,10 +171,11 @@ void LSC_Stop(LSC lsc) {
     }
 }
 
-/* Matching workaround: order-only stand-in for a function the linker stripped from the game; its
- * body is unknown. Its error message (E2005012808) remains in .rodata; this never-called function
- * refers to it at this position. Storing the address keeps the reference. Revisit when that
- * function's body is known. */
+/* Matching workaround: stand-in for a function the linker stripped from the game. The body is not
+ * the original's. Its error code E2005012808 falls in the numbering gap of the surviving functions
+ * and no surviving function uses its message; storing the address keeps the reference. Without it
+ * the message is missing from .rodata (measured by compiling without it). Revisit when the
+ * stripped code is known. */
 static void lsc_RodataOrder08(const Char8 **out) {
     out[0] = "E2005012808: Illigal parameter lsc=NULL\n";
 }
@@ -213,10 +214,12 @@ Sint32 LSC_GetNumStm(LSC lsc) {
     return lsc->num_stm;
 }
 
-/* Matching workaround: as above, order-only stand-in for four functions the linker stripped from
- * the game; their bodies are unknown. Their error messages (E2005012811..18) remain in .rodata.
- * Deferred inlining emits the four last-first, so this never-called function refers to their
- * message pairs in that order. Storing the addresses keeps the references. */
+/* Matching workaround: stand-in for four functions the linker stripped from the game. The body is
+ * not the original's. Their error codes E2005012811..18 fall in the numbering gap and no surviving
+ * function uses their messages. Deferred inlining emits the four last-first, so this never-called
+ * function refers to their message pairs in that order; storing the addresses keeps the
+ * references. Without it these literals are missing from .rodata (measured by compiling without
+ * it). Revisit when the stripped code is known. */
 static void lsc_RodataOrder11(const Char8 **out) {
     out[0] = "E2005012817: Illigal parameter lsc=NULL\n";
     out[1] = "E2005012818: Can not find stream ID =%d\n";
@@ -241,9 +244,10 @@ void LSC_SetFlowLimit(LSC lsc, Sint32 min_val) {
     lsc->min_val = min_val;
 }
 
-/* Matching workaround: as above, order-only stand-in for a function the linker stripped from the
- * game; its body is unknown. Its error message (E2005012821) remains in .rodata; this never-called
- * function refers to it at this position. Storing the address keeps the reference. */
+/* Matching workaround: stand-in for a function the linker stripped from the game. The body is not
+ * the original's. Its error code E2005012821 falls in the numbering gap and no surviving function
+ * uses its message; storing the address keeps the reference. Without it the message is missing
+ * from .rodata (measured by compiling without it). Revisit when the stripped code is known. */
 static void lsc_RodataOrder21(const Char8 **out) {
     out[0] = "E2005012821: Illigal parameter lsc=NULL\n";
 }
