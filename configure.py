@@ -1833,6 +1833,16 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "CRI/mwsfdrna.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
                 "CRI/mwsfdrsc.c",
                 extra_cflags=[
                     "-sdata 0",
