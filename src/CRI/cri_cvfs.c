@@ -54,18 +54,17 @@ static const Char8 *const volatile cvfs_build = "\nCVFS/GC Ver.2.39 Build:Feb 28
 
 void cvFsCallUsrErrFn(void *obj, const Char8 *msg, void *hn);
 
-/* Matching workaround: order-only stand-in for the stripped cvFsInit and cvFsFinish (their bodies
- * are unknown). MWCC places .bss objects in order of first reference, so this never-called function
- * refers to them in storage order before any other code does. Storing the addresses keeps the
- * references. Revisit when the stripped functions' bodies are known. */
+/* Matching workaround: stand-in for the stripped cvFsInit and cvFsFinish. The body is not the
+ * original's. It refers to the .bss objects up to cvfs_defdev in storage order before any other
+ * code does; storing the addresses keeps the references. Without it the .bss objects land in the
+ * first-reference order of the surviving functions and the code that pools their addresses changes
+ * (measured by compiling without it). Revisit when the stripped code is known. */
 static void cvfs_BssOrder(void **out) {
     out[0] = &cvfs_errfn;
     out[1] = &cvfs_errobj;
     out[2] = &cvfs_init_cnt;
     out[3] = add_dev_tmp;
     out[4] = cvfs_defdev;
-    out[5] = cvfs_tbl;
-    out[6] = cvfs_obj;
 }
 
 /* the user error callback */
@@ -247,8 +246,11 @@ static CVFS_IF *cvfs_ResolveDev(const Char8 *fname, Char8 *dev, Char8 *path) {
     return vtbl;
 }
 
-/* Matching workaround: as above, order-only stand-in for the stripped cvFsSetDefVol,
- * cvFsGetVolumeInfo, cvFsDelVolume, cvFsAddVolumeEx and cvFsSetCurVolume (see above). */
+/* Matching workaround: stand-in for the stripped cvFsSetDefVol, cvFsGetVolumeInfo, cvFsDelVolume,
+ * cvFsAddVolumeEx and cvFsSetCurVolume (see the file comment). The body is not the original's. No
+ * surviving function uses these messages, which name functions that have no code in this unit.
+ * Without it these literals are missing from .rodata (measured by compiling without it). Revisit
+ * when the stripped code is known. */
 static void cvfs_RodataOrderVolumes(const Char8 **out) {
     out[0] = "cvFsSetDefVol #1:illegal device name";
     out[1] = "cvFsSetDefVol #2:illegal volume name";
@@ -268,8 +270,10 @@ static void cvfs_RodataOrderVolumes(const Char8 **out) {
     out[15] = "cvFsSetCurVolume #3:device not found";
 }
 
-/* Matching workaround: as above, order-only stand-in for the stripped cvFsOptFn2, cvFsOptFn1 and
- * cvFsGetDevName (see above). */
+/* Matching workaround: stand-in for the stripped cvFsOptFn2, cvFsOptFn1 and cvFsGetDevName. The
+ * body is not the original's. No surviving function uses these messages, which name functions that
+ * have no code in this unit. Without it these literals are missing from .rodata (measured by
+ * compiling without it). Revisit when the stripped code is known. */
 static void cvfs_RodataOrderOptions(const Char8 **out) {
     out[0] = "cvFsOptFn2 #1:handle error";
     out[1] = "cvFsOptFn2 #2:vtbl error";
@@ -278,8 +282,11 @@ static void cvfs_RodataOrderOptions(const Char8 **out) {
     out[4] = "cvFsGetDevName #1:vtbl error";
 }
 
-/* Matching workaround: as above, order-only stand-in for the stripped cvFsDeleteFile,
- * cvFsRemoveDir, cvFsMakeDir, cvFsGetMaxByteRate, cvFsIsExistFile and cvFsChangeDir (see above). */
+/* Matching workaround: stand-in for the stripped cvFsDeleteFile, cvFsRemoveDir, cvFsMakeDir,
+ * cvFsGetMaxByteRate, cvFsIsExistFile and cvFsChangeDir. The body is not the original's. No
+ * surviving function uses these messages, which name functions that have no code in this unit.
+ * Without it these literals are missing from .rodata (measured by compiling without it). Revisit
+ * when the stripped code is known. */
 static void cvfs_RodataOrderFiles(const Char8 **out) {
     out[0] = "cvFsDeleteFile #1:illegal file name";
     out[1] = "cvFsDeleteFile #2:illegal device name";
@@ -305,8 +312,11 @@ static void cvfs_RodataOrderFiles(const Char8 **out) {
     out[21] = "cvFsChangeDir #4:vtbl error";
 }
 
-/* Matching workaround: as above, order-only stand-in for the stripped cvFsGetNumTr, cvFsSetSctLen,
- * cvFsGetSctLen, cvFsGetFreeSize, cvFsGetFileSizeByHndl and cvFsGetFileSizeEx (see above). */
+/* Matching workaround: stand-in for the stripped cvFsGetNumTr, cvFsSetSctLen, cvFsGetSctLen,
+ * cvFsGetFreeSize, cvFsGetFileSizeByHndl and cvFsGetFileSizeEx. The body is not the original's. No
+ * surviving function uses these messages, which name functions that have no code in this unit.
+ * Without it these literals are missing from .rodata (measured by compiling without it). Revisit
+ * when the stripped code is known. */
 static void cvfs_RodataOrderQueries(const Char8 **out) {
     out[0] = "cvFsGetNumTr #1:handle error";
     out[1] = "cvFsGetNumTr #2:vtbl error";
@@ -413,7 +423,10 @@ void cvFsStopTr(CVFS_OBJ *obj) {
     }
 }
 
-/* Matching workaround: as above, order-only stand-in for the stripped cvFsReqWr (see above). */
+/* Matching workaround: stand-in for the stripped cvFsReqWr. The body is not the original's. No
+ * surviving function uses these messages, which name functions that have no code in this unit.
+ * Without it these literals are missing from .rodata (measured by compiling without it). Revisit
+ * when the stripped code is known. */
 static void cvfs_RodataOrderReqWr(const Char8 **out) {
     out[0] = "cvFsReqWr #1:handle error";
     out[1] = "cvFsReqWr #2:vtbl error";
@@ -585,7 +598,10 @@ void cvFsSetDefDev(Char8 *devname) {
     }
 }
 
-/* Matching workaround: as above, order-only stand-in for the stripped cvFsDelDev (see above). */
+/* Matching workaround: stand-in for the stripped cvFsDelDev. The body is not the original's. No
+ * surviving function uses these messages, which name functions that have no code in this unit.
+ * Without it these literals are missing from .rodata (measured by compiling without it). Revisit
+ * when the stripped code is known. */
 static void cvfs_RodataOrderDelDev(const Char8 **out) {
     out[0] = "cvFsDelDev #1:illegal device name";
 }

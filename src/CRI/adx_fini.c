@@ -27,10 +27,12 @@ ADX_FS adxf_obj[ADXF_OBJ_MAX];
 /* Address of the build string, set by ADXF_Init (name inferred). */
 const Char8 *adxf_build_ptr;
 
-/* Matching workaround: order-only stand-in for a function the linker stripped from the game;
- * its body is unknown. MWCC lays out .bss by first reference, so this never-called function
- * refers to every global in storage order before ADXF_Finish does. Storing the addresses keeps
- * those references from being optimized away. Revisit when the stripped body is found. */
+/* Matching workaround: stand-in for a function the linker stripped from the game. The body is not
+ * the original's. It refers to the globals up to adxf_cmd_hstry in storage order before
+ * ADXF_Finish does (the later ones need no reference of their own); storing the addresses keeps
+ * the references. Without it the .bss objects land in the first-reference order of the surviving
+ * functions and the code that pools their addresses changes (measured by compiling without it).
+ * Revisit when the stripped code is known. */
 static void adxf_BssOrder(void **out) {
     out[0] = &adxf_init_cnt;
     out[1] = &adxf_ldptnw_last_stat;
@@ -40,10 +42,6 @@ static void adxf_BssOrder(void **out) {
     out[5] = &adxf_hstry_no;
     out[6] = &adxf_cmd_ncall;
     out[7] = &adxf_cmd_hstry;
-    out[8] = &adxf_ocbi_fg;
-    out[9] = &adxf_ptinfo;
-    out[10] = &adxf_obj;
-    out[11] = &adxf_build_ptr;
 }
 
 /* Reference-counted shutdown: closes every handle and clears the partition table, the command

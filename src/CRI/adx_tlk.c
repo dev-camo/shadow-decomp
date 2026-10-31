@@ -887,8 +887,10 @@ Sint32 ADXT_GetNumSmpl(ADXT adxt) {
     return ret;
 }
 
-/* Matching workaround: as above (order-only stand-in for the stripped ADXT_GetHdrLen and
- * ADXT_GetFmtBps). */
+/* Matching workaround: stand-in for the stripped ADXT_GetHdrLen and ADXT_GetFmtBps (see the file
+ * comment). The body is not the original's. No surviving function uses their messages. Without it
+ * these literals are missing from .rodata (measured by compiling without it). Revisit when the
+ * stripped code is known. */
 static void adxt_RodataOrderHdr(const Char8 **msg) {
     msg[0] = "E02080821 adxt_GetFmtBps: parameter error";
     msg[1] = "E02080822 adxt_GetHdrLen: parameter error";
@@ -954,11 +956,14 @@ void ADXT_SetSvrFreq(ADXT adxt, Sint32 freq) {
     ADXCRS_Leave();
 }
 
-/* Matching workaround: as above (order-only stand-in for the stripped ADXT_SetReloadTime,
- * ADXT_ResetReloadTime, ADXT_SetReloadSct, ADXT_GetNumSctIbuf, ADXT_GetNumSmplObuf,
- * ADXT_GetIbufRemainTime, ADXT_IsIbufSafety and ADXT_IsCompleted. The adxt_GetStat,
- * adxt_GetNumChan, adxt_GetSfreq and adxt_GetNumSmplObuf messages and the 0.0, -1.0 and 0.85
- * constants are first used here). */
+/* Matching workaround: stand-in for the stripped ADXT_SetReloadTime, ADXT_ResetReloadTime,
+ * ADXT_SetReloadSct, ADXT_GetNumSctIbuf, ADXT_GetNumSmplObuf, ADXT_GetIbufRemainTime,
+ * ADXT_IsIbufSafety and ADXT_IsCompleted (see the file comment). The body is not the original's.
+ * The adxt_GetStat, adxt_GetNumChan, adxt_GetSfreq and adxt_GetNumSmplObuf messages and the 0.0
+ * and 0.85 constants are also used by surviving functions and are first used here; no surviving
+ * function uses the other messages or -1.0. Without it those are missing from .rodata and the
+ * shared ones are out of the first-use order (measured by compiling without it). Revisit when the
+ * stripped code is known. */
 static void adxt_RodataOrderIbuf(const Char8 **msg, Float32 *val) {
     msg[0] = "E02080802 adxt_IsCompleted: parameter error";
     msg[1] = "E02080836 ADXT_IsIbufSafety: parameter error";
@@ -1003,8 +1008,10 @@ void ADXT_ClearErrCode(ADXT adxt) {
     ADXCRS_Leave();
 }
 
-/* Matching workaround: as above (order-only stand-in for the stripped ADXT_GetLpCnt,
- * ADXT_SetLpFlg, ADXT_GetInputSj, ADXT_SetWaitPlayStart and ADXT_IsReadyPlayStart). */
+/* Matching workaround: stand-in for the stripped ADXT_GetLpCnt, ADXT_SetLpFlg, ADXT_GetInputSj,
+ * ADXT_SetWaitPlayStart and ADXT_IsReadyPlayStart (see the file comment). The body is not the
+ * original's. No surviving function uses their messages. Without it these literals are missing
+ * from .rodata (measured by compiling without it). Revisit when the stripped code is known. */
 static void adxt_RodataOrderPlayStart(const Char8 **msg) {
     msg[0] = "E02080831 adxt_IsReadyPlayStart: parameter error";
     msg[1] = "E02080830 adxt_SetWaitPlayStart: parameter error";
@@ -1019,7 +1026,10 @@ void ADXT_Pause(ADXT adxt, Sint32 sw) {
     ADXCRS_Leave();
 }
 
-/* Matching workaround: as above (order-only stand-in for the stripped ADXT_GetStatPause). */
+/* Matching workaround: stand-in for the stripped ADXT_GetStatPause (see the file comment). The
+ * body is not the original's. No surviving function uses its message. Without it the message is
+ * missing from .rodata (measured by compiling without it). Revisit when the stripped code is
+ * known. */
 static void adxt_RodataOrderStatPause(const Char8 **msg) {
     msg[0] = "E02080847 adxt_GetStatPause: parameter error";
 }
@@ -1066,8 +1076,10 @@ Sint32 ADXT_GetDecNumSmpl(ADXT adxt) {
     return ret;
 }
 
-/* Matching workaround: as above (order-only stand-in for the stripped ADXT_GetDecDtLen and
- * ADXT_SetCbDec). */
+/* Matching workaround: stand-in for the stripped ADXT_GetDecDtLen and ADXT_SetCbDec (see the file
+ * comment). The body is not the original's. No surviving function uses their messages. Without it
+ * these literals are missing from .rodata (measured by compiling without it). Revisit when the
+ * stripped code is known. */
 static void adxt_RodataOrderDecDtLen(const Char8 **msg) {
     msg[0] = "E04041902 ADXT_SetCbDec: parameter error";
     msg[1] = "E04041901 adxt_GetDecDtLen: parameter error";
@@ -1138,7 +1150,10 @@ void ADXT_SetOutputMono(Sint32 flag) {
     }
 }
 
-/* Matching workaround: as above (order-only stand-in for the stripped ADXT_SetKeyString). */
+/* Matching workaround: stand-in for the stripped ADXT_SetKeyString (see the file comment). The
+ * body is not the original's. No surviving function uses its message. Without it the message is
+ * missing from .rodata (measured by compiling without it). Revisit when the stripped code is
+ * known. */
 static void adxt_RodataOrderKeyString(const Char8 **msg) {
     msg[0] = "E02080860 adxt_SetKeyString: parameter error";
 }

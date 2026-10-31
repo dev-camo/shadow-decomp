@@ -7,8 +7,7 @@
  * when playback stopped inside the first block, and stopping does not reset the play position or
  * the ring buffers. AXRNA_SetSrcType, AXRNA_GetPlaySw and AXRNA_GetTransSw are linker-stripped
  * here (the last two are inlined); they are kept so that MWCC lays out .bss and the literals as
- * the original does, together with the order-only stand-in axrna_OrderStandIn for another
- * stripped function.
+ * the original does, together with the stand-in axrna_OrderStandIn for another stripped function.
  *
  * Not yet matching: AXRNA_SetPlaySw differs in 3 words, all in the additions that form the
  * voice's end and current addresses (an operand order and a register number). */
@@ -123,19 +122,18 @@ void AXRNA_SetSrcType(AXRNA rna, Sint32 type) {
     rna->adjsfreq_state = 1;
 }
 
-/* Matching workaround: order-only stand-in for a stripped function (never called, discarded by
- * the linker): referencing the statics and the "OFF" / "ON " literals here puts them in the
- * original .bss and literal order. The body is not the original's. Passing the first literal to
- * RNAERR_CallErrFunc keeps the array alive; storing both literals through a parameter instead
- * changes the literal order (AXRNA_SetTransSw and AXRNA_Create then differ). Revisit when the
- * stripped body is found. */
+/* Matching workaround: stand-in for a stripped function. The body is not the original's. No
+ * surviving function uses the "OFF" and "ON " literals; the stand-in declares them and refers to
+ * axrna_update_hist and axrna_zero_dat_real, in the order the original lays them out. sw_str is
+ * never read: its initialised declaration alone emits the two literals, at the original's .rodata
+ * offsets. Without the stand-in the literals are missing from .rodata and the .bss objects land in
+ * the first-reference order of the surviving functions (measured by compiling without it).
+ * Revisit when the stripped code is known. */
 static void axrna_OrderStandIn(void) {
     const Char8 *sw_str[2] = {"OFF", "ON "};
 
-    axrna_foo_cnt = 0;
     axrna_update_hist[0] = 0;
     axrna_zero_dat_real[0] = 0;
-    RNAERR_CallErrFunc((Char8 *)sw_str[0]);
 }
 
 /* Whether the voices are running (sw bit 1). */

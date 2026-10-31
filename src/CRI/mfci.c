@@ -188,17 +188,15 @@ Sint32 mfCiOptFn(void *hn, Sint32 fnid, Sint32 a, Sint32 b) {
     return ret;
 }
 
-/* Matching workaround: order-only stand-in for a function the linker stripped from the game; its
- * body is unknown. Its messages (which name it, mfCiOpenEntry) remain in .rodata between those of
- * the functions around it, and MWCC lays out .bss by first reference. This never-called function
- * refers to the messages, then to mfci_obj and mfci_init_flag in storage order. Storing the
- * addresses keeps the references. Revisit when mfCiOpenEntry's body is known. */
+/* Matching workaround: stand-in for the stripped mfCiOpenEntry, which its messages name. The body
+ * is not the original's. The messages stay in .rodata between those of the functions around it;
+ * this never-called function refers to them there, and storing the addresses keeps the references.
+ * Without it the messages are missing from .rodata (measured by compiling without it). Revisit
+ * when the stripped code is known. */
 static void mfci_DataOrder(const void **out) {
     out[0] = "E1041001:invalid entry number.(mfCiOpenEntry)";
     out[1] = "E1041002:rw is illigal.(mfCiOpenEntry)";
     out[2] = "E1041002:not enough handle resource.(mfCiOpenEntry)";
-    out[3] = mfci_obj;
-    out[4] = &mfci_init_flag;
 }
 
 /* Bytes transferred by the last read request. */

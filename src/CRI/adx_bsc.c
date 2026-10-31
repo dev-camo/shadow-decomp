@@ -122,11 +122,12 @@ static void SKG_Init(void) {
     skg_init_count++;
 }
 
-/* Matching workaround: order-only stand-in for functions the linker stripped from the game;
- * their bodies are unknown. MWCC lays out .bss by first reference, so this never-called
- * function refers to the SKG error callback statics in storage order before the ADXB code below
- * refers to its own. Storing the addresses keeps the references. Revisit when the stripped body
- * is found. */
+/* Matching workaround: stand-in for functions the linker stripped from the game. The body is not
+ * the original's. It refers to the SKG error callback statics in storage order before the ADXB
+ * code below refers to its own; storing the addresses keeps the references. Without it the .bss
+ * objects land in the first-reference order of the surviving functions and the code that pools
+ * their addresses changes (measured by compiling without it). Revisit when the stripped code is
+ * known. */
 static void skg_BssOrder(void **out) {
     out[0] = &skg_err_func;
     out[1] = &skg_err_obj;
@@ -186,11 +187,12 @@ static Sint16 adxb_def_ka;
 static Sint32 adxb_ignore_hdrerr;
 static ADXB_OBJ adxb_obj[ADXB_MAX_OBJ];
 
-/* Matching workaround: order-only stand-in for functions the linker stripped from the game
- * (presumably the setters of the statics above); their bodies are unknown. MWCC lays out .bss
- * by first reference, so this never-called function refers to the statics in storage order
- * before any other code does. Storing the addresses keeps the references from being optimized
- * away. Revisit when the stripped body is found. */
+/* Matching workaround: stand-in for functions the linker stripped from the game (presumably the
+ * setters of the statics above). The body is not the original's. It refers to the statics in
+ * storage order before any other code does; storing the addresses keeps the references. Without it
+ * the .bss objects land in the first-reference order of the surviving functions and the code that
+ * pools their addresses changes (measured by compiling without it). Revisit when the stripped code
+ * is known. */
 static void adxb_BssOrder(void **out) {
     out[0] = &ahxsetextfunc;
     out[1] = &pl2encodefunc;
@@ -766,10 +768,11 @@ Sint32 ADXB_DecodeHeaderAdx(ADXB adxb, Uint8 *buf, Sint32 bsize) {
     return hdrlen;
 }
 
-/* Matching workaround: order-only stand-in for a function the linker stripped from the game;
- * its body is unknown. Its literal remains in .rodata after DecodeHeaderAdx's messages; this
- * never-called function refers to it there. Storing the address keeps the reference. Revisit
- * when the stripped body is found. */
+/* Matching workaround: stand-in for a function the linker stripped from the game. The body is not
+ * the original's. No surviving function uses its literal, which stays in .rodata after the
+ * DecodeHeaderAdx messages; storing the address keeps the reference. Without it the literal is
+ * missing from .rodata (measured by compiling without it). Revisit when the stripped code is
+ * known. */
 static void adxb_RodataOrder(const Char8 **out) {
     out[0] = "CRI-MW";
 }
