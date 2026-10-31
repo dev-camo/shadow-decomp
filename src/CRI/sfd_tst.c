@@ -15,9 +15,10 @@ Char8 *sftst_debout_round;
 Char8 *sftst_debout_write;
 SFTST sftst_last;
 
-/* Stand-in for the stripped SFTST_SetDebugOut. MWCC places .bss objects in order of first
- * reference, so this never-called function refers to the debug log variables in storage order
- * before any other code does. Storing the addresses keeps the references. */
+/* Matching workaround: order-only stand-in for the stripped SFTST_SetDebugOut, whose body is
+ * unknown. MWCC places .bss objects in order of first reference, so this never-called function
+ * refers to the debug log variables in storage order before any other code does. Storing the
+ * addresses keeps the references. Revisit when SFTST_SetDebugOut's real body is found. */
 static void sftst_BssOrder(void **out) {
     out[0] = &sftst_debout_siz;
     out[1] = &sftst_debout_buf;
@@ -32,7 +33,7 @@ static void sftst_ResetHist(SFTST tst) {
     tst->resethist++;
 }
 
-/* a * b / c in the unit of another time */
+/* `t` converted to the given unit: unit * t->cnt / t->unit. */
 static Sint64 sftst_Conv(SFTST_TIME *t, Sint64 unit) {
     return unit * t->cnt / t->unit;
 }
@@ -58,17 +59,27 @@ static void sftst_SubHist(SFTST tst, Sint32 sub) {
     }
 }
 
-/* .rodata order: the original emitted SFTST_Create's header string before SFTST_Calc's format (its
- * .text follows); both are named here (a named string is emitted at its declaration) */
-static const Char8 sftst_msg_hdr[] =
+/* Matching workaround: the debug log header and the row format are named string objects (names
+ * invented), and SFTST_Create copies the header from a struct that wraps the string. The original
+ * emitted SFTST_Create's header string in .rodata before SFTST_Calc's format, although SFTST_Calc
+ * comes first in .text; a named string is emitted at its declaration, which fixes that order.
+ * Counterfactuals (measured against the original object): a local `Char8 hdr[] = "..."` with the
+ * format written in the sprintf call puts the format first in .rodata (the .rodata bytes and the
+ * targets of the four relocations to the two strings differ; no instruction word differs); a
+ * memcpy into a `Char8` array makes SFTST_Create 108 words instead of 116 (83 aligned words
+ * differ); naming only the header leaves the format anonymous, so SFTST_Calc's two relocations
+ * to it no longer name sftst_msg_fmt (same .rodata bytes). The struct wrapper makes the copy the
+ * same inline block copy as the array initialiser. Revisit when the original declarations are
+ * found. */
+typedef struct {
+    Char8 s[0x112]; /* 0x00 the header string's 0x111 characters and its NUL */
+} SFTST_HDRSTR;
+CHECK_SIZEOF(SFTST_HDRSTR, 0x112);
+static const SFTST_HDRSTR sftst_msg_hdr = {
     "tst, help_time_sec, help_time_msec, help_time_64, help_time, mt_max, master_time, out_time,  "
     "mt_ot, mtmax_ot,  diff_l_max, diff_l_min, diff_a_max, tst->diff_a_min, pastat, adjmode, "
     "resethist, excesserr, adj_limit, adj_front, adj_rear,  movave_1st, movave_2nd,  "
-    "adxt_stat \n\n";
-typedef struct {
-    Char8 s[sizeof(sftst_msg_hdr)]; /* 0x00 */
-} SFTST_HDRSTR;
-CHECK_SIZEOF(SFTST_HDRSTR, 0x112);
+    "adxt_stat \n\n"};
 static const Char8 sftst_msg_fmt[] =
     "%p, %ld, %ld, %08lX%08lX, %ld, %ld, %ld, %ld,   %ld, %ld,   %ld, %ld, %ld, %ld,   %ld, %ld,   "
     "%ld, %ld, %ld, %ld, %ld,   %ld, %ld,   %ld \n";
@@ -130,7 +141,9 @@ void SFTST_Calc(SFTST tst, SFTST_TIME *mt, SFTST_TIME *hlp, SFTST_TIME *out) {
             tst->adj_limit++;
         }
     } else if (tst->adjflg == 1) {
-        /* the nested assignment keeps the subtraction ahead of the sftst_Conv call */
+        /* Matching workaround: the nested assignment keeps the subtraction ahead of the
+         * sftst_Conv call; splitting it into two statements changes 49 of SFTST_Calc's 660
+         * words. Revisit when the original expression is found. */
         adiff = ((diff = mt->cnt - est) < 0) ? -diff : diff;
         excess = sftst_Conv(&tst->excesserr, mt->unit);
         if (excess < adiff) {
@@ -145,7 +158,9 @@ void SFTST_Calc(SFTST tst, SFTST_TIME *mt, SFTST_TIME *hlp, SFTST_TIME *out) {
             ave = sftst_SumHist(tst) / tst->movave_range;
             tst->movave_1st = (Sint32)ave;
             tst->movave_2nd = (Sint32)ave;
-            /* sftst_Conv(), written out (required: the call compiles differently) */
+            /* Matching workaround: sftst_Conv written out. The call
+             * `tol = sftst_Conv(&tst->tolerance, mt->unit)` changes 41 of SFTST_Calc's 660
+             * words. Revisit when the original inline setting or source is found. */
             tol = mt->unit * tst->tolerance.cnt / tst->tolerance.unit;
             aave = (ave < 0) ? -ave : ave;
             if (tol < aave) {
@@ -156,8 +171,7 @@ void SFTST_Calc(SFTST tst, SFTST_TIME *mt, SFTST_TIME *hlp, SFTST_TIME *out) {
                     q = ave * 2 / tol + 1;
                     tst->adj_rear += (Sint32)-q;
                 }
-                adj = q;
-                step = adj * tol / 2;
+                step = q * tol / 2;
                 tst->base_hlp = hlp->cnt;
                 tst->base_out = est + step;
                 sftst_SubHist(tst, (Sint32)step);
@@ -291,9 +305,8 @@ void SFTST_Create(SFTST tst) {
     tst->diff_a_max = 0;
     tst->diff_a_min = 0;
     {
-        /* `Char8 hdr[] = "..."` with the literal named (see sftst_msg_hdr): a struct copy is the
-         * same inline block copy as the array initialiser */
-        SFTST_HDRSTR hdr = *(const SFTST_HDRSTR *)sftst_msg_hdr;
+        /* local copy of the header string (see sftst_msg_hdr) */
+        SFTST_HDRSTR hdr = sftst_msg_hdr;
 
         if (sftst_debout_buf != 0) {
             memset(sftst_debout_buf, 0, sftst_debout_siz);
