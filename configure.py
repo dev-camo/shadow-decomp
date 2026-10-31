@@ -938,6 +938,19 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
+                # Reading of animation curves. The flags follow the library code (fn_80410630.c,
+                # where the inline depth is shown); with level=1 the key reader must be a macro.
+                Object(
+                    NonMatching,
+                    "Game/fn_80413B30.c",
+                    extra_cflags=[
+                        "-Cpp_exceptions on",
+                        "-O4,s",
+                        "-use_lmw_stmw on",
+                        "-str reuse,readonly",
+                        "-inline auto,level=1",
+                    ],
+                ),
                 Object(Matching, "Game/fn_8040CF2C.c"),
                 Object(Matching, "Game/fn_804202B8.c"),
                 Object(Matching, "Game/fn_8040CD20.c"),
