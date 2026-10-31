@@ -22,10 +22,9 @@
  * blocks. */
 void MPVMC16_OneRef4p_TuneC(MPVMC *mc) {
     /* Three rotating pixel pairs (pixel k lives in pair k % 3) and the sums p0..p7 reused for both
-     * halves. COMPILER-DIFF: the unused `= 0` initialisers of the pixel words and the (Uint32)
-     * casts on them are required; without them MWCC schedules the loads and builds the add tree
-     * differently. */
-    Uint32 a0 = 0, b0 = 0, a1 = 0, b1 = 0, a2 = 0, b2 = 0;
+     * halves. NonMatching: 106 of 139 words differ (same size, same opcodes; register allocation
+     * and instruction order differ). */
+    Uint8 a0, b0, a1, b1, a2, b2;
     Uint32 p0, p1, p2, p3, p4, p5, p6, p7;
     Sint32 i;
     Sint32 stride;
@@ -43,54 +42,54 @@ void MPVMC16_OneRef4p_TuneC(MPVMC *mc) {
         b0 = s1[0];
         a1 = s0[1];
         b1 = s1[1];
-        p0 = (Uint32)a0 + (Uint32)a1 + (Uint32)b0 + (Uint32)b1 + 2;
+        p0 = a0 + a1 + b0 + b1 + 2;
         a2 = s0[2];
         b2 = s1[2];
-        p1 = (Uint32)a1 + (Uint32)a2 + (Uint32)b1 + (Uint32)b2 + 2;
+        p1 = a1 + a2 + b1 + b2 + 2;
         a0 = s0[3];
         b0 = s1[3];
-        p2 = (Uint32)a2 + (Uint32)a0 + (Uint32)b2 + (Uint32)b0 + 2;
+        p2 = a2 + a0 + b2 + b0 + 2;
         a1 = s0[4];
         b1 = s1[4];
-        p3 = (Uint32)a0 + (Uint32)a1 + (Uint32)b0 + (Uint32)b1 + 2;
+        p3 = a0 + a1 + b0 + b1 + 2;
         a2 = s0[5];
         b2 = s1[5];
-        p4 = (Uint32)a1 + (Uint32)a2 + (Uint32)b1 + (Uint32)b2 + 2;
+        p4 = a1 + a2 + b1 + b2 + 2;
         a0 = s0[6];
         b0 = s1[6];
-        p5 = (Uint32)a2 + (Uint32)a0 + (Uint32)b2 + (Uint32)b0 + 2;
+        p5 = a2 + a0 + b2 + b0 + 2;
         a1 = s0[7];
         b1 = s1[7];
-        p6 = (Uint32)a0 + (Uint32)a1 + (Uint32)b0 + (Uint32)b1 + 2;
+        p6 = a0 + a1 + b0 + b1 + 2;
         a2 = s0[8];
         b2 = s1[8];
-        p7 = (Uint32)a1 + (Uint32)a2 + (Uint32)b1 + (Uint32)b2 + 2;
+        p7 = a1 + a2 + b1 + b2 + 2;
         a0 = s0[9];
         b0 = s1[9];
         d[0] = MPVMC16_AVG4(p0, p1, p2, p3);
         d[1] = MPVMC16_AVG4(p4, p5, p6, p7);
-        p0 = (Uint32)a2 + (Uint32)a0 + (Uint32)b2 + (Uint32)b0 + 2;
+        p0 = a2 + a0 + b2 + b0 + 2;
         a1 = s0[10];
         b1 = s1[10];
-        p1 = (Uint32)a0 + (Uint32)a1 + (Uint32)b0 + (Uint32)b1 + 2;
+        p1 = a0 + a1 + b0 + b1 + 2;
         a2 = s0[11];
         b2 = s1[11];
-        p2 = (Uint32)a1 + (Uint32)a2 + (Uint32)b1 + (Uint32)b2 + 2;
+        p2 = a1 + a2 + b1 + b2 + 2;
         a0 = s0[12];
         b0 = s1[12];
-        p3 = (Uint32)a2 + (Uint32)a0 + (Uint32)b2 + (Uint32)b0 + 2;
+        p3 = a2 + a0 + b2 + b0 + 2;
         a1 = s0[13];
         b1 = s1[13];
-        p4 = (Uint32)a0 + (Uint32)a1 + (Uint32)b0 + (Uint32)b1 + 2;
+        p4 = a0 + a1 + b0 + b1 + 2;
         a2 = s0[14];
         b2 = s1[14];
-        p5 = (Uint32)a1 + (Uint32)a2 + (Uint32)b1 + (Uint32)b2 + 2;
+        p5 = a1 + a2 + b1 + b2 + 2;
         a0 = s0[15];
         b0 = s1[15];
-        p6 = (Uint32)a2 + (Uint32)a0 + (Uint32)b2 + (Uint32)b0 + 2;
+        p6 = a2 + a0 + b2 + b0 + 2;
         a1 = s0[16];
         b1 = s1[16];
-        p7 = (Uint32)a0 + (Uint32)a1 + (Uint32)b0 + (Uint32)b1 + 2;
+        p7 = a0 + a1 + b0 + b1 + 2;
         d[16] = MPVMC16_AVG4(p0, p1, p2, p3);
         d[17] = MPVMC16_AVG4(p4, p5, p6, p7);
         s0 += stride;
@@ -598,10 +597,10 @@ void MPVMC16_OneRef1p_TuneC(MPVMC *mc) {
     }
 }
 
-/* the generic (non-tuned) versions were dead-stripped; the table keeps their slots */
+/* The table is all NULL in this build: no generic (non-tuned) kernels are installed. */
 void (*const mpvmc16_oneref1p_func_table[4])(MPVMC *mc) = {0, 0, 0, 0};
 
-/* Fills the handle's 16x16 kernel slots (generic table, stripped to NULLs). */
+/* Fills the handle's 16x16 kernel slots (from the generic table, which is all NULL). */
 void MPVMC16_Init(MPVMC *mc) {
     mc->oneref16[0] = mpvmc16_oneref1p_func_table[0];
     mc->oneref16[1] = mpvmc16_oneref1p_func_table[1];
