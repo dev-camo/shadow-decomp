@@ -1242,6 +1242,9 @@ CRI/uty_tmr.c:
 CRI/uty_ppc.c:
 	.text       start:0x804036D0 end:0x80403738
 
+CRI/mwsfdrna.c:
+	.text       start:0x8040405C end:0x804040A4
+
 CRI/mwsfdrsc.c:
 	.text       start:0x804040A4 end:0x804040AC
 
