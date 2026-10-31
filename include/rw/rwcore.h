@@ -1140,7 +1140,9 @@ CHECK_SIZEOF(RwMatrixTolerance, 0xC);
 /* optimises a matrix's flags, with a tolerance or the default one for NULL (inferred) */
 RwMatrix *fn_8047E990(RwMatrix *matrix, const RwMatrixTolerance *tolerance);
 
-#define rwMATRIXTYPEORTHONORMAL 0x3
+#define rwMATRIXTYPENORMAL 0x1
+#define rwMATRIXTYPEORTHOGONAL 0x2
+#define rwMATRIXTYPEORTHONORMAL (rwMATRIXTYPENORMAL | rwMATRIXTYPEORTHOGONAL)
 #define rwMATRIXINTERNALIDENTITY 0x20000
 
 #define RwMatrixSetIdentity(m)                                                                     \
