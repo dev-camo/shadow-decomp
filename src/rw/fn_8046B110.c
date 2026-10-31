@@ -40,15 +40,16 @@ RwBool fn_8046B110(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
     }
 
     morphTarget = geometry->morphTarget;
-    numStreams = 1;
-    streams[0].data = morphTarget->verts;
-    streams[0].kind = 8;
-    streams[0].dependencies[0] = -1;
+    numStreams = 0;
+    streams[numStreams].data = morphTarget->verts;
+    streams[numStreams].kind = 8;
+    streams[numStreams].dependencies[0] = -1;
+    numStreams++;
     if (geometry->flags & rpGEOMETRYNORMALS) {
         streams[numStreams].data = morphTarget->normals;
-        numStreams = 2;
-        streams[1].kind = 8;
-        streams[1].dependencies[0] = -1;
+        streams[numStreams].kind = 8;
+        streams[numStreams].dependencies[0] = -1;
+        numStreams++;
     }
     if (geometry->flags & rpGEOMETRYPRELIT) {
         streams[numStreams].data = geometry->preLitLum;
@@ -133,8 +134,9 @@ RpGameCubeVertexDescBuilder *fn_8046B554(RpGeometry *geometry, RpGameCubeBuiltSt
     fn_8046FC1C(&lbl_805E18A0);
     fn_8046FC48(&lbl_805E18A0, 0);
     fn_8046FC50(&lbl_805E18A0, GX_VA_POS, GX_POS_XYZ, format->posType, format->posFrac);
-    fn_8046FF34(&lbl_805E18A0, GX_VA_POS, INDEXTYPE(counts[0].count));
-    numAttributes = 1;
+    numAttributes = 0;
+    fn_8046FF34(&lbl_805E18A0, GX_VA_POS, INDEXTYPE(counts[numAttributes].count));
+    numAttributes++;
 
     if (geometry->flags & rpGEOMETRYNORMALS) {
         if (format->normalNbt != 0) {
@@ -144,7 +146,7 @@ RpGameCubeVertexDescBuilder *fn_8046B554(RpGeometry *geometry, RpGameCubeBuiltSt
             fn_8046FC50(&lbl_805E18A0, GX_VA_NRM, GX_NRM_XYZ, format->normalType, 0);
             fn_8046FF34(&lbl_805E18A0, GX_VA_NRM, INDEXTYPE(counts[numAttributes].count));
         }
-        numAttributes = 2;
+        numAttributes++;
     }
     if (geometry->flags & rpGEOMETRYPRELIT) {
         fn_8046FC50(&lbl_805E18A0, GX_VA_CLR0,
@@ -153,12 +155,11 @@ RpGameCubeVertexDescBuilder *fn_8046B554(RpGeometry *geometry, RpGameCubeBuiltSt
         numAttributes++;
     }
     if (geometry->flags & (rpGEOMETRYTEXTURED | rpGEOMETRYTEXTURED2)) {
-        RpGameCubeBuiltStream *count = &counts[numAttributes];
-
-        for (i = 0; i < geometry->numTexCoordSets; i++, count++, numAttributes++) {
+        for (i = 0; i < geometry->numTexCoordSets; i++) {
             fn_8046FC50(&lbl_805E18A0, GX_VA_TEX0 + i, GX_TEX_ST, format->texCoordType[i],
                         format->texCoordFrac[i]);
-            fn_8046FF34(&lbl_805E18A0, GX_VA_TEX0 + i, INDEXTYPE(count->count));
+            fn_8046FF34(&lbl_805E18A0, GX_VA_TEX0 + i, INDEXTYPE(counts[numAttributes].count));
+            numAttributes++;
         }
     }
 
@@ -178,13 +179,14 @@ static inline void BuiltStreamsVertexSource(RpGameCubeVertexSource *vertexSource
     if (format == NULL) {
         fn_80462E1C();
     }
-    vertexSource->numElements[GX_VA_POS] = builtStreams[0].count;
-    vertexSource->data[GX_VA_POS] = builtStreams[0].data;
-    stream = 1;
+    stream = 0;
+    vertexSource->numElements[GX_VA_POS] = builtStreams[stream].count;
+    vertexSource->data[GX_VA_POS] = builtStreams[stream].data;
+    stream++;
     if (flags & rpGEOMETRYNORMALS) {
         vertexSource->numElements[GX_VA_NRM] = builtStreams[stream].count;
         vertexSource->data[GX_VA_NRM] = builtStreams[stream].data;
-        stream = 2;
+        stream++;
     }
     if (flags & rpGEOMETRYPRELIT) {
         vertexSource->numElements[GX_VA_CLR0] = builtStreams[stream].count;
@@ -210,11 +212,12 @@ static inline void MeshIndexSource(RpGameCubeIndexSource *indexSource, RxVertexI
     if (format == NULL) {
         fn_80462E1C();
     }
-    indexSource->indices[GX_VA_POS] = lists[0];
-    list = 1;
+    list = 0;
+    indexSource->indices[GX_VA_POS] = lists[list];
+    list++;
     if (flags & rpGEOMETRYNORMALS) {
         indexSource->indices[GX_VA_NRM] = lists[list];
-        list = 2;
+        list++;
     }
     if (flags & rpGEOMETRYPRELIT) {
         indexSource->indices[GX_VA_CLR0] = lists[list];
@@ -276,12 +279,11 @@ RwResEntry *fn_8046B79C(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
 
     /* the vertex data header, the display list records, then the display lists */
     vertexDataSize = fn_8046EE8C(builder);
-    primitive = GX_TRIANGLES;
     displayListsSize = geometry->mesh->numMeshes * sizeof(RpGameCubeDisplayList);
-    size = vertexDataSize + displayListsSize + 31;
-    if (geometry->flags & rpGEOMETRYTRISTRIP) {
-        primitive = GX_TRIANGLESTRIP;
-    }
+    size = vertexDataSize + displayListsSize;
+    /* room to align the display list data to 32 bytes */
+    size += 31;
+    primitive = (geometry->flags & rpGEOMETRYTRISTRIP) ? GX_TRIANGLESTRIP : GX_TRIANGLES;
     for (i = 0; i < geometry->mesh->numMeshes; i++) {
         RpMesh *mesh = (RpMesh *)(geometry->mesh + 1) + i;
 
@@ -364,8 +366,9 @@ RpGameCubeVertexDescBuilder *fn_8046BEC4(RpGeometry *geometry) {
     fn_8046FC1C(&lbl_805E18A0);
     fn_8046FC48(&lbl_805E18A0, 0);
     fn_8046FC50(&lbl_805E18A0, GX_VA_POS, GX_POS_XYZ, format->posType, format->posFrac);
+    numAttributes = 0;
     fn_8046FF34(&lbl_805E18A0, GX_VA_POS, INDEXTYPE(numVertices));
-    numAttributes = 1;
+    numAttributes++;
 
     if (geometry->flags & rpGEOMETRYNORMALS) {
         if (format->normalNbt != 0) {
@@ -375,7 +378,7 @@ RpGameCubeVertexDescBuilder *fn_8046BEC4(RpGeometry *geometry) {
             fn_8046FC50(&lbl_805E18A0, GX_VA_NRM, GX_NRM_XYZ, format->normalType, 0);
             fn_8046FF34(&lbl_805E18A0, GX_VA_NRM, INDEXTYPE(numVertices));
         }
-        numAttributes = 2;
+        numAttributes++;
     }
     if (geometry->flags & rpGEOMETRYPRELIT) {
         fn_8046FC50(&lbl_805E18A0, GX_VA_CLR0,
@@ -440,12 +443,11 @@ RwResEntry *fn_8046C0D4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     }
 
     vertexDataSize = fn_8046EE8C(builder);
-    primitive = GX_TRIANGLES;
     displayListsSize = geometry->mesh->numMeshes * sizeof(RpGameCubeDisplayList);
-    size = vertexDataSize + displayListsSize + 31;
-    if (geometry->flags & rpGEOMETRYTRISTRIP) {
-        primitive = GX_TRIANGLESTRIP;
-    }
+    size = vertexDataSize + displayListsSize;
+    /* room to align the display list data to 32 bytes */
+    size += 31;
+    primitive = (geometry->flags & rpGEOMETRYTRISTRIP) ? GX_TRIANGLESTRIP : GX_TRIANGLES;
     for (i = 0; i < geometry->mesh->numMeshes; i++) {
         size += fn_8046B094(builder, 1, ((RpMesh *)(geometry->mesh + 1))[i].numIndices);
     }
@@ -529,18 +531,19 @@ RwBool fn_8046C4D0(RpWorld *world, RpWorldSector *sector, RpGameCubeBuiltStream 
         fn_80462E1C();
     }
 
-    streams[0].data = sector->vertices;
-    numStreams = 1;
-    streams[0].kind = 8;
-    streams[0].dependencies[0] = -1;
+    numStreams = 0;
+    streams[numStreams].data = sector->vertices;
+    streams[numStreams].kind = 8;
+    streams[numStreams].dependencies[0] = -1;
+    numStreams++;
     if (world->flags & rpWORLDNORMALS) {
         for (i = 0; i < sector->numVertices; i++) {
             sector->normals[i].pad = 0;
         }
-        streams[1].data = sector->normals;
-        numStreams = 2;
-        streams[1].kind = 4;
-        streams[1].dependencies[0] = -1;
+        streams[numStreams].data = sector->normals;
+        streams[numStreams].kind = 4;
+        streams[numStreams].dependencies[0] = -1;
+        numStreams++;
     }
     if (world->flags & rpWORLDPRELIT) {
         streams[numStreams].data = sector->preLitLum;
@@ -623,8 +626,9 @@ RpGameCubeVertexDescBuilder *fn_8046C94C(RpWorld *world, RpGameCubeBuiltStream *
     fn_8046FC1C(&lbl_805E18C0);
     fn_8046FC48(&lbl_805E18C0, 0);
     fn_8046FC50(&lbl_805E18C0, GX_VA_POS, GX_POS_XYZ, format->posType, format->posFrac);
-    fn_8046FF34(&lbl_805E18C0, GX_VA_POS, INDEXTYPE(counts[0].count));
-    numAttributes = 1;
+    numAttributes = 0;
+    fn_8046FF34(&lbl_805E18C0, GX_VA_POS, INDEXTYPE(counts[numAttributes].count));
+    numAttributes++;
 
     if (world->flags & rpWORLDNORMALS) {
         if (format->normalNbt != 0) {
@@ -634,7 +638,7 @@ RpGameCubeVertexDescBuilder *fn_8046C94C(RpWorld *world, RpGameCubeBuiltStream *
             fn_8046FC50(&lbl_805E18C0, GX_VA_NRM, GX_NRM_XYZ, format->normalType, 0);
             fn_8046FF34(&lbl_805E18C0, GX_VA_NRM, INDEXTYPE(counts[numAttributes].count));
         }
-        numAttributes = 2;
+        numAttributes++;
     }
     if (world->flags & rpWORLDPRELIT) {
         fn_8046FC50(&lbl_805E18C0, GX_VA_CLR0,
@@ -643,12 +647,11 @@ RpGameCubeVertexDescBuilder *fn_8046C94C(RpWorld *world, RpGameCubeBuiltStream *
         numAttributes++;
     }
     if (world->flags & (rpWORLDTEXTURED | rpWORLDTEXTURED2)) {
-        RpGameCubeBuiltStream *count = &counts[numAttributes];
-
-        for (i = 0; i < world->numTexCoordSets; i++, count++, numAttributes++) {
+        for (i = 0; i < world->numTexCoordSets; i++) {
             fn_8046FC50(&lbl_805E18C0, GX_VA_TEX0 + i, GX_TEX_ST, format->texCoordType[i],
                         format->texCoordFrac[i]);
-            fn_8046FF34(&lbl_805E18C0, GX_VA_TEX0 + i, INDEXTYPE(count->count));
+            fn_8046FF34(&lbl_805E18C0, GX_VA_TEX0 + i, INDEXTYPE(counts[numAttributes].count));
+            numAttributes++;
         }
     }
 
@@ -682,12 +685,11 @@ RwResEntry *fn_8046CB94(RpWorld *world, RpWorldSector *sector, void *owner, RwRe
                              GAMECUBEWORLDVERTEXFORMAT(world));
 
     vertexDataSize = fn_8046EE8C(builder);
-    primitive = GX_TRIANGLES;
     displayListsSize = sector->mesh->numMeshes * sizeof(RpGameCubeDisplayList);
-    size = vertexDataSize + displayListsSize + 31;
-    if (world->flags & rpWORLDTRISTRIP) {
-        primitive = GX_TRIANGLESTRIP;
-    }
+    size = vertexDataSize + displayListsSize;
+    /* room to align the display list data to 32 bytes */
+    size += 31;
+    primitive = (world->flags & rpWORLDTRISTRIP) ? GX_TRIANGLESTRIP : GX_TRIANGLES;
     for (i = 0; i < sector->mesh->numMeshes; i++) {
         RpMesh *mesh = (RpMesh *)(sector->mesh + 1) + i;
 
@@ -770,8 +772,9 @@ RpGameCubeVertexDescBuilder *fn_8046D2B8(RpWorld *world, RpWorldSector *sector) 
     fn_8046FC1C(&lbl_805E18C0);
     fn_8046FC48(&lbl_805E18C0, 0);
     fn_8046FC50(&lbl_805E18C0, GX_VA_POS, GX_POS_XYZ, format->posType, format->posFrac);
+    numAttributes = 0;
     fn_8046FF34(&lbl_805E18C0, GX_VA_POS, INDEXTYPE(numVertices));
-    numAttributes = 1;
+    numAttributes++;
 
     if (world->flags & rpWORLDNORMALS) {
         if (format->normalNbt != 0) {
@@ -781,7 +784,7 @@ RpGameCubeVertexDescBuilder *fn_8046D2B8(RpWorld *world, RpWorldSector *sector) 
             fn_8046FC50(&lbl_805E18C0, GX_VA_NRM, GX_NRM_XYZ, format->normalType, 0);
             fn_8046FF34(&lbl_805E18C0, GX_VA_NRM, INDEXTYPE(numVertices));
         }
-        numAttributes = 2;
+        numAttributes++;
     }
     if (world->flags & rpWORLDPRELIT) {
         fn_8046FC50(&lbl_805E18C0, GX_VA_CLR0,
@@ -844,12 +847,11 @@ RwResEntry *fn_8046D4C8(RpWorld *world, RpWorldSector *sector, void *owner, RwRe
     }
 
     vertexDataSize = fn_8046EE8C(builder);
-    primitive = GX_TRIANGLES;
     displayListsSize = sector->mesh->numMeshes * sizeof(RpGameCubeDisplayList);
-    size = vertexDataSize + displayListsSize + 31;
-    if (world->flags & rpWORLDTRISTRIP) {
-        primitive = GX_TRIANGLESTRIP;
-    }
+    size = vertexDataSize + displayListsSize;
+    /* room to align the display list data to 32 bytes */
+    size += 31;
+    primitive = (world->flags & rpWORLDTRISTRIP) ? GX_TRIANGLESTRIP : GX_TRIANGLES;
     for (i = 0; i < sector->mesh->numMeshes; i++) {
         size += fn_8046B094(builder, 1, ((RpMesh *)(sector->mesh + 1))[i].numIndices);
     }
