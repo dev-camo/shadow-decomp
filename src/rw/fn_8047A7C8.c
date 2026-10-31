@@ -408,6 +408,9 @@ RwInt32 fn_8047B154(RtFile *file, RwInt32 unused) {
         case DVD_STATE_CANCELED:
             file->status = RTFILE_STATUS_READY;
             break;
+        case DVD_STATE_FATAL_ERROR:
+        case DVD_STATE_WAITING:
+        case DVD_STATE_RETRY:
         default:
             file->status = RTFILE_STATUS_PENDING;
             break;
@@ -416,7 +419,7 @@ RwInt32 fn_8047B154(RtFile *file, RwInt32 unused) {
     }
     if (file->field_0x18 && file->status == RTFILE_STATUS_READY) {
         if (file->asyncStatus == RTFILE_ASYNC_READ) {
-            file->asyncResult = (RwInt32)file->position - (RwInt32)file->readStart;
+            file->asyncResult = (RwInt32)(file->position - file->readStart);
         }
         fn_804799C8(file);
     }
