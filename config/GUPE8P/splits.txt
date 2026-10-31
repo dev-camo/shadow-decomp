@@ -95,6 +95,15 @@ Game/CircusPole.cpp:
 	.sbss       start:0x805EEEA0 end:0x805EEEB8
 	.sdata2     start:0x805F4200 end:0x805F4228
 
+Game/Coaster.cpp:
+	.text       start:0x801312C0 end:0x80134208
+	.ctors      start:0x804A9D58 end:0x804A9D5C
+	.rodata     start:0x804BECC0 end:0x804BF180
+	.data       start:0x80528868 end:0x80528A98
+	.sdata      start:0x805E5F18 end:0x805E5F80
+	.sbss       start:0x805EEEB8 end:0x805EEEF0
+	.sdata2     start:0x805F4228 end:0x805F4288
+
 Game/Cream.cpp:
 	.text       start:0x80134208 end:0x801352A4
 	.ctors      start:0x804A9D5C end:0x804A9D60

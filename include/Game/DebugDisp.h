@@ -41,4 +41,8 @@ void fn_802E0B7C(const Fn8040Vector3 *center, const Fn8040Vector3 *rotation,
  * unknown). */
 extern UnkDebugColor_802E0E84 lbl_805F06D8;
 
+/* A .sbss colour that the startup code at 0x8040D304 sets to the bytes FF 00 FF 00 (purpose
+ * unknown); the Coaster gadget draws its debug line with it. */
+extern UnkDebugColor_802E0E84 lbl_805F1370;
+
 #endif
