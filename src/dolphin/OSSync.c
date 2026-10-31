@@ -1,3 +1,4 @@
+// Dolphin SDK OS library: system call vector setup.
 #include <dolphin.h>
 #include <dolphin/os.h>
 
