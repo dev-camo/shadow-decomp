@@ -288,7 +288,22 @@ typedef struct {
 } MPV_IXA;
 CHECK_SIZEOF(MPV_IXA, 0x1C60);
 
+/* MPV_CheckDelim start code classes */
+#define MPV_DLM_SLICE 0x01  /* any slice */
+#define MPV_DLM_SLICE1 0x02 /* the first slice (0x101) */
+#define MPV_DLM_PIC 0x04
+#define MPV_DLM_GOP 0x08
+#define MPV_DLM_EXT 0x10
+#define MPV_DLM_UD 0x20
+#define MPV_DLM_SEQ 0x40
+#define MPV_DLM_END 0x80
+
+#define MPV_ERR_INVALID_HN 0xFF030200
+
+/* mpv_deli.c */
 Sint8 *MPV_SearchDelim(Sint8 *p, Sint32 n, Sint32 mask);
+Sint32 MPV_CheckDelim(void *ptr);
+
 /* mpv_vlc.c: VLC decode tables used by the slice decoder (mpv_dec.c) */
 extern Sint16 *mpvvlc_mbai_i_0;
 extern Sint16 *mpvvlc_mbai_i_1;
@@ -315,19 +330,14 @@ extern Sint8 *mpvvlc_c_dcsiz;
 extern Sint8 *mpvvlc2_y_dcsiz;
 extern Sint8 *mpvvlc2_c_dcsiz;
 
-Sint32 MPV_CheckDelim(void *ptr);
-/* MPV_CheckDelim start code classes */
-#define MPV_DLM_SLICE 0x01  /* any slice */
-#define MPV_DLM_SLICE1 0x02 /* the first slice (0x101) */
-#define MPV_DLM_PIC 0x04
-#define MPV_DLM_GOP 0x08
-#define MPV_DLM_EXT 0x10
-#define MPV_DLM_UD 0x20
-#define MPV_DLM_SEQ 0x40
-#define MPV_DLM_END 0x80
+/* mpv_emp.c */
 Sint32 MPV_IsEmptyPpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb);
 Sint32 MPV_IsEmptyBpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb);
+
+/* mpv_lib.c */
 Sint32 MPVLIB_CheckHn(MPV_OBJ *mpv);
+
+/* mpv_err.c */
 Sint32 MPVERR_SetCode(MPV_OBJ *mpv, Sint32 code);
 
 /* mpv_frm.c */
@@ -435,8 +445,6 @@ void MPVMC16_OneRef1p_TuneC(MPVMC *mc);
 void MPVMC16_OneRefH2_TuneC(MPVMC *mc);
 void MPVMC16_OneRefV2_TuneC(MPVMC *mc);
 void MPVMC16_OneRef4p_TuneC(MPVMC *mc);
-
-#define MPV_ERR_INVALID_HN 0xFF030200
 
 #ifdef __cplusplus
 }
