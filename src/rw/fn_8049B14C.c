@@ -14,7 +14,11 @@ void fn_8049B14C(RxPacket *packet) {
             if (cluster->data != NULL && !(cluster->flags & rxCLFLAGS_EXTERNAL)) {
                 fn_8049EA2C(lbl_805F169C, cluster->data);
             }
-            /* the original clears flags and stride with a single 32-bit store */
+            /* Matching workaround: the original clears flags and stride with one 32-bit store;
+             * assigning the two 16-bit members separately (in either order, or chained) compiles
+             * to two sth stores (measured, the function grows from 0xAC to 0xB0 bytes). Revisit
+             * when the original's 32-bit access to the pair (member, union or struct copy) is
+             * found. */
             *(RwUInt32 *)&cluster->flags = 0;
             cluster->data = NULL;
             cluster->numAlloced = 0;

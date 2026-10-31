@@ -18,6 +18,8 @@ RwBool fn_8049F8AC(RxPipeline **transformPipeline) {
                 return TRUE;
             }
         }
+        /* When the unlock fails, pipeline is NULL here, so the new pipeline is not destroyed, as
+         * in the original; when the lock fails, it is destroyed */
         fn_8049B800(pipeline);
     }
     return FALSE;
@@ -73,6 +75,8 @@ RwBool fn_8049FA1C(rwIm3DRenderPipelines *renderPipelines) {
                 return TRUE;
             }
         }
+        /* When the unlock fails, pipeline is NULL here, so the new pipeline is not destroyed, as
+         * in the original; when the lock fails, it is destroyed */
         fn_8049B800(pipeline);
     }
     return FALSE;

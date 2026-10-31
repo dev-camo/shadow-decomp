@@ -10,7 +10,7 @@
  * marker until a triangle that uses the vertex builds them (names inferred) */
 #define rpMTNBTUNBUILTS8 0xFF
 #define rpMTNBTUNBUILTS16 0xFFFF
-#define rpMTNBTUNBUILTREAL 3.4028235e38f
+#define rpMTNBTUNBUILTREAL 3.4028235e38f /* the largest float */
 
 /* The vertices of a triangle that builds the binormal and tangent of its first vertex, in the
  * vertex format's component types (name inferred) */
@@ -181,7 +181,7 @@ static inline void MTNbtListTriangle16(MTNbtTriangle *triangle, RwUInt8 *indices
     MTNBTSETTRIANGLE(triangle, v0, v1, v2, positions, normals, texCoords);
 }
 
-/* Restores GQR5 (name inferred) */
+/* Restores GQR5 (name inferred). Moving to and from a GQR has no C form, hence the asm */
 static inline void MTSetGQR5(RwUInt32 value) {
     register RwUInt32 gqr;
 
@@ -194,7 +194,11 @@ static inline void MTSetGQR5(RwUInt32 value) {
 /* The display list walk of fn_804A6F8C for a normal component type: each primitive's vertices
  * whose binormal is still marked unbuilt are built, with the triangles set up by setTriangle16 for
  * 16-bit indices or setTriangle8 for 8-bit indices. A display list ends at its size or at a zero
- * command. (name inferred) */
+ * command. (name inferred)
+ *
+ * The macro is the display list loop of fn_804A6F8C: it updates its locals offset, numVertices,
+ * data, i, index and triangle, and reads displayList, instance, positions, normals, texCoords and
+ * vertexSize */
 #define MTNBTBUILDPRIMITIVES(component, marker16, marker8, setTriangle16, setTriangle8)            \
     while (offset < displayList->size) {                                                           \
         offset += 3;                                                                               \
@@ -262,6 +266,8 @@ void fn_804A6F8C(RpGameCubeInstanceData *instance, RpGameCubeDisplayList *displa
     }
 
     if (format != NULL) {
+        /* indexed by the GX component type (GX_U8, GX_S8, GX_U16, GX_S16, GX_F32): the GQR load
+         * type, the bytes of a component, and the fraction bits of a normal (6 for S8, 14 for S16) */
         RwUInt8 quantizeType[5] = {4, 6, 5, 7, 0};
         RwUInt8 typeSize[5] = {1, 1, 2, 2, 4};
         RwUInt8 normalScale[5] = {0, 6, 0, 14, 0};
@@ -432,7 +438,9 @@ RwBool fn_804A8478(RpGameCubeRenderMesh *renderMesh) {
  * texture coordinates, loading and storing the components through GQR5 (positions), GQR6 (normals)
  * and GQR7 (texture coordinates). The binormal is the direction of the texture's S axis made
  * perpendicular to the normal, normalized and flipped for a mirrored texture; the tangent is the
- * binormal before the flip crossed with the normal (inferred) */
+ * binormal before the flip crossed with the normal (inferred). The original contains paired-single
+ * loads and stores through the GQRs (psq_l, psq_st), which C cannot express, so it is written
+ * as an asm function */
 asm void fn_804A8558(register MTNbtTriangle *triangle) {
 #ifdef __MWERKS__ // clang-format off
     nofralloc

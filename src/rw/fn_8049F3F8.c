@@ -103,12 +103,17 @@ void fn_8049F3F8(RwUInt8 *first, RwUInt8 *last, RwUInt32 size, RwUInt32 keyOffse
     } while (top != stack);
 }
 
-/* Insertion sort of numElements records whose first record has the smallest key, which stops
+/* Insertion sort of count records whose first record has the smallest key, which stops
  * every search for a record's place */
 static inline void SortInsertion(RwUInt8 *record, RwUInt32 count, RwUInt32 size,
                                  RwUInt32 keyOffset) {
-    /* from the second record on; the loop advances and counts down in its condition, as the
-     * original does */
+    /* Matching workaround: from the second record on, the loop advances and counts down in its
+     * condition. Measured in fn_8049F5B4 (190 words in every form): the closest alternative,
+     * for (record += size; --count != 0; record += size), differs in 4 words (a register copy
+     * becomes an add, one branch target moves and the count decrement is scheduled one slot
+     * later); a for (;;) loop that advances, counts down and breaks at its top differs in 64
+     * words, and while (--count != 0) with the advance in the body in 63. Revisit with the for
+     * form when the original loop form is found. */
     while (record += size, --count != 0) {
         RwUInt32 key;
         RwUInt8 *place;
