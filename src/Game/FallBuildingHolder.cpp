@@ -3,15 +3,14 @@
  * boost::checked_deleter<FallBuilding> RTTI string and the FALLBUILDING.BIN model file) that shows
  * the model. File name inferred from the class. Method names marked "(name inferred)" are not
  * original. Definitions are ordered so that deferred inlining emits the functions at their
- * original addresses.
+ * original addresses. checked_delete<FallBuilding> is a local symbol where the original's is weak.
  *
  * Not reconstructed yet: FallBuilding's constructor (0x800E3608: it casts a pointer of the owner to
  * FallBuildingData with dynamic_cast, builds three attack callbacks with boost::bind and
  * boost::function from the 0x34-byte entry of the table at 0x804B8438 and shows the model), its
  * Update (0x800E2C48) and the attack callback at 0x800E2A6C, and the boost::function and
- * boost::bind instances of the callbacks (0x800E3324-0x800E3ED4). The checked_deleter call
- * operator also inlines checked_delete, which the original keeps out of line (see the note in
- * configure.py). The unit therefore stays NonMatching. */
+ * boost::bind instances of the callbacks (0x800E3324-0x800E3ED4). For these reasons the unit
+ * stays NonMatching. */
 #include "Game/CharInfo.h"
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
@@ -84,7 +83,16 @@ const char *FallBuildingHolder::s_name = "FallBuildingHolder";
 /* The highest type that the load hook allows (name inferred). */
 static s32 s_maxType;
 
+/* Matching workaround: auto_inline around this destructor. The original keeps checked_delete<T>
+ * out of line and emits this destructor at its definition; with the stock GC/2.7 compiler and
+ * -inline noauto that needs auto_inline here. A tooling constraint, not a claim about the original
+ * source; revisit if another compiler build reproduces this without the pragma, or if an original
+ * checked_delete keeps out of line a destructor whose body calls only non-inline functions (the
+ * pragma would inline that destructor into it). A destructor found inlined into checked_delete in
+ * the original would instead mean that the original used auto_inline here. */
+#pragma auto_inline on
 FallBuilding::~FallBuilding() {}
+#pragma auto_inline reset
 
 void FallBuilding::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
     fn_800C9F14(owner, &m_charInfo->m_position);

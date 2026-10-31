@@ -719,14 +719,13 @@ config.libs = [
                 # constructor differ, and 16 small helper functions (the constructor chain, the
                 # accessors, the pair swap) are not reproduced one for one.
                 Object(NonMatching, "Game/CityLaserHolder.cpp", cflags=cflags_game_cpp),
-                # Only the building holder and the functions it needs are reconstructed: 20 of 48
-                # functions have identical instructions (16 also have identical relocation symbol
+                # Only the building holder and the functions it needs are reconstructed: 22 of 48
+                # functions have identical instructions (18 also have identical relocation symbol
                 # names, the other 4 call the building's constructor or Update or refer to symbols
-                # that keep placeholder names). The checked_deleter call operator differs as in
-                # CityLaserHolder.cpp (checked_delete is a weak non-inline instance in the
-                # original). The building's constructor, Update and attack callback, the
-                # boost::function and boost::bind instances of its callbacks and the
-                # FallBuildingData class (26 functions, 1184 words) are not reconstructed.
+                # that keep placeholder names), and checked_delete<FallBuilding> is a local symbol
+                # here where the original's is weak. The building's constructor, Update and
+                # attack callback, the boost::function and boost::bind instances of its callbacks
+                # and the FallBuildingData class (26 functions, 1184 words) are not reconstructed.
                 Object(NonMatching, "Game/FallBuildingHolder.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCristalWallSwitch.cpp", cflags=cflags_game_cpp),
                 Object(NonMatching, "Game/ElecCube.cpp", cflags=cflags_game_cpp),
