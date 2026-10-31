@@ -4,8 +4,6 @@
 
 #include "__os.h"
 
-#define HID2 920
-
 // prototypes
 void DMAErrorHandler(OSError error, OSContext *context, ...);
 
@@ -204,21 +202,21 @@ asm void DCStoreRangeNoSync(register void* addr, register u32 nBytes) {
 
 // clang-format off
 asm void DCZeroRange(register void* addr, register u32 nBytes) {
-  nofralloc
-  cmplwi nBytes, 0
-  blelr
-  clrlwi r5, addr, 27
-  add nBytes, nBytes, r5
-  addi nBytes, nBytes, 31
-  srwi nBytes, nBytes, 5
-  mtctr nBytes
+    nofralloc
+    cmplwi nBytes, 0
+    blelr
+    clrlwi r5, addr, 27
+    add nBytes, nBytes, r5
+    addi nBytes, nBytes, 31
+    srwi nBytes, nBytes, 5
+    mtctr nBytes
 
 @1
-  dcbz r0, addr
-  addi addr, addr, 32
-  bdnz @1
+    dcbz r0, addr
+    addi addr, addr, 32
+    bdnz @1
 
-  blr
+    blr
 }
 // clang-format on
 
@@ -355,7 +353,7 @@ _touchloop:
     oris    r4, r4, 0x100F
     mtspr   HID2, r4
 
-    nop 
+    nop
     nop
     nop
     nop
@@ -500,7 +498,7 @@ void LCAlloc(void *addr, u32 nBytes) {
     ASSERTMSGLINE(1319, !((u32)addr & 31), "LCAlloc(): addr must be 32 byte aligned");
     ASSERTMSGLINE(1321, !((u32)nBytes & 31), "LCAlloc(): nBytes must be 32 byte aligned");
 
-    if ((hid2 & 0x10000000) == 0) {
+    if ((hid2 & HID2_LCE) == 0) {
         LCEnable();
     }
     LCAllocTags(TRUE, addr, numBlocks);
@@ -513,7 +511,7 @@ void LCAllocNoInvalidate(void *addr, u32 nBytes) {
     ASSERTMSGLINE(1366, !((u32)addr & 31), "LCAllocNoFlush(): addr must be 32 byte aligned");
     ASSERTMSGLINE(1368, !((u32)nBytes & 31), "LCAllocNoFlush(): nBytes must be 32 byte aligned");
 
-    if ((hid2 & 0x10000000) == 0) {
+    if ((hid2 & HID2_LCE) == 0) {
         LCEnable();
     }
     LCAllocTags(FALSE, addr, numBlocks);
@@ -622,36 +620,36 @@ void L2Enable(void) {
 
 void L2Disable(void) {
     __sync();
-    PPCMtl2cr(PPCMfl2cr() & ~0x80000000);
+    PPCMtl2cr(PPCMfl2cr() & ~L2CR_L2E);
     __sync();
 }
 
 void L2GlobalInvalidate(void) {
     L2Disable();
-    PPCMtl2cr(PPCMfl2cr() | 0x00200000);
-    while (PPCMfl2cr() & 0x00000001u)
+    PPCMtl2cr(PPCMfl2cr() | L2CR_L2I);
+    while (PPCMfl2cr() & L2CR_L2IP)
         ;
 
-    PPCMtl2cr(PPCMfl2cr() & ~0x00200000);
-    while (PPCMfl2cr() & 0x00000001u) {
+    PPCMtl2cr(PPCMfl2cr() & ~L2CR_L2I);
+    while (PPCMfl2cr() & L2CR_L2IP) {
         DBPrintf(">>> L2 INVALIDATE : SHOULD NEVER HAPPEN\n");
     }
 }
 
 void L2SetDataOnly(BOOL dataOnly) {
     if (dataOnly) {
-        PPCMtl2cr(PPCMfl2cr() | 0x400000);
+        PPCMtl2cr(PPCMfl2cr() | L2CR_L2DO);
         return;
     }
-    PPCMtl2cr(PPCMfl2cr() & 0xFFBFFFFF);
+    PPCMtl2cr(PPCMfl2cr() & ~L2CR_L2DO);
 }
 
 void L2SetWriteThrough(BOOL writeThrough) {
     if (writeThrough) {
-        PPCMtl2cr(PPCMfl2cr() | 0x80000);
+        PPCMtl2cr(PPCMfl2cr() | L2CR_L2WT);
         return;
     }
-    PPCMtl2cr(PPCMfl2cr() & 0xFFF7FFFF);
+    PPCMtl2cr(PPCMfl2cr() & ~L2CR_L2WT);
 }
 
 void DMAErrorHandler(OSError error, OSContext *context, ...) {

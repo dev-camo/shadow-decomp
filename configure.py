@@ -357,8 +357,10 @@ cflags_sdk = [
     "-D__GEKKO__",
     "-DSDK_REVISION=1",
 ]
-# GX and OS in this game are the Nov 10 2004 builds (SDK_REVISION 2 in the reference sources);
-# the other SDK libraries are the Apr 2004 builds (revision 1).
+# The other SDK libraries are the Apr 2004 builds (SDK_REVISION 1). The GX and OS units are
+# Nov 10 2004 builds (revision 2). Of the GX and OS units, only OS.c, OSExec.c, GXInit.c and
+# GXFifo.c are compiled with this flag; OSArena.c's revision-2-only OSAllocFromArenaHi is left
+# uncompiled because it is not in the final binary.
 cflags_sdk_rev2 = [flag for flag in cflags_sdk if flag != "-DSDK_REVISION=1"] + ["-DSDK_REVISION=2"]
 
 

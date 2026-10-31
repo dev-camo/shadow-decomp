@@ -43,6 +43,7 @@ void *OSAllocFromArenaLo(u32 size, u32 align) {
     return ptr;
 }
 
+// Revision 2 only; OSArena.c is built as revision 1, so this function is not compiled.
 #if SDK_REVISION >= 2
 void *OSAllocFromArenaHi(u32 size, u32 align) {
     void *ptr;
