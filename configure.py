@@ -894,6 +894,18 @@ config.libs = [
                     cflags=cflags_game_vector_length,
                     extra_cflags=["-O4,s", "-use_lmw_stmw on"],
                 ),
+                # Groups of numbered resources.
+                Object(
+                    NonMatching,
+                    "Game/fn_80411714.c",
+                    extra_cflags=[
+                        "-Cpp_exceptions on",
+                        "-O4,s",
+                        "-use_lmw_stmw on",
+                        "-str reuse,readonly",
+                        "-inline auto,level=1",
+                    ],
+                ),
                 Object(Matching, "Game/fn_8040CF2C.c"),
                 Object(Matching, "Game/fn_804202B8.c"),
                 Object(Matching, "Game/fn_8040CD20.c"),
