@@ -301,8 +301,8 @@ RwInt32 fn_8047A470(void *fptr, RwInt32 offset, RwInt32 origin) {
 /* Reads a line of at most maxLen - 1 characters, ending after its newline; carriage returns
  * before a newline are dropped, and the file is left just after the line */
 RwChar *fn_8047A518(RwChar *buffer, RwInt32 maxLen, void *fptr) {
-    RtFile *file = fptr;
     RwInt32 i = 0;
+    RtFile *file = fptr;
     RwInt32 numRead = file->fileSystem->fileRead(file, buffer, maxLen - 1);
 
     if (numRead == 0) {
@@ -310,8 +310,7 @@ RwChar *fn_8047A518(RwChar *buffer, RwInt32 maxLen, void *fptr) {
     }
     while (i < numRead) {
         if (buffer[i] == '\n') {
-            i++;
-            buffer[i] = '\0';
+            buffer[++i] = '\0';
             fn_8047A470(file, i - numRead, SEEK_CUR);
             return buffer;
         }
