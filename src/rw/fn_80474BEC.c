@@ -14,7 +14,7 @@ Rt2dPath *fn_80474BEC(Rt2dPath *path) {
     Rt2dPath *next = path->next;
 
     if (path->points != NULL) {
-        if (path->numPoints == -1) {
+        if (path->numPoints == rt2dPATHLOCKED) {
             fn_8047DFC8(path->points);
         } else {
             RwFree(path->points);
@@ -247,13 +247,13 @@ Rt2dPath *fn_804758C8(Rt2dPath *flat, const Rt2dPath *path) {
     RwInt32 i;
 
     lbl_805E1950.pixelSizeSq = fn_80474168();
-    if (path->numPoints == -1) {
+    if (path->numPoints == rt2dPATHLOCKED) {
         node = fn_8047DFAC(path->points);
     } else {
         node = path->points;
     }
     numPoints = path->numPoints;
-    if (numPoints == -1) {
+    if (numPoints == rt2dPATHLOCKED) {
         numPoints = fn_8047E03C(path->points);
     }
     for (i = 0; i < numPoints; i++, node++) {
@@ -302,7 +302,7 @@ RwBool fn_80475E2C(Rt2dPath *path) {
 }
 
 void fn_804760C8(Rt2dPath *path) {
-    if (path->numPoints == -1) {
+    if (path->numPoints == rt2dPATHLOCKED) {
         fn_8047DFC8(path->points);
     } else if (path->points != NULL) {
         RwFree(path->points);
@@ -336,20 +336,20 @@ Rt2dPath *fn_80476490(void) {
 Rt2dPath *fn_80476510(Rt2dPath *path) {
     Rt2dPath *result = path;
 
-    if (path != NULL && path->numPoints != -1) {
+    if (path != NULL && path->numPoints != rt2dPATHLOCKED) {
         RwSList *list = fn_8047DC90(sizeof(rt2dPathNode), rwMEMHINTDUR_EVENT | rwID_2DPATH);
 
         if (list != NULL) {
             void *points;
             RwInt32 numPoints;
 
-            if (path->numPoints == -1) {
+            if (path->numPoints == rt2dPATHLOCKED) {
                 points = fn_8047DFAC(path->points);
             } else {
                 points = path->points;
             }
             numPoints = path->numPoints;
-            if (numPoints == -1) {
+            if (numPoints == rt2dPATHLOCKED) {
                 numPoints = fn_8047E03C(path->points);
             }
             if (numPoints != 0) {
@@ -372,7 +372,7 @@ Rt2dPath *fn_80476510(Rt2dPath *path) {
 
 /* Turns the points of each subpath back into arrays */
 Rt2dPath *fn_80476830(Rt2dPath *path) {
-    if (path != NULL && path->numPoints == -1) {
+    if (path != NULL && path->numPoints == rt2dPATHLOCKED) {
         RwInt32 numPoints = fn_8047E03C(path->points);
 
         path->points = fn_8047E044(path->points);

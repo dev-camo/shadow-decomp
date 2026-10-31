@@ -50,6 +50,20 @@ typedef struct Rt2dBrush {
 } Rt2dBrush;
 CHECK_SIZEOF(Rt2dBrush, 0x78);
 
+/* Sets a vertex's colour to a brush edge's colour at a fraction of the edge: the base colour plus
+ * the fraction of the difference to the second colour */
+#define RT2DEDGECOLOR(vertex, base, delta, t)                                                      \
+    do {                                                                                           \
+        RwRGBAReal col_;                                                                           \
+                                                                                                   \
+        RwRGBARealScale(&col_, &(delta), (t));                                                     \
+        RwRGBARealAdd(&col_, &(base), &col_);                                                      \
+        (vertex)->color.red = col_.red;                                                            \
+        (vertex)->color.green = col_.green;                                                        \
+        (vertex)->color.blue = col_.blue;                                                          \
+        (vertex)->color.alpha = col_.alpha;                                                        \
+    } while (0)
+
 typedef struct Rt2dPath Rt2dPath;
 
 /* The kinds of path segment */
@@ -67,8 +81,11 @@ typedef struct rt2dPathNode {
 } rt2dPathNode;
 CHECK_SIZEOF(rt2dPathNode, 0x18);
 
+/* The numPoints of a locked path, whose points are a list (inferred) */
+#define rt2dPATHLOCKED (-1)
+
 /* A path (0x1C bytes): a chain of subpaths. While locked, the points are a list and numPoints is
- * -1; unlocked, they are an array of numPoints (inferred) */
+ * rt2dPATHLOCKED; unlocked, they are an array of numPoints (inferred) */
 struct Rt2dPath {
     /* 0x00 */ void *points;
     /* 0x04 */ RwInt32 numPoints;
@@ -137,6 +154,9 @@ typedef struct rt2dFontDictNode {
 } rt2dFontDictNode;
 CHECK_SIZEOF(rt2dFontDictNode, 0xC);
 
+/* The vertices of the buffer that strokes are drawn through (inferred) */
+#define rt2dVERTEXBUFFERSIZE 64
+
 /* The depth of the transformation stack */
 #define rt2dCTMSTACKSIZE 32
 
@@ -145,10 +165,10 @@ CHECK_SIZEOF(rt2dFontDictNode, 0xC);
 
 /* The 2D toolkit's globals (0xD58 bytes); only the mapped members are used */
 typedef struct Rt2dGlobalVars {
-    /* 0x000 */ RwImVertexIndex indices[64];                       /* 0 to 63 */
+    /* 0x000 */ RwImVertexIndex indices[rt2dVERTEXBUFFERSIZE];     /* 0 to 63 */
     /* 0x080 */ RwImVertexIndex fontIndices[rt2dFONTMAXQUADS * 6]; /* two triangles per quad */
     /* 0x140 */ RwFreeList *brushFreeList;
-    /* 0x144 */ RwIm3DVertex *vertexBuffer; /* 0x900 bytes (inferred) */
+    /* 0x144 */ RwIm3DVertex *vertexBuffer; /* rt2dVERTEXBUFFERSIZE vertices (inferred) */
     /* 0x148 */ RwFreeList *fontFreeList;
     /* 0x14C */ RwChar *fontPath; /* paths separated by ';' */
     /* 0x150 */ RwUInt32 fontPathSize;
