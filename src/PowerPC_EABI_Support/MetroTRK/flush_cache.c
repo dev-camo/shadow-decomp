@@ -1,6 +1,6 @@
 #include <dolphin/types.h>
 
-asm void TRK_flush_cache(u32 param_1, int param_2) {
+asm void TRK_flush_cache(u32 start, int length) {
 #ifdef __MWERKS__ // clang-format off
 	nofralloc
 	lis r5, 0xFFFFFFF1@h

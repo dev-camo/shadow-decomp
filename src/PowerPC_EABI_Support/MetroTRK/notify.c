@@ -5,10 +5,11 @@ DSError TRKDoNotifyStopped(MessageCommandID cmd) {
     int bufIdx;
     MessageBuffer *msg;
     DSError err;
-    DSError bufError;
 
-    bufError = TRKGetFreeBuffer(&bufIdx, &msg);
-    if ((err = bufError) == FALSE) {
+    err = TRKGetFreeBuffer(&bufIdx, &msg);
+    if (err == DS_NoError) {
+        // The same test again: a single test changes the code (the original has two consecutive
+        // branches on the result).
         if (err == DS_NoError) {
             if (cmd == DSMSG_NotifyStopped) {
                 TRKTargetAddStopInfo(msg);
@@ -16,8 +17,7 @@ DSError TRKDoNotifyStopped(MessageCommandID cmd) {
                 TRKTargetAddExceptionInfo(msg);
             }
         }
-        bufError = TRKRequestSend(msg, &reqIdx, 2, 3, 1);
-        err = bufError;
+        err = TRKRequestSend(msg, &reqIdx, 2, 3, 1);
         if (err == DS_NoError) {
             TRKReleaseBuffer(reqIdx);
         }

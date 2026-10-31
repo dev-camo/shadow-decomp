@@ -22,7 +22,7 @@ static u32 TRK_ISR_OFFSETS[15] = {PPC_SystemReset,
                                   PPC_SystemManagementInterrupt,
                                   PPC_ThermalManagementInterrupt};
 
-__declspec(section ".init") void __TRK_reset() {
+__declspec(section ".init") void __TRK_reset(void) {
     OSResetSystem(FALSE, 0, FALSE);
 }
 
@@ -50,23 +50,24 @@ void TRK_copy_vector(u32 offset) {
 }
 
 void __TRK_copy_vectors(void) {
-    u32 r3 = lc_base;
+    u32 exception_mask_addr = lc_base;
     u32 *isrOffsetPtr;
     int i;
-    u32 r29;
+    u32 exception_mask;
 
-    if (r3 <= 0x44 && r3 + 0x4000 > 0x44 && gTRKCPUState.Extended1.DBAT3U_ & 3) {
-        r3 = 0x44;
+    if (exception_mask_addr <= 0x44 && exception_mask_addr + 0x4000 > 0x44 &&
+        gTRKCPUState.Extended1.DBAT3U_ & 3) {
+        exception_mask_addr = 0x44;
     } else {
-        r3 = EXCEPTIONMASK_ADDR;
+        exception_mask_addr = EXCEPTIONMASK_ADDR;
     }
 
     i = 0;
-    r29 = *(u32 *)r3;
+    exception_mask = *(u32 *)exception_mask_addr;
     isrOffsetPtr = TRK_ISR_OFFSETS;
 
     do {
-        if ((r29 & (1 << i)) && i != 4) {
+        if ((exception_mask & (1 << i)) && i != 4) {
             TRK_copy_vector(isrOffsetPtr[i]);
         }
 
@@ -84,26 +85,25 @@ DSError TRKInitializeTarget(void) {
 #define __dcbi(a, b) asm { dcbi a, b }
 #define __dcbfASM(a, b) asm { dcbf a, b }
 
-void TRK__read_aram(register int c, register u32 p2, void *p3) {
+void TRK__read_aram(register int mem_addr, register u32 aram_addr, size_t *length) {
     u32 err;
     int i;
     register int counter;
     u16 r;
-    u32 g;
     u32 x;
     u32 size;
 
-    if ((size_t)p2 < 0x4000 || p2 + *(u32 *)p3 > 0x8000000) {
+    if (aram_addr < 0x4000 || aram_addr + *length > 0x8000000) {
         return;
     }
 
-    x = p2 & ~0x1F;
-    size = *(u32 *)p3 + (p2 & 0x1F);
+    x = aram_addr & ~0x1F;
+    size = *length + (aram_addr & 0x1F);
     size = OSRoundUp32B(size);
     counter = 0;
 
     for (i = 0; i < size; i += 0x20) {
-        __dcbi(counter, c);
+        __dcbi(counter, mem_addr);
         counter += 0x20;
     }
 
@@ -112,10 +112,9 @@ void TRK__read_aram(register int c, register u32 p2, void *p3) {
     } while (err);
 
     r = __ARGetInterruptStatus();
-    g = 0x8000000;
     __ARClearInterrupt();
 
-    ARStartDMA(1, c, x, size);
+    ARStartDMA(1, mem_addr, x, size);
 
     while (!__ARGetInterruptStatus()) {
     }
@@ -125,25 +124,25 @@ void TRK__read_aram(register int c, register u32 p2, void *p3) {
     }
 }
 
-void TRK__write_aram(register int c, register u32 p2, void *p3) {
+void TRK__write_aram(register int mem_addr, register u32 aram_addr, size_t *length) {
     u8 buff[32] ATTRIBUTE_ALIGN(32);
     u32 err;
-    register int count = c;
+    register int count = mem_addr;
     register u32 bf;
-    u32 uVar1;
+    u32 aligned_addr;
     u32 size;
     u16 r;
     register u32 g;
     register int counter;
     u32 i;
 
-    if ((size_t)p2 < 0x4000 || p2 + *(u32 *)p3 > 0x8000000) {
+    if (aram_addr < 0x4000 || aram_addr + *length > 0x8000000) {
         return;
     }
 
-    uVar1 = p2 & ~0x1f;
+    aligned_addr = aram_addr & ~0x1f;
     counter = 0;
-    size = *(u32 *)p3 + (p2 & 0x1f);
+    size = *length + (aram_addr & 0x1f);
     size = OSRoundUp32B(size);
 
     for (i = 0; i < size; i += 0x20) {
@@ -158,26 +157,26 @@ void TRK__write_aram(register int c, register u32 p2, void *p3) {
     r = __ARGetInterruptStatus();
     g = 0x8000000;
 
-    counter = p2 & 0x1f;
+    counter = aram_addr & 0x1f;
     if (counter) {
-        g = uVar1;
+        g = aligned_addr;
         bf = (u32)buff;
         __dcbi(r0, bf);
         __ARClearInterrupt();
 
-        ARStartDMA(1, bf, uVar1, 0x20);
+        ARStartDMA(1, bf, aligned_addr, 0x20);
 
         while (!__ARGetInterruptStatus()) {
         }
 
-        TRK_memcpy((void *)c, buff, counter);
-        __dcbfASM(r0, c);
+        TRK_memcpy((void *)mem_addr, buff, counter);
+        __dcbfASM(r0, mem_addr);
     }
 
-    p2 += *(u32 *)p3;
-    counter = p2 & 0x1f;
+    aram_addr += *length;
+    counter = aram_addr & 0x1f;
     if (counter) {
-        u32 val = p2 & ~0x1F;
+        u32 val = aram_addr & ~0x1F;
         if (val != g) {
             bf = (u32)buff;
             __dcbi(r0, bf);
@@ -187,14 +186,14 @@ void TRK__write_aram(register int c, register u32 p2, void *p3) {
             while (!__ARGetInterruptStatus()) {
             }
         }
-        g = c + p2;
+        g = mem_addr + aram_addr;
         TRK_memcpy((void *)g, (void *)(buff + counter), 0x20 - counter);
 
         __dcbfASM(r0, g);
     }
     __sync();
     __ARClearInterrupt();
-    ARStartDMA(0, c, uVar1, size);
+    ARStartDMA(0, mem_addr, aligned_addr, size);
     if (!r) {
         while (!__ARGetInterruptStatus()) {
         }

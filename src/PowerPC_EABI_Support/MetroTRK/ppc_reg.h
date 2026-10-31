@@ -9,99 +9,98 @@ extern "C" {
 #endif // ifdef __cplusplus
 
 typedef struct Default_PPC {
-    u32 GPR[32];
-    u32 PC;
-    u32 LR;
-    u32 CR;
-    u32 CTR;
-    u32 XER;
+    /* 0x0 */ u32 GPR[32];
+    /* 0x80 */ u32 PC;
+    /* 0x84 */ u32 LR;
+    /* 0x88 */ u32 CR;
+    /* 0x8C */ u32 CTR;
+    /* 0x90 */ u32 XER;
 } Default_PPC;
 CHECK_SIZEOF(Default_PPC, 0x94);
 
 typedef struct Float_PPC {
-    u64 FPR[32];
-    u64 FPSCR;
-    u64 FPECR;
+    /* 0x0 */ u64 FPR[32];
+    /* 0x100 */ u64 FPSCR;
+    /* 0x108 */ u64 FPECR;
 } Float_PPC;
 CHECK_SIZEOF(Float_PPC, 0x110);
 
 typedef struct Extended1_PPC_6xx_7xx {
-    // u8 pad[0x168];
-    u32 SR[16];
-    u32 TBL;
-    u32 TBU;
-    u32 HID0_;
-    u32 HID1;
-    u32 MSR;
-    u32 PVR;
-    u32 IBAT0U;
-    u32 IBAT0L;
-    u32 IBAT1U;
-    u32 IBAT1L;
-    u32 IBAT2U;
-    u32 IBAT2L;
-    u32 IBAT3U;
-    u32 IBAT3L;
-    u32 DBAT0U;
-    u32 DBAT0L;
-    u32 DBAT1U;
-    u32 DBAT1L;
-    u32 DBAT2U;
-    u32 DBAT2L;
-    u32 DBAT3U_;
-    u32 DBAT3L_;
-    u32 DMISS;
-    u32 DCMP;
-    u32 HASH1;
-    u32 HASH2;
-    u32 IMISS;
-    u32 ICMP;
-    u32 RPA;
-    u32 SDR1;
-    u32 DAR;
-    u32 DSISR;
-    u32 SPRG0;
-    u32 SPRG1;
-    u32 SPRG2;
-    u32 SPRG3;
-    u32 DEC;
-    u32 IABR;
-    u32 EAR;
-    u32 DABR;
-    u32 PMC1;
-    u32 PMC2;
-    u32 PMC3;
-    u32 PMC4;
-    u32 SIA;
-    u32 MMCR0;
-    u32 MMCR1;
-    u32 THRM1;
-    u32 THRM2;
-    u32 THRM3;
-    u32 ICTC;
-    u32 L2CR;
-    u32 UMMCR2;
-    u32 UBAMR;
-    u32 UMMCR0;
-    u32 UPMC1;
-    u32 UPMC2;
-    u32 USIA;
-    u32 UMMCR1;
-    u32 UPMC3;
-    u32 UPMC4;
-    u32 USDA;
-    u32 MMCR2;
-    u32 BAMR;
-    u32 SDA;
-    u32 MSSCR0;
-    u32 MSSCR1;
-    u32 PIR;
-    u32 exceptionID;
-    u32 GQR[8];
-    u32 HID_G;
-    u32 WPAR;
-    u32 DMA_U_;
-    u32 DMA_L_;
+    /* 0x0 */ u32 SR[16];
+    /* 0x40 */ u32 TBL;
+    /* 0x44 */ u32 TBU;
+    /* 0x48 */ u32 HID0_;
+    /* 0x4C */ u32 HID1;
+    /* 0x50 */ u32 MSR;
+    /* 0x54 */ u32 PVR;
+    /* 0x58 */ u32 IBAT0U;
+    /* 0x5C */ u32 IBAT0L;
+    /* 0x60 */ u32 IBAT1U;
+    /* 0x64 */ u32 IBAT1L;
+    /* 0x68 */ u32 IBAT2U;
+    /* 0x6C */ u32 IBAT2L;
+    /* 0x70 */ u32 IBAT3U;
+    /* 0x74 */ u32 IBAT3L;
+    /* 0x78 */ u32 DBAT0U;
+    /* 0x7C */ u32 DBAT0L;
+    /* 0x80 */ u32 DBAT1U;
+    /* 0x84 */ u32 DBAT1L;
+    /* 0x88 */ u32 DBAT2U;
+    /* 0x8C */ u32 DBAT2L;
+    /* 0x90 */ u32 DBAT3U_;
+    /* 0x94 */ u32 DBAT3L_;
+    /* 0x98 */ u32 DMISS;
+    /* 0x9C */ u32 DCMP;
+    /* 0xA0 */ u32 HASH1;
+    /* 0xA4 */ u32 HASH2;
+    /* 0xA8 */ u32 IMISS;
+    /* 0xAC */ u32 ICMP;
+    /* 0xB0 */ u32 RPA;
+    /* 0xB4 */ u32 SDR1;
+    /* 0xB8 */ u32 DAR;
+    /* 0xBC */ u32 DSISR;
+    /* 0xC0 */ u32 SPRG0;
+    /* 0xC4 */ u32 SPRG1;
+    /* 0xC8 */ u32 SPRG2;
+    /* 0xCC */ u32 SPRG3;
+    /* 0xD0 */ u32 DEC;
+    /* 0xD4 */ u32 IABR;
+    /* 0xD8 */ u32 EAR;
+    /* 0xDC */ u32 DABR;
+    /* 0xE0 */ u32 PMC1;
+    /* 0xE4 */ u32 PMC2;
+    /* 0xE8 */ u32 PMC3;
+    /* 0xEC */ u32 PMC4;
+    /* 0xF0 */ u32 SIA;
+    /* 0xF4 */ u32 MMCR0;
+    /* 0xF8 */ u32 MMCR1;
+    /* 0xFC */ u32 THRM1;
+    /* 0x100 */ u32 THRM2;
+    /* 0x104 */ u32 THRM3;
+    /* 0x108 */ u32 ICTC;
+    /* 0x10C */ u32 L2CR;
+    /* 0x110 */ u32 UMMCR2;
+    /* 0x114 */ u32 UBAMR;
+    /* 0x118 */ u32 UMMCR0;
+    /* 0x11C */ u32 UPMC1;
+    /* 0x120 */ u32 UPMC2;
+    /* 0x124 */ u32 USIA;
+    /* 0x128 */ u32 UMMCR1;
+    /* 0x12C */ u32 UPMC3;
+    /* 0x130 */ u32 UPMC4;
+    /* 0x134 */ u32 USDA;
+    /* 0x138 */ u32 MMCR2;
+    /* 0x13C */ u32 BAMR;
+    /* 0x140 */ u32 SDA;
+    /* 0x144 */ u32 MSSCR0;
+    /* 0x148 */ u32 MSSCR1;
+    /* 0x14C */ u32 PIR;
+    /* 0x150 */ u32 exceptionID;
+    /* 0x154 */ u32 GQR[8];
+    /* 0x174 */ u32 HID_G;
+    /* 0x178 */ u32 WPAR;
+    /* 0x17C */ u32 DMA_U_;
+    /* 0x180 */ u32 DMA_L_;
 } Extended1_PPC_6xx_7xx;
 CHECK_SIZEOF(Extended1_PPC_6xx_7xx, 0x184);
 
@@ -223,26 +222,24 @@ typedef ProcessorState_PPC_6xx_7xx ProcessorState_PPC;
 // 0xA00-0xB00 are reserved
 #define PPC_SystemCall 0xC00
 #define PPC_Trace 0xD00
-#define PPC_FloatingPointAssist 0xE00 // unimplemented in 750CL
-#define PPC_PerformanceMonitor 0xF00  // Dolphin/Broadway specific
-// 0x1000-0x1200 are unimplemented in 750CL
-#define PPC_InstructionAddressBreakpoint 0x1300 // Dolphin/Broadway specific
+#define PPC_FloatingPointAssist 0xE00
+#define PPC_PerformanceMonitor 0xF00
+#define PPC_InstructionAddressBreakpoint 0x1300
 // 0x1400-0x2F00 are reserved, but TRK uses some
 #define PPC_SystemManagementInterrupt 0x1400
-// 0x1500-0x1600 are unimplemented in 750CL
 #define PPC_ThermalManagementInterrupt 0x1700
 #define PPC_1800Exception 0x1800
 #define PPC_1900Exception 0x1900
 #define PPC_1A00Exception 0x1A00
 #define PPC_1B00Exception 0x1B00
-#define PPC_1C00Exception 0x1C00 // Data breakpoint?
-#define PPC_1D00Exception 0x1D00 // Instruction breakpoint?
-#define PPC_1E00Exception 0x1E00 // Peripheral breakpoint?
-#define PPC_1F00Exception 0x1F00 // Non maskable development port?
+#define PPC_1C00Exception 0x1C00
+#define PPC_1D00Exception 0x1D00
+#define PPC_1E00Exception 0x1E00
+#define PPC_1F00Exception 0x1F00
 #define PPC_2000Exception 0x2000
 
 #ifdef __cplusplus
-};
+}
 #endif // ifdef __cplusplus
 
 #endif

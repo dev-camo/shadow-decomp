@@ -35,7 +35,7 @@ static DSIOResult __write_file(u32 handle, u8 *buffer, size_t *count, void (*idl
 static DSIOResult __close_file(u32 handle) {
     u32 result;
 
-    if (GetTRKConnected() == DS_NoError) {
+    if (!GetTRKConnected()) {
         return DS_IOError;
     }
 
@@ -56,7 +56,7 @@ static DSIOResult __access_file(u32 handle, u8 *buffer, size_t *count, void (*id
     size_t count_temp;
     u32 result;
 
-    if (GetTRKConnected() == DS_NoError) {
+    if (!GetTRKConnected()) {
         return DS_IOError;
     }
 

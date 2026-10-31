@@ -16,11 +16,11 @@ int ddh_cc_initialize(void *inputPendingPtrRef, __OSInterruptHandler monitorCall
     return 0;
 }
 
-int ddh_cc_shutdown() {
+int ddh_cc_shutdown(void) {
     return 0;
 }
 
-int ddh_cc_open() {
+int ddh_cc_open(void) {
     if (gIsInitialized) {
         return DDH_ERR_ALREADY_INITIALIZED;
     }
@@ -29,7 +29,7 @@ int ddh_cc_open() {
     return 0;
 }
 
-int ddh_cc_close() {
+int ddh_cc_close(void) {
     return 0;
 }
 
@@ -97,17 +97,17 @@ int ddh_cc_write(const u8 *bytes, int length) {
     return 0;
 }
 
-int ddh_cc_pre_continue() {
+int ddh_cc_pre_continue(void) {
     EXI2_Unreserve();
     return 0;
 }
 
-int ddh_cc_post_stop() {
+int ddh_cc_post_stop(void) {
     EXI2_Reserve();
     return 0;
 }
 
-int ddh_cc_peek() {
+int ddh_cc_peek(void) {
     int poll;
     u8 buff[DDH_BUF_SIZE];
 
@@ -125,7 +125,7 @@ int ddh_cc_peek() {
     return poll;
 }
 
-int ddh_cc_initinterrupts() {
+int ddh_cc_initinterrupts(void) {
     EXI2_EnableInterrupts();
     return 0;
 }
