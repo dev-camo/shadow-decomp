@@ -1042,6 +1042,9 @@ CRI/sfx_zmv.c:
 	.rodata     start:0x805186F8 end:0x80518838
 	.bss        start:0x805C4A30 end:0x805C4CA0
 
+CRI/sfx_sud.c:
+	.text       start:0x803D2E1C end:0x803D2E5C
+
 CRI/dct_ac.c:
 	.text       start:0x803D2E5C end:0x803D3238
 	.rodata     start:0x80518838 end:0x80518860
