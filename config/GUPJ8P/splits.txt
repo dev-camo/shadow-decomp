@@ -1289,6 +1289,9 @@ CRI/mwstm.c:
 CRI/mwsfdsee.c:
 	.text       start:0x80403B54 end:0x80403B60
 
+CRI/fn_80403E4C.c:
+	.text       start:0x8040448C end:0x80404504
+
 CRI/mwsfdlib.c:
 	.text       start:0x80406ED4 end:0x804074FC
 	.rodata     start:0x80519FF0 end:0x8051A3A0

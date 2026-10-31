@@ -1546,6 +1546,9 @@ CRI/mwsfdsee.c:
 Game/fn_80403E44.c:
 	.text       start:0x80403E44 end:0x80403E4C
 
+CRI/fn_80403E4C.c:
+	.text       start:0x80403E4C end:0x80403EC4
+
 CRI/mwsfdlib.c:
 	.text       start:0x80406894 end:0x80406EBC
 	.rodata     start:0x80519950 end:0x80519D00
