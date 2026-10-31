@@ -426,8 +426,8 @@ void MPS_SetPsMapFn(MPS mps, void *fn, void *obj) {
     }
 }
 
-/* Installs the system header callback (fn(obj, MPSDEC_SYSINF)); the SFD driver passes the user's
- * cond 0x3B/0x3C hook. */
+/* Installs the system header callback (fn(obj, MPSDEC_SYSHDINF *)); the SFD driver passes the
+ * user's cond 0x3B/0x3C hook. */
 void MPS_SetSystemFn(MPS mps, void *fn, void *obj) {
     if (MPSLIB_CheckHn(mps) == 0) {
         mps->sysfn = fn;

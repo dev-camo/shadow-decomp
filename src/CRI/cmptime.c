@@ -8,7 +8,7 @@ Bool UTY_CmpTime(Sint32 cnt1, Sint32 tscl1, Sint32 cnt2, Sint32 tscl2) {
     Bool ret;
     Sint32 sz = sizeof(Sint64);
 
-    /* The SDK's 64-bit check is compiled in: it spins forever without a 64-bit type. */
+    /* CRI's 64-bit type check is compiled in: it spins forever without a 64-bit type. */
     if (sz < 8) {
         for (;;) {
         }

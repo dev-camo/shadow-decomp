@@ -75,16 +75,15 @@ Sint32 MPVCDEC_NintraBlocks(MPV mpv) {
 Sint32 MPVCDEC_IntraBlocks(MPV mpv) {
     MPV_BLKPRM *prm;
     DCT_PA *pa;
+    Float64 *cur;
 
-    {
-        Float64 *cur = (Float64 *)mpv->blk[0];
-        mpvcdec_ClearBlk(&cur);
-        mpvcdec_ClearBlk(&cur);
-        mpvcdec_ClearBlk(&cur);
-        mpvcdec_ClearBlk(&cur);
-        mpvcdec_ClearBlk(&cur);
-        mpvcdec_ClearBlk(&cur);
-    }
+    cur = (Float64 *)mpv->blk[0];
+    mpvcdec_ClearBlk(&cur);
+    mpvcdec_ClearBlk(&cur);
+    mpvcdec_ClearBlk(&cur);
+    mpvcdec_ClearBlk(&cur);
+    mpvcdec_ClearBlk(&cur);
+    mpvcdec_ClearBlk(&cur);
     prm = &mpv->blkprm;
     pa = &mpv->dctpa;
     prm->qscale = mpv->qscale;
