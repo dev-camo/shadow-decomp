@@ -17,7 +17,7 @@ float fn_8040EE90(void);
 /* Returns a random float from 0 up to and including 1 (behaviour inferred). */
 float fn_8040ECF8(void);
 /* Returns a random integer from 0 to count - 1 (behaviour inferred); passes count straight to
- * Random::NextInt(u32). */
+ * the generator's integer method (Random::NextInt, name inferred). */
 u32 fn_8040EA90(u32 count);
 
 #ifdef __cplusplus

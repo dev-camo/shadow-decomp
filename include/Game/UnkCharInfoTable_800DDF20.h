@@ -7,8 +7,8 @@
 #include "layout_check.h"
 
 /* An entry of the list that fn_801DCB14 builds (behaviour inferred): a weak pointer to a
- * character info, followed by the links to the next and the previous entry (prev inferred: fn_801DCB14
- * stores the preceding entry there). The name is a placeholder. */
+ * character info, followed by the links to the next and the previous entry (prev inferred:
+ * fn_801DCB14 stores the preceding entry there). The name is a placeholder. */
 struct UnkCharInfoNode_801DCB14 {
     /* 0x00 */ boost::weak_ptr<CharInfo> charInfo;
     /* 0x08 */ UnkCharInfoNode_801DCB14 *next;

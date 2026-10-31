@@ -111,8 +111,8 @@ template <class T> class RCPtr : public CBase {
       public:
         RCObject(U *object, DeleteRelease release)
             : m_pObject(object), m_refCount(0), m_custom(), m_eDealloctor(-1) {
-            m_custom.function = NULL;
-            m_eDealloctor = RELEASE_DELETE;
+            m_custom.function = NULL;       /* stored again, as in the original */
+            m_eDealloctor = RELEASE_DELETE; /* stored again, as in the original */
         }
 
         RCObject(U *object, FreeRelease release)
@@ -133,7 +133,8 @@ template <class T> class RCPtr : public CBase {
         }
 
         /* 0x0 */ U *m_pObject;
-        /* 0x4 */ virtual ~RCObject();
+        /* The vptr is at 0x4: the members before the first virtual function come first. */
+        virtual ~RCObject();
         /* 0x8 */ int m_refCount;
         /* 0xC */ union ReleaseTarget {
             ReleaseTarget() : function(NULL) {}

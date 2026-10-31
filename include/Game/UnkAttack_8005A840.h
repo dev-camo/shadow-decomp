@@ -25,7 +25,8 @@ class AttackCallbackParam {
     /* 0x10 */ u8 field_0x10[0x18 - 0x10];
     /* 0x18 */ Fn8040Vector3 field_0x18;
     /* 0x24 */ u8 field_0x24[0x34 - 0x24];
-    /* 0x34 */ Fn8040Vector3 field_0x34; /* the stick writes field_0x18 relative to its owner */
+    /* The stick stores field_0x18 minus its owner's position here (inferred). */
+    /* 0x34 */ Fn8040Vector3 field_0x34;
     /* 0x40 */ u8 field_0x40[0x50 - 0x40];
     /* 0x50 */ float field_0x50; /* ThreatObj subtracts it from its health */
     /* Bit 0 makes the stick count a hit; ThreatObj stores 1, 3 or 8, the Chao 1 or 8. */
