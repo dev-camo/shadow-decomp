@@ -8,14 +8,10 @@
 #include "Game/CSD/RenderState.h"
 #include "Game/CSD/Screen.h"
 #include "Game/CSD/csdBase.h"
+#include "Game/CSD/csdChunkTags.h"
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
-
-/* Signatures set when the library is initialised: the first word of the project file's header
- * ("NGIF") and the tag of the chunk that ends the list of chunks ("NEND"). */
-extern u32 lbl_805859E0;
-extern u32 lbl_80585A14;
 
 namespace Chao {
 namespace CSD {
