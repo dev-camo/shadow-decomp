@@ -8,8 +8,8 @@ DSError TRKDoNotifyStopped(MessageCommandID cmd) {
 
     err = TRKGetFreeBuffer(&bufIdx, &msg);
     if (err == DS_NoError) {
-        // The same test again: a single test changes the code (the original has two consecutive
-        // branches on the result).
+        // Matching workaround: the same test again. A single test changes the code (the original
+        // has two consecutive branches on the error). Revisit when the original source is known.
         if (err == DS_NoError) {
             if (cmd == DSMSG_NotifyStopped) {
                 TRKTargetAddStopInfo(msg);

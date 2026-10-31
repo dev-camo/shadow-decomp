@@ -42,8 +42,9 @@ template<
     typedef Category iterator_category;
 };
 
-// Unused, and operator* and the extra tmp member are not standard. Unused by any unit and unverified against the game's bytes. Kept only because removing a template
-// shifts the @N literal numbering of the Game units.
+// Unused and unverified against the game's bytes (operator* and the extra tmp member are not
+// standard). Deleting an unused template renumbers the compiler's @N labels in several Game objects
+// (no code or data bytes change), which needs a symbol rename pass over those units first.
 template <class Iterator>
 struct reverse_iterator : public iterator<typename iterator_traits<Iterator>::iterator_category,
                                           typename iterator_traits<Iterator>::value_type,
@@ -101,8 +102,7 @@ inline void advance(InputIterator& i, Distance n) {
     __advance(i, n, typename iterator_traits<InputIterator>::iterator_category());
 }
 
-// Non-standard and unused. Unused by any unit and unverified against the game's bytes. Kept only because removing a template
-// shifts the @N literal numbering of the Game units.
+// Non-standard, unused and unverified against the game's bytes. See reverse_iterator above.
 template <class InputIt, class Distance>
 inline void advance_fake(InputIt& it, Distance n) {
     while (n > 0) {
@@ -132,8 +132,7 @@ inline typename iterator_traits<InputIterator>::difference_type distance(InputIt
     return __distance(first, last, typename iterator_traits<InputIterator>::iterator_category());
 }
 
-// Non-standard and unused. Unused by any unit and unverified against the game's bytes. Kept only because removing a template
-// shifts the @N literal numbering of the Game units.
+// Non-standard, unused and unverified against the game's bytes. See reverse_iterator above.
 template <class InputIt, class Distance>
 inline void advance_pointer(InputIt& it, Distance n) {
     it += n;

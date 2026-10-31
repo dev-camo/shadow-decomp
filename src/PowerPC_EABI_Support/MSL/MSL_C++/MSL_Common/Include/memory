@@ -7,8 +7,8 @@
 namespace std {
 
 // The uninitialized_* templates below are unused and unverified (the copy helper assigns instead of
-// constructing). Kept only because removing a template shifts the @N literal numbering of the Game
-// units.
+// constructing). Deleting an unused template renumbers the compiler's @N labels in several Game
+// objects (no code or data bytes change), which needs a symbol rename pass over those units first.
 template <class ForwardIt, class Size, class T>
 inline void uninitialized_fill_n(ForwardIt first, Size count, const T &value) {
     for (; count--; ++first) {

@@ -577,8 +577,9 @@ DSError TRKTargetSupportRequest(void) {
         TRKPostEvent(&event);
         return DS_NoError;
     } else if (commandId == DSMSG_OpenFile) {
-        // Called without a prototype in scope: the saved register values are passed as they are.
-        // A typed prototype (support.c) changes the register allocation of this call.
+        // Matching workaround: called without a prototype in scope, so the saved register values
+        // are passed as they are. A typed prototype (support.c) changes the register allocation of
+        // this call. Revisit when the original declaration is known.
         error = HandleOpenFileSupportRequest(gTRKCPUState.Default.GPR[4],
                                              gTRKCPUState.Default.GPR[5] & 0xff,
                                              gTRKCPUState.Default.GPR[6], &ioResult);
