@@ -257,6 +257,8 @@ void fn_8044D554(RpSkin *skin, RwMatrix *matrices, void *srcPositions, void *dst
     switch (skin->maxNumWeightsForVertex) {
     case 1:
         for (i = 0; i < numVertices; i++) {
+            /* (sic) transforms the skin's bind-pose positions rather than srcPositions, as the
+             * original does */
             fn_80482458((RwV3d *)dstPositions + i, (RwV3d *)skin->positions + i,
                         &matrices[skin->vertexBoneIndices[i] & 0xFF]);
         }

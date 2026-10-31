@@ -154,6 +154,9 @@ RwBool fn_80448850(RpAtomic *atomic, RpPTankData *ptankGlobal, RwInt32 maxPCount
     surfaceProps.specular = 1.0f;
     surfaceProps.diffuse = 1.0f;
     material->surfaceProps = surfaceProps;
+    /* (sic) triangle is an uninitialised scratch value: the call is made for its side effect of
+     * adding the material to the geometry's material list, and the material index it writes into
+     * the triangle is not used */
     fn_8045905C(geometry, &triangle, material);
 
     meshHeader = fn_8045BF30(sizeof(RpMeshHeader) + sizeof(RpMesh));

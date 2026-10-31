@@ -24,7 +24,10 @@
  *   r28-r31 the four colors, f20-f23 the four texture coordinates and f18/f19 the normal. The
  *   render callback sets GQR6 and GQR7 to the vertex format, so positions are written quantized
  *   with GQR6 and normals with GQR7; colors and texture coordinates are written as they are.
- * - With two texture coordinates per particle, the other two corners combine their components. */
+ * - With two texture coordinates per particle, the other two corners combine their components.
+ *   That path jumps straight to the vertex writes and skips the normal load, so with normals the
+ *   previous particle's normal (for the first particle, whatever f18/f19 hold) is written (the
+ *   stream pointer still advances); this is the original's behavior. */
 #include "rw/rpptank.h"
 
 /* a tank constant, addressed from the tank's streams (RpPTankAtomicExtPrv.publicData) */

@@ -47,8 +47,8 @@ RwStream *fn_8044BB18(RwStream *stream, RpSkin *skin) {
     }
     if (skin->skinSplitData.numMeshes != 0) {
         if (fn_80480ED0(stream, splitData->matrixRemapIndices,
-                        skin->numBones + splitData->numMeshes * 2 + splitData->numRLE * 2) ==
-            NULL) {
+                        skin->numBones + splitData->numMeshes * sizeof(SkinRLE) +
+                            splitData->numRLE * sizeof(SkinRLE)) == NULL) {
             return NULL;
         }
     }
@@ -62,7 +62,7 @@ static inline RpSkin *SkinSplitDataCreate(RpSkin *skin, RwUInt32 boneLimit, RwUI
     RwUInt32 size;
 
     SKINSPLITDATADESTROY(skin);
-    size = numMatrices + numMeshes * sizeof(RwUInt16) + numRLE * sizeof(RwUInt16);
+    size = numMatrices + numMeshes * sizeof(SkinRLE) + numRLE * sizeof(SkinRLE);
 
     splitData->matrixRemapIndices = RwMalloc(size, rwMEMHINT_SKIN);
     if (splitData->matrixRemapIndices == NULL) {
@@ -99,7 +99,8 @@ RwStream *fn_8044BBFC(RwStream *stream, RpSkin *skin) {
             return NULL;
         }
         if (fn_80480D4C(stream, splitData->matrixRemapIndices,
-                        skin->numBones + splitData->numMeshes * 2 + splitData->numRLE * 2) == 0) {
+                        skin->numBones + splitData->numMeshes * sizeof(SkinRLE) +
+                            splitData->numRLE * sizeof(SkinRLE)) == 0) {
             /* (sic) frees the split data itself rather than its block */
             RwFree(splitData);
             return NULL;
@@ -113,8 +114,8 @@ RwInt32 fn_8044BDBC(RpSkin *skin) {
     RwInt32 size = 3 * sizeof(RwInt32);
 
     if (skin->skinSplitData.numMeshes != 0) {
-        size = skin->numBones + skin->skinSplitData.numMeshes * 2 + skin->skinSplitData.numRLE * 2 +
-               3 * sizeof(RwInt32);
+        size = skin->numBones + skin->skinSplitData.numMeshes * sizeof(SkinRLE) +
+               skin->skinSplitData.numRLE * sizeof(SkinRLE) + 3 * sizeof(RwInt32);
     }
     return size;
 }
@@ -206,6 +207,9 @@ RpSkin *fn_8044BDF0(RwUInt32 numVertices, RwUInt32 numBones, RwUInt32 numBoneIds
         skin->vertexBoneIndices = (RwUInt32 *)(skin->skinToBoneMatrices + numBones);
         skin->vertexBoneWeights = (RwMatrixWeights *)(skin->vertexBoneIndices + numVertices);
 
+        /* (sic) boneIds is the local array above, so the first test is always true; the copy also
+         * runs when the caller passed numBoneIds, copying the uninitialised local array into the
+         * skin's bone ids. This is the original's behavior. */
         if (boneIds != NULL && numBoneIds != 0) {
             memcpy(skin->boneIds, boneIds, numBoneIds);
         }
