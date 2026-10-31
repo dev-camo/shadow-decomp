@@ -674,14 +674,19 @@ config.libs = [
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitEntrance.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
-                # All 46 functions and every data section match. The implementation class's
-                # destructor is emitted right after boost::checked_delete, where the original
-                # has it between the implementation's Update and constructor. That is where a
-                # plain destructor defined right after the constructor is emitted. With these
-                # flags checked_delete stays a separate function only when the destructor is an
-                # inline function, and an inline destructor (in the class or defined inline after
-                # the constructor) is emitted at its first use, after checked_delete. A plain
-                # destructor lets checked_delete be inlined into ~scoped_ptr.
+                # All 46 functions have identical instructions and are in the original's order,
+                # and the original's data is reproduced at its offsets. The implementation class's
+                # destructor is a global symbol here (a plain out-of-class definition under
+                # auto_inline, which keeps boost::checked_delete out of line and emits the
+                # destructor at its definition) where the original's is weak. Defining it inline,
+                # in the class or after the constructor, makes it weak but emits it at its first
+                # use instead of at its definition, which moves it away from the original's
+                # position. The object also defines a local
+                # boost::checked_delete<UnkAttack_8005A840> (0x24 bytes), which the original unit
+                # does not have (the checked_deleter<UnkAttack_8005A840> call operator is external
+                # there), and appends to .rodata, .data and .sdata the type records, name strings
+                # and vtables of sp_counted_base, std::exception and the UnkAttack_8005A840
+                # sp_counted_base_impl and checked_deleter.
                 Object(NonMatching, "Game/WeaponStickBase.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/TestNakazawa.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/BDTrue.cpp", cflags=cflags_game_cpp),
