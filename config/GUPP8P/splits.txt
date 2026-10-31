@@ -1243,7 +1243,7 @@ CRI/uty_ppc.c:
 	.text       start:0x804036D0 end:0x80403738
 
 CRI/mwsfdsvm.c:
-	.text       start:0x80404148 end:0x804043E8
+	.text       start:0x80404124 end:0x804043E8
 	.bss        start:0x805DE7B8 end:0x805DE8C8
 
 CRI/mwstm.c:
