@@ -1900,8 +1900,10 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # ADXB_ExecOneAdx differs in 4 words: the sample offset of the Pro Logic II loop is in r29
+            # where the original has r24 (same instructions otherwise).
             Object(
-                Matching,
+                NonMatching,
                 "CRI/adx_bsc.c",
                 extra_cflags=[
                     "-sdata 0",

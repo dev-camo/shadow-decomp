@@ -1,5 +1,9 @@
 /* CRI ADX: basic decoder object (ADXB) - creation, header decoding (with the SKG key generation
- * for encrypted ADX/AHX data), per-frame block decoding, snapshots and the getters. */
+ * for encrypted ADX/AHX data), per-frame block decoding, snapshots and the getters.
+ *
+ * Not yet matching: ADXB_ExecOneAdx differs in 4 words, all in the Pro Logic II loop: the
+ * strength-reduced sample offset is coloured r29 where the original has r24 (the instructions are
+ * otherwise the same). */
 #include <string.h>
 #include <stdio.h>
 
@@ -10,7 +14,8 @@
 void adxb_DefAddWr(void *obj, Sint32 nbyte, Sint32 nsmpl);
 Sint16 *adxb_DefGetWr(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *x70);
 
-/* ---- SKG: key generation from the sample count (file-local copy; adx_sje.c has its own) ---- */
+/* ---- SKG: key generation from the sample count (file-local copy; adx_sje.c has only the
+ * counter and error statics of its own) ---- */
 
 /* build string: unreferenced, but kept in the original data */
 static const Char8 skg_version[] = "\nSKG/GC Ver.0.64 Build:Feb 28 2005 15:48:53\n";
@@ -117,11 +122,11 @@ static void SKG_Init(void) {
     skg_init_count++;
 }
 
-/* Stand-in for functions the linker stripped from the game; their bodies are unknown. MWCC lays
- * out .bss by first reference, so this never-called function refers to the SKG error callback
- * statics in storage order before the ADXB code below refers to its own. Storing the addresses
- * keeps the references.
- */
+/* Matching workaround: order-only stand-in for functions the linker stripped from the game;
+ * their bodies are unknown. MWCC lays out .bss by first reference, so this never-called
+ * function refers to the SKG error callback statics in storage order before the ADXB code below
+ * refers to its own. Storing the addresses keeps the references. Revisit when the stripped body
+ * is found. */
 static void skg_BssOrder(void **out) {
     out[0] = &skg_err_func;
     out[1] = &skg_err_obj;
@@ -181,11 +186,11 @@ static Sint16 adxb_def_ka;
 static Sint32 adxb_ignore_hdrerr;
 static ADXB_OBJ adxb_obj[ADXB_MAX_OBJ];
 
-/* Stand-in for functions the linker stripped from the game (presumably the setters of the
- * statics above); their bodies are unknown. MWCC lays out .bss by first reference, so this
- * never-called function refers to the statics in storage order before any other code does.
- * Storing the addresses keeps the references from being optimized away.
- */
+/* Matching workaround: order-only stand-in for functions the linker stripped from the game
+ * (presumably the setters of the statics above); their bodies are unknown. MWCC lays out .bss
+ * by first reference, so this never-called function refers to the statics in storage order
+ * before any other code does. Storing the addresses keeps the references from being optimized
+ * away. Revisit when the stripped body is found. */
 static void adxb_BssOrder(void **out) {
     out[0] = &ahxsetextfunc;
     out[1] = &pl2encodefunc;
@@ -244,28 +249,22 @@ static void adxb_CopySmpl(Sint16 *dst, Sint16 *src, Sint32 n) {
  * optionally runs the Pro Logic II encoder over the output, computes the samples produced (trimming
  * the padding of the last partial block at the stream end), copies samples decoded past the ring
  * end back to its start (mirror), resets the core and reports through addwr_func; state DONE. */
-/* opt_lifetimes off and the operand order of `ofst = x70 + ofst` are required: otherwise MWCC
- * swaps the add operands and moves the padding subtraction. */
-#pragma opt_lifetimes off
 void ADXB_ExecOneAdx(ADXB adxb) {
     Sint32 chofst;
     Sint32 bufsmpl;
     Sint32 pos;
     Sint16 *pcm;
     Sint32 pad;
-    Sint32 nch;
+    Sint32 blkbyte;
+    ADXPD pd;
     Sint32 blksmpl;
     Sint32 ofst;
     Sint32 i;
-    Sint32 n;
-    ADXPD pd;
     Sint32 x70;
     Sint32 nsmpl;
     Sint32 nblk;
     Sint32 nblk2;
     Sint32 cnt;
-    Sint16 *dst;
-    Sint16 *src;
     Sint16 *sp;
 
     if (adxb->stat == ADXB_STAT_DECODE && ADXPD_GetStat(adxb->pd) == ADXPD_STAT_STOP) {
@@ -279,25 +278,19 @@ void ADXB_ExecOneAdx(ADXB adxb) {
             if (adxb->xdc != 0) {
                 pd = adxb->pd;
                 ADXCRS_Lock();
-                /* COMPILER-DIFF: the samples are stepped by a separate byte offset n; indexing
-                 * out0/out1 by i compiles to a different loop */
-                for (i = 0, n = 0; i < pd->nblk * 32; i++) {
-                    src = (Sint16 *)((Uint8 *)pd->out0 + n);
-                    dst = (Sint16 *)((Uint8 *)pd->out1 + n);
-                    pl2encodefunc(adxb, *src, src, dst);
-                    n += 2;
+                for (i = 0; i < pd->nblk * 32; i++) {
+                    pl2encodefunc(adxb, pd->out0[i], &pd->out0[i], &pd->out1[i]);
                 }
                 ADXCRS_Unlock();
             }
             blksmpl = adxb->out_fmt;
-            nch = adxb->x54;
+            blkbyte = adxb->x54;
             pos = adxb->wr_pos;
             pcm = adxb->pcmbuf;
             bufsmpl = adxb->x40;
             chofst = adxb->x44;
-            ofst = blksmpl - 1;
             x70 = adxb->wr_x70;
-            ofst = x70 + ofst;
+            ofst = x70 + blksmpl - 1;
             nblk2 = ofst / blksmpl;
             pad = (blksmpl - 1) - ofst % blksmpl;
             nblk = ADXPD_GetNumBlk(adxb->pd);
@@ -306,7 +299,7 @@ void ADXB_ExecOneAdx(ADXB adxb) {
                 nsmpl -= pad;
             }
             adxb->dec_nsmpl = nsmpl;
-            adxb->dec_nbyte = nblk * nch;
+            adxb->dec_nbyte = nblk * blkbyte;
             pos += nsmpl;
             if (pos >= bufsmpl) {
                 pos -= bufsmpl;
@@ -327,13 +320,11 @@ void ADXB_ExecOneAdx(ADXB adxb) {
         }
     }
 }
-#pragma opt_lifetimes on
 
 /* hand the input to the expander: stereo, Pro Logic II or mono */
 static void adxb_EntrySte(void *obj, Sint32 n) {
     ADXB adxb = obj;
     ADXPD pd;
-
     Sint16 *pcm;
 
     pcm = adxb->pcmbuf;
@@ -348,7 +339,6 @@ static void adxb_EntrySte(void *obj, Sint32 n) {
 static void adxb_EntryPl2(void *obj, Sint32 n) {
     ADXB adxb = obj;
     ADXPD pd;
-
     Sint16 *pcm;
 
     pcm = adxb->pcmbuf;
@@ -362,7 +352,6 @@ static void adxb_EntryPl2(void *obj, Sint32 n) {
 static void adxb_EntryMono(void *obj, Sint32 n) {
     ADXB adxb = obj;
     ADXPD pd;
-
     Sint16 *pcm;
 
     pcm = adxb->pcmbuf;
@@ -376,8 +365,6 @@ static void adxb_EntryMono(void *obj, Sint32 n) {
  * blocks that fit the write window (wr_nsmpl, extended by the end padding when the trap distance
  * x70 is inside it), the blocks before the stream end and the blocks up to the ring end (+1 when a
  * block may straddle it, the mirror area absorbs the overrun). Stereo, PL2 or mono entry. */
-/* `ofst = x70 + ofst` in place: see ADXB_ExecOneAdx */
-#pragma opt_lifetimes off
 void ADXB_EvokeDecode(ADXB adxb) {
     Sint32 n;
     Sint32 pad;
@@ -396,11 +383,10 @@ void ADXB_EvokeDecode(ADXB adxb) {
     bufsmpl = adxb->pcmbuf_nsmpl;
     wr_nsmpl = adxb->wr_nsmpl;
     n = adxb->inbuf_nsmpl / adxb->out_nch;
-    ofst = blksmpl - 1;
     x70 = adxb->wr_x70;
-    ofst = x70 + ofst;
+    ofst = x70 + blksmpl - 1;
     nblk = ofst / blksmpl;
-    pad = (blksmpl - 1) - (ofst - nblk * blksmpl);
+    pad = (blksmpl - 1) - ofst % blksmpl;
     nblk2 = (blksmpl + (bufsmpl - pos) - 1) / blksmpl;
     n2b = nblk2 * blksmpl;
     if (nblk < nblk2 && pos + n2b - pad < bufsmpl) {
@@ -426,7 +412,6 @@ void ADXB_EvokeDecode(ADXB adxb) {
         adxb_EntryMono(adxb, n);
     }
 }
-#pragma opt_lifetimes on
 
 /* Samples decoded by the block that just completed (per channel); read by adxsjd_decexec_end. */
 Sint32 ADXB_GetDecNumSmpl(ADXB adxb) {
@@ -781,10 +766,10 @@ Sint32 ADXB_DecodeHeaderAdx(ADXB adxb, Uint8 *buf, Sint32 bsize) {
     return hdrlen;
 }
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. Its literal
- * remains in .rodata after DecodeHeaderAdx's messages; this never-called function refers to it
- * there. Storing the address keeps the reference.
- */
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game;
+ * its body is unknown. Its literal remains in .rodata after DecodeHeaderAdx's messages; this
+ * never-called function refers to it there. Storing the address keeps the reference. Revisit
+ * when the stripped body is found. */
 static void adxb_RodataOrder(const Char8 **out) {
     out[0] = "CRI-MW";
 }
@@ -871,7 +856,7 @@ void ADXB_Init(void) {
     adxb_ignore_hdrerr = 0;
 }
 
-/* The flag (name inferred). */
+/* adxb_ignore_hdrerr: nonzero suppresses the ADXSJD header error messages (name inferred). */
 Sint32 ADXB_GetIgnoreHdrErr(void) {
     return adxb_ignore_hdrerr;
 }
