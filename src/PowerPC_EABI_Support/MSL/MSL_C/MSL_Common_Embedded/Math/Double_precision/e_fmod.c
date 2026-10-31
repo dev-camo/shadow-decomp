@@ -19,15 +19,9 @@
 #include "fdlibm.h"
 
 #ifdef __STDC__
-static const double one = 1.0, Zero[] = {
-                                   0.0,
-                                   -0.0,
-                               };
+static const double one = 1.0, Zero[] = {0.0, -0.0};
 #else
-static double one = 1.0, Zero[] = {
-                             0.0,
-                             -0.0,
-                         };
+static double one = 1.0, Zero[] = {0.0, -0.0};
 #endif
 
 #ifdef __STDC__

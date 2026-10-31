@@ -19,7 +19,7 @@ typedef unsigned short wchar_t;
 #endif
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif

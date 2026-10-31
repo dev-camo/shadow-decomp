@@ -132,6 +132,9 @@ template <class T, class Allocator> class __vector_obj {
     ~__vector_obj() {
         clear();
         if (data_ != 0) {
+            // Matching workaround: free through the out-of-line __data() accessor although the test
+            // above reads data_; reading data_ here changes the code of CityLaserHolder.o. Revisit
+            // when the original accessor use is known.
             __alloc().deallocate(__data(), __cap());
         }
     }

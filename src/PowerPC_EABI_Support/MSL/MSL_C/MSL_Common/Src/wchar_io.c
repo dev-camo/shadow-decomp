@@ -1,9 +1,5 @@
 #include "wchar_io.h"
 
-int __fwide(FILE *stream, int mode) {
-    return fwide(stream, mode);
-}
-
 int fwide(FILE *stream, int mode) {
     int orientation;
     int result;

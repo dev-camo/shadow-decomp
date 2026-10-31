@@ -69,23 +69,7 @@ exit:
      : (file)->buffer_length-- ? (int)(*(file)->buffer_ptr++ = (unsigned char)(c))                 \
                                : __put_char(c, file))
 
-int fputs(const char *s, FILE *stream) {
-    char c;
-    int ret = 0;
-
-    __begin_critical_region(stdin_access);
-    while ((c = *s++) != 0) {
-        if (__putc(c, stream) == -1) {
-            ret = -1;
-            break;
-        }
-    }
-    __end_critical_region(stdin_access);
-
-    return ret;
-}
-
-/* locks the same region as fputs (stdin_access), as the original does */
+/* locks stdin_access rather than stdout_access, as the original does */
 int puts(const char *s) {
     char c;
     int ret = 0;

@@ -28,23 +28,20 @@ extern "C" {
 #endif
 
 #ifdef __LITTLE_ENDIAN
-#define __HI(x) *(1 + (int *)&x)
-#define __LO(x) *(int *)&x
-#define __HIp(x) *(1 + (int *)x)
-#define __LOp(x) *(int *)x
+#define __HI(x) (*(1 + (int *)&(x)))
+#define __LO(x) (*(int *)&(x))
+#define __HIp(x) (*(1 + (int *)(x)))
+#define __LOp(x) (*(int *)(x))
 #else
-#define __HI(x) *(int *)&x
-#define __LO(x) *(1 + (int *)&x)
-#define __HIp(x) *(int *)x
-#define __LOp(x) *(1 + (int *)x)
+#define __HI(x) (*(int *)&(x))
+#define __LO(x) (*(1 + (int *)&(x)))
+#define __HIp(x) (*(int *)(x))
+#define __LOp(x) (*(1 + (int *)(x)))
 #endif
 
-// TODO: should __STDC__ actually be defined?
-//#ifdef __STDC__
+/* MWCC defines __STDC__ for C sources compiled with this project's flags (checked with -E), so the
+   prototype forms of the fdlibm sources are the ones built and __P keeps the parameter list. */
 #define __P(p) p
-//#else
-//#define __P(p) ()
-//#endif
 
 /*
  * ANSI/POSIX
@@ -226,7 +223,7 @@ extern double __kernel_tan __P((double, double, int));
 extern int __kernel_rem_pio2 __P((double *, double *, int, int, int, const int *));
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif /* FDLIBM_H */

@@ -38,7 +38,7 @@ typedef int32_t  intptr_t;
 typedef long long intmax_t;
 
 #ifdef __cplusplus
-};
+}
 }
 
 using std::uint8_t;

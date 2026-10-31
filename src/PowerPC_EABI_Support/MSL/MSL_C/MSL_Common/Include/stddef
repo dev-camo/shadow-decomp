@@ -4,16 +4,10 @@
 #include <cstddef>
 
 #ifdef __cplusplus
-extern "C" {
-#endif
-
 namespace std {
-    using ::ptrdiff_t;
-    using ::size_t;
-}
-
-#ifdef __cplusplus
-};
+using ::ptrdiff_t;
+using ::size_t;
+}  // namespace std
 #endif
 
 #endif

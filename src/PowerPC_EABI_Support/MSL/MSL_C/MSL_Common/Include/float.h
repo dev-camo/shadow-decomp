@@ -81,7 +81,7 @@ inline int __fpclassifyd(double __value) {
 int __fpclassifyl(long double __value);
 
 #ifdef __cplusplus
-}; // extern "C"
+} // extern "C"
 #endif
 
 #define FLT_MANT_DIG 24

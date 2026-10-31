@@ -2,7 +2,6 @@
 #include "buffer_io.h"
 #include "file_io.h"
 #include "FILE_POS.h"
-#include <cctype>
 
 int fclose(FILE *file) {
     int flush_result, close_result;
@@ -66,29 +65,5 @@ int fflush(FILE *file) {
     file->file_state.io_state = __neutral;
     file->position = pos;
     file->buffer_length = 0;
-    return 0;
-}
-
-int __msl_strnicmp(const char *str1, const char *str2, int n) {
-    int i;
-    char c1, c2;
-
-    for (i = 0; i < n; i++) {
-        c1 = tolower(*str1++);
-        c2 = tolower(*str2++);
-
-        if (c1 < c2) {
-            return -1;
-        }
-
-        if (c1 > c2) {
-            return 1;
-        }
-
-        if (c1 == '\0') {
-            return 0;
-        }
-    }
-
     return 0;
 }
