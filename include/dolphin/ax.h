@@ -111,10 +111,10 @@ typedef struct _AXPBADPCMLOOP {
 CHECK_SIZEOF(AXPBADPCMLOOP, 0x6);
 
 typedef struct _AXPBLPF {
-    u16 on;
-    u16 yn1;
-    u16 a0;
-    u16 b0;
+    /* 0x00 */ u16 on;
+    /* 0x02 */ u16 yn1;
+    /* 0x04 */ u16 a0;
+    /* 0x06 */ u16 b0;
 } AXPBLPF;
 CHECK_SIZEOF(AXPBLPF, 0x8);
 

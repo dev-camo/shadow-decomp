@@ -89,29 +89,29 @@ struct STRUCT_MENU {
 CHECK_SIZEOF(struct STRUCT_MENU, 0x38);
 
 typedef struct STRUCT_LISTBOX_ITEM {
-    /* 0x00 */ char *name; // offset 0x0, size 0x4
-    /* 0x04 */ u32 flags;  // offset 0x4, size 0x4
+    /* 0x00 */ char *name;
+    /* 0x04 */ u32 flags;
 } DEMOWinListboxItem;
 CHECK_SIZEOF(DEMOWinListboxItem, 0x8);
 
 typedef struct STRUCT_LISTBOX {
-    /* 0x00 */ char *title;               // offset 0x0, size 0x4
-    /* 0x04 */ DEMOWindow *handle;        // offset 0x4, size 0x4
-    /* 0x08 */ DEMOWinListboxItem *items; // offset 0x8, size 0x4
-    /* 0x0C */ s32 max_display_items;     // offset 0xC, size 0x4
-    /* 0x10 */ u32 flags;                 // offset 0x10, size 0x4
-    /* 0x14 */ s32 num_display_items;     // offset 0x14, size 0x4
-    /* 0x18 */ s32 num_items;             // offset 0x18, size 0x4
-    /* 0x1C */ u32 max_str_len;           // offset 0x1C, size 0x4
-    /* 0x20 */ s32 curr_pos;              // offset 0x20, size 0x4
-    /* 0x24 */ s32 display_pos;           // offset 0x24, size 0x4
-    /* 0x28 */ int cursor_state;          // offset 0x28, size 0x4
+    /* 0x00 */ char *title;
+    /* 0x04 */ DEMOWindow *handle;
+    /* 0x08 */ DEMOWinListboxItem *items;
+    /* 0x0C */ s32 max_display_items;
+    /* 0x10 */ u32 flags;
+    /* 0x14 */ s32 num_display_items;
+    /* 0x18 */ s32 num_items;
+    /* 0x1C */ u32 max_str_len;
+    /* 0x20 */ s32 curr_pos;
+    /* 0x24 */ s32 display_pos;
+    /* 0x28 */ int cursor_state;
 } DEMOWinListbox;
 CHECK_SIZEOF(DEMOWinListbox, 0x2C);
 
 void DEMOWinInit(void);
 DEMOWindow *DEMOWinCreateWindow(s32 x1, s32 y1, s32 x2, s32 y2, char *caption, u16 scroll,
-                                void *func);
+                                void (*func)(DEMOWindow *));
 void DEMOWinDestroyWindow(DEMOWindow *handle);
 void DEMOWinOpenWindow(DEMOWindow *handle);
 void DEMOWinCloseWindow(DEMOWindow *handle);
