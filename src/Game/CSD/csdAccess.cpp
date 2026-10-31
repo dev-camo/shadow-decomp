@@ -143,9 +143,9 @@ SceneData *GetSceneByName(const char *name, const ProjectData *project, const ch
     return FindScene(name, project->root, foundName);
 }
 
-/* The original expands the recursive call of FindScene and FindFolderByName once into the function
- * (the out-of-line copies remain). Declaring them inline instead emits those copies after their
- * callers, where the original has them before. */
+/* Matching workaround: the original expands the recursion of FindScene and FindFolderByName once
+ * into the function and keeps the out-of-line copies, before their callers; inline declarations
+ * emit them after. Revisit if the original's inline helpers are found. */
 #pragma auto_inline on
 static SceneData *FindScene(const char *name, const SceneFolder *folder, const char **foundName) {
     NameEntry key;
@@ -177,7 +177,7 @@ const NodeEntry *FindNode(const char *name, const SceneData *scene) {
     key.field_0x8 = -1;
     const NodeEntry *entry = static_cast<const NodeEntry *>(
         bsearch(&key, scene->nodes, scene->nodeCount, sizeof(NodeEntry), CompareNodeNames));
-
+    /* Matching workaround: the test gives the original's 0x5C bytes; revisit on a natural form. */
     if (entry != NULL) {
         return entry;
     }
@@ -283,7 +283,7 @@ SceneFolder *GetFolderByPath(const char *path, const ProjectData *project) {
     return folder;
 }
 
-#pragma auto_inline on
+#pragma auto_inline on // Matching workaround: as for FindScene (once-expanded recursion)
 static SceneFolder *FindFolderByName(const char *name, const SceneFolder *folder) {
     NameEntry key;
     key.name = name;

@@ -809,8 +809,9 @@ config.libs = [
                 # Every function present matches except BuildTextEntry and InitPalette, which address
                 # .rodata through one section base where the original addresses each literal on its
                 # own (probably also the cause of their register and scheduling differences), and
-                # whose allocations pass lower __LINE__ values than the original 442 and 234. MarkEntryDirty (0x803609D4) is not emitted and MarkMatrixUsers comes after its
-                # caller: the original file has callers the game does not use (removed at link).
+                # whose allocations pass lower __LINE__ values than the original 442 and 234.
+                # MarkMatrixUsers also comes after its caller MarkLayerMatrixUsers, where the
+                # original has it before.
                 Object(NonMatching, "Game/CSD/csdMotionPalette.cpp", cflags=cflags_csd),
                 # Every function matches except LoadFile (its allocation passes __LINE__ 47 where
                 # the original passes 137) and RegisterTexList (the pair conversion takes its

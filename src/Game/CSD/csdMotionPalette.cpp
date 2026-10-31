@@ -426,9 +426,13 @@ void ReleaseEntry(MotionPaletteEntry *entry) {
 }
 
 /* Clears ENTRY_SUBTREE_SET of an entry and its ancestors and marks the root's layer
- * and palette for an update. The original's out-of-line copy came from a caller removed at link;
- * it is not emitted here although other units call it. */
-inline void MarkEntryDirty(MotionPaletteEntry *entry) {
+ * and palette for an update.
+ *
+ * Matching workaround: auto_inline expands the recursion once into the function, as the original
+ * does (0x98 bytes; a plain definition gives a 0x60-byte copy), the same device as csdAccess.cpp.
+ * Revisit if the original's inline helpers are found. */
+#pragma auto_inline on
+void MarkEntryDirty(MotionPaletteEntry *entry) {
     entry->flags &= ~ENTRY_SUBTREE_SET;
     if (entry->parent != NULL) {
         MarkEntryDirty(entry->parent);
@@ -439,6 +443,7 @@ inline void MarkEntryDirty(MotionPaletteEntry *entry) {
         layer->palette->field_0x30 = 1;
     }
 }
+#pragma auto_inline reset
 
 static void MarkLayerMatrixUsers(MotionPaletteLayer *layer, const LayerData *src);
 
