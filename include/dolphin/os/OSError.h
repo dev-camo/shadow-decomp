@@ -2,6 +2,7 @@
 #define _DOLPHIN_OSERROR_H_
 
 #include <dolphin/os/OSContext.h>
+#include <dolphin/os/OSException.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,7 +30,9 @@ typedef void (*OSErrorHandler)(OSError error, OSContext *context, ...);
 
 OSErrorHandler OSSetErrorHandler(OSError error, OSErrorHandler handler);
 extern u32 __OSFpscrEnableBits;
-extern OSErrorHandler __OSErrorTable[17];
+/* One handler per exception number, including memory protection (15) and the floating-point
+ * exception (16) beyond the OS_ERROR_* range. */
+extern OSErrorHandler __OSErrorTable[__OS_EXCEPTION_FLOATING_POINT_EXCEPTION + 1];
 
 #ifdef __cplusplus
 }

@@ -11,17 +11,10 @@ extern "C" {
 extern char *__OSExceptionNames[17]; // D ONLY
 
 u32 __OSIsDebuggerPresent(void);
-void __OSPSInit(void);
-
-// OSAlloc
-extern volatile int __OSCurrHeap;
 
 // OSAudioSystem
 void __OSInitAudioSystem(void);
 void __OSStopAudioSystem(void);
-
-// OSCache
-void __OSCacheInit(void);
 
 // OSContext
 void __OSContextInit(void);
@@ -44,12 +37,7 @@ extern u64 __OSSpuriousInterrupts;   // D ONLY
 extern char *__OSInterruptNames[33]; // D ONLY
 extern char *__OSPIErrors[8];        // D ONLY
 
-__OSInterruptHandler __OSSetInterruptHandler(__OSInterrupt interrupt, __OSInterruptHandler handler);
-__OSInterruptHandler __OSGetInterruptHandler(__OSInterrupt interrupt);
 void __OSInterruptInit(void);
-OSInterruptMask __OSMaskInterrupts(OSInterruptMask global);
-OSInterruptMask __OSUnmaskInterrupts(OSInterruptMask global);
-void __OSDispatchInterrupt(__OSException exception, OSContext *context);
 void __OSModuleInit(void);
 
 // OSMemory
@@ -98,7 +86,6 @@ void __OSReschedule(void);
 
 // OSTime
 void __OSSetTime(OSTime time);
-OSTime __OSGetSystemTime();
 void __OSSetTick(register OSTick newTicks);
 OSTime __OSTimeToSystemTime(OSTime time);
 
@@ -113,7 +100,6 @@ __declspec(weak) void InitMetroTRK_BBA();
 
 __declspec(section ".init") void __start(void);
 
-__declspec(section ".init") extern void __start(void);
 __declspec(section ".init") void __copy_rom_section(void *dst, const void *src, u32 size);
 __declspec(section ".init") void __init_bss_section(void *dst, u32 size);
 __declspec(section ".init") extern void __init_registers(void);

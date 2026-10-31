@@ -4,6 +4,10 @@
 #include <dolphin/gx/GXEnum.h>
 #include <dolphin/gx/GXStruct.h>
 
+#if DEBUG
+#include <dolphin/os.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,10 +31,12 @@ static inline void GXSetTexCoordGen(GXTexCoordID dst_coord, GXTexGenType func,
 
 void GXBegin(GXPrimitive type, GXVtxFmt vtxfmt, u16 nverts);
 
+#if DEBUG
+extern GXBool __GXinBegin;
+#endif
+
 static inline void GXEnd(void) {
 #if DEBUG
-    extern GXBool __GXinBegin;
-    extern void OSPanic(char *file, int line, char *msg, ...);
     if (!__GXinBegin) {
         OSPanic(__FILE__, 118, "GXEnd: called without a GXBegin");
     }

@@ -9,10 +9,6 @@
 #define __declspec(attr) // Metrowerks keyword (weak symbols); GCC has none
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef s64 OSTime;
 typedef u32 OSTick;
 
@@ -43,9 +39,14 @@ typedef u32 OSTick;
 #include <dolphin/os/OSSemaphore.h>
 #include <dolphin/os/OSUtf.h>
 #include <dolphin/os/OSTimer.h>
+#include <dolphin/dvd.h>
 #include "layout_check.h"
 
-// private macro, maybe shouldn't be defined here?
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// Byte offset of addr within an align-byte block (align is a power of two).
 #define OFFSET(addr, align) (((u32)(addr) & ((align) - 1)))
 
 #define DOLPHIN_ALIGNMENT 32
@@ -69,7 +70,7 @@ u32 __OSCoreClock AT_ADDRESS(OS_BASE_CACHED | 0x00FC);
 volatile u16 __OSDeviceCode AT_ADDRESS(OS_BASE_CACHED | 0x30E6);
 u16 __OSWirelessPadFixMode AT_ADDRESS(OS_BASE_CACHED | 0x30E0);
 
-// unknowns
+// Low-memory globals whose purpose is not known
 OSThread *__gUnkThread1 AT_ADDRESS(OS_BASE_CACHED | 0x00D8);
 int __gUnknown800030C0[2] AT_ADDRESS(OS_BASE_CACHED | 0x30C0);
 u8 __gUnknown800030E3 AT_ADDRESS(OS_BASE_CACHED | 0x30E3);
@@ -101,8 +102,6 @@ void OSSetArenaLo(void *newLo);
 void *OSAllocFromArenaLo(u32 size, u32 align);
 void *OSAllocFromArenaHi(u32 size, u32 align);
 
-u32 OSGetPhysicalMemSize(void);
-
 void __OSPSInit(void);
 void __OSFPRInit(void);
 u32 __OSGetDIConfig(void);
@@ -123,7 +122,6 @@ typedef struct OSCalendarTime {
 } OSCalendarTime;
 CHECK_SIZEOF(OSCalendarTime, 0x28);
 
-#include <dolphin/dvd.h>
 typedef struct OSBootInfo_s {
     DVDDiskID DVDDiskID;
     u32 magic;
@@ -186,12 +184,6 @@ BOOL OSRestoreInterrupts(BOOL level);
 #define OS_CONSOLE_PC_EMULATOR 0x10000001
 #define OS_CONSOLE_EMULATOR 0x10000000
 
-#define OS_SOUND_MODE_MONO 0
-#define OS_SOUND_MODE_STEREO 1
-
-u32 OSGetSoundMode(void);
-void OSSetSoundMode(u32 mode);
-
 __declspec(weak) void OSReport(const char *msg, ...);
 __declspec(weak) void OSVReport(const char *msg, va_list list);
 __declspec(weak) void OSPanic(const char *file, int line, const char *msg, ...);
@@ -216,7 +208,7 @@ void *OSUncachedToCached(void *ucaddr);
 #define OSUncachedToCached(ucaddr) ((void *)((u8 *)(ucaddr) - (OS_BASE_UNCACHED - OS_BASE_CACHED)))
 #endif
 
-// unsorted externs
+// OS-internal declarations
 extern OSTime __OSGetSystemTime(void);
 __declspec(weak) extern int __OSIsGcam;
 extern OSExecParams __OSRebootParams;

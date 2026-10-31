@@ -11,7 +11,6 @@
 #include <dolphin/gx/GXGeometry.h>
 #include <dolphin/gx/GXVert.h>
 #include <dolphin/gx/GXTexture.h>
-#include <dolphin/gx/GXTev.h>
 #include <dolphin/gx/GXLighting.h>
 #include <dolphin/gx/GXDispList.h>
 #include <dolphin/gx/GXCommandList.h>
@@ -22,19 +21,5 @@
 #include <dolphin/gx/GXPerf.h>
 #include <dolphin/gx/GXCpu2Efb.h>
 #include <dolphin/gx/GXVerify.h>
-
-// unsorted GX externs
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-// GXMisc
-void (*GXSetDrawSyncCallback(void (*cb)(u16)))(u16);
-void GXSetDrawSync(u16 token);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

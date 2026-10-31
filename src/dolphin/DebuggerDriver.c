@@ -6,8 +6,6 @@
 #include <dolphin/os.h>
 #include <dolphin/db/DBInterface.h>
 
-typedef void (*MTRCallbackType)(int);
-
 static MTRCallbackType MTRCallback;
 
 static void (*DBGCallback)(u32, OSContext *);

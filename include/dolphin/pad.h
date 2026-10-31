@@ -45,8 +45,6 @@ extern "C" {
 #define PAD_ERR_NOT_READY -2
 #define PAD_ERR_TRANSFER -3
 
-#define RES_WIRELESS_LITE 0x40000
-
 typedef struct PADStatus {
     /* 0x00 */ u16 button;
     /* 0x02 */ s8 stickX;

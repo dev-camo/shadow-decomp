@@ -529,7 +529,6 @@ u32 PPCMfhid1();
 void PPCEieio();
 u32 PPCMfmmcr0();
 u32 PPCMfmmcr1();
-u32 PPCMfpmc2();
 u32 PPCMfsia();
 void PPCMtsia(u32 newSia);
 u32 PPCMfdmaL();
