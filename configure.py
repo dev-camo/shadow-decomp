@@ -2563,8 +2563,14 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # NonMatching: the seven little-endian 32-bit readers (SFH_AnlyElemSmpHz,
+            # SFH_AnlyMaxFrmNum, SFH_AnlyMaxPlyLenVid, SFH_AnlyMaxPlyLenAud, SFH_AnlyPackSiz,
+            # SFH_AnlyHdrSiz and SFH_AnlyByteRate) store the swapped word with stwbrx; the original
+            # has a rlwinm/rlwimi chain and a plain stw (87/39/44 words against 83/35/40: in each,
+            # 3 aligned words differ and the original has 4 more, 7 in all); the other functions
+            # match.
             Object(
-                Matching,
+                NonMatching,
                 "CRI/sfh_main.c",
                 extra_cflags=[
                     "-sdata 0",
