@@ -16,6 +16,9 @@ typedef struct ADXSTM_OBJ *ADXSTM;
 #define ADXSTM_STAT_END 3
 #define ADXSTM_STAT_ERROR 4
 
+/* sector count that selects the whole file (ADXSTM_BindFile, LSC_EntryFileRange) */
+#define ADXSTM_NSCT_INF 0xFFFFF
+
 #ifdef __cplusplus
 extern "C" {
 #endif

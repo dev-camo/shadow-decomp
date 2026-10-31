@@ -23,12 +23,7 @@
 #define ADXSTM_MAX_OBJ 40
 #define ADXSTM_SCT_SHIFT 11
 #define ADXSTM_SCT_SIZE 2048
-#define ADXSTM_NSCT_INF 0xFFFFF
 #define ADXSTM_MIN(a, b) ((a) < (b) ? (a) : (b))
-
-/* cvFsGetStat results */
-#define CVFS_STAT_COMPLETE 1
-#define CVFS_STAT_ERROR 3
 
 typedef struct ADXSTM_OBJ {
     Sint8 used;                  /* 0x00 */
@@ -170,14 +165,14 @@ void ADXSTMF_ExecHndl(ADXSTM stm) {
                     stm->bind_req = 0;
                     return;
                 }
-                cvFsSeek(stm->fs, 0, 2);
+                cvFsSeek(stm->fs, 0, CVFS_SEEK_END);
                 fnsct = cvFsTell(stm->fs);
                 if (stm->dir == 0) {
                     fsize = cvFsGetFileSize(stm->fname);
                 } else {
                     fsize = fnsct << ADXSTM_SCT_SHIFT;
                 }
-                cvFsSeek(stm->fs, 0, 0);
+                cvFsSeek(stm->fs, 0, CVFS_SEEK_SET);
                 if (stm->fsize == (ADXSTM_NSCT_INF << ADXSTM_SCT_SHIFT)) {
                     stm->fsize = fsize;
                     stm->nsct = fnsct;
@@ -300,7 +295,7 @@ void adxstmf_stat_exec(ADXSTM stm) {
     n = ADXSTM_MIN(n, stm->eos_nsct - stm->pos);
     n = ADXSTM_MIN(n, stm->nsct - stm->pos);
     rd = ADXSTM_MIN(n, stm->rd_lim);
-    cvFsSeek(stm->fs, stm->ofst + stm->pos, 0);
+    cvFsSeek(stm->fs, stm->ofst + stm->pos, CVFS_SEEK_SET);
     if (stm->lim_nsct != ADXSTM_NSCT_INF) {
         n = stm->lim_nsct - stm->rd_byte / ADXSTM_SCT_SIZE;
         if (rd < n) {
@@ -489,8 +484,8 @@ void ADXSTM_BindFile(ADXSTM stm, const Char8 *fname, void *dir, Sint32 ofst, Sin
     } while (stm->bind_req != 0);
 }
 
-/* Records the file to stream (`fname` on CVFS device `dir`, `ofst`/`nsct` in sectors; nsct 0xFFFFF
- * = whole file) and asks the server to open it (bind_req). */
+/* Records the file to stream (`fname` on CVFS device `dir`, `ofst`/`nsct` in sectors; nsct
+ * ADXSTM_NSCT_INF = whole file) and asks the server to open it (bind_req). */
 void ADXSTM_BindFileNw(ADXSTM stm, const Char8 *fname, void *dir, Sint32 ofst, Sint32 nsct) {
     SVM_Lock();
     stm->ofst = ofst;
