@@ -357,10 +357,13 @@ const RwChar *fn_804885DC(const RwChar *path) {
     return path;
 }
 
-/* The scratch memory, grown to at least size bytes (inferred helper) */
-/* Sets result to the scratch memory, grown to at least size bytes, or NULL when it cannot grow.
- * (inferred: written as a macro, since the original's path function is not inlined into its
- * callers as a call to a helper would let it be) */
+/* Sets result to the scratch memory, grown to at least size bytes, or NULL when it cannot grow
+ * (inferred helper).
+ *
+ * Matching workaround: a macro, not a static inline function. As an inline function returning the
+ * memory, the helper makes fn_804886CC 208 words against the original 206, 33 of them differing,
+ * and moves the functions after it. With the macro fn_804886CC still differs from the original in
+ * 26 of its 206 words. Revisit when the original's form of the helper is found. */
 #define IMAGESCRATCH(result, size)                                                                 \
     do {                                                                                           \
         RwInt32 size_ = (size);                                                                    \
@@ -530,7 +533,8 @@ RwBool ImageRegisterFormat(const RwChar *extension, RwImage *(*imageRead)(const 
 }
 
 /* Reads an image with the format registered for its extension, along the image path (inferred
- * helper; the original's copy is not in the game, nor in the E3 prototype) */
+ * helper: neither the game nor the E3 prototype has an out-of-line copy of it, so this unit emits
+ * a function the original does not have) */
 static RwImage *ImageRead(const RwChar *imageName) {
     const RwChar *searchStart;
     const RwChar *separator;
