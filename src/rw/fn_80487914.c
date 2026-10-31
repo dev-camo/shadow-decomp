@@ -325,10 +325,11 @@ RwImage *fn_80488088(RwImage *image, const RwImage *mask) {
     }
         /* fall through: the image is now 32-bit */
     case 32: {
+        RwInt32 y;
+        RwInt32 x;
         const RwUInt8 *maskRow = mask->cpPixels;
         const RwRGBA *maskPalette = mask->palette;
         RwUInt8 *row = image->cpPixels;
-        RwInt32 y;
 
         for (y = 0; y < image->height; y++) {
             RwRGBA *pixel = (RwRGBA *)row;
@@ -337,7 +338,6 @@ RwImage *fn_80488088(RwImage *image, const RwImage *mask) {
             case 4:
             case 8: {
                 const RwUInt8 *maskIndex = maskRow;
-                RwInt32 x;
 
                 for (x = 0; x < image->width; x++) {
                     pixel->alpha = maskPalette[*maskIndex].alpha;
@@ -348,7 +348,6 @@ RwImage *fn_80488088(RwImage *image, const RwImage *mask) {
             }
             case 32: {
                 const RwRGBA *maskPixel = (const RwRGBA *)maskRow;
-                RwInt32 x;
 
                 for (x = 0; x < image->width; x++) {
                     pixel->alpha = maskPixel->alpha;
@@ -565,26 +564,27 @@ RwBool ImageRegisterFormat(const RwChar *extension, RwImage *(*imageRead)(const 
 /* Reads an image with the format registered for its extension, along the image path (inferred
  * helper; the original's copy is not in the game, nor in the E3 prototype) */
 static RwImage *ImageRead(const RwChar *imageName) {
-    const RwChar *fileName;
+    const RwChar *searchStart;
     const RwChar *separator;
     const RwChar *extension;
-    rwImageFormat *format;
 
     /* The extension is looked for after the last drive or directory separator */
-    separator = rwstrrchr(imageName, ':');
-    if (separator != NULL) {
-        fileName = separator;
-    } else {
-        fileName = imageName;
-    }
-    separator = rwstrrchr(fileName, '/');
-    if (separator != NULL) {
-        fileName = separator;
-    }
-    separator = rwstrrchr(fileName, '\\');
-    extension = rwstrrchr((separator != NULL) ? separator : fileName, '.');
+    searchStart = imageName;
+
+    separator = rwstrrchr(searchStart, ':');
+    searchStart = (separator != NULL) ? separator : searchStart;
+
+    separator = rwstrrchr(searchStart, '/');
+    searchStart = (separator != NULL) ? separator : searchStart;
+
+    separator = rwstrrchr(searchStart, '\\');
+    searchStart = (separator != NULL) ? separator : searchStart;
+
+    extension = rwstrrchr(searchStart, '.');
     if (extension != NULL) {
-        for (format = RWIMAGEGLOBAL(imageFormats); format != NULL; format = format->nextFormat) {
+        rwImageFormat *format = RWIMAGEGLOBAL(imageFormats);
+
+        while (format != NULL) {
             if (rwstrcmp(format->lowerCaseExtension, extension) == 0 ||
                 rwstrcmp(format->upperCaseExtension, extension) == 0) {
                 if (format->imageRead != NULL) {
@@ -597,6 +597,7 @@ static RwImage *ImageRead(const RwChar *imageName) {
                 }
                 return NULL;
             }
+            format = format->nextFormat;
         }
         /* No format is registered for the extension */
         return NULL;
@@ -696,26 +697,35 @@ RwBool fn_8048915C(RwImage *destImage, const RwImage *sourceImage) {
     return result;
 }
 
-/* Copies an image's pixels, palette and gamma correction to an image of the same size */
-RwImage *fn_804893B8(RwImage *destImage, const RwImage *sourceImage) {
-    const RwUInt8 *sourceRow;
-    RwInt32 rowSize;
+/* Copies the palette and pixels between images of the same depth; it cannot fail
+ * (inferred helper) */
+static inline RwBool ImageCopySameDepth(RwImage *destImage, const RwImage *sourceImage) {
     RwInt32 y;
+    RwInt32 rowSize;
+    const RwUInt8 *sourceRow;
     RwUInt8 *destRow;
 
-    if (destImage->depth == sourceImage->depth) {
-        if (destImage->palette != NULL && sourceImage->palette != NULL && sourceImage->depth <= 8) {
-            memcpy(destImage->palette, sourceImage->palette,
-                   (1 << sourceImage->depth) * sizeof(RwRGBA));
-        }
+    if (destImage->palette != NULL && sourceImage->palette != NULL && sourceImage->depth <= 8) {
+        memcpy(destImage->palette, sourceImage->palette,
+               (1 << sourceImage->depth) * sizeof(RwRGBA));
+    }
 
-        rowSize = ((destImage->depth + 7) >> 3) * destImage->width;
-        sourceRow = sourceImage->cpPixels;
-        destRow = destImage->cpPixels;
-        for (y = 0; y < destImage->height; y++) {
-            memcpy(destRow, sourceRow, rowSize);
-            sourceRow += sourceImage->stride;
-            destRow += destImage->stride;
+    rowSize = ((destImage->depth + 7) >> 3) * destImage->width;
+    sourceRow = sourceImage->cpPixels;
+    destRow = destImage->cpPixels;
+    for (y = 0; y < destImage->height; y++) {
+        memcpy(destRow, sourceRow, rowSize);
+        sourceRow += sourceImage->stride;
+        destRow += destImage->stride;
+    }
+    return TRUE;
+}
+
+/* Copies an image's pixels, palette and gamma correction to an image of the same size */
+RwImage *fn_804893B8(RwImage *destImage, const RwImage *sourceImage) {
+    if (destImage->depth == sourceImage->depth) {
+        if (!ImageCopySameDepth(destImage, sourceImage)) {
+            destImage = NULL;
         }
     } else if (!fn_8048915C(destImage, sourceImage)) {
         destImage = NULL;
