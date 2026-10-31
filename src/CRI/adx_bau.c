@@ -237,7 +237,7 @@ Sint32 ADXB_DecodeHeaderAu(ADXB adxb, void *buf, Sint32 bsize) {
     adxb->pcmbuf_chofst = adxb->x44;
     adxb->x8c = 0;
     adxb->x88 = 0;
-    adxb->x98 = 4;
+    adxb->x98 = ADXB_TYPE_AU;
     adxb->x9c = type;
     return hdrlen;
 }

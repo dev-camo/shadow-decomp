@@ -12,6 +12,7 @@
 typedef struct ADXPD_OBJ *ADXPD;
 
 /* byte-order helpers of the WAV/AIFF/AU header parsers (adx_bwav.c, adx_baif.c, adx_bau.c) */
+#define LE16(p) ((Uint16)(p)[0] | ((Uint16)(p)[1] << 8))
 #define LE32(p)                                                                                    \
     ((Uint32)(p)[0] | ((Uint32)(p)[1] << 8) | ((Uint32)(p)[2] << 16) | ((Uint32)(p)[3] << 24))
 #define SWAP16(x) ((((x) >> 8) & 0xFF) | (((x) & 0xFF) << 8))
