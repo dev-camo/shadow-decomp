@@ -92,6 +92,11 @@ CHECK_SIZEOF(ADXT_OBJ, 0xC4);
 
 typedef ADXT_OBJ *ADXT;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* adx_inis.c */
 extern ADXT_OBJ adxt_obj[ADXT_MAX_OBJ];
 extern const Char8 adxt_build[];
 extern Sint32 adxt_init_cnt;
@@ -99,12 +104,6 @@ extern Sint32 adxt_svr_main_id;
 extern Sint32 adxt_output_mono_flag;
 extern Sint32 adxt_svr_fs_id;
 extern Sint32 adxt_vsync_cnt;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* adx_inis.c */
 void ADXT_Init(void);
 void ADXT_Finish(void);
 

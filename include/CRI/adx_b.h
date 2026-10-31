@@ -11,6 +11,13 @@
 
 typedef struct ADXPD_OBJ *ADXPD;
 
+/* byte-order helpers of the WAV/AIFF/AU header parsers (adx_bwav.c, adx_baif.c, adx_bau.c) */
+#define LE32(p)                                                                                    \
+    ((Uint32)(p)[0] | ((Uint32)(p)[1] << 8) | ((Uint32)(p)[2] << 16) | ((Uint32)(p)[3] << 24))
+#define SWAP16(x) ((((x) >> 8) & 0xFF) | (((x) & 0xFF) << 8))
+#define SWAP32(x)                                                                                  \
+    ((((x) >> 24) & 0xFF) | (((x) >> 8) & 0xFF00) | (((x) << 8) & 0xFF0000) | ((x) << 24))
+
 /* write-window callback: returns the PCM buffer, *pos the write position in it, *nsmpl the samples
  * that fit, *x70 the samples left before the trap point */
 typedef Sint16 *(*ADXB_GETWR_FUNC)(void *obj, Sint32 *pos, Sint32 *nsmpl, Sint32 *x70);
@@ -219,12 +226,5 @@ Sint32 ADX_DecodeInfoSpsd(Uint8 *buf, Sint32 bsize, Sint16 *hdrlen, Sint8 *x0c, 
 #ifdef __cplusplus
 }
 #endif
-
-/* byte-order helpers of the WAV/AIFF/AU header parsers (adx_bwav.c, adx_baif.c, adx_bau.c) */
-#define LE32(p)                                                                                    \
-    ((Uint32)(p)[0] | ((Uint32)(p)[1] << 8) | ((Uint32)(p)[2] << 16) | ((Uint32)(p)[3] << 24))
-#define SWAP16(x) ((((x) >> 8) & 0xFF) | (((x) & 0xFF) << 8))
-#define SWAP32(x)                                                                                  \
-    ((((x) >> 24) & 0xFF) | (((x) >> 8) & 0xFF00) | (((x) << 8) & 0xFF0000) | ((x) << 24))
 
 #endif
