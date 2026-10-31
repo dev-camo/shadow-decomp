@@ -5,10 +5,11 @@
 #include "layout_check.h"
 
 /* dB to linear gain: the first entry whose threshold exceeds a dB value gives its gain. Entry i
- * holds gain i / 1024 and its level in dB (-96 dB for silence). */
+ * holds a gain of about i / 1024 (rounded to six decimals) and its level in dB (-96 dB for
+ * silence). */
 typedef struct GcaxCurvePoint {
-    f32 value;
-    f32 threshold; /* dB */
+    /* 0x0 */ f32 value;
+    /* 0x4 */ f32 threshold; /* dB */
 } GcaxCurvePoint;
 CHECK_SIZEOF(GcaxCurvePoint, 0x8);
 
@@ -1430,7 +1431,7 @@ GcaxNode *fn_8043B3DC(GcaxList *list, GcaxNode *node) {
 f32 fn_8043B3A0(f32 db) {
     int i;
 
-    for (i = 0; i < 1025; i++) {
+    for (i = 0; i < sizeof(lbl_8056B090) / sizeof(lbl_8056B090[0]); i++) {
         if (lbl_8056B090[i].threshold > db) {
             return lbl_8056B090[i].value;
         }
@@ -1438,7 +1439,10 @@ f32 fn_8043B3A0(f32 db) {
     return 1.0f;
 }
 
-/* Sets the default sizes and mixing parameters (purposes unknown). */
+/* Sets the default ARAM bank sizes (config[0..15], reserved by fn_8043E6F4 through
+ * gcaxSndNewBanks) and the high-quality reverb parameters. It also sets field_0x13A44 (a factor on
+ * the sequence frame ticks in fn_8043FF5C) and clears inCallback, so frame updates run with
+ * interrupts disabled. */
 void fn_8043B25C(void) {
     lbl_805F1404->config[0] = 0xE1000;
     lbl_805F1404->config[1] = 0x7D000;
