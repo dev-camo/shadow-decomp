@@ -2,13 +2,7 @@
 #include "abort_exit.h"
 #include "critical_regions.h"
 
-#if PLATFORM_GCN
 #define SIGNAL_NUM 6
-#else
-#define SIGNAL_NUM 7
-#endif
-
-#define __std(ref) ref
 
 __signal_func_ptr signal_funcs[SIGNAL_NUM];
 
@@ -22,18 +16,17 @@ int raise(int sig) {
     __begin_critical_region(stderr_access);
     signal_func = signal_funcs[sig - 1];
 
-    if (signal_func != ((__std(__signal_func_ptr))1)) {
-        signal_funcs[sig - 1] = ((__std(__signal_func_ptr))0);
+    if (signal_func != SIG_IGN) {
+        signal_funcs[sig - 1] = SIG_DFL;
     }
 
     __end_critical_region(stderr_access);
 
-    if (signal_func == ((__std(__signal_func_ptr))1) ||
-        (signal_func == ((__std(__signal_func_ptr))0) && sig == 1)) {
+    if (signal_func == SIG_IGN || (signal_func == SIG_DFL && sig == 1)) {
         return 0;
     }
 
-    if (signal_func == ((__std(__signal_func_ptr))0)) {
+    if (signal_func == SIG_DFL) {
         exit(0);
     }
 

@@ -133,14 +133,8 @@ double x, y[];
             i = j - (((__HI(y[0])) >> 20) & 0x7ff);
             if (i > 16) { /* 2nd iteration needed, good to 118 */
                 t = r;
-#if PLATFORM_WII || PLATFORM_SHIELD
-                w = fn * pio2_2;
-                r = t - w;
-                w = fn * pio2_2t - ((t - r) - w);
-#else
                 r = t - fn * pio2_2;
                 w = fn * pio2_2t - ((t - r) - fn * pio2_2);
-#endif
                 y[0] = r - w;
                 i = j - (((__HI(y[0])) >> 20) & 0x7ff);
                 if (i > 49) { /* 3rd iteration need, 151 bits acc */

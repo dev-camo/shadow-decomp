@@ -190,11 +190,6 @@ void __copy_longs_rev_unaligned(void *dst, const void *src, size_t n) {
 
     cps += 4 - src_offset;
 
-#if !PLATFORM_GCN
-    cps = ((unsigned char *)lps);
-    cpd = ((unsigned char *)lpd);
-#endif
-
     i = n >> 3;
 
     v1 = *--lps;
@@ -212,11 +207,6 @@ void __copy_longs_rev_unaligned(void *dst, const void *src, size_t n) {
     }
 
     n &= 3;
-
-#if !PLATFORM_GCN
-    cps = ((unsigned char *)lps);
-    cpd = ((unsigned char *)lpd);
-#endif
 
     if (n) {
         cps += src_offset;
