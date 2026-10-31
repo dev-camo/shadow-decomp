@@ -25,7 +25,7 @@ int _ftell(FILE *file) {
 
     if (!file->file_mode.binary_io) {
         int n = file->buffer_ptr - file->buffer - charsInUndoBuffer;
-        unsigned char *p = (unsigned char *)file->buffer;
+        unsigned char *p = file->buffer;
 
         while (n--)
             if (*p++ == '\n')
@@ -36,19 +36,16 @@ int _ftell(FILE *file) {
 }
 
 long ftell(FILE *stream) {
-    int retval;
+    long retval;
 
     __begin_critical_region(stdin_access);
-    retval = (long)_ftell(stream);
+    retval = _ftell(stream);
     __end_critical_region(stdin_access);
     return retval;
 }
 
-int _fseek(FILE *file, unsigned long offset, int whence) {
-    int bufferCode;
+int _fseek(FILE *file, fpos_t offset, int whence) {
     int pos;
-
-    unsigned char *ptr;
 
     if (file->file_mode.file_kind != __disk_file || file->file_state.error != 0) {
         errno = EFPOS;
@@ -57,8 +54,7 @@ int _fseek(FILE *file, unsigned long offset, int whence) {
 
     if (file->file_state.io_state == __writing) {
         if (__flush_buffer(file, NULL) != 0) {
-            file->file_state.error = 1;
-            file->buffer_length = 0;
+            set_error(file);
             errno = EFPOS;
             return -1;
         }
@@ -85,9 +81,8 @@ int _fseek(FILE *file, unsigned long offset, int whence) {
 
     if (file->file_state.io_state == __neutral) {
         if (file->position_fn != NULL &&
-            (int)file->position_fn(file->handle, &offset, whence, file->idle_fn)) {
-            file->file_state.error = 1;
-            file->buffer_length = 0;
+            file->position_fn(file->handle, &offset, whence, file->idle_fn)) {
+            set_error(file);
             errno = EFPOS;
             return -1;
         } else {

@@ -52,12 +52,12 @@ struct _loc_mon_cmpt {
     char n_sign_posn;
     char* int_curr_symbol;
     char int_frac_digits;
-    char int_p_cs_precedes; 
-    char int_n_cs_precedes; 
-    char int_p_sep_by_space; 
-    char int_n_sep_by_space; 
-    char int_p_sign_posn; 
-    char int_n_sign_posn; 
+    char int_p_cs_precedes;
+    char int_n_cs_precedes;
+    char int_p_sep_by_space;
+    char int_n_sep_by_space;
+    char int_p_sign_posn;
+    char int_n_sign_posn;
 };
 CHECK_SIZEOF(struct _loc_mon_cmpt, 0x34);
 
@@ -111,8 +111,8 @@ struct __locale {
     struct _loc_coll_cmpt* coll_cmpt_ptr;       // 0x34
     struct _loc_ctype_cmpt* ctype_cmpt_ptr;     // 0x38
     struct _loc_mon_cmpt* mon_cmpt_ptr;         // 0x3C
-	struct _loc_num_cmpt* num_cmpt_ptr;         // 0x40
-	struct _loc_time_cmpt* time_cmpt_ptr;       // 0x44
+    struct _loc_num_cmpt* num_cmpt_ptr;         // 0x40
+    struct _loc_time_cmpt* time_cmpt_ptr;       // 0x44
 };
 CHECK_SIZEOF(struct __locale, 0x48);
 

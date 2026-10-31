@@ -21,10 +21,10 @@ int __flush_buffer(FILE *file, size_t *bytes_flushed) {
         file->buffer_length = buffer_len;
 
         if (!file->file_mode.binary_io)
-            __convert_from_newlines(file->buffer, (size_t *)&file->buffer_length);
+            __convert_from_newlines(file->buffer, &file->buffer_length);
 
-        ioresult = (*file->write_fn)(file->handle, file->buffer, (size_t *)&file->buffer_length,
-                                     file->idle_fn);
+        ioresult =
+            (*file->write_fn)(file->handle, file->buffer, &file->buffer_length, file->idle_fn);
 
         if (bytes_flushed)
             *bytes_flushed = file->buffer_length;

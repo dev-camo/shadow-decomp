@@ -17,10 +17,10 @@ int fclose(FILE *file) {
     close_result = (*file->close_fn)(file->handle);
 
     file->file_mode.file_kind = __closed_file;
-    file->handle = NULL;
+    file->handle = 0;
 
     if (file->file_state.free_buffer)
-        free((FILE *)file->buffer);
+        free(file->buffer);
     return ((flush_result || close_result) ? -1 : 0);
 }
 
@@ -59,8 +59,7 @@ int fflush(FILE *file) {
     }
 
     if (__flush_buffer(file, 0) != 0) {
-        file->file_state.error = 1;
-        file->buffer_length = 0;
+        set_error(file);
         return -1;
     }
 

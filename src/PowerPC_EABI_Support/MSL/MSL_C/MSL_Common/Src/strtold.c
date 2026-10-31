@@ -48,17 +48,17 @@ enum hex_scan_states {
     hex_exp_digit_loop = 0x0100
 };
 
-#define final_state(scan_state) (scan_state & (finished | failure))
+#define final_state(scan_state) ((scan_state) & (finished | failure))
 #define success(scan_state)                                                                        \
-    (scan_state & (leading_sig_zeroes | int_digit_loop | frac_digit_loop | leading_exp_zeroes |    \
-                   exp_digit_loop | finished))
+    ((scan_state) & (leading_sig_zeroes | int_digit_loop | frac_digit_loop | leading_exp_zeroes |  \
+                     exp_digit_loop | finished))
 #define hex_success(count, scan_state)                                                             \
-    (count - 1 > 2 &&                                                                              \
-     scan_state & (hex_leading_sig_zeroes | hex_int_digit_loop | hex_frac_digit_loop |             \
-                   hex_leading_exp_zeroes | hex_exp_digit_loop))
+    ((count) - 1 > 2 &&                                                                            \
+     (scan_state) & (hex_leading_sig_zeroes | hex_int_digit_loop | hex_frac_digit_loop |           \
+                     hex_leading_exp_zeroes | hex_exp_digit_loop))
 
 #define fetch() (count++, (*ReadProc)(ReadProcArg, 0, __GetAChar))
-#define unfetch(c) (*ReadProc)(ReadProcArg, c, __UngetAChar)
+#define unfetch(c) ((*ReadProc)(ReadProcArg, (c), __UngetAChar))
 
 long double __strtold(int max_width, int (*ReadProc)(void *, int, int), void *ReadProcArg,
                       int *chars_scanned, int *overflow) {
@@ -463,6 +463,7 @@ long double __strtold(int max_width, int (*ReadProc)(void *, int, int), void *Re
 
                 exponent = exponent * 10 + (c - '0');
 
+                /* Library bug, kept: this tests exp_value instead of exponent. */
                 if (exp_value > SHRT_MAX) {
                     *overflow = 1;
                 }
@@ -572,8 +573,9 @@ long double __strtold(int max_width, int (*ReadProc)(void *, int, int), void *Re
 }
 
 double strtod(const char *str, char **end) {
-    // long double, like __strtold's result: with double locals the 0.0 below shares a different
-    // .sdata2 literal and the literal pool order changes.
+    // Matching workaround: long double locals, like __strtold's result. strtod is stripped from
+    // the game; with double locals the 0.0 below shares a different .sdata2 literal and the
+    // literal pool order changes. Revisit when the original strtod is found.
     long double value, abs_value;
     int count, overflow;
 

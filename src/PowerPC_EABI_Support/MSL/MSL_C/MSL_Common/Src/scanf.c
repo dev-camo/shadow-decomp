@@ -3,6 +3,7 @@
 #include "strtold.h"
 #include "strtoul.h"
 #include <cctype>
+#include <climits>
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
@@ -31,14 +32,14 @@ typedef struct {
 } scan_format;
 CHECK_SIZEOF(scan_format, 0x28);
 
-#define set_char_map(map, ch) map[(unsigned char)ch >> 3] |= (1 << (ch & 7))
-#define tst_char_map(map, ch) (map[(unsigned char)ch >> 3] & (1 << (ch & 7)))
+#define set_char_map(map, ch) (map)[(unsigned char)(ch) >> 3] |= (1 << ((ch) & 7))
+#define tst_char_map(map, ch) ((map)[(unsigned char)(ch) >> 3] & (1 << ((ch) & 7)))
 
 static const char *parse_format(const char *format_string, scan_format *format) {
     const char *s = format_string;
     int c;
     int flag_found, invert;
-    scan_format f = {0, 0, normal_argument, 0, 2147483647, {0}};
+    scan_format f = {0, 0, normal_argument, 0, INT_MAX, {0}};
 
     if (((c = *++s) == '%')) {
         f.conversion_char = c;
@@ -457,6 +458,8 @@ static int __sformatter(int (*ReadProc)(void *, int, int), void *ReadProcArg,
 
                     if (format.argument_options == wchar_argument) {
                         mbtowc(((wchar_t *)arg_ptr), (char *)(&c), 1);
+                        /* Library bug, kept: this advances arg_ptr by one byte (the %ls path
+                           below advances by one wchar_t). */
                         (wchar_t *)arg_ptr++;
                     } else {
                         *arg_ptr++ = c;
