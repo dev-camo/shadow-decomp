@@ -1,5 +1,5 @@
-#ifndef FN_8041116C_MATRIX_STACK_H
-#define FN_8041116C_MATRIX_STACK_H
+#ifndef GAME_FN_8041116C_MATRIX_STACK_H
+#define GAME_FN_8041116C_MATRIX_STACK_H
 
 #include "Game/fn_8040_vector_types.h"
 #include "layout_check.h"

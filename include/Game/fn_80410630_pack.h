@@ -1,5 +1,5 @@
-#ifndef FN_80410630_PACK_H
-#define FN_80410630_PACK_H
+#ifndef GAME_FN_80410630_PACK_H
+#define GAME_FN_80410630_PACK_H
 
 #include "Game/fn_8042_name_registry.h"
 #include "layout_check.h"
@@ -16,6 +16,7 @@ typedef union PackNodeLink {
     unsigned int offset;
     struct PackNode *node;
 } PackNodeLink;
+CHECK_SIZEOF(PackNodeLink, 0x4);
 
 typedef struct PackNode {
     /* 0x00 */ unsigned int id;
@@ -53,6 +54,7 @@ typedef union PackEntriesLink {
     unsigned int offset;
     PackEntry *entries;
 } PackEntriesLink;
+CHECK_SIZEOF(PackEntriesLink, 0x4);
 
 /* The header of a pack: the loader links it into a list of the loaded packs. For a single entry
  * without a pack header, fn_804109C4 allocates the header; a pack that fn_804108F0 loads from a

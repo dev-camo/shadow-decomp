@@ -1,5 +1,5 @@
-#ifndef FN_8042_NAME_REGISTRY_H
-#define FN_8042_NAME_REGISTRY_H
+#ifndef GAME_FN_8042_NAME_REGISTRY_H
+#define GAME_FN_8042_NAME_REGISTRY_H
 
 /* The name registry, byte-order and ARAM helpers at 0x80420C74-0x80421368 that the pack loader in
  * fn_80410630.c and the resource groups in fn_80411714.c call. The original names and types are

@@ -1,5 +1,5 @@
-#ifndef FN_80413B30_MOTION_KEYS_H
-#define FN_80413B30_MOTION_KEYS_H
+#ifndef GAME_FN_80413B30_MOTION_KEYS_H
+#define GAME_FN_80413B30_MOTION_KEYS_H
 
 #include "Game/fn_80411714_resource_groups.h"
 #include "layout_check.h"

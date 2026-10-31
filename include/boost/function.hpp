@@ -2,11 +2,11 @@
 #define BOOST_FUNCTION_HPP
 
 #include "boost/utility/addressof.hpp"
-#include "layout_check.h"
 #include <memory>
 #include <new>
 #include <typeinfo>
 #include <utility>
+#include "layout_check.h"
 
 /* boost::function with one argument, in the style of boost 1.32: function1 derives from
  * function_base and keeps the manager, the functor pointer and the invoker. The game's code uses

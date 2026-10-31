@@ -1,9 +1,9 @@
 #ifndef GAME_CSD_CTEXLIST_H
 #define GAME_CSD_CTEXLIST_H
 
+#include <dolphin/types.h>
 #include "Game/CSD/csdBase.h"
 #include "Game/CSD/csdRCObject.h"
-#include <dolphin/types.h>
 #include "layout_check.h"
 
 namespace Chao {
