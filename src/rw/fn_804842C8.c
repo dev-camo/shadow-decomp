@@ -127,147 +127,156 @@ static void CameraUpdateZShiftScale(RwCamera *camera) {
 /* The perspective frustum's corners in the world, near then far, and its planes: far, near, then
  * the four sides */
 void fn_804842C8(RwCamera *camera) {
-    RwMatrix *ltm = &CAMERAFRAME(camera)->ltm;
-    RwV3d *corners = camera->frustumCorners;
-    RwFrustumPlane *frustumPlane;
-    RwV3d scaledRight;
-    RwV3d scaledUp;
     RwV3d temp;
-    RwV3d offset;
-    RwV3d edgeA;
-    RwV3d edgeB;
+    RwV3d edge;
+    RwV3d right;
+    RwV3d up;
+    RwV3d centre;
+    RwMatrix *ltm = &CAMERAFRAME(camera)->ltm;
+    RwReal scale;
     RwInt32 i;
+    RwV3d *corners = camera->frustumCorners;
+    RwFrustumPlane *frustumPlanes = camera->frustumPlanes;
 
-    /* The view offset, applied to the corners in the loop below */
-    offset.x = ltm->up.x * camera->viewOffset.y + ltm->right.x * -camera->viewOffset.x;
-    offset.y = ltm->up.y * camera->viewOffset.y + ltm->right.y * -camera->viewOffset.x;
-    offset.z = ltm->up.z * camera->viewOffset.y + ltm->right.z * -camera->viewOffset.x;
+    /* The centre of projection relative to the camera: the view offset along right and up */
+    scale = -camera->viewOffset.x;
+    centre.x = ltm->right.x * scale;
+    centre.y = ltm->right.y * scale;
+    centre.z = ltm->right.z * scale;
+    centre.x += ltm->up.x * camera->viewOffset.y;
+    centre.y += ltm->up.y * camera->viewOffset.y;
+    centre.z += ltm->up.z * camera->viewOffset.y;
 
     /* The corners of the view window, a unit along the view direction */
-    scaledRight.x = ltm->right.x * camera->viewWindow.x;
-    scaledRight.y = ltm->right.y * camera->viewWindow.x;
-    scaledRight.z = ltm->right.z * camera->viewWindow.x;
-    scaledUp.x = ltm->up.x * camera->viewWindow.y;
-    scaledUp.y = ltm->up.y * camera->viewWindow.y;
-    scaledUp.z = ltm->up.z * camera->viewWindow.y;
+    right.x = ltm->right.x * camera->viewWindow.x;
+    right.y = ltm->right.y * camera->viewWindow.x;
+    right.z = ltm->right.z * camera->viewWindow.x;
+    temp.x = ltm->at.x + right.x;
+    temp.y = ltm->at.y + right.y;
+    temp.z = ltm->at.z + right.z;
 
-    temp.x = ltm->at.x + scaledRight.x;
-    temp.y = ltm->at.y + scaledRight.y;
-    temp.z = ltm->at.z + scaledRight.z;
-    temp.x += scaledUp.x;
-    temp.y += scaledUp.y;
-    temp.z += scaledUp.z;
+    up.x = ltm->up.x * camera->viewWindow.y;
+    up.y = ltm->up.y * camera->viewWindow.y;
+    up.z = ltm->up.z * camera->viewWindow.y;
+    temp.x += up.x;
+    temp.y += up.y;
+    temp.z += up.z;
+
+    right.x *= 2.0f;
+    right.y *= 2.0f;
+    right.z *= 2.0f;
+    up.x *= 2.0f;
+    up.y *= 2.0f;
+    up.z *= 2.0f;
     corners[0] = temp;
-    scaledRight.x *= 2.0f;
-    scaledRight.y *= 2.0f;
-    scaledRight.z *= 2.0f;
-    temp.x -= scaledRight.x;
-    temp.y -= scaledRight.y;
-    temp.z -= scaledRight.z;
+    temp.x -= right.x;
+    temp.y -= right.y;
+    temp.z -= right.z;
     corners[1] = temp;
-    scaledUp.x *= 2.0f;
-    scaledUp.y *= 2.0f;
-    scaledUp.z *= 2.0f;
-    temp.x -= scaledUp.x;
-    temp.y -= scaledUp.y;
-    temp.z -= scaledUp.z;
+    temp.x -= up.x;
+    temp.y -= up.y;
+    temp.z -= up.z;
     corners[2] = temp;
-    temp.x += scaledRight.x;
-    temp.y += scaledRight.y;
-    temp.z += scaledRight.z;
+    temp.x += right.x;
+    temp.y += right.y;
+    temp.z += right.z;
     corners[3] = temp;
 
-    /* Each corner at the near and far planes, from the view offset */
+    /* Each corner at the near and far planes, from the centre of projection */
     for (i = 0; i < 4; i++) {
-        temp.x = corners[i].x - offset.x;
-        temp.y = corners[i].y - offset.y;
-        temp.z = corners[i].z - offset.z;
-        corners[i].x = offset.x + ltm->pos.x;
-        corners[i].y = offset.y + ltm->pos.y;
-        corners[i].z = offset.z + ltm->pos.z;
-        corners[i].x = temp.x * camera->nearPlane + corners[i].x;
-        corners[i].y = temp.y * camera->nearPlane + corners[i].y;
-        corners[i].z = temp.z * camera->nearPlane + corners[i].z;
-        corners[i + 4].x = offset.x + ltm->pos.x;
-        corners[i + 4].y = offset.y + ltm->pos.y;
-        corners[i + 4].z = offset.z + ltm->pos.z;
-        corners[i + 4].x = temp.x * camera->farPlane + corners[i + 4].x;
-        corners[i + 4].y = temp.y * camera->farPlane + corners[i + 4].y;
-        corners[i + 4].z = temp.z * camera->farPlane + corners[i + 4].z;
+        RwV3d *target;
+
+        target = &corners[i];
+        temp.x = target->x - centre.x;
+        temp.y = target->y - centre.y;
+        temp.z = target->z - centre.z;
+        target->x = centre.x + ltm->pos.x;
+        target->y = centre.y + ltm->pos.y;
+        target->z = centre.z + ltm->pos.z;
+        target->x += temp.x * camera->nearPlane;
+        target->y += temp.y * camera->nearPlane;
+        target->z += temp.z * camera->nearPlane;
+
+        target = &corners[4 + i];
+        target->x = centre.x + ltm->pos.x;
+        target->y = centre.y + ltm->pos.y;
+        target->z = centre.z + ltm->pos.z;
+        target->x += temp.x * camera->farPlane;
+        target->y += temp.y * camera->farPlane;
+        target->z += temp.z * camera->farPlane;
     }
 
     /* The far plane faces along the view, through the far corners */
-    frustumPlane = &camera->frustumPlanes[0];
-    frustumPlane->plane.normal = ltm->at;
-    frustumPlane->plane.distance =
+    frustumPlanes[0].plane.normal = ltm->at;
+    frustumPlanes[0].plane.distance =
         corners[4].x * ltm->at.x + corners[4].y * ltm->at.y + corners[4].z * ltm->at.z;
-    FRUSTUMPLANESETCLOSEST(frustumPlane);
+    FRUSTUMPLANESETCLOSEST(&frustumPlanes[0]);
 
     /* The near plane faces back, through the near corners */
-    FRUSTUMPLANEOPPOSITE(&camera->frustumPlanes[1], &camera->frustumPlanes[0], corners[0]);
+    FRUSTUMPLANEOPPOSITE(&frustumPlanes[1], &frustumPlanes[0], corners[0]);
 
     /* The sides, through the corners about the far plane's second and fourth corners */
     temp.x = corners[1].x - corners[5].x;
     temp.y = corners[1].y - corners[5].y;
     temp.z = corners[1].z - corners[5].z;
-    edgeB.x = corners[6].x - corners[5].x;
-    edgeB.y = corners[6].y - corners[5].y;
-    edgeB.z = corners[6].z - corners[5].z;
-    FRUSTUMPLANEFROMEDGES(&camera->frustumPlanes[2], temp, edgeB, corners[1]);
-    edgeA.x = corners[4].x - corners[5].x;
-    edgeA.y = corners[4].y - corners[5].y;
-    edgeA.z = corners[4].z - corners[5].z;
-    FRUSTUMPLANEFROMEDGES(&camera->frustumPlanes[3], edgeA, temp, corners[1]);
+    edge.x = corners[6].x - corners[5].x;
+    edge.y = corners[6].y - corners[5].y;
+    edge.z = corners[6].z - corners[5].z;
+    FRUSTUMPLANEFROMEDGES(&frustumPlanes[2], temp, edge, corners[1]);
+    edge.x = corners[4].x - corners[5].x;
+    edge.y = corners[4].y - corners[5].y;
+    edge.z = corners[4].z - corners[5].z;
+    FRUSTUMPLANEFROMEDGES(&frustumPlanes[3], edge, temp, corners[1]);
 
     temp.x = corners[3].x - corners[7].x;
     temp.y = corners[3].y - corners[7].y;
     temp.z = corners[3].z - corners[7].z;
-    edgeB.x = corners[4].x - corners[7].x;
-    edgeB.y = corners[4].y - corners[7].y;
-    edgeB.z = corners[4].z - corners[7].z;
-    FRUSTUMPLANEFROMEDGES(&camera->frustumPlanes[4], temp, edgeB, corners[3]);
-    edgeA.x = corners[6].x - corners[7].x;
-    edgeA.y = corners[6].y - corners[7].y;
-    edgeA.z = corners[6].z - corners[7].z;
-    FRUSTUMPLANEFROMEDGES(&camera->frustumPlanes[5], edgeA, temp, corners[3]);
+    edge.x = corners[4].x - corners[7].x;
+    edge.y = corners[4].y - corners[7].y;
+    edge.z = corners[4].z - corners[7].z;
+    FRUSTUMPLANEFROMEDGES(&frustumPlanes[4], temp, edge, corners[3]);
+    edge.x = corners[6].x - corners[7].x;
+    edge.y = corners[6].y - corners[7].y;
+    edge.z = corners[6].z - corners[7].z;
+    FRUSTUMPLANEFROMEDGES(&frustumPlanes[5], edge, temp, corners[3]);
 }
 
 /* The perspective view matrix: from the world into the camera's view, with the view window and
  * offset mapped into [0, 1] */
 RwCamera *fn_80484AAC(RwCamera *camera) {
+    RwReal scale;
+    RwV3d row;
     RwMatrix *ltm = &CAMERAFRAME(camera)->ltm;
     RwMatrix *viewMatrix = &camera->viewMatrix;
-    RwReal scale;
-    RwReal shift;
-    RwV3d row;
 
-    scale = -0.5f * camera->recipViewWindow.x;
+    scale = camera->recipViewWindow.x * -0.5f;
     row.x = ltm->right.x * scale;
     row.y = ltm->right.y * scale;
     row.z = ltm->right.z * scale;
-    shift = 0.5f - scale * camera->viewOffset.x;
-    row.x += ltm->at.x * shift;
-    row.y += ltm->at.y * shift;
-    row.z += ltm->at.z * shift;
+    /* scale now holds the shift along the view direction */
+    scale = 0.5f - scale * camera->viewOffset.x;
+    row.x += ltm->at.x * scale;
+    row.y += ltm->at.y * scale;
+    row.z += ltm->at.z * scale;
     viewMatrix->right.x = row.x;
     viewMatrix->up.x = row.y;
     viewMatrix->at.x = row.z;
     viewMatrix->pos.x =
-        0.5f - (shift + (ltm->pos.x * row.x + ltm->pos.y * row.y + ltm->pos.z * row.z));
+        0.5f - (scale + (ltm->pos.x * row.x + ltm->pos.y * row.y + ltm->pos.z * row.z));
 
-    scale = -0.5f * camera->recipViewWindow.y;
+    scale = camera->recipViewWindow.y * -0.5f;
     row.x = ltm->up.x * scale;
     row.y = ltm->up.y * scale;
     row.z = ltm->up.z * scale;
-    shift = scale * camera->viewOffset.y + 0.5f;
-    row.x += ltm->at.x * shift;
-    row.y += ltm->at.y * shift;
-    row.z += ltm->at.z * shift;
+    scale = 0.5f + scale * camera->viewOffset.y;
+    row.x += ltm->at.x * scale;
+    row.y += ltm->at.y * scale;
+    row.z += ltm->at.z * scale;
     viewMatrix->right.y = row.x;
     viewMatrix->up.y = row.y;
     viewMatrix->at.y = row.z;
     viewMatrix->pos.y =
-        0.5f - (shift + (ltm->pos.x * row.x + ltm->pos.y * row.y + ltm->pos.z * row.z));
+        0.5f - (scale + (ltm->pos.x * row.x + ltm->pos.y * row.y + ltm->pos.z * row.z));
 
     viewMatrix->right.z = ltm->at.x;
     viewMatrix->up.z = ltm->at.y;
@@ -281,33 +290,45 @@ RwCamera *fn_80484AAC(RwCamera *camera) {
 /* The parallel frustum's corners in the world, near then far, and its planes: far, near, then
  * the four sides */
 void fn_80484C10(RwCamera *camera) {
-    RwV3d *corners = camera->frustumCorners;
-    RwMatrix *ltm = &CAMERAFRAME(camera)->ltm;
-    RwReal width = camera->viewWindow.x;
-    RwReal height = camera->viewWindow.y;
-    RwReal nearPlane = camera->nearPlane;
-    RwReal farPlane = camera->farPlane;
-    RwReal offsetX = -camera->viewOffset.x;
-    RwReal offsetY = camera->viewOffset.y;
-    RwReal nearOffsetX = (1.0f - nearPlane) * offsetX;
-    RwReal nearOffsetY = (1.0f - nearPlane) * offsetY;
-    RwReal farOffsetX = (1.0f - farPlane) * offsetX;
-    RwReal farOffsetY = (1.0f - farPlane) * offsetY;
+    RwReal width;
+    RwReal height;
+    RwReal nearPlane;
+    RwReal farPlane;
+    RwReal offsetX;
+    RwReal offsetY;
+    RwReal offset;
     RwV3d edgeA;
     RwV3d edgeB;
-    RwV3d edgeC;
+    RwV3d *corners = camera->frustumCorners;
+    RwMatrix *ltm = &CAMERAFRAME(camera)->ltm;
 
-    /* The view window's corners at the near and far planes, in the camera's space */
+    width = camera->viewWindow.x;
+    height = camera->viewWindow.y;
+    nearPlane = camera->nearPlane;
+    farPlane = camera->farPlane;
+    offsetX = -camera->viewOffset.x;
+    offsetY = camera->viewOffset.y;
+
+    /* The view window's corners at the near and far planes, in the camera's space; the offset
+     * shears them with the distance */
     corners[0].z = corners[1].z = corners[2].z = corners[3].z = nearPlane;
     corners[4].z = corners[5].z = corners[6].z = corners[7].z = farPlane;
-    corners[0].x = corners[3].x = width + nearOffsetX;
-    corners[1].x = corners[2].x = -width + nearOffsetX;
-    corners[4].x = corners[7].x = width + farOffsetX;
-    corners[5].x = corners[6].x = -width + farOffsetX;
-    corners[0].y = corners[1].y = height + nearOffsetY;
-    corners[2].y = corners[3].y = -height + nearOffsetY;
-    corners[4].y = corners[5].y = height + farOffsetY;
-    corners[6].y = corners[7].y = -height + farOffsetY;
+
+    offset = (1.0f - nearPlane) * offsetX;
+    corners[0].x = corners[3].x = width + offset;
+    corners[1].x = corners[2].x = -width + offset;
+
+    offset = (1.0f - farPlane) * offsetX;
+    corners[4].x = corners[7].x = width + offset;
+    corners[5].x = corners[6].x = -width + offset;
+
+    offset = (1.0f - nearPlane) * offsetY;
+    corners[0].y = corners[1].y = height + offset;
+    corners[2].y = corners[3].y = -height + offset;
+
+    offset = (1.0f - farPlane) * offsetY;
+    corners[4].y = corners[5].y = height + offset;
+    corners[6].y = corners[7].y = -height + offset;
     fn_804824A4(corners, corners, 8, ltm);
 
     /* The far plane faces along the view, through the far corners */
@@ -329,10 +350,10 @@ void fn_80484C10(RwCamera *camera) {
     edgeB.y = corners[6].y - corners[5].y;
     edgeB.z = corners[6].z - corners[5].z;
     FRUSTUMPLANEFROMEDGES(&camera->frustumPlanes[2], edgeA, edgeB, corners[1]);
-    edgeC.x = corners[4].x - corners[5].x;
-    edgeC.y = corners[4].y - corners[5].y;
-    edgeC.z = corners[4].z - corners[5].z;
-    FRUSTUMPLANEFROMEDGES(&camera->frustumPlanes[3], edgeC, edgeA, corners[1]);
+    edgeB.x = corners[4].x - corners[5].x;
+    edgeB.y = corners[4].y - corners[5].y;
+    edgeB.z = corners[4].z - corners[5].z;
+    FRUSTUMPLANEFROMEDGES(&camera->frustumPlanes[3], edgeB, edgeA, corners[1]);
     FRUSTUMPLANEOPPOSITE(&camera->frustumPlanes[4], &camera->frustumPlanes[2], corners[3]);
     FRUSTUMPLANEOPPOSITE(&camera->frustumPlanes[5], &camera->frustumPlanes[3], corners[3]);
 }
@@ -340,39 +361,39 @@ void fn_80484C10(RwCamera *camera) {
 /* The parallel view matrix: from the world into the camera's view, with the view window and
  * offset mapped into [0, 1] */
 RwCamera *fn_80485124(RwCamera *camera) {
+    RwReal scale;
+    RwV3d row;
     RwMatrix *ltm = &CAMERAFRAME(camera)->ltm;
     RwMatrix *viewMatrix = &camera->viewMatrix;
-    RwReal scale;
-    RwReal shift;
-    RwV3d row;
 
-    scale = -0.5f * camera->recipViewWindow.x;
+    scale = camera->recipViewWindow.x * -0.5f;
     row.x = ltm->right.x * scale;
     row.y = ltm->right.y * scale;
     row.z = ltm->right.z * scale;
-    shift = -(scale * camera->viewOffset.x);
-    row.x += ltm->at.x * shift;
-    row.y += ltm->at.y * shift;
-    row.z += ltm->at.z * shift;
+    /* scale now holds the shift along the view direction */
+    scale = -(scale * camera->viewOffset.x);
+    row.x += ltm->at.x * scale;
+    row.y += ltm->at.y * scale;
+    row.z += ltm->at.z * scale;
     viewMatrix->right.x = row.x;
     viewMatrix->up.x = row.y;
     viewMatrix->at.x = row.z;
     viewMatrix->pos.x =
-        0.5f - (shift + (ltm->pos.x * row.x + ltm->pos.y * row.y + ltm->pos.z * row.z));
+        0.5f - (scale + (ltm->pos.x * row.x + ltm->pos.y * row.y + ltm->pos.z * row.z));
 
-    scale = -0.5f * camera->recipViewWindow.y;
-    shift = scale * camera->viewOffset.y;
+    scale = camera->recipViewWindow.y * -0.5f;
     row.x = ltm->up.x * scale;
     row.y = ltm->up.y * scale;
     row.z = ltm->up.z * scale;
-    row.x += ltm->at.x * shift;
-    row.y += ltm->at.y * shift;
-    row.z += ltm->at.z * shift;
+    scale = scale * camera->viewOffset.y;
+    row.x += ltm->at.x * scale;
+    row.y += ltm->at.y * scale;
+    row.z += ltm->at.z * scale;
     viewMatrix->right.y = row.x;
     viewMatrix->up.y = row.y;
     viewMatrix->at.y = row.z;
     viewMatrix->pos.y =
-        0.5f - (shift + (ltm->pos.x * row.x + ltm->pos.y * row.y + ltm->pos.z * row.z));
+        0.5f - (scale + (ltm->pos.x * row.x + ltm->pos.y * row.y + ltm->pos.z * row.z));
 
     viewMatrix->right.z = ltm->at.x;
     viewMatrix->up.z = ltm->at.y;
