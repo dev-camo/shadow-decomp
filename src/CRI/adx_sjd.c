@@ -18,13 +18,6 @@
 #define ADXSJD_MAX_OBJ 16
 #define ADXSJD_MAX_NCH 2
 
-/* ADXSJD_OBJ.stat */
-#define ADXSJD_STAT_STOP 0
-#define ADXSJD_STAT_PREP 1
-#define ADXSJD_STAT_DECODE 2
-#define ADXSJD_STAT_END 3
-#define ADXSJD_STAT_ERROR 4
-
 /* container types (ADXB_GetFormat) whose input is passed through undecoded: AHX and the
  * unnamed types 11, 12, 15 and 20 */
 #define ADXSJD_IS_RAW_FMT(fmt)                                                                     \

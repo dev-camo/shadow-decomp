@@ -9,6 +9,13 @@
 
 typedef struct ADXSJD_OBJ *ADXSJD;
 
+/* decoder status (ADXSJD_GetStat) */
+#define ADXSJD_STAT_STOP 0
+#define ADXSJD_STAT_PREP 1
+#define ADXSJD_STAT_DECODE 2
+#define ADXSJD_STAT_END 3
+#define ADXSJD_STAT_ERROR 4
+
 #ifdef __cplusplus
 extern "C" {
 #endif

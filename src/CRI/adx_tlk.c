@@ -68,17 +68,6 @@ Sint32 adxt_time_mode;
 static Sint32 adxstm_seteos_sct = 25;
 Uint32 adxt_time_adjust_sw = 1;
 
-Sint32 ADXT_GetStat(ADXT adxt);
-Sint32 ADXT_GetNumChan(ADXT adxt);
-Sint32 ADXT_GetSfreq(ADXT adxt);
-Sint32 ADXT_GetOutPan(ADXT adxt, Sint32 ch);
-void ADXT_SetOutPan(ADXT adxt, Sint32 ch, Sint32 pan);
-void ADXT_GetTime(ADXT adxt, Sint32 *ncount, Sint32 *tscale);
-void ADXT_SetLnkSw(ADXT adxt, Sint32 sw);
-void ADXT_Stop(ADXT adxt);
-void ADXT_Destroy(ADXT adxt);
-void ADXT_ExecServer(void);
-
 static inline Sint32 adxt_GetOutBalance(ADXT adxt);
 static inline void adxt_SetOutBalance(ADXT adxt, Sint32 bal);
 static inline Sint32 adxt_InsertSilence(ADXT adxt, Sint32 nch, Sint32 nsmpl);

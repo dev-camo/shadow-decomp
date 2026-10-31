@@ -121,6 +121,17 @@ void ADXT_Stop(ADXT adxt);
 void ADXT_StopWithoutLsc(ADXT adxt);
 void adxt_start_sj(ADXT adxt, SJ sj);
 void ADXT_SetLnkSw(ADXT adxt, Sint32 sw);
+void ADXT_Destroy(ADXT adxt);
+Sint32 ADXT_GetStat(ADXT adxt);
+Sint32 ADXT_GetNumChan(ADXT adxt);
+Sint32 ADXT_GetSfreq(ADXT adxt);
+Sint32 ADXT_GetOutPan(ADXT adxt, Sint32 ch);
+void ADXT_GetTime(ADXT adxt, Sint32 *ncount, Sint32 *tscale);
+void ADXT_SetOutVol(ADXT adxt, Sint32 vol);
+void ADXT_SetOutPan(ADXT adxt, Sint32 ch, Sint32 pan);
+void ADXT_SetTranspose(ADXT adxt, Sint32 oct, Sint32 cent);
+void ADXT_GetTranspose(ADXT adxt, Sint32 *oct, Sint32 *cent);
+void adxt_start_stm(ADXT adxt, void *fname, void *dir, Sint32 ofst, Sint32 nsct);
 
 /* adx_lsc.c; ADXT_ExecLscSvr's name is inferred */
 void ADXT_EntryFname(ADXT adxt, Char8 *fname);

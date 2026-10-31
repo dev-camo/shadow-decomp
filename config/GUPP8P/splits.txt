@@ -885,6 +885,11 @@ CRI/adx_tlk2.c:
 	.text       start:0x803C3D94 end:0x803C3F4C
 	.rodata     start:0x80516950 end:0x805169D0
 
+CRI/adx_tsvr.c:
+	.text       start:0x803C3F4C end:0x803C4CA4
+	.rodata     start:0x805169D0 end:0x80516A68
+	.bss        start:0x805AC638 end:0x805AC648
+
 CRI/adx_xpnd.c:
 	.text       start:0x803C4CA4 end:0x803C5118
 	.bss        start:0x805AC648 end:0x805ACA10
