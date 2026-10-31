@@ -3,9 +3,9 @@
 static TRKFramingState gTRKFramingState;
 void *gTRKInputPendingPtr;
 
-MessageBufferID TRKTestForPacket() {
-    u8 payloadBuf[0x880];
-    u8 packetBuf[0x40];
+MessageBufferID TRKTestForPacket(void) {
+    u8 payloadBuf[TRKMSGBUF_SIZE];
+    u8 packetBuf[TRKMSG_HEADER_SIZE];
     int bufID;
     MessageBuffer *msg;
     MessageBufferID result;
@@ -19,15 +19,16 @@ MessageBufferID TRKTestForPacket() {
     MWTRACE(4, "TestForPacket : FreeBuffer is  %ld\n", result);
 
     TRKSetBufferPosition(msg, 0);
-    if (TRKReadUARTN(packetBuf, 0x40) == UART_NoError) {
+    if (TRKReadUARTN(packetBuf, TRKMSG_HEADER_SIZE) == UART_NoError) {
         int readSize;
 
-        TRKAppendBuffer_ui8(msg, packetBuf, 0x40);
-        readSize = ((u32 *)packetBuf)[0] - 0x40;
+        TRKAppendBuffer_ui8(msg, packetBuf, TRKMSG_HEADER_SIZE);
+        readSize = ((u32 *)packetBuf)[0] - TRKMSG_HEADER_SIZE;
         result = bufID;
         if (readSize > 0) {
             MWTRACE(1, "Reading payload %ld bytes\n", readSize);
-            if (TRKReadUARTN(payloadBuf, ((u32 *)packetBuf)[0] - 0x40) == UART_NoError) {
+            if (TRKReadUARTN(payloadBuf, ((u32 *)packetBuf)[0] - TRKMSG_HEADER_SIZE) ==
+                UART_NoError) {
                 TRKAppendBuffer_ui8(msg, payloadBuf, ((u32 *)packetBuf)[0]);
             } else {
                 MWTRACE(8, "TestForPacket : Invalid size of packet hdr.size\n");

@@ -1,6 +1,8 @@
 #include "MetroTRK/trk.h"
 
-MessageBuffer gTRKMsgBufs[3];
+#define TRK_MSGBUF_COUNT 3
+
+MessageBuffer gTRKMsgBufs[TRK_MSGBUF_COUNT];
 
 void TRKSetBufferUsed(MessageBuffer *msg, BOOL state) {
     msg->isInUse = state;
@@ -8,7 +10,7 @@ void TRKSetBufferUsed(MessageBuffer *msg, BOOL state) {
 
 DSError TRKInitializeMessageBuffers(void) {
     int i;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < TRK_MSGBUF_COUNT; i++) {
         TRKInitializeMutex(&gTRKMsgBufs[i]);
         TRKAcquireMutex(&gTRKMsgBufs[i]);
         TRKSetBufferUsed(&gTRKMsgBufs[i], FALSE);
@@ -25,7 +27,7 @@ DSError TRKGetFreeBuffer(int *msgID, MessageBuffer **outMsg) {
 
     *outMsg = NULL;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < TRK_MSGBUF_COUNT; i++) {
         buf = TRKGetBuffer(i);
 
         TRKAcquireMutex(buf);
@@ -35,7 +37,7 @@ DSError TRKGetFreeBuffer(int *msgID, MessageBuffer **outMsg) {
             error = DS_NoError;
             *outMsg = buf;
             *msgID = i;
-            i = 3; // ends the loop once this buffer's mutex is released
+            i = TRK_MSGBUF_COUNT; // ends the loop once this buffer's mutex is released
         }
         TRKReleaseMutex(buf);
     }
@@ -49,7 +51,7 @@ DSError TRKGetFreeBuffer(int *msgID, MessageBuffer **outMsg) {
 
 void *TRKGetBuffer(int idx) {
     MessageBuffer *buf = NULL;
-    if (idx >= 0 && idx < 3) {
+    if (idx >= 0 && idx < TRK_MSGBUF_COUNT) {
         buf = &gTRKMsgBufs[idx];
     }
 
@@ -58,7 +60,7 @@ void *TRKGetBuffer(int idx) {
 
 void TRKReleaseBuffer(int idx) {
     MessageBuffer *msg;
-    if (idx != -1 && idx >= 0 && idx < 3) {
+    if (idx != -1 && idx >= 0 && idx < TRK_MSGBUF_COUNT) {
         msg = &gTRKMsgBufs[idx];
         TRKAcquireMutex(msg);
         TRKSetBufferUsed(msg, FALSE);
@@ -71,14 +73,14 @@ void TRKResetBuffer(MessageBuffer *msg, BOOL keepData) {
     msg->position = 0;
 
     if (!keepData) {
-        TRK_memset(msg->data, 0, 0x880);
+        TRK_memset(msg->data, 0, TRKMSGBUF_SIZE);
     }
 }
 
 DSError TRKSetBufferPosition(MessageBuffer *msg, u32 pos) {
     DSError error = DS_NoError;
 
-    if (pos > 0x880) {
+    if (pos > TRKMSGBUF_SIZE) {
         error = DS_MessageBufferOverflow;
     } else {
         msg->position = pos;
@@ -98,7 +100,7 @@ DSError TRKAppendBuffer(MessageBuffer *msg, const void *data, size_t length) {
         return DS_NoError;
     }
 
-    bytesLeft = 0x880 - msg->position;
+    bytesLeft = TRKMSGBUF_SIZE - msg->position;
 
     if (bytesLeft < length) {
         error = DS_MessageBufferOverflow;
@@ -248,7 +250,7 @@ DSError TRKReadBuffer1_ui64(MessageBuffer *buffer, u64 *data) {
 
     err = TRKReadBuffer(buffer, (void *)bigEndianData, sizeof(*data));
 
-    if (!gTRKBigEndian && err == 0) {
+    if (!gTRKBigEndian && err == DS_NoError) {
         byteData = (u8 *)data;
 
         byteData[0] = bigEndianData[7];

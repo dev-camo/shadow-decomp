@@ -1,5 +1,6 @@
 #include "MetroTRK/custconn/CircleBuffer.h"
 #include "MetroTRK/MWCriticalSection_gc.h"
+#include <string.h>
 
 u32 CBGetBytesAvailableForRead(CircleBuffer *cb) {
     return cb->mBytesToRead;

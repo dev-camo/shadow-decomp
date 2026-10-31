@@ -1,13 +1,16 @@
 #include <dolphin/types.h>
 
 #define WRITE(dst, add, n_dst, n_src)                                                              \
-    ((u##n_dst *)dst) = ((u##n_dst *)(((u##n_src *)dst) + add)) - 1
+    ((u##n_dst *)(dst)) = ((u##n_dst *)(((u##n_src *)(dst)) + (add))) - 1
 #define WRITE_BYTE(dst, add) WRITE(dst, add, 8, 32)
 #define WRITE_WORD(dst, add) WRITE(dst, add, 32, 8)
 
 __declspec(section ".init") void *TRK_memcpy(void *dst, const void *src, size_t n);
 __declspec(section ".init") void *TRK_memset(void *dst, int val, size_t n);
 
+// Matching workaround: keep TRK_fill_mem out of line. Without the pragma it is inlined into
+// TRK_memset, whose code then differs (the original TRK_memset calls it). Revisit when the
+// original unit's inline setting is known.
 #pragma dont_inline on
 void TRK_fill_mem(void *dst, int val, size_t n) {
     u32 v = (u8)val;
@@ -58,8 +61,6 @@ void TRK_fill_mem(void *dst, int val, size_t n) {
         do {
             *++((u8 *)dst) = v;
         } while (--n);
-
-    return;
 }
 #pragma dont_inline reset
 

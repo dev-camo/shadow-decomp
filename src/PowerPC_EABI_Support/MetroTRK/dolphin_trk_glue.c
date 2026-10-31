@@ -7,7 +7,7 @@ u8 TRK_Use_BBA;
 
 DBCommTable gDBCommTable = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 
-void TRKEXICallBack(s16 r3, OSContext *ctx) {
+void TRKEXICallBack(s16 interrupt, OSContext *ctx) {
     OSEnableScheduler();
     TRKLoadContext(ctx, 0x500);
 }
@@ -72,8 +72,8 @@ int InitMetroTRKCommTable(int hwId) {
     return result;
 }
 
-DSError TRKInitializeIntDrivenUART(u32, u32, u32, void *r5) {
-    gDBCommTable.initialize_func(r5, TRKEXICallBack);
+DSError TRKInitializeIntDrivenUART(u32, u32, u32, void *init_arg) {
+    gDBCommTable.initialize_func(init_arg, TRKEXICallBack);
     gDBCommTable.open_func();
     return DS_NoError;
 }
@@ -124,7 +124,7 @@ void InitializeProgramEndTrap(void) {
 
 void TRKUARTInterruptHandler(void) {}
 
-asm void TRKLoadContext(OSContext *ctx, u32 r4) {
+asm void TRKLoadContext(OSContext *ctx, u32 exception_id) {
 #ifdef __MWERKS__ // clang-format off
 	nofralloc
 	lwz r0, OSContext.gpr[0](r3)
@@ -132,14 +132,14 @@ asm void TRKLoadContext(OSContext *ctx, u32 r4) {
 	lwz r2, OSContext.gpr[2](r3)
 	lhz r5, OSContext.state(r3)
 	rlwinm. r6, r5, 0, 0x1e, 0x1e
-	beq L_802CC24C
+	beq restore_nonvolatile
 	rlwinm r5, r5, 0, 0x1f, 0x1d
 	sth r5, OSContext.state(r3)
 	lmw r5, OSContext.gpr[5](r3)
-	b L_802CC250
-L_802CC24C:
+	b restore_special_regs
+restore_nonvolatile:
 	lmw r13, OSContext.gpr[13](r3)
-L_802CC250:
+restore_special_regs:
 	mr r31, r3
 	mr r3, r4
 	lwz r4, OSContext.cr(r31)

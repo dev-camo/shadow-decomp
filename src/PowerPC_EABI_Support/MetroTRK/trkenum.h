@@ -173,6 +173,9 @@ typedef enum {
     UART_NoData = 4,         // no data available from polling
 } UARTErrorOptions;
 
+/* The same values as UARTBaudRate in the MSL UART.h, which this unit set cannot include (offsetof).
+ * One shared definition would renumber the compiler-generated labels fixed by the original (@N
+ * literals of the MetroTRK objects, initialized$N in uart_console_io_gcn.o). */
 typedef enum {
     kBaudHWSet = -1, // use HW settings such as DIP switches
     kBaud300 = 300,  // valid baud rates
@@ -195,7 +198,7 @@ typedef enum {
 ////////////////////////////////////
 
 #ifdef __cplusplus
-};
+}
 #endif // ifdef __cplusplus
 
 #endif

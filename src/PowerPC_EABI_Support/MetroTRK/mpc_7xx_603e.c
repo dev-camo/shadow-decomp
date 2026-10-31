@@ -69,7 +69,7 @@ asm void TRKSaveExtended1Block(void) {
 	mfspr     r30, 0x39A
 	mfspr     r31, 0x39B
 	stmw      r20, 0x2FC(r2)
-	b         loc_0x150
+	b         save_misc_sprs
 
 	mfspr     r16, 0x3A0
 	mfspr     r17, 0x3A7
@@ -89,7 +89,7 @@ asm void TRKSaveExtended1Block(void) {
 	mfspr     r31, 0x3FF
 	stmw      r16, 0x2B8(r2)
 
-loc_0x150:
+save_misc_sprs:
 	mfspr     r19, 0x3F5
 	mfspr     r20, 0x3B9
 	mfspr     r21, 0x3BA
@@ -119,7 +119,7 @@ loc_0x150:
 #endif // clang-format on
 }
 
-asm void TRKRestoreExtended1Block() {
+asm void TRKRestoreExtended1Block(void) {
 #ifdef __MWERKS__ // clang-format off
 	nofralloc
 	lis       r2, gTRKCPUState@h
@@ -132,13 +132,13 @@ asm void TRKRestoreExtended1Block() {
 	stb       r0, 0x0(r5)
 	stb       r0, 0x1(r5)
 	cmpwi     r3, 0
-	beq-      loc_0x3C
+	beq-      skip_time_base
 	lwz       r24, 0x1E8(r2)
 	lwz       r25, 0x1EC(r2)
 	mttbl     r24
 	mttbu     r25
 
-loc_0x3C:
+skip_time_base:
 	lmw       r20, 0x2FC(r2)
 	mtspr     912, r20
 	mtspr     913, r21
@@ -151,7 +151,7 @@ loc_0x3C:
 	mtspr     920, r28
 	mtspr     922, r30
 	mtspr     923, r31
-	b         loc_0x88
+	b         restore_misc_sprs
 	lmw       r26, 0x2E0(r2)
 	mtspr     944, r26
 	mtspr     951, r27
@@ -159,7 +159,7 @@ loc_0x3C:
 	mtspr     1015, r30
 	mtspr     1023, r31
 
-loc_0x88:
+restore_misc_sprs:
 	lmw       r19, 0x284(r2)
 	mtspr     1013, r19
 	mtspr     953, r20
@@ -174,13 +174,13 @@ loc_0x88:
 	mtspr     1022, r29
 	mtspr     1019, r30
 	mtspr     1017, r31
-	b         loc_0xF4
+	b         restore_segment_regs
 	cmpwi     r6, 0
-	beq-      loc_0xD4
+	beq-      skip_decrementer
 	lwz       r26, 0x278(r2)
 	mtdec     r26
 
-loc_0xD4:
+skip_decrementer:
 	lmw       r25, 0x240(r2)
 	mtspr     976, r25
 	mtspr     977, r26
@@ -190,7 +190,7 @@ loc_0xD4:
 	mtspr     981, r30
 	mtspr     982, r31
 
-loc_0xF4:
+restore_segment_regs:
 	lmw       r16, 0x1A8(r2)
 	mtsr      0, r16
 	mtsr      1, r17
