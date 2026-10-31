@@ -3,6 +3,9 @@
 
 #include "__gx.h"
 
+// None of the GXRead* functions of this unit has a symbol in the final binary: the linker
+// stripped them, so no original bytes exist to check them against.
+
 void GXSetGPMetric(GXPerf0 perf0, GXPerf1 perf1) {
     u32 reg;
 
@@ -350,7 +353,6 @@ void GXSetGPMetric(GXPerf0 perf0, GXPerf1 perf1) {
     __GXData->bpSentNot = 0;
 }
 
-#pragma scheduling off
 void GXReadGPMetric(u32 *cnt0, u32 *cnt1) {
     u32 cpCtr0, cpCtr1, cpCtr2, cpCtr3;
 
@@ -454,7 +456,6 @@ void GXReadGPMetric(u32 *cnt0, u32 *cnt1) {
         break;
     }
 }
-#pragma scheduling reset
 
 void GXClearGPMetric(void) {
     u32 reg;
@@ -477,7 +478,6 @@ u32 GXReadGP1Metric(void) {
     return cnt1;
 }
 
-#pragma scheduling off
 void GXReadMemMetric(u32 *cp_req, u32 *tc_req, u32 *cpu_rd_req, u32 *cpu_wr_req, u32 *dsp_req,
                      u32 *io_req, u32 *vi_req, u32 *pe_req, u32 *rf_req, u32 *fi_req) {
     *cp_req = __GXReadMEMCounterU32(26, 25);
@@ -491,7 +491,6 @@ void GXReadMemMetric(u32 *cp_req, u32 *tc_req, u32 *cpu_rd_req, u32 *cpu_wr_req,
     *rf_req = __GXReadMEMCounterU32(42, 41);
     *fi_req = __GXReadMEMCounterU32(44, 43);
 }
-#pragma scheduling reset
 
 void GXClearMemMetric(void) {
     GX_SET_MEM_REG(25, 0);
@@ -516,7 +515,6 @@ void GXClearMemMetric(void) {
     GX_SET_MEM_REG(43, 0);
 }
 
-#pragma scheduling off
 void GXReadPixMetric(u32 *top_pixels_in, u32 *top_pixels_out, u32 *bot_pixels_in,
                      u32 *bot_pixels_out, u32 *clr_pixels_in, u32 *copy_clks) {
     *top_pixels_in = __GXReadPECounterU32(12, 13) * 4;
@@ -526,7 +524,6 @@ void GXReadPixMetric(u32 *top_pixels_in, u32 *top_pixels_out, u32 *bot_pixels_in
     *clr_pixels_in = __GXReadPECounterU32(20, 21) * 4;
     *copy_clks = __GXReadPECounterU32(22, 23);
 }
-#pragma scheduling reset
 
 void GXClearPixMetric(void) {
     u32 reg;
@@ -549,13 +546,11 @@ void GXSetVCacheMetric(GXVCachePerf attr) {
     GX_WRITE_SOME_REG4(8, 0x10, reg, -12);
 }
 
-#pragma scheduling off
 void GXReadVCacheMetric(u32 *check, u32 *miss, u32 *stall) {
     *check = __GXReadCPCounterU32(40, 41);
     *miss = __GXReadCPCounterU32(42, 43);
     *stall = __GXReadCPCounterU32(44, 45);
 }
-#pragma scheduling reset
 
 void GXClearVCacheMetric(void) {
     GX_WRITE_SOME_REG4(8, 0, 0, -12);
@@ -573,14 +568,12 @@ void GXInitXfRasMetric(void) {
     __GXData->bpSentNot = 1;
 }
 
-#pragma scheduling off
 void GXReadXfRasMetric(u32 *xf_wait_in, u32 *xf_wait_out, u32 *ras_busy, u32 *clocks) {
     *ras_busy = __GXReadCPCounterU32(32, 33);
     *clocks = __GXReadCPCounterU32(34, 35);
     *xf_wait_in = __GXReadCPCounterU32(36, 37);
     *xf_wait_out = __GXReadCPCounterU32(38, 39);
 }
-#pragma scheduling reset
 
 u32 GXReadClksPerVtx(void) {
     u32 perfCnt;
