@@ -11,7 +11,7 @@ void abort(void);
 extern void (*__stdio_exit)(void);
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif /* _MSL_COMMON_ABORT_EXIT_H */

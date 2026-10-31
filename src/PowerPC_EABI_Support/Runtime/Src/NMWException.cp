@@ -1,22 +1,17 @@
 #include "NMWException.h"
 #include "MWCPlusLib.h"
+#include "abort_exit.h"
 #include "layout_check.h"
 
 namespace std {
 typedef void (*unexpected_handler)();
-unexpected_handler set_unexpected(unexpected_handler handler);
 void unexpected();
 
 typedef void (*terminate_handler)();
-terminate_handler set_terminate(terminate_handler handler);
 void terminate();
 } // namespace std
 
 #define ARRAY_HEADER_SIZE 16
-
-extern "C" {
-extern void abort();
-}
 
 namespace std {
 static void dthandler() {
@@ -31,20 +26,8 @@ static void duhandler() {
 
 static unexpected_handler uhandler = duhandler;
 
-extern terminate_handler set_terminate(terminate_handler handler) {
-    terminate_handler old = thandler;
-    thandler = handler;
-    return old;
-}
-
 extern void terminate() {
     thandler();
-}
-
-extern unexpected_handler set_unexpected(unexpected_handler handler) {
-    unexpected_handler old = uhandler;
-    uhandler = handler;
-    return old;
 }
 
 extern void unexpected() {
@@ -230,7 +213,3 @@ extern void __destroy_new_array(void *block, ConstructorDestructor dtor) {
         ::operator delete[]((char *)block - ARRAY_HEADER_SIZE);
     }
 }
-
-void __destroy_new_array2(void) {}
-
-void __destroy_new_array3(void) {}
