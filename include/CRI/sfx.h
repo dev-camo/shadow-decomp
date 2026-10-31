@@ -27,11 +27,26 @@ typedef struct {
     SFX_PLN pln[3]; /* 0x04 */
 } SFX_FRM;
 
-/* The Z conversion object (sfx_zmv.c). */
+/* The Z conversion object (sfx_zmv.c) and the alpha object (sfx_alp.c). */
 typedef struct SFXZ_OBJ SFXZ_OBJ;
+typedef struct SFXA_OBJ SFXA_OBJ;
 
 /* sfx_lib.c */
 Sint32 SFX_GetCcirFx(void);
+
+/* frmno of the table builders below: the same argument for all four, which the caller loads from
+ * offset 0x4C of its frame record. SFXZ_MakeCnvZTbl uses it as the frame index into the "ZMFDATA"
+ * tag; the SFXA builders do not use it. */
+
+/* sfx_alp.c */
+Sint32 SFXA_IsNeedUpdateLumiTbl(SFXA_OBJ *sfxa);
+void SFXA_MakeAlp3211Tbl(SFXA_OBJ *sfxa, Sint32 frmno, void *tbl);
+void SFXA_MakeAlp3110Tbl(SFXA_OBJ *sfxa, Sint32 frmno, void *tbl);
+void SFXA_MakeAlpLumiTbl(SFXA_OBJ *sfxa, Sint32 frmno, void *tbl);
+void SFXA_Destroy(SFXA_OBJ *sfxa);
+SFXA_OBJ *SFXA_Create(void);
+void SFXA_Finish(void); /* name inferred: the counterpart of SFXA_Init */
+void SFXA_Init(void);
 
 /* sfx_zmv.c */
 void SFXZ_SetTagInf(SFXZ_OBJ *sfxz, Uint8 *tag_ptr, Sint32 tag_len);
