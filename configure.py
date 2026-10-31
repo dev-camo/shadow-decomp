@@ -858,12 +858,12 @@ config.libs = [
                 Object(Matching, "Game/fn_8040CB2C.c"),
                 Object(Matching, "Game/fn_8040E310.c"),
                 Object(Matching, "Game/fn_8040D608.c"),
-                Object(Matching, "Game/fn_80411548.c"),
-                # Size-optimized like the game C++ units: the target saves r30/r31 with stmw/lmw.
+                # Transform helpers over the current matrix stack.
                 Object(
                     Matching,
-                    "Game/fn_8041157C.c",
-                    extra_cflags=["-Cpp_exceptions on", "-O4,s", "-use_lmw_stmw on"],
+                    "Game/fn_8041116C.cpp",
+                    cflags=cflags_game_vector_length,
+                    extra_cflags=["-O4,s", "-use_lmw_stmw on"],
                 ),
                 Object(Matching, "Game/fn_8040CF2C.c"),
                 Object(Matching, "Game/fn_804202B8.c"),
