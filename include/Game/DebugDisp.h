@@ -16,10 +16,15 @@ struct UnkDebugColor_802E0E84 {
 };
 CHECK_SIZEOF(UnkDebugColor_802E0E84, 0x4);
 
+struct UnkSegment_80020A20;
+
 extern "C" {
 /* Creates a SonicteamUSA::System::DebugDispSphere (class name from RTTI) of the given radius at
  * center and queues it (behaviour inferred; the original function name is unknown). */
 void fn_802E0E84(const Fn8040Vector3 *center, const UnkDebugColor_802E0E84 *color, float radius);
+/* Creates a SonicteamUSA::System::DebugDispLine (class name from RTTI) for the segment and queues
+ * it (behaviour inferred). */
+void fn_802E0B58(const UnkSegment_80020A20 &segment, const UnkDebugColor_802E0E84 *color);
 }
 
 /* A zero-filled .sbss colour that several gadgets pass when they draw their range (purpose
