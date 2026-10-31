@@ -234,12 +234,12 @@ Rt2dPath *fn_80476830(Rt2dPath *path);                     /* unlock */
 Rt2dPath *fn_80474C7C(Rt2dPath *path, RwReal x, RwReal y); /* moveto */
 Rt2dPath *fn_80474BEC(Rt2dPath *path); /* destroys one subpath and returns the next */
 Rt2dPath *fn_8047548C(void);           /* the emptied scratch path */
-void fn_804754F4(Rt2dPath *path, RwV2d *bezier, RwInt32 depth); /* flattens a curve */
-Rt2dPath *fn_804758C8(Rt2dPath *flat, Rt2dPath *path);          /* adds a flattened subpath */
-void fn_804760C8(Rt2dPath *path);                               /* frees the points */
-void fn_80476A0C(void);                                         /* closes the paths */
-RwBool fn_80476A58(void);                                       /* opens the paths */
-Rt2dPath *fn_80474EA0(Rt2dPath *path, RwReal x, RwReal y);      /* lineto */
+void fn_804754F4(Rt2dPath *path, const RwV2d *bezier, RwInt32 depth); /* flattens a curve */
+Rt2dPath *fn_804758C8(Rt2dPath *flat, const Rt2dPath *path);          /* adds a flattened subpath */
+void fn_804760C8(Rt2dPath *path);                                     /* frees the points */
+void fn_80476A0C(void);                                               /* closes the paths */
+RwBool fn_80476A58(void);                                             /* opens the paths */
+Rt2dPath *fn_80474EA0(Rt2dPath *path, RwReal x, RwReal y);            /* lineto */
 Rt2dPath *fn_80474FF8(Rt2dPath *path, RwReal x1, RwReal y1, RwReal x2, RwReal y2, RwReal x3,
                       RwReal y3);      /* curveto */
 Rt2dPath *fn_80475260(Rt2dPath *path); /* closepath */

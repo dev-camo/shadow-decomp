@@ -91,11 +91,11 @@ Rt2dPath *fn_80474EA0(Rt2dPath *path, RwReal x, RwReal y) {
     return path;
 }
 
-/* Sets a curve point's normal and length from the point before it */
+/* Sets a curve point: its type, position, normal and path length, from the point before it */
 #define CURVEPOINT(node, prev, px, py)                                                             \
     do {                                                                                           \
-        RwReal dx_;                                                                                \
         RwReal dy_;                                                                                \
+        RwReal dx_;                                                                                \
         RwReal lengthSq_;                                                                          \
         RwReal length_;                                                                            \
         RwReal recip_;                                                                             \
@@ -103,8 +103,8 @@ Rt2dPath *fn_80474EA0(Rt2dPath *path, RwReal x, RwReal y) {
         (node)->type = rt2dCURVETO;                                                                \
         (node)->pos.x = (px);                                                                      \
         (node)->pos.y = (py);                                                                      \
-        dx_ = (prev)->pos.x - (px);                                                                \
         dy_ = (py) - (prev)->pos.y;                                                                \
+        dx_ = (prev)->pos.x - (px);                                                                \
         lengthSq_ = dy_ * dy_ + dx_ * dx_;                                                         \
         length_ = fn_80482340(lengthSq_);                                                          \
         recip_ = fn_80482394(lengthSq_);                                                           \
@@ -116,9 +116,8 @@ Rt2dPath *fn_80474EA0(Rt2dPath *path, RwReal x, RwReal y) {
 /* Adds a cubic curve through two control points */
 Rt2dPath *fn_80474FF8(Rt2dPath *path, RwReal x1, RwReal y1, RwReal x2, RwReal y2, RwReal x3,
                       RwReal y3) {
-    Rt2dPath *curr = path->curr;
     RwInt32 numPoints = fn_8047E03C(path->curr->points);
-    rt2dPathNode *node = fn_8047DEA0(curr->points, 3, rwMEMHINTDUR_EVENT | RT2DMEMID);
+    rt2dPathNode *node = fn_8047DEA0(path->curr->points, 3, rwMEMHINTDUR_EVENT | RT2DMEMID);
 
     CURVEPOINT(&node[0], &node[-1], x1, y1);
     if (numPoints > 1) {
@@ -132,8 +131,7 @@ Rt2dPath *fn_80474FF8(Rt2dPath *path, RwReal x1, RwReal y1, RwReal x2, RwReal y2
         node[-1].normal.x = sumX * scale;
         node[-1].normal.y = sumY * scale;
     } else {
-        node[-1].normal.x = node[0].normal.x;
-        node[-1].normal.y = node[0].normal.y;
+        node[-1].normal = node[0].normal;
     }
     CURVEPOINT(&node[1], &node[0], x2, y2);
     CURVEPOINT(&node[2], &node[1], x3, y3);
@@ -186,15 +184,18 @@ Rt2dPath *fn_8047548C(void) {
 
 /* Adds a cubic curve as lines, halving it until both control points are within a pixel of the
  * chord or the depth is used up */
-void fn_804754F4(Rt2dPath *path, RwV2d *bezier, RwInt32 depth) {
+void fn_804754F4(Rt2dPath *path, const RwV2d *bezier, RwInt32 depth) {
     RwV2d chord;
     RwV2d control;
     RwV2d left[4];
     RwV2d right[4];
     RwBool flat;
+    RwBool depthUsedUp;
 
-    depth--;
-    if (depth < 0) {
+    /* A value rather than a direct branch: branching on --depth < 0 compiles to addic./bge, not
+     * the original's sign-bit test */
+    depthUsedUp = --depth < 0;
+    if (depthUsedUp) {
         PATHADDLINE(path, bezier[3].x, bezier[3].y);
         return;
     }
@@ -244,9 +245,9 @@ void fn_804754F4(Rt2dPath *path, RwV2d *bezier, RwInt32 depth) {
 }
 
 /* Adds a subpath's points to a path, with its curves as lines */
-Rt2dPath *fn_804758C8(Rt2dPath *flat, Rt2dPath *path) {
+Rt2dPath *fn_804758C8(Rt2dPath *flat, const Rt2dPath *path) {
     RwInt32 numPoints;
-    rt2dPathNode *node;
+    const rt2dPathNode *node;
     RwInt32 i;
 
     lbl_805E1950.pixelSizeSq = fn_80474168();
@@ -299,9 +300,7 @@ RwBool fn_80475E2C(Rt2dPath *path) {
     if (result) {
         Rt2dPath *next = fn_80474BEC(path);
 
-        if (next != NULL) {
-            fn_80475E2C(next);
-        }
+        fn_80475E2C(next);
     }
     return result;
 }
