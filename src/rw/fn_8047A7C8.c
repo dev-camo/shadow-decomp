@@ -292,13 +292,14 @@ RwUInt32 fn_8047AC10(RtFile *file, void *buffer, RwUInt32 length) {
         } else {
             /* fill the cache from the aligned block the position is in */
             RwInt32 blockStart = (RwInt32)file->position - positionMisalign;
-            RwInt32 alignedLength = ((RwInt32)file->length + 31) & ~31;
+            RwInt32 alignedLength = (RwInt32)((file->length + 31) & ~31);
             RwInt32 cacheLength = gcnFile->cacheSize;
 
             if (alignedLength < cacheLength + blockStart) {
                 cacheLength = alignedLength - blockStart;
             }
-            numRead = fn_8047A978(gcnFile, gcnFile->cache, cacheLength, blockStart, FALSE);
+            numRead =
+                fn_8047A978(gcnFile, gcnFile->cache, cacheLength, blockStart, file->field_0x18);
             if (numRead > 0) {
                 gcnFile->cacheOffset = positionMisalign;
                 numFailed = 0;
