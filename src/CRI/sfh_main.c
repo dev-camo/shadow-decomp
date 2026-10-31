@@ -118,7 +118,7 @@ static const Char8 *sfhlib_version_dummy;
 /* Picture rate code (1..8) -> frame rate x1000 (23976 .. 60000); 0 for unknown. Not an
  * exported symbol of the original (its bytes exist only inlined into SFH_AnlyElemPicRate), so
  * the name is inferred. */
-static Sint32 getPicRate(Uint32 code) {
+static inline Sint32 getPicRate(Uint32 code) {
     switch (code) {
     case 1:
         return 23976;
