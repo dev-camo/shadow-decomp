@@ -47,7 +47,13 @@ CHECK_SIZEOF(RwRealShape, 0x4);
  * is preserved.
  * ====================================================
  */
-/* Sets result to acos(x); a macro, so that its temporaries are the caller's */
+/* Sets result to acos(x).
+ *
+ * Matching workaround: a macro instead of a function, so that its temporaries are the caller's.
+ * Replaced by an equivalent static inline function, fn_8045A760 gets a different register and
+ * stack slot for the negated argument and fn_80445CF4 changes too; units that include this header
+ * but do not use the macro shift their literal numbering. Revisit if the original's form of the
+ * acos call is found. */
 #define RwACosMacro(result, x)                                                                     \
     do {                                                                                           \
         RwReal x_ = (x);                                                                           \

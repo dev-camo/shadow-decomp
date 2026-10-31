@@ -23,18 +23,18 @@ extern "C" {
 
 /* The weights of up to four bones on a vertex */
 typedef struct RwMatrixWeights {
-    RwReal w0;
-    RwReal w1;
-    RwReal w2;
-    RwReal w3;
+    /* 0x0 */ RwReal w0;
+    /* 0x4 */ RwReal w1;
+    /* 0x8 */ RwReal w2;
+    /* 0xC */ RwReal w3;
 } RwMatrixWeights;
 CHECK_SIZEOF(RwMatrixWeights, 0x10);
 
 /* A two-byte record of the split data: a mesh's first run (its low seven bits index meshRLE) and
  * number of runs, or a run's first bone and number of bones (inferred) */
 typedef struct SkinRLE {
-    RwUInt8 start;
-    RwUInt8 length;
+    /* 0x0 */ RwUInt8 start;
+    /* 0x1 */ RwUInt8 length;
 } SkinRLE;
 CHECK_SIZEOF(SkinRLE, 0x2);
 

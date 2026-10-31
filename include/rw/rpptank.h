@@ -58,8 +58,7 @@ typedef struct RpPTankData {
     /* 0x34 */ RpPTankLockStruct dataRotate;
     /* 0x3C */ RpPTankLockStruct dataVtx2TexCoords;
     /* 0x44 */ RpPTankLockStruct dataVtx4TexCoords;
-    /* 0x4C */ RwV3d
-        *cameraAxes; /* the right and up axes particles face while rendered (inferred) */
+    /* 0x4C */ RwV3d *cameraAxes; /* the axes particles face while rendered (inferred) */
 } RpPTankData;
 CHECK_SIZEOF(RpPTankData, 0x50);
 
@@ -169,7 +168,7 @@ void fn_8044ADA8(RwUInt16 count, RwUInt32 platFlags, RpPTankData *ptankGlobal);
 void fn_8044B210(RwUInt16 count, RwUInt32 platFlags, RpPTankData *ptankGlobal);
 void fn_8044B654(RwUInt16 count, RwUInt32 platFlags, RpPTankData *ptankGlobal);
 
-/* GameCube platform flags: the kernel, texture coordinate and color sources and normals */
+/* GameCube platform flags: the color sources */
 #define PTANKPLATFLAGCOLORSTREAMS 0x70000 /* colors come from a stream */
 #define PTANKPLATFLAGCNSCOLOR 0x80000     /* the constant color */
 

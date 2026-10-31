@@ -12,8 +12,11 @@
 #include "layout_check.h"
 
 /* RenderWare Graphics 3.7 (stream chunk version 0x37002), linked into the game. Only what the
- * recovered RenderWare code uses is declared. The functions keep placeholder names; their roles
- * are inferred from their behavior and from the RenderWare stream format. */
+ * recovered RenderWare code uses is declared. Type and member names follow RenderWare's
+ * conventions where the layout and the code correspond and are inferred from the code that uses
+ * them otherwise. Most functions keep their placeholder names (the few named ones say so where
+ * they are declared); their roles are inferred from their behavior and from the RenderWare stream
+ * format. */
 
 #ifdef __cplusplus
 extern "C" {
@@ -88,6 +91,9 @@ typedef char RwChar;
 #define rwID_ERRORMODULE 0x40F
 #define rwID_DRIVERMODULE 0x411 /* raster memory, the frame buffers and palette quantizer nodes */
 #define rwID_CHUNKGROUPMODULE 0x412 /* only creates and destroys a free list of 33-byte entries */
+
+/* pi as a single precision constant */
+#define rwPI 3.1415926535f
 
 /* memory hints: how long an allocation lives, whether it is resized, and the chunk ID of what it
  * is for in the low bits */
@@ -323,14 +329,14 @@ CHECK_SIZEOF(RwMemoryFunctions, 0x10);
 
 /* A link of a doubly linked list */
 typedef struct RwLLLink {
-    struct RwLLLink *next;
-    struct RwLLLink *prev;
+    /* 0x0 */ struct RwLLLink *next;
+    /* 0x4 */ struct RwLLLink *prev;
 } RwLLLink;
 CHECK_SIZEOF(RwLLLink, 0x8);
 
 /* A doubly linked list: its link is the head and the tail sentinel */
 typedef struct RwLinkList {
-    RwLLLink link;
+    /* 0x0 */ RwLLLink link;
 } RwLinkList;
 CHECK_SIZEOF(RwLinkList, 0x8);
 
@@ -478,51 +484,51 @@ typedef RwFrame *(*RwFrameCallBack)(RwFrame *frame, void *data);
 
 /* An error reported with fn_8047DB84: the reporting plugin and its error code. */
 typedef struct RwError {
-    RwInt32 pluginID;
-    RwInt32 errorCode;
+    /* 0x0 */ RwInt32 pluginID;
+    /* 0x4 */ RwInt32 errorCode;
 } RwError;
 CHECK_SIZEOF(RwError, 0x8);
 
 typedef struct RwV3d {
-    RwReal x;
-    RwReal y;
-    RwReal z;
+    /* 0x0 */ RwReal x;
+    /* 0x4 */ RwReal y;
+    /* 0x8 */ RwReal z;
 } RwV3d;
 CHECK_SIZEOF(RwV3d, 0xC);
 
 typedef struct RwBBox {
-    RwV3d sup;
-    RwV3d inf;
+    /* 0x00 */ RwV3d sup;
+    /* 0x0C */ RwV3d inf;
 } RwBBox;
 CHECK_SIZEOF(RwBBox, 0x18);
 
 RwBBox *fn_8048349C(RwBBox *boundBox, const RwV3d *verts, RwInt32 numVerts); /* calculates */
 
 typedef struct RwRGBA {
-    RwUInt8 red;
-    RwUInt8 green;
-    RwUInt8 blue;
-    RwUInt8 alpha;
+    /* 0x0 */ RwUInt8 red;
+    /* 0x1 */ RwUInt8 green;
+    /* 0x2 */ RwUInt8 blue;
+    /* 0x3 */ RwUInt8 alpha;
 } RwRGBA;
 CHECK_SIZEOF(RwRGBA, 0x4);
 
 typedef struct RwTexCoords {
-    RwReal u;
-    RwReal v;
+    /* 0x0 */ RwReal u;
+    /* 0x4 */ RwReal v;
 } RwTexCoords;
 CHECK_SIZEOF(RwTexCoords, 0x8);
 
 typedef struct RwV2d {
-    RwReal x;
-    RwReal y;
+    /* 0x0 */ RwReal x;
+    /* 0x4 */ RwReal y;
 } RwV2d;
 CHECK_SIZEOF(RwV2d, 0x8);
 
 typedef struct RwRGBAReal {
-    RwReal red;
-    RwReal green;
-    RwReal blue;
-    RwReal alpha;
+    /* 0x0 */ RwReal red;
+    /* 0x4 */ RwReal green;
+    /* 0x8 */ RwReal blue;
+    /* 0xC */ RwReal alpha;
 } RwRGBAReal;
 CHECK_SIZEOF(RwRGBAReal, 0x10);
 
@@ -588,14 +594,12 @@ typedef struct RwMatrix {
 } RwMatrix;
 CHECK_SIZEOF(RwMatrix, 0x40);
 
-/* A camera; its parent object is its frame */
-
 /* A rectangle */
 typedef struct RwRect {
-    RwInt32 x;
-    RwInt32 y;
-    RwInt32 w;
-    RwInt32 h;
+    /* 0x0 */ RwInt32 x;
+    /* 0x4 */ RwInt32 y;
+    /* 0x8 */ RwInt32 w;
+    /* 0xC */ RwInt32 h;
 } RwRect;
 CHECK_SIZEOF(RwRect, 0x10);
 
@@ -1108,7 +1112,8 @@ void fn_8049B800(RxPipeline *pipeline); /* destroys a pipeline */
  * array */
 RxPipelineNode *fn_8049B350(RxPipelineNode *node, RxPipeline *pipeline);
 RxHeap *fn_8049B66C(void); /* the heap pipelines execute with */
-/* executes a pipeline on an object, first resetting the heap if heapReset is set; NULL on failure */
+/* executes a pipeline on an object, first resetting the heap if heapReset is set; NULL on
+ * failure */
 RxPipeline *fn_8049B674(RxPipeline *pipeline, void *data, RwBool heapReset);
 
 /* editing pipelines (inferred from their use) */
@@ -1225,8 +1230,8 @@ struct RwTexDictionary {
 CHECK_SIZEOF(struct RwTexDictionary, 0x18);
 
 typedef struct RwLine {
-    RwV3d start;
-    RwV3d end;
+    /* 0x00 */ RwV3d start;
+    /* 0x0C */ RwV3d end;
 } RwLine;
 CHECK_SIZEOF(RwLine, 0x18);
 
@@ -1261,10 +1266,10 @@ RwMatrix *fn_8047E990(RwMatrix *matrix, const RwMatrixTolerance *tolerance);
 
 #define RwMatrixSetIdentity(m)                                                                     \
     do {                                                                                           \
-        (m)->right.x = (m)->up.y = (m)->at.z = 1.0;                                                \
-        (m)->right.y = (m)->right.z = (m)->up.x = 0.0;                                             \
-        (m)->up.z = (m)->at.x = (m)->at.y = 0.0;                                                   \
-        (m)->pos.x = (m)->pos.y = (m)->pos.z = 0.0;                                                \
+        (m)->right.x = (m)->up.y = (m)->at.z = 1.0f;                                               \
+        (m)->right.y = (m)->right.z = (m)->up.x = 0.0f;                                            \
+        (m)->up.z = (m)->at.x = (m)->at.y = 0.0f;                                                  \
+        (m)->pos.x = (m)->pos.y = (m)->pos.z = 0.0f;                                               \
         (m)->flags |= rwMATRIXINTERNALIDENTITY | rwMATRIXTYPEORTHONORMAL;                          \
     } while (0)
 
@@ -1299,8 +1304,8 @@ RwMatrix *fn_8047ECD4(RwMatrix *matrix, const RwV3d *unitAxis, RwInt32 combine,
                       RwReal oneMinusCosine, RwReal sine); /* rotates */
 
 typedef struct RwSphere {
-    RwV3d center;
-    RwReal radius;
+    /* 0x0 */ RwV3d center;
+    /* 0xC */ RwReal radius;
 } RwSphere;
 CHECK_SIZEOF(RwSphere, 0x10);
 
@@ -1392,7 +1397,7 @@ RwBool fn_8048124C(RwStream *stream, void *data); /* close; data receives a writ
 RwStream *fn_80481368(RwInt32 type, RwInt32 accessType, const void *data); /* open */
 
 /* frames */
-RwMatrix *RwFrameGetLTM(RwFrame *frame);
+RwMatrix *RwFrameGetLTM(RwFrame *frame); /* the local-to-world matrix (name inferred) */
 
 /* maths and intersection tests (inferred from their use) */
 RwReal fn_80482340(RwReal x);                    /* sqrt(x) */
@@ -1432,7 +1437,7 @@ RwFreeList *fn_8047FF50(RwFreeList *freeList, void *mem); /* frees an entry */
 
 /* The parameters an engine is opened with */
 typedef struct RwEngineOpenParams {
-    void *displayID; /* the device's display (inferred) */
+    /* 0x0 */ void *displayID; /* the device's display (inferred) */
 } RwEngineOpenParams;
 CHECK_SIZEOF(RwEngineOpenParams, 0x4);
 
@@ -1611,8 +1616,8 @@ RwImage *fn_804899A8(RwImage *image, RwRaster *raster);             /* reads a r
 RwImage *fn_80487F50(RwImage *image);                               /* frees the pixels */
 RwImage *fn_80487FA8(RwImage *image); /* sets each pixel's alpha to its brightest component */
 RwImage *fn_80488088(RwImage *image, const RwImage *mask); /* applies a mask's alpha */
-const RwChar *
-fn_80488B58(const RwChar *name); /* the extension of the image file found for a name */
+/* the extension of the image file found for a name */
+const RwChar *fn_80488B58(const RwChar *name);
 /* registers an extension's read and write functions (name inferred; stripped from retail) */
 RwBool ImageRegisterFormat(const RwChar *extension, RwImage *(*imageRead)(const RwChar *imageName),
                            RwImage *(*imageWrite)(RwImage *image, const RwChar *imageName));
@@ -1919,9 +1924,7 @@ RwCamera *fn_80485808(RwCamera *camera, void *device, RwUInt32 flags);     /* sh
 RwBool fn_8048B354(void);           /* synchronizes dirty frames; returns TRUE (inferred) */
 void fn_8049B148(RwCamera *camera); /* the pipeline library's camera hook; does nothing */
 RwRaster *fn_80489D44(RwRaster *raster, void *device, RwUInt32 flags); /* shows a raster */
-extern RwPluginRegistry lbl_8056DF70; /* the camera plugin registry */
-
-/* cameras (inferred) */
+extern RwPluginRegistry lbl_8056DF70;                             /* the camera plugin registry */
 RwCamera *fn_80485A58(void);                                      /* create */
 RwCamera *fn_80485950(RwCamera *camera, const RwV2d *viewWindow); /* set the view window */
 RwCamera *fn_80485504(RwCamera *camera, const RwV2d *offset);     /* set the view offset */
