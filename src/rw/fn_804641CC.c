@@ -65,7 +65,9 @@ static inline void LightLoadDirectional(const RpLight *light, RwInt32 index) {
                         attenuation->k0, attenuation->k1, attenuation->k2);
     }
 
-    /* a directional light is a point light far away against its direction */
+    /* a directional light is a point light far away against its direction: 2^20 units away, with
+     * the x and z components of the light's direction negated and y kept, as for the positions and
+     * directions of the other lights (the axis convention is not established) */
     lightObj = &lbl_805E16A0[index];
     GXInitLightPos(lightObj, -1048576.0f * -direction.x, -1048576.0f * direction.y,
                    -1048576.0f * -direction.z);
@@ -111,6 +113,10 @@ void fn_804643E8(RpLight *light, RpGameCubeRenderMesh *renderMesh) {
         RwV3d position;
         LightAttenuation *attenuation;
 
+        /* Matching workaround: the colour is set by hand as in LightInitColor; calling that
+         * function makes this one an instruction shorter than the original (0x3C4 against 0x3C8
+         * bytes: 220 raw differing words, 22 once the missing instruction is aligned). Revisit
+         * when the original form of the colour setup is found. */
         color.r = 255.0f * light->color.red;
         color.g = 255.0f * light->color.green;
         color.b = 255.0f * light->color.blue;
@@ -142,6 +148,7 @@ void fn_804643E8(RpLight *light, RpGameCubeRenderMesh *renderMesh) {
             GXInitLightDir(&lbl_805E16A0[renderMesh->numLights], -direction.x, direction.y,
                            -direction.z);
             if (!attenuation->enabled) {
+                /* 57.29578 is degrees per radian: the cone angle is in radians */
                 GXInitLightSpot(&lbl_805E16A0[renderMesh->numLights],
                                 57.29578f * fn_8045A818(light), GX_SP_FLAT);
                 GXInitLightDistAttn(&lbl_805E16A0[renderMesh->numLights], 0.5f * light->radius,

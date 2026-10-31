@@ -36,8 +36,8 @@
         }                                                                                          \
     } while (0)
 
-/* The dot product of two split vectors */
-#define SPLITDOT(a, b) ((a).x * (b).x + (a).y * (b).y + (a).z * (b).z)
+/* The dot product of two 3D vectors */
+#define V3DDOT(a, b) ((a).x * (b).x + (a).y * (b).y + (a).z * (b).z)
 
 /* Rejects the triangle when the point of an edge closest to the sphere's center lies outside the
  * sphere, on the far side of the edge from the triangle's third vertex */
@@ -52,18 +52,15 @@
         edge_.y = (end).y - (start).y;                                                             \
         edge_.x = (end).x - (start).x;                                                             \
         edge_.z = (end).z - (start).z;                                                             \
-        t_ = (edge_.x * (start).x + edge_.y * (start).y + edge_.z * (start).z) /                   \
-             (edge_.x * edge_.x + edge_.y * edge_.y + edge_.z * edge_.z);                          \
+        t_ = V3DDOT(edge_, start) / V3DDOT(edge_, edge_);                                          \
         scaled_.y = edge_.y * t_;                                                                  \
         scaled_.x = edge_.x * t_;                                                                  \
         scaled_.z = edge_.z * t_;                                                                  \
         closest_.y = (start).y - scaled_.y;                                                        \
         closest_.x = (start).x - scaled_.x;                                                        \
         closest_.z = (start).z - scaled_.z;                                                        \
-        distanceSq_ = closest_.x * closest_.x + closest_.y * closest_.y + closest_.z * closest_.z; \
-        if (distanceSq_ > (radiusSq) && distanceSq_ < closest_.x * (opposite).x +                  \
-                                                          closest_.y * (opposite).y +              \
-                                                          closest_.z * (opposite).z) {             \
+        distanceSq_ = V3DDOT(closest_, closest_);                                                  \
+        if (distanceSq_ > (radiusSq) && distanceSq_ < V3DDOT(closest_, opposite)) {                \
             return FALSE;                                                                          \
         }                                                                                          \
     } while (0)
@@ -106,7 +103,7 @@ RwBool fn_8047B720(const RwSphere *sphere, const RwV3d *v0, const RwV3d *v1, con
     normal->x = edge1.y * edge2.z - edge1.z * edge2.y;
     normal->y = edge1.z * edge2.x - edge1.x * edge2.z;
     normal->z = edge1.x * edge2.y - edge1.y * edge2.x;
-    lengthSq = normal->x * normal->x + normal->y * normal->y + normal->z * normal->z;
+    lengthSq = V3DDOT(*normal, *normal);
     if (lengthSq <= 0.0f) {
         /* a degenerate triangle */
         return FALSE;
@@ -116,7 +113,7 @@ RwBool fn_8047B720(const RwSphere *sphere, const RwV3d *v0, const RwV3d *v1, con
     normal->y *= recipLength;
     normal->z *= recipLength;
 
-    planeDistance = offset0.x * normal->x + offset0.y * normal->y + offset0.z * normal->z;
+    planeDistance = V3DDOT(offset0, *normal);
     if (planeDistance < -sphere->radius || planeDistance > sphere->radius) {
         return FALSE;
     }
@@ -124,15 +121,15 @@ RwBool fn_8047B720(const RwSphere *sphere, const RwV3d *v0, const RwV3d *v1, con
 
     /* a vertex inside the sphere */
     radiusSq = sphere->radius * sphere->radius;
-    distanceSq0 = SPLITDOT(offset0, offset0);
+    distanceSq0 = V3DDOT(offset0, offset0);
     if (distanceSq0 <= radiusSq) {
         return TRUE;
     }
-    distanceSq1 = SPLITDOT(offset1, offset1);
+    distanceSq1 = V3DDOT(offset1, offset1);
     if (distanceSq1 <= radiusSq) {
         return TRUE;
     }
-    distanceSq2 = SPLITDOT(offset2, offset2);
+    distanceSq2 = V3DDOT(offset2, offset2);
     if (distanceSq2 <= radiusSq) {
         return TRUE;
     }
@@ -140,20 +137,18 @@ RwBool fn_8047B720(const RwSphere *sphere, const RwV3d *v0, const RwV3d *v1, con
     /* the triangle lies beyond its vertex closest to the center */
     if (distanceSq0 < distanceSq1) {
         if (distanceSq2 < distanceSq0) {
-            if (SPLITDOT(offset2, offset0) > distanceSq2 &&
-                SPLITDOT(offset2, offset1) > distanceSq2) {
+            if (V3DDOT(offset2, offset0) > distanceSq2 && V3DDOT(offset2, offset1) > distanceSq2) {
                 return FALSE;
             }
-        } else if (SPLITDOT(offset0, offset1) > distanceSq0 &&
-                   SPLITDOT(offset0, offset2) > distanceSq0) {
+        } else if (V3DDOT(offset0, offset1) > distanceSq0 &&
+                   V3DDOT(offset0, offset2) > distanceSq0) {
             return FALSE;
         }
     } else if (distanceSq2 < distanceSq1) {
-        if (SPLITDOT(offset2, offset0) > distanceSq2 && SPLITDOT(offset2, offset1) > distanceSq2) {
+        if (V3DDOT(offset2, offset0) > distanceSq2 && V3DDOT(offset2, offset1) > distanceSq2) {
             return FALSE;
         }
-    } else if (SPLITDOT(offset1, offset0) > distanceSq1 &&
-               SPLITDOT(offset1, offset2) > distanceSq1) {
+    } else if (V3DDOT(offset1, offset0) > distanceSq1 && V3DDOT(offset1, offset2) > distanceSq1) {
         return FALSE;
     }
 
@@ -329,16 +324,16 @@ RwBool fn_8047BDD0(const RwBBox *box, const RwV3d *v0, const RwV3d *v1, const Rw
         direction.z = box->sup.z - box->inf.z;
         origin.z = box->inf.z - v0->z;
     }
-    det = -(direction.x * normal.x + direction.y * normal.y + direction.z * normal.z);
-    t = origin.x * normal.x + origin.y * normal.y + origin.z * normal.z;
+    det = -V3DDOT(direction, normal);
+    t = V3DDOT(origin, normal);
     if (det < 0.0f) {
         if (0.0f > t && t > det) {
             q.x = origin.y * direction.z - origin.z * direction.y;
             q.y = origin.z * direction.x - origin.x * direction.z;
             q.z = origin.x * direction.y - origin.y * direction.x;
-            u = edge2.x * q.x + edge2.y * q.y + edge2.z * q.z;
+            u = V3DDOT(edge2, q);
             if (0.0f > u && u > det) {
-                v = -(edge1.x * q.x + edge1.y * q.y + edge1.z * q.z);
+                v = -V3DDOT(edge1, q);
                 if (0.0f > v && u + v > det) {
                     return TRUE;
                 }
@@ -348,9 +343,9 @@ RwBool fn_8047BDD0(const RwBBox *box, const RwV3d *v0, const RwV3d *v1, const Rw
         q.x = origin.y * direction.z - origin.z * direction.y;
         q.y = origin.z * direction.x - origin.x * direction.z;
         q.z = origin.x * direction.y - origin.y * direction.x;
-        u = edge2.x * q.x + edge2.y * q.y + edge2.z * q.z;
+        u = V3DDOT(edge2, q);
         if (0.0f < u && u < det) {
-            v = -(edge1.x * q.x + edge1.y * q.y + edge1.z * q.z);
+            v = -V3DDOT(edge1, q);
             if (0.0f < v && u + v < det) {
                 return TRUE;
             }

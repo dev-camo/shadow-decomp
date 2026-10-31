@@ -144,6 +144,8 @@ void fn_8046FF34(RpGameCubeVertexDescBuilder *builder, RwInt32 attribute, RwInt3
     case GX_VA_CLR1: {
         RwUInt32 numColors;
 
+        /* (sic) the original's mask and shift for color 1 sit one bit below the bits 15-16 that
+         * the count below tests: the mask is 0xC000 and the mode is shifted by 14 */
         SetField(&builder->vcd[0], 0x6000 << (attribute - GX_VA_CLR0), mode << (attribute + 2));
         numColors = 0;
         if (builder->vcd[0] & 0x6000) {

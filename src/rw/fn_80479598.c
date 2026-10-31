@@ -139,7 +139,12 @@ RwBool fn_804799C0(RtFileSystem *fileSystem) {
 
 void fn_804799C8(RtFile *file) {
     if (file != NULL && file->field_0x18) {
-        /* first the operation that completed, then its result */
+        /* Matching workaround: one local holds first the operation that completed, then its
+         * result, and the operation is copied for the callback. The original keeps the operation
+         * in the result's register (r4) and copies it to the callback's argument register
+         * (mr r6,r4) after the test for a position operation; separate locals for the operation
+         * and the result move that copy or the register (at least 6 raw differing words, USA, in
+         * every form tried). Revisit when the original form of the completion is found. */
         RwInt32 value = file->asyncStatus;
 
         if (value != RTFILE_ASYNC_IDLE && file->callBack != NULL) {
