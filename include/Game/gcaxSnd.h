@@ -446,7 +446,7 @@ void fn_8043C89C(GcaxList *voices, s32 bank, s32 program, s32 key, s32 velocity)
 int fn_8043C9D0(s32 bank, s32 program, s32 key);
 void fn_8043CA7C(s32 bank, GcaxVoice *voice, GcaxLayer *layer, GcaxBankHeader *header,
                  GcaxRegion *region, s32 key, u8 *velocityCurves, s32 velocity);
-u32 fn_8043D20C(s32 cents, f32 base);
+u32 fn_8043D20C(s32 bendUnits, f32 base);
 f32 fn_8043D318(s32 steps);
 f32 fn_8043D3BC(s32 rootKey, s32 fineTune, s32 key);
 int fn_8043D49C(void);
