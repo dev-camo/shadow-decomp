@@ -222,9 +222,9 @@ RwBool fn_8047E960(const RwMatrixTolerance *tolerance) {
 
 /* Sets a matrix's normal, orthogonal and identity flags from its errors */
 RwMatrix *fn_8047E990(RwMatrix *matrix, const RwMatrixTolerance *tolerance) {
+    RwBool isIdentity = FALSE;
     RwBool isNormal;
     RwBool isOrthogonal;
-    RwBool isIdentity = FALSE;
     RwUInt32 flags;
 
     if (tolerance == NULL) {
