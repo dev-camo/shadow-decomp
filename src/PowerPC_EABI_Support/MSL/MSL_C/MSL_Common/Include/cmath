@@ -121,7 +121,7 @@ MSL_INLINE float tanf(float x) {
 }
 
 #ifdef __cplusplus
-};
+}
 
 namespace std {
 template<typename T>

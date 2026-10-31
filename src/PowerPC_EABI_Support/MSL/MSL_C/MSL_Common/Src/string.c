@@ -340,7 +340,9 @@ char *strstr(const char *str, const char *pat) {
     return NULL;
 }
 
-/* Dead-stripped in this game; its messages stay in the string pool after strtok's "". */
+/* Matching workaround: order-only stand-in. __strerror is stripped from the game; this body only
+   keeps its messages in the string pool after strtok's "". Revisit when the original __strerror
+   is found. */
 char *__strerror(int errnum, char *str) {
     switch (errnum) {
     case E2BIG:

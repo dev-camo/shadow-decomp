@@ -34,4 +34,4 @@ extern "C" {
 }
 #endif
 
-#endif /* __VA_ARG_H */
+#endif /* MSL_VA_LIST_H */

@@ -8,6 +8,9 @@
 
 namespace std {
 
+// lower_bound, upper_bound, find, fill, copy and copy_backward are unused and unverified against the
+// game's bytes (find takes val by non-const reference, copy compares iterators with <). Kept only
+// because removing a template shifts the @N literal numbering of the Game units.
 template <class ForwardIterator, class T, typename Predicate>
 inline ForwardIterator lower_bound(ForwardIterator first, ForwardIterator last, const T& val, Predicate p) {
     typedef typename iterator_traits<ForwardIterator>::difference_type difference_type;
@@ -79,7 +82,6 @@ InputIt find_if(InputIt first, InputIt last, UnaryPredicate p) {
     return first;
 }
 
-// Unlike the standard find, val is taken by non-const reference.
 template<class ForwardIterator, class T>
 inline ForwardIterator find(ForwardIterator first, ForwardIterator last, T& val) {
     while (first != last && !(*first == val)) {

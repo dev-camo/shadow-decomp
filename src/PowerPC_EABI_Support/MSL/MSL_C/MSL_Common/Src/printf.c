@@ -1247,6 +1247,9 @@ int vsprintf(char *s, const char *format, va_list arg) {
     return vsnprintf(s, ULONG_MAX, format, arg);
 }
 
+/* Matching workaround: order-only stand-in. snprintf is stripped from the game (not in the DOL);
+   this standard MSL body is unverified against the original and is kept only because removing it
+   renumbers the @N labels of printf.o. Revisit when the original snprintf is found. */
 int snprintf(char *s, size_t n, const char *format, ...) {
     va_list args;
     va_start(args, format);

@@ -4,15 +4,9 @@
 #include <cstdarg>
 
 #ifdef __cplusplus
-extern "C" {
-#endif
-
 namespace std {
-    using ::va_list;
-}
-
-#ifdef __cplusplus
-};
+using ::va_list;
+}  // namespace std
 #endif
 
 #endif

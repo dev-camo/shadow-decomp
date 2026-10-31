@@ -19,19 +19,17 @@ void qsort(void* base, size_t num, size_t size, int (*compare)(const void*, cons
 #endif
 
 #ifdef __cplusplus
-extern "C" {
 namespace std {
-    using ::strtol;
-    using ::strtoul;
-    using ::div;
-    using ::exit;
-    using ::abort;
-    using ::atoi;
-    using ::atof;
-    using ::bsearch;
-    using ::qsort;
-}
-};
+using ::strtol;
+using ::strtoul;
+using ::div;
+using ::exit;
+using ::abort;
+using ::atoi;
+using ::atof;
+using ::bsearch;
+using ::qsort;
+}  // namespace std
 #endif
 
 #endif

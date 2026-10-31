@@ -6,6 +6,9 @@
 
 namespace std {
 
+// The uninitialized_* templates below are unused and unverified (the copy helper assigns instead of
+// constructing). Kept only because removing a template shifts the @N literal numbering of the Game
+// units.
 template <class ForwardIt, class Size, class T>
 inline void uninitialized_fill_n(ForwardIt first, Size count, const T &value) {
     for (; count--; ++first) {

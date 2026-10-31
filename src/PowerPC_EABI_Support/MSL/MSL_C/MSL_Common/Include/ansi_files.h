@@ -123,7 +123,7 @@ unsigned int __flush_all(void);
 void __close_all(void);
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif /* _MSL_COMMON_ANSI_FILES_H */
