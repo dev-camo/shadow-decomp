@@ -1,15 +1,9 @@
 #include <dolphin.h>
 
+#include "__exi.h"
+
 #define REG_MAX 5
 #define REG(chan, idx) (__EXIRegs[((chan) * REG_MAX) + (idx)])
-
-#define STATE_IDLE 0
-#define STATE_DMA 1
-#define STATE_IMM 2
-#define STATE_BUSY 3
-#define STATE_SELECTED 4
-#define STATE_ATTACHED 8
-#define STATE_LOCKED 16
 
 #define MAX_CHAN 3
 
@@ -29,11 +23,6 @@ const char *__EXIVersion = "<< Dolphin SDK - EXI\trelease build: Apr  5 2004 04:
 static EXIControl Ecb[3];
 static u32 IDSerialPort1;
 
-// external functions
-extern void __OSEnableBarnacle(s32 chan, u32 dev);
-
-// prototypes
-u32 EXIClearInterrupts(s32 chan, int exi, int tc, int ext);
 static int __EXIProbe(s32 chan);
 
 static void SetExiInterruptMask(s32 chan, EXIControl *exi) {
@@ -42,21 +31,22 @@ static void SetExiInterruptMask(s32 chan, EXIControl *exi) {
 
     switch (chan) {
     case 0:
-        if ((exi->exiCallback == 0 && exi2->exiCallback == 0) || (exi->state & STATE_LOCKED)) {
+        if ((exi->exiCallback == 0 && exi2->exiCallback == 0) || (exi->state & EXI_STATE_LOCKED)) {
             __OSMaskInterrupts(OS_INTERRUPTMASK_EXI_0_EXI | OS_INTERRUPTMASK_EXI_2_EXI);
         } else {
             __OSUnmaskInterrupts(OS_INTERRUPTMASK_EXI_0_EXI | OS_INTERRUPTMASK_EXI_2_EXI);
         }
         break;
     case 1:
-        if (exi->exiCallback == 0 || (exi->state & STATE_LOCKED)) {
+        if (exi->exiCallback == 0 || (exi->state & EXI_STATE_LOCKED)) {
             __OSMaskInterrupts(OS_INTERRUPTMASK_EXI_1_EXI);
         } else {
             __OSUnmaskInterrupts(OS_INTERRUPTMASK_EXI_1_EXI);
         }
         break;
     case 2:
-        if (__OSGetInterruptHandler(__OS_INTERRUPT_PI_DEBUG) == 0 || (exi->state & STATE_LOCKED)) {
+        if (__OSGetInterruptHandler(__OS_INTERRUPT_PI_DEBUG) == 0 ||
+            (exi->state & EXI_STATE_LOCKED)) {
             __OSMaskInterrupts(OS_INTERRUPTMASK_PI_DEBUG);
         } else {
             __OSUnmaskInterrupts(OS_INTERRUPTMASK_PI_DEBUG);
@@ -75,34 +65,34 @@ static void CompleteTransfer(s32 chan) {
     exi = &Ecb[chan];
     ASSERTLINE(366, 0 <= chan && chan < MAX_CHAN);
 
-    if (exi->state & STATE_BUSY) {
-        if (exi->state & STATE_IMM) {
+    if (exi->state & EXI_STATE_BUSY) {
+        if (exi->state & EXI_STATE_IMM) {
             if ((len = exi->immLen) != 0) {
                 buf = exi->immBuf;
-                data = __EXIRegs[(chan * 5) + 4];
+                data = REG(chan, 4);
                 for (i = 0; i < len; i++) {
                     *buf++ = data >> ((3 - i) * 8);
                 }
             }
         }
-        exi->state &= ~STATE_BUSY;
+        exi->state &= ~EXI_STATE_BUSY;
     }
 }
 
-int EXIImm(s32 chan, void *buf, s32 len, u32 type, EXICallback callback) {
+BOOL EXIImm(s32 chan, void *buf, s32 len, u32 type, EXICallback callback) {
     EXIControl *exi;
     BOOL enabled;
     u32 data;
     int i;
 
     exi = &Ecb[chan];
-    ASSERTLINE(404, exi->state & STATE_SELECTED);
+    ASSERTLINE(404, exi->state & EXI_STATE_SELECTED);
     ASSERTLINE(405, 0 <= chan && chan < MAX_CHAN);
     ASSERTLINE(406, 0 < len && len <= MAX_IMM);
     ASSERTLINE(407, type < MAX_TYPE);
     enabled = OSDisableInterrupts();
 
-    if ((exi->state & STATE_BUSY) || !(exi->state & STATE_SELECTED)) {
+    if ((exi->state & EXI_STATE_BUSY) || !(exi->state & EXI_STATE_SELECTED)) {
         OSRestoreInterrupts(enabled);
         return 0;
     }
@@ -110,26 +100,26 @@ int EXIImm(s32 chan, void *buf, s32 len, u32 type, EXICallback callback) {
     exi->tcCallback = callback;
     if (exi->tcCallback) {
         EXIClearInterrupts(chan, 0, 1, 0);
-        __OSUnmaskInterrupts(0x200000U >> (chan * 3));
+        __OSUnmaskInterrupts(OS_INTERRUPTMASK_EXI_0_TC >> (chan * 3));
     }
 
-    exi->state |= STATE_IMM;
+    exi->state |= EXI_STATE_IMM;
     if (type != 0) {
         data = 0;
         for (i = 0; i < len; i++) {
             data |= ((u8 *)buf)[i] << ((3 - i) * 8);
         }
-        __EXIRegs[(chan * 5) + 4] = data;
+        REG(chan, 4) = data;
     }
 
     exi->immBuf = buf;
     exi->immLen = (type != 1) ? len : 0;
-    __EXIRegs[(chan * 5) + 3] = (type << 2) | 1 | ((len - 1) << 4);
+    REG(chan, 3) = (type << 2) | 1 | ((len - 1) << 4);
     OSRestoreInterrupts(enabled);
     return 1;
 }
 
-int EXIImmEx(s32 chan, void *buf, s32 len, u32 mode) {
+BOOL EXIImmEx(s32 chan, void *buf, s32 len, u32 mode) {
     s32 xLen;
 
     while (len) {
@@ -140,47 +130,47 @@ int EXIImmEx(s32 chan, void *buf, s32 len, u32 mode) {
         if (EXISync(chan) == 0) {
             return 0;
         }
-        ((u8 *)buf) += xLen;
+        buf = (u8 *)buf + xLen;
         len -= xLen;
     }
 
     return 1;
 }
 
-int EXIDma(s32 chan, void *buf, s32 len, u32 type, EXICallback callback) {
+BOOL EXIDma(s32 chan, void *buf, s32 len, u32 type, EXICallback callback) {
     EXIControl *exi;
     BOOL enabled;
 
     exi = &Ecb[chan];
 
-    ASSERTLINE(509, exi->state & STATE_SELECTED);
+    ASSERTLINE(509, exi->state & EXI_STATE_SELECTED);
     ASSERTLINE(510, OFFSET(buf, 32) == 0);
     ASSERTLINE(511, 0 < len && OFFSET(len, 32) == 0);
     ASSERTLINE(513, ((u32)len & ~EXI_0LENGTH_EXILENGTH_MASK) == 0);
     ASSERTLINE(515, type == EXI_READ || type == EXI_WRITE);
 
     enabled = OSDisableInterrupts();
-    if ((exi->state & STATE_BUSY) || !(exi->state & STATE_SELECTED)) {
+    if ((exi->state & EXI_STATE_BUSY) || !(exi->state & EXI_STATE_SELECTED)) {
         OSRestoreInterrupts(enabled);
         return 0;
     }
 
     exi->tcCallback = callback;
-    if ((u32)exi->tcCallback) {
+    if (exi->tcCallback) {
         EXIClearInterrupts(chan, 0, 1, 0);
-        __OSUnmaskInterrupts(0x200000U >> (chan * 3));
+        __OSUnmaskInterrupts(OS_INTERRUPTMASK_EXI_0_TC >> (chan * 3));
     }
 
-    exi->state |= STATE_DMA;
-    __EXIRegs[(chan * 5) + 1] = (u32)buf & EXI_0LENGTH_EXILENGTH_MASK;
-    __EXIRegs[(chan * 5) + 2] = len;
-    __EXIRegs[(chan * 5) + 3] = (type * 4) | 3;
+    exi->state |= EXI_STATE_DMA;
+    REG(chan, 1) = (u32)buf & EXI_0LENGTH_EXILENGTH_MASK;
+    REG(chan, 2) = len;
+    REG(chan, 3) = (type * 4) | 3;
 
     OSRestoreInterrupts(enabled);
     return 1;
 }
 
-int EXISync(s32 chan) {
+BOOL EXISync(s32 chan) {
     EXIControl *exi;
     int rc;
     BOOL enabled;
@@ -189,16 +179,15 @@ int EXISync(s32 chan) {
     rc = 0;
     ASSERTLINE(565, 0 <= chan && chan < MAX_CHAN);
 
-    while ((exi->state & STATE_SELECTED)) {
-        if (!(__EXIRegs[(chan * 5) + 3] & 1)) {
+    while (exi->state & EXI_STATE_SELECTED) {
+        if (!(REG(chan, 3) & 1)) {
             enabled = OSDisableInterrupts();
-            if (exi->state & STATE_SELECTED) {
+            if (exi->state & EXI_STATE_SELECTED) {
                 CompleteTransfer(chan);
                 if (__OSGetDIConfig() != 0xFF || (OSGetConsoleType() & 0xf0000000) == 0x20000000 ||
-                    exi->immLen != 4 || (__EXIRegs[chan * 5] & 0x70) ||
-                    (__EXIRegs[(chan * 5) + 4] != 0x01010000 &&
-                     __EXIRegs[(chan * 5) + 4] != 0x05070000 &&
-                     __EXIRegs[(chan * 5) + 4] != 0x04220001) ||
+                    exi->immLen != 4 || (REG(chan, 0) & 0x70) ||
+                    (REG(chan, 4) != EXI_USB_ADAPTER && REG(chan, 4) != EXI_IS_VIEWER &&
+                     REG(chan, 4) != EXI_ETHER_VIEWER) ||
                     __OSDeviceCode == 0x8200) {
                     rc = 1;
                 }
@@ -208,7 +197,7 @@ int EXISync(s32 chan) {
         }
     }
 
-    ASSERTLINE(593, !(exi->state & STATE_BUSY));
+    ASSERTLINE(593, !(exi->state & EXI_STATE_BUSY));
     return rc;
 }
 
@@ -218,7 +207,7 @@ u32 EXIClearInterrupts(s32 chan, int exi, int tc, int ext) {
 
     ASSERTLINE(614, 0 <= chan && chan < MAX_CHAN);
 
-    cpr = prev = __EXIRegs[(chan * 5)];
+    cpr = prev = REG(chan, 0);
     prev &= 0x7F5;
 
     if (exi != 0) {
@@ -233,7 +222,7 @@ u32 EXIClearInterrupts(s32 chan, int exi, int tc, int ext) {
         prev |= 0x800;
     }
 
-    __EXIRegs[(chan * 5)] = prev;
+    REG(chan, 0) = prev;
     return cpr;
 }
 
@@ -258,7 +247,7 @@ EXICallback EXISetExiCallback(s32 chan, EXICallback exiCallback) {
     return prev;
 }
 
-void EXIProbeReset() {
+void EXIProbeReset(void) {
     __gUnknown800030C0[0] = __gUnknown800030C0[1] = 0;
     Ecb[0].idTime = Ecb[1].idTime = 0;
     __EXIProbe(0);
@@ -280,9 +269,9 @@ static int __EXIProbe(s32 chan) {
 
     rc = 1;
     enabled = OSDisableInterrupts();
-    cpr = __EXIRegs[(chan * 5)];
+    cpr = REG(chan, 0);
 
-    if (!(exi->state & STATE_ATTACHED)) {
+    if (!(exi->state & EXI_STATE_ATTACHED)) {
         if (cpr & 0x800) {
             EXIClearInterrupts(chan, 0, 0, 1);
             __gUnknown800030C0[chan] = exi->idTime = 0;
@@ -311,7 +300,7 @@ static int __EXIProbe(s32 chan) {
     return rc;
 }
 
-int EXIProbe(s32 chan) {
+BOOL EXIProbe(s32 chan) {
     EXIControl *exi = &Ecb[chan];
     int rc;
     u32 id;
@@ -344,21 +333,21 @@ static int __EXIAttach(s32 chan, EXICallback extCallback) {
     ASSERTLINE(808, 0 <= chan && chan < 2);
     enabled = OSDisableInterrupts();
 
-    if ((exi->state & STATE_ATTACHED) || !__EXIProbe(chan)) {
+    if ((exi->state & EXI_STATE_ATTACHED) || !__EXIProbe(chan)) {
         OSRestoreInterrupts(enabled);
         return 0;
     }
 
     EXIClearInterrupts(chan, 1, 0, 0);
     exi->extCallback = extCallback;
-    __OSUnmaskInterrupts(0x100000U >> (chan * 3));
-    exi->state |= STATE_ATTACHED;
+    __OSUnmaskInterrupts(OS_INTERRUPTMASK_EXI_0_EXT >> (chan * 3));
+    exi->state |= EXI_STATE_ATTACHED;
 
     OSRestoreInterrupts(enabled);
     return 1;
 }
 
-int EXIAttach(s32 chan, EXICallback extCallback) {
+BOOL EXIAttach(s32 chan, EXICallback extCallback) {
     EXIControl *exi;
     BOOL enabled;
     int rc;
@@ -378,7 +367,7 @@ int EXIAttach(s32 chan, EXICallback extCallback) {
     return rc;
 }
 
-int EXIDetach(s32 chan) {
+BOOL EXIDetach(s32 chan) {
     EXIControl *exi;
     BOOL enabled;
 
@@ -386,18 +375,18 @@ int EXIDetach(s32 chan) {
     ASSERTLINE(868, 0 <= chan && chan < 2);
     enabled = OSDisableInterrupts();
 
-    if (!(exi->state & STATE_ATTACHED)) {
+    if (!(exi->state & EXI_STATE_ATTACHED)) {
         OSRestoreInterrupts(enabled);
         return 1;
     }
 
-    if ((exi->state & STATE_LOCKED) && (exi->dev == 0)) {
+    if ((exi->state & EXI_STATE_LOCKED) && (exi->dev == 0)) {
         OSRestoreInterrupts(enabled);
         return 0;
     }
 
-    exi->state &= ~STATE_ATTACHED;
-    __OSMaskInterrupts(0x500000U >> (chan * 3));
+    exi->state &= ~EXI_STATE_ATTACHED;
+    __OSMaskInterrupts((OS_INTERRUPTMASK_EXI_0_EXI | OS_INTERRUPTMASK_EXI_0_EXT) >> (chan * 3));
 
     OSRestoreInterrupts(enabled);
     return 1;
@@ -413,29 +402,30 @@ int EXISelectSD(s32 chan, u32 dev, u32 freq) {
     ASSERTLINE(908, 0 <= chan && chan < MAX_CHAN);
     ASSERTLINE(909, chan == 0 && dev < MAX_DEV || dev == 0);
     ASSERTLINE(910, freq < MAX_FREQ);
-    ASSERTLINE(911, !(exi->state & STATE_SELECTED));
+    ASSERTLINE(911, !(exi->state & EXI_STATE_SELECTED));
 
     enabled = OSDisableInterrupts();
-    if ((exi->state & STATE_SELECTED) ||
-        ((chan != 2) && (((dev == 0) && !(exi->state & STATE_ATTACHED) && (EXIProbe(chan) == 0)) ||
-                         !(exi->state & STATE_LOCKED) || (exi->dev != dev)))) {
+    if ((exi->state & EXI_STATE_SELECTED) ||
+        ((chan != 2) &&
+         (((dev == 0) && !(exi->state & EXI_STATE_ATTACHED) && (EXIProbe(chan) == 0)) ||
+          !(exi->state & EXI_STATE_LOCKED) || (exi->dev != dev)))) {
         OSRestoreInterrupts(enabled);
         return 0;
     }
 
-    exi->state |= STATE_SELECTED;
-    cpr = __EXIRegs[(chan * 5)];
+    exi->state |= EXI_STATE_SELECTED;
+    cpr = REG(chan, 0);
     cpr &= 0x405;
     cpr |= freq * 0x10;
-    __EXIRegs[(chan * 5)] = cpr;
+    REG(chan, 0) = cpr;
 
-    if (exi->state & STATE_ATTACHED) {
+    if (exi->state & EXI_STATE_ATTACHED) {
         switch (chan) {
         case 0:
-            __OSMaskInterrupts(0x100000U);
+            __OSMaskInterrupts(OS_INTERRUPTMASK_EXI_0_EXT);
             break;
         case 1:
-            __OSMaskInterrupts(0x20000U);
+            __OSMaskInterrupts(OS_INTERRUPTMASK_EXI_1_EXT);
             break;
         }
     }
@@ -444,7 +434,7 @@ int EXISelectSD(s32 chan, u32 dev, u32 freq) {
     return 1;
 }
 
-int EXISelect(s32 chan, u32 dev, u32 freq) {
+BOOL EXISelect(s32 chan, u32 dev, u32 freq) {
     EXIControl *exi;
     u32 cpr;
     BOOL enabled;
@@ -454,30 +444,30 @@ int EXISelect(s32 chan, u32 dev, u32 freq) {
     ASSERTLINE(966, 0 <= chan && chan < MAX_CHAN);
     ASSERTLINE(967, chan == 0 && dev < MAX_DEV || dev == 0);
     ASSERTLINE(968, freq < MAX_FREQ);
-    ASSERTLINE(969, !(exi->state & STATE_SELECTED));
+    ASSERTLINE(969, !(exi->state & EXI_STATE_SELECTED));
 
     enabled = OSDisableInterrupts();
-    if ((exi->state & STATE_SELECTED) ||
+    if ((exi->state & EXI_STATE_SELECTED) ||
         ((chan != 2) &&
-         (((dev == 0) && !(exi->state & STATE_ATTACHED) && (__EXIProbe(chan) == 0)) ||
-          !(exi->state & STATE_LOCKED) || (exi->dev != dev)))) {
+         (((dev == 0) && !(exi->state & EXI_STATE_ATTACHED) && (__EXIProbe(chan) == 0)) ||
+          !(exi->state & EXI_STATE_LOCKED) || (exi->dev != dev)))) {
         OSRestoreInterrupts(enabled);
         return 0;
     }
 
-    exi->state |= STATE_SELECTED;
-    cpr = __EXIRegs[(chan * 5)];
+    exi->state |= EXI_STATE_SELECTED;
+    cpr = REG(chan, 0);
     cpr &= 0x405;
     cpr |= (((1 << dev) << 7) | (freq * 0x10));
-    __EXIRegs[(chan * 5)] = cpr;
+    REG(chan, 0) = cpr;
 
-    if (exi->state & STATE_ATTACHED) {
+    if (exi->state & EXI_STATE_ATTACHED) {
         switch (chan) {
         case 0:
-            __OSMaskInterrupts(0x100000U);
+            __OSMaskInterrupts(OS_INTERRUPTMASK_EXI_0_EXT);
             break;
         case 1:
-            __OSMaskInterrupts(0x20000U);
+            __OSMaskInterrupts(OS_INTERRUPTMASK_EXI_1_EXT);
             break;
         }
     }
@@ -486,7 +476,7 @@ int EXISelect(s32 chan, u32 dev, u32 freq) {
     return 1;
 }
 
-int EXIDeselect(s32 chan) {
+BOOL EXIDeselect(s32 chan) {
     EXIControl *exi;
     u32 cpr;
     BOOL enabled;
@@ -495,22 +485,22 @@ int EXIDeselect(s32 chan) {
     ASSERTLINE(1020, 0 <= chan && chan < MAX_CHAN);
     enabled = OSDisableInterrupts();
 
-    if (!(exi->state & STATE_SELECTED)) {
+    if (!(exi->state & EXI_STATE_SELECTED)) {
         OSRestoreInterrupts(enabled);
         return 0;
     }
 
-    exi->state &= ~STATE_SELECTED;
-    cpr = __EXIRegs[(chan * 5)];
-    __EXIRegs[(chan * 5)] = cpr & 0x405;
+    exi->state &= ~EXI_STATE_SELECTED;
+    cpr = REG(chan, 0);
+    REG(chan, 0) = cpr & 0x405;
 
-    if (exi->state & STATE_ATTACHED) {
+    if (exi->state & EXI_STATE_ATTACHED) {
         switch (chan) {
         case 0:
-            __OSUnmaskInterrupts(0x100000U);
+            __OSUnmaskInterrupts(OS_INTERRUPTMASK_EXI_0_EXT);
             break;
         case 1:
-            __OSUnmaskInterrupts(0x20000U);
+            __OSUnmaskInterrupts(OS_INTERRUPTMASK_EXI_1_EXT);
             break;
         }
     }
@@ -532,7 +522,7 @@ static void EXIIntrruptHandler(__OSInterrupt interrupt, OSContext *context) {
     EXIControl *exi;
     EXICallback callback;
 
-    chan = (interrupt - 9) / 3;
+    chan = (interrupt - __OS_INTERRUPT_EXI_0_EXI) / 3;
 
     ASSERTLINE(1071, 0 <= chan && chan < MAX_CHAN);
     exi = &Ecb[chan];
@@ -555,11 +545,11 @@ static void TCIntrruptHandler(__OSInterrupt interrupt, OSContext *context) {
     EXIControl *exi;
     EXICallback callback;
 
-    chan = (interrupt - 10) / 3;
+    chan = (interrupt - __OS_INTERRUPT_EXI_0_TC) / 3;
 
     ASSERTLINE(1107, 0 <= chan && chan < MAX_CHAN);
     exi = &Ecb[chan];
-    __OSMaskInterrupts(0x80000000U >> interrupt);
+    __OSMaskInterrupts(OS_INTERRUPTMASK(interrupt));
     EXIClearInterrupts(chan, 0, 1, 0);
 
     callback = exi->tcCallback;
@@ -582,13 +572,13 @@ static void EXTIntrruptHandler(__OSInterrupt interrupt, OSContext *context) {
     EXIControl *exi;
     EXICallback callback;
 
-    chan = (interrupt - 11) / 3;
+    chan = (interrupt - __OS_INTERRUPT_EXI_0_EXT) / 3;
 
     ASSERTLINE(1147, 0 <= chan && chan < 2);
-    __OSMaskInterrupts(0x500000U >> (chan * 3));
+    __OSMaskInterrupts((OS_INTERRUPTMASK_EXI_0_EXI | OS_INTERRUPTMASK_EXI_0_EXT) >> (chan * 3));
     exi = &Ecb[chan];
     callback = exi->extCallback;
-    exi->state &= ~STATE_ATTACHED;
+    exi->state &= ~EXI_STATE_ATTACHED;
 
     if (callback) {
         OSContext exceptionContext;
@@ -602,25 +592,25 @@ static void EXTIntrruptHandler(__OSInterrupt interrupt, OSContext *context) {
     }
 }
 
-void EXIInit() {
+void EXIInit(void) {
     u32 id;
 
     while (((REG(0, 3) & 1) == 1) || ((REG(1, 3) & 1) == 1) || ((REG(2, 3) & 1) == 1)) {
     }
 
-    __OSMaskInterrupts(0x7F8000U);
-    __EXIRegs[0] = 0;
-    __EXIRegs[5] = 0;
-    __EXIRegs[10] = 0;
-    __EXIRegs[0] = 0x2000;
-    __OSSetInterruptHandler(9, EXIIntrruptHandler);
-    __OSSetInterruptHandler(10, TCIntrruptHandler);
-    __OSSetInterruptHandler(11, EXTIntrruptHandler);
-    __OSSetInterruptHandler(12, EXIIntrruptHandler);
-    __OSSetInterruptHandler(13, TCIntrruptHandler);
-    __OSSetInterruptHandler(14, EXTIntrruptHandler);
-    __OSSetInterruptHandler(15, EXIIntrruptHandler);
-    __OSSetInterruptHandler(16, TCIntrruptHandler);
+    __OSMaskInterrupts(OS_INTERRUPTMASK_EXI);
+    REG(0, 0) = 0;
+    REG(1, 0) = 0;
+    REG(2, 0) = 0;
+    REG(0, 0) = 0x2000;
+    __OSSetInterruptHandler(__OS_INTERRUPT_EXI_0_EXI, EXIIntrruptHandler);
+    __OSSetInterruptHandler(__OS_INTERRUPT_EXI_0_TC, TCIntrruptHandler);
+    __OSSetInterruptHandler(__OS_INTERRUPT_EXI_0_EXT, EXTIntrruptHandler);
+    __OSSetInterruptHandler(__OS_INTERRUPT_EXI_1_EXI, EXIIntrruptHandler);
+    __OSSetInterruptHandler(__OS_INTERRUPT_EXI_1_TC, TCIntrruptHandler);
+    __OSSetInterruptHandler(__OS_INTERRUPT_EXI_1_EXT, EXTIntrruptHandler);
+    __OSSetInterruptHandler(__OS_INTERRUPT_EXI_2_EXI, EXIIntrruptHandler);
+    __OSSetInterruptHandler(__OS_INTERRUPT_EXI_2_TC, TCIntrruptHandler);
 
     EXIGetID(0, 2, &IDSerialPort1);
 
@@ -635,7 +625,7 @@ void EXIInit() {
     OSRegisterVersion(__EXIVersion);
 }
 
-int EXILock(s32 chan, u32 dev, EXICallback unlockedCallback) {
+BOOL EXILock(s32 chan, u32 dev, EXICallback unlockedCallback) {
     EXIControl *exi;
     BOOL enabled;
     int i;
@@ -645,7 +635,7 @@ int EXILock(s32 chan, u32 dev, EXICallback unlockedCallback) {
     ASSERTLINE(1260, chan == 0 && dev < MAX_DEV || dev == 0);
     enabled = OSDisableInterrupts();
 
-    if (exi->state & STATE_LOCKED) {
+    if (exi->state & EXI_STATE_LOCKED) {
         if (unlockedCallback) {
             ASSERTLINE(1266, chan == 0 && exi->items < (MAX_DEV - 1) || exi->items == 0);
             for (i = 0; i < exi->items; i++) {
@@ -663,14 +653,14 @@ int EXILock(s32 chan, u32 dev, EXICallback unlockedCallback) {
     }
 
     ASSERTLINE(1282, exi->items == 0);
-    exi->state |= STATE_LOCKED;
+    exi->state |= EXI_STATE_LOCKED;
     exi->dev = dev;
     SetExiInterruptMask(chan, exi);
     OSRestoreInterrupts(enabled);
     return 1;
 }
 
-int EXIUnlock(s32 chan) {
+BOOL EXIUnlock(s32 chan) {
     EXIControl *exi;
     BOOL enabled;
     EXICallback unlockedCallback;
@@ -679,17 +669,17 @@ int EXIUnlock(s32 chan) {
     ASSERTLINE(1306, 0 <= chan && chan < MAX_CHAN);
     enabled = OSDisableInterrupts();
 
-    if (!(exi->state & STATE_LOCKED)) {
+    if (!(exi->state & EXI_STATE_LOCKED)) {
         OSRestoreInterrupts(enabled);
         return 0;
     }
 
-    exi->state &= ~STATE_LOCKED;
+    exi->state &= ~EXI_STATE_LOCKED;
     SetExiInterruptMask(chan, exi);
     if (exi->items > 0) {
         unlockedCallback = exi->queue[0].callback;
         if (--exi->items > 0) {
-            memmove(&exi->queue[0], &exi->queue[1], exi->items * 8);
+            memmove(&exi->queue[0], &exi->queue[1], exi->items * sizeof(exi->queue[0]));
         }
         unlockedCallback(chan, 0);
     }
@@ -748,9 +738,9 @@ s32 EXIGetID(s32 chan, u32 dev, u32 *id) {
         err = !EXISelect(chan, dev, 0);
         if (err == 0) {
             cmd = 0;
-            err |= !EXIImm(chan, &cmd, 2, 1, 0);
+            err |= !EXIImm(chan, &cmd, 2, EXI_WRITE, 0);
             err |= !EXISync(chan);
-            err |= !EXIImm(chan, id, 4, 0, 0);
+            err |= !EXIImm(chan, id, 4, EXI_READ, 0);
             err |= !EXISync(chan);
             err |= !EXIDeselect(chan);
         }

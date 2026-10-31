@@ -1,5 +1,6 @@
 #include <dolphin/exi.h>
 #include <dolphin/os.h>
+#include "__exi.h"
 #include "__os.h"
 
 static s32 Chan;
@@ -7,11 +8,15 @@ static u32 Dev;
 static u32 Enabled;
 static u32 BarnacleEnabled;
 
-// prototypes
+// Value stored in Enabled and BarnacleEnabled once a UART channel is usable.
+#define UART_ENABLED_MAGIC 0xA5FF005A
+
+// The MSL console driver declares these as UARTError InitializeUART(UARTBaudRate) and
+// UARTError WriteUARTN(void *, unsigned long). The bytes do not depend on those types, so the
+// definitions below use the types of the values they actually produce and consume.
 int InitializeUART(void);
 int ReadUARTN(void);
 int WriteUARTN(void *buf, u32 len);
-void __OSEnableBarnacle(s32 chan, u32 dev);
 
 static BOOL ProbeBarnacle(s32 chan, u32 dev, u32 *revision) {
     int err;
@@ -29,7 +34,7 @@ static BOOL ProbeBarnacle(s32 chan, u32 dev, u32 *revision) {
             err = FALSE;
             err |= !EXIImm(chan, &cmd, sizeof(cmd), EXI_WRITE, NULL);
             err |= !EXISync(chan);
-            err |= !EXIImm(chan, revision, sizeof(revision), EXI_READ, NULL);
+            err |= !EXIImm(chan, revision, sizeof(*revision), EXI_READ, NULL);
             err |= !EXISync(chan);
             err |= !EXIDeselect(chan);
         }
@@ -67,7 +72,7 @@ void __OSEnableBarnacle(s32 chan, u32 dev) {
     case EXI_USB_ADAPTER:
     case EXI_NPDP_GDEV:
     case EXI_MODEM:
-    case 0x03010000:
+    case EXI_MARLIN:
     case 0x04020100:
     case EXI_ETHER:
     case 0x04020300:
@@ -86,14 +91,14 @@ void __OSEnableBarnacle(s32 chan, u32 dev) {
         if (ProbeBarnacle(chan, dev, &id)) {
             Chan = chan;
             Dev = dev;
-            Enabled = BarnacleEnabled = 0xA5FF005A;
+            Enabled = BarnacleEnabled = UART_ENABLED_MAGIC;
             break;
         }
     }
 }
 
 int InitializeUART(void) {
-    if (BarnacleEnabled == 0xA5FF005A) {
+    if (BarnacleEnabled == UART_ENABLED_MAGIC) {
         return 0;
     }
 
@@ -104,7 +109,7 @@ int InitializeUART(void) {
 
     Chan = 0;
     Dev = 1;
-    Enabled = 0xA5FF005A;
+    Enabled = UART_ENABLED_MAGIC;
     return 0;
 }
 
@@ -115,7 +120,7 @@ int ReadUARTN(void) {
 static int QueueLength(void) {
     u32 cmd;
 
-    if (EXISelect(Chan, Dev, 3) == 0) {
+    if (EXISelect(Chan, Dev, EXI_FREQ_8M) == 0) {
         return -1;
     }
 
@@ -136,20 +141,20 @@ int WriteUARTN(void *buf, u32 len) {
     int locked;
     int error;
 
-    if ((Enabled - 0xA5FF0000) != 0x5A) {
+    if (Enabled != UART_ENABLED_MAGIC) {
         return 2;
     }
 
     locked = EXILock(Chan, Dev, 0);
     if (locked == 0) {
         return 0;
-    } else {
-        ptr = (char *)buf;
     }
 
+    ptr = (char *)buf;
+
     while ((u32)ptr - (u32)buf < len) {
-        if (*(s8 *)ptr == 0xA) {
-            *ptr = 0xD;
+        if (*(s8 *)ptr == '\n') {
+            *ptr = '\r';
         }
         ptr++;
     }
@@ -177,10 +182,11 @@ int WriteUARTN(void *buf, u32 len) {
                     break;
                 }
 
+                // The (long) cast keeps the conditional signed; without it MWCC emits different code.
                 xLen = len < 4 ? (long)len : 4;
 
                 EXIImm(Chan, buf, xLen, EXI_WRITE, 0);
-                (char *)buf += xLen;
+                buf = (char *)buf + xLen;
                 len -= xLen;
                 qLen -= xLen;
                 EXISync(Chan);
