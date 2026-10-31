@@ -16,6 +16,7 @@ void ADX_GetCoefficient(Sint32 cutoff, Sint32 sfreq, Sint16 *c1, Sint16 *c2);
 /* adx_dcd.c: ADX header fields */
 Sint32 ADX_CalcHdrInfoLen(Sint32 loop, Sint32 infolen, Sint32 ofst, Sint32 align);
 Sint32 ADX_DecodeFooter(Uint8 *data, Sint32 len, Sint16 *ofst);
+Sint32 ADX_ScanInfoCode(Uint8 *data, Sint32 len, Sint16 *ofst);
 Sint32 ADX_DecodeInfoAinf(Uint8 *data, Sint32 len, Sint32 *ainfsiz, void *ainf, Sint16 *a,
                           Sint16 *b);
 Sint32 ADX_DecodeInfoExLoop(Uint8 *data, Sint32 len, Sint32 *lptype, Sint16 *nloop, Sint16 *lpflg,
