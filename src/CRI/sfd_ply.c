@@ -127,10 +127,11 @@ Sint32 SFD_GetFrm(SFD sfd, void **frm) {
     return ret;
 }
 
-/* Matching workaround: order-only stand-in for the stripped SFPLY_GetLastHnCtrlWkSiz and
- * SFPLY_SetPtsmFn. MWCC places .bss objects in order of first reference; this never-called function
- * refers to these three in storage order right after SFD_GetFrm's SFPLY_recordgetfrm, and storing
- * the addresses keeps the references. Revisit when the stripped functions are recovered. */
+/* Matching workaround: stand-in for the stripped SFPLY_GetLastHnCtrlWkSiz and SFPLY_SetPtsmFn. The
+ * body is not the original's. It refers to these three .bss objects in storage order right after
+ * SFD_GetFrm's SFPLY_recordgetfrm; storing the addresses keeps the references. Without it the .bss
+ * objects land in the first-reference order of the surviving functions (measured by compiling
+ * without it). Revisit when the stripped code is known. */
 static void sfply_BssOrder(void **out) {
     out[0] = &sfply_last_hnctrl_wksiz;
     out[1] = &SFPLY_SetPtsInfo;

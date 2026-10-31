@@ -15,10 +15,11 @@ Char8 *sftst_debout_round;
 Char8 *sftst_debout_write;
 SFTST sftst_last;
 
-/* Matching workaround: order-only stand-in for the stripped SFTST_SetDebugOut, whose body is
- * unknown. MWCC places .bss objects in order of first reference, so this never-called function
- * refers to the debug log variables in storage order before any other code does. Storing the
- * addresses keeps the references. Revisit when SFTST_SetDebugOut's real body is found. */
+/* Matching workaround: stand-in for the stripped SFTST_SetDebugOut. The body is not the
+ * original's. It refers to the debug log variables in storage order before any other code does;
+ * storing the addresses keeps the references. Without it the .bss objects land in the
+ * first-reference order of the surviving functions and the code that pools their addresses changes
+ * (measured by compiling without it). Revisit when the stripped code is known. */
 static void sftst_BssOrder(void **out) {
     out[0] = &sftst_debout_siz;
     out[1] = &sftst_debout_buf;

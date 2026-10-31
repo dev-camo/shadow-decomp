@@ -6,7 +6,8 @@
  * into the messages the game's error callback receives.
  *
  * Names follow the RE4 GameCube decompilation of the same file. The inlined static helpers
- * (mwPlySfdInit, mwsflib_SetLibPrm) have no symbol in any build; their names are inferred.
+ * (mwPlySfdInit, mwsflib_SetLibPrm, mwsflib_EntrySvr) have no symbol in any build; their names are
+ * inferred.
  */
 #include <stdio.h>
 #include <string.h>
@@ -60,10 +61,11 @@ Sint32 mwg_sfd_errcode[MWSFD_MAX_ERRCODE];
 MWSFD_LIBWORK mwsfd_libwork;
 static const Char8 *cri_verstr_ptr;
 
-/* Matching workaround: order-only stand-in for a function the linker stripped from the game (its
- * body is unknown). MWCC lays out .bss by first reference, so this never-called function refers to
- * the library globals in storage order before the functions below do; storing the addresses keeps
- * the references. Revisit when the stripped function is recovered. */
+/* Matching workaround: stand-in for a function the linker stripped from the game. The body is not
+ * the original's. It refers to the library globals up to mwg_sfd_errcnt in storage order before
+ * the functions below do; storing the addresses keeps the references. Without it the .bss objects
+ * land in the first-reference order of the surviving functions and the code that pools their
+ * addresses changes (measured by compiling without it). Revisit when the stripped code is known. */
 static void mwsfdlib_BssOrder(void **out) {
     out[0] = &mwsfd_init_cnt;
     out[1] = &mwsfd_init_flag;
@@ -71,8 +73,6 @@ static void mwsfdlib_BssOrder(void **out) {
     out[3] = &mwsfd_err_mwsfdhn;
     out[4] = &mwg_sfd_errstr;
     out[5] = &mwg_sfd_errcnt;
-    out[6] = &mwg_sfd_errcode;
-    out[7] = &mwsfd_libwork;
 }
 
 /* SFD error callback: remembers the failing player and SFD handle, records the error codes (the
@@ -235,14 +235,13 @@ static void mwsflib_SetLibPrm(MWSFD_LIBWORK *lw, MWSFD_INIT_PRM *prm) {
     }
 }
 
-/* Matching workaround: order-only stand-in for a function the linker stripped from the game (its
- * body is unknown). The original pools the server names ahead of the messages of mwPlyInitSfdFx,
- * so this never-called function refers to them first; storing the texts keeps the references.
- * Revisit when the stripped function is recovered. */
-static void mwsfdlib_SvrNameOrder(const Char8 **out) {
-    out[0] = "MWSFSVR_VsyncThrdProc";
-    out[1] = "MWSFSVR_MainThrdProc";
-    out[2] = "MWSFSVR_IdleThrdProc";
+/* Registers the vsync, main and idle servers with the SVM (helper and name inferred). Its
+ * out-of-line copy is emitted here, ahead of mwPlyInitSfdFx, which puts the server names ahead of
+ * mwPlyInitSfdFx's messages in .rodata as in the original; the copy is not linked. */
+static void mwsflib_EntrySvr(void) {
+    MWSFSVM_EntryIdVfunc(2, MWSFSVR_VsyncThrdProc, 0, "MWSFSVR_VsyncThrdProc");
+    MWSFSVM_EntryMainFunc(MWSFSVR_MainThrdProc, 0, "MWSFSVR_MainThrdProc");
+    MWSFSVM_EntryIdleFunc(MWSFSVR_IdleThrdProc, 0, "MWSFSVR_IdleThrdProc");
 }
 
 /* Library init: ADXT, stream joints, SFD core, load scheduler and SFX converter, then registers the
@@ -298,9 +297,7 @@ void mwPlyInitSfdFx(MWSFD_INIT_PRM *iprm) {
         LSC_Init();
         LSC_EntryErrFunc(mwsflib_LscErrFunc, 0);
         MWSFSFX_Init();
-        MWSFSVM_EntryIdVfunc(2, MWSFSVR_VsyncThrdProc, 0, "MWSFSVR_VsyncThrdProc");
-        MWSFSVM_EntryMainFunc(MWSFSVR_MainThrdProc, 0, "MWSFSVR_MainThrdProc");
-        MWSFSVM_EntryIdleFunc(MWSFSVR_IdleThrdProc, 0, "MWSFSVR_IdleThrdProc");
+        mwsflib_EntrySvr();
     }
     mwsfd_init_cnt++;
 }
