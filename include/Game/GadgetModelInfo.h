@@ -103,4 +103,8 @@ CHECK_SIZEOF(GadgetModelInfo, 0x74);
  * inferred; arg0 is the first argument of the GadgetModelInfo constructor, always 1 in callers). */
 extern "C" boost::shared_ptr<GadgetModelInfo> fn_8015F800(int arg0, const char *fileName);
 
+/* Returns the word at 0x0 of the object at 0x34 of the model, or null when there is none: a name
+ * (behaviour inferred from the ball, which looks it up with fn_80208888). */
+extern "C" const char *fn_801626D8(GadgetModelInfo *model);
+
 #endif

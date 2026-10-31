@@ -38,9 +38,6 @@ boost::shared_ptr<UnkObject_801695B8> fn_801695B8(void);
 void fn_801697F0(UnkObject_801695B8 *object);
 bool fn_801697CC(UnkObject_801695B8 *object, const boost::weak_ptr<CharInfo> &target);
 void fn_8016952C(boost::shared_ptr<UnkObject_801695B8> &object);
-/* Returns the word at 0x0 of the object at 0x34 of the model, or null when there is none: a
- * name, as the ball looks it up with fn_80208888 (behaviour inferred). */
-const char *fn_801626D8(GadgetModelInfo *model);
 }
 
 /* The gadget parameters in the order of the descriptor's table below. */
