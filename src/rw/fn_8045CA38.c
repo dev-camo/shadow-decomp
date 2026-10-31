@@ -64,14 +64,6 @@ typedef struct TriStripFreeLists {
 } TriStripFreeLists;
 CHECK_SIZEOF(TriStripFreeLists, 0x8);
 
-/* A run of sorted triangles that share a material (0xC bytes) */
-typedef struct MaterialRun {
-    /* 0x0 */ void *field_0x0;
-    /* 0x4 */ RwUInt32 numTriangles; /* first the index of the run's first triangle */
-    /* 0x8 */ RpMaterial *material;
-} MaterialRun;
-CHECK_SIZEOF(MaterialRun, 0xC);
-
 typedef RpMeshHeader *(*RpTriStripMeshCallBack)(RpBuildMesh *buildMesh, void *data);
 
 /* The triangle strip generator (inferred) */
@@ -872,22 +864,22 @@ RwBool fn_8045E51C(TriStripList **stripList, RwBool keepWinding) {
 
 /* Builds triangle strips from a build mesh: one mesh per material, joined into a strip each */
 RpMeshHeader *fn_8045E904(RpBuildMesh *buildMesh, RwInt32 firstTrial, RwBool keepWinding) {
+    RpMeshHeader *meshHeader;
     RpBuildMeshTriangle **sorted;
-    RwUInt16 numMeshes = 0;
-    MaterialRun *run;
-    RwUInt32 numMaterials;
-    RwUInt32 numRuns;
+    RpMesh *mesh;
     RwUInt32 i;
     RwUInt32 j;
-    RpMesh **meshes;
-    MaterialRun *runs;
-    RwUInt32 numIndices;
+    RwUInt32 numMaterials;
     RwUInt32 size;
-    RpMeshHeader *meshHeader;
-    RpMesh *mesh;
-    RxVertexIndex *indices;
-    TriStripList *stripList;
     RpBuildMeshTriangle **source;
+    RpBuildMeshTriangle *triangles;
+    TriStripList *stripList;
+    TriStripList *strip;
+    RwUInt16 numMeshes = 0;
+    RxVertexIndex *indices;
+    RpMesh **meshes;
+    RpMesh *runs;
+    RwUInt32 numIndices;
 
     sorted = RwMalloc(buildMesh->numTriangles * sizeof(RpBuildMeshTriangle *),
                       rwMEMHINTDUR_FUNCTION | rwID_MESHMODULE);
@@ -899,70 +891,70 @@ RpMeshHeader *fn_8045E904(RpBuildMesh *buildMesh, RwInt32 firstTrial, RwBool kee
     }
     qsort(sorted, buildMesh->numTriangles, sizeof(RpBuildMeshTriangle *), fn_8045CA38);
 
+    /* Count the materials: the sorted triangles group into one run per material */
     numMaterials = 1;
     if (buildMesh->numTriangles >= 2) {
-        RpMaterial *material = sorted[0]->material;
+        RpMaterial *lastMaterial = sorted[0]->material;
 
         for (i = 1; i < buildMesh->numTriangles; i++) {
-            if (sorted[i]->material != material) {
-                material = sorted[i]->material;
+            if (sorted[i]->material != lastMaterial) {
+                lastMaterial = sorted[i]->material;
                 numMaterials++;
             }
         }
     }
-    meshes = RwMalloc(numMaterials * sizeof(RpMesh *),
-                      rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_FUNCTION | rwID_MESHMODULE);
-    runs = RwMalloc(numMaterials * sizeof(MaterialRun), rwMEMHINTDUR_FUNCTION | rwID_MESHMODULE);
+    meshes = RwMalloc(sizeof(RpMesh *) * numMaterials,
+                      rwMEMHINTDUR_FUNCTION | rwID_MESHMODULE | rwMEMHINTFLAG_RESIZABLE);
+    runs = RwMalloc(sizeof(RpMesh) * numMaterials, rwMEMHINTDUR_FUNCTION | rwID_MESHMODULE);
 
-    numRuns = 1;
+    /* Fill in the materials, with each numIndices first the index of the run's first triangle,
+     * then its length */
+    numMaterials = 1;
     runs[0].material = sorted[0]->material;
-    runs[0].numTriangles = 0;
-    runs[0].field_0x0 = NULL;
+    runs[0].numIndices = 0;
+    runs[0].indices = NULL;
     if (buildMesh->numTriangles >= 2) {
-        run = &runs[1];
         for (i = 0; i < buildMesh->numTriangles - 1; i++) {
             if (sorted[i]->material != sorted[i + 1]->material) {
-                run->material = sorted[i + 1]->material;
-                numRuns++;
-                run->numTriangles = i + 1;
-                run->field_0x0 = NULL;
-                run[-1].numTriangles = (i + 1) - run[-1].numTriangles;
-                run++;
+                runs[numMaterials].material = sorted[i + 1]->material;
+                runs[numMaterials].numIndices = i + 1;
+                runs[numMaterials].indices = NULL;
+                runs[numMaterials - 1].numIndices = (i + 1) - runs[numMaterials - 1].numIndices;
+                numMaterials++;
             }
         }
     }
-    runs[numRuns - 1].numTriangles = buildMesh->numTriangles - runs[numRuns - 1].numTriangles;
+    runs[numMaterials - 1].numIndices = buildMesh->numTriangles - runs[numMaterials - 1].numIndices;
 
     RPMESHGLOBAL(triStripListEntryFreeList) =
-        fn_8047FBD8(sizeof(TriStripList), buildMesh->numTriangles / 10 + 5, 4,
+        fn_8047FBD8(sizeof(TriStripList), (buildMesh->numTriangles / 10) + 5, sizeof(RwUInt32),
                     rwMEMHINTDUR_FUNCTION | rwID_MESHMODULE);
     source = sorted;
-    run = runs;
     stripList = NULL;
-    for (i = 0; i < numRuns; i++) {
-        RpBuildMeshTriangle *triangles = RwMalloc(run->numTriangles * sizeof(RpBuildMeshTriangle),
-                                                  rwMEMHINTDUR_FUNCTION | rwID_MESHMODULE);
-        TriStripList *strip;
-
-        for (j = 0; j < run->numTriangles; j++) {
-            triangles[j] = **source;
+    for (i = 0; i < numMaterials; i++) {
+        triangles = RwMalloc(sizeof(RpBuildMeshTriangle) * runs[i].numIndices,
+                             rwMEMHINTDUR_FUNCTION | rwID_MESHMODULE);
+        for (j = 0; j < runs[i].numIndices; j++) {
+            triangles[j] = *source[0];
             source++;
         }
-        fn_8045D898(triangles, run->numTriangles, &stripList, firstTrial);
+        fn_8045D898(triangles, runs[i].numIndices, &stripList, firstTrial);
         fn_8045E51C(&stripList, keepWinding);
 
-        for (strip = stripList; strip != NULL; strip = strip->next) {
-            RpMesh *stripMesh =
-                RwMalloc(sizeof(RpMesh) + strip->numVertices * sizeof(RxVertexIndex),
-                         rwMEMHINTDUR_FUNCTION | rwID_MESHMODULE);
+        strip = stripList;
+        while (strip != NULL) {
+            RwUInt32 bytes = sizeof(RpMesh) + (sizeof(RxVertexIndex) * strip->numVertices);
 
-            stripMesh->material = run->material;
-            stripMesh->numIndices = strip->numVertices;
-            stripMesh->indices = (RxVertexIndex *)(stripMesh + 1);
-            for (j = 0; j < stripMesh->numIndices; j++) {
-                stripMesh->indices[j] = strip->vertices[j];
+            mesh = RwMalloc(bytes, rwMEMHINTDUR_FUNCTION | rwID_MESHMODULE);
+            mesh->material = runs[i].material;
+            mesh->numIndices = strip->numVertices;
+            mesh->indices = (RxVertexIndex *)(mesh + 1);
+            for (j = 0; j < mesh->numIndices; j++) {
+                mesh->indices[j] = strip->vertices[j];
             }
-            meshes[numMeshes++] = stripMesh;
+            meshes[numMeshes] = mesh;
+            numMeshes++;
+            strip = strip->next;
         }
         while (stripList != NULL) {
             strip = stripList;
@@ -972,7 +964,6 @@ RpMeshHeader *fn_8045E904(RpBuildMesh *buildMesh, RwInt32 firstTrial, RwBool kee
             RwFreeListFree(RPMESHGLOBAL(triStripListEntryFreeList), strip);
         }
         RwFree(triangles);
-        run++;
     }
     fn_8047FCDC(RPMESHGLOBAL(triStripListEntryFreeList));
     RPMESHGLOBAL(triStripListEntryFreeList) = NULL;
@@ -980,8 +971,11 @@ RpMeshHeader *fn_8045E904(RpBuildMesh *buildMesh, RwInt32 firstTrial, RwBool kee
     size = sizeof(RpMeshHeader);
     numIndices = 0;
     for (i = 0; i < numMeshes; i++) {
+        RwUInt32 indexSize;
+
+        indexSize = sizeof(RxVertexIndex) * meshes[i]->numIndices;
+        size += sizeof(RpMesh) + indexSize;
         numIndices += meshes[i]->numIndices;
-        size += sizeof(RpMesh) + meshes[i]->numIndices * sizeof(RxVertexIndex);
     }
     meshHeader = fn_8045BF30(size);
     meshHeader->flags = rpMESHHEADERTRISTRIP;
@@ -997,7 +991,7 @@ RpMeshHeader *fn_8045E904(RpBuildMesh *buildMesh, RwInt32 firstTrial, RwBool kee
         mesh->indices = indices;
         mesh->numIndices = meshes[i]->numIndices;
         mesh->material = meshes[i]->material;
-        memcpy(indices, meshes[i]->indices, meshes[i]->numIndices * sizeof(RxVertexIndex));
+        memcpy(indices, meshes[i]->indices, sizeof(RxVertexIndex) * meshes[i]->numIndices);
         indices += mesh->numIndices;
         mesh++;
         RwFree(meshes[i]);
