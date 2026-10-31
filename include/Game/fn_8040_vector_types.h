@@ -81,6 +81,18 @@ typedef struct Fn8040Matrix34 {
 } Fn8040Matrix34;
 CHECK_SIZEOF(Fn8040Matrix34, 0x30);
 
+/* Two points, a line segment from start to end (behaviour inferred from its constructor,
+ * fn_80020A20, which copies both, and from the closest-point code in fn_8040F364.cpp; fn_8026DBB8
+ * constructs one and passes it to fn_8040FC3C). */
+typedef struct UnkSegment_80020A20 {
+#ifdef __cplusplus
+    UnkSegment_80020A20(const Fn8040Vector3 &start, const Fn8040Vector3 &end);
+#endif
+    /* 0x00 */ Fn8040Vector3 start;
+    /* 0x0C */ Fn8040Vector3 end;
+} UnkSegment_80020A20;
+CHECK_SIZEOF(UnkSegment_80020A20, 0x18);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -212,6 +224,62 @@ Fn8040Vector3 fn_8040F16C(const Fn8040Vector3 *from, const Fn8040Vector3 *to, in
 void fn_8040F268(Fn8040Vector3 *result, const Fn8040Vector3 *from, const Fn8040Vector3 *to,
                  float t);
 float fn_8040F314(float from, float to, float t);
+/* Vector helpers called by fn_8040F364.cpp (descriptions inferred). */
+/* Rotates the vector about the y, x and z axes. */
+void fn_8040D0AC(Fn8040Vector3 *result, const Fn8040Vector3 *vector, float angle);
+void fn_8040D118(Fn8040Vector3 *result, const Fn8040Vector3 *vector, float angle);
+void fn_8040D044(Fn8040Vector3 *result, const Fn8040Vector3 *vector, float angle);
+/* result = the vector scaled to length 1. */
+void fn_8040CEE8(Fn8040Vector3 *result, const Fn8040Vector3 *vector);
+/* result = -vector. */
+void fn_80016284(Fn8040Vector3 *result, const Fn8040Vector3 *vector);
+/* result = vector * factor (fn_800091A4 is a by-value wrapper that calls this). */
+void fn_8040CDA8(Fn8040Vector3 *result, const Fn8040Vector3 *vector, float factor);
+/* atan2(y, x) as a float. */
+float fn_80016260(float y, float x);
+/* Absolute value. */
+float fn_8000A980(float value);
+/* Arc cosine as a float. */
+float fn_801B1DB0(float value);
+/* Functions defined in fn_8040F364.cpp (descriptions inferred; fn_8040FB88 is declared below,
+ * after this block, as it returns bool). */
+/* Rotation vector of a forward and an up direction, in order 2 (fn_8040F364) and order 0
+ * (fn_8040F450), and the one of them that order selects (fn_8040F5F4; any other order gives the
+ * zero vector). They return the vector by value. */
+Fn8040Vector3 fn_8040F364(const Fn8040Vector3 *forward, const Fn8040Vector3 *up);
+Fn8040Vector3 fn_8040F450(const Fn8040Vector3 *forward, const Fn8040Vector3 *up);
+Fn8040Vector3 fn_8040F5F4(const Fn8040Vector3 *forward, const Fn8040Vector3 *up, int order);
+/* Pitch and yaw of a direction, by two conventions (fn_8040F664, fn_8040F760), and the first of
+ * them with a zero roll added (fn_8040F7F8). */
+Fn8040Vector2 fn_8040F664(const Fn8040Vector3 *direction);
+Fn8040Vector2 fn_8040F760(const Fn8040Vector3 *direction);
+Fn8040Vector3 fn_8040F7F8(const Fn8040Vector3 *direction);
+/* Angle between two vectors, in radians. */
+float fn_8040F8FC(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
+/* Splits vector into its part along onto (parallel) and the remainder (perpendicular); either
+ * output may be null. onto is assumed to be of unit length; it is not normalised. */
+void fn_8040F990(Fn8040Vector3 *parallel, Fn8040Vector3 *perpendicular, const Fn8040Vector3 *vector,
+                 const Fn8040Vector3 *onto);
+/* Writes the translation column of the matrix from a vector (fn_8040FA20), and reads it into one
+ * (fn_8040FAA0, and fn_8040FB08 that returns it). */
+void fn_8040FA20(Fn8040Matrix34 *matrix, const Fn8040Vector3 *translation);
+void fn_8040FAA0(Fn8040Vector3 *translation, Fn8040Matrix34 *matrix);
+Fn8040Vector3 fn_8040FB08(Fn8040Matrix34 *matrix);
+/* The closest point of a segment to a point, with its fraction along the segment when requested
+ * (fn_8040FC78; fn_8040FC3C without the fraction). */
+Fn8040Vector3 fn_8040FC3C(const UnkSegment_80020A20 *segment, const Fn8040Vector3 *point);
+Fn8040Vector3 fn_8040FC78(float *fraction, const UnkSegment_80020A20 *segment,
+                          const Fn8040Vector3 *point);
+/* Builds the matrix that rotates by angle about the axis. */
+void fn_8040FD8C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *axis, float angle);
+/* result = matrix rotated by a rotation vector, and by its inverse (fn_8040FEBC). */
+void fn_8040FFBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix,
+                 const Fn8040Vector3 *rotation, int order);
+void fn_8040FEBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix,
+                 const Fn8040Vector3 *rotation, int order);
+/* result = vector rotated by a rotation vector. */
+void fn_80410098(Fn8040Vector3 *result, const Fn8040Vector3 *vector, const Fn8040Vector3 *rotation,
+                 int order);
 /* The identity and zero matrices, built at startup (a __sinit_ function and a .ctors entry in
  * fn_8040B034.cpp). */
 extern Fn8040Matrix34 lbl_805E0720; /* identity */
@@ -219,6 +287,12 @@ extern Fn8040Matrix34 lbl_805E0750; /* zero */
 
 #ifdef __cplusplus
 }
+
+/* Returns whether the value is close enough to 0 to count as 0 (behaviour inferred). */
+extern "C" bool fn_8000A950(float value);
+
+/* Whether the point lies between the planes through the segment's ends (behaviour inferred). */
+extern "C" bool fn_8040FB88(const UnkSegment_80020A20 *segment, const Fn8040Vector3 *point);
 
 /* Sets matrix to the identity rotation with the given translation (name inferred). Where a smart
  * pointer's operator-> supplies the vector, the original calls that operator out of line, which

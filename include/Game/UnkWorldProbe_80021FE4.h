@@ -15,15 +15,6 @@ class UnkWorld_80020D40;
 class UnkProbeTarget_800587A0;
 class UnkProbeHit_8001E9BC;
 
-/* Two points (behaviour inferred from its constructor, fn_80020A20, which copies both). */
-struct UnkSegment_80020A20 {
-    UnkSegment_80020A20(const Fn8040Vector3 &start, const Fn8040Vector3 &end);
-
-    /* 0x00 */ Fn8040Vector3 start;
-    /* 0x0C */ Fn8040Vector3 end;
-};
-CHECK_SIZEOF(UnkSegment_80020A20, 0x18);
-
 struct UnkProbeNode_80021FE4 {
     /* 0x00 */ boost::weak_ptr<UnkProbeTarget_800587A0> target;
     /* 0x08 */ u8 field_0x8[0x14 - 0x8];
