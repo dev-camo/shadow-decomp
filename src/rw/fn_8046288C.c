@@ -47,19 +47,7 @@ void *fn_80462914(void *object, RpGameCubeRenderMesh *renderMesh) {
             RpWorldSector *sector = object;
             RwReal step;
 
-            origin.at.z = 1.0f;
-            origin.up.x = 0.0f;
-            origin.up.y = 1.0f;
-            origin.right.x = 1.0f;
-            origin.right.z = 0.0f;
-            origin.right.y = 0.0f;
-            origin.at.y = 0.0f;
-            origin.at.x = 0.0f;
-            origin.up.z = 0.0f;
-            origin.pos.z = 0.0f;
-            origin.pos.y = 0.0f;
-            origin.pos.x = 0.0f;
-            origin.flags |= rwMATRIXINTERNALIDENTITY | rwMATRIXTYPEORTHONORMAL;
+            RwMatrixSetIdentity(&origin);
             step = 1.0f / (1 << format->posFrac);
             origin.pos.x =
                 sector->boundingBox.inf.x - (RwReal)fmod(sector->boundingBox.inf.x, step);
