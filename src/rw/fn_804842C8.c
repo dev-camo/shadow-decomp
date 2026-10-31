@@ -3,7 +3,7 @@
 #include "rw/rwcore.h"
 #include "layout_check.h"
 
-/* object type and chunk ID */
+/* object type */
 #define rwCAMERA 4
 
 #define rwPERSPECTIVE 1
