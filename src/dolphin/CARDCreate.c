@@ -2,9 +2,6 @@
 
 #include "__card.h"
 
-// prototypes
-static void CreateCallbackFat(s32 chan, s32 result);
-
 static void CreateCallbackFat(s32 chan, s32 result) {
     CARDControl *card;
     CARDDir *dir;
@@ -15,36 +12,39 @@ static void CreateCallbackFat(s32 chan, s32 result) {
     callback = card->apiCallback;
     card->apiCallback = NULL;
 
-    if (result >= 0) {
-        dir = __CARDGetDirBlock(card);
-        ent = &dir[card->freeNo];
-        memcpy(ent->gameName, card->diskID->gameName, sizeof(ent->gameName));
-        memcpy(ent->company, card->diskID->company, sizeof(ent->company));
-        ent->permission = 4;
-        ent->copyTimes = 0;
+    if (result < 0) {
+        goto error;
+    }
 
-        ASSERTLINE(111, CARDIsValidBlockNo(card, card->startBlock));
-        ent->startBlock = card->startBlock;
-        ent->bannerFormat = 0;
-        ent->iconAddr = -1;
-        ent->iconFormat = 0;
-        ent->iconSpeed = 0;
-        ent->commentAddr = -1;
+    dir = __CARDGetDirBlock(card);
+    ent = &dir[card->freeNo];
+    memcpy(ent->gameName, card->diskID->gameName, sizeof(ent->gameName));
+    memcpy(ent->company, card->diskID->company, sizeof(ent->company));
+    ent->permission = CARD_ATTR_PUBLIC;
+    ent->copyTimes = 0;
 
-        CARDSetIconSpeed(ent, 0, CARD_STAT_SPEED_FAST);
-        card->fileInfo->offset = 0;
-        card->fileInfo->iBlock = ent->startBlock;
-        ent->time = OSTicksToSeconds(OSGetTime());
-        result = __CARDUpdateDir(chan, callback);
-        if (result < 0) {
-            goto after;
-        }
-    } else {
-    after:;
-        __CARDPutControlBlock(card, result);
-        if (callback) {
-            callback(chan, result);
-        }
+    ASSERTLINE(111, CARDIsValidBlockNo(card, card->startBlock));
+    ent->startBlock = card->startBlock;
+    ent->bannerFormat = 0;
+    ent->iconAddr = -1;
+    ent->iconFormat = 0;
+    ent->iconSpeed = 0;
+    ent->commentAddr = -1;
+
+    CARDSetIconSpeed(ent, 0, CARD_STAT_SPEED_FAST);
+    card->fileInfo->offset = 0;
+    card->fileInfo->iBlock = ent->startBlock;
+    ent->time = OSTicksToSeconds(OSGetTime());
+    result = __CARDUpdateDir(chan, callback);
+    if (result < 0) {
+        goto error;
+    }
+    return;
+
+error:
+    __CARDPutControlBlock(card, result);
+    if (callback) {
+        callback(chan, result);
     }
 }
 
