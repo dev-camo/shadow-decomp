@@ -804,7 +804,6 @@ config.libs = [
                 Object(Matching, "Game/fn_80406F08.c", extra_cflags=["-sdata2 0"]),
                 Object(Matching, "Game/fn_804212F4.c"),
                 Object(Matching, "Game/fn_8040E048.c"),
-                Object(Matching, "Game/fn_8040AB94.c"),
                 Object(
                     Matching,
                     "Game/fn_8040ABC8.cpp",
@@ -1244,6 +1243,16 @@ config.libs = [
             Object(
                 Matching,
                 "CRI/cftcoladj.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/cft_lib.c",
                 extra_cflags=[
                     "-sdata 0",
                     "-sdata2 0",

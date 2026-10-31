@@ -1534,10 +1534,12 @@ CRI/cftfx.c:
 
 CRI/cftcoladj.c:
 	.text       start:0x8040A4A8 end:0x8040AB94
-	.rodata     start:0x8051A250 end:0x8051A254
+	.rodata     start:0x8051A250 end:0x8051A258
 
-Game/fn_8040AB94.c:
-	.text       start:0x8040AB94 end:0x8040AB98
+CRI/cft_lib.c:
+	.text       start:0x8040AB94 end:0x8040ABC8
+	.rodata     start:0x8051A258 end:0x8051A2B0
+	.bss        start:0x805E0718 end:0x805E0720
 
 Game/fn_8040ABC8.cpp:
 	extab       start:0x8000574C end:0x8000577C

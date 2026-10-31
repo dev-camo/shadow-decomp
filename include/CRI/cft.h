@@ -1,7 +1,7 @@
 #ifndef CRI_CFT_H
 #define CRI_CFT_H
 
-/* CRI Sofdec colour format transforms (cftcoladj.c, cftfx.c). */
+/* CRI Sofdec colour format transforms (cftcoladj.c, cftfx.c) and their library init (cft_lib.c). */
 #include "CRI/cri_xpt.h"
 #include "CRI/sfx.h"
 #include "layout_check.h"
@@ -35,6 +35,15 @@ CHECK_SIZEOF(CFT_ARGBDST, 0x18);
 /* cftcoladj.c */
 void CFT_MakeInverseMtx3D(Float32 *m, Float32 *inv);
 void CFT_MakeInvConvTableCustom(Uint8 *ytbl, Uint8 *cbtbl, Uint8 *crtbl);
+
+/* cft_lib.c */
+void CFT_Finish(void); /* name inferred: the counterpart of CFT_Init */
+void CFT_Init(void);   /* name inferred: the library start called from SFX_Init */
+
+/* Fills the static YCC to RGB coefficient tables. Name and file (cftyp422_ppc.c) from the RE4
+ * GameCube decompilation, whose function of that name computes the same coefficients (1.596,
+ * 2.017, -0.392, -0.813). Not yet sourced. */
+void CFT_Ycc420plnToArgb8888Init(void);
 
 /* cftfx.c */
 void CFT_Ycc420plnToA256V(const SFX_FRM *frm, const SFX_FRM *dstfrm, Uint8 *const *tbl);
