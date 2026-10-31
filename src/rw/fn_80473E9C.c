@@ -160,13 +160,10 @@ RwBool fn_80474498(void) {
 
     lbl_805E1950.ctmIndex = 0;
     lbl_805E1950.ctmStack[0] = fn_8047F994();
-    RwMatrixSetIdentity(CTM());
-    lbl_805E1950.deviceMatrixValid = FALSE;
-    lbl_805E1950.pixelSizeValid = FALSE;
+    fn_80473ECC();
     lbl_805E1950.field_0x324 = 0.5f;
     lbl_805E1950.pixelSizeValid = FALSE;
-    lbl_805E1950.layerDepth = 1.0f;
-    lbl_805E1950.deviceMatrixValid = FALSE;
+    fn_80474228(1.0f);
     lbl_805E1950.field_0x330 = 7;
     RwMatrixSetIdentity(&lbl_805E1950.baseMatrix);
     for (i = 0; i < rt2dVERTEXBUFFERSIZE; i++) {
