@@ -112,6 +112,16 @@ void fn_80413318(unsigned short id);
 ResourceGroup *fn_80413538(ResourceGroup *group);
 int fn_804139B4(ResourceData *data);
 
+/* Not sourced yet. fn_80415854 and fn_80415A18 call them with the id of a motion (0 for the
+ * motion that is already playing), a value passed on from their callers, the range of a player,
+ * another such value and a flag; the callers repeat the call while it returns nonzero (all inferred
+ * from those callers). */
+struct MotionRange;
+int fn_80411818(unsigned short motionId, int arg1, const struct MotionRange *range, int arg3,
+                int arg4);
+int fn_80411DEC(unsigned short motionId, int arg1, const struct MotionRange *range, int arg3,
+                int arg4);
+
 #ifdef __cplusplus
 }
 #endif

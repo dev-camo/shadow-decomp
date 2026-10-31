@@ -975,7 +975,19 @@ config.libs = [
                 # Replaceable memory functions of the library code at 0x80410630-0x8042166C.
                 Object(Matching, "Game/fn_804110EC.c", extra_cflags=["-Cpp_exceptions on"]),
                 Object(Matching, "Game/fn_8040DB6C.c"),
-                Object(Matching, "Game/fn_8041583C.c"),
+                # The middle piece of the control of motions (see Game/fn_804157E8.c
+                # below); it takes the same flags as the other two pieces.
+                Object(
+                    Matching,
+                    "Game/fn_8041583C.c",
+                    extra_cflags=[
+                        "-Cpp_exceptions on",
+                        "-O4,s",
+                        "-use_lmw_stmw on",
+                        "-str reuse,readonly",
+                        "-inline auto,level=1",
+                    ],
+                ),
                 Object(Matching, "Game/fn_8040CB2C.c"),
                 Object(Matching, "Game/fn_8040E310.c"),
                 Object(Matching, "Game/fn_8040D608.c"),
@@ -1003,6 +1015,32 @@ config.libs = [
                 Object(
                     NonMatching,
                     "Game/fn_80413B30.c",
+                    extra_cflags=[
+                        "-Cpp_exceptions on",
+                        "-O4,s",
+                        "-use_lmw_stmw on",
+                        "-str reuse,readonly",
+                        "-inline auto,level=1",
+                    ],
+                ),
+                # Control of motions (two pieces of one file around the Matching
+                # Game/fn_8041583C.c above). The flags follow the neighbouring library code.
+                # Game/fn_804157E8.c cannot link yet: it owns the file's first .sdata2
+                # constant, which unsourced code of the same file references by name.
+                Object(
+                    NonMatching,
+                    "Game/fn_804157E8.c",
+                    extra_cflags=[
+                        "-Cpp_exceptions on",
+                        "-O4,s",
+                        "-use_lmw_stmw on",
+                        "-str reuse,readonly",
+                        "-inline auto,level=1",
+                    ],
+                ),
+                Object(
+                    NonMatching,
+                    "Game/fn_80415854.c",
                     extra_cflags=[
                         "-Cpp_exceptions on",
                         "-O4,s",

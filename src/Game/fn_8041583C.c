@@ -1,13 +1,10 @@
-typedef struct Fn8041583CObject {
-    /* 0x00 */ char padding[32];
-    /* 0x20 */ void *value;
-#include "layout_check.h"
-} Fn8041583CObject;
-CHECK_SIZEOF(Fn8041583CObject, 0x24);
+/* Control of motions, part 2 (see Game/fn_804157E8.c). */
+#include "Game/fn_804157E8_motion_control.h"
 
-void *fn_8041583C(Fn8041583CObject *object) {
-    if (object != 0) {
-        return object->value;
+/* The number of players of a control. */
+int fn_8041583C(MotionControl *control) {
+    if (control != 0) {
+        return control->playerCount;
     }
     return 0;
 }

@@ -13,8 +13,7 @@ class UnkMotionControl_801602B4;
 
 /* Tests or sets a work flag of the motion control (behaviour inferred: CityLaser and ThreatObj
  * pass 0, 3, 1 and test the result, GadgetModelInfo::fn_8015FF60 passes 0, 11, 0). */
-extern "C" int stMtnControlWorkFlag(UnkMotionControl_801602B4 *control, int arg1, int arg2,
-                                    int arg3);
+extern "C" int stMtnControlWorkFlag(UnkMotionControl_801602B4 *control, int id, int arg2, int arg3);
 
 /* Motion control calls with behaviour inferred from the names: prepare a blend towards the target
  * motion, set the blend length and set the frame speed. The Chao gadget passes 0, -1 and -1, then a
@@ -22,8 +21,10 @@ extern "C" int stMtnControlWorkFlag(UnkMotionControl_801602B4 *control, int arg1
  * unknown, and the return types are unknown (the Chao ignores them). */
 extern "C" void stMtnPrepareBlendWithTarget(UnkMotionControl_801602B4 *control, int arg1, int arg2,
                                             int arg3);
-extern "C" void stMtnRequestBlendFrame(UnkMotionControl_801602B4 *control, int arg1, float frames);
-extern "C" void stMtnRequestFrameSpeed(UnkMotionControl_801602B4 *control, int arg1, float speed);
+/* Also declared, with MotionControl for the control, in Game/fn_804157E8_motion_control.h, whose
+ * unit defines it (the two control types are not unified yet). */
+extern "C" void stMtnRequestBlendFrame(UnkMotionControl_801602B4 *control, int id, float frames);
+extern "C" void stMtnRequestFrameSpeed(UnkMotionControl_801602B4 *control, int id, float speed);
 
 /* The three words that fn_8015FA78 passes to its callback for each part (names and meaning
  * unknown). */
