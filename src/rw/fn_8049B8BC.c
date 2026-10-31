@@ -336,19 +336,19 @@ void fn_8049BDF0(PipelineTopSortState *state, RwUInt32 nodeIndex) {
  * to, starting from the entry point; NULL if the pipeline is fragmented or cyclic */
 static inline RxPipeline *PipelineTopSort(RxPipeline *pipeline) {
     PipelineTopSortState state;
-    RwUInt32 i;
     RxPipelineNode *node;
+    RwUInt32 i;
 
     state.pipeline = pipeline;
     state.numSorted = 0;
 
-    for (i = 0, node = pipeline->nodes; i < pipeline->numNodes; i++, node++) {
+    for (i = 0, node = pipeline->nodes; i < pipeline->numNodes; node++, i++) {
         if (node->nodeDef != NULL) {
             node->topSortData->numInsVisited = 0;
             node->topSortData->numIns = 0;
         }
     }
-    for (i = 0, node = pipeline->nodes; i < pipeline->numNodes; i++, node++) {
+    for (i = 0, node = pipeline->nodes; i < pipeline->numNodes; node++, i++) {
         if (node->nodeDef != NULL && node->numOutputs != 0) {
             RwUInt32 *output = node->outputs;
             RwUInt32 count = node->numOutputs;
@@ -396,8 +396,10 @@ RxPipeline *fn_8049C1E0(RxPipeline *pipeline) {
             RwUInt32 unlockedSize;
             RwUInt32 size;
             RwUInt32 maxNodes;
+            RwUInt32 topSortSize;
+            RwUInt32 clusterScratchSize;
+            RwUInt32 reqListSize;
             RwInt32 i;
-            RxPipelineNode *node;
 
             if (pipeline->entryPoint >= pipeline->numNodes ||
                 pipeline->nodes[pipeline->entryPoint].nodeDef == NULL) {
@@ -406,34 +408,39 @@ RxPipeline *fn_8049C1E0(RxPipeline *pipeline) {
             }
 
             /* the superblock must hold the locked layout while the nodes are sorted and the
-             * unlocked layout, with its packet and cluster tables, afterwards; the separate
-             * products and the order of the two running totals follow the original */
+             * unlocked layout afterwards: the nodes and their output arrays, the top-sort data,
+             * the dependency pass's scratch, then what the pass allocates from the bottom (size):
+             * the cluster tables, the per-node slot tables and private data, and the packet;
+             * the operand order of the running totals follows the original */
             numClusters = fn_8049B9A4(pipeline);
             maxNodes = RXPIPELINEGLOBAL(maxNodesPerPipe);
+            topSortSize = maxNodes * sizeof(RxPipelineNodeTopSortData);
             lockedSize = maxNodes * sizeof(RxPipelineNode) +
-                         (maxNodes * RXNODEMAXOUTPUTS * sizeof(RwUInt32) +
-                          maxNodes * sizeof(RxPipelineNodeTopSortData));
+                         maxNodes * RXNODEMAXOUTPUTS * sizeof(RwUInt32) + topSortSize;
             unlockedSize = pipeline->numNodes * sizeof(RxPipelineNode);
             for (i = 0; (RwUInt32)i < pipeline->numNodes; i++) {
                 /* the original counts the first node's outputs for every node */
                 unlockedSize += pipeline->nodes->numOutputs * sizeof(RwUInt32);
             }
-            unlockedSize = maxNodes * sizeof(RxPipelineNodeTopSortData) + unlockedSize;
+            unlockedSize = topSortSize + unlockedSize;
+            clusterScratchSize = pipeline->numNodes * numClusters * rxDEPREQUIREMENTSIZE;
+            clusterScratchSize += pipeline->numNodes * numClusters * rxDEPCLUSTERSCRATCHSIZE;
+            unlockedSize = clusterScratchSize + unlockedSize;
             size = numClusters * sizeof(RxPipelineCluster) +
                    numClusters * sizeof(RxPipelineRequiresCluster);
-            unlockedSize = pipeline->numNodes * numClusters * rxDEPREQUIREMENTSIZE +
-                           pipeline->numNodes * numClusters * rxDEPCLUSTERSCRATCHSIZE +
-                           unlockedSize;
             size += pipeline->numNodes * numClusters * sizeof(RwUInt32);
-            unlockedSize = pipeline->numNodes * rxDEPREQUIREMENTLISTSIZE + unlockedSize;
+            reqListSize = pipeline->numNodes * rxDEPREQUIREMENTLISTSIZE;
+            unlockedSize = reqListSize + unlockedSize;
             size += pipeline->numNodes * (numClusters + 1) * sizeof(RwUInt32);
-            for (i = 0, node = pipeline->nodes; (RwUInt32)i < pipeline->numNodes; i++, node++) {
-                if (node->nodeDef->pipelineNodePrivateDataSize != 0) {
-                    size += node->nodeDef->pipelineNodePrivateDataSize;
+            for (i = 0; (RwUInt32)i < pipeline->numNodes; i++) {
+                RxNodeDefinition *nodeDef = pipeline->nodes[i].nodeDef;
+
+                if (nodeDef->pipelineNodePrivateDataSize != 0) {
+                    size += nodeDef->pipelineNodePrivateDataSize;
                 }
-                size += node->nodeDef->io.numClustersOfInterest * sizeof(RwUInt32);
+                size += nodeDef->io.numClustersOfInterest * sizeof(RwUInt32);
             }
-            size = (numClusters - 1) * sizeof(RxCluster) + size + sizeof(RxPacket);
+            size += sizeof(RxPacket) + (numClusters - 1) * sizeof(RxCluster);
             unlockedSize += size;
             size = lockedSize;
             if (unlockedSize > lockedSize) {
@@ -444,8 +451,8 @@ RxPipeline *fn_8049C1E0(RxPipeline *pipeline) {
                 return NULL;
             }
 
-            lbl_805EDF58.bottom = NULL;
             lbl_805EDF58.top = (RwUInt8 *)pipeline->superBlock + size;
+            lbl_805EDF58.bottom = NULL;
 
             pipeline = PipelineTopSort(pipeline);
             if (pipeline == NULL) {
@@ -459,7 +466,8 @@ RxPipeline *fn_8049C1E0(RxPipeline *pipeline) {
                 RxPipelineNodeTopSortData *topSortSrc;
                 RwUInt32 *outputsDst;
                 RwUInt32 *outputsSrc;
-                RwUInt32 j;
+                /* a counter of its own: counting down with i compiles to different code */
+                RwInt32 j;
 
                 topSortDst = (RxPipelineNodeTopSortData *)((RwUInt8 *)pipeline->superBlock + size);
                 topSortDst--;
@@ -468,25 +476,25 @@ RxPipeline *fn_8049C1E0(RxPipeline *pipeline) {
                 topSortSrc =
                     (RxPipelineNodeTopSortData *)(outputsSrc + maxNodes * RXNODEMAXOUTPUTS);
                 topSortSrc += pipeline->numNodes - 1;
-                for (i = pipeline->numNodes - 1; i >= 0; i--) {
+                for (j = pipeline->numNodes - 1; j >= 0; j--) {
                     memcpy(topSortDst, topSortSrc, sizeof(RxPipelineNodeTopSortData));
-                    pipeline->nodes[i].topSortData = topSortDst;
+                    pipeline->nodes[j].topSortData = topSortDst;
                     topSortSrc--;
                     topSortDst--;
                 }
 
                 outputsDst = (RwUInt32 *)(pipeline->nodes + pipeline->numNodes);
-                for (j = 0; j < pipeline->numNodes; j++) {
-                    if (pipeline->nodes[j].numOutputs == 0) {
-                        pipeline->nodes[j].outputs = NULL;
+                for (i = 0; (RwUInt32)i < pipeline->numNodes; i++) {
+                    if (pipeline->nodes[i].numOutputs == 0) {
+                        pipeline->nodes[i].outputs = NULL;
                     } else {
                         memcpy(outputsDst, outputsSrc,
-                               pipeline->nodes[j].numOutputs * sizeof(RwUInt32));
-                        pipeline->nodes[j].outputs = outputsDst;
+                               pipeline->nodes[i].numOutputs * sizeof(RwUInt32));
+                        pipeline->nodes[i].outputs = outputsDst;
                     }
                     outputsSrc += RXNODEMAXOUTPUTS;
-                    numOutputsTotal += pipeline->nodes[j].numOutputs;
-                    outputsDst += pipeline->nodes[j].numOutputs;
+                    numOutputsTotal += pipeline->nodes[i].numOutputs;
+                    outputsDst += pipeline->nodes[i].numOutputs;
                 }
 
                 lbl_805EDF58.top = (RwUInt8 *)topSortSrc;
@@ -505,8 +513,8 @@ RxPipeline *fn_8049C1E0(RxPipeline *pipeline) {
             {
                 RwUInt32 j;
 
-                for (j = 0; j < pipeline->numNodes; j++) {
-                    pipeline->nodes[j].topSortData = NULL;
+                for (i = 0; (RwUInt32)i < pipeline->numNodes; i++) {
+                    pipeline->nodes[i].topSortData = NULL;
                 }
 
                 for (i = pipeline->numNodes - 1; i >= 0; i--) {
