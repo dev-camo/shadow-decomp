@@ -617,6 +617,7 @@ config.libs = [
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/TestNakazawa.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/BDTrue.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCristalWallSwitch.cpp", cflags=cflags_game_cpp),
                 Object(NonMatching, "Game/ElecCube.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecPillar.cpp", cflags=cflags_game_cpp),
