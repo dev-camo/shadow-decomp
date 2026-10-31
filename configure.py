@@ -734,6 +734,23 @@ config.libs = [
                 Object(Matching, "Game/fn_80424D18.c"),
                 Object(Matching, "Game/fn_8040D9D8.c"),
                 Object(Matching, "Game/fn_8040D498.c"),
+                # 3x4 matrix helpers. Nine of 28 functions still differ. The three axis rotations
+                # (fn_8040B0C0, fn_8040B138, fn_8040B1B0) load r0 and r31 in the opposite order in
+                # the epilogue, and the look-at matrix (fn_8040B33C) swaps one fneg with the next
+                # lfs (2 words each). The quaternion matrix (fn_8040B228) and the vector transforms
+                # (fn_8040B618, fn_8040B67C) have the same instructions in a different order or with
+                # different registers. The inverses (fn_8040BCD4, fn_8040BEF8) differ in scheduling,
+                # registers and saved registers: fn_8040BEF8 has the target's arithmetic opcodes and
+                # saves 1 more FPR (152 instructions instead of 148); fn_8040BCD4 reuses the
+                # determinant's products m10 * m22 and m12 * m20 for element [1][0], which the target
+                # computes again (2 fsubs and 1 fneg where the target has 1 fmsubs and 1 fnmsubs),
+                # and saves 2 more FPRs (146 instructions instead of 137).
+                Object(
+                    NonMatching,
+                    "Game/fn_8040B034.cpp",
+                    cflags=cflags_game_cpp,
+                    extra_cflags=["-Cpp_exceptions on"],
+                ),
                 Object(Matching, "Game/fn_8040C244.c"),
                 Object(Matching, "Game/fn_8040CC5C.c"),
                 Object(
