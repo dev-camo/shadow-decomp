@@ -7,12 +7,6 @@
 /* The longest path the device is opened with, its prefix included */
 #define rtGCNFSMAXPATH 0x100
 
-/* The open results (inferred) */
-#define RTGCNFS_OPEN_NOERROR 1
-#define RTGCNFS_OPEN_NOTFOUND 3
-#define RTGCNFS_OPEN_BADMODE 4 /* the disc cannot be written */
-#define RTGCNFS_OPEN_PATHTOOLONG 5
-
 /* The device state (RTGCNFS_ERROR_*).
  *
  * Matching workaround: the state is declared volatile. After each store fn_8047B154 loads it back
@@ -52,15 +46,15 @@ RwInt32 fn_8047A824(RtFileSystem *fileSystem, RtFile *file, const RwChar *name, 
     const RwChar *devicePath;
 
     if (mode & (RTFILE_MODE_WRITE | RTFILE_MODE_FLAG4 | RTFILE_MODE_FLAG8)) {
-        return RTGCNFS_OPEN_BADMODE;
+        return RTFS_ERROR_BADMODE;
     }
     devicePath = fn_80479698(name);
     if (fn_8047971C(path, rtGCNFSMAXPATH, fileSystem->getPathPrefix(fileSystem), devicePath, '/') ==
         NULL) {
-        return RTGCNFS_OPEN_PATHTOOLONG;
+        return RTFS_ERROR_PATHTOOLONG;
     }
     if (!DVDOpen(path, &gcnFile->fileInfo)) {
-        return RTGCNFS_OPEN_NOTFOUND;
+        return RTFS_ERROR_FILENOTFOUND;
     }
     file->status = RTFILE_STATUS_READY;
     file->field_0x24 = 1;
@@ -76,7 +70,7 @@ RwInt32 fn_8047A824(RtFileSystem *fileSystem, RtFile *file, const RwChar *name, 
         file->status = RTFILE_STATUS_READY;
     }
     file->priority = 2;
-    return RTGCNFS_OPEN_NOERROR;
+    return RTFS_ERROR_NOERROR;
 }
 
 void fn_8047A938(RtFile *file) {

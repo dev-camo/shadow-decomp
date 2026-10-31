@@ -5,9 +5,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* The newest stream library version read */
-#define rwLIBRARYCURRENTVERSION 0x37002
-
 /* The bytes converted at a time when writing */
 #define rwSTREAMCONVERTBUFFER 0x100
 
@@ -169,7 +166,7 @@ RwInt32 fn_8047CF50(RwStream *stream, RwUInt32 type, RwUInt32 *lengthOut, RwUInt
                 RWERROR((E_RW_BADVERSION));
                 return FALSE;
             }
-            if (version > rwLIBRARYCURRENTVERSION) {
+            if (version > RW_STREAM_VERSION) {
                 RWERROR((E_RW_BADVERSION));
                 return FALSE;
             }

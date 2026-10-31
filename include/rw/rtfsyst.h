@@ -22,6 +22,9 @@ typedef struct RtFileSystem RtFileSystem;
 /* The toolkit's results (inferred) */
 #define RTFS_ERROR_NOERROR 1
 #define RTFS_ERROR_TOOMANYFS 2       /* the manager has no room for another file system */
+#define RTFS_ERROR_FILENOTFOUND 3    /* a device could not find the file to open */
+#define RTFS_ERROR_BADMODE 4         /* a device cannot open the file in the requested mode */
+#define RTFS_ERROR_PATHTOOLONG 5     /* the path, with the device's prefix, is too long */
 #define RTFS_ERROR_FSNAMEINUSE 6     /* a file system of that name is registered */
 #define RTFS_ERROR_DEVICENAMEINUSE 7 /* a file system of that device name is registered */
 
