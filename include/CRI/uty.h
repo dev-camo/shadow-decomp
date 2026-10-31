@@ -32,6 +32,16 @@ Sint32 UTY_MulDiv(Sint32 a, Sint32 b, Sint32 c);
 /* cmptime.c: compares cnt1/tscl1 with cnt2/tscl2 */
 Bool UTY_CmpTime(Sint32 cnt1, Sint32 tscl1, Sint32 cnt2, Sint32 tscl2);
 
+/* uty_tmr.c: the PowerPC time base as the profiling clock */
+Sint64 UTY_GetTmrUnit(void);
+Bool UTY_IsTmrVoid(void);
+Sint64 UTY_GetTmr(void);
+void UTY_FinishTmr(void);
+void UTY_InitTmr(Sint32 ch);
+
+/* Game/fn_803CC9D0.c: looks a configuration entry up by key (the table and the name are unknown) */
+int fn_803CC9D0(const char *key, unsigned int *output_word);
+
 /* mcp_not.c: the portable memory copy over memcpy */
 void MEM_Copy(void *dst, const void *src, Uint32 nbytes);
 

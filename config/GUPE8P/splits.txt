@@ -1373,6 +1373,11 @@ CRI/muldiv.c:
 CRI/muldivr.c:
 	.text       start:0x804023A0 end:0x804024FC
 
+CRI/uty_tmr.c:
+	.text       start:0x804024FC end:0x80402680
+	.rodata     start:0x80518BF0 end:0x80518BF8
+	.bss        start:0x805DD6E8 end:0x805DD6F8
+
 CRI/uty_ppc.c:
 	.text       start:0x80402680 end:0x804026E8
 
