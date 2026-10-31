@@ -96,7 +96,10 @@ RwBool fn_80491BAC(void *out, void *inOut, RwInt32 numIn) {
 
     switch (numIn & rwRASTERFORMATPIXELFORMATMASK) {
     case rwRASTERFORMATDEFAULT:
-        pixel = fn_80491AF4(color);
+        /* The default format is the 565 one */
+        if (!fn_80491BAC(&pixel, inOut, rwRASTERFORMAT565)) {
+            return FALSE;
+        }
         break;
     case rwRASTERFORMATLUM8:
         RWERROR((ERRORDEBUGMESSAGE, "rwRASTERFORMATLUM8 not yet supported"));
@@ -195,7 +198,10 @@ RwBool fn_80491EC0(void *out, void *inOut, RwInt32 numIn) {
 
     switch (numIn & rwRASTERFORMATPIXELFORMATMASK) {
     case rwRASTERFORMATDEFAULT:
-        fn_80491DBC(color, pixel);
+        /* The default format is the 565 one */
+        if (!fn_80491EC0(out, inOut, rwRASTERFORMAT565)) {
+            return FALSE;
+        }
         break;
     case rwRASTERFORMATLUM8:
         RWERROR((ERRORDEBUGMESSAGE, "rwRASTERFORMATLUM8 not yet supported"));
