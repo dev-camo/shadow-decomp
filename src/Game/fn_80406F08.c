@@ -1,6 +1,7 @@
-#include "Game/fn_8040_stream_object.h"
+#include "CRI/mwsfd.h"
 
-void fn_80406F08(Fn8040StreamObject *object) {
-    int max_nsct = object->field_1C8;
-    fn_8040773C(object, (int)(max_nsct * 0.8), max_nsct);
+void MWSFPLY_SetFlowLimit(MWPLY mwply) {
+    Sint32 max_nsct = mwply->flow_nsct;
+
+    MWSFD_SetFlowLimit(mwply, (Sint32)(max_nsct * 0.8), max_nsct);
 }
