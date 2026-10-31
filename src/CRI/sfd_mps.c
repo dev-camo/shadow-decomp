@@ -1043,7 +1043,7 @@ Sint32 SFMPS_Init(void) {
 
 /* Registers a stream joint that receives the raw payload of element stream `stmid` (0xBC..0xFF)
  * instead of the internal buffers, with a notification callback (side audio streams). */
-Sint32 SFD_SetElementOutSj(SFD sfd, Sint32 stmid, void *sj, void (*fn)(void *obj, Sint32 stmid),
+Sint32 SFD_SetElementOutSj(SFD sfd, Sint32 stmid, SJ sj, void (*fn)(void *obj, Sint32 stmid),
                            void *obj) {
     SFMPS_WORK *wk;
 

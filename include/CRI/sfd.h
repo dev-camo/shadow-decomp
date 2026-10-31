@@ -39,7 +39,7 @@ typedef struct SFD_OBJ *SFD;
 
 /* user-output (usr sj) channel */
 typedef struct {
-    void *sj;    /* 0x00 */
+    SJ sj;       /* 0x00 */
     void *prm;   /* 0x04 */
     Sint32 rsv1; /* 0x08 */
     Sint32 rsv2; /* 0x0C */
@@ -742,21 +742,21 @@ CHECK_SIZEOF(SFPLY_FRMSTAT, 0x20);
 #define SFMPS_OUTSJ_NUM (SFMPS_STMID_MAX - SFMPS_STMID_MIN + 1)
 
 typedef struct {
-    struct MPS_OBJ *mps;          /* 0x000 */
-    Sint32 nvid;                  /* 0x004 video_bound of the system headers */
-    Sint32 naud;                  /* 0x008 audio_bound */
-    Sint32 x0c;                   /* 0x00C */
-    Sint64 pts_min;               /* 0x010 minimum audio PTS */
-    Sint64 pts_min2;              /* 0x018 */
-    Sint32 concat_cnt;            /* 0x020 end codes passed in concatenated play */
-    Sint32 last_vid;              /* 0x024 stream id of the last video packet */
-    Sint32 last_aud;              /* 0x028 stream id of the last audio packet */
-    Sint32 first_vid;             /* 0x02C first video stream id seen (-1) */
-    Sint32 first_aud;             /* 0x030 */
-    Sint32 cur_vid;               /* 0x034 video stream id being decoded (-1) */
-    Sint32 cur_aud;               /* 0x038 */
-    Sint32 endcode;               /* 0x03C an end code was seen at the pack start */
-    void *outsj[SFMPS_OUTSJ_NUM]; /* 0x040 element output stream joints by stream id - 0xBC */
+    struct MPS_OBJ *mps;       /* 0x000 */
+    Sint32 nvid;               /* 0x004 video_bound of the system headers */
+    Sint32 naud;               /* 0x008 audio_bound */
+    Sint32 x0c;                /* 0x00C */
+    Sint64 pts_min;            /* 0x010 minimum audio PTS */
+    Sint64 pts_min2;           /* 0x018 */
+    Sint32 concat_cnt;         /* 0x020 end codes passed in concatenated play */
+    Sint32 last_vid;           /* 0x024 stream id of the last video packet */
+    Sint32 last_aud;           /* 0x028 stream id of the last audio packet */
+    Sint32 first_vid;          /* 0x02C first video stream id seen (-1) */
+    Sint32 first_aud;          /* 0x030 */
+    Sint32 cur_vid;            /* 0x034 video stream id being decoded (-1) */
+    Sint32 cur_aud;            /* 0x038 */
+    Sint32 endcode;            /* 0x03C an end code was seen at the pack start */
+    SJ outsj[SFMPS_OUTSJ_NUM]; /* 0x040 element output stream joints by stream id - 0xBC */
     void (*outfn)(void *obj, Sint32 stmid); /* 0x150 */
     void *outobj;                           /* 0x154 */
     Sint32 skip;                            /* 0x158 bytes of the pack still to skip (-1: none) */
@@ -955,7 +955,7 @@ void SFHDS_Init(void);
 
 /* sfd_mps.c */
 Sint32 SFMPS_GetConcatCnt(SFD sfd);
-Sint32 SFD_SetElementOutSj(SFD sfd, Sint32 stmid, void *sj, void (*fn)(void *obj, Sint32 stmid),
+Sint32 SFD_SetElementOutSj(SFD sfd, Sint32 stmid, SJ sj, void (*fn)(void *obj, Sint32 stmid),
                            void *obj);
 
 /* sfd_mpv.c (not decompiled) */
