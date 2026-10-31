@@ -58,8 +58,10 @@ void *fn_80463428(void *object, RpGameCubeRenderMesh *renderMesh) {
     renderMesh->numLights = 0;
 
     if ((geometryFlags & rpGEOMETRYLIGHT) && lbl_805F15B4->curWorld != NULL) {
-        RwLLLink *tieEnd;
+        RwLLLink *lightEnd;
         RwLLLink *tieLink;
+        RwLLLink *tieEnd;
+        RwLLLink *lightLink;
 
         fn_804641CC(rpLIGHTLIGHTATOMICS, renderMesh);
         lbl_805F15B4->lightFrame++;
@@ -68,8 +70,9 @@ void *fn_80463428(void *object, RpGameCubeRenderMesh *renderMesh) {
         tieLink = tieEnd->next;
         while (tieLink != tieEnd) {
             RpWorldSector *sector = TIEFROMATOMICLINK(tieLink)->worldSector;
-            RwLLLink *lightEnd = &sector->lightsInWorldSector.link;
-            RwLLLink *lightLink = lightEnd->next;
+
+            lightEnd = &sector->lightsInWorldSector.link;
+            lightLink = lightEnd->next;
 
             while (lightLink != lightEnd) {
                 RpLight *light = ((RpLightTie *)lightLink)->light;
@@ -117,11 +120,17 @@ void *fn_80463428(void *object, RpGameCubeRenderMesh *renderMesh) {
  * coordinates. The node data is not used. */
 void fn_804635D4(RpGeometry *geometry, RpGameCubeInstanceData *instance,
                  struct RxGameCubeAllInOneData *nodeData) {
-    RwUInt16 locked = geometry->lockedSinceLastInst;
-    RwUInt32 flags = geometry->flags | rpGEOMETRYPOSITIONS;
-    RwInt32 index = 0;
-    RwUInt32 numVertices = geometry->numVertices;
-    RpGameCubeVertexFormat *format = GAMECUBEVERTEXFORMAT(geometry);
+    RwUInt32 numVertices;
+    RwUInt32 flags;
+    RwInt32 index;
+    RwUInt16 locked;
+    RpGameCubeVertexFormat *format;
+
+    locked = geometry->lockedSinceLastInst;
+    flags = geometry->flags | rpGEOMETRYPOSITIONS;
+    index = 0;
+    numVertices = geometry->numVertices;
+    format = GAMECUBEVERTEXFORMAT(geometry);
 
     if (format == NULL) {
         format = fn_80462E1C();
