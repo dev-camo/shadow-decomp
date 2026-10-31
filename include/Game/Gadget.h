@@ -16,6 +16,9 @@ void fn_800C9ED4(UnkGadgetOwner_800C9CD0 *owner, Fn8040Vector3 *rotation);
 /* CandleStick's parameter SAME_COMID_SWITCH_NUM suggests that the byte at +0x22 is the com id
  * (CandleStick.cpp stores it as m_comId). */
 void fn_800C9E60(UnkGadgetOwner_800C9CD0 *owner, u8 *value);
+/* Stores byte 0x22 of the owner's record (the byte fn_800C9E60 copies), widened to a word
+ * (behaviour inferred; CircusBall reads its key id with it). */
+void fn_800C9E50(UnkGadgetOwner_800C9CD0 *owner, s32 *value);
 /* Copies the owner's parameter block into params when its size equals size, and otherwise flags
  * the owner (behaviour inferred). */
 void fn_800C9DBC(UnkGadgetOwner_800C9CD0 *owner, void *params, int size);

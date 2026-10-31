@@ -15,6 +15,11 @@ UnkSoundManager_80053164 *fn_80053164(void);
  * passed on and not understood). The weapons pass ids from 0x2000 upwards. */
 bool fn_801D54F4(UnkSoundManager_80053164 *manager, u16 id, const Fn8040Vector3 *position, int arg3,
                  u16 arg4);
+/* Another way to play sound id: gets an object from fn_801D5B74 (with 0 for its last two
+ * arguments), passes it to fn_801D9780 and stores arg2 as its byte at 0x6 and arg3 as its word at
+ * 0x18; returns false for id 0xFFFF or when there is no object (behaviour inferred; arg2 and arg3
+ * are not understood). */
+bool fn_801D560C(UnkSoundManager_80053164 *manager, u16 id, int arg2, int arg3);
 }
 
 #endif

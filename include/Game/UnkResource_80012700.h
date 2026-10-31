@@ -28,6 +28,9 @@ UnkResourceManager_800122D4 *fn_800122D4(void);
 UnkResource_80012700 *fn_80012700(UnkResourceManager_800122D4 *manager, int arg1, const char *name);
 /* Returns the record of resource whose word at 0x4 equals id, or null (behaviour inferred). */
 UnkResourceRecord_80208848 *fn_80208848(UnkResource_80012700 *resource, int id);
+/* Returns the record of resource whose word at 0x0 points to a string equal to name (compared
+ * with strcmp), or null (behaviour inferred). */
+UnkResourceRecord_80208848 *fn_80208888(UnkResource_80012700 *resource, const char *name);
 }
 
 #endif
