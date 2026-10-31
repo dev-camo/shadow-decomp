@@ -29,6 +29,9 @@ RwBool fn_8046B110(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
     RwInt32 i;
     RwInt32 j;
 
+    /* When the geometry has no vertex format the original asks for the default one and discards
+     * the result, here and at the other sites in this file that call fn_80462E1C without using its
+     * result */
     if (GAMECUBEVERTEXFORMAT(geometry) == NULL) {
         fn_80462E1C();
     }
