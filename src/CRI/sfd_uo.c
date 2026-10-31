@@ -1,5 +1,5 @@
-/* CRI Sofdec user output driver (sfd_uo.c, SFD_tr_uo, driver slot 8): hands private-stream packets
- * (the Sofdec additional-info / tag data) to stream joints the application registers with
+/* CRI Sofdec user output driver (sfd_uo.c, SFD_tr_uo, driver slot SFUO_TR): hands private-stream
+ * packets (the Sofdec additional-info / tag data) to stream joints the application registers with
  * SFD_SetUsrSj; the MW player registers its additional-info ring as channel 2. */
 #include "CRI/sfd.h"
 
@@ -63,12 +63,13 @@ static void sfuo_InitCh(SFD sfd, SFUO *uo, Sint32 uobuf) {
     }
 }
 
-/* Attaches the handle's SFUO channel table to slot 8 and clears its 3 channels into buffer 7. */
+/* Attaches the handle's SFUO channel table to slot SFUO_TR and clears its 3 channels into
+ * buffer 7. */
 Sint32 SFUO_Create(SFD sfd) {
     Sint32 uobuf;
 
-    sfd->tr[8].hn = &sfd->uo_tbl;
-    uobuf = sfd->tr[8].bufin;
+    sfd->tr[SFUO_TR].hn = &sfd->uo_tbl;
+    uobuf = sfd->tr[SFUO_TR].bufin;
     sfd->uo_tbl.nch = 0;
     sfuo_InitCh(sfd, &sfd->uo_tbl, uobuf);
     return 0;
@@ -76,14 +77,14 @@ Sint32 SFUO_Create(SFD sfd) {
 
 /* Mirrors buffer 7's prepared/terminated flags onto the driver. */
 Sint32 SFUO_ExecServer(SFD sfd) {
-    if (SFTRN_GetTermFlg(sfd, 8) != 1) {
-        if (SFBUF_GetTermFlg(sfd, sfd->tr[8].bufin) == 1) {
-            SFTRN_SetTermFlg(sfd, 8, 1);
+    if (SFTRN_GetTermFlg(sfd, SFUO_TR) != 1) {
+        if (SFBUF_GetTermFlg(sfd, sfd->tr[SFUO_TR].bufin) == 1) {
+            SFTRN_SetTermFlg(sfd, SFUO_TR, 1);
         }
     }
-    if (SFTRN_GetPrepFlg(sfd, 8) != 1) {
-        if (SFBUF_GetPrepFlg(sfd, sfd->tr[8].bufin) == 1) {
-            SFTRN_SetPrepFlg(sfd, 8, 1);
+    if (SFTRN_GetPrepFlg(sfd, SFUO_TR) != 1) {
+        if (SFBUF_GetPrepFlg(sfd, sfd->tr[SFUO_TR].bufin) == 1) {
+            SFTRN_SetPrepFlg(sfd, SFUO_TR, 1);
         }
     }
     return 0;
@@ -107,8 +108,8 @@ Sint32 SFD_SetUsrSj(SFD sfd, Sint32 chno, SJ sj, void *prm) {
     if (SFLIB_CheckHn(sfd) != 0) {
         return SFLIB_SetErr(0, 0xFF000191);
     }
-    uobuf = sfd->tr[8].bufin;
-    uo = sfd->tr[8].hn;
+    uobuf = sfd->tr[SFUO_TR].bufin;
+    uo = sfd->tr[SFUO_TR].hn;
     if (uobuf == 8) {
         return SFLIB_SetErr(sfd, 0xFF000602);
     }

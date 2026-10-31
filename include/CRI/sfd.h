@@ -314,7 +314,7 @@ typedef Sint32 (*SFD_TR_FUNC)();
 typedef struct {
     Sint32 prepflg;           /* 0x00 */
     Sint32 termflg;           /* 0x04 */
-    void *hn;                 /* 0x08 driver handle (tr[8]: SFUO *) */
+    void *hn;                 /* 0x08 driver handle (tr[SFUO_TR]: SFUO *) */
     SFD_TR_FUNC *trif;        /* 0x0C driver function table */
     Sint32 bufin;             /* 0x10 SFBUF id read by this driver */
     Sint32 bufout;            /* 0x14 SFBUF id written by this driver */
@@ -326,13 +326,15 @@ typedef struct {
 CHECK_SIZEOF(SFD_TR, 0x44);
 
 #define SFD_TR_NUM 9
-/* transfer driver slots of the video decoder (SFD_tr_vd_mpv), the ADX audio driver
- * (sfd_adxt.c), the manual video output driver (sfd_vom.c) and the auto-play audio output driver
- * (sfd_aoap.c) */
+/* transfer driver slots of the MPEG system stream demultiplexer (sfd_mps.c), the video decoder
+ * (SFD_tr_vd_mpv), the ADX audio driver (sfd_adxt.c), the manual video output driver (sfd_vom.c),
+ * the auto-play audio output driver (sfd_aoap.c) and the user output driver (sfd_uo.c) */
+#define SFMPS_TR 1
 #define SFMPV_TR 2
 #define SFADXT_TR 3
 #define SFVOM_TR 6
 #define SFAOAP_TR 7
+#define SFUO_TR 8
 #define SFD_COND_NUM 100
 
 /* condition ids (SFSET_GetCond / SFD_SetCond) */
@@ -510,8 +512,9 @@ typedef struct {
 CHECK_SIZEOF(SFBUF_RINF, 0x1C);
 
 /* creation parameters passed to SFTRN_InitHn: trif_tbl[n] is driver n's function table
- * (0 input, 1 system, 2 video decoder, 3 audio decoder, 4/5 optional video/audio stage before the
- * output, 6 video output, 7 audio output, 8 user output; see sftrn_BuildSystem) */
+ * (0 input, 1 system (SFMPS_TR), 2 video decoder (SFMPV_TR), 3 audio decoder (SFADXT_TR), 4/5
+ * optional video/audio stage before the output, 6 video output (SFVOM_TR), 7 audio output
+ * (SFAOAP_TR), 8 user output (SFUO_TR); see sftrn_BuildSystem) */
 typedef struct {
     SFD_TR_FUNC **trif_tbl; /* 0x00 */
 } SFTRN_PRM;
@@ -744,7 +747,7 @@ typedef struct {
 } SFPLY_FRMSTAT;
 CHECK_SIZEOF(SFPLY_FRMSTAT, 0x20);
 
-/* system stream (MPS) driver work (sfd_mps.c), SFD_OBJ + 0x2198, tr[1].hn */
+/* system stream (MPS) driver work (sfd_mps.c), SFD_OBJ + 0x2198, tr[SFMPS_TR].hn */
 #define SFMPS_STMID_MIN 0xBC
 #define SFMPS_STMID_MAX 0xFF
 #define SFMPS_OUTSJ_NUM (SFMPS_STMID_MAX - SFMPS_STMID_MIN + 1)
@@ -814,10 +817,11 @@ typedef struct SFD_OBJ {
     SFBUF_WORK buf[SFD_BUF_NUM];    /* 0x1310 */
     SFD_VFRM vfrm[SFD_VFRM_NUM];    /* 0x16B0 */
     /* tr[SFMPV_TR].hn = SFMPV_WORK *, tr[SFADXT_TR].hn = SFADXT_WORK *,
-     * tr[SFAOAP_TR].hn = SFAOAP *, tr[8].hn = SFUO *, tr[8].bufin = user-output SFBUF id */
+     * tr[SFAOAP_TR].hn = SFAOAP *, tr[SFUO_TR].hn = SFUO *,
+     * tr[SFUO_TR].bufin = user-output SFBUF id */
     SFD_TR tr[SFD_TR_NUM];          /* 0x1F30 */
     Sint32 x2194;                   /* 0x2194 */
-    SFMPS_WORK mps;                 /* 0x2198 system stream driver work (tr[1].hn) */
+    SFMPS_WORK mps;                 /* 0x2198 system stream driver work (tr[SFMPS_TR].hn) */
     Uint8 pad2300[0x23A8 - 0x2300]; /* 0x2300 */
     SFMPV_WORK mpv;                 /* 0x23A8 video driver work (tr[SFMPV_TR].hn) */
     SFADXT_WORK adxt;               /* 0x3448 */
