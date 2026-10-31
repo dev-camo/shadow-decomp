@@ -85,7 +85,6 @@ typedef struct {
     Uint8 x62;                /* 0x62 */
     Uint8 x63;                /* 0x63 */
     Uint8 x64;                /* 0x64 */
-    Uint8 pad65[3];           /* 0x65 */
     Sint32 x68;               /* 0x68 picture number (see above) */
     Uint8 pad6C[0x80 - 0x6C]; /* 0x6C */
 } MPV_PICATR;
@@ -154,7 +153,7 @@ typedef struct {
     Sint32 len;     /* 0x0C code length in bits */
     Sint32 idx0;    /* 0x10 zigzag position of the first coefficient */
     Sint32 idx;     /* 0x14 zigzag position of the last coefficient */
-    Sint32 pad18;   /* 0x18 */
+    Sint32 x18;     /* 0x18 */
     Float32 *dst;   /* 0x1C block coefficient buffer (64 coefficients) */
     Uint8 *iqm;     /* 0x20 quantiser matrix */
     Sint32 qscale;  /* 0x24 */
@@ -174,7 +173,7 @@ typedef struct {
     Sint32 f;        /* 0x0C 1 << r_size */
     Sint32 pred[2];  /* 0x10 predictors (h, v) */
     Sint32 vec[2];   /* 0x18 decoded vector (h, v) */
-    Sint32 pad;      /* 0x20 */
+    Sint32 x20;      /* 0x20 */
 } MPV_MV;
 CHECK_SIZEOF(MPV_MV, 0x24);
 
@@ -257,7 +256,7 @@ typedef struct MPV_OBJ {
     Sint32 dcprec;               /* 0x1334 "IDCPREC" (0: 8 bit, 3: 11 bit DC) */
     MPV_BLKDEC_FUNC intra_func;  /* 0x1338 */
     MPV_BLKDEC_FUNC nintra_func; /* 0x133C */
-    Sint32 pad1340;              /* 0x1340 */
+    Sint32 x1340;                /* 0x1340 */
     Sint32 x1344;                /* 0x1344 copy of cond[7] */
     Sint8 *dctbl_y;              /* 0x1348 intra DC size tables */
     Sint8 *dctbl_c;              /* 0x134C */
@@ -267,7 +266,7 @@ typedef struct MPV_OBJ {
     Uint8 *picusr_buf;           /* 0x1388 */
     Sint32 picusr_bufsiz;        /* 0x138C */
     Sint32 picusr_len;           /* 0x1390 */
-    Sint32 pad1394;              /* 0x1394 */
+    Sint32 x1394;                /* 0x1394 */
     Sint32 x1398;                /* 0x1398 I/P pictures since the last GOP or sequence header */
     Sint32 x139c;                /* 0x139C other pictures since then or the last I/P picture */
     Sint32 x13a0;                /* 0x13A0 */
