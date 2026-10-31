@@ -25,7 +25,7 @@
 #define SFADXT_COPYMAX 0x19000
 
 #define SFADXT_WK(sfd) ((SFADXT_WORK *)(sfd)->tr[SFADXT_TR].hn)
-#define SFADXT_TST(sfd) (&(sfd)->tst)
+#define SFADXT_TST(sfd) (&SFD_TIM(sfd)->tst)
 
 Sint32 sfadxt_stat = 0;
 Sint32 sfadxt_adxterr = 0;
@@ -737,7 +737,7 @@ static inline void sfadxt_WriteTotSmpl(SFD sfd) {
     Sint32 sfreq;
 
     adxt = SFADXT_WK(sfd)->adxt;
-    if (sfd->con.que_wr == sfd->con.que_rd) {
+    if (SFD_TIM(sfd)->que_wr == SFD_TIM(sfd)->que_rd) {
         nsmpl = ADXT_GetNumSmpl(adxt);
         sfreq = ADXT_GetSfreq(adxt);
         if (nsmpl > 0 && sfreq > 0) {

@@ -6,24 +6,22 @@
  * Source from the RE4 GameCube decompilation; this game's SFD_OBJ holds the work at 0xD30. */
 #include "CRI/sfd.h"
 
-#define SFCON_QUE_NUM 32
-
 /* Pops the next total-sample entry of the concatenation queue (the audio driver reads the sample
  * count of each concatenated file); *val = -1 and 0 when empty. */
 Sint32 SFCON_ReadTotSmplQue(SFD sfd, Sint32 *val, Sint32 *last) {
-    SFCON *con = &sfd->con;
+    SFTIM tim = SFD_TIM(sfd);
     Sint32 cs;
     Sint32 ret;
 
     SFLIB_LockCs(&cs);
-    if (con->que_wr - con->que_rd <= 0) {
+    if (tim->que_wr - tim->que_rd <= 0) {
         *val = -1;
         ret = 0;
     } else {
-        *last = con->tot_last;
+        *last = tim->tot_last;
         ret = 1;
-        *val = con->tot_que[con->que_rd % SFCON_QUE_NUM];
-        con->que_rd++;
+        *val = tim->tot_que[tim->que_rd % SFCON_QUE_NUM];
+        tim->que_rd++;
     }
     SFLIB_UnlockCs(&cs);
     return ret;
@@ -32,18 +30,18 @@ Sint32 SFCON_ReadTotSmplQue(SFD sfd, Sint32 *val, Sint32 *last) {
 /* Pushes a file's total sample count onto the 32-entry queue (from the demuxer at each concatenated
  * file); 0 when full. */
 Sint32 SFCON_WriteTotSmplQue(SFD sfd, Sint32 val, Sint32 last) {
-    SFCON *con = &sfd->con;
+    SFTIM tim = SFD_TIM(sfd);
     Sint32 cs;
     Sint32 ret;
 
     SFLIB_LockCs(&cs);
-    if (con->que_wr - con->que_rd >= SFCON_QUE_NUM) {
+    if (tim->que_wr - tim->que_rd >= SFCON_QUE_NUM) {
         ret = 0;
     } else {
-        con->tot_last = last;
+        tim->tot_last = last;
         ret = 1;
-        con->tot_que[con->que_wr % SFCON_QUE_NUM] = val;
-        con->que_wr++;
+        tim->tot_que[tim->que_wr % SFCON_QUE_NUM] = val;
+        tim->que_wr++;
     }
     SFLIB_UnlockCs(&cs);
     return ret;
@@ -52,16 +50,16 @@ Sint32 SFCON_WriteTotSmplQue(SFD sfd, Sint32 val, Sint32 last) {
 /* Adds a finished file's duration to the accumulated concatenation time and records it in the
  * per-file ring (the clock adds it to the next file's timestamps). */
 void SFCON_UpdateConcatTime(SFD sfd, Sint32 t) {
-    SFCON *con = &sfd->con;
+    SFTIM tim = SFD_TIM(sfd);
     Sint32 cs;
     Sint32 idx;
 
     SFLIB_LockCs(&cs);
-    con->ctime += t;
-    idx = con->ctime_idx;
+    tim->ctime += t;
+    idx = tim->ctime_idx;
     idx++;
-    con->ctime_que[idx % SFCON_QUE_NUM] = con->ctime;
-    con->ctime_idx = idx;
+    tim->ctime_que[idx % SFCON_QUE_NUM] = tim->ctime;
+    tim->ctime_idx = idx;
     SFLIB_UnlockCs(&cs);
 }
 

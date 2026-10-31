@@ -340,7 +340,7 @@ void SFTIM_Tc2Time(SFTIM_TC *tc, Sint32 *ncount, Sint32 *tscale) {
 /* Installs a clock source (type 0 none, 1 vsync, 2 audio driver, 3 ufrm, 4 user, 5 external); the
  * ADXT driver installs sfadxt_GetTime as type 2. */
 void SFTIM_SetTimeFn(SFD sfd, SFTIM_FN fn, Sint32 type) {
-    sfd->con.timefn[type] = fn;
+    SFD_TIM(sfd)->timefn[type] = fn;
 }
 
 /* Installs an external clock callback (with its wrap value) and selects it (cond 0xF = 5); 0
@@ -373,7 +373,7 @@ Sint32 SFD_SetUsrTimeFn(SFD sfd, SFTIM_FN fn) {
     if (SFLIB_CheckHn(sfd) != 0) {
         return SFLIB_SetErr(0, 0xFF000123);
     }
-    sfd->con.timefn[4] = fn;
+    SFD_TIM(sfd)->timefn[4] = fn;
     if (fn != 0) {
         SFSET_SetCond(sfd, 0xF, 4);
     }
@@ -627,7 +627,7 @@ static void sftim_VbInHn(SFD sfd) {
         return;
     }
     SFLIB_LockCs(&cs);
-    fn = sfd->con.timefn[SFSET_GetCond(sfd, 0xF)];
+    fn = SFD_TIM(sfd)->timefn[SFSET_GetCond(sfd, 0xF)];
     if (fn == 0) {
         fn = sftim_GetTimeNone;
     }
@@ -739,12 +739,12 @@ void SFTIM_InitTtu(SFTIM_TTU *ttu, Sint32 val) {
 void SFTIM_InitHn(SFD sfd, SFTIM tim) {
     Sint32 i;
 
-    sfd->con.timefn[0] = sftim_GetTimeNone;
-    sfd->con.timefn[1] = sftim_GetTimeVsync;
-    sfd->con.timefn[2] = 0;
-    sfd->con.timefn[3] = sftim_GetTimeUfrm;
-    sfd->con.timefn[4] = 0;
-    sfd->con.timefn[5] = sftim_GetTimeExtClock;
+    SFTIM_SetTimeFn(sfd, sftim_GetTimeNone, 0);
+    SFTIM_SetTimeFn(sfd, sftim_GetTimeVsync, 1);
+    SFTIM_SetTimeFn(sfd, 0, 2);
+    SFTIM_SetTimeFn(sfd, sftim_GetTimeUfrm, 3);
+    SFTIM_SetTimeFn(sfd, 0, 4);
+    SFTIM_SetTimeFn(sfd, sftim_GetTimeExtClock, 5);
     tim->isskipfn = 0;
     tim->tc.type = 0;
     tim->tc.drop = 0;
@@ -763,19 +763,19 @@ void SFTIM_InitHn(SFD sfd, SFTIM tim) {
     SFTIM_InitTtu(&tim->vofst, SFTIM_INTMAX);
     tim->astart_smpl = 0;
     tim->astart_sfreq = 0;
-    tim->x150 = -1;
+    tim->pts_base = -1;
     tim->as_pts = -1;
     tim->x160 = 0;
     tim->ctime = 0;
     tim->ctime_idx = 0;
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < SFCON_QUE_NUM; i++) {
         tim->ctime_que[i] = 0;
     }
     tim->tot_last = 1;
     tim->x1f0 = 0;
     tim->que_wr = 0;
     tim->que_rd = 0;
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < SFCON_QUE_NUM; i++) {
         tim->tot_que[i] = 0;
     }
     tim->vterm = SFTIM_NONE;
@@ -806,9 +806,9 @@ void SFTIM_InitHn(SFD sfd, SFTIM tim) {
     tim->ext_unit = 1;
     tim->ext_wrap = -1;
     tim->ext_obj = 0;
-    tim->x5b0 = 0;
-    tim->x5b4 = 0;
-    tim->x5b8 = 0;
+    tim->ptsm.x00 = 0;
+    tim->ptsm.x04 = 0;
+    tim->ptsm.x08 = 0;
 }
 
 /* Empty; called by the library finish (SFD_Finish) with the library timing work. */
