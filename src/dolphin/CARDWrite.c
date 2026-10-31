@@ -2,8 +2,6 @@
 
 #include "__card.h"
 
-// prototypes
-static void WriteCallback(s32 chan, s32 result);
 static void EraseCallback(s32 chan, s32 result);
 
 static void WriteCallback(s32 chan, s32 result) {
@@ -15,43 +13,46 @@ static void WriteCallback(s32 chan, s32 result) {
     CARDFileInfo *fileInfo;
 
     card = &__CARDBlock[chan];
-    if (result >= 0) {
-        fileInfo = card->fileInfo;
-        if (fileInfo->length < 0) {
-            result = CARD_RESULT_CANCELED;
-            goto after;
-        }
-        fileInfo->length -= card->sectorSize;
-        if (fileInfo->length <= 0) {
-            dir = __CARDGetDirBlock(card);
-            ent = dir + fileInfo->fileNo;
-            ent->time = OSGetTime() / (__OSBusClock / 4);
-            callback = card->apiCallback;
-            card->apiCallback = NULL;
-            result = __CARDUpdateDir(chan, callback);
-            goto check;
-        } else {
-            fat = __CARDGetFatBlock(card);
-            fileInfo->offset += card->sectorSize;
-            fileInfo->iBlock = fat[fileInfo->iBlock];
-            if ((fileInfo->iBlock < 5) || (fileInfo->iBlock >= card->cBlock)) {
-                result = CARD_RESULT_BROKEN;
-                goto after;
-            }
-            result = __CARDEraseSector(chan, card->sectorSize * fileInfo->iBlock, EraseCallback);
-        check:;
-            if (result < 0) {
-                goto after;
-            }
-        }
-    } else {
-    after:;
+    if (result < 0) {
+        goto error;
+    }
+
+    fileInfo = card->fileInfo;
+    if (fileInfo->length < 0) {
+        result = CARD_RESULT_CANCELED;
+        goto error;
+    }
+
+    fileInfo->length -= card->sectorSize;
+    if (fileInfo->length <= 0) {
+        dir = __CARDGetDirBlock(card);
+        ent = dir + fileInfo->fileNo;
+        ent->time = OSTicksToSeconds(OSGetTime());
         callback = card->apiCallback;
         card->apiCallback = NULL;
-        __CARDPutControlBlock(card, result);
-        ASSERTLINE(0x86, callback);
-        callback(chan, result);
+        result = __CARDUpdateDir(chan, callback);
+    } else {
+        fat = __CARDGetFatBlock(card);
+        fileInfo->offset += card->sectorSize;
+        fileInfo->iBlock = fat[fileInfo->iBlock];
+        if (!CARDIsValidBlockNo(card, fileInfo->iBlock)) {
+            result = CARD_RESULT_BROKEN;
+            goto error;
+        }
+        result = __CARDEraseSector(chan, card->sectorSize * fileInfo->iBlock, EraseCallback);
     }
+
+    if (result < 0) {
+        goto error;
+    }
+    return;
+
+error:
+    callback = card->apiCallback;
+    card->apiCallback = NULL;
+    __CARDPutControlBlock(card, result);
+    ASSERTLINE(134, callback);
+    callback(chan, result);
 }
 
 static void EraseCallback(s32 chan, s32 result) {
@@ -60,22 +61,25 @@ static void EraseCallback(s32 chan, s32 result) {
     CARDFileInfo *fileInfo;
 
     card = &__CARDBlock[chan];
-    if (result >= 0) {
-        fileInfo = card->fileInfo;
-        ASSERTLINE(161, OFFSET(fileInfo->offset, card->sectorSize) == 0);
-        result = __CARDWrite(chan, card->sectorSize * fileInfo->iBlock, card->sectorSize,
-                             card->buffer, WriteCallback);
-        if (result < 0) {
-            goto after;
-        }
-    } else {
-    after:;
-        callback = card->apiCallback;
-        card->apiCallback = NULL;
-        __CARDPutControlBlock(card, result);
-        ASSERTLINE(175, callback);
-        callback(chan, result);
+    if (result < 0) {
+        goto error;
     }
+
+    fileInfo = card->fileInfo;
+    ASSERTLINE(161, OFFSET(fileInfo->offset, card->sectorSize) == 0);
+    result = __CARDWrite(chan, card->sectorSize * fileInfo->iBlock, card->sectorSize, card->buffer,
+                         WriteCallback);
+    if (result < 0) {
+        goto error;
+    }
+    return;
+
+error:
+    callback = card->apiCallback;
+    card->apiCallback = NULL;
+    __CARDPutControlBlock(card, result);
+    ASSERTLINE(175, callback);
+    callback(chan, result);
 }
 
 s32 CARDWriteAsync(CARDFileInfo *fileInfo, void *buf, s32 length, s32 offset,
