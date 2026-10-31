@@ -56,8 +56,8 @@ unsigned int fn_804106C0(const char *name) {
 static inline PackEntry *FindEntry(unsigned int id) {
     PackFile *pack = lbl_805F1388;
 
-    /* Required: the original tests the list head once before the loop; without this return
-     * fn_804106FC loses that test (0x68 bytes instead of 0x78). */
+    /* The original returns early on an empty list before the loop, which tests the head again
+     * (fn_804106FC+0x04: cmplwi, bne, li r4,0 and a branch to the end). */
     if (pack == 0) {
         return 0;
     }
@@ -248,32 +248,40 @@ int fn_80410A4C(PackFile *pack) {
 int fn_80410BB4(char *name, const char *path) {
     char buffer[256];
     const char *separator = "/";
-    char *position;
+    char *p;
 
-    /* Required: the original searches with a separate cursor and copies it to path (with one
-     * variable fn_80410BB4 is one word short). */
+    /* Matching workaround: the scan runs on rest, and path is reassigned from it after each match
+     * instead of serving as the scan pointer itself. With path alone, the register copies of the
+     * two parameters swap and the loop branch moves (b 0x5B8 becomes b 0x5B0). Revisit when the
+     * original's loop form is found. */
     const char *rest = path;
 
-    while ((position = strstr(rest, separator)) != 0) {
-        rest = position + strlen(separator);
+    while ((p = strstr(rest, separator)) != 0) {
+        rest = p + strlen(separator);
         path = rest;
     }
     strcpy(buffer, path);
 
-    position = strstr(buffer, ".");
-    if (position != 0) {
-        *position = 0;
+    p = strstr(buffer, ".");
+    if (p != 0) {
+        *p = 0;
     }
-    position = strstr(buffer, "_");
-    if (position != 0) {
-        *position = 0;
+    p = strstr(buffer, "_");
+    if (p != 0) {
+        *p = 0;
     }
 
-    /* Required: the original passes buffer to both calls through the cursor (naming buffer in the
-     * calls makes fn_80410BB4 one word short; a pointer of its own takes another register). */
-    position = buffer;
-    if (strlen(position) < 32) {
-        strcpy(name, position);
+    /* Matching workaround: the scratch pointer p, which held the strstr results, is pointed at
+     * buffer for the last two calls. The target keeps both the strstr result of the loop
+     * (mr. r31,r3) and buffer's address (addi r31,r1,8) in the same callee-saved register. The
+     * natural forms all differ: naming buffer in the calls recomputes the address at each call
+     * and makes fn_80410BB4 one word short; a separate pointer to buffer differs too (declared up
+     * front it changes the code from object offset 0x5A0 on, assigned here it takes another
+     * register); an inline helper taking name and buffer recomputes the address (addi r3,r1,8
+     * and addi r4,r1,8) at each use. Revisit when the original's local layout is found. */
+    p = buffer;
+    if (strlen(p) < 32) {
+        strcpy(name, p);
         return 1;
     }
     return 0;

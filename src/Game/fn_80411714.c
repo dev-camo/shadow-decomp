@@ -2,7 +2,10 @@
  * the code). A group is a file image or a single block of data that holds items for a range of
  * 16-bit ids. The loaded groups form a list; an item can be read through its group or, for a
  * group whose data lies in ARAM, through a counted copy in main memory. Definitions are in address
- * order, with automatic inlining one level deep (see configure.py). */
+ * order, with automatic inlining one level deep (see configure.py).
+ *
+ * Not complete: fn_80411818 (0x5D4 bytes) and fn_80411DEC (0x5F0 bytes) are not written yet, and
+ * fn_804124DC, fn_80413058, fn_80413318 and fn_80413538 do not match yet. */
 #include <stddef.h>
 #include <string.h>
 
@@ -23,8 +26,15 @@ unsigned short lbl_805F13BA;
 unsigned short lbl_805F13B8;
 ResourceGroup *lbl_805F13B0;
 
-/* Returns the item of an id, or 0. The id is compared with the group range as an int, which gives
- * the original's signed comparison. */
+/* Returns the item of an id, or 0.
+ *
+ * Like FindEntry (fn_80410630.c), the original returns early on an empty list before the loop
+ * that tests the head again (fn_80412820+0x20: cmplwi, bne, li r3,0 and a branch to the end).
+ *
+ * Matching workaround: the id is copied into an int (idValue) for the range test. Comparing the
+ * unsigned short id directly gives cmplw where the original has cmpw, and adds a branch to
+ * fn_804124DC; an int parameter instead of the copy changes the register of the masked id and
+ * the branch offsets. Revisit when the original's types for the id are known. */
 static inline ResourceItem *FindItem(unsigned short id) {
     ResourceGroup *group = lbl_805F13B0;
     int idValue;
@@ -404,6 +414,8 @@ unsigned short fn_80412BFC(void *data, const char *path, void (*release)(void *)
         size = strlen(name) + 1;
     }
 
+    /* The size is rounded up to a multiple of 4 with 4 - size % 4, which adds 4 bytes when it is
+     * one already; that is the original's allocation size. */
     group = fn_80411134(1, size + (4 - size % 4) + offsetof(ResourceGroup, aramAddress) +
                                sizeof(ResourceItem));
     group->count = 1;
