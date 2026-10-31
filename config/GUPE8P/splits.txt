@@ -1617,6 +1617,13 @@ Game/fn_804103E8.cpp:
 	.text       start:0x804103E8 end:0x80410630
 	.rodata     start:0x8051A540 end:0x8051A558
 
+Game/fn_80410630.c:
+	extab       start:0x80005BEC end:0x80005C4C
+	extabindex  start:0x80007B98 end:0x80007C28
+	.text       start:0x80410630 end:0x804110EC
+	.sbss       start:0x805F1388 end:0x805F1398
+	.sdata2     start:0x805FADA8 end:0x805FADB8
+
 Game/fn_804110EC.c:
 	extab       start:0x80005C4C end:0x80005C5C
 	extabindex  start:0x80007C28 end:0x80007C40

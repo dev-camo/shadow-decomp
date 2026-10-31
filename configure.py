@@ -837,6 +837,20 @@ config.libs = [
                     cflags=cflags_game_cpp,
                     extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
                 ),
+                # Loader of packs of named nodes. Inlining is automatic but one level deep: the
+                # recursive node functions expand once, as in the original (with unlimited depth
+                # fn_80410C7C grows from 0xC4 to 0x304 bytes).
+                Object(
+                    Matching,
+                    "Game/fn_80410630.c",
+                    extra_cflags=[
+                        "-Cpp_exceptions on",
+                        "-O4,s",
+                        "-use_lmw_stmw on",
+                        "-str reuse,readonly",
+                        "-inline auto,level=1",
+                    ],
+                ),
                 # Replaceable memory functions of the library code at 0x80410630-0x8042166C.
                 Object(Matching, "Game/fn_804110EC.c", extra_cflags=["-Cpp_exceptions on"]),
                 Object(Matching, "Game/fn_8040DB6C.c"),
