@@ -503,13 +503,18 @@ RpClump *fn_80456BC4(RpClump *clump) {
 
 /* Calls a function for each atomic of a clump until it returns NULL */
 RpClump *fn_80456C54(RpClump *clump, RpAtomicCallBack callBack, void *data) {
-    RwLLLink *end = &clump->atomicList.link;
-    RwLLLink *cur = clump->atomicList.link.next;
+    RwLLLink *cur;
+    RwLLLink *end;
     RwLLLink *next;
 
+    cur = clump->atomicList.link.next;
+    end = &clump->atomicList.link;
+
     while (cur != end) {
+        RpAtomic *atomic = CLUMPATOMICFROMLINK(cur);
+
         next = cur->next;
-        if (callBack(CLUMPATOMICFROMLINK(cur), data) == NULL) {
+        if (callBack(atomic, data) == NULL) {
             return clump;
         }
         cur = next;
@@ -519,13 +524,18 @@ RpClump *fn_80456C54(RpClump *clump, RpAtomicCallBack callBack, void *data) {
 
 /* Calls a function for each camera of a clump until it returns NULL */
 RpClump *fn_80456CD0(RpClump *clump, RwCameraCallBack callBack, void *data) {
-    RwLLLink *end = &clump->cameraList.link;
-    RwLLLink *cur = clump->cameraList.link.next;
+    RwLLLink *cur;
+    RwLLLink *end;
     RwLLLink *next;
 
+    cur = clump->cameraList.link.next;
+    end = &clump->cameraList.link;
+
     while (cur != end) {
+        RwCamera *camera = CLUMPCAMERAFROMLINK(cur);
+
         next = cur->next;
-        if (callBack(CLUMPCAMERAFROMLINK(cur), data) == NULL) {
+        if (callBack(camera, data) == NULL) {
             return clump;
         }
         cur = next;
@@ -535,13 +545,18 @@ RpClump *fn_80456CD0(RpClump *clump, RwCameraCallBack callBack, void *data) {
 
 /* Calls a function for each light of a clump until it returns NULL */
 RpClump *fn_80456D54(RpClump *clump, RpLightCallBack callBack, void *data) {
-    RwLLLink *end = &clump->lightList.link;
-    RwLLLink *cur = clump->lightList.link.next;
+    RwLLLink *cur;
+    RwLLLink *end;
     RwLLLink *next;
 
+    cur = clump->lightList.link.next;
+    end = &clump->lightList.link;
+
     while (cur != end) {
+        RpLight *light = CLUMPLIGHTFROMLINK(cur);
+
         next = cur->next;
-        if (callBack(CLUMPLIGHTFROMLINK(cur), data) == NULL) {
+        if (callBack(light, data) == NULL) {
             return clump;
         }
         cur = next;
@@ -596,9 +611,9 @@ RpAtomic *fn_80456DD8(void) {
 }
 
 RpAtomic *fn_80456F0C(RpAtomic *atomic, RpGeometry *geometry, RwUInt32 flags) {
-    RwFrame *frame;
-
     if (geometry != atomic->geometry) {
+        RwFrame *frame;
+
         if (geometry != NULL) {
             fn_8045984C(geometry);
         }
@@ -750,18 +765,18 @@ RpClump *fn_804573A8(void) {
 }
 
 /* clump destroy callbacks for its atomics, lights and cameras */
-static inline RpAtomic *ClumpDestroyAtomic(RpAtomic *atomic) {
+static RpAtomic *ClumpDestroyAtomic(RpAtomic *atomic, void *data) {
     fn_80456FD8(atomic);
     return atomic;
 }
 
-static inline RpLight *ClumpDestroyLight(RpLight *light) {
+static RpLight *ClumpDestroyLight(RpLight *light, void *data) {
     fn_80457630(CLUMPLIGHTEXT(light)->clump, light);
     fn_8045ACD4(light);
     return light;
 }
 
-static inline RwCamera *ClumpDestroyCamera(RwCamera *camera) {
+static RwCamera *ClumpDestroyCamera(RwCamera *camera, void *data) {
     fn_80457664(CLUMPCAMERAEXT(camera)->clump, camera);
     fn_804859F8(camera);
     return camera;
@@ -770,46 +785,9 @@ static inline RwCamera *ClumpDestroyCamera(RwCamera *camera) {
 /* Destroys a clump with its atomics, lights, cameras and frame hierarchy */
 RwBool fn_80457468(RpClump *clump) {
     fn_80482144(&lbl_8056D7F8, clump);
-
-    {
-        RwLLLink *cur = clump->atomicList.link.next;
-        RwLLLink *end = &clump->atomicList.link;
-
-        while (cur != end) {
-            RpAtomic *atomic = CLUMPATOMICFROMLINK(cur);
-
-            cur = cur->next;
-            if (ClumpDestroyAtomic(atomic) == NULL) {
-                break;
-            }
-        }
-    }
-    {
-        RwLLLink *cur = clump->lightList.link.next;
-        RwLLLink *end = &clump->lightList.link;
-
-        while (cur != end) {
-            RpLight *light = CLUMPLIGHTFROMLINK(cur);
-
-            cur = cur->next;
-            if (ClumpDestroyLight(light) == NULL) {
-                break;
-            }
-        }
-    }
-    {
-        RwLLLink *cur = clump->cameraList.link.next;
-        RwLLLink *end = &clump->cameraList.link;
-
-        while (cur != end) {
-            RwCamera *camera = CLUMPCAMERAFROMLINK(cur);
-
-            cur = cur->next;
-            if (ClumpDestroyCamera(camera) == NULL) {
-                break;
-            }
-        }
-    }
+    fn_80456C54(clump, ClumpDestroyAtomic, NULL);
+    fn_80456D54(clump, ClumpDestroyLight, NULL);
+    fn_80456CD0(clump, ClumpDestroyCamera, NULL);
 
     if (clump->object.parent != NULL) {
         fn_80487208(clump->object.parent);
