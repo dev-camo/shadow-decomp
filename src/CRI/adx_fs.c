@@ -36,6 +36,13 @@ static inline Sint32 adxf_CalcByte2Sct(Sint32 nbyte) {
     return nsct;
 }
 
+/* Reads a little-endian 32-bit word of the AFS header or table (helper and name inferred: with
+ * the four byte reads written out at each use, or through a macro such as LE32, which expands to
+ * the same reads, adxf_GetPtStat colours its registers differently, 42 words). */
+static inline Sint32 adxf_Le32(const Uint8 *p) {
+    return p[0] | (p[1] << 8) | (p[2] << 16) | (p[3] << 24);
+}
+
 /* Debug trace: records command cmdid (entry fg 0 / exit fg 1) and three parameters in the
  * 16-entry ring adxf_cmd_hstry; entries also count the calls per command.
  */
@@ -200,23 +207,23 @@ static inline Sint32 adxf_Stop(ADXF adxf) {
         ADXERR_CallErrFunc1("E9040822:'adxf' is NULL.(adxf_Stop)");
         return ADXF_ERR_PRM;
     }
-    if (adxf->stat == ADXF_STAT_STOP) {
-        /* already stopped */
-    } else if (adxf->stat == ADXF_STAT_READEND) {
-        adxf->stat = ADXF_STAT_STOP;
-    } else {
-        stm = adxf->stm;
-        if (stm == 0) {
-            ADXERR_CallErrFunc1("E9040823:'adxf->stm' is NULL.(adxf_Stop)");
-            return ADXF_ERR_FATAL;
+    if (adxf->stat != ADXF_STAT_STOP) {
+        if (adxf->stat == ADXF_STAT_READEND) {
+            adxf->stat = ADXF_STAT_STOP;
+        } else {
+            stm = adxf->stm;
+            if (stm == 0) {
+                ADXERR_CallErrFunc1("E9040823:'adxf->stm' is NULL.(adxf_Stop)");
+                return ADXF_ERR_FATAL;
+            }
+            ADXSTM_Stop(stm);
+            ADXCRS_Lock();
+            adxf->rdsct = ADXSTM_Tell(adxf->stm) - adxf->skpos;
+            adxf_CloseSjStm(adxf);
+            adxf->stat = ADXF_STAT_STOP;
+            ADXCRS_Unlock();
+            adxf_SetCmdHstry(ADXF_CMD_STOP, 1, (Sint32)adxf, -1, -1);
         }
-        ADXSTM_Stop(stm);
-        ADXCRS_Lock();
-        adxf->rdsct = ADXSTM_Tell(adxf->stm) - adxf->skpos;
-        adxf_CloseSjStm(adxf);
-        adxf->stat = ADXF_STAT_STOP;
-        ADXCRS_Unlock();
-        adxf_SetCmdHstry(ADXF_CMD_STOP, 1, (Sint32)adxf, -1, -1);
     }
     return adxf->skpos;
 }
@@ -347,7 +354,7 @@ Sint32 adxf_ReadNw32(ADXF adxf, Sint32 nsct, void *buf) {
         return ADXF_ERR_FATAL;
     }
 
-    bsize = nsct << 11;
+    bsize = nsct * ADXF_SCT_SIZE;
     sj = SJRBF_Create(buf, bsize, 0);
     if (sj == 0) {
         return ADXF_ERR_INTERNAL;
@@ -472,7 +479,7 @@ static inline Sint32 adxf_SetAfsFileInfo(ADXF adxf, Sint32 ptid, Sint32 flid) {
         return ADXF_ERR_FATAL;
     }
     adxf->fnsct = fnsct;
-    adxf->fsize = fnsct << 11;
+    adxf->fsize = fnsct * ADXF_SCT_SIZE;
     return ADXF_ERR_OK;
 }
 
@@ -505,7 +512,7 @@ static inline Sint32 adxf_SetFileInfoRange(ADXF adxf, const Char8 *fname, void *
         return ADXF_ERR_FATAL;
     }
     adxf->fnsct = fnsct;
-    adxf->fsize = fnsct << 11;
+    adxf->fsize = fnsct * ADXF_SCT_SIZE;
     return ADXF_ERR_OK;
 }
 
@@ -537,7 +544,8 @@ Sint32 adxf_GetPtStat(Sint32 ptid) {
     Uint16 *top_rev0 = 0;
     Sint32 *fsizes_rev1 = 0;
     Sint32 *top_rev1 = 0;
-    Sint32 val; /* load status, then the AFS file count */
+    Sint32 stat;
+    Sint32 nfile;
     Sint32 nsct;
     Sint32 i;
     Sint32 n;
@@ -550,10 +558,10 @@ Sint32 adxf_GetPtStat(Sint32 ptid) {
     if (adxf_ldptnw_hn == 0 && adxf_ldptnw_ptid != -1) {
         return adxf_ldptnw_last_stat;
     }
-    val = adxf_GetStat(adxf_ldptnw_hn);
-    adxf_ldptnw_last_stat = val;
-    if (val != ADXF_STAT_READEND) {
-        return val;
+    stat = adxf_GetStat(adxf_ldptnw_hn);
+    adxf_ldptnw_last_stat = stat;
+    if (stat != ADXF_STAT_READEND) {
+        return stat;
     }
 
     ptinfo = adxf_ptinfo[ptid];
@@ -573,29 +581,24 @@ Sint32 adxf_GetPtStat(Sint32 ptid) {
             adxf_CloseLdptnwHn();
             return adxf_ldptnw_last_stat;
         }
-        val = adxf_ldpt_buf[4] | (adxf_ldpt_buf[5] << 8) | (adxf_ldpt_buf[6] << 16) |
-              (adxf_ldpt_buf[7] << 24);
-        if (val > 0x10000) {
+        nfile = adxf_Le32(&adxf_ldpt_buf[4]);
+        if (nfile > 0x10000) {
             ADXERR_CallErrFunc1("E0040702:Illigal number of file.(adxf_GetPtStat)");
             adxf_ldptnw_last_stat = ADXF_STAT_ERROR;
             adxf_CloseLdptnwHn();
             return adxf_ldptnw_last_stat;
         }
-        ptinfo->nentry = val;
-        ptinfo->nfile = (Uint16)val;
+        ptinfo->nentry = nfile;
+        ptinfo->nfile = (Uint16)nfile;
         if (ptinfo->rev == 1) {
             ptinfo->size = (sizeof(ADXF_PTINFO) + (ptinfo->nfile + 1) * sizeof(Sint32)) & ~3;
         } else {
             ptinfo->size = (sizeof(ADXF_PTINFO) - 2 + (ptinfo->nfile + 1) * sizeof(Uint16)) & ~3;
         }
         if (ptinfo->rev == 1) {
-            *top_rev1 = (adxf_ldpt_buf[8] | (adxf_ldpt_buf[9] << 8) | (adxf_ldpt_buf[10] << 16) |
-                         (adxf_ldpt_buf[11] << 24)) /
-                        ADXF_SCT_SIZE;
+            *top_rev1 = adxf_Le32(&adxf_ldpt_buf[8]) / ADXF_SCT_SIZE;
         } else {
-            *top_rev0 = (adxf_ldpt_buf[8] | (adxf_ldpt_buf[9] << 8) | (adxf_ldpt_buf[10] << 16) |
-                         (adxf_ldpt_buf[11] << 24)) /
-                        ADXF_SCT_SIZE;
+            *top_rev0 = adxf_Le32(&adxf_ldpt_buf[8]) / ADXF_SCT_SIZE;
         }
         i = 3;
     } else {
@@ -607,11 +610,11 @@ Sint32 adxf_GetPtStat(Sint32 ptid) {
     while (i < n) {
         if (ptinfo->rev == 1) {
             p = adxf_ldpt_buf + i * 4;
-            nsct = adxf_CalcByte2Sct(p[0] | (p[1] << 8) | (p[2] << 16) | (p[3] << 24));
+            nsct = adxf_CalcByte2Sct(adxf_Le32(p));
             fsizes_rev1[adxf_flno++] = nsct;
         } else {
             p = adxf_ldpt_buf + i * 4;
-            nsct = adxf_CalcByte2Sct(p[0] | (p[1] << 8) | (p[2] << 16) | (p[3] << 24));
+            nsct = adxf_CalcByte2Sct(adxf_Le32(p));
             if (nsct & 0xFFFF0000) {
                 ADXERR_CallErrFunc1(
                     "E2122501:AFS file has 128MB or more of inside file.(adxf_GetPtStat)");
@@ -750,7 +753,7 @@ Sint32 ADXF_LoadPartitionNw(Sint32 ptid, const Char8 *fname, void *dir, void *pt
     Sint32 ret;
 
     ADXCRS_Enter();
-    ret = adxf_LoadPtBothNw(ptid, 0, 0, fname, dir, 0, 0xFFFFF, ptinfo,
+    ret = adxf_LoadPtBothNw(ptid, 0, 0, fname, dir, 0, ADXSTM_NSCT_INF, ptinfo,
                             (void *)(((Uint32)adxf_ldpt_work + 0x20) & ~0x1F), ADXF_SCT_SIZE, 0);
     ADXCRS_Leave();
     return ret;
