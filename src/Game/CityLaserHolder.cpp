@@ -8,11 +8,11 @@
  * addresses.
  *
  * NonMatching: SetState differs in five words (the order of the stack argument of fn_800C7A84 and
- * the moves around it), Update in five (the stack slot of the result of fn_8040FC3C), the
- * checked_deleter call operator inlines checked_delete, which the original keeps out of line,
- * five std::vector instances of weak pointers differ (insert, reserve, swap, the vector
- * destructor and the __vector_obj constructor) and 16 small helpers of the vector are not
- * reproduced; see the notes in configure.py. */
+ * the moves around it), Update in five (the stack slot of the result of fn_8040FC3C),
+ * checked_delete<CityLaser> is a local symbol where the original's is weak, five std::vector
+ * instances of weak pointers differ (insert, reserve, swap, the vector destructor and the
+ * __vector_obj constructor) and 16 small helpers of the vector are not reproduced; see the notes
+ * in configure.py. */
 #include "Game/CharInfo.h"
 #include "Game/DebugDisp.h"
 #include "Game/Gadget.h"
@@ -160,7 +160,16 @@ CityLaser::CityLaser(CityLaserHolder *holder, UnkGadgetOwner_800C9CD0 *owner)
     m_model = fn_8015F800(1, "CITYLASER.BIN");
 }
 
+/* Matching workaround: auto_inline around this destructor. The original keeps checked_delete<T>
+ * out of line and emits this destructor at its definition; with the stock GC/2.7 compiler and
+ * -inline noauto that needs auto_inline here. A tooling constraint, not a claim about the original
+ * source; revisit if another compiler build reproduces this without the pragma, or if an original
+ * checked_delete keeps out of line a destructor whose body calls only non-inline functions (the
+ * pragma would inline that destructor into it). A destructor found inlined into checked_delete in
+ * the original would instead mean that the original used auto_inline here. */
+#pragma auto_inline on
 CityLaser::~CityLaser() {}
+#pragma auto_inline reset
 
 void CityLaser::Update(float dt) {
     Fn8040Vector3 distance;

@@ -707,21 +707,17 @@ config.libs = [
                 # of the character info (the second branch skips the cast check), and the single
                 # natural test compiles to one branch fewer.
                 Object(NonMatching, "Game/TornadoCollision.cpp", cflags=cflags_game_cpp),
-                # 53 of the 78 functions have identical instructions; 42 of them also have identical
+                # 55 of the 78 functions have identical instructions; 44 of them also have identical
                 # relocation symbol names, the others refer to symbols that keep placeholder names.
-                # SetState differs in 5 words (the order of the stack argument of the probe call and
-                # the moves around it) and Update in 5 (the stack slot of the result of
+                # checked_delete<CityLaser> is a local symbol here where the original's is weak.
+                # SetState differs in 5 words (the order of the stack argument of the probe call
+                # and the moves around it) and Update in 5 (the stack slot of the result of
                 # fn_8040FC3C).
-                # The original's checked_delete<CityLaser> is a weak, out-of-line instance of a
-                # non-inline template, while ThreatObjHolder.cpp and WeaponStickBase.cpp have local
-                # copies of an inline one, which their code needs; with the shared inline
-                # definition, the checked_deleter call operator here inlines it (7 words) and
-                # checked_delete itself is absent. The rest are the std::vector instances of weak
-                # pointers: insert, reserve and swap differ in structure (the original reaches the
-                # capacity and the allocator through more out-of-line accessors), the vector
-                # destructor and the __vector_obj constructor differ, and 16 small helper functions
-                # (the constructor chain, the accessors, the pair swap) are not reproduced one for
-                # one.
+                # The rest are the std::vector instances of weak pointers: insert, reserve and
+                # swap differ in structure (the original reaches the capacity and the allocator
+                # through more out-of-line accessors), the vector destructor and the __vector_obj
+                # constructor differ, and 16 small helper functions (the constructor chain, the
+                # accessors, the pair swap) are not reproduced one for one.
                 Object(NonMatching, "Game/CityLaserHolder.cpp", cflags=cflags_game_cpp),
                 # Only the building holder and the functions it needs are reconstructed: 20 of 48
                 # functions have identical instructions (16 also have identical relocation symbol
