@@ -8,9 +8,11 @@
 extern "C" {
 #endif
 
-// Unlike ASSERTMSGLINE, these checks are compiled into release builds too. They stay a bare `if`
-// statement: wrapping them in do { } while (0) renumbers the compiler's @NN local labels in dvd.o
-// and dvdfs.o, which the original objects do not have. Do not follow them with an `else`.
+// Unlike ASSERTMSGLINE, these checks are compiled into release builds too.
+// Matching workaround: they stay a bare `if` statement. Wrapping them in do { } while (0)
+// renumbers the compiler's @NN local labels of dvd.o and dvdfs.o away from the original objects'
+// numbers, and the expression form used by ASSERTMSGLINE changes their code. Do not follow them
+// with an `else`. Revisit when the SDK's macro text is found.
 #define DVD_ASSERTMSGLINE(line, cond, msg)                                                         \
     if (!(cond))                                                                                   \
     OSPanic(__FILE__, line, msg)
