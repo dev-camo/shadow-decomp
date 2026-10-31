@@ -793,6 +793,14 @@ config.libs = [
                     cflags=cflags_game_cpp,
                     extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
                 ),
+                # Motion integration (float constants in .rodata, -sdata2 0; <cmath> leaves the weak
+                # sqrtf static locals, which the link discards).
+                Object(
+                    Matching,
+                    "Game/fn_804103E8.cpp",
+                    cflags=cflags_game_cpp,
+                    extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
+                ),
                 Object(Matching, "Game/fn_8040DB6C.c"),
                 Object(Matching, "Game/fn_8041583C.c"),
                 Object(Matching, "Game/fn_8040CB2C.c"),
