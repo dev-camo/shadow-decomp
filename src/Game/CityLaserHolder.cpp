@@ -23,6 +23,7 @@
 #include "Game/UnkManager_800CB69C.h"
 #include "Game/UnkProbeTarget_800587A0.h"
 #include "Game/UnkSoundManager_80053164.h"
+#include "Game/UnkStartupFloat_800E2570.h"
 #include "Game/UnkTarget_80166AF4.h"
 #include "Game/UnkWorldProbe_80021FE4.h"
 #include "Game/fn_8006_resource_list.h"
@@ -47,15 +48,6 @@ void fn_801DD0BC(const Fn8040Vector3 *position, int arg1, int arg2, float arg3);
 /* Degrees to radians. */
 float fn_8000AB90(float degrees);
 }
-
-/* Four floats that the original builds at startup (sinit at 0x800E2570); the names say what the
- * code does with them (inferred). The original mechanism is unknown (a dynamically initialised
- * float, possibly a tunable wrapper): this placeholder class reproduces the startup function. */
-struct UnkStartupFloat_800E2570 {
-    UnkStartupFloat_800E2570(float v) : value(v) {}
-
-    float value;
-};
 
 /* The height of the segment that goes up from the laser, and the radius around it that the bombs
  * are placed in: each bomb goes to the target's position, moved towards the nearest point of the

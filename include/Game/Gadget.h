@@ -5,6 +5,7 @@
 #include "Game/fn_8040_vector_types.h"
 #include "layout_check.h"
 
+class SetAdapterState;
 class UnkGadgetOwner_800C9CD0;
 
 /* Copy the owner's position, its rotation converted from degrees to radians, and its byte at
@@ -35,6 +36,11 @@ void fn_800C9D68(UnkGadgetOwner_800C9CD0 *owner, const void *params, int size);
  * fn_800C9B84 and fn_800CB534 (purpose unknown). ThreatObjHolder calls it when its ThreatObj is
  * finished. */
 void fn_800C9B34(UnkGadgetOwner_800C9CD0 *owner);
+/* Sets bit 3 of the word at 0x18 of the record that owner points to (behaviour inferred from its
+ * body). */
+void fn_800C985C(UnkGadgetOwner_800C9CD0 *owner);
+/* Stores state in the owner's word at 0x14 (behaviour inferred from its body). */
+void fn_800C9930(UnkGadgetOwner_800C9CD0 *owner, SetAdapterState *state);
 }
 
 /* Gadget (class name from RTTI): a stage object task registered with an owner object. */

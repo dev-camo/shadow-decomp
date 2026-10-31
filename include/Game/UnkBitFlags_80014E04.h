@@ -12,6 +12,8 @@ class UnkBitFlags_80014E04 {
   public:
     /* Clears every bit. */
     UnkBitFlags_80014E04();
+    /* Starts with the given bits (0x8000AAEC; stores its argument). */
+    explicit UnkBitFlags_80014E04(u32 bits);
     void Clear();
     void Set(int bit);
     bool Test(int bit) const;

@@ -59,6 +59,15 @@ Game/FallBuildingHolder.cpp:
 	.sbss       start:0x805EE870 end:0x805EE888
 	.sdata2     start:0x805F3398 end:0x805F33B0
 
+Game/ChaoHolder.cpp:
+	.text       start:0x8012DACC end:0x8012F674
+	.ctors      start:0x804A9D54 end:0x804A9D58
+	.rodata     start:0x804BE6F8 end:0x804BE910
+	.data       start:0x80528520 end:0x80528670
+	.sdata      start:0x805E5E70 end:0x805E5EC0
+	.sbss       start:0x805EEE68 end:0x805EEE90
+	.sdata2     start:0x805F4160 end:0x805F41B8
+
 Game/ThreatObjHolder.cpp:
 	.text       start:0x8013EDCC end:0x80140278
 	.ctors      start:0x804A9D64 end:0x804A9D68
