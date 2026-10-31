@@ -301,13 +301,14 @@ void fn_8049BDF0(PipelineTopSortState *state, RwUInt32 nodeIndex) {
 
         /* the outputs that led to either node now lead to the other slot */
         for (i = 0; i < state->pipeline->numNodes; i++) {
+            RwUInt32 k;
             RxPipelineNode *other = &state->pipeline->nodes[i];
 
-            for (j = 0; j < other->numOutputs; j++) {
-                if (other->outputs[j] == slot) {
-                    other->outputs[j] = nodeIndex;
-                } else if (other->outputs[j] == nodeIndex) {
-                    other->outputs[j] = slot;
+            for (k = 0; k < other->numOutputs; k++) {
+                if (other->outputs[k] == slot) {
+                    other->outputs[k] = nodeIndex;
+                } else if (other->outputs[k] == nodeIndex) {
+                    other->outputs[k] = slot;
                 }
             }
         }
