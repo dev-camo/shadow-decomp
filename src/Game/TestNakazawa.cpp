@@ -98,7 +98,7 @@ void TestNakazawa::Update(float dt) {
         delete hits;
 
         /* The debug line runs from the position to a copy of it, so it has no length. */
-        fn_802E0B58(UnkSegment_80020A20(start, lineEnd), &lbl_805F06D8);
+        fn_802E0B58(UnkSegment_80020A20(start, lineEnd), lbl_805F06D8);
     }
 }
 

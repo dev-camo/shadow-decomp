@@ -20,6 +20,13 @@ typedef struct Fn8040Vector3 {
 #ifdef __cplusplus
     Fn8040Vector3() {}
     Fn8040Vector3(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
+    /* Stores the three components (name inferred): the arguments are evaluated before the first
+     * store, as the original does where a vector is assigned in place. */
+    void Set(float x_, float y_, float z_) {
+        x = x_;
+        y = y_;
+        z = z_;
+    }
 #endif
     /* 0x00 */ float x;
     /* 0x04 */ float y;
@@ -137,6 +144,8 @@ void fn_8040CD74(Fn8040Vector3 *destination, const Fn8040Vector3 *a, const Fn804
 void fn_8040CE38(Fn8040Vector3 *vector, float scale);
 /* Sets all three components to the 3D clear value lbl_805FAD80 (behaviour inferred). */
 void fn_8040CE60(Fn8040Vector3 *vector);
+/* Zeroes the vector (behaviour inferred). */
+void fn_8040E970(Fn8040Vector3 *vector);
 /* result += value (behaviour inferred). */
 void fn_8040CFF8(Fn8040Vector3 *result, const Fn8040Vector3 *value);
 /* The length of a - b (behaviour inferred). */

@@ -219,6 +219,30 @@ const T& max(const T& a, const T& b) {
 	return a < b ? b : a;
 }
 
+template <class InputIt, class OutputIt, class Predicate>
+OutputIt remove_copy_if(InputIt first, InputIt last, OutputIt result, Predicate pred) {
+	for (; first != last; ++first) {
+		if (!pred(*first)) {
+			*result = *first;
+			++result;
+		}
+	}
+	return result;
+}
+
+// The game's remove_if passes the predicate to find_if by reference and to remove_copy_if by
+// value.
+template <class ForwardIt, class Predicate>
+ForwardIt remove_if(ForwardIt first, ForwardIt last, Predicate pred) {
+	first = find_if<ForwardIt, Predicate &>(first, last, pred);
+	if (first == last) {
+		return first;
+	}
+	ForwardIt next = first;
+	++next;
+	return remove_copy_if(next, last, first, pred);
+}
+
 }  // namespace std
 
 #endif

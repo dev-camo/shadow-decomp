@@ -17,7 +17,9 @@ class UnkProbeTarget_800587A0 {
     virtual void UnkSlot0() = 0;
     virtual void UnkSlot1() = 0;
     virtual void UnkSlot2() = 0;
-    virtual void UnkSlot3() = 0;
+    /* A pointer to the probe's position (name and behaviour inferred from the CityLaser gadget,
+     * which subtracts the nearest point of a segment from the vector it points to). */
+    virtual const Fn8040Vector3 *GetPosition() = 0;
     virtual void UnkSlot4() = 0;
     virtual void UnkSlot5() = 0;
     virtual void UnkSlot6() = 0;
@@ -62,6 +64,9 @@ boost::shared_ptr<UnkProbeTarget_800587A0> fn_800C7A84(UnkWorld_80021B08 *world,
                                                        float arg2, float arg3, int arg4, int arg5,
                                                        int arg6, const Fn8040Vector3 *arg7,
                                                        const Fn8040Vector3 *arg8, int arg9);
+/* Resets the probe pointer (behaviour inferred; the world argument is unused and the pointer is
+ * passed by address). */
+void fn_800C78B0(UnkWorld_80021B08 *world, boost::shared_ptr<UnkProbeTarget_800587A0> *probe);
 /* The character info that the probe belongs to, or an empty pointer (behaviour inferred). */
 boost::weak_ptr<CharInfo> fn_800C4568(UnkWorld_80021B08 *world,
                                       boost::weak_ptr<UnkProbeTarget_800587A0> target);

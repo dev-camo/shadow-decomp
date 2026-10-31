@@ -7,17 +7,10 @@
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
 #include "Game/GadgetTypeInfo.h"
+#include "Game/UnkManager_80009548.h"
 #include "Game/UnkTarget_80166AF4.h"
 #include "Game/fn_8006_resource_list.h"
 #include "layout_check.h"
-
-class UnkManager_80009548;
-
-extern "C" {
-UnkManager_80009548 *fn_80009548(void);
-Fn8040Vector3 fn_80109B80(UnkManager_80009548 *manager, int arg1);
-int fn_80169D00(UnkModelPart_8015FA78 part, const void *userData);
-}
 
 static const char *s_modelFile = "BDTRUE.BIN";
 

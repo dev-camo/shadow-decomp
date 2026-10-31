@@ -9,6 +9,10 @@
  * shape; most likely a colour (inferred). fn_802E0E84 picks a queue by comparing the first byte
  * with 0xFF. */
 struct UnkDebugColor_802E0E84 {
+    /* Sets the four bytes in order (fn_8040D2D8); the body is not visible to the compiler, as in
+     * the original. */
+    UnkDebugColor_802E0E84(u8 b0, u8 b1, u8 b2, u8 b3);
+
     /* 0x0 */ u8 field_0x0;
     /* 0x1 */ u8 field_0x1;
     /* 0x2 */ u8 field_0x2;
@@ -20,11 +24,17 @@ struct UnkSegment_80020A20;
 
 extern "C" {
 /* Creates a SonicteamUSA::System::DebugDispSphere (class name from RTTI) of the given radius at
- * center and queues it (behaviour inferred; the original function name is unknown). */
-void fn_802E0E84(const Fn8040Vector3 *center, const UnkDebugColor_802E0E84 *color, float radius);
+ * center and queues it (behaviour inferred; the original function name is unknown). The colour is
+ * passed by reference, so a caller may build it in a temporary at the call. */
+void fn_802E0E84(const Fn8040Vector3 *center, const UnkDebugColor_802E0E84 &color, float radius);
 /* Creates a SonicteamUSA::System::DebugDispLine (class name from RTTI) for the segment and queues
  * it (behaviour inferred). */
-void fn_802E0B58(const UnkSegment_80020A20 &segment, const UnkDebugColor_802E0E84 *color);
+void fn_802E0B58(const UnkSegment_80020A20 &segment, const UnkDebugColor_802E0E84 &color);
+/* Creates a SonicteamUSA::System::DebugDispCylinder (class name from RTTI) at center with the
+ * given rotation (radians), colour, flag (0 in the known callers), half length and radius and
+ * queues it (behaviour inferred). */
+void fn_802E0B7C(const Fn8040Vector3 *center, const Fn8040Vector3 *rotation,
+                 const UnkDebugColor_802E0E84 &color, int arg3, float halfLength, float radius);
 }
 
 /* A zero-filled .sbss colour that several gadgets pass when they draw their range (purpose

@@ -57,4 +57,7 @@ class Gadget : public Task {
 };
 CHECK_SIZEOF(Gadget, 0x30);
 
+/* Passes the gadget's owner (m_owner) to fn_800C9B34 when there is one (behaviour inferred). */
+extern "C" void fn_8015A794(Gadget *gadget);
+
 #endif

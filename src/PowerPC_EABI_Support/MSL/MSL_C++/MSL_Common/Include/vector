@@ -1,11 +1,12 @@
 #ifndef MSL_VECTOR_H_
 #define MSL_VECTOR_H_
 
+#include <algorithm>
 #include <memory>
 
-/* The part of <vector> that the Chao::CSD code uses: the vector of pointers (the game's vectors of
- * other element types are not covered yet). Its messages ("vector::reserve length error",
- * "vector::insert length error") are the library's.
+/* The parts of <vector> that the game uses so far: the vector of pointers (the Chao::CSD code) and
+ * the vector of objects (__vector_obj below, for the CityLaser gadget's weak pointers). Their
+ * messages ("vector::reserve length error", "vector::insert length error") are the library's.
  *
  * Every vector of pointers is implemented by one vector of void pointers, through private bases:
  * the GameCube code has, for each pointer type, an out-of-line copy of each member of vector<T *>
@@ -87,7 +88,275 @@ template <class T> class __vector_ptr : private __vector_imp<void *, allocator<v
     }
 };
 
+/* Assignment loops for elements that are objects. Each is an out-of-line function of the game;
+ * the names and the two-layer shape (a wrapper calling the loop) are placeholders. */
+template <class T> T *__copy_objects_loop(T *first, T *last, T *result) {
+    for (; first < last; ++first, ++result) {
+        *result = *first;
+    }
+    return result;
+}
+template <class T> T *__copy_objects(T *first, T *last, T *result) {
+    return __copy_objects_loop(first, last, result);
+}
+
+template <class T> T *__copy_backward_objects_loop(T *first, T *last, T *result) {
+    while (last > first) {
+        --result;
+        --last;
+        *result = *last;
+    }
+    return result;
+}
+template <class T> T *__copy_backward_objects(T *first, T *last, T *result) {
+    return __copy_backward_objects_loop(first, last, result);
+}
+
+template <class T> void __fill_objects(T *first, size_t count, const T &value) {
+    for (; count != 0; ++first, --count) {
+        *first = value;
+    }
+}
+
+/* The vector of objects that are not pointers (the CityLaser gadget keeps weak pointers), as far as
+ * its members were recovered from the game; the layout is the same as __vector_imp's. The
+ * game has one out-of-line copy of each member per element type, so none of them is inlined.
+ * The internal names are placeholders, and so are the algorithm helpers' shapes. */
+template <class T, class Allocator> class __vector_obj {
+  public:
+    typedef T value_type;
+    typedef T *iterator;
+    typedef size_t size_type;
+
+    __vector_obj() : cap_(Allocator()), size_(0), data_(0) {}
+    ~__vector_obj() {
+        clear();
+        if (data_ != 0) {
+            __alloc().deallocate(__data(), __cap());
+        }
+    }
+
+    /* Defined after the class and not inline: the game has an out-of-line copy of each. */
+    iterator begin();
+    iterator end();
+    void clear();
+    void push_back(const value_type &x);
+    iterator erase(iterator first, iterator last);
+
+    void reserve(size_type n);
+    void insert(iterator position, size_type n, const value_type &x);
+
+    void swap(__vector_obj &other) {
+        if (this != &other) {
+            std::swap(__cap(), other.__cap());
+            std::swap(data_, other.data_);
+            std::swap(size_, other.size_);
+        }
+    }
+
+  private:
+    size_type max_size() {
+        return size_type(-1) / sizeof(T);
+    }
+    size_type &__cap() {
+        return cap_.first();
+    }
+    T *&__data();
+    Allocator &__alloc() {
+        return cap_.second();
+    }
+
+    __compressed_pair<size_type, Allocator> cap_;
+    size_type size_;
+    T *data_;
+};
+
+template <class T, class Allocator>
+typename __vector_obj<T, Allocator>::iterator __vector_obj<T, Allocator>::begin() {
+    return data_;
+}
+
+template <class T, class Allocator>
+typename __vector_obj<T, Allocator>::iterator __vector_obj<T, Allocator>::end() {
+    return data_ + size_;
+}
+
+template <class T, class Allocator> T *&__vector_obj<T, Allocator>::__data() {
+    return data_;
+}
+
+template <class T, class Allocator> void __vector_obj<T, Allocator>::clear() {
+    iterator first = data_;
+    iterator last = data_ + size_;
+    while (last > first) {
+        __alloc().destroy(--last);
+    }
+    size_ = 0;
+}
+
+template <class T, class Allocator>
+void __vector_obj<T, Allocator>::push_back(const value_type &x) {
+    insert(end(), 1, x);
+}
+
+template <class T, class Allocator>
+typename __vector_obj<T, Allocator>::iterator
+__vector_obj<T, Allocator>::erase(iterator first, iterator last) {
+    if (first == last) {
+        return first;
+    }
+    iterator old_end = end();
+    size_type count = old_end - last;
+    if (count != 0) {
+        __copy_objects(last, old_end, first);
+    }
+    iterator new_end = first + count;
+    while (new_end < old_end) {
+        __alloc().destroy(new_end);
+        ++new_end;
+    }
+    size_ -= last - first;
+    return first;
+}
+
+template <class T, class Allocator> void __vector_obj<T, Allocator>::reserve(size_type n) {
+    if (n > __cap()) {
+        if (n > max_size()) {
+            fprintf(stderr, "vector::reserve length error\n");
+            abort();
+        }
+
+        /* The new storage is built in a vector of its own and swapped in; its destructor then
+         * releases the old elements. */
+        __vector_obj tmp;
+        T *new_data = tmp.__alloc().allocate(n);
+        tmp.__cap() = n;
+        tmp.data_ = new_data;
+
+        T *source = data_;
+        T *old_end = end();
+        T *destination = new_data;
+        for (; source < old_end; ++source, ++destination) {
+            tmp.__alloc().construct(destination, *source);
+            ++tmp.size_;
+        }
+        tmp.swap(*this);
+    }
+}
+
+template <class T, class Allocator>
+void __vector_obj<T, Allocator>::insert(iterator position, size_type n, const value_type &x) {
+    if (n == 0) {
+        return;
+    }
+    if (n > max_size() || size_ > max_size() - n) {
+        fprintf(stderr, "vector::insert length error\n");
+        abort();
+    }
+
+    if (size_ + n <= __cap()) {
+        iterator old_end = end();
+        size_type elems_after = old_end - position;
+
+        if (n > elems_after) {
+            /* The new elements reach beyond the old end: the surplus copies of x and the old
+             * tail go into raw storage, the rest are assigned. */
+            iterator destination = old_end;
+            for (; n > elems_after; --n, ++destination) {
+                __alloc().construct(destination, x);
+                ++size_;
+            }
+            for (iterator source = position; source < old_end; ++source, ++destination) {
+                __alloc().construct(destination, *source);
+                ++size_;
+            }
+            __fill_objects(position, n, x);
+        } else {
+            iterator destination = old_end;
+            for (iterator source = old_end - n; source < old_end; ++source, ++destination) {
+                __alloc().construct(destination, *source);
+                ++size_;
+            }
+            size_type moved = elems_after - n;
+            const value_type *value = &x;
+            /* When x lies in [old_end - moved, old_end), read it n elements further up. */
+            if (old_end - moved <= value && value < old_end) {
+                value += n;
+            }
+            __copy_backward_objects(position, position + moved, old_end);
+            __fill_objects(position, n, *value);
+        }
+    } else {
+        size_type new_cap = __cap() != 0 ? __cap() : 1;
+        size_type needed = size_ + n;
+        while (needed > new_cap) {
+            if (new_cap < max_size() / 2) {
+                new_cap *= 2;
+            } else {
+                new_cap = max_size();
+            }
+        }
+
+        __vector_obj tmp;
+        T *new_data = tmp.__alloc().allocate(new_cap);
+        tmp.__cap() = new_cap;
+        tmp.data_ = new_data;
+
+        T *destination = new_data;
+        for (T *source = data_; source < position; ++source, ++destination) {
+            tmp.__alloc().construct(destination, *source);
+            ++tmp.size_;
+        }
+        for (; n != 0; --n, ++destination) {
+            tmp.__alloc().construct(destination, x);
+            ++tmp.size_;
+        }
+        for (T *source = position; source < end(); ++source, ++destination) {
+            tmp.__alloc().construct(destination, *source);
+            ++tmp.size_;
+        }
+        tmp.swap(*this);
+    }
+}
+
 template <class T, class Allocator = allocator<T> > class vector;
+
+/* A vector of objects. The game has out-of-line copies of begin, end, push_back and clear, which
+ * are defined after the class; erase and reserve are inline, as the game's callers call
+ * __vector_obj's erase and reserve directly. */
+template <class T, class Allocator> class vector : private __vector_obj<T, Allocator> {
+    typedef __vector_obj<T, Allocator> base;
+
+  public:
+    typedef size_t size_type;
+    typedef T *iterator;
+
+    iterator begin();
+    iterator end();
+    void push_back(const T &x);
+    iterator erase(iterator first, iterator last) {
+        return base::erase(first, last);
+    }
+    void clear();
+    void reserve(size_type n) {
+        base::reserve(n);
+    }
+};
+
+template <class T, class Allocator>
+typename vector<T, Allocator>::iterator vector<T, Allocator>::begin() {
+    return base::begin();
+}
+template <class T, class Allocator>
+typename vector<T, Allocator>::iterator vector<T, Allocator>::end() {
+    return base::end();
+}
+template <class T, class Allocator> void vector<T, Allocator>::push_back(const T &x) {
+    base::push_back(x);
+}
+template <class T, class Allocator> void vector<T, Allocator>::clear() {
+    base::clear();
+}
 
 template <class T, class Allocator> class vector<T *, Allocator> : private __vector_ptr<T> {
     typedef __vector_ptr<T> base;

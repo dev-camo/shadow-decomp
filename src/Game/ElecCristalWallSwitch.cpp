@@ -67,7 +67,7 @@ void ElecCristalWallSwitch::fn_800CBC1C() {
 }
 
 void ElecCristalWallSwitch::DrawDebugRange() {
-    fn_802E0E84(&m_charInfo->m_position, &lbl_805F06D8, m_range);
+    fn_802E0E84(&m_charInfo->m_position, lbl_805F06D8, m_range);
 }
 
 void ElecCristalWallSwitch::CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner) {

@@ -11,6 +11,11 @@ class CharInfo;
 class UnkAttack_8005A840;
 class UnkMotionControl_801602B4;
 
+/* Tests or sets a work flag of the motion control (behaviour inferred: CityLaser and ThreatObj
+ * pass 0, 3, 1 and test the result, GadgetModelInfo::fn_8015FF60 passes 0, 11, 0). */
+extern "C" int stMtnControlWorkFlag(UnkMotionControl_801602B4 *control, int arg1, int arg2,
+                                    int arg3);
+
 /* The three words that fn_8015FA78 passes to its callback for each part (names and meaning
  * unknown). */
 struct UnkModelPart_8015FA78 {
@@ -40,6 +45,7 @@ class GadgetModelInfo {
     /* Attaches a character info to the model node named nodeName (behaviour inferred). */
     bool fn_80161F08(const char *nodeName, const boost::weak_ptr<CharInfo> &info);
     void fn_80162804();
+    void fn_80160670(int arg0);
     bool fn_80162A68(int arg0, int arg1);
     void fn_80162EF4();
     /* Advances the model by dt (decrements its timers; behaviour inferred). */
