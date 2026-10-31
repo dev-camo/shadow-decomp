@@ -1630,13 +1630,12 @@ Game/fn_804110EC.c:
 	.text       start:0x804110EC end:0x8041116C
 	.sbss       start:0x805F1398 end:0x805F13A8
 
-Game/fn_80411548.c:
-	.text       start:0x80411548 end:0x8041157C
-
-Game/fn_8041157C.c:
-	extab       start:0x80005C7C end:0x80005C84
-	extabindex  start:0x80007C70 end:0x80007C7C
-	.text       start:0x8041157C end:0x80411634
+Game/fn_8041116C.cpp:
+	extab       start:0x80005C5C end:0x80005C8C
+	extabindex  start:0x80007C40 end:0x80007C88
+	.text       start:0x8041116C end:0x80411714
+	.sbss       start:0x805F13A8 end:0x805F13B0
+	.sdata2     start:0x805FADB8 end:0x805FADC0
 
 Game/fn_8041583C.c:
 	.text       start:0x8041583C end:0x80415854

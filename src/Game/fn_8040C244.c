@@ -1,12 +1,7 @@
-typedef struct Fn8040C244Object {
-    /* 0x00 */ char padding[8];
-    /* 0x08 */ int count;
-#include "layout_check.h"
-} Fn8040C244Object;
-CHECK_SIZEOF(Fn8040C244Object, 0xC);
+#include "Game/fn_8041116C_matrix_stack.h"
 
-void fn_8040C244(Fn8040C244Object *object) {
-    if (object->count > 0) {
-        object->count--;
+void fn_8040C244(MatrixStack *stack) {
+    if (stack->top > 0) {
+        stack->top--;
     }
 }
