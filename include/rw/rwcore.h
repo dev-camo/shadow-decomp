@@ -1948,20 +1948,12 @@ extern RwMatrix lbl_805E31CC;
 /* calls a function for each entry in use in a free list (inferred) */
 RwFreeList *fn_804800DC(RwFreeList *freeList, void (*callBack)(void *mem, void *data), void *data);
 
-RwFrame *fn_8048752C(RwFrame *frame, RwFrameCallBack callBack, void *data);
-
 /* plugin registration with cameras and textures (inferred: the user data plugin registers with
  * them in RenderWare's attach order, between frames and lights and after materials) */
 RwInt32 fn_804859B8(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructCB,
                     RwPluginObjectDestructor destructCB, RwPluginObjectCopy copyCB);
-RwInt32 fn_80483554(RwUInt32 pluginID, RwPluginDataChunkReadCallBack readCB,
-                    RwPluginDataChunkWriteCallBack writeCB,
-                    RwPluginDataChunkGetSizeCallBack getSizeCB);
 RwInt32 fn_8048D280(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructCB,
                     RwPluginObjectDestructor destructCB, RwPluginObjectCopy copyCB);
-RwInt32 fn_80483AFC(RwUInt32 pluginID, RwPluginDataChunkReadCallBack readCB,
-                    RwPluginDataChunkWriteCallBack writeCB,
-                    RwPluginDataChunkGetSizeCallBack getSizeCB);
 
 /* errors */
 void *fn_8047DB10(void *instance, RwInt32 offset, RwInt32 size); /* opens a counted module */

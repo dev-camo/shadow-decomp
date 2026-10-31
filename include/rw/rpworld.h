@@ -649,13 +649,7 @@ typedef struct RpMeshGlobals {
 CHECK_SIZEOF(RpMeshGlobals, 0x30);
 
 /* The mesh module (inferred) */
-typedef struct RpMeshModule {
-    /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
-    /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
-} RpMeshModule;
-CHECK_SIZEOF(RpMeshModule, 0x8);
-
-extern RpMeshModule lbl_805F14F0;
+extern RwModuleInfo lbl_805F14F0;
 
 #define RPMESHGLOBAL(var)                                                                          \
     (RWPLUGINOFFSET(RpMeshGlobals, lbl_805F15B4, lbl_805F14F0.globalsOffset)->var)
@@ -936,7 +930,8 @@ void fn_80462C14(RxPipelineNode *node, RxGameCubeAllInOneCallBack callBack); /* 
 
 /* the default render callback of atomics and world sectors */
 void *fn_80462914(void *object, RpGameCubeRenderMesh *renderMesh);
-/* waits until the GPU is done with a resource entry's instanced data */
+/* the destroy callback of GameCube instanced data: waits until the GPU is done with the resource
+ * entry's instanced data */
 void fn_8046288C(RwResEntry *repEntry);
 
 typedef RpWorldSector *(*RpGameCubeSectorCallBack)(RpWorldSector *sector,

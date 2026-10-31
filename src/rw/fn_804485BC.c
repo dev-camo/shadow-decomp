@@ -6,7 +6,7 @@
 #include <math.h>
 #include <string.h>
 
-void *lbl_805F1450; /* the tank pipeline */
+RxPipeline *lbl_805F1450; /* the tank pipeline */
 
 /* Engine plugin constructor: creates the tank pipeline */
 void *fn_804485BC(void *object, RwInt32 offset, RwInt32 size) {

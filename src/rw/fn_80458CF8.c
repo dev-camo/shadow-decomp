@@ -212,7 +212,7 @@ RpGeometry *fn_8045916C(RpGeometry *geometry, RwInt32 lockMode) {
 RpGeometry *fn_804591C4(RpGeometry *geometry) {
     RwTexture **textures;
     RwRaster **rasters;
-    void **pipelines;
+    RxPipeline **pipelines;
     RwUInt16 numTextures = 0;
     RwUInt16 numRasters = 0;
     RwUInt16 numPipelines = 0;
@@ -224,7 +224,7 @@ RpGeometry *fn_804591C4(RpGeometry *geometry) {
     RwUInt16 rasterIndex;
     RwUInt32 size;
     RwUInt16 pipelineIndex;
-    void *pipeline;
+    RxPipeline *pipeline;
     RwInt32 i;
     RpTriangle *triangle;
     RwRaster *raster;

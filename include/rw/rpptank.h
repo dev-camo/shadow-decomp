@@ -124,8 +124,8 @@ typedef struct RpPTankAtomicExtPrv {
 } RpPTankAtomicExtPrv;
 CHECK_SIZEOF(RpPTankAtomicExtPrv, 0x138);
 
-extern RwInt32 lbl_805F1448; /* atomic plugin offset of the tank */
-extern void *lbl_805F1450;   /* the tank pipeline (GameCube) */
+extern RwInt32 lbl_805F1448;     /* atomic plugin offset of the tank */
+extern RxPipeline *lbl_805F1450; /* the tank pipeline (GameCube) */
 
 #define PTANKEXT(atomic) (*RWPLUGINOFFSET(RpPTankAtomicExtPrv *, atomic, lbl_805F1448))
 
