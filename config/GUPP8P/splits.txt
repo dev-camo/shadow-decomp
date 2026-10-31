@@ -1028,6 +1028,10 @@ CRI/sud_lib.c:
 	.rodata     start:0x80518EC0 end:0x80518F10
 	.bss        start:0x805C4EA8 end:0x805C4EB0
 
+CRI/sfx_set.c:
+	.text       start:0x803D09CC end:0x803D0B74
+	.rodata     start:0x80518F10 end:0x80518F20
+
 CRI/sfx_inf.c:
 	.text       start:0x803D2074 end:0x803D207C
 
