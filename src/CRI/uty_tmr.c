@@ -14,7 +14,9 @@
 #define UTYTMR_TBL 268
 
 static Sint32 utytmr_ch = 0;
-/* volatile: UTY_FinishTmr and UTY_InitTmr reload the counter, as the original does */
+/* The init count is volatile: in the original UTY_FinishTmr and UTY_InitTmr reload it after
+ * storing it, which MWCC emits only for a volatile object. Declared plain, UTY_FinishTmr is 9
+ * words against the original's 12 and UTY_InitTmr 44 against 45 (26 aligned words differ). */
 static volatile Sint32 utytmr_init_cnt = 0;
 static Sint64 utytmr_unit;
 
@@ -57,7 +59,14 @@ Sint64 UTY_GetTmr(void) {
 /* Drops a reference. */
 void UTY_FinishTmr(void) {
     utytmr_init_cnt--;
-    /* unused read: the original loads the counter a second time here */
+    /* Matching workaround: a discarded read of the volatile counter. After the store the
+     * original loads the counter twice into the same register before the compare (the first
+     * value is unused); MWCC keeps every access to a volatile object, so only a separate read
+     * gives that load. Plausibly a debug-build check left as a bare expression in release.
+     * Without it the function is 11 words against 12, and the other forms tried (--x, x -= 1,
+     * x = x - 1, the decrement or an assignment inside the test, a <= -1 compare, a local
+     * copy, an early return, conditional expressions) give one load or fold it into addic.
+     * Revisit if the original uty_tmr.c or a check string for this counter is found. */
     utytmr_init_cnt;
     if (utytmr_init_cnt < 0) {
         utytmr_init_cnt = 0;
