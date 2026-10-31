@@ -56,9 +56,9 @@ struct rxScopeTrace {
 };
 CHECK_SIZEOF(struct rxScopeTrace, 0x10);
 
-/* Called once for each distinct cluster definition of a list of scopes (name inferred). The one
- * callback here ignores its second argument, so its type is inferred. */
-typedef void (*rxEnumClustersCallBack)(RxClusterDefinition *clusterDef, rxScopeTrace *scope,
+/* Called once for each distinct cluster definition of a list of scopes (name and second parameter
+ * inferred; the one callback here ignores it) */
+typedef void (*rxEnumClustersCallBack)(RxClusterDefinition *clusterDef, RwUInt32 clusterIndex,
                                        void *data);
 
 /* Finds the entry for a cluster in a node's requirements; NULL if there is none */
@@ -283,21 +283,19 @@ RwUInt32 fn_8049D934(RxPipeline *pipeline) {
  * create, and marks in each entry the outputs that pass its cluster on. Returns 0 or the error
  * code. */
 RwUInt32 fn_8049DE44(RxPipeline *pipeline) {
-    RwUInt32 i;
-    RxOutputSpec *output;
-    RxNodeDefinition *nodeDef;
     RwUInt32 count;
+    RwUInt32 i;
     RwUInt32 j;
     RxPipelineNode *node;
-    RxPipelineNode *next;
 
     count = pipeline->numNodes;
-    node = pipeline->nodes;
-    do {
-        nodeDef = node->nodeDef;
+    node = &pipeline->nodes[0];
 
-        for (i = 0; i < nodeDef->io.numClustersOfInterest; i++) {
-            RxClusterRef *clusterRef = &nodeDef->io.clustersOfInterest[i];
+    do {
+        RxIoSpec *io = &node->nodeDef->io;
+
+        for (i = 0; i < io->numClustersOfInterest; i++) {
+            RxClusterRef *clusterRef = &io->clustersOfInterest[i];
 
             if (clusterRef->forcePresent) {
                 rxReqEntry *entry = ReqAddEntry(node->topSortData->req, clusterRef->clusterDef,
@@ -312,15 +310,13 @@ RwUInt32 fn_8049DE44(RxPipeline *pipeline) {
 
         for (i = 0; i < node->numOutputs; i++) {
             if (node->outputs[i] != (RwUInt32)-1) {
-                next = &pipeline->nodes[node->outputs[i]];
-                output = &node->nodeDef->io.outputs[i];
+                RxPipelineNode *next = &pipeline->nodes[node->outputs[i]];
+                RxOutputSpec *output = &node->nodeDef->io.outputs[i];
 
                 for (j = 0; j < next->topSortData->req->numReqs; j++) {
                     rxReqEntry *nextEntry = ReqGetEntry(next->topSortData->req, j);
-                    RxClusterDefinition *clusterDef = nextEntry->clusterDef;
-                    RwUInt32 index = fn_8049D4B8(&nodeDef->io, clusterDef);
+                    RwUInt32 index = fn_8049D4B8(io, nextEntry->clusterDef);
                     RwInt32 valid;
-                    rxReqEntry *entry;
 
                     if (index == (RwUInt32)-1) {
                         valid = output->allOtherClusters;
@@ -328,15 +324,17 @@ RwUInt32 fn_8049DE44(RxPipeline *pipeline) {
                         valid = output->outputClusters[index];
                     }
                     if (valid != rxCLVALID_INVALID) {
+                        rxReqEntry *entry;
+
                         if (valid != rxCLVALID_NOCHANGE) {
-                            entry = ReqAddEntry(node->topSortData->req, clusterDef,
+                            entry = ReqAddEntry(node->topSortData->req, nextEntry->clusterDef,
                                                 rxCLREQ_DONTWANT, 1, node);
                             if (entry == NULL) {
                                 RWERROR((E_RX_DEP_OUTOFMEMORY));
                                 return E_RX_DEP_OUTOFMEMORY;
                             }
                         } else {
-                            entry = fn_8049D408(node->topSortData->req, clusterDef);
+                            entry = fn_8049D408(node->topSortData->req, nextEntry->clusterDef);
                         }
                         if (entry != NULL) {
                             entry->outputMask |= 1 << i;
@@ -406,20 +404,15 @@ RwUInt32 fn_8049E1A4(RxPipeline *pipeline, rxScopeTrace **scopes) {
     RwUInt32 i;
     RwUInt32 j;
     RxPipelineNode *node;
-    rxReqEntry *entry;
-    RxPipelineNode *next;
 
     count = pipeline->numNodes;
-    node = pipeline->nodes;
+    node = &pipeline->nodes[0];
     do {
         for (j = 0; j < node->topSortData->req->numReqs; j++) {
-            entry = ReqGetEntry(node->topSortData->req, j);
+            rxReqEntry *entry = ReqGetEntry(node->topSortData->req, j);
 
             if (entry->scope == NULL) {
-                rxScopeTrace *scope = ScopeTraceCreate(scopes);
-
-                entry->scope = scope;
-                if (scope == NULL) {
+                if ((entry->scope = ScopeTraceCreate(scopes)) == NULL) {
                     RWERROR((E_RX_DEP_OUTOFMEMORY));
                     return E_RX_DEP_OUTOFMEMORY;
                 }
@@ -429,12 +422,14 @@ RwUInt32 fn_8049E1A4(RxPipeline *pipeline, rxScopeTrace **scopes) {
 
         for (i = 0; i < node->numOutputs; i++) {
             if (node->outputs[i] != (RwUInt32)-1) {
-                next = &pipeline->nodes[node->outputs[i]];
+                RxPipelineNode *next = &pipeline->nodes[node->outputs[i]];
+
                 for (j = 0; j < next->topSortData->req->numReqs; j++) {
                     rxReqEntry *nextEntry = ReqGetEntry(next->topSortData->req, j);
 
                     if (nextEntry->rqdOrOpt != rxCLREQ_DONTWANT) {
-                        entry = fn_8049D408(node->topSortData->req, nextEntry->clusterDef);
+                        rxReqEntry *entry =
+                            fn_8049D408(node->topSortData->req, nextEntry->clusterDef);
 
                         if (entry != NULL && (entry->outputMask & (1 << i))) {
                             if (nextEntry->scope == NULL) {
@@ -456,22 +451,21 @@ RwUInt32 fn_8049E1A4(RxPipeline *pipeline, rxScopeTrace **scopes) {
 /* Gives each scope the lowest packet slot that none of its nodes uses yet and sets the pipeline's
  * slot count. Returns 0. */
 RwUInt32 fn_8049E438(RxPipeline *pipeline, rxScopeTrace **scopes) {
-    RwUInt32 numSlots;
-    rxScopeTrace *scope;
-    RwUInt32 slot;
-    RwUInt32 slotBit;
-    rxScopeTrace *merged;
-    RwUInt32 slotsUsed;
-    rxReqEntry *entry;
+    RwUInt32 numSlots = 0;
+    rxScopeTrace *scope = *scopes;
 
-    scope = *scopes;
-    numSlots = 0;
     while (scope != NULL) {
-        slotsUsed = 0;
+        rxScopeTrace *merged;
+        RwUInt32 slotsUsed = 0;
+        RwUInt32 slot;
+
         merged = scope;
         do {
-            for (entry = merged->reqs; entry != NULL; entry = entry->nextInScope) {
+            rxReqEntry *entry = merged->reqs;
+
+            while (entry != NULL) {
                 slotsUsed |= entry->req->slotsUsed;
+                entry = entry->nextInScope;
             }
             merged = merged->merged;
         } while (merged != NULL);
@@ -485,12 +479,14 @@ RwUInt32 fn_8049E438(RxPipeline *pipeline, rxScopeTrace **scopes) {
             numSlots = slot + 1;
         }
 
-        slotBit = 1 << slot;
         merged = scope;
         do {
-            for (entry = merged->reqs; entry != NULL; entry = entry->nextInScope) {
+            rxReqEntry *entry = merged->reqs;
+
+            while (entry != NULL) {
                 entry->slotIndex = slot;
-                entry->req->slotsUsed |= slotBit;
+                entry->req->slotsUsed |= 1 << slot;
+                entry = entry->nextInScope;
             }
             merged = merged->merged;
         } while (merged != NULL);
@@ -501,22 +497,9 @@ RwUInt32 fn_8049E438(RxPipeline *pipeline, rxScopeTrace **scopes) {
     return 0;
 }
 
-/* Whether scope is the first in the list of scopes with its cluster definition (name inferred) */
-static inline RwBool ScopeIsFirstOfCluster(rxScopeTrace *scopes, rxScopeTrace *scope) {
-    rxScopeTrace *other = scopes;
-
-    while (other != scope) {
-        if (other->reqs->clusterDef == scope->reqs->clusterDef) {
-            break;
-        }
-        other = other->next;
-    }
-    return other == scope;
-}
-
 /* Adds a pipeline cluster for a cluster definition in the scratch space; data points to the
  * first pipeline cluster, set by the first call */
-void fn_8049E4F4(RxClusterDefinition *clusterDef, rxScopeTrace *scope, void *data) {
+void fn_8049E4F4(RxClusterDefinition *clusterDef, RwUInt32 clusterIndex, void *data) {
     RxPipelineCluster **first = data;
     RxPipelineCluster *cluster = fn_8049B92C(sizeof(RxPipelineCluster));
 
@@ -527,66 +510,105 @@ void fn_8049E4F4(RxClusterDefinition *clusterDef, rxScopeTrace *scope, void *dat
     cluster->creationAttributes = clusterDef->defaultAttributes;
 }
 
-/* Calls callBack once for each distinct cluster definition of the scopes (name inferred) */
-static inline void EnumPipelineClusters(rxScopeTrace *scopes, rxEnumClustersCallBack callBack,
-                                        void *data) {
+/* Calls callBack, when there is one, once for each distinct cluster definition of the scopes.
+ * Returns how many there are (name inferred) */
+static inline RwUInt32 EnumPipelineClusters(rxScopeTrace *scopes, rxEnumClustersCallBack callBack,
+                                            void *data) {
+    RwUInt32 numClusters = 0;
     rxScopeTrace *scope;
 
     for (scope = scopes; scope != NULL; scope = scope->next) {
-        if (ScopeIsFirstOfCluster(scopes, scope) && callBack != NULL) {
-            callBack(scope->reqs->clusterDef, scope, data);
+        rxScopeTrace *earlier;
+
+        /* look for an earlier scope with the same cluster definition */
+        for (earlier = scopes; earlier != scope; earlier = earlier->next) {
+            if (earlier->reqs->clusterDef == scope->reqs->clusterDef) {
+                break;
+            }
+        }
+        if (earlier == scope) {
+            if (callBack != NULL) {
+                callBack(scope->reqs->clusterDef, numClusters, data);
+            }
+            numClusters++;
         }
     }
+    return numClusters;
+}
+
+/* Counts the requirements of the first node that are required or optional (name inferred) */
+static inline RwUInt32 CountHeadNodeRequirements(RxPipeline *pipeline) {
+    RxPipelineNode *node = &pipeline->nodes[0];
+    RwUInt32 i;
+    RwUInt32 count = 0;
+
+    for (i = 0; i < node->topSortData->req->numReqs; i++) {
+        rxReqEntry *entry = ReqGetEntry(node->topSortData->req, i);
+
+        if (entry->rqdOrOpt == rxCLREQ_REQUIRED || entry->rqdOrOpt == rxCLREQ_OPTIONAL) {
+            count++;
+        }
+    }
+    return count;
+}
+
+/* Writes the required and optional requirements of the first node as the pipeline's input
+ * requirements, sorted by cluster definition (name inferred) */
+static inline void WriteHeadNodeRequirements(RxPipeline *pipeline) {
+    RxPipelineNode *node = &pipeline->nodes[0];
+    RwUInt32 i;
+    RwUInt32 count = 0;
+
+    for (i = 0; i < node->topSortData->req->numReqs; i++) {
+        rxReqEntry *entry = ReqGetEntry(node->topSortData->req, i);
+
+        if (entry->rqdOrOpt == rxCLREQ_REQUIRED || entry->rqdOrOpt == rxCLREQ_OPTIONAL) {
+            RxPipelineRequiresCluster *requirement = &pipeline->inputRequirements[count++];
+
+            requirement->clusterDef = entry->clusterDef;
+            requirement->rqdOrOpt = entry->rqdOrOpt;
+            requirement->slotIndex = entry->slotIndex;
+        }
+    }
+    pipeline->numInputRequirements = count;
+    fn_8049F5B4(pipeline->inputRequirements, pipeline->numInputRequirements,
+                sizeof(RxPipelineRequiresCluster), 0, 0, (RwUInt32)-1);
 }
 
 /* Lays out the packet tables in the scratch space: the embedded packet, the pipeline clusters,
  * each node's slot cluster table, slot continuity masks, cluster of interest slots and private
  * data, and the pipeline's input requirements sorted by cluster definition. Returns 0. */
 RwUInt32 fn_8049E54C(RxPipeline *pipeline, rxScopeTrace *scopes) {
-    RwUInt32 numInputRequirements = 0;
+    RwUInt32 numInputRequirements;
     RwUInt32 numClusters;
     RxPipelineCluster *clusters;
-    rxScopeTrace *scope;
-    void *top;
-    void *bottom;
-    RxPipelineNode *entryNode;
+    RxPipelineNode *node;
+    RwUInt8 *top;
+    RwUInt8 *bottom;
     RwUInt32 i;
     RwUInt32 j;
+    RwUInt32 k;
+    RwUInt32 continuity;
 
-    /* the entry point is the first node once the nodes are sorted */
-    entryNode = pipeline->nodes;
-    for (j = 0; j < entryNode->topSortData->req->numReqs; j++) {
-        rxReqEntry *entry = ReqGetEntry(entryNode->topSortData->req, j);
-
-        if (entry->rqdOrOpt == rxCLREQ_REQUIRED || entry->rqdOrOpt == rxCLREQ_OPTIONAL) {
-            numInputRequirements++;
-        }
-    }
-
-    numClusters = 0;
-    for (scope = scopes; scope != NULL; scope = scope->next) {
-        if (ScopeIsFirstOfCluster(scopes, scope)) {
-            numClusters++;
-        }
-    }
+    numInputRequirements = CountHeadNodeRequirements(pipeline);
+    numClusters = EnumPipelineClusters(scopes, NULL, NULL);
 
     /* clear what is left of the scratch space */
     top = fn_8049B8BC(0);
     bottom = fn_8049B92C(0);
-    memset(bottom, 0, (RwUInt8 *)top - (RwUInt8 *)bottom);
+    memset(bottom, 0, top - bottom);
 
     pipeline->embeddedPacket =
         fn_8049B92C(sizeof(RxPacket) + (pipeline->packetNumClusterSlots - 1) * sizeof(RxCluster));
-    clusters = NULL;
     pipeline->embeddedPacket->numClusters = pipeline->packetNumClusterSlots;
     pipeline->embeddedPacket->pipeline = pipeline;
     pipeline->embeddedPacketState = rxPKST_PACKETLESS;
+
+    clusters = NULL;
     EnumPipelineClusters(scopes, fn_8049E4F4, &clusters);
 
     for (i = 0; i < pipeline->numNodes; i++) {
-        RxPipelineNode *node = &pipeline->nodes[i];
-        RwUInt32 continuity;
-        RwUInt32 k;
+        node = &pipeline->nodes[i];
 
         if (pipeline->packetNumClusterSlots != 0) {
             node->slotClusterRefs =
@@ -636,23 +658,7 @@ RwUInt32 fn_8049E54C(RxPipeline *pipeline, rxScopeTrace *scopes) {
         pipeline->inputRequirements =
             fn_8049B92C(numInputRequirements * sizeof(RxPipelineRequiresCluster));
     }
-    numInputRequirements = 0;
-    entryNode = pipeline->nodes;
-    for (j = 0; j < entryNode->topSortData->req->numReqs; j++) {
-        rxReqEntry *entry = ReqGetEntry(entryNode->topSortData->req, j);
-
-        if (entry->rqdOrOpt == rxCLREQ_REQUIRED || entry->rqdOrOpt == rxCLREQ_OPTIONAL) {
-            RxPipelineRequiresCluster *requirement =
-                &pipeline->inputRequirements[numInputRequirements++];
-
-            requirement->clusterDef = entry->clusterDef;
-            requirement->rqdOrOpt = entry->rqdOrOpt;
-            requirement->slotIndex = entry->slotIndex;
-        }
-    }
-    pipeline->numInputRequirements = numInputRequirements;
-    fn_8049F5B4(pipeline->inputRequirements, pipeline->numInputRequirements,
-                sizeof(RxPipelineRequiresCluster), 0, 0, (RwUInt32)-1);
+    WriteHeadNodeRequirements(pipeline);
     return 0;
 }
 
