@@ -18,6 +18,7 @@
 #include "Game/UnkBitFlags_80014E04.h"
 #include "Game/UnkProbeTarget_800587A0.h"
 #include "Game/UnkSoundManager_80053164.h"
+#include "Game/UnkStartupFloat_800E2570.h"
 #include "Game/UnkWorldProbe_80021FE4.h"
 #include "Game/WeaponStickBase.h"
 #include "Game/fn_8040_vector_types.h"
@@ -86,15 +87,9 @@ class WeaponStickBaseImpl {
 CHECK_SIZEOF(Weapon::WeaponStickBaseImpl, 0x54);
 
 /* The distance between two tested segments of a sweep (name inferred). The original initialises
- * the word at start-up with a 12-byte function in .ctors that stores the pooled literal; a float
- * initialised with a plain literal is a static initialiser instead (measured). The initialiser
- * is written as an inline call, one form that produces that start-up store; what the original
- * wrote there is not known. */
-static inline float DefaultSweepStep() {
-    return 5.0f;
-}
-
-static float s_sweepStep = DefaultSweepStep();
+ * the word at start-up with a 12-byte startup function listed in .ctors that stores the pooled
+ * literal; a plain literal initialiser would place it in .sdata. */
+static UnkStartupFloat_800E2570 s_sweepStep(5.0f);
 
 WeaponStickBaseImpl::WeaponStickBaseImpl(const boost::weak_ptr<CharInfo> &owner, float arg1) {
     field_0x48 = arg1;
@@ -204,7 +199,7 @@ void WeaponStickBaseImpl::SweepAttack() {
     fn_800091EC(&endMove, &endDelta);
 
     /* The whole movements are scaled in place to one step's movement once the count is known. */
-    int count = (int)(fn_8040CF50(&endMove) / s_sweepStep) + 1;
+    int count = (int)(fn_8040CF50(&endMove) / s_sweepStep.value) + 1;
     float fraction = 1.0f / (float)count;
 
     fn_8040CE38(&startMove, fraction);
