@@ -1711,6 +1711,13 @@ Game/fn_80411714.c:
 	.sbss       start:0x805F13B0 end:0x805F13D0
 	.sdata2     start:0x805FADC0 end:0x805FADD8
 
+Game/fn_80413B30.c:
+	extab       start:0x80005D0C end:0x80005D74
+	extabindex  start:0x80007D48 end:0x80007DE4
+	.text       start:0x80413B30 end:0x804157E8
+	.bss        start:0x805E12C0 end:0x805E12E0
+	.sdata2     start:0x805FADD8 end:0x805FAE00
+
 Game/fn_8041583C.c:
 	.text       start:0x8041583C end:0x80415854
 

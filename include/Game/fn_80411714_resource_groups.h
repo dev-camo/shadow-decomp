@@ -21,8 +21,8 @@ CHECK_SIZEOF(ResourceRecord, 0x4);
  * data is set, otherwise 32-bit), and the size is the distance to the next block. */
 typedef struct ResourceBlock {
     /* 0x00 */ int size;
-    /* 0x04 */ unsigned short unknown04;
-    /* 0x06 */ unsigned char unknown06;
+    /* 0x04 */ unsigned short count;      /* number of entries; curve keys in fn_80413E38 */
+    /* 0x06 */ signed char trailingBytes; /* unused bytes at the end of the block (fn_80413B30) */
     /* 0x07 */ signed char hasNext;
 } ResourceBlock;
 CHECK_SIZEOF(ResourceBlock, 0x8);

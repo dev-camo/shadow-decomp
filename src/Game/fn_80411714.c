@@ -105,7 +105,7 @@ static inline int FixDataHeader(ResourceData *data) {
                 int elementBytes;
 
                 fn_804210E4(&block->size, &block->size, 1);
-                fn_8042118C(&block->unknown04, &block->unknown04, 1);
+                fn_8042118C(&block->count, &block->count, 1);
                 /* An int, so that the division is signed. */
                 elementBytes = block->size - sizeof(ResourceBlock);
                 if (data->flags & 1) {
