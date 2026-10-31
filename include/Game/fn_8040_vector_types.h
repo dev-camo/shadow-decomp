@@ -117,6 +117,9 @@ extern Fn8040Vector2 lbl_805F1358;
 extern float lbl_805FAD78;
 extern float lbl_805FAD80;
 extern Fn8040Vector3 lbl_805E07A0;
+/* A zero vector that the startup code at 0x8040EA64 stores (together with a 2D one at 0x805E07B0);
+ * the GravityChangeCollision gadget passes it to the box probe factory fn_800C7C34. */
+extern Fn8040Vector3 lbl_805E07B8;
 
 /* Lengths of a 2D and a 3D vector, through MSL <cmath>'s inline std::sqrt(float). Retail calls the
  * out-of-line copy of std::sqrt at 0x8000FEE4, which calls the copy of sqrtf at 0x8000FF04. The E3

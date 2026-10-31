@@ -41,6 +41,9 @@ void fn_800C9D68(UnkGadgetOwner_800C9CD0 *owner, const void *params, int size);
  * fn_800C9B84 and fn_800CB534 (purpose unknown). ThreatObjHolder calls it when its ThreatObj is
  * finished. */
 void fn_800C9B34(UnkGadgetOwner_800C9CD0 *owner);
+/* Sets bit 16 of the word at 0x18 of the record that owner points to, then calls fn_800C9B34
+ * (behaviour inferred from its body). Gadgets call it before marking themselves finished. */
+void fn_800C9AD4(UnkGadgetOwner_800C9CD0 *owner);
 /* Sets bit 3 of the word at 0x18 of the record that owner points to (behaviour inferred from its
  * body). */
 void fn_800C985C(UnkGadgetOwner_800C9CD0 *owner);

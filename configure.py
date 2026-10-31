@@ -732,6 +732,7 @@ config.libs = [
                 Object(Matching, "Game/ElecPillar.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecSmallPillar.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecWakka.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/GravityChangeCollision.cpp", cflags=cflags_game_cpp),
                 # The remaining differences: five allocations pass lower __LINE__ values (one word
                 # each; the original passes 723, 965, 667, 773 and 1046); CopyFirstComponent
                 # computes the length of the component once where the original subtracts the

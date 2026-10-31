@@ -174,6 +174,13 @@ Game/ElecWakka.cpp:
 	.sdata      start:0x805E9CA8 end:0x805E9CC8
 	.sdata2     start:0x805F7170 end:0x805F7188
 
+Game/GravityChangeCollision.cpp:
+	.text       start:0x802476A8 end:0x80247B24
+	.rodata     start:0x804F3CC8 end:0x804F3D08
+	.data       start:0x80548968 end:0x80548A98
+	.sdata      start:0x805EA158 end:0x805EA178
+	.sdata2     start:0x805F74A0 end:0x805F74C8
+
 Game/BackDrop.cpp:
 	.text       start:0x8026B3B0 end:0x8026B718
 	.ctors      start:0x804A9F0C end:0x804A9F10

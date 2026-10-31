@@ -79,7 +79,7 @@ void TornadoCollision::Update(float dt) {
             fn_800C9E60(m_owner, &m_tag);
             if (m_target.get() != 0) {
                 m_target->SetPosition(&m_position);
-                m_target->SetRadius(m_radius, -2, 0.0f, 0.0f);
+                m_target->SetSize(m_radius, -2, 0.0f, 0.0f);
             }
             fn_800C9CF8(m_owner);
         }
