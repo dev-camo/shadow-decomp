@@ -484,7 +484,6 @@ Rt2dFont *fn_80471A54(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
     RwInt32 charOffset;
     RwInt32 numChars;
     RwInt32 maxChars;
-    Rt2dGlobalVars *globals;
     RwInt32 *codes;
     RwInt16 *map;
     RwChar *p;
@@ -508,7 +507,6 @@ Rt2dFont *fn_80471A54(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
     if (maxChars == 0) {
         maxChars = 0x100;
     }
-    globals = &lbl_805E1950;
     codes = lbl_805E1950.charCodes;
     map = font->map;
     p = NULL;
@@ -596,7 +594,6 @@ Rt2dFont *fn_80471A54(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
                     RwInt32 x;
                     RwInt32 xOffset = pixelSize;
                     RwInt32 codeIndex = codeOffset;
-                    RwInt32 rectIndex = rectOffset;
                     RwInt32 cellBottom = cellTop + cellHeight;
 
                     for (x = 1; x < width && result == font; x++, xOffset += pixelSize) {
@@ -632,7 +629,7 @@ Rt2dFont *fn_80471A54(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
 
                             p += length;
                             GROWCHARCODES(codes);
-                            globals->charCodes = codes;
+                            lbl_805E1950.charCodes = codes;
                             if (code >= rt2dFONTMAPSIZE) {
                                 font->flag |= rt2dFONTFLAGWIDECHARS;
                                 codes[codeIndex] = code;
@@ -641,7 +638,6 @@ Rt2dFont *fn_80471A54(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
                             }
                             numChars++;
                             codeIndex++;
-                            rectIndex++;
                             charRect = &charRects[charOffset];
                             codeOffset++;
                             rectOffset++;
@@ -682,7 +678,7 @@ Rt2dFont *fn_80471A54(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
     if (result == font) {
         font->numChars = numChars;
         fn_80471300(font);
-        if (globals->charCodes != NULL) {
+        if (lbl_805E1950.charCodes != NULL) {
             memset(lbl_805E1950.charCodes, -1, lbl_805E1950.numCharCodes * sizeof(RwInt32));
         }
     }
