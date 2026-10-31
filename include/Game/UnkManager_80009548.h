@@ -15,6 +15,10 @@ UnkManager_80009548 *fn_80009548(void);
 void fn_8000D664(UnkManager_80009548 *manager, int arg1, float arg2, float arg3, float arg4);
 /* Returns a vector that the BDTrue gadget uses as angles (behaviour inferred). */
 Fn8040Vector3 fn_80109B80(UnkManager_80009548 *manager, int arg1);
+/* Returns the address of a position that the BDHologram gadget measures its distance to; it
+ * passes 0 for arg1 (behaviour inferred: the function looks the entry up and returns the address
+ * 8 bytes into it). */
+Fn8040Vector3 *fn_80010244(UnkManager_80009548 *manager, int arg1);
 }
 
 #endif
