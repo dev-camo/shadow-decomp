@@ -768,7 +768,7 @@ config.libs = [
                 # through integer registers and addresses some of the stores differently.
                 # RCPtr::Assign (117 words, the original's 120) differs in 100 (24): the original
                 # keeps the object to release in r4 and copies it to r3 for each call, and the
-                # allocation of the holder passes line 94 of csdRCObject.h where the original
+                # allocation of the holder passes line 132 of csdRCObject.h where the original
                 # passes 410. Reset and the holder's constructor come after RenderState::End, as
                 # in the original; the out-of-line CMemoryAlloc::AllocObject that the holder
                 # allocation emits after them is a weak copy of a function the game has at
@@ -850,6 +850,25 @@ config.libs = [
                 # allocator's AllocObject and FreeObject are also emitted as weak copies, as are the
                 # CTexList and RCObject vtables; the link discards them.
                 Object(NonMatching, "Game/CSD/fn_80364058.cpp", cflags=cflags_csd),
+                # The palette object of a scene (CMotionPalette, which owns the palette block
+                # through a reference-counted handle) and the CMotionPattern constructor that wraps
+                # one of its entries. 12 of 12 functions are sourced; 8 match in raw instruction
+                # words, and the unit's .rodata layout is identical. The CMotionPalette constructor
+                # and Rebuild differ in one word each, the __LINE__ of their allocations (the
+                # original passes 55 and 100). The holder Assign for the function release policy
+                # (112 words, the original's 115) shows the difference described for csdLoader.cpp.
+                # GetPattern differs in 7 words: the original loads the element's index before the
+                # palette and the layer index (scheduling; four spellings of the entry address gave
+                # the same code). The holder's SetRelease matches but comes last in the unit, where
+                # the original has it right after the holder constructor for the function policy
+                # (see csdRCObject.h). The unit also emits weak copies of
+                # RCPtr<unsigned char>::Reset and the holder constructor for the delete policy and
+                # of CMemoryAlloc::AllocObject, which the link discards in favour of the game's
+                # earlier copies, and a local instance of the delete-policy Assign that only the
+                # discarded Reset calls. It also emits a weak copy of the RCObject<unsigned char>
+                # vtable (the original unit has no .data), which the link discards in favour of the
+                # game's copy.
+                Object(NonMatching, "Game/CSD/csdmMotionPalette.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/fn_80008D48.c"),
                 Object(Matching, "Game/fn_80008DA4.c"),
                 Object(Matching, "Game/fn_80008E1C.c"),

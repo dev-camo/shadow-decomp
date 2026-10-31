@@ -6,10 +6,10 @@
 /* The library's reference-counting pointer (class name from the game's RTTI, which names
  * RCPtr<Chao::CSD::CTexList>::RCObject<Chao::CSD::CTexList> and others). This file stands in for
  * the original csdRCObject.h, the file name the game's RCPtr code passes to AllocObject: it has
- * only the members recovered code uses. Reset, Assign and the holder's constructor are defined in
+ * only the members recovered code uses. Reset, Assign and the holder's constructors are defined in
  * the class because the game's copies come out right after their first user (the weak instances of
- * a member defined outside the class come out at the end of the file); the other members are
- * compiled elsewhere.
+ * a member defined outside the class come out at the end of the file); SetRelease is the exception
+ * (see its definition), and the other members are compiled elsewhere.
  *
  * The CBase base is inferred: the game's deleting destructor of RCPtr<unsigned char> (0x8003F224
  * in the USA release) frees the pointer through the current allocator's FreeObject, as CBase's
@@ -19,6 +19,22 @@ namespace CSD {
 
 template <class T> class RCPtr : public CBase {
   public:
+    /* Selects RELEASE_DELETE (an empty class passed by reference; name inferred). */
+    class DeleteRelease {};
+
+    /* Selects RELEASE_FREE: the object is a buffer from Alloc (name inferred). */
+    class FreeRelease {};
+
+    /* Selects RELEASE_FUNCTION: the function releases the object when the last pointer to it goes
+     * away (name inferred). The constructor lets a release function convert to the policy at
+     * the call (Reset(object, ReleasePaletteBlock)). */
+    class FunctionRelease {
+      public:
+        FunctionRelease(void (*function)(T *)) : function(function) {}
+
+        void (*function)(T *);
+    };
+
     RCPtr();
     RCPtr(T *object);
     ~RCPtr();
@@ -51,6 +67,15 @@ template <class T> class RCPtr : public CBase {
         return *this;
     }
 
+    /* Replace the held object by object, released with Free or by a function (names inferred).
+     * Unlike Reset(T *), they return nothing. */
+    void Reset(T *object, const FreeRelease &release) {
+        Assign(object, release);
+    }
+    void Reset(T *object, const FunctionRelease &release) {
+        Assign(object, release);
+    }
+
     /* How a holder releases its object when the last pointer to it goes away. The switch over
      * the holder's m_eDealloctor in RCPtr<CTexList>'s code has these five cases; the names are
      * inferred from what each does. */
@@ -62,12 +87,12 @@ template <class T> class RCPtr : public CBase {
         RELEASE_RELEASER = 4  /* run a releaser object */
     };
 
-    /* Selects RELEASE_DELETE (an empty class passed by reference; name inferred). */
-    class DeleteRelease {};
-
     /* Holds object, released with delete; the policy object is taken by value (the RenderWare
      * texture lists pass their unit's DeleteRelease). */
     RCPtr(T *object, DeleteRelease release) : field_0x0(NULL) {
+        Assign(object, release);
+    }
+    RCPtr(T *object, const FunctionRelease &release) : field_0x0(NULL) {
         Assign(object, release);
     }
 
@@ -90,6 +115,19 @@ template <class T> class RCPtr : public CBase {
             m_eDealloctor = RELEASE_DELETE;
         }
 
+        RCObject(U *object, FreeRelease release)
+            : m_pObject(object), m_refCount(0), m_custom(), m_eDealloctor(-1) {
+            m_custom.function = NULL;
+            m_eDealloctor = RELEASE_FREE;
+        }
+
+        RCObject(U *object, FunctionRelease release)
+            : m_pObject(object), m_refCount(0), m_custom(), m_eDealloctor(-1) {
+            SetRelease(release);
+        }
+
+        void SetRelease(FunctionRelease release);
+
         static void *operator new(size_t size) {
             return GetMemoryAlloc()->AllocObject(size, __FILE__, __LINE__);
         }
@@ -107,8 +145,9 @@ template <class T> class RCPtr : public CBase {
 
   private:
     /* Replaces the held object by object, to be released as release selects (name inferred).
-     * Called by Reset and by the RCPtr(T *, DeleteRelease) constructor. */
-    void Assign(T *object, const DeleteRelease &release) {
+     * Called by Reset and by the constructors that take a release policy. Each policy gets its own
+     * instance, as the original's separate copies of this code show. */
+    template <class Release> void Assign(T *object, const Release &release) {
         RCObject<T> *holder = field_0x0;
 
         if (holder != NULL) {
@@ -163,6 +202,20 @@ template <class T> class RCPtr : public CBase {
 
     /* 0x0 */ RCObject<T> *field_0x0;
 };
+
+/* Stores a release function and selects RELEASE_FUNCTION (name inferred).
+ *
+ * Matching workaround: defined outside the class so that GC/2.7 does not inline it into the
+ * holder constructor for the function policy; defined in the class, it is expanded there (li 3 and
+ * a store of m_eDealloctor) and no out-of-line copy is emitted. The game's copy follows that
+ * constructor, while this form emits it at the end of the unit. Revisit when the original's inline
+ * control for this member is found. */
+template <class T>
+template <class U>
+void RCPtr<T>::RCObject<U>::SetRelease(FunctionRelease release) {
+    m_custom.function = release.function;
+    m_eDealloctor = RELEASE_FUNCTION;
+}
 
 } // namespace CSD
 } // namespace Chao
