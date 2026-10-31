@@ -623,6 +623,7 @@ config.libs = [
                 # 50 of 52 functions have identical instructions. The checked_deleter call operator
                 # differs by one word and checked_delete is absent, as in CityLaserHolder.cpp.
                 Object(NonMatching, "Game/ChaoHolder.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/Cream.cpp", cflags=cflags_game_cpp),
                 # Every function but the ThreatObj constructor is instruction-identical, and so is the
                 # data. Two differences remain: the constructor's two table loads (model table and
                 # holder) use r6 and r7 the other way round (four words), and the destructor of
