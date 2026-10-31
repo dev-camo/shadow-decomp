@@ -212,6 +212,38 @@ const RwChar *fn_80482FA4(const RwChar *string, RwStream *stream) {
     return NULL;
 }
 
+/* Reads the characters of a string chunk into string, or into a new string when it is NULL */
+static inline RwChar *StringReadNarrow(RwChar *string, RwStream *stream, RwUInt32 length) {
+    RwChar *dst;
+    RwChar buffer[rwSTRINGREADCHUNK];
+
+    if (string == NULL) {
+        string = RwMalloc(length, rwMEMHINTDUR_EVENT | rwID_STRING);
+        if (string == NULL) {
+            RWERROR((E_RW_NOMEM, length));
+            return NULL;
+        }
+    }
+    dst = string;
+    while (length != 0) {
+        RwUInt32 chunk = rwSTRINGREADCHUNK;
+        RwUInt32 i;
+
+        if (length <= rwSTRINGREADCHUNK) {
+            chunk = length;
+        }
+        if (chunk != fn_80480D4C(stream, buffer, chunk)) {
+            return NULL;
+        }
+        length -= chunk;
+        for (i = 0; i < chunk; i++) {
+            dst[i] = buffer[i];
+        }
+        dst += chunk;
+    }
+    return string;
+}
+
 /* Reads a Unicode string chunk's characters into string, keeping the low byte of each, or into a
  * new string when it is NULL */
 static inline RwChar *StringReadUnicode(RwChar *string, RwStream *stream, RwUInt32 length) {
@@ -258,48 +290,16 @@ RwChar *fn_80483060(RwChar *string, RwStream *stream) {
     RwUInt32 type;
     RwUInt32 length;
     RwUInt32 version;
-    RwChar buffer[rwSTRINGREADCHUNK];
 
     while (fn_8047CDB4(stream, &type, &length, &version, NULL)) {
-        RwBool versionOK = FALSE;
+        const RwBool versionOK = version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION;
 
-        if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
-            versionOK = TRUE;
-        }
         if (!versionOK) {
             RWERROR((E_RW_BADVERSION));
             return NULL;
         }
         if (type == rwID_STRING) {
-            /* Reads the characters into string, or into a new string when it is NULL */
-            RwUInt32 remaining = length;
-            RwChar *dst;
-
-            if (string == NULL) {
-                string = RwMalloc(remaining, rwMEMHINTDUR_EVENT | rwID_STRING);
-                if (string == NULL) {
-                    RWERROR((E_RW_NOMEM, remaining));
-                    return NULL;
-                }
-            }
-            dst = string;
-            while (remaining != 0) {
-                RwUInt32 chunk = rwSTRINGREADCHUNK;
-                RwUInt32 i;
-
-                if (remaining <= rwSTRINGREADCHUNK) {
-                    chunk = remaining;
-                }
-                if (chunk != fn_80480D4C(stream, buffer, chunk)) {
-                    return NULL;
-                }
-                remaining -= chunk;
-                for (i = 0; i < chunk; i++) {
-                    dst[i] = buffer[i];
-                }
-                dst += chunk;
-            }
-            return string;
+            return StringReadNarrow(string, stream, length);
         }
         if (type == rwID_UNICODESTRING) {
             return StringReadUnicode(string, stream, length);
