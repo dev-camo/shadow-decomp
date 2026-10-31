@@ -264,6 +264,33 @@ Game/CSD/fn_80364058.cpp:
 	.data       start:0x8055FCD0 end:0x8055FCF8
 	.bss        start:0x80585B40 end:0x80585B48
 
+Game/CSD/csdmScene.cpp:
+	.text       start:0x8036442C end:0x8036872C
+	.rodata     start:0x80513080 end:0x80513108
+	.data       start:0x8055FCF8 end:0x8055FEC8
+	.bss        start:0x80585B48 end:0x80585B50
+
+Game/CSD/csdmMotionPalette.cpp:
+	.text       start:0x8036872C end:0x80368C70
+	.rodata     start:0x80513108 end:0x80513150
+
+Game/CSD/csdmMotionPattern.cpp:
+	.text       start:0x80368C70 end:0x8036A208
+	.rodata     start:0x80513150 end:0x805131B8
+	.data       start:0x8055FEC8 end:0x8055FED8
+	.bss        start:0x80585B50 end:0x80585B58
+
+Game/CSD/csdmNode.cpp:
+	.text       start:0x8036A208 end:0x8036BCAC
+	.rodata     start:0x805131B8 end:0x805131F0
+	.data       start:0x8055FED8 end:0x8055FF70
+
+Game/CSD/csdmProject.cpp:
+	.text       start:0x8036BCAC end:0x8036FC94
+	.rodata     start:0x805131F0 end:0x80513318
+	.data       start:0x8055FF70 end:0x8055FFD8
+	.bss        start:0x80585B58 end:0x80585B80
+
 dolphin/PPCArch.c:
 	.text       start:0x8036FC94 end:0x8036FDA8
 
