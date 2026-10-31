@@ -631,6 +631,23 @@ config.libs = [
                 # lis (33 words, shorter by seven; the pooled base is the only remaining
                 # difference).
                 Object(NonMatching, "Game/CSD/csdAccess.cpp", cflags=cflags_csd),
+                # The range 0x8035C5CC-0x8035F81C is the one gap between csdAccess and csdMatrix;
+                # its .rodata holds the file name string "csdLoader.cpp", which only
+                # ExtractFileParts uses (the __FILE__ of its allocations), so the other functions
+                # are in this unit because they share its address range. 19 of its 53 functions are
+                # sourced so far: ResolveProject, LoadProject, the Normalize* functions,
+                # UnpackPatternBlend, PackPatternBlend, SplitFloat, SetEntryColors, TintEntryColors,
+                # HoldKeyValue, InterpolateLinear, InterpolateColor and TransformPoint match (rodata
+                # operands compared by target). SwapBytes differs by the register of the loaded
+                # value in four instructions. InterpolateKeys differs in that the original saves its
+                # first argument to pass it again in the default case. InterpolateHermite differs in
+                # instruction order, registers and one extra address instruction in the original.
+                # ExtractFileParts has the original's 102 words and differs in 13: the original
+                # loads the file's first word after copying the six arguments to saved registers,
+                # where this build loads it after the first copy and interleaves the rest with the
+                # comparison (eight words), and the five allocation __LINE__ values (471, 480, 494,
+                # 504 and 512 in the original).
+                Object(NonMatching, "Game/CSD/csdLoader.cpp", cflags=cflags_csd),
                 # Every function matches except InitMatrixStack, whose allocations pass lines 64 and
                 # 65 instead of the original 53 and 54. .rodata also starts with the two static
                 # doubles of MSL <cmath>'s sqrtf, unreferenced weak data that the link discards.
