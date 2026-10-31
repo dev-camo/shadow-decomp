@@ -47,15 +47,17 @@ Char8 cvfs_defdev[9];
 static CVFS_DEV cvfs_tbl[CVFS_MAX_DEV];
 CVFS_OBJ cvfs_obj[CVFS_MAX_HN];
 
-/* volatile: cvFsAddDev reads the build string pointer without using it; without volatile MWCC drops
- * the load (cvFsAddDev 0x27C -> 0x278). */
+/* Matching workaround: volatile. The original's cvFsAddDev loads the build string pointer and
+ * discards it; without volatile MWCC drops the load (cvFsAddDev 0x27C -> 0x278 bytes). Revisit when
+ * the original's form of the dead load is known. */
 static const Char8 *const volatile cvfs_build = "\nCVFS/GC Ver.2.39 Build:Feb 28 2005 15:48:34\n";
 
 void cvFsCallUsrErrFn(void *obj, const Char8 *msg, void *hn);
 
-/* Stand-in for the stripped cvFsInit and cvFsFinish. MWCC places .bss objects in order of first
- * reference, so this never-called function refers to them in storage order before any other code
- * does. Storing the addresses keeps the references. */
+/* Matching workaround: order-only stand-in for the stripped cvFsInit and cvFsFinish (their bodies
+ * are unknown). MWCC places .bss objects in order of first reference, so this never-called function
+ * refers to them in storage order before any other code does. Storing the addresses keeps the
+ * references. Revisit when the stripped functions' bodies are known. */
 static void cvfs_BssOrder(void **out) {
     out[0] = &cvfs_errfn;
     out[1] = &cvfs_errobj;
@@ -103,7 +105,8 @@ static Sint32 cvfs_IsExistDev(const Char8 *name, Sint32 len) {
     return 0;
 }
 
-/* Device search by table index. */
+/* Device search by name: returns the interface of the global table entry at the index of the first
+ * matching name in tbl. */
 static CVFS_IF *cvfs_SearchDev(CVFS_DEV *tbl, const Char8 *name) {
     Uint32 i;
     Sint32 len;
@@ -182,9 +185,11 @@ static void cvfs_GetDefDev(Char8 *dev) {
     }
 }
 
-/* Device search with the length computed by the caller. The original loads the
- * table base after the first strlen, so the name check and strlen stay in cvfs_ResolveDev and
- * `tbl = cvfs_tbl` follows them. */
+/* Device search with the length computed by the caller (name inferred).
+ * Matching workaround: the helper split of cvfs_FindDev, cvfs_WantsDevForm and cvfs_ResolveDev is
+ * a reconstruction driven by the original's load order: the original loads the table base after
+ * the first strlen, so the name check and strlen stay in cvfs_ResolveDev and `tbl = cvfs_tbl`
+ * follows them. Revisit when the original's helper functions are known. */
 static CVFS_IF *cvfs_FindDev(CVFS_DEV *tbl, const Char8 *name, Sint32 len) {
     CVFS_DEV *dev;
     Uint32 i;
@@ -199,14 +204,15 @@ static CVFS_IF *cvfs_FindDev(CVFS_DEV *tbl, const Char8 *name, Sint32 len) {
     return 0;
 }
 
-/* Whether the named device asks for the "DEV:path" form (option 100). */
+/* Whether the named device asks for the "DEV:path" form (option 100) (name inferred). */
 static Sint32 cvfs_WantsDevForm(CVFS_DEV *tbl, const Char8 *name, Sint32 len) {
     return cvfs_OptFn(cvfs_FindDev(tbl, name, len), 0, 100, 0, 0) == 1;
 }
 
-/* Finds the device table for a split file name: an empty device part takes the default device; a
- * device that asked for it (option 100) gets the "DEV:path" form back in `path`; an unknown device
- * name falls back to the default device with the whole original name as the path. */
+/* Finds the device table for a split file name (name inferred): an empty device part takes the
+ * default device; a device that asked for it (option 100) gets the "DEV:path" form back in `path`;
+ * an unknown device name falls back to the default device with the whole original name as the
+ * path. */
 static CVFS_IF *cvfs_ResolveDev(const Char8 *fname, Char8 *dev, Char8 *path) {
     CVFS_IF *vtbl;
     CVFS_DEV *tbl;
@@ -234,16 +240,15 @@ static CVFS_IF *cvfs_ResolveDev(const Char8 *fname, Char8 *dev, Char8 *path) {
         cvfs_GetDefDev(dev);
         vtbl = cvfs_SearchDev(tbl, dev);
         if (vtbl == 0) {
-            vtbl = 0;
-        } else {
-            strcpy(path, fname);
+            return 0;
         }
+        strcpy(path, fname);
     }
     return vtbl;
 }
 
-/* Stand-in for the stripped cvFsSetDefVol, cvFsGetVolumeInfo, cvFsDelVolume, cvFsAddVolumeEx and
- * cvFsSetCurVolume (see above). */
+/* Matching workaround: as above, order-only stand-in for the stripped cvFsSetDefVol,
+ * cvFsGetVolumeInfo, cvFsDelVolume, cvFsAddVolumeEx and cvFsSetCurVolume (see above). */
 static void cvfs_RodataOrderVolumes(const Char8 **out) {
     out[0] = "cvFsSetDefVol #1:illegal device name";
     out[1] = "cvFsSetDefVol #2:illegal volume name";
@@ -263,7 +268,8 @@ static void cvfs_RodataOrderVolumes(const Char8 **out) {
     out[15] = "cvFsSetCurVolume #3:device not found";
 }
 
-/* Stand-in for the stripped cvFsOptFn2, cvFsOptFn1 and cvFsGetDevName (see above). */
+/* Matching workaround: as above, order-only stand-in for the stripped cvFsOptFn2, cvFsOptFn1 and
+ * cvFsGetDevName (see above). */
 static void cvfs_RodataOrderOptions(const Char8 **out) {
     out[0] = "cvFsOptFn2 #1:handle error";
     out[1] = "cvFsOptFn2 #2:vtbl error";
@@ -272,8 +278,8 @@ static void cvfs_RodataOrderOptions(const Char8 **out) {
     out[4] = "cvFsGetDevName #1:vtbl error";
 }
 
-/* Stand-in for the stripped cvFsDeleteFile, cvFsRemoveDir, cvFsMakeDir, cvFsGetMaxByteRate,
- * cvFsIsExistFile and cvFsChangeDir (see above). */
+/* Matching workaround: as above, order-only stand-in for the stripped cvFsDeleteFile,
+ * cvFsRemoveDir, cvFsMakeDir, cvFsGetMaxByteRate, cvFsIsExistFile and cvFsChangeDir (see above). */
 static void cvfs_RodataOrderFiles(const Char8 **out) {
     out[0] = "cvFsDeleteFile #1:illegal file name";
     out[1] = "cvFsDeleteFile #2:illegal device name";
@@ -299,8 +305,8 @@ static void cvfs_RodataOrderFiles(const Char8 **out) {
     out[21] = "cvFsChangeDir #4:vtbl error";
 }
 
-/* Stand-in for the stripped cvFsGetNumTr, cvFsSetSctLen, cvFsGetSctLen, cvFsGetFreeSize,
- * cvFsGetFileSizeByHndl and cvFsGetFileSizeEx (see above). */
+/* Matching workaround: as above, order-only stand-in for the stripped cvFsGetNumTr, cvFsSetSctLen,
+ * cvFsGetSctLen, cvFsGetFreeSize, cvFsGetFileSizeByHndl and cvFsGetFileSizeEx (see above). */
 static void cvfs_RodataOrderQueries(const Char8 **out) {
     out[0] = "cvFsGetNumTr #1:handle error";
     out[1] = "cvFsGetNumTr #2:vtbl error";
@@ -329,13 +335,12 @@ void cvFsEntryErrFunc(CVFS_USRERRFN func, void *obj) {
     }
 }
 
-/* Matching constraint: the original allocates `pdev` before the device table; the codeless move
- * through r11 keeps pdev live long enough to get that register order (COMPILER-DIFF M1; no
- * code). */
+/* NonMatching: the original has pdev in r28 and the device table cursor in r27; here they swap
+ * (14 words, register numbers only). */
 Sint32 cvFsGetFileSize(const Char8 *fname) {
     Char8 dev[CVFS_NAME_LEN];
     Char8 path[CVFS_NAME_LEN];
-    register Char8 *pdev;
+    Char8 *pdev;
     CVFS_IF *vtbl;
 
     if (fname == 0) {
@@ -348,14 +353,15 @@ Sint32 cvFsGetFileSize(const Char8 *fname) {
         return 0;
     }
     pdev = dev;
-    asm { mr r11, pdev; mr pdev, r11 } /* COMPILER-DIFF: M1 (level-shifter, no code) */
     vtbl = cvfs_ResolveDev(fname, pdev, path);
+    /* Original quirk: dev is the local array, so this test is always false (see the header). */
     if (dev == 0) {
         cvfs_Error("cvFsGetFileSize #2:illegal device name");
     }
     if (vtbl == 0) {
         cvfs_Error("cvFsGetFileSize #3:device not found");
     }
+    /* Original quirk: no return after the error above, so a null vtbl is dereferenced here. */
     if (vtbl->GetFileSize != 0) {
         return vtbl->GetFileSize(path);
     }
@@ -407,7 +413,7 @@ void cvFsStopTr(CVFS_OBJ *obj) {
     }
 }
 
-/* Stand-in for the stripped cvFsReqWr (see above). */
+/* Matching workaround: as above, order-only stand-in for the stripped cvFsReqWr (see above). */
 static void cvfs_RodataOrderReqWr(const Char8 **out) {
     out[0] = "cvFsReqWr #1:handle error";
     out[1] = "cvFsReqWr #2:vtbl error";
@@ -480,8 +486,11 @@ void cvFsClose(CVFS_OBJ *obj) {
     }
 }
 
-/* a free handle slot */
-static CVFS_OBJ *cvfs_AllocObj(void) {
+/* a free handle slot
+ * Matching workaround: returns void *. With a CVFS_OBJ * return, cvFsOpen is 408 words instead of
+ * the original's 409, 228 of them differing. Revisit when the original allocator's signature is
+ * known. */
+static void *cvfs_AllocObj(void) {
     CVFS_OBJ *obj;
     Sint32 i;
 
@@ -506,7 +515,6 @@ CVFS_OBJ *cvFsOpen(const Char8 *fname, void *dir, Sint32 rw) {
     Char8 *pdev;
     CVFS_OBJ *obj;
     CVFS_IF *vtbl;
-    void *hn;
 
     if (fname == 0) {
         cvfs_Error("cvFsOpen #1:illegal file name");
@@ -517,9 +525,7 @@ CVFS_OBJ *cvFsOpen(const Char8 *fname, void *dir, Sint32 rw) {
         cvfs_Error("cvFsOpen #1:illegal file name");
         return 0;
     }
-    /* required: assigning cvfs_AllocObj() to obj directly compiles differently */
-    hn = cvfs_AllocObj();
-    obj = hn;
+    obj = cvfs_AllocObj();
     if (obj == 0) {
         cvfs_Error("cvFsOpen #3:failed handle alloced");
         return 0;
@@ -527,6 +533,7 @@ CVFS_OBJ *cvFsOpen(const Char8 *fname, void *dir, Sint32 rw) {
     pdev = dev;
     vtbl = cvfs_ResolveDev(fname, pdev, path);
     obj->vtbl = vtbl;
+    /* Original quirk: always false, as in cvFsGetFileSize. */
     if (dev == 0) {
         obj->hn = 0;
         obj->vtbl = 0;
@@ -578,17 +585,15 @@ void cvFsSetDefDev(Char8 *devname) {
     }
 }
 
-/* Stand-in for the stripped cvFsDelDev (see above). */
+/* Matching workaround: as above, order-only stand-in for the stripped cvFsDelDev (see above). */
 static void cvfs_RodataOrderDelDev(const Char8 **out) {
     out[0] = "cvFsDelDev #1:illegal device name";
 }
 
-/* Registers the device in the table unless its name is already there; 0 when the table is full.
- * The interface arrives as `void *` and is converted once. */
-static CVFS_IF *cvfs_AddDevTbl(Char8 *devname, void *vt) {
+/* Registers the device in the table unless its name is already there; 0 when the table is full. */
+static CVFS_IF *cvfs_AddDevTbl(Char8 *devname, CVFS_IF *vtbl) {
     CVFS_DEV *dev;
     Sint32 i;
-    CVFS_IF *vtbl = vt;
 
     if (cvfs_SearchDev(cvfs_tbl, devname) != 0) {
         return vtbl;
@@ -613,23 +618,19 @@ static CVFS_IF *cvfs_AddDevTbl(Char8 *devname, void *vt) {
  * device's error callback at cvFsCallUsrErrFn. Called for "MFS" and "GCD" by ADXGC_SetupDvdFs,
  * which passes 0 for the device parameter prm (unused here). */
 void cvFsAddDev(Char8 *devname, CVFS_GETIFFN getif, void *prm) {
-    Char8 *name;
     CVFS_IF *vtbl;
-    CVFS_GETIFFN fn;
 
     cvfs_build;
-    name = devname;
-    fn = getif;
-    if (name == 0) {
+    if (devname == 0) {
         cvfs_Error("cvFsAddDev #1:illegal device name");
         return;
     }
-    if (fn == 0) {
+    if (getif == 0) {
         cvfs_Error("cvFsAddDev #2:illegal I/F func name");
         return;
     }
-    cvfs_StrUpr(name);
-    vtbl = cvfs_AddDevTbl(name, fn());
+    cvfs_StrUpr(devname);
+    vtbl = cvfs_AddDevTbl(devname, getif());
     if (vtbl == 0) {
         cvfs_Error("cvFsAddDev #3:failed added a device");
         return;
