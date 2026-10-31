@@ -7,7 +7,12 @@
  * emits functions last-defined first).
  *
  * The callbacks are boost::function objects built with boost::bind(&WeaponStickBaseImpl::method,
- * this, _1); their manager, invoker and copy functions come from the boost headers. */
+ * this, _1); their manager, invoker and copy functions come from the boost headers.
+ *
+ * NonMatching: WeaponStickBaseImpl's destructor is a global symbol where the original's is weak
+ * (see the note at the destructor), and this object defines a local
+ * boost::checked_delete<UnkAttack_8005A840> and some type records and name strings that the
+ * original unit does not have (listed in the note in configure.py). */
 #include "Game/CharInfo.h"
 #include "Game/UnkAttack_8005A840.h"
 #include "Game/UnkBitFlags_80014E04.h"
@@ -30,9 +35,7 @@ namespace Weapon {
 class WeaponStickBaseImpl {
   public:
     WeaponStickBaseImpl(const boost::weak_ptr<CharInfo> &owner, float arg1);
-    ~WeaponStickBaseImpl() {
-        ReleaseAttack();
-    }
+    ~WeaponStickBaseImpl();
 
     /* The stick's methods of the same names forward to these four (names inferred). */
     void Update(float dt);
@@ -113,6 +116,22 @@ WeaponStickBaseImpl::WeaponStickBaseImpl(const boost::weak_ptr<CharInfo> &owner,
     m_scale = 1.0f;
     m_flags.Clear();
 }
+
+/* Matching workaround: auto_inline around this destructor. The original keeps checked_delete<T>
+ * out of line and emits this destructor at its definition; with the stock GC/2.7 compiler and
+ * -inline noauto that needs auto_inline here. A tooling constraint, not a claim about the original
+ * source; revisit if another compiler build reproduces this without the pragma, or if an original
+ * checked_delete keeps out of line a destructor whose body calls only non-inline functions (the
+ * pragma would inline that destructor into it). A destructor found inlined into checked_delete in
+ * the original would instead mean that the original used auto_inline here.
+ * The original's destructor is a weak symbol, as an inline destructor would be, but this
+ * toolchain emits an inline destructor at its first use, after checked_delete, so it is written
+ * out of line here and is a global symbol. */
+#pragma auto_inline on
+WeaponStickBaseImpl::~WeaponStickBaseImpl() {
+    ReleaseAttack();
+}
+#pragma auto_inline reset
 
 void WeaponStickBaseImpl::Update(float dt) {
     bool attacked = false;
