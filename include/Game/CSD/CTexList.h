@@ -24,9 +24,12 @@ class CTexList : public CBase {
     virtual RCPtr<CTexList> Create() = 0;
     /* Loads the texture list from file data in memory. */
     virtual int Load(const void *data, u32 size) = 0;
-    virtual void fn_803637CC() = 0;
-    virtual void fn_803636C8() = 0;
-    virtual void fn_80363724() = 0;
+    /* The next three set the texture, its filter and its addressing in the renderer (each
+     * RenderWare implementation reads only the texture, the filter, or the two addressing modes;
+     * the callers also pass the three words of RenderState at 0x30 and their count). */
+    virtual void fn_803637CC(int texture, const s32 *values, int valueCount) = 0;
+    virtual void fn_803636C8(int texture, int filter, const s32 *values, int valueCount) = 0;
+    virtual void fn_80363724(int addressU, int addressV, const s32 *values, int valueCount) = 0;
 
     /* Load with the current directory set to directory, when given (name inferred). */
     int LoadInDirectory(const void *data, u32 size, const char *directory);

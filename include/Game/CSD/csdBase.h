@@ -26,6 +26,11 @@ void Free(void *ptr);
 CPlatform *GetPlatform();
 void SetPlatform(CPlatform *platform);
 
+/* Set up and tear down the matrix stack and the registry of texture-list types (names
+ * inferred). */
+void InitLibrary();
+void TermLibrary();
+
 /* Formats a printf-style message and passes it to the platform's Print (name inferred). */
 void PrintError(const char *format, ...);
 

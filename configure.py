@@ -687,19 +687,34 @@ config.libs = [
                 # The range 0x8035C5CC-0x8035F81C is the one gap between csdAccess and csdMatrix;
                 # its .rodata holds the file name string "csdLoader.cpp", which only
                 # ExtractFileParts uses (the __FILE__ of its allocations), so the other functions
-                # are in this unit because they share its address range. 19 of its 53 functions are
-                # sourced so far: ResolveProject, LoadProject, the Normalize* functions,
-                # UnpackPatternBlend, PackPatternBlend, SplitFloat, SetEntryColors, TintEntryColors,
-                # HoldKeyValue, InterpolateLinear, InterpolateColor and TransformPoint match (rodata
-                # operands compared by target). SwapBytes differs by the register of the loaded
-                # value in four instructions. InterpolateKeys differs in that the original saves its
-                # first argument to pass it again in the default case. InterpolateHermite differs in
-                # instruction order, registers and one extra address instruction in the original.
-                # ExtractFileParts has the original's 102 words and differs in 13: the original
-                # loads the file's first word after copying the six arguments to saved registers,
-                # where this build loads it after the first copy and interleaves the rest with the
-                # comparison (eight words), and the five allocation __LINE__ values (471, 480, 494,
-                # 504 and 512 in the original).
+                # are in this unit because they share its address range. 44 of its 53 functions
+                # are sourced; fn_8035CDCC, fn_8035D66C, fn_8035DAA8, fn_8035DC68, fn_8035DE60,
+                # fn_8035E15C (updates a scene's elements, inferred) and the RCPtr template
+                # instances at 0x8035EC38 (declared only), fn_8035EC6C and fn_8035EE4C are not.
+                # The RenderState functions, ResolveProject, LoadProject, the Normalize*
+                # functions, FindSceneNameIndex, ApplyScreenAspect, DrawScene, DrawLayer,
+                # DrawElement, UnpackPatternBlend, PackPatternBlend, SplitFloat, SetEntryColors,
+                # TintEntryColors, HoldKeyValue, InterpolateLinear, InterpolateColor and
+                # TransformPoint match (rodata operands compared by target). SwapBytes differs by
+                # the register of the loaded value in four instructions. InterpolateKeys differs
+                # in that the original saves its first argument to pass it again in the default
+                # case. InterpolateHermite differs in instruction order, registers and one extra
+                # address instruction in the original. ExtractFileParts has the original's 102
+                # words and differs in 13: the original loads the file's first word after copying
+                # the six arguments to saved registers, where this build loads it after the first
+                # copy and interleaves the rest with the comparison (eight words), and the five
+                # allocation __LINE__ values (471, 480, 494, 504 and 512 in the original).
+                # DrawQuadElement has the original's 111 words and differs in 11 (the filter value
+                # and the value passed to SetField0x24 have each other's saved registers, and one
+                # load is placed differently). DrawTextElement (152 words, the original's 165)
+                # copies the corners of a glyph without texture with a different address
+                # computation (the original multiplies the vertex index by the vertex size for the
+                # x and y of corners 1 to 3), plus register and scheduling differences.
+                # EvaluateTrack (168 words, the original's 187) calls PackPatternBlend in case 6
+                # where the original expands it in place (and first copies the interpolated value
+                # to a second stack slot); outside case 6 it differs only in branch displacements,
+                # stack frame offsets (the original's frame is 16 bytes larger) and the register
+                # of one comparison operand.
                 Object(NonMatching, "Game/CSD/csdLoader.cpp", cflags=cflags_csd),
                 # Every function matches except InitMatrixStack, whose allocations pass lines 64 and
                 # 65 instead of the original 53 and 54. .rodata also starts with the two static

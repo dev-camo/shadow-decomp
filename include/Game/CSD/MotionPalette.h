@@ -41,7 +41,9 @@ struct PlainVertex {
 CHECK_SIZEOF(Chao::CSD::PlainVertex, 0xC);
 
 /* File data of one element of a scene layer. Type 0 and 1 elements are single quads, type 2
- * elements draw their text with a font. */
+ * elements draw their text with a font. The aspect (name inferred: ApplyScreenAspect defaults to
+ * 1.3333 and divides by the screen's aspect ratio) is used only when field_0x0 is at
+ * least 1. */
 struct ElementData {
     /* 0x00 */ s32 field_0x0;
     /* 0x04 */ s32 type;
@@ -52,7 +54,7 @@ struct ElementData {
     /* 0x34 */ u32 flags;
     /* 0x38 */ u32 packed;
     /* 0x3C */ u32 field_0x3C;
-    /* 0x40 */ u32 field_0x40;
+    /* 0x40 */ f32 aspect;
     /* 0x44 */ const char *text;
     /* 0x48 */ const char *fontName;
     /* 0x4C */ f32 charSpacing;
@@ -111,7 +113,7 @@ struct NodeEntry {
 };
 CHECK_SIZEOF(Chao::CSD::NodeEntry, 0xC);
 
-/* File data of a scene (only the members used by the palette and access code). */
+/* File data of a scene (only the members used by the CSD code so far). */
 struct SceneData {
     /* 0x00 */ u8 field_0x0[0x18];
     /* 0x18 */ TextureSize *textureSizes;
@@ -121,8 +123,12 @@ struct SceneData {
     /* 0x28 */ LayerData *layers;
     /* 0x2C */ s32 nodeCount;
     /* 0x30 */ NodeEntry *nodes;
+    /* 0x34 */ s32 nameCount;
+    /* 0x38 */ u32 field_0x38;
+    /* 0x3C */ NameEntry *names;
 };
-CHECK_SIZEOF(Chao::CSD::SceneData, 0x34);
+/* Only the members up to 0x40 are known. */
+CHECK_SIZEOF(Chao::CSD::SceneData, 0x40);
 
 /* A character code and its glyph index, sorted by code. */
 struct FontCharacter {
@@ -152,7 +158,7 @@ struct MotionPaletteLayer;
  * allocate four vertices of each kind and one texture index per character. */
 struct MotionPaletteEntry {
     /* 0x00 */ Matrix matrix;
-    /* 0x20 */ u8 field_0x20[0x24 - 0x20];
+    /* 0x20 */ s32 field_0x20;
     /* 0x24 */ u32 field_0x24;
     /* 0x28 */ u8 field_0x28[0x38 - 0x28];
     /* 0x38 */ f32 field_0x38;
@@ -160,7 +166,7 @@ struct MotionPaletteEntry {
     /* 0x40 */ f32 field_0x40;
     /* 0x44 */ s32 field_0x44;
     /* 0x48 */ u32 colors[4];
-    /* 0x58 */ u8 field_0x58[0x64 - 0x58];
+    /* 0x58 */ s32 field_0x58[3];
     /* 0x64 */ const char *text;
     /* 0x68 */ const char *fontName;
     /* 0x6C */ f32 textWidth;

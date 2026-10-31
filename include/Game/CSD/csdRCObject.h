@@ -17,11 +17,40 @@ namespace CSD {
 
 template <class T> class RCPtr : public CBase {
   public:
+    RCPtr();
     RCPtr(T *object);
     ~RCPtr();
+    RCPtr &operator=(const RCPtr &other);
+
+    /* The object, or null for a pointer that holds none. */
+    T *Get() const {
+        return field_0x0 != NULL ? field_0x0->m_pObject : NULL;
+    }
+    T *operator->() const {
+        return field_0x0 != NULL ? field_0x0->m_pObject : NULL;
+    }
+
+    /* Pointers are equal when they share an object holder or hold the same object. The result is
+     * an int: a bool result compiles to different code in RenderState::SetTexture. */
+    int operator==(const RCPtr &other) const {
+        if (field_0x0 != NULL && other.field_0x0 != NULL) {
+            return field_0x0->m_pObject == other.field_0x0->m_pObject;
+        }
+        return field_0x0 == other.field_0x0;
+    }
+
+    /* Releases the held object and takes object, returning this pointer (names inferred; the
+     * game's copy at 0x8035EC38 in the USA release returns its first argument). */
+    RCPtr &Reset(T *object);
 
   private:
-    template <class U> class RCObject;
+    /* The shared holder of an object (class name from the game's RTTI, member name inferred; the
+     * members after the object are not recovered yet). */
+    template <class U> class RCObject {
+      public:
+        /* 0x0 */ U *m_pObject;
+        /* 0x4 */ virtual ~RCObject();
+    };
 
     /* 0x0 */ RCObject<T> *field_0x0;
 };
