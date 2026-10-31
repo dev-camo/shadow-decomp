@@ -120,7 +120,7 @@ static s32 ReadArrayUnlock(s32 chan, u32 data, void *rbuf, s32 rlen, int mode) {
         return CARD_RESULT_NOCARD;
 
     data &= 0xfffff000;
-    memset(cmd, 0, 5);
+    memset(cmd, 0, sizeof(cmd));
     cmd[0] = 0x52;
     if (mode == 0) {
         cmd[1] = SEC_AD1(data);
@@ -133,9 +133,9 @@ static s32 ReadArrayUnlock(s32 chan, u32 data, void *rbuf, s32 rlen, int mode) {
     }
 
     err = FALSE;
-    err |= !EXIImmEx(chan, cmd, 5, 1);
-    err |= !EXIImmEx(chan, (u8 *)card->workArea + sizeof(CARDID), card->latency, 1);
-    err |= !EXIImmEx(chan, rbuf, rlen, 0);
+    err |= !EXIImmEx(chan, cmd, sizeof(cmd), EXI_WRITE);
+    err |= !EXIImmEx(chan, (u8 *)card->workArea + sizeof(CARDID), card->latency, EXI_WRITE);
+    err |= !EXIImmEx(chan, rbuf, rlen, EXI_READ);
     err |= !EXIDeselect(chan);
 
     return err ? CARD_RESULT_NOCARD : CARD_RESULT_READY;
@@ -194,6 +194,7 @@ s32 __CARDUnlock(s32 chan, u8 flashID[12]) {
     s32 rlen;
     u32 rshift;
 
+    // fsts and Ans2 are assigned but never read; they occupy part of the 288-byte frame.
     u8 fsts;
     u32 wk, wk1;
     u32 Ans1 = 0;
@@ -292,7 +293,7 @@ s32 __CARDUnlock(s32 chan, u8 flashID[12]) {
 
     task->priority = 255;
     task->iram_mmem_addr = (u16 *)OSCachedToPhysical(CardData);
-    task->iram_length = 0x160;
+    task->iram_length = sizeof(CardData);
     task->iram_addr = 0;
     task->dsp_init_vector = 0x10;
     task->init_cb = InitCallback;

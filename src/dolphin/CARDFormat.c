@@ -49,7 +49,7 @@ s32 __CARDFormatRegionAsync(s32 chan, u16 encode, CARDCallback callback) {
     s32 result;
     OSSram *sram;
     OSSramEx *sramEx;
-    u16 dvdstatus;
+    u16 dtvStatus;
     OSTime time;
     OSTime rand;
 
@@ -60,9 +60,11 @@ s32 __CARDFormatRegionAsync(s32 chan, u16 encode, CARDCallback callback) {
     if (result < 0)
         return result;
 
+    // The 32-byte serial field is written as a packed record: flash-ID-derived bytes at 0..11,
+    // the OSTime at 12, SRAM counterBias at 20, language at 24 and the VI DTV status at 28.
     id = (CARDID *)card->workArea;
     memset(id, 0xff, CARD_SYSTEM_BLOCK_SIZE);
-    dvdstatus = __VIRegs[55];
+    dtvStatus = __VIRegs[VI_DTV_STAT];
 
     id->encode = encode;
     sram = __OSLockSram();
@@ -80,7 +82,7 @@ s32 __CARDFormatRegionAsync(s32 chan, u16 encode, CARDCallback callback) {
     }
     __OSUnlockSramEx(FALSE);
 
-    *(u32 *)&id->serial[28] = dvdstatus;
+    *(u32 *)&id->serial[28] = dtvStatus;
     *(OSTime *)&id->serial[12] = time;
 
     id->deviceID = 0;

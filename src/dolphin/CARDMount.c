@@ -1,6 +1,7 @@
 #include <dolphin/card.h>
 #include <dolphin/exi.h>
 
+#include "__exi.h"
 #include "__os.h"
 #include "__card.h"
 
@@ -19,7 +20,7 @@ static void DoUnmount(s32 chan, s32 result);
 static BOOL IsCard(u32 id) {
     u32 size;
     s32 sectorSize;
-    if (id & (0xFFFF0000) && (id != 0x80000004 || __CARDVendorID == 0xFFFF)) {
+    if ((id & 0xFFFF0000) && (id != 0x80000004 || __CARDVendorID == 0xFFFF)) {
         return FALSE;
     }
 
@@ -38,7 +39,6 @@ static BOOL IsCard(u32 id) {
         break;
     default:
         return FALSE;
-        break;
     }
 
     sectorSize = SectorSizeTable[(id & 0x00003800) >> 11];
@@ -106,7 +106,7 @@ s32 CARDProbeEx(s32 chan, s32 *memSize, s32 *sectorSize) {
 
             result = CARD_RESULT_READY;
         }
-    } else if ((EXIGetState(chan) & 8))
+    } else if (EXIGetState(chan) & EXI_STATE_ATTACHED)
         result = CARD_RESULT_WRONGDEVICE;
     else if (!EXIGetID(chan, 0, &id))
         result = CARD_RESULT_BUSY;
@@ -221,6 +221,7 @@ static s32 DoMount(s32 chan) {
             u16 vendorID;
 
             sram = __OSLockSramEx();
+            // The first two bytes of the 12-byte flash ID are compared as one u16 vendor ID.
             vendorID = *(u16 *)sram->flashID[chan];
             __OSUnlockSramEx(FALSE);
 
@@ -318,7 +319,7 @@ s32 CARDMountAsync(s32 chan, void *workArea, CARDCallback detachCallback,
         return CARD_RESULT_BUSY;
     }
 
-    if (!card->attached && (EXIGetState(chan) & 0x08)) {
+    if (!card->attached && (EXIGetState(chan) & EXI_STATE_ATTACHED)) {
         OSRestoreInterrupts(enabled);
         return CARD_RESULT_WRONGDEVICE;
     }
