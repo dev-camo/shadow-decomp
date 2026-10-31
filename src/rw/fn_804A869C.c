@@ -28,11 +28,7 @@ static inline RpMultiTexture *MultiTextureCreate(rpMultiTexturePlatform *platfor
     multiTexture = RwMalloc(size, rwMEMHINT_MULTITEXTURE);
 
     if (multiTexture == NULL) {
-        RwError error;
-
-        error.pluginID = rpID_MATFXPLUGIN;
-        error.errorCode = fn_8047DC28(E_RW_NOMEM, size);
-        fn_8047DB84(&error);
+        RWERRORPLUGIN(rpID_MATFXPLUGIN, (E_RW_NOMEM, size));
         return NULL;
     }
     memset(multiTexture, 0, size);

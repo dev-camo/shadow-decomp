@@ -50,6 +50,7 @@ void fn_804A2C90(RpGameCubeRenderMesh *renderMesh, RpMaterial *material) {
             GXSetChanAmbColor(GX_COLOR0A0, color);
         }
         if (renderMesh->geometryFlags & rpGEOMETRYMODULATEMATERIALCOLOR) {
+            /* an RwRGBA and a GXColor are both four bytes: red, green, blue, alpha */
             GXSetChanMatColor(GX_COLOR0A0, *(GXColor *)&material->color);
         }
     } else if (renderMesh->geometryFlags & rpGEOMETRYPRELIT) {
@@ -164,10 +165,10 @@ static inline void MatFXSetupTev(RpGameCubeRenderMesh *renderMesh) {
 static inline void MatFXSetTexture(RwTexture *texture) {
     fn_80499C38(texture, 0);
     if (texture != NULL && texture->raster != NULL) {
-        fn_80497778(
-            (RWPLUGINOFFSET(RwGameCubeRasterExt, texture->raster->parent, lbl_805F1658)->flags &
-             1) ^
-            1);
+        RwGameCubeRasterExt *rasterExt =
+            RWPLUGINOFFSET(RwGameCubeRasterExt, texture->raster->parent, lbl_805F1658);
+
+        fn_80497778((rasterExt->flags & rwGAMECUBERASTERHASALPHA) ? FALSE : TRUE);
     } else {
         fn_80497778(TRUE);
     }
@@ -648,19 +649,7 @@ void *fn_804A5280(void *object, RpGameCubeRenderMesh *renderMesh) {
             RpWorldSector *sector = object;
             RwReal step;
 
-            origin.up.x = 0.0f;
-            origin.at.z = 1.0f;
-            origin.up.y = 1.0f;
-            origin.right.x = 1.0f;
-            origin.right.z = 0.0f;
-            origin.right.y = 0.0f;
-            origin.at.y = 0.0f;
-            origin.at.x = 0.0f;
-            origin.up.z = 0.0f;
-            origin.pos.z = 0.0f;
-            origin.pos.y = 0.0f;
-            origin.pos.x = 0.0f;
-            origin.flags |= rwMATRIXINTERNALIDENTITY | rwMATRIXTYPEORTHONORMAL;
+            RwMatrixSetIdentity(&origin);
             step = 1.0f / (1 << format->posFrac);
             origin.pos.x =
                 sector->boundingBox.inf.x - (RwReal)fmod(sector->boundingBox.inf.x, step);

@@ -5,23 +5,6 @@
 #include "rw/rwcore.h"
 #include <string.h>
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
-/* The scratch the dependency pass takes per node: a requirement list of 0x14 bytes and, per
- * cluster, a requirement of 0x24 bytes and 0x10 bytes more (inferred from the dependency pass
- * and the size the superblock is grown to) */
-#define rxDEPREQUIREMENTLISTSIZE 0x14
-#define rxDEPREQUIREMENTSIZE 0x24
-#define rxDEPCLUSTERSCRATCHSIZE 0x10
-
 /* The size of a locked pipeline's superblock: a slot per node for the node, its output array and
  * its top-sort data */
 #define rxLOCKEDSUPERBLOCKSIZE()                                                                   \
@@ -51,7 +34,7 @@ void *fn_8049B8BC(RwUInt32 size) {
     lbl_805EDF58.top -= size;
     if (lbl_805EDF58.top < lbl_805EDF58.bottom) {
         lbl_805EDF58.top += size;
-        RWERROR((E_RW_NOMEM, size));
+        RWERRORCORE((E_RW_NOMEM, size));
         return NULL;
     }
     return lbl_805EDF58.top;
@@ -62,7 +45,7 @@ void *fn_8049B92C(RwUInt32 size) {
     lbl_805EDF58.bottom += size;
     if (lbl_805EDF58.bottom > lbl_805EDF58.top) {
         lbl_805EDF58.bottom -= size;
-        RWERROR((E_RW_NOMEM, size));
+        RWERRORCORE((E_RW_NOMEM, size));
         return NULL;
     }
     return lbl_805EDF58.bottom - size;
@@ -150,7 +133,7 @@ static inline RwBool PipelineSuperBlockRealloc(RxPipeline *pipeline, RwUInt32 ne
             }
         }
     } else {
-        RWERROR((E_RW_NOMEM, newSize));
+        RWERRORCORE((E_RW_NOMEM, newSize));
         return FALSE;
     }
     return TRUE;
@@ -175,7 +158,7 @@ RwBool fn_8049BA30(RxPipeline *pipeline, RxPipeline *source) {
                     RwMalloc(pipeline->nodes[i].initializationDataSize,
                              rwMEMHINTDUR_EVENT | rwID_PIPEMODULE);
                 if (pipeline->nodes[i].initializationData == NULL) {
-                    RWERROR((E_RW_NOMEM, pipeline->nodes[i].initializationDataSize));
+                    RWERRORCORE((E_RW_NOMEM, pipeline->nodes[i].initializationDataSize));
                     return FALSE;
                 }
                 memcpy(pipeline->nodes[i].initializationData, source->nodes[i].initializationData,
@@ -215,16 +198,16 @@ RwBool fn_8049BC4C(RxPipeline *pipeline, RxPipelineNode *node, RxNodeDefinition 
 
     memset(node, 0, sizeof(RxPipelineNode));
     if (numOutputs > RXNODEMAXOUTPUTS) {
-        RWERROR((E_RX_NODETOOMANYOUTPUTS));
+        RWERRORCORE((E_RX_NODETOOMANYOUTPUTS));
         result = FALSE;
     }
     if (nodeDef->io.numClustersOfInterest > RXNODEMAXCLUSTERSOFINTEREST) {
-        RWERROR((E_RX_NODETOOMANYCLUSTERSOFINTEREST));
+        RWERRORCORE((E_RX_NODETOOMANYCLUSTERSOFINTEREST));
         result = FALSE;
     }
     /* the output count is the value tested against the pipeline's node limit */
     if (numOutputs >= RXPIPELINEGLOBAL(maxNodesPerPipe)) {
-        RWERROR((E_RX_PIPELINETOOMANYNODES));
+        RWERRORCORE((E_RX_PIPELINETOOMANYNODES));
         result = FALSE;
     }
 
@@ -374,12 +357,12 @@ static inline RxPipeline *PipelineTopSort(RxPipeline *pipeline) {
     PipelineCountInputs(pipeline);
 
     if (pipeline->nodes[pipeline->entryPoint].topSortData->numIns != 0) {
-        RWERROR((E_RX_INVALIDENTRYPOINT));
+        RWERRORCORE((E_RX_INVALIDENTRYPOINT));
         return NULL;
     }
     for (i = 0; i < pipeline->numNodes; i++) {
         if (i != pipeline->entryPoint && pipeline->nodes[i].topSortData->numIns == 0) {
-            RWERROR((E_RX_FRAGMENTEDPIPELINE));
+            RWERRORCORE((E_RX_FRAGMENTEDPIPELINE));
             return NULL;
         }
     }
@@ -388,7 +371,7 @@ static inline RxPipeline *PipelineTopSort(RxPipeline *pipeline) {
     for (i = 0; i < pipeline->numNodes; i++) {
         if (pipeline->nodes[i].topSortData->numIns !=
             pipeline->nodes[i].topSortData->numInsVisited) {
-            RWERROR((E_RX_CYCLICPIPELINE));
+            RWERRORCORE((E_RX_CYCLICPIPELINE));
             return NULL;
         }
     }
@@ -450,7 +433,7 @@ RxPipeline *fn_8049C1E0(RxPipeline *pipeline) {
 
             if (pipeline->entryPoint >= pipeline->numNodes ||
                 pipeline->nodes[pipeline->entryPoint].nodeDef == NULL) {
-                RWERROR((E_RX_INVALIDENTRYPOINT));
+                RWERRORCORE((E_RX_INVALIDENTRYPOINT));
                 return NULL;
             }
 
@@ -461,9 +444,9 @@ RxPipeline *fn_8049C1E0(RxPipeline *pipeline) {
             lockedSize = rxLOCKEDSUPERBLOCKSIZE();
             unlockedSize = sizeof(RxPipelineNodeTopSortData) * RXPIPELINEGLOBAL(maxNodesPerPipe);
             unlockedSize += PipelineCalcPackedSize(pipeline);
-            unlockedSize += pipeline->numNodes * rxDEPREQUIREMENTLISTSIZE +
-                            pipeline->numNodes * numClusters * rxDEPREQUIREMENTSIZE +
-                            pipeline->numNodes * numClusters * rxDEPCLUSTERSCRATCHSIZE;
+            unlockedSize += pipeline->numNodes * sizeof(rxReq) +
+                            pipeline->numNodes * numClusters * sizeof(rxReqEntry) +
+                            pipeline->numNodes * numClusters * sizeof(rxScopeTrace);
             unlockedSize += PipelineCalcPersistentSize(pipeline, numClusters);
 
             startSize = lockedSize;
@@ -588,9 +571,9 @@ RxPipeline *fn_8049C1E0(RxPipeline *pipeline) {
     }
 
     if (pipeline == NULL) {
-        RWERROR((E_RW_NULLP));
+        RWERRORCORE((E_RW_NULLP));
     } else {
-        RWERROR((E_RX_UNLOCKEDPIPE));
+        RWERRORCORE((E_RX_UNLOCKEDPIPE));
     }
     return NULL;
 
@@ -618,7 +601,7 @@ RxPipeline *fn_8049CCB8(RxPipeline *pipeline) {
             pipeline->superBlock =
                 RwMalloc(size, rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_EVENT | rwID_PIPEMODULE);
             if (pipeline->superBlock == NULL) {
-                RWERROR((E_RW_NOMEM, size));
+                RWERRORCORE((E_RW_NOMEM, size));
                 return NULL;
             }
             pipeline->superBlockSize = size;
@@ -718,7 +701,7 @@ RxPipeline *fn_8049D0D0(RxPipeline *pipeline, RwUInt32 *firstIndex, RxNodeDefini
             prev = NULL;
             first = pipeline->numNodes;
             if (first + numDefs > RXPIPELINEGLOBAL(maxNodesPerPipe)) {
-                RWERROR((E_RX_PIPELINETOOMANYNODES));
+                RWERRORCORE((E_RX_PIPELINETOOMANYNODES));
                 return NULL;
             }
 
@@ -754,9 +737,9 @@ RxPipeline *fn_8049D0D0(RxPipeline *pipeline, RwUInt32 *firstIndex, RxNodeDefini
             }
         }
     } else if (pipeline == NULL) {
-        RWERROR((E_RW_NULLP));
+        RWERRORCORE((E_RW_NULLP));
     } else {
-        RWERROR((E_RX_UNLOCKEDPIPE));
+        RWERRORCORE((E_RX_UNLOCKEDPIPE));
     }
     return NULL;
 }

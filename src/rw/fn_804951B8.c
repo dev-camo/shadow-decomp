@@ -8,33 +8,8 @@
 #include <dolphin/os.h>
 #include <string.h>
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
-/* Error codes (inferred names): a debug message, an unsupported raster depth, format or type, a
- * raster that cannot be locked, and one that cannot be unlocked */
-#define ERRORDEBUGMESSAGE 2
-#define ERRORINVALIDRASTERDEPTH 0x8000000C
-#define ERRORINVALIDRASTERFORMAT 0x8000000D
-#define ERRORCANNOTLOCK 0x8000000E
-#define ERRORCANNOTUNLOCK 0x80000011
-
 /* The memory hint of raster memory (inferred) */
 #define rwMEMHINT_RASTER (rwMEMHINTDUR_EVENT | rwID_DRIVERMODULE)
-
-#define rwRASTERFLAGSMASK 0xF8
-
-/* raster formats */
-#define rwRASTERFORMAT16 0x0700
-#define rwRASTERFORMAT24 0x0800
-#define rwRASTERFORMAT32 0x0900
 
 /* The next draw sync token (declared volatile in rpworld.h) */
 volatile RwUInt16 lbl_805EDF40 = 1;
@@ -77,7 +52,7 @@ void fn_804951B8(RwRaster *raster, RwBool halve) {
         break;
     case 24:
     default:
-        RWERROR((ERRORINVALIDRASTERDEPTH));
+        RWERRORCORE((E_RW_INVRASTERDEPTH));
         return;
     }
 
@@ -154,7 +129,7 @@ RwInt32 fn_80495428(RwRaster *raster, RwUInt8 level) {
         break;
     case 24:
     default:
-        RWERROR((ERRORINVALIDRASTERDEPTH));
+        RWERRORCORE((E_RW_INVRASTERDEPTH));
         return 0;
     }
     return (size + 31) & ~31;
@@ -188,7 +163,7 @@ RwInt32 fn_804955CC(RwRaster *raster, RwUInt8 level) {
         return ((width + 3) & ~3) << 2;
     case 24:
     default:
-        RWERROR((ERRORINVALIDRASTERDEPTH));
+        RWERRORCORE((E_RW_INVRASTERDEPTH));
         return 0;
     }
 }
@@ -317,7 +292,7 @@ void fn_8049572C(RwUInt8 *tiles, RwUInt8 *pixels, RwInt32 width, RwInt32 height,
     }
     case 24:
     default:
-        RWERROR((ERRORINVALIDRASTERDEPTH));
+        RWERRORCORE((E_RW_INVRASTERDEPTH));
         break;
     }
 }
@@ -420,19 +395,8 @@ void fn_804959C0(RwUInt8 *pixels, RwUInt8 *tiles, RwInt32 width, RwInt32 height,
     }
     case 24:
     default:
-        RWERROR((ERRORINVALIDRASTERDEPTH));
+        RWERRORCORE((E_RW_INVRASTERDEPTH));
         break;
-    }
-}
-
-/* Waits until the GPU has used a raster: sets a draw sync token when the raster's is the next one,
- * then waits for the raster's token (inferred helper) */
-static inline void RasterWaitForGPU(RwGameCubeRasterExt *rasterExt) {
-    if (rasterExt->syncToken == lbl_805EDF40) {
-        GXSetDrawSync(lbl_805EDF40);
-        lbl_805EDF40 = (lbl_805EDF40 + 1) % rwGAMECUBEMAXSYNCTOKEN;
-    }
-    while (!fn_8049A78C(rasterExt->syncToken)) {
     }
 }
 
@@ -514,11 +478,11 @@ RwBool fn_80495C54(void *out, void *inOut, RwInt32 numIn) {
                 break;
             case 24:
             default:
-                RWERROR((ERRORINVALIDRASTERDEPTH));
+                RWERRORCORE((E_RW_INVRASTERDEPTH));
                 return FALSE;
             }
         } else {
-            RWERROR((ERRORCANNOTLOCK));
+            RWERRORCORE((E_RW_INVRASTERLOCKREQ));
             return FALSE;
         }
 
@@ -540,7 +504,7 @@ RwBool fn_80495C54(void *out, void *inOut, RwInt32 numIn) {
         if (lockMode & rwRASTERLOCKWRITE) {
             raster->privateFlags |= rwRASTERPIXELLOCKEDWRITE;
             parent->privateFlags |= rwRASTERPIXELLOCKEDWRITE;
-            RasterWaitForGPU(rasterExt);
+            RPGAMECUBEWAITDRAWSYNC(rasterExt->syncToken);
         }
         if (raw) {
             raster->privateFlags |= rwRASTERPIXELLOCKEDRAW;
@@ -550,7 +514,7 @@ RwBool fn_80495C54(void *out, void *inOut, RwInt32 numIn) {
     }
     case RASTERTYPEUNDEFINED:
     default:
-        RWERROR((ERRORCANNOTLOCK));
+        RWERRORCORE((E_RW_INVRASTERLOCKREQ));
         return FALSE;
     }
     *(RwUInt8 **)out = raster->cpPixels;
@@ -599,7 +563,7 @@ RwBool fn_804960B4(void *out, void *inOut, RwInt32 numIn) {
         break;
     case RASTERTYPEUNDEFINED:
     default:
-        RWERROR((ERRORCANNOTUNLOCK));
+        RWERRORCORE((E_RW_INVRASTERUNLOCKREQ));
         return FALSE;
     }
     return TRUE;
@@ -631,7 +595,7 @@ RwBool fn_80496268(void *out, void *inOut, RwInt32 numIn) {
     default:
         break;
     }
-    RWERROR((ERRORCANNOTLOCK));
+    RWERRORCORE((E_RW_INVRASTERLOCKREQ));
     return FALSE;
 }
 
@@ -658,7 +622,7 @@ RwBool fn_80496338(void *out, void *inOut, RwInt32 numIn) {
     default:
         break;
     }
-    RWERROR((ERRORCANNOTUNLOCK));
+    RWERRORCORE((E_RW_INVRASTERUNLOCKREQ));
     return FALSE;
 }
 
@@ -674,9 +638,10 @@ RwBool fn_80496408(RwRaster *raster, RwInt32 flags) {
     switch (raster->cType) {
     case rwRASTERTYPECAMERATEXTURE:
         if (format & rwRASTERFORMATPALMASK) {
-            RWERROR((ERRORDEBUGMESSAGE, "rwRASTERTYPECAMERATEXTURE can not be palletized"));
+            RWERRORCORE((E_RW_DEBUGMESSAGE, "rwRASTERTYPECAMERATEXTURE can not be palletized"));
             return FALSE;
         }
+        /* fall through: a camera texture is otherwise set up like a normal raster */
     case rwRASTERTYPENORMAL:
     case rwRASTERTYPETEXTURE:
         if (!(format & rwRASTERFORMATPIXELFORMATMASK)) {
@@ -734,7 +699,7 @@ RwBool fn_80496408(RwRaster *raster, RwInt32 flags) {
                 rasterExt->flags = rwGAMECUBERASTERHASALPHA;
                 break;
             default:
-                RWERROR((ERRORINVALIDRASTERDEPTH));
+                RWERRORCORE((E_RW_INVRASTERDEPTH));
                 return FALSE;
             }
         } else {
@@ -787,7 +752,7 @@ RwBool fn_80496408(RwRaster *raster, RwInt32 flags) {
                 break;
             case rwRASTERFORMAT888:
                 if (format & rwRASTERFORMATPALMASK) {
-                    RWERROR((ERRORDEBUGMESSAGE, "rwRASTERFORMAT888 invalid format"));
+                    RWERRORCORE((E_RW_DEBUGMESSAGE, "rwRASTERFORMAT888 invalid format"));
                     return FALSE;
                 }
                 rasterExt->texFormat = GX_TF_RGBA8;
@@ -796,7 +761,7 @@ RwBool fn_80496408(RwRaster *raster, RwInt32 flags) {
                 break;
             case rwRASTERFORMAT8888:
                 if (format & rwRASTERFORMATPALMASK) {
-                    RWERROR((ERRORDEBUGMESSAGE, "rwRASTERFORMAT8888 invalid format"));
+                    RWERRORCORE((E_RW_DEBUGMESSAGE, "rwRASTERFORMAT8888 invalid format"));
                     return FALSE;
                 }
                 rasterExt->texFormat = GX_TF_RGBA8;
@@ -804,19 +769,19 @@ RwBool fn_80496408(RwRaster *raster, RwInt32 flags) {
                 raster->depth = 32;
                 break;
             case rwRASTERFORMATLUM8:
-                RWERROR((ERRORDEBUGMESSAGE, "rwRASTERFORMATLUM8 invalid format"));
+                RWERRORCORE((E_RW_DEBUGMESSAGE, "rwRASTERFORMATLUM8 invalid format"));
                 return FALSE;
             case rwRASTERFORMAT16:
-                RWERROR((ERRORDEBUGMESSAGE, "rwRASTERFORMAT16 invalid format"));
+                RWERRORCORE((E_RW_DEBUGMESSAGE, "rwRASTERFORMAT16 invalid format"));
                 return FALSE;
             case rwRASTERFORMAT24:
-                RWERROR((ERRORDEBUGMESSAGE, "rwRASTERFORMAT24 invalid format"));
+                RWERRORCORE((E_RW_DEBUGMESSAGE, "rwRASTERFORMAT24 invalid format"));
                 return FALSE;
             case rwRASTERFORMAT32:
-                RWERROR((ERRORDEBUGMESSAGE, "rwRASTERFORMAT32 invalid format"));
+                RWERRORCORE((E_RW_DEBUGMESSAGE, "rwRASTERFORMAT32 invalid format"));
                 return FALSE;
             default:
-                RWERROR((ERRORINVALIDRASTERFORMAT));
+                RWERRORCORE((E_RW_INVRASTERFORMAT));
                 return FALSE;
             }
         }
@@ -840,12 +805,12 @@ RwBool fn_80496408(RwRaster *raster, RwInt32 flags) {
                    (format == rwRASTERFORMAT24 && !lbl_805F164C->aa)) {
             /* Only a 16-bit raster of an antialiased frame buffer is accepted; the original also
              * tests a 24-bit raster without antialiasing, which cannot be reached */
-            RWERROR((ERRORINVALIDRASTERFORMAT));
+            RWERRORCORE((E_RW_INVRASTERFORMAT));
             return FALSE;
         }
         break;
     default:
-        RWERROR((ERRORINVALIDRASTERFORMAT));
+        RWERRORCORE((E_RW_INVRASTERFORMAT));
         return FALSE;
     }
     raster->cFormat = format >> 8;
@@ -869,7 +834,7 @@ RwBool fn_80496A20(RwRaster *raster, RwUInt8 numLevels) {
 
         rasterExt->memory = RwMalloc(allocSize, rwMEMHINT_RASTER);
         if (rasterExt->memory == NULL) {
-            RWERROR((E_RW_NOMEM, allocSize));
+            RWERRORCORE((E_RW_NOMEM, allocSize));
             return FALSE;
         }
         rasterExt->texels = (RwUInt8 *)(((RwUInt32)rasterExt->memory + 31) & ~31);
@@ -879,7 +844,7 @@ RwBool fn_80496A20(RwRaster *raster, RwUInt8 numLevels) {
     } else {
         rasterExt->memory = RwMalloc(size + 31, rwMEMHINT_RASTER);
         if (rasterExt->memory == NULL) {
-            RWERROR((E_RW_NOMEM, size + 31));
+            RWERRORCORE((E_RW_NOMEM, size + 31));
             return FALSE;
         }
         rasterExt->texels = (RwUInt8 *)(((RwUInt32)rasterExt->memory + 31) & ~31);
@@ -930,7 +895,7 @@ RwBool fn_80496C58(void *out, void *inOut, RwInt32 numIn) {
                     numLevels = 1;
                 }
                 if (!fn_80496A20(raster, numLevels)) {
-                    RWERROR((ERRORDEBUGMESSAGE, "Failed to create surface for texture"));
+                    RWERRORCORE((E_RW_DEBUGMESSAGE, "Failed to create surface for texture"));
                     return FALSE;
                 }
             }
@@ -942,7 +907,7 @@ RwBool fn_80496C58(void *out, void *inOut, RwInt32 numIn) {
             break;
         case RASTERTYPEUNDEFINED:
         default:
-            RWERROR((ERRORINVALIDRASTERFORMAT));
+            RWERRORCORE((E_RW_INVRASTERFORMAT));
             return FALSE;
         }
     } else {
@@ -965,7 +930,7 @@ RwBool fn_80497008(void *out, void *inOut, RwInt32 numIn) {
             RwGameCubeRasterExt *rasterExt =
                 RWPLUGINOFFSET(RwGameCubeRasterExt, raster, lbl_805F1658);
 
-            RasterWaitForGPU(rasterExt);
+            RPGAMECUBEWAITDRAWSYNC(rasterExt->syncToken);
             if (lbl_805F1664 != NULL && raster == lbl_805F1664->raster) {
                 fn_8049714C(lbl_805F1664, NULL, 0);
             }
@@ -977,7 +942,7 @@ RwBool fn_80497008(void *out, void *inOut, RwInt32 numIn) {
             break;
         case RASTERTYPEUNDEFINED:
         default:
-            RWERROR((ERRORINVALIDRASTERFORMAT));
+            RWERRORCORE((E_RW_INVRASTERFORMAT));
             return FALSE;
         }
     }

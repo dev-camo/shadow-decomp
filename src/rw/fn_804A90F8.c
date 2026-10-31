@@ -9,6 +9,9 @@
 /* the chunk an effect file holds an effect in (inferred) */
 #define rwID_MTEFFECT 0x20
 
+/* The effect path buffer: the path, then the path with an effect's name */
+#define PATHBUFFERSIZE (rpMTEFFECTPATHLENGTH + rpMTEFFECTPATHLENGTH + rpMTEFFECTNAMELENGTH)
+
 rpMTEffectPlatform lbl_805E3378[rpMTNUMPLATFORMS]; /* each platform's callbacks */
 RpMTEffectDict *lbl_805F16D0;                      /* the dictionary made when opening */
 
@@ -54,20 +57,13 @@ RwBool fn_804A9158(void) {
     }
     MULTITEXTUREGLOBAL(currentDict) = lbl_805F16D0;
 
-    /* the path, then the path with an effect's name */
-    path = RwMalloc(rpMTEFFECTPATHLENGTH + rpMTEFFECTPATHLENGTH + rpMTEFFECTNAMELENGTH,
-                    rwMEMHINTDUR_GLOBAL | rpID_MULTITEXPLUGIN);
+    path = RwMalloc(PATHBUFFERSIZE, rwMEMHINTDUR_GLOBAL | rpID_MULTITEXPLUGIN);
     if (path == NULL) {
-        RwError error;
-
         fn_804A9468(MULTITEXTUREGLOBAL(currentDict));
-        error.pluginID = rpID_MATFXPLUGIN;
-        error.errorCode = fn_8047DC28(E_RW_NOMEM, rpMTEFFECTPATHLENGTH + rpMTEFFECTPATHLENGTH +
-                                                      rpMTEFFECTNAMELENGTH);
-        fn_8047DB84(&error);
+        RWERRORPLUGIN(rpID_MATFXPLUGIN, (E_RW_NOMEM, PATHBUFFERSIZE));
         return FALSE;
     }
-    memset(path, 0, rpMTEFFECTPATHLENGTH + rpMTEFFECTPATHLENGTH + rpMTEFFECTNAMELENGTH);
+    memset(path, 0, PATHBUFFERSIZE);
     MULTITEXTUREGLOBAL(path) = path;
     MULTITEXTUREGLOBAL(fileName) = path + rpMTEFFECTPATHLENGTH;
     MULTITEXTUREGLOBAL(pathSize) = rpMTEFFECTPATHLENGTH;
@@ -112,11 +108,7 @@ RpMTEffectDict *fn_804A93B0(void) {
     RpMTEffectDict *dict = RwMalloc(sizeof(RpMTEffectDict), rwMEMHINT_MTEFFECT);
 
     if (dict == NULL) {
-        RwError error;
-
-        error.pluginID = rpID_MATFXPLUGIN;
-        error.errorCode = fn_8047DC28(E_RW_NOMEM, sizeof(RpMTEffectDict));
-        fn_8047DB84(&error);
+        RWERRORPLUGIN(rpID_MATFXPLUGIN, (E_RW_NOMEM, sizeof(RpMTEffectDict)));
         return NULL;
     }
     rwLinkListInitialize(&dict->effectList);
@@ -162,11 +154,7 @@ RpMTEffect *fn_804A95D4(void) {
     RpMTEffect *effect = RwMalloc(sizeof(RpMTEffect), rwMEMHINT_MTEFFECT);
 
     if (effect == NULL) {
-        RwError error;
-
-        error.pluginID = rpID_MATFXPLUGIN;
-        error.errorCode = fn_8047DC28(E_RW_NOMEM, sizeof(RpMTEffect));
-        fn_8047DB84(&error);
+        RWERRORPLUGIN(rpID_MATFXPLUGIN, (E_RW_NOMEM, sizeof(RpMTEffect)));
         return NULL;
     }
     return fn_804A932C(effect, 0);

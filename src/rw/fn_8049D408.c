@@ -7,55 +7,6 @@
 #include "rw/rwcore.h"
 #include <string.h>
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
-typedef struct rxReqEntry rxReqEntry;
-typedef struct rxScopeTrace rxScopeTrace;
-
-/* A cluster that a node or the nodes after it need, or that one of its outputs passes on (name
- * inferred) */
-struct rxReqEntry {
-    /* 0x00 */ RxClusterDefinition *clusterDef;
-    /* 0x04 */ RwInt32 rqdOrOpt;    /* rxCLREQ_* */
-    /* 0x08 */ RwUInt32 numInsLeft; /* the node's inputs that do not yet invalidate it */
-    /* 0x0C */ rxScopeTrace *scope;
-    /* 0x10 */ rxReqEntry *nextInScope;
-    /* 0x14 */ rxReq *req;           /* the list that holds the entry */
-    /* 0x18 */ RwUInt32 outputMask;  /* the outputs that pass the cluster on, bit per output */
-    /* 0x1C */ RwUInt32 slotIndex;   /* the packet slot of the cluster, -1 until one is given */
-    /* 0x20 */ RxPipelineNode *node; /* the node whose requirement it is */
-};
-CHECK_SIZEOF(struct rxReqEntry, 0x24);
-
-/* The requirements of a node: room for one entry per distinct cluster of the pipeline */
-struct rxReq {
-    /* 0x00 */ RwUInt32 numReqs;
-    /* 0x04 */ RwUInt32 maxReqs;
-    /* 0x08 */ RwUInt32 slotsUsed; /* the packet slots taken at the node, bit per slot */
-    /* 0x0C */ rxReqEntry *reqs;
-    /* 0x10 */ RxPipelineNode *node;
-};
-CHECK_SIZEOF(struct rxReq, 0x14);
-
-/* A scope: requirements of successive nodes that carry the same cluster in the same packet slot.
- * Merged scopes are chained to the first one, which alone stays in the list of scopes (name
- * inferred). */
-struct rxScopeTrace {
-    /* 0x0 */ rxReqEntry *reqs;     /* chained through nextInScope */
-    /* 0x4 */ rxScopeTrace *merged; /* the next scope merged into this one */
-    /* 0x8 */ rxScopeTrace *next;   /* in the list of scopes */
-    /* 0xC */ rxScopeTrace *parent; /* the scope this one was merged into */
-};
-CHECK_SIZEOF(struct rxScopeTrace, 0x10);
-
 /* Called once for each distinct cluster definition of a list of scopes (name and second parameter
  * inferred; the one callback here ignores it) */
 typedef void (*rxEnumClustersCallBack)(RxClusterDefinition *clusterDef, RwUInt32 clusterIndex,
@@ -202,14 +153,14 @@ RwUInt32 fn_8049D934(RxPipeline *pipeline) {
 
             if (clusterDef == NULL) {
                 /* the original passes no cluster index with this error */
-                RWERROR((E_RX_DEP_NULLCLUSTERDEF, node->nodeDef->name));
+                RWERRORCORE((E_RX_DEP_NULLCLUSTERDEF, node->nodeDef->name));
                 return E_RX_DEP_NULLCLUSTERDEF;
             }
             for (j = i + 1; j < nodeDef->io.numClustersOfInterest; j++) {
                 RxClusterDefinition *other = nodeDef->io.clustersOfInterest[j].clusterDef;
 
                 if (clusterDef == other) {
-                    RWERROR((E_RX_DEP_DUPLICATECLUSTERDEFS, node->nodeDef->name, other->name));
+                    RWERRORCORE((E_RX_DEP_DUPLICATECLUSTERDEFS, node->nodeDef->name, other->name));
                     return E_RX_DEP_DUPLICATECLUSTERDEFS;
                 }
             }
@@ -219,7 +170,7 @@ RwUInt32 fn_8049D934(RxPipeline *pipeline) {
         req = ReqCreate(numClusters, node);
         node->topSortData->req = req;
         if (req == NULL) {
-            RWERROR((E_RX_DEP_OUTOFMEMORY));
+            RWERRORCORE((E_RX_DEP_OUTOFMEMORY));
             return E_RX_DEP_OUTOFMEMORY;
         }
 
@@ -245,14 +196,14 @@ RwUInt32 fn_8049D934(RxPipeline *pipeline) {
                                         node->topSortData->numIns, nextEntry->node);
 
                         if (entry == NULL) {
-                            RWERROR((E_RX_DEP_OUTOFMEMORY));
+                            RWERRORCORE((E_RX_DEP_OUTOFMEMORY));
                             return E_RX_DEP_OUTOFMEMORY;
                         }
                     } else if (nextEntry->rqdOrOpt == rxCLREQ_REQUIRED) {
                         if (valid != rxCLVALID_VALID) {
-                            RWERROR((E_RX_DEP_DEPENDENCIESMISMATCH, nextEntry->clusterDef->name,
-                                     nextEntry->node->nodeDef->name, node->nodeDef->name, i,
-                                     output->name));
+                            RWERRORCORE((E_RX_DEP_DEPENDENCIESMISMATCH, nextEntry->clusterDef->name,
+                                         nextEntry->node->nodeDef->name, node->nodeDef->name, i,
+                                         output->name));
                             return E_RX_DEP_DEPENDENCIESMISMATCH;
                         }
                     } else if (valid == rxCLVALID_INVALID) {
@@ -269,7 +220,7 @@ RwUInt32 fn_8049D934(RxPipeline *pipeline) {
                     nodeDef->io.inputRequirements[i], node->topSortData->numIns, node);
 
                 if (entry == NULL) {
-                    RWERROR((E_RX_DEP_OUTOFMEMORY));
+                    RWERRORCORE((E_RX_DEP_OUTOFMEMORY));
                     return E_RX_DEP_OUTOFMEMORY;
                 }
             }
@@ -302,7 +253,7 @@ RwUInt32 fn_8049DE44(RxPipeline *pipeline) {
                                                 rxCLREQ_DONTWANT, 1, node);
 
                 if (entry == NULL) {
-                    RWERROR((E_RX_DEP_OUTOFMEMORY));
+                    RWERRORCORE((E_RX_DEP_OUTOFMEMORY));
                     return E_RX_DEP_OUTOFMEMORY;
                 }
             }
@@ -330,7 +281,7 @@ RwUInt32 fn_8049DE44(RxPipeline *pipeline) {
                             entry = ReqAddEntry(node->topSortData->req, nextEntry->clusterDef,
                                                 rxCLREQ_DONTWANT, 1, node);
                             if (entry == NULL) {
-                                RWERROR((E_RX_DEP_OUTOFMEMORY));
+                                RWERRORCORE((E_RX_DEP_OUTOFMEMORY));
                                 return E_RX_DEP_OUTOFMEMORY;
                             }
                         } else {
@@ -413,7 +364,7 @@ RwUInt32 fn_8049E1A4(RxPipeline *pipeline, rxScopeTrace **scopes) {
 
             if (entry->scope == NULL) {
                 if ((entry->scope = ScopeTraceCreate(scopes)) == NULL) {
-                    RWERROR((E_RX_DEP_OUTOFMEMORY));
+                    RWERRORCORE((E_RX_DEP_OUTOFMEMORY));
                     return E_RX_DEP_OUTOFMEMORY;
                 }
                 ScopeTraceAddEntry(entry->scope, entry);

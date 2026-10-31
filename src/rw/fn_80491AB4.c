@@ -4,23 +4,6 @@
  * an image. The original file name is unknown. */
 #include "rw/rpworld.h"
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
-/* Error codes (inferred names): a debug message, an image depth that cannot be converted, a raster
- * depth that cannot be converted, and an unsupported raster format or type */
-#define ERRORDEBUGMESSAGE 2
-#define ERRORINVALIDIMAGEDEPTH 0x80000008
-#define ERRORINVALIDRASTERDEPTH 0x8000000C
-#define ERRORINVALIDRASTERFORMAT 0x8000000D
-
 /* The largest raster side made from an image */
 #define MAXRASTERSIZE 1024
 
@@ -84,7 +67,7 @@ RwBool fn_80491BAC(void *out, void *inOut, RwInt32 numIn) {
         }
         break;
     case rwRASTERFORMATLUM8:
-        RWERROR((ERRORDEBUGMESSAGE, "rwRASTERFORMATLUM8 not yet supported"));
+        RWERRORCORE((E_RW_DEBUGMESSAGE, "rwRASTERFORMATLUM8 not yet supported"));
         break;
     case rwRASTERFORMAT1555:
     case rwRASTERFORMAT4444:
@@ -103,7 +86,7 @@ RwBool fn_80491BAC(void *out, void *inOut, RwInt32 numIn) {
         pixel = fn_80491B64(color);
         break;
     default:
-        RWERROR((ERRORINVALIDRASTERFORMAT));
+        RWERRORCORE((E_RW_INVRASTERFORMAT));
         break;
     }
     *(RwUInt32 *)out = pixel;
@@ -186,7 +169,7 @@ RwBool fn_80491EC0(void *out, void *inOut, RwInt32 numIn) {
         }
         break;
     case rwRASTERFORMATLUM8:
-        RWERROR((ERRORDEBUGMESSAGE, "rwRASTERFORMATLUM8 not yet supported"));
+        RWERRORCORE((E_RW_DEBUGMESSAGE, "rwRASTERFORMATLUM8 not yet supported"));
         break;
     case rwRASTERFORMAT555:
         fn_80491D98(color, pixel);
@@ -207,7 +190,7 @@ RwBool fn_80491EC0(void *out, void *inOut, RwInt32 numIn) {
         fn_80491EA0(color, pixel);
         break;
     default:
-        RWERROR((ERRORINVALIDRASTERFORMAT));
+        RWERRORCORE((E_RW_INVRASTERFORMAT));
         break;
     }
     return TRUE;
@@ -219,7 +202,7 @@ static inline PixelUnpackFunc RasterUnpackFunc(RwRaster *raster) {
 
     switch (RwRasterGetFormat(raster) & rwRASTERFORMATPIXELFORMATMASK) {
     case rwRASTERFORMATLUM8:
-        RWERROR((ERRORDEBUGMESSAGE, "rwRASTERFORMATLUM8 not yet supported"));
+        RWERRORCORE((E_RW_DEBUGMESSAGE, "rwRASTERFORMATLUM8 not yet supported"));
         break;
     case rwRASTERFORMAT555:
         unpack = fn_80491D98;
@@ -240,7 +223,7 @@ static inline PixelUnpackFunc RasterUnpackFunc(RwRaster *raster) {
         unpack = fn_80491E80;
         break;
     default:
-        RWERROR((ERRORINVALIDRASTERFORMAT));
+        RWERRORCORE((E_RW_INVRASTERFORMAT));
         break;
     }
     return unpack;
@@ -252,7 +235,7 @@ static inline PixelPackFunc RasterPackFunc(RwRaster *raster) {
 
     switch (RwRasterGetFormat(raster) & rwRASTERFORMATPIXELFORMATMASK) {
     case rwRASTERFORMATLUM8:
-        RWERROR((ERRORDEBUGMESSAGE, "rwRASTERFORMATLUM8 not yet supported"));
+        RWERRORCORE((E_RW_DEBUGMESSAGE, "rwRASTERFORMATLUM8 not yet supported"));
         break;
     case rwRASTERFORMAT555:
         pack = fn_80491AD4;
@@ -271,7 +254,7 @@ static inline PixelPackFunc RasterPackFunc(RwRaster *raster) {
         pack = fn_80491B88;
         break;
     default:
-        RWERROR((ERRORINVALIDRASTERFORMAT));
+        RWERRORCORE((E_RW_INVRASTERFORMAT));
         break;
     }
     return pack;
@@ -306,12 +289,12 @@ void fn_804920C8(RwImage *image, RwRaster *raster) {
     case 8:
     case 16:
     case 32:
-        RWERROR((ERRORDEBUGMESSAGE,
-                 "Conversion from 8/16/32bit rasters to 4bit images is not supported"));
+        RWERRORCORE((E_RW_DEBUGMESSAGE,
+                     "Conversion from 8/16/32bit rasters to 4bit images is not supported"));
         break;
     case 24:
     default:
-        RWERROR((ERRORINVALIDRASTERDEPTH));
+        RWERRORCORE((E_RW_INVRASTERDEPTH));
         break;
     }
 }
@@ -364,12 +347,12 @@ void fn_8049231C(RwImage *image, RwRaster *raster) {
     }
     case 16:
     case 32:
-        RWERROR((ERRORDEBUGMESSAGE,
-                 "Conversion from 16/32bit rasters to 8bit images is not supported"));
+        RWERRORCORE((E_RW_DEBUGMESSAGE,
+                     "Conversion from 16/32bit rasters to 8bit images is not supported"));
         break;
     case 24:
     default:
-        RWERROR((ERRORINVALIDRASTERDEPTH));
+        RWERRORCORE((E_RW_INVRASTERDEPTH));
         break;
     }
 }
@@ -439,7 +422,7 @@ void fn_80492610(RwImage *image, RwRaster *raster) {
         break;
     }
     case 24:
-        RWERROR((ERRORINVALIDRASTERDEPTH));
+        RWERRORCORE((E_RW_INVRASTERDEPTH));
         break;
     case 32: {
         RwInt32 y;
@@ -458,7 +441,7 @@ void fn_80492610(RwImage *image, RwRaster *raster) {
         break;
     }
     default:
-        RWERROR((ERRORINVALIDRASTERDEPTH));
+        RWERRORCORE((E_RW_INVRASTERDEPTH));
         break;
     }
 }
@@ -492,7 +475,7 @@ RwBool fn_804929F0(void *out, void *inOut, RwInt32 numIn) {
         fn_80492610(image, raster);
         break;
     default:
-        RWERROR((ERRORINVALIDIMAGEDEPTH));
+        RWERRORCORE((E_RW_INVIMAGEDEPTH));
         break;
     }
 
@@ -568,7 +551,7 @@ void fn_80492BE8(RwRaster *raster, RwImage *image) {
         break;
     }
     default:
-        RWERROR((ERRORINVALIDIMAGEDEPTH));
+        RWERRORCORE((E_RW_INVIMAGEDEPTH));
         break;
     }
 }
@@ -615,7 +598,7 @@ void fn_80492E40(RwRaster *raster, RwImage *image) {
         break;
     }
     default:
-        RWERROR((ERRORINVALIDIMAGEDEPTH));
+        RWERRORCORE((E_RW_INVIMAGEDEPTH));
         break;
     }
 }
@@ -664,7 +647,7 @@ void fn_8049309C(RwRaster *raster, RwImage *image) {
         break;
     }
     default:
-        RWERROR((ERRORINVALIDIMAGEDEPTH));
+        RWERRORCORE((E_RW_INVIMAGEDEPTH));
         break;
     }
 }
@@ -713,7 +696,7 @@ void fn_80493330(RwRaster *raster, RwImage *image) {
         break;
     }
     default:
-        RWERROR((ERRORINVALIDIMAGEDEPTH));
+        RWERRORCORE((E_RW_INVIMAGEDEPTH));
         break;
     }
 }
@@ -755,13 +738,13 @@ RwBool fn_804935C4(void *out, void *inOut, RwInt32 numIn) {
         fn_8049309C(raster, image);
         break;
     case 24:
-        RWERROR((ERRORINVALIDRASTERDEPTH));
+        RWERRORCORE((E_RW_INVRASTERDEPTH));
         break;
     case 32:
         fn_80493330(raster, image);
         break;
     default:
-        RWERROR((ERRORINVALIDRASTERDEPTH));
+        RWERRORCORE((E_RW_INVRASTERDEPTH));
         break;
     }
 
@@ -879,7 +862,7 @@ RwBool fn_80493888(void *out, void *inOut, RwInt32 numIn) {
         raster->height = image->height;
         return TRUE;
     default:
-        RWERROR((ERRORINVALIDRASTERFORMAT));
+        RWERRORCORE((E_RW_INVRASTERFORMAT));
         return FALSE;
     }
 }

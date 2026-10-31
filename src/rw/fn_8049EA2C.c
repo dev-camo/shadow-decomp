@@ -4,16 +4,6 @@
  * grows as needed. The original file name is unknown. */
 #include "rw/rwcore.h"
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* The free block table grows by this many entries */
 #define rxHEAPFREEBLOCKGROWTH 32
 
@@ -38,7 +28,7 @@ static inline rxHeapFreeBlock *HeapFreeBlockAlloc(RxHeap *heap) {
         freeBlocks = RwRealloc(freeBlocks, entriesAlloced * sizeof(rxHeapFreeBlock),
                                rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_EVENT | rwID_PIPEMODULE);
         if (freeBlocks == NULL) {
-            RWERROR((E_RW_NOMEM, heap->entriesAlloced * sizeof(rxHeapFreeBlock)));
+            RWERRORCORE((E_RW_NOMEM, heap->entriesAlloced * sizeof(rxHeapFreeBlock)));
             heap->entriesAlloced -= rxHEAPFREEBLOCKGROWTH;
         } else {
             /* the table moved: point each free block at its entry again */
