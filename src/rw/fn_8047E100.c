@@ -154,10 +154,15 @@ RwMatrix *fn_8047E298(RwMatrix *dst, const RwMatrix *matrix) {
     return dst;
 }
 
+/* The determinant: the right axis dotted with the cross product of the up and at axes */
 RwReal fn_8047E704(const RwMatrix *matrix) {
-    return matrix->right.x * (matrix->up.y * matrix->at.z - matrix->up.z * matrix->at.y) +
-           matrix->right.y * (matrix->up.z * matrix->at.x - matrix->up.x * matrix->at.z) +
-           matrix->right.z * (matrix->up.x * matrix->at.y - matrix->up.y * matrix->at.x);
+    RwV3d cross;
+
+    cross.x = matrix->up.y * matrix->at.z - matrix->up.z * matrix->at.y;
+    cross.y = matrix->up.z * matrix->at.x - matrix->up.x * matrix->at.z;
+    cross.z = matrix->up.x * matrix->at.y - matrix->up.y * matrix->at.x;
+
+    return cross.x * matrix->right.x + cross.y * matrix->right.y + cross.z * matrix->right.z;
 }
 
 /* The sum of the squared dot products of the matrix's axes */
