@@ -148,16 +148,20 @@ typedef struct {
     Float32 x2c0;         /* 0x2C0 (-1.0) frame time (ft) of the last decision count */
     Sint32 x2c4;          /* 0x2C4 last frame decision */
     Float32 x2c8;         /* 0x2C8 (-1.0) frame time (ft) of the last decided frame */
-    Sint32 vcnt;          /* 0x2CC (-1) vsync count while requested */
-    Sint32 chg_base;      /* 0x2D0 clock at the last time change */
-    SFTIM_FN extfn;       /* 0x2D4 external clock (SFD_SetExtClockFn) */
-    Sint32 ext_last;      /* 0x2D8 (-5) last external clock count */
-    Sint32 ext_cnt;       /* 0x2DC */
-    Sint32 ext_unit;      /* 0x2E0 (1) */
-    Sint32 ext_wrap;      /* 0x2E4 (-1) */
-    void *ext_obj;        /* 0x2E8 */
-    Sint32 x2ec;          /* 0x2EC */
-    Uint8 tst[0x1C0];     /* 0x2F0 (SFD_OBJ + 0x1020) */
+    /* volatile: written on another thread. SFD_VbIn runs as an SVM vsync server (the MW player
+     * registers fn_80407C9C with SVM_SVTYPE_VSYNC), i.e. on the ADXM vsync thread; there
+     * sftim_VbInHn updates vcnt and chg_base, and ext_last through clock source 5
+     * (sftim_GetTimeExtClock), while the server step reads them. */
+    volatile Sint32 vcnt;     /* 0x2CC (-1) vsync count while requested */
+    volatile Sint32 chg_base; /* 0x2D0 clock at the last time change */
+    SFTIM_FN extfn;           /* 0x2D4 external clock (SFD_SetExtClockFn) */
+    volatile Sint32 ext_last; /* 0x2D8 (-5) last external clock count */
+    Sint32 ext_cnt;           /* 0x2DC */
+    Sint32 ext_unit;          /* 0x2E0 (1) */
+    Sint32 ext_wrap;          /* 0x2E4 (-1) */
+    void *ext_obj;            /* 0x2E8 */
+    Sint32 x2ec;              /* 0x2EC */
+    Uint8 tst[0x1C0];         /* 0x2F0 (SFD_OBJ + 0x1020) */
     struct {
         Sint16 rpt; /* repeat_first_field count of the picture */
         Sint16 acc; /* accumulated repeated fields */
@@ -174,7 +178,7 @@ typedef SFTIM_WORK *SFTIM;
 typedef struct {
     Sint32 vcnt;  /* 0x00 vsync count (SFTIM_VbIn) */
     Sint32 x04;   /* 0x04 */
-    Sint32 vrate; /* 0x08 vsyncs per second (59940 = 59.94 Hz) */
+    Sint32 vrate; /* 0x08 refresh rate x1000 (59940 = 59.94 Hz) */
 } SFTIM_LIB;
 CHECK_SIZEOF(SFTIM_LIB, 0xC);
 
@@ -989,8 +993,9 @@ void SFTMR_AddTsum(SFTMR_TSUM *ts, Sint64 t);
 Sint32 SFPL2_Standby(SFD sfd);
 Sint32 SFPL2_Pause(SFD sfd, Sint32 sw);
 
-/* Not yet decompiled; signatures inferred from their callers. */
-void SFTIM_Init(void *work);
+/* sfd_tim.c */
+void SFTIM_Init(SFTIM_LIB *lib, Sint32 vrate);
+void fn_803FDCD0(SFTIM_LIB *lib); /* empty; the library finish fn_803F1570 calls it */
 void SFTIM_InitHn(SFD sfd, SFTIM tim);
 void SFTIM_VbIn(void);
 Sint32 SFMPV_SaveCond(SFD sfd, void *buf, Sint32 size);
@@ -998,7 +1003,7 @@ void SFMPV_RestoreCond(SFD sfd, void *buf, Sint32 n);
 Sint32 SFD_SetUsrTimeFn(SFD sfd, SFTIM_FN fn);
 Sint32 SFD_SetExtClockFn(SFD sfd, SFTIM_FN fn, Sint32 wrap, void *obj);
 Sint32 SFD_SetUsrIsSkipFn(SFD sfd, Bool (*fn)());
-/* sfd_tim.c (not yet decompiled): parameters as its callers pass them. */
+/* sfd_tim.c */
 Sint32 SFTIM_GetTime(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 Sint32 SFTIM_GetTimeSub(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 Bool SFTIM_IsStagnant(SFD sfd);

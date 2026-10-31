@@ -8,9 +8,6 @@
 
 #define SFD_VERSION 0x3640
 
-/* this game only: module finish entries (inferred; the time and buffer ones are empty) */
-extern void fn_803FDCD0(void *work);
-
 const Char8 SFLIB_version_str[] =
     "\nCRI SFD/GC Ver.1.958 Build:Feb 28 2005 19:36:28\n\0Append: MW2407 GC20Apr2004Patch2\n";
 
@@ -126,7 +123,7 @@ Sint32 fn_803F1570(void) {
             ret = SFD_Destroy(hn[i]);
         }
     }
-    fn_803FDCD0(SFLIB_libwork.tim);
+    fn_803FDCD0(SFTIM_LIBWK);
     fn_803F052C(&SFLIB_libwork.buf);
     trnret = SFTRN_Finish(&SFLIB_libwork.trif);
     fn_803F12EC();
@@ -140,9 +137,9 @@ Sint32 fn_803F1570(void) {
 /* Library init (from mwPlySfdInit): clears the library work, copies the default conditions, stores
  * the driver table and the refresh rate (prm1, 1/1000 Hz), initialises timing, buffers, the drivers
  * (each driver's Init), the player and the header analyser. */
-Sint32 SFD_Init(register SFD_INIT_PRM *prm) {
-    register Sint32 p1;
-    register SFTRN_TRIF_TBL *tbl;
+Sint32 SFD_Init(SFD_INIT_PRM *prm) {
+    Sint32 p1;
+    SFTRN_TRIF_TBL *tbl;
     Sint32 ret;
     Sint32 i;
 
@@ -151,16 +148,13 @@ Sint32 SFD_Init(register SFD_INIT_PRM *prm) {
     SJRBF_Init();
     UTY_MemsetDword(&SFLIB_libwork, 0, sizeof(SFLIB_libwork) / 4 - 1);
     MEM_Copy(&SFLIB_libwork, SFPLY_cond_dfl, sizeof(SFLIB_libwork.cond));
-    /* COMPILER-DIFF: the `+ 0` copy of tbl generates no code; it keeps prm1 loaded before
-     * trif_tbl and trif_tbl stored first, which the plain copy does not. */
     p1 = prm->prm1;
     tbl = prm->trif_tbl;
-    tbl = (SFTRN_TRIF_TBL *)((Uint32)tbl + 0);
     SFLIB_libwork.trif_tbl = tbl;
     SFLIB_libwork.prm1 = p1;
     SFLIB_libwork.x198 = 0;
     SFLIB_InitErrInf(&SFLIB_libwork.err);
-    SFTIM_Init(SFLIB_libwork.tim);
+    SFTIM_Init(SFTIM_LIBWK, p1);
     SFBUF_Init(&SFLIB_libwork.buf);
     SFLIB_libwork.x1fc = 0;
     SFLIB_libwork.x200 = 0;
