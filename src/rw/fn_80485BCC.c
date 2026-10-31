@@ -7,10 +7,6 @@
 /* RwEngineInitFlag: free list entries are allocated and freed with the memory functions */
 #define rwENGINEINITNOFREELISTS 0x1
 
-/* errors (inferred) */
-#define E_RW_BADENGINESTATE 0x80000001 /* the engine is not in the status the call needs */
-#define E_RW_DEVICEERROR 0x18          /* reported with the device request that failed */
-
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \

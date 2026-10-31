@@ -7,12 +7,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* object type */
-#define rwTEXDICTIONARY 6
-
-/* errors (inferred) */
-#define E_RW_STRINGTRUNCATED 0x8000001E /* reported with the string, its limit and the cut */
-
 /* The size of the buffers image file names are built in */
 #define rwTEXTUREFILENAMELENGTH 256
 
@@ -615,7 +609,7 @@ RwBool fn_8048C9EC(void) {
 
 RwTexture *fn_8048CA00(RwTexture *texture, RwRaster *raster) {
     if (raster != NULL) {
-        if (lbl_805F15B4->stdFunc[8](texture, raster, 0)) {
+        if (lbl_805F15B4->stdFunc[rwSTANDARDTEXTURESETRASTER](texture, raster, 0)) {
             return texture;
         }
         return NULL;

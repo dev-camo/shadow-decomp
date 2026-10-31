@@ -6,13 +6,6 @@
 /* The size a memory stream's block starts at and grows by at least */
 #define rwSTREAMSTREAMBLOCKSIZE 512
 
-/* errors (inferred) */
-#define E_RW_ENDOFSTREAM 0x5     /* reading or skipping past the end */
-#define E_RW_BADACCESSTYPE 0xD   /* the access type is not one of RwStreamAccessType */
-#define E_RW_BADSTREAMTYPE 0xE   /* the type is not one of RwStreamType */
-#define E_RW_FILEOPEN 0x80000002 /* reported with the file name */
-#define E_RW_WRITE 0x8000001C    /* writing a file stream failed */
-
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \

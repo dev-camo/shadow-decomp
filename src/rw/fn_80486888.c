@@ -4,9 +4,6 @@
 #include "rw/rwcore.h"
 #include "layout_check.h"
 
-/* object type */
-#define rwFRAME 0
-
 /* The engine globals of the frame module */
 typedef struct rwFrameGlobals {
     /* 0x0 */ RwFreeList *frameFreeList;

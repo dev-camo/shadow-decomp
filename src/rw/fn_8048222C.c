@@ -4,9 +4,6 @@
 #include <math.h>
 #include "layout_check.h"
 
-/* errors (inferred) */
-#define E_RW_ZEROLENGTH 0x19 /* normalizing a vector of length 0 */
-
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \

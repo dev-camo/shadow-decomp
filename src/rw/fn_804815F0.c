@@ -2,9 +2,6 @@
  * and copying, and its stream chunks. The original file name is unknown. */
 #include "rw/rwcore.h"
 
-/* errors (inferred) */
-#define E_RW_PLUGININIT 0x80000017 /* plugins cannot be registered now */
-
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \
