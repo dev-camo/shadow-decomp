@@ -29,6 +29,9 @@ CHECK_SIZEOF(RwRealShape, 0x4);
         (d) = sf_u.value;                                                                          \
     } while (0)
 
+/* The absolute value of a real; evaluates its argument twice */
+#define RwRealAbs(a) ((a) >= 0.0f ? (a) : -(a))
+
 /* acos(x): the single precision acos of fdlibm, adapted from newlib's ef_acos.c, which carries
  * these notices:
  *

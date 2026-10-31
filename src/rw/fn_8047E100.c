@@ -2,6 +2,7 @@
  * transforming matrices, their errors and type flags, and the matrix module and its free list. The
  * original file name is unknown. */
 #include "rw/rwcore.h"
+#include "rw/rwmath.h"
 #include <math.h>
 #include "layout_check.h"
 
@@ -98,13 +99,9 @@ RwMatrix *fn_8047E298(RwMatrix *dst, const RwMatrix *matrix) {
     if (recipRight > 0.0f) {
         if (recipUp > 0.0f) {
             if (recipAt > 0.0f) {
-                RwReal upAt = up.x * at.x + up.y * at.y + up.z * at.z;
-                RwReal atRight = at.x * right.x + at.y * right.y + at.z * right.z;
-                RwReal rightUp = right.x * up.x + right.y * up.y + right.z * up.z;
-
-                upAt = (upAt >= 0.0f) ? upAt : -upAt;
-                atRight = (atRight >= 0.0f) ? atRight : -atRight;
-                rightUp = (rightUp >= 0.0f) ? rightUp : -rightUp;
+                RwReal upAt = RwRealAbs(up.x * at.x + up.y * at.y + up.z * at.z);
+                RwReal atRight = RwRealAbs(at.x * right.x + at.y * right.y + at.z * right.z);
+                RwReal rightUp = RwRealAbs(right.x * up.x + right.y * up.y + right.z * up.z);
                 if (upAt < atRight) {
                     if (upAt < rightUp) {
                         first = &up;

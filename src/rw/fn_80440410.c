@@ -4,6 +4,7 @@
  * sector tree and then the collision trees of its sectors. The original file name is unknown. */
 #include "rw/rpcollis.h"
 #include "rw/rpworld.h"
+#include "rw/rwmath.h"
 #include "layout_check.h"
 
 #define rwMEMHINT_COLLTREE 0x3002C
@@ -452,7 +453,6 @@ RwInt32 fn_80441028(void) {
  * and collision trees keep their split axes in */
 #define RwV3dGetCoord(vector, offset) (*(RwReal *)((RwUInt8 *)&(vector) + (offset)))
 
-#define RwRealAbs(a) ((a) >= 0.0f ? (a) : -(a))
 #define RwRealMax2(a, b) ((a) >= (b) ? (a) : (b))
 
 /* A line in the form the line walks use (inferred): its direction and the reciprocals of the
