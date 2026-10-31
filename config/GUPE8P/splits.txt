@@ -29,6 +29,14 @@ Game/fn_80068A3C.c:
 	.text       start:0x80068A3C end:0x80068A48
 	.ctors      start:0x804A9C7C end:0x804A9C80
 
+Game/TornadoCollision.cpp:
+	.text       start:0x800DF4E8 end:0x800DFBAC
+	.rodata     start:0x804B8180 end:0x804B81A8
+	.data       start:0x80523F00 end:0x80523F90
+	.sdata      start:0x805E50F0 end:0x805E5108
+	.sbss       start:0x805EE840 end:0x805EE848
+	.sdata2     start:0x805F3330 end:0x805F3348
+
 Game/ElecCircuit.cpp:
 	.text       start:0x801F78B8 end:0x801F7D24
 	.rodata     start:0x804EB930 end:0x804EB958
