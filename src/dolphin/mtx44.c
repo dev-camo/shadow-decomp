@@ -1,6 +1,10 @@
+// Dolphin SDK MTX library: 4x4 matrices.
+// 25 global functions of this file are not present as separate functions in this game's DOL; their
+// bodies are unverified unless they are inlined into a function that is present. The global
+// functions present in the DOL are: C_MTXOrtho.
 #include <dolphin.h>
 #include <dolphin/mtx.h>
-#include "fake_tgmath.h"
+#include "fake_tgmath.h" // fabsf; the stand-in for the MSL math header
 
 static f32 mtxUnit[] = {0.0f, 1.0f, 0.5f, 3.0f};
 
@@ -356,12 +360,11 @@ asm void PSMTX44Transpose(const register Mtx44 src, register Mtx44 xPose) {
 // clang-format on
 
 #define SWAP(a, b)                                                                                 \
-    {                                                                                              \
-        f32 tmp;                                                                                   \
-        tmp = a;                                                                                   \
-        a = b;                                                                                     \
-        b = tmp;                                                                                   \
-    }
+    do {                                                                                           \
+        f32 swap_tmp_ = (a);                                                                       \
+        (a) = (b);                                                                                 \
+        (b) = swap_tmp_;                                                                           \
+    } while (0)
 
 u32 C_MTX44Inverse(const Mtx44 src, Mtx44 inv) {
     Mtx44 gjm;

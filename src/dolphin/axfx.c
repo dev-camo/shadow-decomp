@@ -1,3 +1,4 @@
+// Dolphin SDK AXFX library: allocation hooks for the effects.
 #include <dolphin.h>
 #include <dolphin/ax.h>
 #include <dolphin/axfx.h>
