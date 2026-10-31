@@ -115,6 +115,16 @@ typedef RwInt32 RwPlatformID;
 #define E_RW_PLUGINNOTINIT 0x80000018 /* used before its module is ready (inferred) */
 #define E_RW_READTEXMASK 0x16         /* a texture could not be read by its name and mask */
 
+/* image and raster errors, and an error reported with a message (names inferred) */
+#define E_RW_INVIMAGEDEPTH 0x80000008      /* an image depth is not supported */
+#define E_RW_INVIMAGEFORMAT 0x80000009     /* an image format is not supported */
+#define E_RW_INVIMAGESIZE 0x8000000A       /* the image and mask sizes differ */
+#define E_RW_INVRASTERDEPTH 0x8000000C     /* a raster depth is not supported */
+#define E_RW_INVRASTERFORMAT 0x8000000D    /* a raster format or type is not supported */
+#define E_RW_INVRASTERLOCKREQ 0x8000000E   /* a raster cannot be locked as requested */
+#define E_RW_INVRASTERUNLOCKREQ 0x80000011 /* a raster cannot be unlocked */
+#define E_RW_DEBUGMESSAGE 2
+
 /* pipeline errors of the core (inferred from where they are reported) */
 #define E_RX_CYCLICPIPELINE 0x1C
 #define E_RX_DEP_DEPENDENCIESMISMATCH 0x1D /* an output does not create a required cluster */
@@ -229,6 +239,9 @@ typedef struct RwCamera RwCamera;
 #define rwRASTERFORMATLUM8 0x0400
 #define rwRASTERFORMAT8888 0x0500
 #define rwRASTERFORMAT888 0x0600
+#define rwRASTERFORMAT16 0x0700
+#define rwRASTERFORMAT24 0x0800
+#define rwRASTERFORMAT32 0x0900
 #define rwRASTERFORMAT555 0x0A00
 #define rwRASTERFORMATPIXELFORMATMASK 0x0F00
 #define rwRASTERFORMATAUTOMIPMAP 0x1000
@@ -248,11 +261,14 @@ typedef struct RwCamera RwCamera;
 #define rwRASTERTYPETEXTURE 0x4
 #define rwRASTERTYPECAMERATEXTURE 0x5
 #define rwRASTERTYPEMASK 0x7
+#define rwRASTERFLAGSMASK 0xF8 /* the flags above the raster type */
 
 /* A raster type RenderWare does not define; the driver's switches name it explicitly */
 #define RASTERTYPEUNDEFINED 0x3
 
-/* raster private flags: which parts of a raster are locked */
+/* raster private flags: whether the pixels are gamma corrected and which parts of a raster are
+ * locked */
+#define rwRASTERGAMMACORRECTED 0x01
 #define rwRASTERPIXELLOCKEDREAD 0x02
 #define rwRASTERPIXELLOCKEDWRITE 0x04
 #define rwRASTERPALETTELOCKEDREAD 0x08
@@ -1967,6 +1983,19 @@ RwError *fn_8047DB84(const RwError *error);
 RwError *fn_8047DBE4(RwError *error); /* takes the pending error */
 RwInt32 fn_8047DC28(RwInt32 code, ...);
 
+/* Reports an error of a plugin; args is the parenthesized error code and its arguments */
+#define RWERRORPLUGIN(errorPluginID, args)                                                         \
+    do {                                                                                           \
+        RwError error_;                                                                            \
+                                                                                                   \
+        error_.pluginID = (errorPluginID);                                                         \
+        error_.errorCode = fn_8047DC28 args;                                                       \
+        fn_8047DB84(&error_);                                                                      \
+    } while (0)
+
+/* Reports an error of the core */
+#define RWERRORCORE(args) RWERRORPLUGIN(rwID_COREPLUGIN, args)
+
 /* the engine and its plugins */
 RwInt32 fn_80485D6C(void);
 RwInt32 fn_80485D78(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructor,
@@ -1981,6 +2010,47 @@ RwBool fn_80486204(RwEngineOpenParams *initParams);                 /* open */
 RwBool fn_804864AC(void);                                           /* terminate */
 RwBool fn_804864F8(const RwMemoryFunctions *memFuncs, RwUInt32 initFlags,
                    RwUInt32 resArenaSize); /* initialize */
+
+/* The records of the dependency pass of unlocking a pipeline (the unit fn_8049D408.c); fn_8049C1E0
+ * reserves their scratch in the pipeline's superblock */
+typedef struct rxReqEntry rxReqEntry;
+typedef struct rxScopeTrace rxScopeTrace;
+
+/* A cluster that a node or the nodes after it need, or that one of its outputs passes on (name
+ * inferred) */
+struct rxReqEntry {
+    /* 0x00 */ RxClusterDefinition *clusterDef;
+    /* 0x04 */ RwInt32 rqdOrOpt;    /* rxCLREQ_* */
+    /* 0x08 */ RwUInt32 numInsLeft; /* the node's inputs that do not yet invalidate it */
+    /* 0x0C */ rxScopeTrace *scope;
+    /* 0x10 */ rxReqEntry *nextInScope;
+    /* 0x14 */ rxReq *req;           /* the list that holds the entry */
+    /* 0x18 */ RwUInt32 outputMask;  /* the outputs that pass the cluster on, bit per output */
+    /* 0x1C */ RwUInt32 slotIndex;   /* the packet slot of the cluster, -1 until one is given */
+    /* 0x20 */ RxPipelineNode *node; /* the node whose requirement it is */
+};
+CHECK_SIZEOF(struct rxReqEntry, 0x24);
+
+/* The requirements of a node: room for one entry per distinct cluster of the pipeline */
+struct rxReq {
+    /* 0x00 */ RwUInt32 numReqs;
+    /* 0x04 */ RwUInt32 maxReqs;
+    /* 0x08 */ RwUInt32 slotsUsed; /* the packet slots taken at the node, bit per slot */
+    /* 0x0C */ rxReqEntry *reqs;
+    /* 0x10 */ RxPipelineNode *node;
+};
+CHECK_SIZEOF(struct rxReq, 0x14);
+
+/* A scope: requirements of successive nodes that carry the same cluster in the same packet slot.
+ * Merged scopes are chained to the first one, which alone stays in the list of scopes (name
+ * inferred). */
+struct rxScopeTrace {
+    /* 0x0 */ rxReqEntry *reqs;     /* chained through nextInScope */
+    /* 0x4 */ rxScopeTrace *merged; /* the next scope merged into this one */
+    /* 0x8 */ rxScopeTrace *next;   /* in the list of scopes */
+    /* 0xC */ rxScopeTrace *parent; /* the scope this one was merged into */
+};
+CHECK_SIZEOF(struct rxScopeTrace, 0x10);
 
 #ifdef __cplusplus
 }

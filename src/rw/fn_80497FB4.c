@@ -7,22 +7,6 @@
 #include <dolphin/vi.h>
 #include <string.h>
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
-/* Error codes (inferred names, as in the raster unit): a debug message, an unsupported raster depth
- * and an unsupported raster format or type */
-#define ERRORDEBUGMESSAGE 2
-#define ERRORINVALIDRASTERDEPTH 0x8000000C
-#define ERRORINVALIDRASTERFORMAT 0x8000000D
-
 /* The raster rendering and clearing draw into */
 RwRaster *lbl_805F1668;
 
@@ -205,7 +189,7 @@ RwBool fn_804988D4(RwRaster *raster, RwRect *rect, RwBool scaled, RwBool blend) 
         case rwRASTERTYPECAMERA:
         case rwRASTERTYPETEXTURE:
         case rwRASTERTYPECAMERATEXTURE:
-            RWERROR((ERRORDEBUGMESSAGE, "SRC, DST Raster render combination not supported"));
+            RWERRORCORE((E_RW_DEBUGMESSAGE, "SRC, DST Raster render combination not supported"));
             return FALSE;
         case RASTERTYPEUNDEFINED:
             break;
@@ -222,14 +206,14 @@ RwBool fn_804988D4(RwRaster *raster, RwRect *rect, RwBool scaled, RwBool blend) 
             break;
         case rwRASTERTYPEZBUFFER:
         case rwRASTERTYPECAMERA:
-            RWERROR((ERRORDEBUGMESSAGE, "SRC, DST Raster render combination not supported"));
+            RWERRORCORE((E_RW_DEBUGMESSAGE, "SRC, DST Raster render combination not supported"));
             return FALSE;
         case RASTERTYPEUNDEFINED:
             break;
         }
         break;
     default:
-        RWERROR((ERRORDEBUGMESSAGE, "SRC, DST Raster render combination not supported"));
+        RWERRORCORE((E_RW_DEBUGMESSAGE, "SRC, DST Raster render combination not supported"));
         return FALSE;
     }
     return TRUE;
@@ -278,8 +262,10 @@ void fn_80498AC4(RwRaster *raster) {
                   GX_AF_NONE);
 
     if (raster->cType == rwRASTERTYPECAMERATEXTURE) {
-        /* bit 0 of the flags: the raster's format has alpha */
-        if (RWPLUGINOFFSET(RwGameCubeRasterExt, raster->parent, lbl_805F1658)->flags & 1) {
+        /* the original compares the frame buffer's pixel format (lbl_805F15E4) here, not the
+         * format currently set (lbl_805F15E8) that it updates and that fn_804946A4 compares */
+        if (RWPLUGINOFFSET(RwGameCubeRasterExt, raster->parent, lbl_805F1658)->flags &
+            rwGAMECUBERASTERHASALPHA) {
             if (lbl_805F15E4 != GX_PF_RGBA6_Z24) {
                 GXSetPixelFmt(GX_PF_RGBA6_Z24, GX_ZC_LINEAR);
                 lbl_805F15E8 = GX_PF_RGBA6_Z24;
@@ -474,7 +460,7 @@ RwBool fn_804990D4(RwRaster *raster, RwRect *rect, RwInt32 color) {
         }
         case 24:
         default:
-            RWERROR((ERRORINVALIDRASTERDEPTH));
+            RWERRORCORE((E_RW_INVRASTERDEPTH));
             break;
         }
 
@@ -483,7 +469,7 @@ RwBool fn_804990D4(RwRaster *raster, RwRect *rect, RwInt32 color) {
         }
         break;
     default:
-        RWERROR((ERRORINVALIDRASTERFORMAT));
+        RWERRORCORE((E_RW_INVRASTERFORMAT));
         return FALSE;
     }
     return TRUE;

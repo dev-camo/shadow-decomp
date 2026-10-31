@@ -11,18 +11,7 @@
 #define rwTEXDICTIONARY 6
 
 /* errors (inferred) */
-#define E_RW_INVIMAGEFORMAT 0x80000009  /* the image cannot be put in a raster */
 #define E_RW_STRINGTRUNCATED 0x8000001E /* reported with the string, its limit and the cut */
-
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
 
 /* The size of the buffers image file names are built in */
 #define rwTEXTUREFILENAMELENGTH 256
@@ -35,7 +24,8 @@
     do {                                                                                           \
         rwstrncpy((buffer), (string), (size));                                                     \
         if (rwstrlen(string) >= (size)) {                                                          \
-            RWERROR((E_RW_STRINGTRUNCATED, (string), (size), (size) - 1, (string)[(size) - 1]));   \
+            RWERRORCORE(                                                                           \
+                (E_RW_STRINGTRUNCATED, (string), (size), (size) - 1, (string)[(size) - 1]));       \
             (buffer)[(size) - 1] = '\0';                                                           \
         }                                                                                          \
     } while (0)
@@ -240,7 +230,7 @@ RwImage *fn_8048BA30(const RwChar *name, const RwChar *maskName, RwInt32 rasterT
     if (*width == 0 || *height == 0) {
         if (fn_80489A90(image, rasterType, width, height, depth, format) == NULL) {
             fn_80487DB0(image);
-            RWERROR((E_RW_INVIMAGEFORMAT));
+            RWERRORCORE((E_RW_INVIMAGEFORMAT));
             return NULL;
         }
     }
@@ -832,9 +822,9 @@ RwTexture *fn_8048D130(const RwChar *name, const RwChar *maskName) {
     texture = RWTEXTUREGLOBAL(textureReadCallBack)(name, maskName);
     if (texture == NULL) {
         if (maskName != NULL) {
-            RWERROR((E_RW_READTEXMASK, name, maskName));
+            RWERRORCORE((E_RW_READTEXMASK, name, maskName));
         } else {
-            RWERROR((E_RW_READTEXMASK, name, "(null)"));
+            RWERRORCORE((E_RW_READTEXMASK, name, "(null)"));
         }
         return NULL;
     }

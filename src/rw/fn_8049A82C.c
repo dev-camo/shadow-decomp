@@ -4,16 +4,6 @@
 #include "rw/rwcore.h"
 #include <string.h>
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* The most vertices one transform can take */
 #define rwIM3DMAXVERTICES 0x10000
 
@@ -22,7 +12,7 @@ rwImmediGlobals *lbl_805F1680; /* the immediate module's globals, set when it op
 
 void *fn_8049A82C(RwIm3DVertex *vertices, RwUInt32 numVertices, RwMatrix *ltm, RwUInt32 flags) {
     if (numVertices > rwIM3DMAXVERTICES) {
-        RWERROR((E_RX_TOOMANYVERTS));
+        RWERRORCORE((E_RX_TOOMANYVERTS));
     } else {
         RWIMMEDIGLOBAL(curPool.numElements) = numVertices;
         RWIMMEDIGLOBAL(curPool.elements) = vertices;
@@ -80,7 +70,7 @@ RwBool fn_8049A95C(RwInt32 primType, RwImVertexIndex *indices, RwInt32 numIndice
             stash->pipeline = RWIMMEDIGLOBAL(im3DRenderPipelines.polyLine);
             break;
         default:
-            RWERROR((E_RX_INVALIDPRIMTYPE, primType));
+            RWERRORCORE((E_RX_INVALIDPRIMTYPE, primType));
             break;
         }
 
@@ -88,7 +78,7 @@ RwBool fn_8049A95C(RwInt32 primType, RwImVertexIndex *indices, RwInt32 numIndice
             return TRUE;
         }
     } else {
-        RWERROR((E_RX_IM3DNOTACTIVE));
+        RWERRORCORE((E_RX_IM3DNOTACTIVE));
     }
     return FALSE;
 }
@@ -122,7 +112,7 @@ RwBool fn_8049AAF8(RwInt32 primType) {
             stash->pipeline = RWIMMEDIGLOBAL(im3DRenderPipelines.polyLine);
             break;
         default:
-            RWERROR((E_RX_INVALIDPRIMTYPE, primType));
+            RWERRORCORE((E_RX_INVALIDPRIMTYPE, primType));
             break;
         }
 
@@ -130,7 +120,7 @@ RwBool fn_8049AAF8(RwInt32 primType) {
             return TRUE;
         }
     } else {
-        RWERROR((E_RX_IM3DNOTACTIVE));
+        RWERRORCORE((E_RX_IM3DNOTACTIVE));
     }
     return FALSE;
 }
@@ -171,7 +161,7 @@ RxPipeline *fn_8049ACE0(RxPipeline *pipeline, RwInt32 primType) {
             RWIMMEDIGLOBAL(im3DRenderPipelines.pointList) = pipeline;
             return pipeline;
         default:
-            RWERROR((E_RX_INVALIDPRIMTYPE));
+            RWERRORCORE((E_RX_INVALIDPRIMTYPE));
             break;
         }
     } else {
@@ -225,7 +215,7 @@ RxPipeline *fn_8049ACE0(RxPipeline *pipeline, RwInt32 primType) {
             }
             return RWIMMEDIGLOBAL(platformIm3DRenderPipelines.pointList);
         default:
-            RWERROR((E_RX_INVALIDPRIMTYPE));
+            RWERRORCORE((E_RX_INVALIDPRIMTYPE));
             break;
         }
     }

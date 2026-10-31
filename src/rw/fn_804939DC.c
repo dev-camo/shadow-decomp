@@ -10,19 +10,6 @@
 #include <dolphin/vi.h>
 #include "layout_check.h"
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
-/* The error code of a debug message (inferred name) */
-#define ERRORDEBUGMESSAGE 2
-
 /* video modes */
 #define rwVIDEOMODEEXCLUSIVE 0x1
 
@@ -269,7 +256,7 @@ void fn_80493C84(GXRenderModeObj *renderMode, RwInt32 pixelFormat) {
             lbl_8056E348[3].depth = 16;
             break;
         default:
-            RWERROR((ERRORDEBUGMESSAGE, "Invalid pixel format"));
+            RWERRORCORE((E_RW_DEBUGMESSAGE, "Invalid pixel format"));
             break;
         }
     } else {
@@ -288,7 +275,7 @@ void fn_80493C84(GXRenderModeObj *renderMode, RwInt32 pixelFormat) {
             lbl_805F15EC = VI_MPAL;
             break;
         default:
-            RWERROR((ERRORDEBUGMESSAGE, "Invalid TV format"));
+            RWERRORCORE((E_RW_DEBUGMESSAGE, "Invalid TV format"));
             break;
         }
     }
@@ -608,9 +595,12 @@ RwBool fn_804946A4(void *out, void *inOut, RwInt32 numIn) {
     GXSetProjectionv(lbl_8056E430);
 
     raster = camera->frameBuffer;
+    /* A camera texture. The original tests the bits of rwRASTERTYPECAMERATEXTURE, so other raster
+     * types with bit 0 or bit 2 set take this path too */
     if (raster->cType & rwRASTERTYPECAMERATEXTURE) {
-        /* A camera texture: its pixel format has alpha when the raster has */
-        if (RWPLUGINOFFSET(RwGameCubeRasterExt, raster->parent, lbl_805F1658)->flags & 1) {
+        /* its pixel format has alpha when the raster has */
+        if (RWPLUGINOFFSET(RwGameCubeRasterExt, raster->parent, lbl_805F1658)->flags &
+            rwGAMECUBERASTERHASALPHA) {
             if (lbl_805F15E8 != GX_PF_RGBA6_Z24) {
                 GXSetPixelFmt(GX_PF_RGBA6_Z24, GX_ZC_LINEAR);
                 lbl_805F15E8 = GX_PF_RGBA6_Z24;

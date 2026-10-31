@@ -6,24 +6,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* raster private flags */
-#define rwRASTERGAMMACORRECTED 0x1
-
-/* errors (inferred) */
-#define E_RW_INVIMAGEDEPTH 0x80000008  /* the image depth is not supported */
-#define E_RW_INVIMAGEFORMAT 0x80000009 /* the depths cannot be converted */
-#define E_RW_INVIMAGESIZE 0x8000000A   /* the image and mask sizes differ */
-
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* The longest image file extension, with its terminator */
 #define rwIMAGEEXTENSIONLENGTH 20
 
@@ -214,7 +196,7 @@ RwImage *fn_80487E18(RwImage *image) {
 
     image->cpPixels = (RwUInt8 *)RwMalloc(size, rwMEMHINTDUR_EVENT | rwID_IMAGE);
     if (image->cpPixels == NULL) {
-        RWERROR((E_RW_NOMEM, size));
+        RWERRORCORE((E_RW_NOMEM, size));
         return NULL;
     }
     image->palette = palettized ? (RwRGBA *)(image->cpPixels + pixelSize) : NULL;
@@ -283,7 +265,7 @@ RwImage *fn_80487FA8(RwImage *image) {
 /* Sets an image's alpha from a mask of the same size. A 4 or 8-bit image becomes 32-bit first. */
 RwImage *fn_80488088(RwImage *image, const RwImage *mask) {
     if (image->width != mask->width || image->height != mask->height) {
-        RWERROR((E_RW_INVIMAGESIZE));
+        RWERRORCORE((E_RW_INVIMAGESIZE));
         return NULL;
     }
 
@@ -349,7 +331,7 @@ RwImage *fn_80488088(RwImage *image, const RwImage *mask) {
         break;
     }
     default:
-        RWERROR((E_RW_INVIMAGEFORMAT));
+        RWERRORCORE((E_RW_INVIMAGEFORMAT));
         return NULL;
     }
     return image;
@@ -365,7 +347,7 @@ const RwChar *fn_804885DC(const RwChar *path) {
                                 rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_GLOBAL | rwID_IMAGEMODULE);
 
         if (newPath == NULL) {
-            RWERROR((E_RW_NOMEM, size));
+            RWERRORCORE((E_RW_NOMEM, size));
             return NULL;
         }
         RWIMAGEGLOBAL(imagePath) = newPath;
@@ -395,7 +377,7 @@ const RwChar *fn_804885DC(const RwChar *path) {
                                                      rwID_IMAGE);                                  \
             }                                                                                      \
             if (mem_ == NULL) {                                                                    \
-                RWERROR((E_RW_NOMEM, size_));                                                      \
+                RWERRORCORE((E_RW_NOMEM, size_));                                                  \
                 (result) = NULL;                                                                   \
                 break;                                                                             \
             }                                                                                      \
@@ -677,7 +659,7 @@ RwBool fn_8048915C(RwImage *destImage, const RwImage *sourceImage) {
     case (32 << 8) | 4:
     case (32 << 8) | 8:
     default:
-        RWERROR((E_RW_INVIMAGEFORMAT));
+        RWERRORCORE((E_RW_INVIMAGEFORMAT));
         break;
     }
     return result;
@@ -744,7 +726,7 @@ RwImage *fn_804894B8(RwImage *image) {
         RwRGBA *palette = image->palette;
 
         if (palette == NULL) {
-            RWERROR((E_RW_NULLP));
+            RWERRORCORE((E_RW_NULLP));
             return NULL;
         }
         ImageGammaCorrectColors(palette, palette, numColors);
@@ -757,7 +739,7 @@ RwImage *fn_804894B8(RwImage *image) {
         RwInt32 y;
 
         if (row == NULL) {
-            RWERROR((E_RW_NULLP));
+            RWERRORCORE((E_RW_NULLP));
             return NULL;
         }
         for (y = 0; y < height; y++) {
@@ -767,7 +749,7 @@ RwImage *fn_804894B8(RwImage *image) {
         break;
     }
     default:
-        RWERROR((E_RW_INVIMAGEDEPTH));
+        RWERRORCORE((E_RW_INVIMAGEDEPTH));
         return NULL;
     }
     image->flags |= rwIMAGEGAMMACORRECTED;

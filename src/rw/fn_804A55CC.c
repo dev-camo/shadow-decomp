@@ -144,7 +144,7 @@ static inline RwUInt32 MTEffectGameCubeStreamSize(const MTEffectGameCube *data) 
 
     size += data->numTexMtx * (sizeof(MTEffectGameCubeStreamTexMtx) + sizeof(Mtx));
     size += data->numTexGens * sizeof(MTEffectGameCubeStreamTexGen);
-    size += data->numIndMtx * (sizeof(MTEffectGameCubeStreamIndMtx) + sizeof(RwReal) * 6);
+    size += data->numIndMtx * (sizeof(MTEffectGameCubeStreamIndMtx) + sizeof(RwReal[2][3]));
     size += data->numIndStages * sizeof(MTEffectGameCubeStreamIndStage);
     size += data->numTevStages * sizeof(MTEffectGameCubeStreamTevStage);
     return size;
@@ -437,11 +437,7 @@ RpMTEffect *fn_804A5F48(RwUInt32 numTevStages, RwUInt32 numTexGens, RwUInt32 num
     size = ALIGN4(size);
     effect = RwMalloc(size, rwMEMHINT_GCNMTEFFECT);
     if (effect == NULL) {
-        RwError error;
-
-        error.pluginID = rpID_MATFXPLUGIN;
-        error.errorCode = fn_8047DC28(E_RW_NOMEM, size);
-        fn_8047DB84(&error);
+        RWERRORPLUGIN(rpID_MATFXPLUGIN, (E_RW_NOMEM, size));
         return NULL;
     }
     memset(effect, 0, size);
@@ -560,7 +556,7 @@ RpMTEffect *fn_804A62E4(RpMTEffect *effect, RwUInt32 numTextures, const RwUInt8 
                         RwMatrix *ltm) {
     MTEffectGameCube *data = fn_804A60D0(effect);
     RwInt32 colorMode;
-    RwInt8 texMapOfTexCoord[8];
+    RwInt8 texMapOfTexCoord[GX_MAX_TEXCOORD];
     RwInt32 i;
 
     if (data->flags & rpMTGCNEFFECTTEVCOLORS) {

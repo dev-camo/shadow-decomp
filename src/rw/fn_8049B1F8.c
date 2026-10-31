@@ -3,16 +3,6 @@
 #include "rw/rwcore.h"
 #include <string.h>
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 RxExecutionContext lbl_805E3260; /* the pipeline being executed */
 RwFreeList lbl_805E3278;         /* the storage of the pipeline free list */
 
@@ -200,7 +190,7 @@ RxPipeline *fn_8049B76C(void) {
         pipeline->locked = FALSE;
         return pipeline;
     }
-    RWERROR((E_RW_NOMEM, sizeof(RxPipeline)));
+    RWERRORCORE((E_RW_NOMEM, sizeof(RxPipeline)));
     return NULL;
 }
 

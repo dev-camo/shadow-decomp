@@ -213,8 +213,7 @@ void fn_80497804(void) {
         fn_80499C38(lbl_805F1664, 0);
         rasterExt = RWPLUGINOFFSET(RwGameCubeRasterExt, lbl_805F1664->raster, lbl_805F1658);
 
-        /* bit 0 of the flags: the raster's format has alpha */
-        fn_80497778((rasterExt->flags & 1) ? FALSE : TRUE);
+        fn_80497778((rasterExt->flags & rwGAMECUBERASTERHASALPHA) ? FALSE : TRUE);
     }
 }
 
