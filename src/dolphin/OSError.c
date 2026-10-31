@@ -1,3 +1,6 @@
+// Dolphin SDK OS library: error handlers and unhandled-exception reporting.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: OSVReport.
 #include <stdio.h>
 #include <dolphin.h>
 #include <dolphin/os.h>
@@ -103,8 +106,6 @@ OSErrorHandler OSSetErrorHandler(OSError error, OSErrorHandler handler) {
     return oldHandler;
 }
 
-volatile OSContext *__OSFPUContext AT_ADDRESS(OS_BASE_CACHED | 0x00D8);
-
 void __OSUnhandledException(__OSException exception, OSContext *context, u32 dsisr, u32 dar) {
     OSTime now;
     u32 fpscr;
@@ -120,7 +121,7 @@ void __OSUnhandledException(__OSException exception, OSContext *context, u32 dsi
             exception = __OS_EXCEPTION_FLOATING_POINT_EXCEPTION;
 
             msr = PPCMfmsr();
-            PPCMtmsr(msr | 0x2000);
+            PPCMtmsr(msr | MSR_FP);
 
             if (__OSFPUContext) {
                 OSSaveFPUContext((OSContext *)__OSFPUContext);
@@ -137,7 +138,7 @@ void __OSUnhandledException(__OSException exception, OSContext *context, u32 dsi
             if (__OSFPUContext == context) {
                 OSDisableScheduler();
                 __OSErrorTable[exception](exception, context, dsisr, dar);
-                context->srr1 &= ~0x2000;
+                context->srr1 &= ~MSR_FP;
                 __OSFPUContext = NULL;
 
                 context->fpscr &=
@@ -147,7 +148,7 @@ void __OSUnhandledException(__OSException exception, OSContext *context, u32 dsi
                 OSEnableScheduler();
                 __OSReschedule();
             } else {
-                context->srr1 &= ~0x2000;
+                context->srr1 &= ~MSR_FP;
                 __OSFPUContext = NULL;
             }
 
@@ -191,6 +192,7 @@ void __OSUnhandledException(__OSException exception, OSContext *context, u32 dsi
                  context->srr0, dar);
         break;
     case __OS_EXCEPTION_PROGRAM:
+        // dar is passed although the format string has a single %x (the DOL passes it too).
         OSReport("\nProgram exception : Possible illegal instruction/operation "
                  "at or around 0x%x (read from SRR0)\n",
                  context->srr0, dar);

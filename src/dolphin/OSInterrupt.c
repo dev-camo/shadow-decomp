@@ -1,3 +1,7 @@
+// Dolphin SDK OS library: interrupt masks and dispatch.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: OSGetInterruptMask,
+// OSSetInterruptMask.
 #include <dolphin.h>
 #include <dolphin/os.h>
 
@@ -47,7 +51,6 @@ char *__OSPIErrors[8] = {
 };
 #endif
 
-// prototypes
 static void ExternalInterruptHandler(register __OSException exception, register OSContext *context);
 
 #ifdef __GEKKO__
@@ -128,10 +131,10 @@ void __OSInterruptInit(void) {
     __OSMaskInterrupts(OS_INTERRUPTMASK_MEM | OS_INTERRUPTMASK_DSP | OS_INTERRUPTMASK_AI |
                        OS_INTERRUPTMASK_EXI | OS_INTERRUPTMASK_PI);
 
-    __OSSetExceptionHandler(4, ExternalInterruptHandler);
+    __OSSetExceptionHandler(__OS_EXCEPTION_EXTERNAL_INTERRUPT, ExternalInterruptHandler);
 #if DEBUG
     __PIRegs[0] = 1;
-    __OSUnmaskInterrupts(0x100);
+    __OSUnmaskInterrupts(OS_INTERRUPTMASK_PI_ERROR);
 #endif
 }
 
@@ -155,13 +158,13 @@ static u32 SetInterruptMask(OSInterruptMask mask, OSInterruptMask current) {
             reg |= 0x8;
         if (!(current & OS_INTERRUPTMASK_MEM_ADDRESS))
             reg |= 0x10;
-        __MEMRegs[0x0000000e] = (u16)reg;
+        __MEMRegs[14] = (u16)reg;
         mask &= ~OS_INTERRUPTMASK_MEM;
         break;
     case __OS_INTERRUPT_DSP_AI:
     case __OS_INTERRUPT_DSP_ARAM:
     case __OS_INTERRUPT_DSP_DSP:
-        reg = __DSPRegs[0x00000005];
+        reg = __DSPRegs[DSP_CONTROL_STATUS];
         reg &= ~0x1F8;
         if (!(current & OS_INTERRUPTMASK_DSP_AI))
             reg |= 0x10;
@@ -169,7 +172,7 @@ static u32 SetInterruptMask(OSInterruptMask mask, OSInterruptMask current) {
             reg |= 0x40;
         if (!(current & OS_INTERRUPTMASK_DSP_DSP))
             reg |= 0x100;
-        __DSPRegs[0x00000005] = (u16)reg;
+        __DSPRegs[DSP_CONTROL_STATUS] = (u16)reg;
         mask &= ~OS_INTERRUPTMASK_DSP;
         break;
     case __OS_INTERRUPT_AI_AI:

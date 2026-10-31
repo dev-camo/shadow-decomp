@@ -71,9 +71,15 @@ volatile u16 __OSDeviceCode AT_ADDRESS(OS_BASE_CACHED | 0x30E6);
 u16 __OSWirelessPadFixMode AT_ADDRESS(OS_BASE_CACHED | 0x30E0);
 
 // Low-memory globals whose purpose is not known
-OSThread *__gUnkThread1 AT_ADDRESS(OS_BASE_CACHED | 0x00D8);
 int __gUnknown800030C0[2] AT_ADDRESS(OS_BASE_CACHED | 0x30C0);
 u8 __gUnknown800030E3 AT_ADDRESS(OS_BASE_CACHED | 0x30E3);
+u8 __gUnknown800030E2 AT_ADDRESS(OS_BASE_CACHED | 0x30E2);
+volatile u32 __gUnknown812FDFF0 AT_ADDRESS(0x812FDFF0);
+volatile u32 __gUnknown812FDFEC AT_ADDRESS(0x812FDFEC);
+
+// The current context and the owner of the floating-point registers.
+volatile OSContext *__OSCurrentContext AT_ADDRESS(OS_BASE_CACHED | 0x00D4);
+volatile OSContext *__OSFPUContext AT_ADDRESS(OS_BASE_CACHED | 0x00D8);
 #else
 #define __OSBusClock (*(u32 *)(OS_BASE_CACHED | 0x00F8))
 #define __OSCoreClock (*(u32 *)(OS_BASE_CACHED | 0x00FC))

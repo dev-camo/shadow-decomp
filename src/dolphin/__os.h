@@ -47,6 +47,7 @@ void __OSInitMemoryProtection(void);
 void __OSUnlockAllMutex(OSThread *thread);
 int __OSCheckDeadLock(OSThread *thread);
 int __OSCheckMutexes(OSThread *thread);
+int __OSCheckMutex(OSMutex *mutex);
 
 // OSReset
 void __OSDoHotReset(u32 resetCode);
@@ -54,7 +55,7 @@ void __OSShutdownDevices(BOOL doRecal);
 int __OSCallResetFunctions(BOOL final);
 
 // OSResetSW
-void __OSResetSWInterruptHandler(s16 exception, OSContext *context);
+void __OSResetSWInterruptHandler(__OSInterrupt interrupt, OSContext *context);
 void __OSSetResetButtonTimer(u8 min);
 
 // OSRtc
@@ -73,8 +74,8 @@ u8 __OSGetBootMode(void);
 void __OSSetBootMode(u8 ntd);
 
 // OSSync
-extern void __OSSystemCallVectorStart();
-extern void __OSSystemCallVectorEnd();
+extern void __OSSystemCallVectorStart(void);
+extern void __OSSystemCallVectorEnd(void);
 
 void __OSInitSystemCall(void);
 
@@ -96,7 +97,7 @@ void __init_user(void);
 void _ExitProcess(void);
 
 // start
-__declspec(weak) void InitMetroTRK_BBA();
+__declspec(weak) void InitMetroTRK_BBA(void);
 
 __declspec(section ".init") void __start(void);
 
