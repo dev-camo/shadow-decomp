@@ -89,6 +89,13 @@ Game/ElecCircuitExit.cpp:
 	.sdata      start:0x805EC030 end:0x805EC050
 	.sdata2     start:0x805F8D88 end:0x805F8DA0
 
+Game/TestNakazawa.cpp:
+	.text       start:0x802DF6B0 end:0x802DFA00
+	.rodata     start:0x80505840 end:0x80505860
+	.data       start:0x80559210 end:0x80559250
+	.sdata      start:0x805EC598 end:0x805EC5B0
+	.sdata2     start:0x805F90D0 end:0x805F90E0
+
 Game/CSD/csdMatrix.cpp:
 	.text       start:0x8035F81C end:0x80360528
 	.rodata     start:0x80512EE8 end:0x80512F08
