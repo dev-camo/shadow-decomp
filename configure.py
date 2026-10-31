@@ -778,6 +778,21 @@ config.libs = [
                     cflags=cflags_game_cpp,
                     extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
                 ),
+                # Rotation and segment helpers (float constants in .rodata, -sdata2 0). fn_8040FC78
+                # (closest point on a segment) still differs: the target calls fn_800091EC (copy;
+                # start or end of the segment) and fn_8040CDD0 (add; the point in between) as
+                # by-value functions that build the point directly in its caller's result slot,
+                # which their void (destination, source) prototypes cannot express. This build
+                # builds the point in a local and copies it out: 75 instructions instead of 69,
+                # with a stack address in place of the result pointer in the three calls. A
+                # result-pointer signature matches fn_8040FC78 but makes its by-value wrapper
+                # fn_8040FC3C differ.
+                Object(
+                    NonMatching,
+                    "Game/fn_8040F364.cpp",
+                    cflags=cflags_game_cpp,
+                    extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
+                ),
                 Object(Matching, "Game/fn_8040DB6C.c"),
                 Object(Matching, "Game/fn_8041583C.c"),
                 Object(Matching, "Game/fn_8040CB2C.c"),
