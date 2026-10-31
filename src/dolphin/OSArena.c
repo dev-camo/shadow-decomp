@@ -43,7 +43,6 @@ void *OSAllocFromArenaLo(u32 size, u32 align) {
     return ptr;
 }
 
-#if SDK_REVISION >= 2
 void *OSAllocFromArenaHi(u32 size, u32 align) {
     void *ptr;
     u8 *arenaHi;
@@ -55,4 +54,3 @@ void *OSAllocFromArenaHi(u32 size, u32 align) {
     OSSetArenaHi(arenaHi);
     return ptr;
 }
-#endif
