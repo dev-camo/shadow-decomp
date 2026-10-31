@@ -1531,6 +1531,15 @@ Game/fn_8040E310.c:
 Game/fn_8040E38C.c:
 	.text       start:0x8040E38C end:0x8040E3A0
 
+Game/fn_8040EA90.cpp:
+	extab       start:0x80005AD4 end:0x80005B24
+	extabindex  start:0x800079F4 end:0x80007A6C
+	.text       start:0x8040EA90 end:0x8040EFA4
+	.ctors      start:0x804AA060 end:0x804AA064
+	.rodata     start:0x8051A4F0 end:0x8051A528
+	.data       start:0x80569F08 end:0x80569F28
+	.bss        start:0x805E07C8 end:0x805E11A0
+
 Game/fn_804110EC.c:
 	.text       start:0x804110EC end:0x804110FC
 

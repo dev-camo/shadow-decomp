@@ -749,6 +749,20 @@ config.libs = [
                 Object(Matching, "Game/fn_8040CCD4.c"),
                 Object(Matching, "Game/fn_8040D6F4.c"),
                 Object(Matching, "Game/fn_8040E38C.c"),
+                # SonicUSA::System::Random: the target keeps its doubles in .rodata and its RTTI record
+                # and twist table in .data (-sdata 0, -sdata2 0). NextFloat and NextFloatInclusive
+                # still differ: the target adds the m_state[i + 397] offset to an index register
+                # (lwzx), while this build folds it into the load displacement.
+                Object(
+                    NonMatching,
+                    "Game/fn_8040EA90.cpp",
+                    cflags=cflags_game_cpp,
+                    extra_cflags=[
+                        "-Cpp_exceptions on",
+                        "-sdata 0",
+                        "-sdata2 0",
+                    ],
+                ),
                 Object(Matching, "Game/fn_8040DB6C.c"),
                 Object(Matching, "Game/fn_8041583C.c"),
                 Object(Matching, "Game/fn_8040CB2C.c"),

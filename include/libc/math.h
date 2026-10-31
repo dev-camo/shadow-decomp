@@ -42,6 +42,14 @@ double copysign(double x, double y);
 #endif
 
 double floor(double x);
+/* Retail calls an out-of-line copy of the MSL inline floorf (floor, then frsp), with C linkage. */
+#ifdef __cplusplus
+extern "C" {
+#endif
+float floorf(float x);
+#ifdef __cplusplus
+}
+#endif
 
 extern inline float sqrtf(float x) {
     const double _half = .5;
