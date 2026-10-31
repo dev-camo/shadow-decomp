@@ -42,6 +42,8 @@ RwSList *fn_8047DDB0(RwSList *sList) {
 
 /* Adds an entry, growing the array by a quarter when it is full */
 void *fn_8047DDBC(RwSList *sList, RwUInt32 hint) {
+    void *entry;
+
     if (sList->numElementsFilled >= sList->numElementsAlloced) {
         RwUInt8 *newElements = RwRealloc(
             sList->listElements,
@@ -55,12 +57,9 @@ void *fn_8047DDBC(RwSList *sList, RwUInt32 hint) {
         sList->listElements = newElements;
         sList->numElementsAlloced += sList->numElementsAlloced / 4;
     }
-    {
-        void *entry = &sList->listElements[sList->numElementsFilled * sList->entrySize];
-
-        sList->numElementsFilled++;
-        return entry;
-    }
+    entry = &sList->listElements[sList->numElementsFilled * sList->entrySize];
+    sList->numElementsFilled++;
+    return entry;
 }
 
 /* Adds entries, growing the array by a quarter more than needed when they do not fit */

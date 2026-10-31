@@ -1,6 +1,7 @@
 /* RenderWare streams: reading, writing and skipping through files, memory and custom functions.
  * The original file name is unknown. */
 #include "rw/rwcore.h"
+#include <string.h>
 #include "layout_check.h"
 
 /* The size a memory stream's block starts at and grows by at least */
@@ -225,21 +226,21 @@ static inline RwStream *StreamOpenMemory(RwStream *stream, RwInt32 accessType,
     switch (accessType) {
     case rwSTREAMREAD:
         stream->Type.memory.position = 0;
-        result = stream;
         stream->Type.memory.nSize = memory->length;
         stream->Type.memory.memBlock = memory->start;
+        result = stream;
         break;
     case rwSTREAMWRITE:
         stream->Type.memory.position = 0;
-        result = stream;
         stream->Type.memory.nSize = 0;
         stream->Type.memory.memBlock = NULL;
+        result = stream;
         break;
     case rwSTREAMAPPEND:
-        result = stream;
         stream->Type.memory.position = memory->length;
         stream->Type.memory.nSize = memory->length;
         stream->Type.memory.memBlock = memory->start;
+        result = stream;
         break;
     default:
         RWERROR((E_RW_BADACCESSTYPE));
