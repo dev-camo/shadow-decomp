@@ -2110,8 +2110,9 @@ config.libs = [
                     "-inline noauto",
                 ],
             ),
+            # NonMatching: cvFsGetFileSize differs in 14 words (two registers swapped).
             Object(
-                Matching,
+                NonMatching,
                 "CRI/cri_cvfs.c",
                 extra_cflags=[
                     "-sdata 0",
