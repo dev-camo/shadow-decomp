@@ -52,7 +52,7 @@ static UnkStartupFloat_800E2570 s_animationSpeedBase(7.0f);
 struct ChaoParams {
     /* 0x0 */ u32 type;         /* 0 CHAO or 1 CHEEZ */
     /* 0x4 */ float moveRadius; /* MOVE_RADIUS (m); the code scales it by 10 */
-    /* 0x8 */ float moveSpeed;  /* MOVE_SPPED (m/sec); the code scales it by 10 */
+    /* 0x8 */ float moveSpeed;  /* MOVE_SPPED, sic (m/sec); the code scales it by 10 */
 };
 CHECK_SIZEOF(ChaoParams, 0xC);
 

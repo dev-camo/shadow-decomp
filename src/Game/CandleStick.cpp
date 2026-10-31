@@ -127,9 +127,9 @@ CandleStick::CandleStick(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(
     UpdateModelMatrix();
 }
 
-/* The block that stops the effect appears in this destructor and in ResetFromOwner; as an inline
- * member the compiler leaves it a call, and the original has no such function, so it is written
- * out in both. */
+/* Matching workaround: the block that stops the effect is written out both in this destructor and
+ * in ResetFromOwner. As an inline member the compiler leaves it a call, and the original has no
+ * such function. Revisit if the original's shared inline form is found. */
 CandleStick::~CandleStick() {
     if (!m_effect.expired()) {
         boost::shared_ptr<UnkEffect_80168C48> effect(m_effect.lock());

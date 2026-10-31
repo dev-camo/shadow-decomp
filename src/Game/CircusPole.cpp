@@ -25,6 +25,7 @@
 #include "boost/shared_ptr.hpp"
 #include "layout_check.h"
 
+// RednerDrawArgs is the original spelling (from the RTTI name).
 class RednerDrawArgs;
 
 typedef boost::function1<void, RednerDrawArgs &> RenderDrawCallback;

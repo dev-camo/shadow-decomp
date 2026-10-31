@@ -47,7 +47,7 @@ TornadoCollision::TornadoCollision(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
         m_owner = owner;
         fn_800C9CD0(m_owner, this);
         fn_800C9F14(m_owner, &m_position);
-        fn_800C9DBC(m_owner, &m_radius, 4);
+        fn_800C9DBC(m_owner, &m_radius, sizeof(m_radius));
         fn_800C9E60(m_owner, &m_tag);
         m_target = fn_800C7EA8(fn_80021B08(), &m_position, 0x40100, 10, 0, lbl_805EE698,
                                &lbl_805E07A0, m_radius);
@@ -75,7 +75,7 @@ void TornadoCollision::Update(float dt) {
          * TestNakazawa::Update; fn_800C9D0C always returns false in this build). */
         if (fn_800C9D0C(m_owner) && fn_800C9D14(m_owner)) {
             fn_800C9F14(m_owner, &m_position);
-            fn_800C9DBC(m_owner, &m_radius, 4);
+            fn_800C9DBC(m_owner, &m_radius, sizeof(m_radius));
             fn_800C9E60(m_owner, &m_tag);
             if (m_target.get() != 0) {
                 m_target->SetPosition(&m_position);
