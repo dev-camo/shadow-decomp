@@ -19,10 +19,6 @@
 /* A block's bitmap follows its link */
 #define rwFREELISTBLOCKBITMAP(block) ((RwUInt8 *)(block) + sizeof(RwLLLink))
 
-/* The entries of a block start after the bitmap, at the alignment */
-#define rwFREELISTBLOCKENTRIES(block, heapSize, alignment)                                         \
-    ((RwUInt32)(rwFREELISTBLOCKBITMAP(block) + (heapSize) + (alignment) - 1) & ~((alignment) - 1))
-
 /* The free list a link in the list of all free lists belongs to */
 #define FREELISTFROMLINK(link) ((RwFreeList *)((RwUInt8 *)(link) - offsetof(RwFreeList, link)))
 
@@ -133,87 +129,119 @@ RwBool fn_8047FCDC(RwFreeList *freeList) {
 }
 
 void *fn_8047FDB0(RwFreeList *freeList, RwUInt32 hint) {
-    RwUInt32 heapSize = freeList->heapSize;
-    RwUInt32 index;
-    RwUInt32 entry = 0;
-    RwUInt8 *bitmap;
-    RwUInt8 mask;
     RwUInt8 bits;
+    RwUInt8 mask;
+    void *entry = NULL;
     RwUInt32 i;
     RwUInt32 bit;
-    RwLLLink *block = freeList->blockList.link.next;
-    RwLLLink *end = &freeList->blockList.link;
+    RwUInt32 heapSize;
+    RwUInt8 *bitmap;
+    RwLLLink *block;
+    RwLLLink *end;
     RwUInt32 entriesLeft;
 
+    heapSize = freeList->heapSize;
+    block = freeList->blockList.link.next;
+    end = &freeList->blockList.link;
+
     /* The first entry not in use */
-    while (block != end && entry == 0) {
+    while (block != end && entry == NULL) {
         bitmap = rwFREELISTBLOCKBITMAP(block);
         entriesLeft = freeList->entriesPerBlock;
-        index = 0;
+
         for (i = 0; i < heapSize; i++) {
             bits = bitmap[i];
+
             if (bits != 0xFF) {
-                for (bit = 0; bit < 8 && entriesLeft != 0; bit++, entriesLeft--) {
+                bit = 0;
+                while (bit < 8 && entriesLeft > 0) {
                     mask = 0x80 >> bit;
-                    if (!(bits & mask)) {
-                        bitmap[i] = mask | bits;
-                        entry = rwFREELISTBLOCKENTRIES(block, heapSize, freeList->alignment) +
-                                freeList->entrySize * (index + bit);
+                    if ((bits & mask) == 0) {
+                        RwUInt8 *entries;
+
+                        bitmap[i] = bitmap[i] | mask;
+                        entries = rwFREELISTBLOCKBITMAP(block) + heapSize + freeList->alignment - 1;
+                        entries = (RwUInt8 *)((RwUInt32)entries & ~(freeList->alignment - 1));
+                        entry = entries + ((i << 3) + bit) * freeList->entrySize;
                         break;
                     }
+                    bit++;
+                    entriesLeft--;
                 }
             } else {
                 entriesLeft -= 8;
             }
-            if (entry != 0) {
+            if (entry != NULL) {
                 break;
             }
-            index += 8;
         }
         block = block->next;
     }
 
     /* Otherwise a new block */
-    if (entry == 0) {
-        block =
+    if (entry == NULL) {
+        RwUInt8 *entries;
+        RwLLLink *newBlock =
             RwMalloc(sizeof(RwLLLink) + heapSize + freeList->entriesPerBlock * freeList->entrySize +
                          freeList->alignment - 1,
                      hint);
-        if (block == NULL) {
+
+        if (newBlock == NULL) {
             return NULL;
         }
-        bitmap = rwFREELISTBLOCKBITMAP(block);
-        memset(bitmap, 0, heapSize);
-        rwLinkListAddLLLink(&freeList->blockList, block);
-        *bitmap = 0x80;
-        entry = rwFREELISTBLOCKENTRIES(block, heapSize, freeList->alignment);
+        memset(rwFREELISTBLOCKBITMAP(newBlock), 0, heapSize);
+        rwLinkListAddLLLink(&freeList->blockList, newBlock);
+        *rwFREELISTBLOCKBITMAP(newBlock) = 0x80;
+        entries = rwFREELISTBLOCKBITMAP(newBlock) + heapSize + freeList->alignment - 1;
+        entries = (RwUInt8 *)((RwUInt32)entries & ~(freeList->alignment - 1));
+        entry = entries;
     }
-    return (void *)entry;
+    return entry;
+}
+
+/* Whether no entry of a block is in use (inferred helper; fn_8047FF50 contains its loop).
+ * Matching workaround: declared inline. As a plain static function it links to the same DOL bytes,
+ * because its unused out-of-line copy is dropped at link; inline only keeps that copy out of the
+ * per-object comparison. Revisit when that comparison ignores unreferenced local functions. */
+static inline RwBool FreeListBlockUnused(RwUInt8 *bitmap, RwUInt32 heapSize) {
+    RwUInt32 i;
+    RwUInt32 used = 0;
+
+    for (i = 0; i < heapSize; i++) {
+        used += bitmap[i];
+    }
+    return used == 0;
 }
 
 RwFreeList *fn_8047FF50(RwFreeList *freeList, void *mem) {
-    RwUInt32 heapSize = freeList->heapSize;
-    RwLLLink *block = freeList->blockList.link.next;
-    RwLLLink *end = &freeList->blockList.link;
+    RwUInt32 heapSize;
+    RwUInt8 *blockData;
+    RwLLLink *block;
+    RwLLLink *end;
+
+    heapSize = freeList->heapSize;
+    block = freeList->blockList.link.next;
+    end = &freeList->blockList.link;
 
     while (block != end) {
-        RwUInt8 *entries = rwFREELISTBLOCKBITMAP(block) + heapSize;
+        /* The entries start here before alignment; the index below is taken from this address */
+        blockData = rwFREELISTBLOCKBITMAP(block) + heapSize;
 
-        if ((RwUInt8 *)mem >= entries &&
-            (RwUInt8 *)mem <= entries + freeList->entriesPerBlock * freeList->entrySize) {
-            RwUInt8 *bitmap = rwFREELISTBLOCKBITMAP(block);
-            RwUInt32 index = ((RwUInt8 *)mem - entries) / freeList->entrySize;
+        if ((RwUInt8 *)mem >= blockData &&
+            (RwUInt8 *)mem <= blockData + freeList->entriesPerBlock * freeList->entrySize) {
+            RwUInt8 *bitmap;
+            RwUInt32 index;
+            RwUInt32 byteIndex;
+            RwUInt8 mask;
 
-            bitmap[index >> 3] &= (RwUInt8) ~(RwUInt8)(0x80 >> (index - (index & ~7)));
+            index = ((RwUInt8 *)mem - blockData) / freeList->entrySize;
+            byteIndex = index >> 3;
+            mask = (RwUInt8)(0x80 >> (index - (byteIndex << 3)));
+            bitmap = rwFREELISTBLOCKBITMAP(block);
+            bitmap[byteIndex] &= (RwUInt8)~mask;
 
             if (freeList->flags & rwFREELISTFLAG_FREEBLOCKS) {
-                RwUInt32 i;
-                RwUInt32 used = 0;
-
-                for (i = 0; i < heapSize; i++) {
-                    used += bitmap[i];
-                }
-                if (used == 0) {
+                if (FreeListBlockUnused(bitmap, heapSize)) {
                     rwLinkListRemoveLLLink(block);
                     RwFree(block);
                 }
@@ -227,35 +255,47 @@ RwFreeList *fn_8047FF50(RwFreeList *freeList, void *mem) {
 
 /* Calls callBack on each entry in use */
 RwFreeList *fn_804800DC(RwFreeList *freeList, void (*callBack)(void *mem, void *data), void *data) {
-    RwUInt32 heapSize = freeList->heapSize;
-    RwLLLink *block = freeList->blockList.link.next;
-    RwLLLink *end = &freeList->blockList.link;
+    RwUInt32 heapSize;
+    RwLLLink *block;
+    RwLLLink *end;
+    RwLLLink *next;
+
+    heapSize = freeList->heapSize;
+    block = freeList->blockList.link.next;
+    end = &freeList->blockList.link;
 
     while (block != end) {
-        RwUInt8 *blockBitmap = rwFREELISTBLOCKBITMAP(block);
-        RwLLLink *next;
-        RwUInt8 *bitmap = RwMalloc(heapSize, rwMEMHINTDUR_FUNCTION);
+        RwUInt8 *blockBitmap;
+        RwUInt8 *bitmap;
+        RwUInt32 bits;
+        RwUInt8 mask;
         RwUInt32 i;
 
+        blockBitmap = rwFREELISTBLOCKBITMAP(block);
+
+        /* The callback may free entries, so a copy of the bitmap is walked */
+        bitmap = RwMalloc(heapSize, rwMEMHINTDUR_FUNCTION);
         if (bitmap == NULL) {
             return NULL;
         }
-
-        /* The callback may free entries, so a copy of the bitmap is walked */
         memcpy(bitmap, blockBitmap, heapSize);
         next = block->next;
-        for (i = 0; i < heapSize; i++) {
-            RwUInt8 byte = bitmap[i];
 
-            if (byte != 0) {
+        for (i = 0; i < heapSize; i++) {
+            bits = bitmap[i];
+            if (bits != 0) {
                 RwUInt32 bit;
 
                 for (bit = 0; bit < 8; bit++) {
-                    if (byte & (RwUInt8)(0x80 >> bit)) {
-                        callBack(
-                            (void *)(rwFREELISTBLOCKENTRIES(block, heapSize, freeList->alignment) +
-                                     freeList->entrySize * (i * 8 + bit)),
-                            data);
+                    mask = (RwUInt8)(0x80 >> bit);
+                    if ((bits & mask) != 0) {
+                        RwUInt8 *entries;
+                        RwUInt8 *entry;
+
+                        entries = rwFREELISTBLOCKBITMAP(block) + heapSize + freeList->alignment - 1;
+                        entries = (RwUInt8 *)((RwUInt32)entries & ~(freeList->alignment - 1));
+                        entry = entries + ((i << 3) + bit) * freeList->entrySize;
+                        callBack(entry, data);
                     }
                 }
             }
