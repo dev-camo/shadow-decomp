@@ -435,13 +435,13 @@ RpWorld *fn_804556F4(RwStream *stream) {
     RwUInt8 *memory;
     RwUInt32 length;
     RwUInt32 version;
-    RwUInt32 chunkVersion;
+    RwUInt32 numTexCoordSets;
     RpSector *rootSector;
     RwInt32 texCoordSetBits;
     WorldChunk header;
     RpWorld *world;
     RwUInt32 size;
-    RwUInt32 numTexCoordSets;
+    RwUInt32 chunkVersion;
     RwUInt32 format;
     RpMaterial *material;
     RwInt32 i;
