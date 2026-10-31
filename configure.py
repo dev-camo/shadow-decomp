@@ -1188,12 +1188,17 @@ config.libs = [
             Object(Matching, "dolphin/CARDCheck.c"),
             Object(Matching, "dolphin/CARDMount.c"),
             Object(Matching, "dolphin/CARDFormat.c"),
+            # Matching workaround: -char signed for this unit only (the rest of the library is
+            # unsigned char). With unsigned char, __CARDCompareFileName and __CARDGetFileNo lose
+            # the extsb of the char comparisons. Revisit if the original per-file flags are found.
+            Object(Matching, "dolphin/CARDOpen.c", extra_cflags=["-char signed"]),
             Object(Matching, "dolphin/CARDCreate.c"),
             Object(Matching, "dolphin/CARDRead.c"),
             Object(Matching, "dolphin/CARDWrite.c"),
             Object(Matching, "dolphin/CARDDelete.c"),
             Object(Matching, "dolphin/CARDStat.c"),
             Object(Matching, "dolphin/CARDUnlock.c"),
+            Object(Matching, "dolphin/CARDNet.c"),
         ],
     ),
     DolphinLib(
