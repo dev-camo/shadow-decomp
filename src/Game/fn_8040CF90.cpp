@@ -1,3 +1,5 @@
+/* 3-float vector dot product, cross product and in-place addition (behaviour inferred; the
+ * original names are unknown). */
 #include "Game/fn_8040_vector_types.h"
 
 extern "C" {

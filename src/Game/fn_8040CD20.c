@@ -1,3 +1,5 @@
+/* 2-float vector dot product at 0x8040CD20 and in-place addition at 0x8040CD3C (behaviour inferred;
+ * the original names are unknown). */
 #include "Game/fn_8040_vector_types.h"
 
 float fn_8040CD20(Fn8040Vector2 *left, Fn8040Vector2 *right) {

@@ -1,3 +1,5 @@
+/* MWSFPLY_SetFlowLimit: passes MWSFD_SetFlowLimit 80% of the player's flow sector count and the
+ * count itself. */
 #include "CRI/mwsfd.h"
 
 void MWSFPLY_SetFlowLimit(MWPLY mwply) {
