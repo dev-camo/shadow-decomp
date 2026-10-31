@@ -7,16 +7,6 @@
 /* RwEngineInitFlag: free list entries are allocated and freed with the memory functions */
 #define rwENGINEINITNOFREELISTS 0x1
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* A device sub system's description; only its name is written here, and the name's size is
  * RenderWare's */
 typedef struct RwSubSystemInfo {
@@ -76,7 +66,7 @@ RwBool fn_80485C3C(RwDevice *device, RwInt32 requestID, void *out, void *inOut, 
         }
     }
     if (!result) {
-        RWERROR((E_RW_DEVICEERROR, requestID));
+        RWERRORCORE((E_RW_DEVICEERROR, requestID));
     }
     return result;
 }
@@ -192,7 +182,7 @@ static inline RwBool EngineOpenOnDevice(RwDevice *device, RwEngineOpenParams *in
         return FALSE;
     }
     lbl_805F15B4 = &lbl_805E2B48;
-    RWERROR((E_RW_NOMEM, lbl_8056DFB0.sizeOfStruct));
+    RWERRORCORE((E_RW_NOMEM, lbl_8056DFB0.sizeOfStruct));
     return FALSE;
 }
 
@@ -218,10 +208,10 @@ RwBool fn_80486204(RwEngineOpenParams *initParams) {
                 }
             }
         } else {
-            RWERROR((E_RW_NULLP));
+            RWERRORCORE((E_RW_NULLP));
         }
     } else {
-        RWERROR((E_RW_BADENGINESTATE));
+        RWERRORCORE((E_RW_BADENGINESTATE));
     }
     return result;
 }

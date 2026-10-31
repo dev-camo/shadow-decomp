@@ -6,16 +6,6 @@
 /* The characters a texture name is read into */
 #define rwTEXTURENAMEBUFFERLENGTH (rwTEXTUREBASENAMELENGTH * 4)
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* A texture dictionary's stream data, as it is in memory once read */
 typedef struct rwStreamTexDictionary {
     /* 0x0 */ RwUInt16 deviceId; /* 0 for any device */
@@ -160,7 +150,7 @@ RwTexture *fn_80483D28(RwStream *stream) {
         }
         return texture;
     }
-    RWERROR((E_RW_BADVERSION));
+    RWERRORCORE((E_RW_BADVERSION));
     return NULL;
 }
 
@@ -212,7 +202,7 @@ RwTexDictionary *fn_80483FBC(RwStream *stream) {
             if (!(version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION)) {
                 fn_8048CBE0(dict, fn_80483F8C, NULL);
                 fn_8048CB38(dict);
-                RWERROR((E_RW_BADVERSION));
+                RWERRORCORE((E_RW_BADVERSION));
                 return NULL;
             }
             if (!lbl_805F15B4->stdFunc[rwSTANDARDNATIVETEXTUREREAD](stream, &texture, size)) {
@@ -240,6 +230,6 @@ RwTexDictionary *fn_80483FBC(RwStream *stream) {
         }
         return dict;
     }
-    RWERROR((E_RW_BADVERSION));
+    RWERRORCORE((E_RW_BADVERSION));
     return NULL;
 }

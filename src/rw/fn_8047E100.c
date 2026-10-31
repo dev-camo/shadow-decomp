@@ -6,16 +6,6 @@
 #include <math.h>
 #include "layout_check.h"
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* The engine globals of the matrix module */
 typedef struct rwMatrixGlobals {
     /* 0x00 */ RwFreeList *matrixFreeList;
@@ -415,7 +405,7 @@ RwMatrix *fn_8047ECD4(RwMatrix *matrix, const RwV3d *unitAxis, RwInt32 combine,
         *matrix = result;
         break;
     default:
-        RWERROR((E_RW_BADPARAM, "Invalid combination type"));
+        RWERRORCORE((E_RW_BADPARAM, "Invalid combination type"));
         matrix = NULL;
         break;
     }
@@ -533,7 +523,7 @@ RwMatrix *fn_8047F398(RwMatrix *matrix, const RwV3d *scale, RwInt32 combine) {
         matrix->pos.z *= scale->z;
         break;
     default:
-        RWERROR((E_RW_BADPARAM, "Invalid combination type"));
+        RWERRORCORE((E_RW_BADPARAM, "Invalid combination type"));
         /* as in the original, the flags are still updated, through the NULL result */
         matrix = NULL;
         break;
@@ -564,7 +554,7 @@ RwMatrix *fn_8047F59C(RwMatrix *matrix, const RwV3d *translation, RwInt32 combin
         matrix->pos.z += translation->z;
         break;
     default:
-        RWERROR((E_RW_BADPARAM, "Invalid combination type"));
+        RWERRORCORE((E_RW_BADPARAM, "Invalid combination type"));
         /* as in the original, the flags are still updated, through the NULL result */
         matrix = NULL;
         break;
@@ -593,7 +583,7 @@ RwMatrix *fn_8047F72C(RwMatrix *matrix, const RwMatrix *transform, RwInt32 combi
         break;
     }
     default:
-        RWERROR((E_RW_BADPARAM, "Invalid combination type"));
+        RWERRORCORE((E_RW_BADPARAM, "Invalid combination type"));
         matrix = NULL;
         break;
     }

@@ -3,16 +3,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* A camera's stream data (0x20 bytes) */
 typedef struct rwStreamCamera {
     /* 0x00 */ RwV2d viewWindow;
@@ -64,6 +54,6 @@ RwCamera *fn_80483590(RwStream *stream) {
         fn_8048584C(camera, cam.projection);
         return camera;
     }
-    RWERROR((E_RW_BADVERSION));
+    RWERRORCORE((E_RW_BADVERSION));
     return NULL;
 }

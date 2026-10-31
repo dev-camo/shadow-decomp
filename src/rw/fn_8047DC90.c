@@ -5,21 +5,11 @@
 /* The entries a new list has room for */
 #define rwSLISTINITIALENTRIES 20
 
-/* Reports an error of the core; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_COREPLUGIN;                                                         \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 RwSList *fn_8047DC90(RwInt32 size, RwUInt32 hint) {
     RwSList *sList = RwMalloc(sizeof(RwSList), rwMEMHINTDUR_EVENT);
 
     if (sList == NULL) {
-        RWERROR((E_RW_NOMEM, sizeof(RwSList)));
+        RWERRORCORE((E_RW_NOMEM, sizeof(RwSList)));
         return NULL;
     }
     sList->numElementsFilled = 0;
@@ -28,7 +18,7 @@ RwSList *fn_8047DC90(RwInt32 size, RwUInt32 hint) {
     sList->listElements =
         RwMalloc(sList->numElementsAlloced * sList->entrySize, hint | rwMEMHINTFLAG_RESIZABLE);
     if (sList->listElements == NULL) {
-        RWERROR((E_RW_NOMEM, sList->numElementsAlloced * sList->entrySize));
+        RWERRORCORE((E_RW_NOMEM, sList->numElementsAlloced * sList->entrySize));
         RwFree(sList);
         return NULL;
     }
@@ -50,8 +40,8 @@ void *fn_8047DDBC(RwSList *sList, RwUInt32 hint) {
             sList->entrySize * (sList->numElementsAlloced + sList->numElementsAlloced / 4), hint);
 
         if (newElements == NULL) {
-            RWERROR((E_RW_NOMEM, sList->entrySize *
-                                     (sList->numElementsAlloced + sList->numElementsAlloced / 4)));
+            RWERRORCORE((E_RW_NOMEM, sList->entrySize * (sList->numElementsAlloced +
+                                                         sList->numElementsAlloced / 4)));
             return NULL;
         }
         sList->listElements = newElements;
@@ -73,8 +63,8 @@ void *fn_8047DEA0(RwSList *sList, RwInt32 size, RwUInt32 hint) {
             hint);
 
         if (newElements == NULL) {
-            RWERROR((E_RW_NOMEM, sList->entrySize * (sList->numElementsAlloced + size +
-                                                     sList->numElementsAlloced / 4)));
+            RWERRORCORE((E_RW_NOMEM, sList->entrySize * (sList->numElementsAlloced + size +
+                                                         sList->numElementsAlloced / 4)));
             return NULL;
         }
         sList->listElements = newElements;
