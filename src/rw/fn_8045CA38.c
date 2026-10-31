@@ -761,10 +761,11 @@ RwBool fn_8045D898(RpBuildMeshTriangle *triangles, RwUInt32 numTriangles, TriStr
 /* Joins a list of strips into one, linking each to the next with repeated vertices. With
  * keepWinding, a join keeps the winding of the strip it adds. */
 RwBool fn_8045E51C(TriStripList **stripList, RwBool keepWinding) {
-    TriStripList *joined;
-    TriStripList *strip;
-    TriStripList *rest;
     RwUInt32 i;
+    RwUInt32 j;
+    TriStripList *joined;
+    TriStripList *cursor;
+    TriStripList *next;
 
     if (*stripList == NULL) {
         return FALSE;
@@ -773,82 +774,88 @@ RwBool fn_8045E51C(TriStripList **stripList, RwBool keepWinding) {
                              rwMEMHINTDUR_EVENT | rwID_MESHMODULE);
     joined->numVertices = 0;
     joined->size = 0;
-    for (strip = *stripList; strip != NULL; strip = strip->next) {
-        joined->size += strip->numVertices + 6;
-    }
-    joined->vertices =
-        RwMalloc(joined->size * sizeof(RwUInt32), rwMEMHINTDUR_EVENT | rwID_MESHMODULE);
 
-    strip = *stripList;
-    for (i = 0; i < strip->numVertices; i++) {
-        joined->vertices[joined->numVertices] = strip->vertices[i];
+    /* room for every strip plus six indices each (a join adds at most three) */
+    cursor = *stripList;
+    while (cursor != NULL) {
+        joined->size += cursor->numVertices + 6;
+        cursor = cursor->next;
+    }
+    /* four bytes per 16-bit index, as the original allocates */
+    joined->vertices =
+        RwMalloc(sizeof(RwUInt32) * joined->size, rwMEMHINTDUR_EVENT | rwID_MESHMODULE);
+
+    cursor = *stripList;
+    for (i = 0; i < cursor->numVertices; i++) {
+        joined->vertices[joined->numVertices] = cursor->vertices[i];
         joined->numVertices++;
     }
-    RwFree(strip->vertices);
-    strip->vertices = NULL;
-    rest = strip->next;
-    RwFreeListFree(RPMESHGLOBAL(triStripListEntryFreeList), strip);
+    RwFree(cursor->vertices);
+    cursor->vertices = NULL;
+    next = cursor->next;
+    RwFreeListFree(RPMESHGLOBAL(triStripListEntryFreeList), cursor);
+    cursor = next;
 
-    while (rest != NULL) {
-        /* prefer a strip that starts where the joined strip ends */
-        for (strip = rest; strip != NULL; strip = strip->next) {
-            RxVertexIndex *end = &joined->vertices[joined->numVertices];
+    while (cursor != NULL) {
+        TriStripList *strip = cursor;
 
-            if (strip->vertices[0] == end[-1]) {
-                if ((joined->numVertices & 1) && keepWinding) {
-                    *end = strip->vertices[0];
-                    joined->numVertices++;
+        /* prefer a strip that starts with the vertex the joined strip ends with */
+        while (strip != NULL) {
+            if (joined->vertices[joined->numVertices - 1] == strip->vertices[0]) {
+                /* the strip continues from the joined end; an odd length needs one more index to
+                 * keep the winding */
+                if ((joined->numVertices % 2) && keepWinding) {
+                    joined->vertices[joined->numVertices] = strip->vertices[0];
+                    joined->numVertices += 1;
                 }
                 break;
             }
+            strip = strip->next;
         }
         if (strip == NULL) {
-            for (strip = rest; strip != NULL; strip = strip->next) {
-                RxVertexIndex *end = &joined->vertices[joined->numVertices];
-
-                if (strip->vertices[0] == end[-2]) {
-                    if (!(joined->numVertices & 1) && keepWinding) {
-                        *end = strip->vertices[0];
+            /* else one that starts with the vertex before it */
+            strip = cursor;
+            while (strip != NULL) {
+                if (joined->vertices[joined->numVertices - 2] == strip->vertices[0]) {
+                    if (!(joined->numVertices % 2) && keepWinding) {
+                        joined->vertices[joined->numVertices] = strip->vertices[0];
                         joined->vertices[joined->numVertices + 1] = strip->vertices[0];
                         joined->numVertices += 2;
                     } else {
-                        *end = strip->vertices[0];
-                        joined->numVertices++;
+                        joined->vertices[joined->numVertices] = strip->vertices[0];
+                        joined->numVertices += 1;
                     }
                     break;
                 }
+                strip = strip->next;
             }
         }
         if (strip == NULL) {
-            /* no strip continues the joined one: link to the first with a degenerate triangle */
-            strip = rest;
-            if (!(joined->numVertices & 1) || !keepWinding) {
-                RxVertexIndex *end = &joined->vertices[joined->numVertices];
-
-                *end = end[-1];
-                joined->vertices[joined->numVertices + 1] = rest->vertices[0];
+            /* else the next one, linked by degenerate triangles */
+            strip = cursor;
+            if (!(joined->numVertices % 2) || !keepWinding) {
+                joined->vertices[joined->numVertices] = joined->vertices[joined->numVertices - 1];
+                joined->vertices[joined->numVertices + 1] = strip->vertices[0];
                 joined->numVertices += 2;
             } else {
-                RxVertexIndex *end = &joined->vertices[joined->numVertices];
-
-                *end = end[-1];
-                joined->vertices[joined->numVertices + 1] = rest->vertices[0];
-                joined->vertices[joined->numVertices + 2] = rest->vertices[0];
+                joined->vertices[joined->numVertices] = joined->vertices[joined->numVertices - 1];
+                joined->vertices[joined->numVertices + 1] = strip->vertices[0];
+                joined->vertices[joined->numVertices + 2] = strip->vertices[0];
                 joined->numVertices += 3;
             }
         }
 
-        for (i = 0; i < strip->numVertices; i++) {
-            joined->vertices[joined->numVertices] = strip->vertices[i];
+        for (j = 0; j < strip->numVertices; j++) {
+            joined->vertices[joined->numVertices] = strip->vertices[j];
             joined->numVertices++;
         }
         RwFree(strip->vertices);
         strip->vertices = NULL;
-        if (rest == strip) {
-            rest = rest->next;
+        if (cursor == strip) {
+            cursor = cursor->next;
             RwFreeListFree(RPMESHGLOBAL(triStripListEntryFreeList), strip);
         } else {
-            TriStripList *before = rest;
+            TriStripList *before = cursor;
 
             while (before->next != strip) {
                 before = before->next;
