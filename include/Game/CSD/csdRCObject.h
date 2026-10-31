@@ -65,6 +65,12 @@ template <class T> class RCPtr : public CBase {
     /* Selects RELEASE_DELETE (an empty class passed by reference; name inferred). */
     class DeleteRelease {};
 
+    /* Holds object, released with delete; the policy object is taken by value (the RenderWare
+     * texture lists pass their unit's DeleteRelease). */
+    RCPtr(T *object, DeleteRelease release) : field_0x0(NULL) {
+        Assign(object, release);
+    }
+
     /* An object that releases an object itself (RELEASE_RELEASER). */
     class Releaser {
       public:
@@ -101,7 +107,7 @@ template <class T> class RCPtr : public CBase {
 
   private:
     /* Replaces the held object by object, to be released as release selects (name inferred).
-     * Reset is the only caller. */
+     * Called by Reset and by the RCPtr(T *, DeleteRelease) constructor. */
     void Assign(T *object, const DeleteRelease &release) {
         RCObject<T> *holder = field_0x0;
 

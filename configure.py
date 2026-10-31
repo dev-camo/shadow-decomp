@@ -755,7 +755,7 @@ config.libs = [
                 # through integer registers and addresses some of the stores differently.
                 # RCPtr::Assign (117 words, the original's 120) differs in 100 (24): the original
                 # keeps the object to release in r4 and copies it to r3 for each call, and the
-                # allocation of the holder passes line 88 of csdRCObject.h where the original
+                # allocation of the holder passes line 94 of csdRCObject.h where the original
                 # passes 410. Reset and the holder's constructor come after RenderState::End, as
                 # in the original; the out-of-line CMemoryAlloc::AllocObject that the holder
                 # allocation emits after them is a weak copy of a function the game has at

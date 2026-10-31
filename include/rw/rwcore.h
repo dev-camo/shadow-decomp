@@ -2,7 +2,13 @@
 #define RW_RWCORE_H
 
 #include <dolphin/types.h>
+#ifdef __cplusplus
+/* MSL's headers, which the C++ units built with cflags_csd or cflags_game_cpp search in place of
+ * include/libc, have no stdarg.h. */
+#include <cstdarg>
+#else
 #include <stdarg.h>
+#endif
 #include "layout_check.h"
 
 /* RenderWare Graphics 3.7 (stream chunk version 0x37002), linked into the game. Only what the
