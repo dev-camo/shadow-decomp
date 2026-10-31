@@ -582,7 +582,6 @@ RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     RwUInt8 *displayListData;
     RwUInt32 vertexDataSize;
     RwUInt32 size;
-    RwUInt32 entrySize;
     RwInt32 primitive;
     RwUInt32 i;
     RwInt32 j;
@@ -641,7 +640,6 @@ RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     }
     size += fn_8046EEA0(builder, &vertexSource);
 
-    entrySize = size;
     repEntry = RwMalloc(size + sizeof(RwResEntry), rwMEMHINT_SKIN);
     repEntry->link.next = NULL;
     repEntry->link.prev = NULL;
@@ -720,7 +718,7 @@ RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
         memcpy(skin->weights, indices[1].data, skin->maxNumWeightsForVertex * indices[1].count);
     }
     geometry->numVertices = builtStreams[0].count;
-    DCFlushRange(instance, entrySize);
+    DCFlushRange(instance, repEntry->size);
     GXInvalidateVtxCache();
 
     for (i = 0; i < geometry->mesh->numMeshes; i++) {
@@ -839,7 +837,6 @@ RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     RwUInt8 *displayListData;
     RwUInt32 vertexDataSize;
     RwUInt32 size;
-    RwUInt32 entrySize;
     RwInt32 primitive;
     RwUInt32 i;
     RwInt32 j;
@@ -892,7 +889,6 @@ RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     }
 
     instance = (RpGameCubeInstanceData *)(repEntry + 1);
-    entrySize = size;
     memset(instance, 0, size);
     instance->syncToken = lbl_805F1678;
     instance->serialNum = geometry->mesh->serialNum;
@@ -954,7 +950,7 @@ RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
 
     fn_8046F208(builder, instance, &vertexSource, displayListData);
     fn_8046F6CC(builder, instance, &vertexSource, 0, 0);
-    DCFlushRange(instance, entrySize);
+    DCFlushRange(instance, repEntry->size);
     GXInvalidateVtxCache();
     return repEntry;
 }
