@@ -721,6 +721,7 @@ vertex:
 
 /* Creates the delta morph pipeline */
 RwBool fn_80445C38(RwInt32 pluginData) {
+    /* fn_80462914 renders both atomics and sectors, so its type is cast to the callback's */
     RxPipeline *pipeline = fn_8046335C(rpID_DMORPHPLUGIN, pluginData, fn_80445934, fn_80444E7C,
                                        fn_80463428, (RpGameCubeRenderCallBack)fn_80462914);
 

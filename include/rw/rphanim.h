@@ -41,6 +41,9 @@ CHECK_SIZEOF(RpHAnimInterpFrame, 0x24);
 
 #define rpID_HANIMPLUGIN 0x11E
 
+/* the ID the plugin's keyframe scheme is registered under with the animation toolkit (inferred) */
+#define rpHANIMSTDKEYFRAMETYPEID 0x1
+
 /* RpHAnimHierarchy flags */
 #define rpHANIMHIERARCHYSUBHIERARCHY 0x1 /* shares its parent's matrices and node data */
 #define rpHANIMHIERARCHYNOMATRICES 0x2

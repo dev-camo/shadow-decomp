@@ -90,6 +90,8 @@ RpDMorphAnimation *fn_80442C24(RwStream *stream) {
     if (animation == NULL) {
         return NULL;
     }
+    /* (sic) none of the failure returns below frees the partly built animation, as in the
+     * original */
     for (i = 0; i < numDMorphTargets; i++) {
         RpDMorphFrame *frame;
         RwUInt32 j;

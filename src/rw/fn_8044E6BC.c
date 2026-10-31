@@ -616,8 +616,8 @@ RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     size = vertexDataSize + displayListsSize;
     size += 31; /* slack to align the display lists to 32 bytes */
     primitive = (geometry->flags & rpGEOMETRYTRISTRIP) ? GX_TRIANGLESTRIP : GX_TRIANGLES;
-    /* the original reloads geometry->mesh after the calls in the second loop, so each mesh is
-     * read through the geometry at every use */
+    /* the original reloads geometry->mesh after the calls in this loop and in the second one below,
+     * so each mesh is read through the geometry at every use */
     for (i = 0; i < geometry->mesh->numMeshes; i++) {
         if (geometry->flags & rpGEOMETRYTRISTRIP) {
             RwInt32 meshStrips;

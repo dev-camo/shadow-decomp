@@ -43,12 +43,12 @@ void *fn_80446AA8(void *instance, RwInt32 offset, RwInt32 size) {
 
     lbl_805F1440.hierarchyFreeList =
         fn_8047FC04(sizeof(RpHAnimHierarchy), lbl_805EDD70, 4, lbl_805EDD74, &lbl_805E1510,
-                    0x40000 | rpID_HANIMPLUGIN);
+                    rwMEMHINTDUR_GLOBAL | rpID_HANIMPLUGIN);
     if (lbl_805F1440.hierarchyFreeList == NULL) {
         instance = NULL;
     }
 
-    info.typeID = 1;
+    info.typeID = rpHANIMSTDKEYFRAMETYPEID;
     info.interpKeyFrameSize = sizeof(RpHAnimInterpFrame);
     info.animKeyFrameSize = sizeof(RpHAnimKeyFrame);
     /* the toolkit passes the scheme's frames untyped */
@@ -214,6 +214,8 @@ RwStream *fn_80446F40(RwStream *stream, RwInt32 length, void *object, RwInt32 of
             return NULL;
         }
         hierarchy = RwFreeListAlloc(lbl_805F1440.hierarchyFreeList, rwMEMHINT_HANIM);
+        /* (sic) clears the hierarchy before the check for a failed allocation, as the original
+         * does */
         memset(hierarchy, 0, sizeof(RpHAnimHierarchy));
         if (hierarchy != NULL) {
             RwInt32 i;

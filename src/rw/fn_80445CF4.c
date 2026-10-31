@@ -5,8 +5,11 @@
 #include "rw/rphanim.h"
 #include "rw/rwmath.h"
 
-/* Sets result to sin(x) by the degree-13 fdlibm kernel polynomial (odd terms through x^13); a
- * macro, so that its temporaries are the caller's */
+/* Sets result to sin(x) by the degree-13 fdlibm kernel polynomial (odd terms through x^13).
+ *
+ * Matching workaround: a macro instead of a function, so that its temporaries are the caller's.
+ * As an equivalent static inline function it changes fn_80445E08 and fn_8044621C (22 -> 37
+ * differing words each, same sizes). Revisit if the original's form of the sine is found. */
 #define RwSinMacro(result, x)                                                                      \
     do {                                                                                           \
         RwReal x_ = (x);                                                                           \
@@ -95,6 +98,7 @@ void fn_80445CF4(RwMatrix *matrix, RpHAnimInterpFrame *frame) {
     matrix->at.x = 2.0f * (cross.y + wimag.y);
     matrix->at.y = 2.0f * (cross.x - wimag.x);
     matrix->at.z = 1.0f - 2.0f * (square.x + square.y);
+    /* (sic) the position is cleared and then overwritten with the frame's translation below */
     matrix->pos.x = 0.0f;
     matrix->pos.y = 0.0f;
     matrix->pos.z = 0.0f;
@@ -183,6 +187,7 @@ void fn_80446790(RpHAnimKeyFrame *frame, RpHAnimKeyFrame *start) {
     RwReal norm = start->q.imag.x * start->q.imag.x + start->q.imag.y * start->q.imag.y +
                   start->q.imag.z * start->q.imag.z + start->q.real * start->q.real;
 
+    /* (sic) recip is left uninitialised when the norm is not positive, as in the original */
     if (norm > 0.0f) {
         RwReal recipNorm = 1.0f / norm;
 
