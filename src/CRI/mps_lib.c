@@ -27,11 +27,11 @@ static Sint32 mpslib_CheckHn(MPS mps) {
     return 0;
 }
 
-/* Matching workaround: order-only stand-in for a function the linker stripped from the game; its
- * body is unknown. MWCC lays out .bss by first reference, so this never-called function refers to
- * cri_verstr_ptr before the error functions below refer to MPSLIB_libwork. Storing the address
- * keeps the reference. Revisit when the stripped function's body is known.
- */
+/* Matching workaround: stand-in for a function the linker stripped from the game. The body is not
+ * the original's. It refers to cri_verstr_ptr before the error functions below refer to
+ * MPSLIB_libwork; storing the address keeps the reference. Without it the .bss objects land in the
+ * first-reference order of the surviving functions and the code that pools their addresses changes
+ * (measured by compiling without it). Revisit when the stripped code is known. */
 static void mpslib_BssOrder(void **out) {
     out[0] = &cri_verstr_ptr;
 }

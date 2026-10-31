@@ -36,16 +36,17 @@ MPVHDEC_MCFUNC mc_forward_func[2][5];
 static MPVHDEC_MCFUNC mc_intra_func[2][2][5];
 static MPVHDEC_SKIPFUNC skip_func[2][5];
 
-/* Matching workaround: order-only stand-in for a function the linker stripped from the game; its
- * body is unknown. MWCC lays out .bss by first reference, so this never-called function refers to
- * the tables in storage order before mpvhdec_DecPscSj does. Storing the addresses keeps those
- * references from being optimized away. Revisit when the stripped function's body is known. */
+/* Matching workaround: stand-in for a function the linker stripped from the game. The body is not
+ * the original's. It refers to the tables mc_bidirect_func, mc_backward_func, mc_forward_func and
+ * mc_intra_func in storage order before mpvhdec_DecPscSj does; storing the addresses keeps the
+ * references. Without it the .bss objects land in the first-reference order of the surviving
+ * functions and the code that pools their addresses changes (measured by compiling without it).
+ * Revisit when the stripped code is known. */
 static void mpvhdec_BssOrder(void **out) {
     out[0] = &mc_bidirect_func;
     out[1] = &mc_backward_func;
     out[2] = &mc_forward_func;
     out[3] = &mc_intra_func;
-    out[4] = &skip_func;
 }
 
 /* Byte position of the first bit not yet read after `nbit` bits of the window (rounded up to a
