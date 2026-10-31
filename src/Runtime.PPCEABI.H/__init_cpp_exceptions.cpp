@@ -2,11 +2,7 @@
  * tables at startup and installs the init/fini entries in .ctors/.dtors. */
 #include "NMWException.h"
 
-struct __eti_init_info;
-
 extern "C" {
-extern __eti_init_info _eti_init_info[];
-
 static int fragmentID = -2;
 
 void __fini_cpp_exceptions(void) {
