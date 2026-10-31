@@ -2,6 +2,22 @@
 #define STD_NEW_H_
 
 #include <stdio>
+#include <exception>
+
+namespace std {
+
+/* The exception for a failed allocation. The constructor and destructor are inline, so a unit
+ * that reports one emits its own weak copies of them. what() is declared out of line here; an
+ * inline body would add the vtable, what() and its string to every unit that reports a
+ * bad_alloc. */
+class bad_alloc : public exception {
+  public:
+    bad_alloc() {}
+    virtual ~bad_alloc() {}
+    virtual const char *what() const;
+};
+
+} // namespace std
 
 inline void* operator new(size_t, void *ptr) { return ptr; }
 inline void* operator new[](size_t, void* ptr) { return ptr; }

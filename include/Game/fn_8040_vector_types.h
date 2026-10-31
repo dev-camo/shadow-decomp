@@ -83,10 +83,14 @@ CHECK_SIZEOF(Fn8040Matrix34, 0x30);
 
 /* Two points, a line segment from start to end (behaviour inferred from its constructor,
  * fn_80020A20, which copies both, and from the closest-point code in fn_8040F364.cpp; fn_8026DBB8
- * constructs one and passes it to fn_8040FC3C). */
+ * constructs one and passes it to fn_8040FC3C). The default constructor leaves both points as they
+ * are and the assignment copies them one after the other; both are called out of line (their
+ * copies at 0x80029DA4 and 0x8002CCF0), as the weapon stick does for its array of segments. */
 typedef struct UnkSegment_80020A20 {
 #ifdef __cplusplus
+    UnkSegment_80020A20();
     UnkSegment_80020A20(const Fn8040Vector3 &start, const Fn8040Vector3 &end);
+    UnkSegment_80020A20 &operator=(const UnkSegment_80020A20 &other);
 #endif
     /* 0x00 */ Fn8040Vector3 start;
     /* 0x0C */ Fn8040Vector3 end;
@@ -129,8 +133,14 @@ float fn_8040CF90(const Fn8040Vector3 *left, const Fn8040Vector3 *right);
 void fn_8040CFB8(Fn8040Vector3 *result, const Fn8040Vector3 *left, const Fn8040Vector3 *right);
 /* destination = a - b (behaviour inferred). */
 void fn_8040CD74(Fn8040Vector3 *destination, const Fn8040Vector3 *a, const Fn8040Vector3 *b);
+/* vector *= scale (behaviour inferred). */
+void fn_8040CE38(Fn8040Vector3 *vector, float scale);
+/* Sets all three components to the 3D clear value lbl_805FAD80 (behaviour inferred). */
+void fn_8040CE60(Fn8040Vector3 *vector);
 /* result += value (behaviour inferred). */
 void fn_8040CFF8(Fn8040Vector3 *result, const Fn8040Vector3 *value);
+/* The length of a - b (behaviour inferred). */
+float fn_8040D1B4(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 void fn_800091D0(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
 void fn_800091EC(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
 void fn_80008E1C(Fn8040Vector3 *vector, float x, float y, float z);

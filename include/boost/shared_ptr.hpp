@@ -1,7 +1,11 @@
 #ifndef BOOST_SHARED_PTR_HPP
 #define BOOST_SHARED_PTR_HPP
+#include "boost/checked_delete.hpp"
 #include "layout_check.h"
 #include <exception>
+#include <new>
+#include <typeinfo>
+#include <utility>
 
 /* The boost smart pointers the game uses (its RTTI names boost::detail::sp_counted_base and
  * boost::checked_deleter<...>), written in the style of boost 1.32 with the single-threaded
@@ -10,10 +14,6 @@
  * smart pointer correct. Their bodies are visible because the game's inlining depends on them: a
  * function whose body calls one of these inline members is itself never inlined (see
  * cflags_game_cpp in configure.py). */
-namespace std {
-class type_info;
-}
-
 namespace boost {
 template <class T> class weak_ptr;
 
@@ -90,10 +90,44 @@ class sp_counted_base {
 };
 CHECK_SIZEOF(boost::detail::sp_counted_base, 0xC);
 
+/* The control block for an object owned through a pointer of type P and released by a deleter of
+ * type D (the game's: boost::checked_deleter<...>). */
+template <class P, class D> class sp_counted_base_impl : public sp_counted_base {
+  public:
+    sp_counted_base_impl(P p, D d) : ptr(p), del(d) {}
+
+    virtual void dispose() {
+        del(ptr);
+    }
+
+    virtual void *get_deleter(const std::type_info &ti) {
+        return ti == typeid(D) ? &del : 0;
+    }
+
+  private:
+    sp_counted_base_impl(const sp_counted_base_impl &);
+    sp_counted_base_impl &operator=(const sp_counted_base_impl &);
+
+    /* 0xC */ P ptr;
+    /* 0x10 */ D del;
+};
+
 /* The shared reference held by a shared_ptr: copying retains it and destruction releases it. */
 class shared_count {
   public:
     shared_count() : pi_(0) {}
+
+    /* The first reference to the object p, released with d. The game is built without exceptions,
+     * so a failed allocation of the control block releases the object and reports a bad_alloc
+     * through throw_exception, as boost does under BOOST_NO_EXCEPTIONS. */
+    template <class P, class D> shared_count(P p, D d) : pi_(0) {
+        pi_ = new sp_counted_base_impl<P, D>(p, d);
+
+        if (pi_ == 0) {
+            d(p);
+            boost::throw_exception(std::bad_alloc());
+        }
+    }
 
     /* Takes a shared reference from a weak one; defined after weak_count. */
     shared_count(const weak_count &r);
@@ -125,6 +159,13 @@ class shared_count {
         return *this;
     }
 
+    void swap(shared_count &r) {
+        sp_counted_base *tmp = r.pi_;
+
+        r.pi_ = pi_;
+        pi_ = tmp;
+    }
+
     sp_counted_base *pi_;
 };
 CHECK_SIZEOF(boost::detail::shared_count, 0x4);
@@ -132,13 +173,24 @@ CHECK_SIZEOF(boost::detail::shared_count, 0x4);
 /* Selects the shared_ptr constructor that casts the stored pointer with static_cast. */
 struct static_cast_tag {};
 
+/* boost's hook for enable_shared_from_this: the overload for every other type does nothing. It is
+ * variadic, so the compiler never expands it in place. */
+inline void sp_enable_shared_from_this(const shared_count &, ...) {}
+
 } // namespace detail
 
 /* The copy constructor, assignment and destructor are the compiler-generated ones, which copy,
  * assign and destroy pn, as in boost. */
 template <class T> class shared_ptr {
   public:
+    typedef shared_ptr<T> this_type;
+
     shared_ptr() : px(0), pn() {}
+
+    /* Takes ownership of p, to be released with delete. */
+    template <class Y> explicit shared_ptr(Y *p) : px(p), pn(p, checked_deleter<Y>()) {
+        detail::sp_enable_shared_from_this(pn, p, p);
+    }
 
     /* A shared pointer to the object a weak pointer refers to. */
     template <class Y> explicit shared_ptr(const weak_ptr<Y> &r) : pn(r.pn) {
@@ -148,6 +200,16 @@ template <class T> class shared_ptr {
     template <class Y>
     shared_ptr(const shared_ptr<Y> &r, detail::static_cast_tag)
         : px(static_cast<T *>(r.px)), pn(r.pn) {}
+
+    /* Releases the object; the pointer becomes empty. */
+    void reset() {
+        this_type().swap(*this);
+    }
+
+    void swap(shared_ptr<T> &other) {
+        std::swap(px, other.px);
+        pn.swap(other.pn);
+    }
 
     T *operator->() const {
         return px;
