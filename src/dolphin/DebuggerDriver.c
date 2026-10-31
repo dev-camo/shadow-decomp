@@ -23,7 +23,7 @@ static u8 EXIInputFlag;
 static u8 SendCount = 0x80;
 
 #define IS_TRUE(x) ((x) != FALSE)
-#define IS_FALSE(x) !IS_TRUE(x)
+#define IS_FALSE(x) (!IS_TRUE(x))
 #define ROUND_UP(x, align) (((x) + (align) - 1) & (-(align)))
 
 static BOOL DBGEXIImm(void *buffer, s32 bytecounter, u32 write);
@@ -33,11 +33,9 @@ static BOOL DBGWrite(u32 count, void *buffer, s32 param3);
 static BOOL DBGReadStatus(u32 *p1);
 static void MWCallback(u32 a, OSContext *b);
 static void DBGHandler(s16 a, OSContext *b);
-void DBClose(void);
-void DBOpen(void);
 
-inline void DBGEXIInit() {
-    __OSMaskInterrupts(0x18000);
+inline static void DBGEXIInit(void) {
+    __OSMaskInterrupts(OS_INTERRUPTMASK_EXI_2);
     __EXIRegs[10] = 0;
 }
 
@@ -49,12 +47,12 @@ inline static u32 DBGEXISelect(u32 v) {
     return TRUE;
 }
 
-inline BOOL DBGEXIDeselect(void) {
+inline static BOOL DBGEXIDeselect(void) {
     __EXIRegs[10] &= 0x405;
     return TRUE;
 }
 
-inline static BOOL DBGEXISync() {
+inline static BOOL DBGEXISync(void) {
     while (__EXIRegs[13] & 1)
         ;
 
@@ -174,24 +172,21 @@ u32 DBQueryData(void) {
 }
 
 void DBInitInterrupts(void) {
-    __OSMaskInterrupts(0x18000);
-    __OSMaskInterrupts(0x40);
+    __OSMaskInterrupts(OS_INTERRUPTMASK_EXI_2);
+    __OSMaskInterrupts(OS_INTERRUPTMASK_PI_DEBUG);
     DBGCallback = &MWCallback;
-    __OSSetInterruptHandler(0x19, DBGHandler);
-    __OSUnmaskInterrupts(0x40);
+    __OSSetInterruptHandler(__OS_INTERRUPT_PI_DEBUG, DBGHandler);
+    __OSUnmaskInterrupts(OS_INTERRUPTMASK_PI_DEBUG);
 }
 
-void DBInitComm(u8 **a, MTRCallbackType b) {
+void DBInitComm(u8 **inputFlagPtr, MTRCallbackType mtrCallback) {
     BOOL interrupts = OSDisableInterrupts();
-    {
-        pEXIInputFlag = &EXIInputFlag;
 
-        *a = pEXIInputFlag;
+    pEXIInputFlag = &EXIInputFlag;
+    *inputFlagPtr = pEXIInputFlag;
+    MTRCallback = mtrCallback;
+    DBGEXIInit();
 
-        MTRCallback = b;
-
-        DBGEXIInit();
-    }
     OSRestoreInterrupts(interrupts);
 }
 

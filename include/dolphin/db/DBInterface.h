@@ -19,14 +19,22 @@ CHECK_SIZEOF(DBInterface, 0x10);
 extern DBInterface *__DBInterface;
 
 void DBInit(void);
-/* Stores the address of the driver's input-pending flag in *inputFlagPtr and installs mtrCallback
- * (called with an int when input arrives); implemented in DebuggerDriver.c. */
-void DBInitComm(u8 **inputFlagPtr, void (*mtrCallback)(int));
 void __DBExceptionDestination(void);
 void __DBExceptionDestinationAux(void);
 BOOL __DBIsExceptionMarked(__OSException exception);
 void __DBMarkException(u8 exception, int value);
 void __DBSetPresent(u32 value);
+
+/* DebuggerDriver.c */
+void DBOpen(void);
+void DBClose(void);
+BOOL DBWrite(void *src, u32 size);
+BOOL DBRead(u32 *buffer, s32 count);
+u32 DBQueryData(void);
+void DBInitInterrupts(void);
+/* Stores the address of the driver's input-pending flag in *inputFlagPtr and installs mtrCallback
+ * (called with an int when input arrives). */
+void DBInitComm(u8 **inputFlagPtr, void (*mtrCallback)(int));
 
 #ifdef __cplusplus
 }
