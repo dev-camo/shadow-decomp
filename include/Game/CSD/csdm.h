@@ -10,9 +10,10 @@
 /* The classes of the csdm* files, the library's object layer over the records of MotionPalette.h.
  * The original headers' names are unknown except csdmProject.h; this header stands in for them.
  * The game's code carries no run-time type information for these classes, so every class and
- * member name here is inferred from what the code does. Virtual functions are declared and
- * defined elsewhere (csdmScene.cpp holds the vtables and the destructors of these classes);
- * members without a supported meaning keep their offset. */
+ * member name here is inferred from what the code does. The out-of-line virtual functions are
+ * defined in csdmScene.cpp, except CMotionPattern's Copy, which is in csdmMotionPattern.cpp with
+ * the class's vtable. CMotionPattern's destructor is inline; the game's copy of it is the one in
+ * csdmScene.cpp. Members without a supported meaning keep their offset. */
 namespace Chao {
 namespace CSD {
 
@@ -80,13 +81,35 @@ class CMotionPatternRef {
 };
 CHECK_SIZEOF(Chao::CSD::CMotionPatternRef, 0xC);
 
+/* The node an element belongs to (class name inferred from csdmNode.cpp). Only the members that
+ * CMotionPattern reads are known. */
+class CNode {
+  public:
+    /* 0x00 */ u8 field_0x0[0x8];
+    /* 0x08 */ const ElementData *m_element;
+    /* 0x0C */ u8 field_0xC[0x28];
+    /* 0x34 */ CSceneDataRef *m_scene;
+};
+CHECK_OFFSETOF(Chao::CSD::CNode, m_element, 0x8);
+CHECK_OFFSETOF(Chao::CSD::CNode, m_scene, 0x34);
+
+/* The defaults a node's element has for a channel, read when neither an override nor a computed
+ * value exists (placeholder name: the function is in csdmNode.cpp). */
+void fn_8036ADC0(ChannelWord *value, const CNode *node, int channel);
+
+/* Makes a Vector2 (placeholder name: the function is in the unit before csdAccess.cpp). */
+Vector2 fn_8035BA0C(f32 x, f32 y);
+
 /* The entry of an element with the accessors that override its animated values (class name
- * inferred from csdmMotionPattern.cpp). The CBase base is inferred: the game's deleting
- * destructor of CMotionPattern (0x80365C6C in the USA release) frees the object through the
- * current allocator's FreeObject, while that of CMotionPatternRef uses the global operator
- * delete. */
+ * inferred from csdmMotionPattern.cpp). An override replaces the channel's computed value until
+ * it is cleared: the entry's overrides block holds the values and its mask says which exist.
+ * The CBase base is inferred: the game's deleting destructor of CMotionPattern (0x80365C6C in
+ * the USA release) frees the object through the current allocator's FreeObject, while that of
+ * CMotionPatternRef uses the global operator delete. */
 class CMotionPattern : public CMotionPatternRef, public CBase {
   public:
+    /* A new entry, reset to the state of a newly created element (aspect is the scene's). */
+    CMotionPattern(f32 aspect);
     /* Wraps the entry of an element of a palette; ref counts the palette's block. */
     CMotionPattern(MotionPaletteEntry *entry, const RCPtr<unsigned char> &ref);
     virtual ~CMotionPattern() {}
@@ -95,8 +118,37 @@ class CMotionPattern : public CMotionPatternRef, public CBase {
     /* Takes the entry and the reference to its block (name inferred). */
     void Attach(MotionPaletteEntry *entry, const RCPtr<unsigned char> &ref);
 
-    /* 0x0C */ void *field_0xC;
-    /* 0x10 */ f32 field_0x10;
+    /* Brings an entry without quads up to date: its hidden flag, tint and matrix, for the
+     * screen as it is now (name inferred). */
+    void UpdateTransform();
+
+    /* The accessors (names inferred). A getter returns the override, the entry's computed value
+     * or the element's default, in that order. */
+    void SetHidden(s32 hidden);
+    void ClearHidden();
+    s32 GetHidden();
+    void SetTranslation(f32 x, f32 y);
+    void SetTranslateX(f32 x);
+    void SetTranslateY(f32 y);
+    Vector2 GetTranslation();
+    void SetRotation(f32 rotation);
+    f32 GetRotation();
+    void SetScaleX(f32 scaleX);
+    void SetScaleY(f32 scaleY);
+    Vector2 GetScale();
+    void SetPattern(f32 pattern);
+    f32 GetPattern();
+    void SetTint(const u32 &tint);
+    void ClearTint();
+    u32 GetTint();
+    void SetColor(int corner, const u32 &color);
+    void ClearColor(int corner);
+    u32 GetColor(int corner);
+    void SetValue(int index, s32 value);
+    s32 GetValue(int index);
+
+    /* 0x0C */ CNode *m_node;
+    /* 0x10 */ f32 m_aspect;
     /* 0x14 */ RCPtr<MatrixValue> m_pool;
 };
 CHECK_SIZEOF(Chao::CSD::CMotionPattern, 0x18);

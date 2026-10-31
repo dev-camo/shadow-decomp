@@ -69,7 +69,7 @@ template <class T> class RCPtr : public CBase {
 
     /* Replace the held object by object, released with Free or by a function (names inferred).
      * Unlike Reset(T *), they return nothing. */
-    void Reset(T *object, const FreeRelease &release) {
+    void Reset(T *object, FreeRelease release) {
         Assign(object, release);
     }
     void Reset(T *object, const FunctionRelease &release) {
@@ -142,6 +142,17 @@ template <class T> class RCPtr : public CBase {
         } m_custom;
         /* 0x10 */ int m_eDealloctor;
     };
+
+    /* The held object. Dereferencing a pointer that holds none reports an error and never
+     * returns (the text is the library's; name inferred). */
+    T &operator*() const {
+        if (field_0x0 != NULL) {
+            return *field_0x0->m_pObject;
+        }
+        for (;;) {
+            PrintError("CSD Error:Reference to NULL\n");
+        }
+    }
 
   private:
     /* Replaces the held object by object, to be released as release selects (name inferred).
