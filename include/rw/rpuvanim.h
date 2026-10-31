@@ -83,8 +83,6 @@ typedef struct RpUVAnimMaterialExtension {
 } RpUVAnimMaterialExtension;
 CHECK_SIZEOF(RpUVAnimMaterialExtension, 0x28);
 
-#define rwPI 3.1415926535f
-
 extern RtDictSchema lbl_8056D748;           /* the UV animation dictionary schema */
 extern RtAnimInterpolatorInfo lbl_8056D77C; /* the linear keyframe scheme */
 extern RtAnimInterpolatorInfo lbl_8056D7AC; /* the parametric keyframe scheme */
@@ -96,7 +94,7 @@ extern const RwV3d lbl_8051BD40; /* (-0.5, -0.5, 0) */
 extern const RwV3d lbl_8051BD4C; /* (0.5, 0.5, 0) */
 
 #define RPUVANIMMATERIALGETEXT(material)                                                           \
-    ((RpUVAnimMaterialExtension *)((RwUInt8 *)(material) + lbl_805F149C))
+    RWPLUGINOFFSET(RpUVAnimMaterialExtension, material, lbl_805F149C)
 
 /* keyframes common to both schemes: the stream callbacks (inferred) */
 RtAnimAnimation *fn_804530CC(RwStream *stream, RtAnimAnimation *animation);
@@ -142,8 +140,14 @@ static inline void UVAnimLinearKeyFrameApply(RwMatrix *matrix, const RpUVAnimInt
 }
 
 /* Sets a matrix to a parametric keyframe's transform: the scales, skew and translation, then the
- * rotation about the texture's centre. A macro, so that the axis initializer is placed with the
- * function it expands in. */
+ * rotation about the texture's centre.
+ *
+ * Matching workaround: a macro instead of a static inline function like
+ * UVAnimLinearKeyFrameApply. As a function the axis constant is created ahead of the other
+ * literals of fn_804535C8 (@19 becomes @9 and the following constants shift by one),
+ * fn_80453980 changes too, and fn_80453018, which does not use the macro, gains the unused
+ * axis initializer in .rodata and renumbers its literals. Revisit if the original's form of the
+ * keyframe apply is found. */
 #define UVANIMPARAMKEYFRAMEAPPLY(matrix, frame)                                                    \
     do {                                                                                           \
         RwV3d axis_ = {0.0f, 0.0f, 1.0f};                                                          \
@@ -160,7 +164,7 @@ static inline void UVAnimLinearKeyFrameApply(RwMatrix *matrix, const RpUVAnimInt
         (matrix)->pos.x = (frame)->data.param.x;                                                   \
         (matrix)->pos.y = (frame)->data.param.y;                                                   \
         (matrix)->pos.z = 0.0f;                                                                    \
-        fn_8047EBA0(matrix);                                                                       \
+        fn_8047EBA0((matrix));                                                                     \
         fn_8047F59C((matrix), &lbl_8051BD40, rwCOMBINEPOSTCONCAT);                                 \
         fn_8047EFC8((matrix), &axis_, 180.0f * ((frame)->data.param.theta / rwPI),                 \
                     rwCOMBINEPOSTCONCAT);                                                          \

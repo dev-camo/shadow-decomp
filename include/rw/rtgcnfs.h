@@ -13,11 +13,15 @@
 extern "C" {
 #endif
 
-/* A 64-bit file offset as an 8-byte aggregate. The read reports the file position to OSReport in
- * this form: MWCC copies such an argument to memory and passes its address, as the original does.
- * Whether the file's position member itself has this type is not established. */
+/* A 64-bit file offset as an 8-byte aggregate.
+ *
+ * Matching workaround: the read reports the file position to OSReport in this form, which MWCC
+ * copies to memory and passes by address. Passing the RwInt64 position directly gives fn_8047AC10
+ * a 48-byte frame where the original's is 64 bytes (0x40), so the aggregate is kept. The original
+ * format string prints the argument with %d. Whether the file's position member itself has this
+ * type is not established; revisit when the position member's declaration is established. */
 typedef struct RtGCNFileOffset {
-    RwInt64 value;
+    /* 0x0 */ RwInt64 value;
 } RtGCNFileOffset;
 CHECK_SIZEOF(RtGCNFileOffset, 0x8);
 

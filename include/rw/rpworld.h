@@ -6,7 +6,9 @@
 #include <stddef.h>
 #include "layout_check.h"
 
-/* RenderWare world objects; only the members used by recovered code are mapped. */
+/* RenderWare world objects; only the members used by recovered code are mapped. Type and member
+ * names follow RenderWare's conventions where the layout and the code correspond and are inferred
+ * from the code that uses them otherwise. */
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,9 +52,9 @@ typedef struct RpGeometry RpGeometry;
 #define rpGEOMETRYNATIVEINSTANCE 0x02000000
 
 typedef struct RwSurfaceProperties {
-    RwReal ambient;
-    RwReal specular;
-    RwReal diffuse;
+    /* 0x0 */ RwReal ambient;
+    /* 0x4 */ RwReal specular;
+    /* 0x8 */ RwReal diffuse;
 } RwSurfaceProperties;
 CHECK_SIZEOF(RwSurfaceProperties, 0xC);
 
@@ -180,8 +182,6 @@ CHECK_SIZEOF(RpInterpolator, 0x14);
 /* the private flag of a frame-attached object whose world bounding sphere is out of date */
 #define rpATOMICSPHEREDIRTY 0x1
 
-/* the sync callback of an object attached to a frame */
-
 /* An atomic (0x70 bytes) */
 struct RpAtomic {
     /* 0x00 */ RwObject object; /* the parent is the atomic's frame */
@@ -270,7 +270,7 @@ typedef struct RpWorldSector {
 } RpWorldSector;
 CHECK_SIZEOF(RpWorldSector, 0x88);
 
-#define rpWORLDSECTORTYPE -1 /* the RpSector type of a world sector */
+#define rpWORLDSECTORTYPE (-1) /* the RpSector type of a world sector */
 
 #define rpWORLD 7 /* RwObject type of a world */
 
@@ -515,12 +515,11 @@ RpWorld *fn_804622FC(RpWorld *world, RpClump *clump);   /* adds a clump */
 RpWorld *fn_804623EC(RpWorld *world, RpClump *clump);   /* removes a clump */
 RpWorld *fn_80462578(RpWorld *world, RpLight *light);   /* adds a light */
 RpWorld *fn_80462618(RpWorld *world, RpLight *light);   /* removes a light */
-RwBool fn_80462884(void);                               /* (inferred) */
-RpWorld *fn_8045FEA0(RpWorldSector *sector);            /* the world a sector belongs to */
+/* attaches the pipeline plugin: nothing to attach, returns TRUE */
+RwBool fn_80462884(void);
+RpWorld *fn_8045FEA0(RpWorldSector *sector); /* the world a sector belongs to */
 /* collects the world sectors in a camera's view frustum */
 RpWorld *fn_80461658(RpWorld *world, RwCamera *camera);
-/* clumps */
-
 #define rpLIGHT 3 /* RwObject type of a light */
 
 /* RpLightType: a light's object subtype */
@@ -615,7 +614,6 @@ typedef RpMaterial *(*RpMaterialCallBack)(RpMaterial *material, void *data);
 RpGeometry *fn_80459464(RwInt32 numVertices, RwInt32 numTriangles, RwUInt32 format); /* create */
 RwInt32 fn_80458DB0(RpGeometry *geometry, RwInt32 numMorphTargets); /* the first new one, or -1 */
 RpGeometry *fn_804590E8(RpGeometry *geometry, RpMaterialCallBack callBack, void *data);
-/* geometries (inferred from their use) */
 RpGeometry *fn_80458D24(RwReal radius);   /* an empty geometry with a bounding sphere of radius */
 RwBool fn_8045985C(RpGeometry *geometry); /* destroy */
 /* sets the material of a triangle, adding it to the geometry's material list */
@@ -853,9 +851,13 @@ CHECK_SIZEOF(struct RpGameCubeInstanceData, 0x14);
 /* RpGameCubeInstanceData flags: the instanced prelit colours have alpha (inferred) */
 #define rpGAMECUBEINSTANCEPRELITALPHA 0x1
 
-/* The display list records of the meshes, which follow the instance's vertex descriptors. Written
- * as the second descriptor's address plus the remaining descriptors, which is how the original
- * computes it. */
+/* The display list records of the meshes, which follow the instance's vertex descriptors.
+ *
+ * Matching workaround: written as the second descriptor's address plus the remaining descriptors.
+ * The natural form &vertexDescriptors[numVertexDescriptors] changes the code of all five
+ * consumers (fn_8044CDC4, fn_80451A6C, fn_80464A94, fn_804A2C90, fn_804A6CDC). It is right only
+ * while RpGameCubeVertexDescriptor and RpGameCubeDisplayList have the same size (both 8 bytes,
+ * checked above). Revisit when the instance record is mapped beyond its first descriptor. */
 #define RPGAMECUBEINSTANCEDISPLAYLISTS(instance)                                                   \
     ((RpGameCubeDisplayList *)&(instance)->vertexDescriptors[1] +                                  \
      ((instance)->numVertexDescriptors - 1))
@@ -946,8 +948,8 @@ RxPipeline *fn_80463D28(RwUInt32 pluginID, RwUInt32 pluginData,
 RpWorldSector *fn_80463DF4(RpWorldSector *sector, RpGameCubeRenderMesh *renderMesh); /* lighting */
 RpWorldSector *fn_80463F10(RpWorldSector *sector, RpGameCubeRenderMesh *renderMesh); /* instance */
 RxNodeDefinition *fn_804641C0(void); /* the world sector all-in-one node definition */
-/* create the instanced data of a world sector for its owner (inferred) */
-/* the same for a world sector */
+/* building the instanced data of a world sector (inferred): its built streams and mesh indices, its
+ * vertex descriptors, and the resource entry that holds it for its owner */
 RwBool fn_8046C4D0(RpWorld *world, RpWorldSector *sector, RpGameCubeBuiltStream **builtStreams,
                    RxVertexIndex ****meshIndexLists);
 RpGameCubeVertexDescBuilder *fn_8046C94C(RpWorld *world, RpGameCubeBuiltStream *counts);
@@ -976,9 +978,9 @@ void fn_804641CC(RwUInt32 lightFlags, RpGameCubeRenderMesh *renderMesh);
 void fn_804643E8(RpLight *light, RpGameCubeRenderMesh *renderMesh); /* adds a light */
 
 /* GameCube instanced data (inferred from their use) */
-/* creates the instanced data of a geometry for its owner, the atomic or the geometry itself */
-/* building the instanced data of a geometry (inferred): its built streams and mesh indices, and
- * its vertex descriptors indexed into the built streams or by vertex */
+/* building the instanced data of a geometry (inferred): its built streams and mesh indices, its
+ * vertex descriptors indexed into the built streams or by vertex, and the resource entry that holds
+ * it for its owner, the atomic or the geometry itself */
 RwBool fn_8046B110(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
                    RxVertexIndex ****meshIndexLists);
 RpGameCubeVertexDescBuilder *fn_8046B554(RpGeometry *geometry, RpGameCubeBuiltStream *counts);

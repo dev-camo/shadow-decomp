@@ -41,7 +41,7 @@ typedef struct RpDMorphTarget {
     /* 0x00 */ RpGeometry *geometry;
     /* 0x04 */ RwChar *name;
     /* 0x08 */ RwUInt32 flags;     /* rpDMORPHTARGET* */
-    /* 0x0C */ RwUInt32 field_0xC; /* passed to fn_8045916C when the target is applied */
+    /* 0x0C */ RwUInt32 field_0xC; /* the geometry lock mode when the target is applied */
     /* 0x10 */ rpDMorphRLE rle;
     /* 0x20 */ RwV3d *positions;
     /* 0x24 */ RwV3d *normals;

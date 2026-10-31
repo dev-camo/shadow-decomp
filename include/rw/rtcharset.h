@@ -47,7 +47,7 @@ RwInt32 fn_8047832C(const RwChar *string, RwUInt32 count, RtCharset *charSet, Rw
 RtCharset *fn_80478700(RtCharset *charSet, const RwChar *string, RwInt32 x,
                        RwInt32 y); /* prints a string */
 RtCharset *fn_80478AC8(RtCharset *charSet, const RwChar *string, RwInt32 x,
-                       RwInt32 y); /* prints a string */
+                       RwInt32 y); /* forwards to fn_80478700 */
 const RwUInt8 *fn_80478AE8(RtCharsetDesc *desc,
                            RwInt32 *rasterSize); /* the font, its metrics and raster size */
 RtCharset *fn_80478B5C(RtCharset *charSet, RtCharsetDesc *desc); /* gets the metrics */

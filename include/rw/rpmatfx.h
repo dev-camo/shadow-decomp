@@ -372,8 +372,8 @@ typedef struct MTEffectGameCubeIndStage {
 } MTEffectGameCubeIndStage;
 CHECK_SIZEOF(MTEffectGameCubeIndStage, 0x14);
 
-/* The GameCube data of a multi-texture effect (name inferred): the GX state it renders with. The arrays follow the
- * effect, which a GameCube effect is allocated with. */
+/* The GameCube data of a multi-texture effect (name inferred): the GX state it renders with. The
+ * arrays follow the effect, which a GameCube effect is allocated with. */
 typedef struct MTEffectGameCube {
     /* 0x00 */ RwUInt32 flags;     /* rpMTGCNEFFECT* */
     /* 0x04 */ RwUInt8 maxTexGens; /* the arrays' sizes */

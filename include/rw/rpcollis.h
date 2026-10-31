@@ -21,9 +21,10 @@ extern "C" {
 /* One side of a split (8 bytes): either another split or a range of triangles (a leaf), with the
  * extent of that side along the split axis. */
 typedef struct RpCollTreeBranch {
-    /* 0x0 */ RwUInt8 field_0x0; /* bits 2-3 of the left branch's: the split axis (byte offset) */
-    /* 0x1 */ RwUInt8 type;      /* 0xFF: index is a split, else the leaf's triangle count */
-    /* 0x2 */ RwUInt16 index;    /* the split, or the leaf's first triangle */
+    /* in the left branch, bits 2-3 hold the split axis as a byte offset into an RwV3d */
+    /* 0x0 */ RwUInt8 field_0x0;
+    /* 0x1 */ RwUInt8 type;   /* 0xFF: index is a split, else the leaf's triangle count */
+    /* 0x2 */ RwUInt16 index; /* the split, or the leaf's first triangle */
     /* 0x4 */ RwReal value;
 } RpCollTreeBranch;
 CHECK_SIZEOF(RpCollTreeBranch, 0x8);

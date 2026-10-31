@@ -16,8 +16,8 @@ extern "C" {
 typedef struct RtAnimAnimation RtAnimAnimation;
 typedef struct RtAnimInterpolator RtAnimInterpolator;
 
-/* The callbacks of a keyframe scheme. The toolkit is generic over schemes, so the keyframe callbacks
- * take untyped frames; each scheme's functions use their own frame types. */
+/* The callbacks of a keyframe scheme. The toolkit is generic over schemes, so the keyframe
+ * callbacks take untyped frames; each scheme's functions use their own frame types. */
 typedef void (*RtAnimKeyFrameApplyCallBack)(void *result, void *voidIFrame);
 typedef void (*RtAnimKeyFrameBlendCallBack)(void *voidOut, void *voidIn1, void *voidIn2,
                                             RwReal alpha);
