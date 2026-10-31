@@ -1424,10 +1424,12 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # Deferred inlining: fn_803FE96C expands fn_803FEA5C, which is emitted after it.
             Object(
                 Matching,
                 "CRI/sfd_tmr.c",
                 extra_cflags=[
+                    "-inline auto,deferred",
                     "-sdata 0",
                     "-sdata2 0",
                     "-str readonly",

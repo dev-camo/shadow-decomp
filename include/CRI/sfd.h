@@ -878,6 +878,8 @@ typedef struct {
 CHECK_SIZEOF(SFD_INIT_PRM, 0x8);
 
 extern SFLIB_WORK SFLIB_libwork;
+/* the handle last validated by SFLIB_CheckHn (sfd_lib.c) */
+extern SFD sfd_hn_last;
 
 Sint32 SFLIB_SetErr(SFD sfd, Sint32 code);
 Sint32 SFLIB_CheckHn(SFD sfd);
@@ -988,6 +990,10 @@ Sint32 SFD_SetSeekPos(SFD sfd, Sint32 pos);
 /* sfd_tmr.c */
 void SFTMR_InitTsum(SFTMR_TSUM *ts);
 void SFTMR_AddTsum(SFTMR_TSUM *ts, Sint64 t);
+/* Sofdec profiling clock (sfd_tmr.c): the first returns the clock units per second, the second the
+ * current clock value (the time base, the last handle's external clock, or the vsync count) */
+Sint64 fn_803FE96C(void);
+Sint64 fn_803FEA5C(void);
 
 /* sfd_pl2.c */
 Sint32 SFPL2_Standby(SFD sfd);

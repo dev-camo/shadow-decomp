@@ -1193,7 +1193,8 @@ CRI/sfd_vom.c:
 	.rodata     start:0x80519AD8 end:0x80519B10
 
 CRI/sfd_tmr.c:
-	.text       start:0x803FF8F8 end:0x803FF9BC
+	.text       start:0x803FF8F8 end:0x803FFB80
+	.bss        start:0x805DE770 end:0x805DE778
 
 CRI/sfd_tst.c:
 	.text       start:0x803FFB80 end:0x80400898

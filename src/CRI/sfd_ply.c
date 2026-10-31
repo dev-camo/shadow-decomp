@@ -39,11 +39,6 @@ CHECK_SIZEOF(SFPLY_PLYINF, 0xA8);
 #define SFPLY_IS_PLAYING(sfd)                                                                      \
     ((sfd)->stat == SFD_STAT_PLAYING && (sfd)->pause_sw != 1 && PLYINF(sfd)->bpa != 1)
 
-/* the player's 64-bit clock */
-extern Sint64 fn_803FEA5C(void);
-/* clock units per second for fn_803FEA5C (inferred) */
-extern Sint64 fn_803FE96C(void);
-
 void (*SFPLY_recordgetfrm)(SFD sfd, void *frm);
 Sint32 sfply_last_hnctrl_wksiz;
 SFPLY_PTSINFO_FN SFPLY_SetPtsInfo;

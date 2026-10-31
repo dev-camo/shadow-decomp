@@ -27,7 +27,8 @@ void SFLIB_LockCs(Sint32 *cs) {
     SVM_Lock();
 }
 
-/* -1 for a 0 or destroyed handle (stat 0); records the handle in sfd_hn_last for debugging. */
+/* -1 for a 0 or destroyed handle (stat 0); records the handle in sfd_hn_last (read by the timer
+ * clock, sfd_tmr.c). */
 Sint32 SFLIB_CheckHn(SFD sfd) {
     if (sfd == 0) {
         return -1;
