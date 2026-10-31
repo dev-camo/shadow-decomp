@@ -3,6 +3,7 @@
 
 #include "Game/CharCommand.h"
 #include "Game/fn_8040_vector_types.h"
+#include "boost/weak_ptr.hpp"
 #include <dolphin/types.h>
 #include "layout_check.h"
 
@@ -66,6 +67,25 @@ class LaunchCommand : public PlayerCommand {
     /* 0x14 */ int m_arg0;
 };
 CHECK_SIZEOF(Player::LaunchCommand, 0x18);
+
+/* The command that the Coaster gadget sends to the character it carries. The constructor at
+ * 0x80115B70 passes 0x112 as the command id, stores a copy of target at 0x14, the two vector
+ * pointers at 0x1C and 0x20 and arg3 at 0x24; the meaning of the vectors and numbers is not
+ * known (the Coaster gadget passes its position and the angles of its turned matrix). Passing
+ * target by value is inferred: the constructor only copies it and the caller destroys the
+ * temporary, which a const reference would also produce. */
+class TouchHangCommand : public PlayerCommand {
+  public:
+    TouchHangCommand(boost::weak_ptr<CharInfo> target, const Fn8040Vector3 *position,
+                     const Fn8040Vector3 *angles, int arg3, int arg4);
+    virtual ~TouchHangCommand();
+
+    /* 0x14 */ boost::weak_ptr<CharInfo> m_target;
+    /* 0x1C */ const Fn8040Vector3 *field_0x1C;
+    /* 0x20 */ const Fn8040Vector3 *field_0x20;
+    /* 0x24 */ int field_0x24;
+};
+CHECK_SIZEOF(Player::TouchHangCommand, 0x28);
 
 } // namespace Player
 

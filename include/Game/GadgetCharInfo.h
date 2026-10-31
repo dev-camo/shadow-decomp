@@ -6,13 +6,15 @@
 #include <dolphin/types.h>
 #include "layout_check.h"
 
+class CharCommandUnit;
+
 /* GadgetCharInfo (class name from RTTI, with CharInfo as its only base): the 0x6C-byte character
  * info of a gadget. */
 class GadgetCharInfo : public CharInfo {
   public:
     virtual ~GadgetCharInfo();
 
-    /* 0x64 */ u8 field_0x64[0x6C - 0x64];
+    /* 0x64 */ boost::shared_ptr<CharCommandUnit> m_commandUnit; /* created by fn_8015CF7C */
 };
 CHECK_SIZEOF(GadgetCharInfo, 0x6C);
 
@@ -23,5 +25,8 @@ extern "C" boost::shared_ptr<GadgetCharInfo> fn_8015CB88(int arg0, int arg1, con
  * the GadgetCharInfo constructor and arg1 is stored at 0x5C of the new object, as fn_8015CB88 does
  * with its arg1. */
 extern "C" boost::shared_ptr<GadgetCharInfo> fn_8015CD90(int arg0, int arg1);
+
+/* Creates the command unit at 0x64 when there is none (behaviour inferred). */
+extern "C" void fn_8015CF7C(GadgetCharInfo *info);
 
 #endif

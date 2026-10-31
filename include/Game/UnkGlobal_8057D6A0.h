@@ -5,9 +5,12 @@
 #include "layout_check.h"
 
 /* The 0x150-byte object at 0x8057D6A0 in .bss (placeholder name; the original name and type are
- * unknown). More than 400 functions across the game read it. Only the word at 0xAC is mapped. */
+ * unknown). More than 400 functions across the game read it. Only the words at 0x28 and 0xAC are
+ * mapped. */
 struct UnkGlobal_8057D6A0 {
-    /* 0x00 */ u8 field_0x0[0xAC];
+    /* 0x00 */ u8 field_0x0[0x28];
+    /* 0x28 */ float field_0x28; /* Coaster multiplies it by 540 (meaning unknown) */
+    /* 0x2C */ u8 field_0x2C[0xAC - 0x2C];
     /* ThreatObjHolder compares it with 9 to pick its model table, and FallBuildingHolder's load
      * hook with 12 and 5 to limit the building type. */
     /* 0xAC */ s32 field_0xAC;

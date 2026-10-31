@@ -650,6 +650,19 @@ config.libs = [
                 # has a 32-byte local copy of std::swap (called by the weak boost::function1 swap)
                 # and the sp_counted_base vtable and RTTI, which the original unit does not have.
                 Object(NonMatching, "Game/CircusPole.cpp", cflags=cflags_game_cpp),
+                # 79 of the 85 functions have identical instructions. The preload hook differs in 5
+                # words (the registers of the table pointer and the stage number), SetupPath in 2
+                # (the order of two argument moves), ResetFromOwner in 7 (the original calls the
+                # smart pointer's operator-> out of line for the yaw of the character info), the
+                # camera event handler in 2 (the original tests its argument for null) and
+                # UpdateBody in 14 (exchanged vector stack slots, one argument move scheduled
+                # earlier, the register of the stage pointer); the conversion fn_80131654 has no
+                # function of that name in the object. The original builds the copies of the
+                # follower pointer passed to fn_801CE9F4/fn_801CEA54 with fn_80131654 and destroys
+                # them with fn_80009844, so their parameter is a shared pointer of another, unknown
+                # type, and each copy differs in those two relocation targets. The RTTI and vtable
+                # records differ in layout, and the object has additional weak template instances.
+                Object(NonMatching, "Game/Coaster.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/Cream.cpp", cflags=cflags_game_cpp),
                 # Every function but the ThreatObj constructor is instruction-identical, and so is the
                 # data. Two differences remain: the constructor's two table loads (model table and
