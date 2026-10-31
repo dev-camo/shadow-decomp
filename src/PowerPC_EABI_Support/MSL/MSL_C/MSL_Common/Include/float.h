@@ -13,15 +13,8 @@
 
 #define FP_NAN FP_QNAN
 
-#if __REVOLUTION_SDK__
-#define fpclassify(x)                                                                              \
-    ((sizeof(x) == sizeof(float))    ? __fpclassifyf((float)(x))                                   \
-     : (sizeof(x) == sizeof(double)) ? __fpclassifyd((double)(x))                                  \
-                                     : __fpclassifyl((long double)(x)))
-#else
 #define fpclassify(x)                                                                              \
     ((sizeof(x) == sizeof(float)) ? __fpclassifyf((float)(x)) : __fpclassifyd((double)(x)))
-#endif
 
 #define signbit(x) ((sizeof(x) == sizeof(float)) ? __signbitf(x) : __signbitd(x))
 #define isfinite(x) ((fpclassify(x) > FP_INFINITE))
@@ -30,7 +23,6 @@
 
 #define __signbitf(x) ((int)(__HI(x) & 0x80000000))
 
-// TODO: OK?
 #define __signbitd(x) ((int)(__HI(x) & 0x80000000))
 
 extern int __float_nan[];
@@ -99,13 +91,8 @@ int __fpclassifyl(long double __value);
 #define FLT_MAX_EXP 128
 #define FLT_MAX_10_EXP 38
 
-#if !PLATFORM_GCN
-#define FLT_MAX 3.4028235e38f
-#define FLT_EPSILON 1.1920929e-7f
-#else
 #define FLT_MAX (*(float *)__float_max)
 #define FLT_EPSILON (*(float *)__float_epsilon)
-#endif
 
 #define DBL_MANT_DIG 53
 #define DBL_DIG 15

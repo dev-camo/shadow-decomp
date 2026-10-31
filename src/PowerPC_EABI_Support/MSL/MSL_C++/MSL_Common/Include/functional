@@ -7,7 +7,7 @@ namespace detail {
 
 template <class T1, class T2>
 struct less {
-	bool operator()(const T1& lhs, const T2& rhs) const { return lhs < rhs; }
+    bool operator()(const T1& lhs, const T2& rhs) const { return lhs < rhs; }
 };
 
 }  // namespace detail

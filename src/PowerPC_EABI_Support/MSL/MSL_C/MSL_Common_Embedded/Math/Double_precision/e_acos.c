@@ -75,10 +75,6 @@ double x;
                 return pi + 2.0 * pio2_lo; /* acos(-1)= pi */
         }
 
-#if PLATFORM_SHIELD
-        errno = EDOM;
-#endif
-
         return NAN; /* acos(|x|>1) is NaN */
     }
     if (ix < 0x3fe00000) { /* |x| < 0.5 */

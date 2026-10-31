@@ -23,12 +23,7 @@ int __put_char(int c, FILE *stream) {
 
     if (stream->file_state.io_state == __neutral && (stream->file_mode.io_mode & __write)) {
         if ((stream->file_mode.io_mode & __append)) {
-#if PLATFORM_GCN
-            if (fseek(stream, 0, SEEK_END) != 0)
-#else
-            if (_fseek(stream, 0, SEEK_END) != 0)
-#endif
-            {
+            if (fseek(stream, 0, SEEK_END) != 0) {
                 return 0;
             }
         }
@@ -42,8 +37,7 @@ int __put_char(int c, FILE *stream) {
         ret = -1;
         stream->buffer_length = 0;
     } else if ((stream->file_mode.buffer_mode == _IOFBF ||
-                stream->buffer_size ==
-                    (unsigned int)stream->buffer_ptr - (unsigned int)stream->buffer) &&
+                stream->buffer_size == stream->buffer_ptr - stream->buffer) &&
                __flush_buffer(stream, NULL) != 0) {
         stream->file_state.error = 1;
         ret = -1;
@@ -70,24 +64,17 @@ exit:
     return ret;
 }
 
-#if PLATFORM_GCN
 #define __putc(c, file)                                                                            \
     ((fwide(file, -1) >= 0)    ? -1                                                                \
      : (file)->buffer_length-- ? (int)(*(file)->buffer_ptr++ = (unsigned char)(c))                 \
                                : __put_char(c, file))
-#else
-#define __putc(c, file)                                                                            \
-    ((__fwide(file, -1) >= 0)  ? -1                                                                \
-     : (file)->buffer_length-- ? (int)(*(file)->buffer_ptr++ = (unsigned char)(c))                 \
-                               : __put_char(c, file))
-#endif
 
 int fputs(const char *s, FILE *stream) {
     char c;
     int ret = 0;
 
     __begin_critical_region(stdin_access);
-    while (c = *s++, c != 0) {
+    while ((c = *s++) != 0) {
         if (__putc(c, stream) == -1) {
             ret = -1;
             break;
@@ -105,7 +92,7 @@ int puts(const char *s) {
     FILE *stream = stdout;
 
     __begin_critical_region(stdin_access);
-    while (c = *s++, c != 0) {
+    while ((c = *s++) != 0) {
         if (__putc(c, stream) == -1) {
             ret = -1;
             break;

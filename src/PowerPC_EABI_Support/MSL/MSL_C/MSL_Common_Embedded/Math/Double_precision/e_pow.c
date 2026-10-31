@@ -365,11 +365,7 @@ double x, y;
     j = __HI(z);
     j += (n << 20);
     if ((j >> 20) <= 0) {
-#if PLATFORM_GCN
         z = ldexp(z, n); /* subnormal output */
-#else
-        z = scalbn(z, n); /* subnormal output */
-#endif
     } else {
         __HI(z) += (n << 20);
     }
