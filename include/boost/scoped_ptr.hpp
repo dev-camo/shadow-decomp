@@ -1,41 +1,84 @@
 #ifndef BOOST_SCOPED_PTR_HPP
 #define BOOST_SCOPED_PTR_HPP
 
-#include "boost/checked_delete.hpp"
-#include "layout_check.h"
+//  (C) Copyright Greg Colvin and Beman Dawes 1998, 1999.
+//  Copyright (c) 2001, 2002 Peter Dimov
+//
+//  Distributed under the Boost Software License, Version 1.0. (See
+//  accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+//
+//  http://www.boost.org/libs/smart_ptr/scoped_ptr.htm
+//
+//  Adapted from Boost 1.32 (boost/scoped_ptr.hpp): the include guard follows this project's
+//  naming. The debug hooks, the auto_ptr constructor, the conversion to bool and the free swap
+//  and get_pointer functions are left out because the reconstructed units use none of them.
+//  BOOST_ASSERT is resolved for an NDEBUG build, so the checks in reset(), operator* and
+//  operator-> are left out.
 
-/* The boost pointer that owns one object for its own lifetime, in the style of boost 1.32
- * (boost/scoped_ptr.hpp). Only the members the game's code uses are written. The game calls
- * operator-> out of line where its result is the object of an inline member call, as the comment
- * at MakeTranslationMatrix in Game/fn_8040_vector_types.h describes for an argument of an inline
- * call. */
+#include "boost/checked_delete.hpp"
+
 namespace boost {
 
-template <class T> class scoped_ptr {
-  public:
-    explicit scoped_ptr(T *p = 0) : ptr(p) {}
+//  scoped_ptr mimics a built-in pointer except that it guarantees deletion
+//  of the object pointed to, either on destruction of the scoped_ptr or via
+//  an explicit reset(). scoped_ptr is a simple solution for simple needs;
+//  use shared_ptr or std::auto_ptr if your needs are more complex.
 
-    ~scoped_ptr() {
+template <class T>
+class scoped_ptr // noncopyable
+{
+  private:
+    /* 0x0 */ T *ptr;
+
+    scoped_ptr(scoped_ptr const &);
+    scoped_ptr &operator=(scoped_ptr const &);
+
+    typedef scoped_ptr<T> this_type;
+
+  public:
+    typedef T element_type;
+
+    explicit scoped_ptr(T *p = 0)
+        : ptr(p) // never throws
+    {}
+
+    ~scoped_ptr() // never throws
+    {
         boost::checked_delete(ptr);
     }
 
-    T &operator*() const {
+    void reset(T *p = 0) // never throws
+    {
+        this_type(p).swap(*this);
+    }
+
+    T &operator*() const // never throws
+    {
         return *ptr;
     }
 
-    T *operator->() const {
+    T *operator->() const // never throws
+    {
         return ptr;
     }
 
-    T *get() const {
+    T *get() const // never throws
+    {
         return ptr;
     }
 
-  private:
-    scoped_ptr(const scoped_ptr &);
-    scoped_ptr &operator=(const scoped_ptr &);
+    bool operator!() const // never throws
+    {
+        return ptr == 0;
+    }
 
-    /* 0x0 */ T *ptr;
+    void swap(scoped_ptr &b) // never throws
+    {
+        T *tmp = b.ptr;
+        b.ptr = ptr;
+        ptr = tmp;
+    }
 };
 
 } // namespace boost
