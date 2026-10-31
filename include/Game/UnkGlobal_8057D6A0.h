@@ -11,8 +11,9 @@ struct UnkGlobal_8057D6A0 {
     /* 0x00 */ u8 field_0x0[0x28];
     /* 0x28 */ float field_0x28; /* Coaster multiplies it by 540 (meaning unknown) */
     /* 0x2C */ u8 field_0x2C[0xAC - 0x2C];
-    /* ThreatObjHolder compares it with 9 to pick its model table, and FallBuildingHolder's load
-     * hook with 12 and 5 to limit the building type. */
+    /* ThreatObjHolder compares it with 9 to pick its model table, FallBuildingHolder's hookA
+     * with 12 and 5 to limit the building type, and GrindGadget's hookA with 13 to pick
+     * its PTB file. */
     /* 0xAC */ s32 field_0xAC;
     /* 0xB0 */ u8 field_0xB0[0x150 - 0xB0];
 };
