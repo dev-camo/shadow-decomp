@@ -1,7 +1,8 @@
 #ifndef CRI_SFX_H
 #define CRI_SFX_H
 
-/* CRI Sofdec SFX frame conversion: the frame description the converters read. */
+/* CRI Sofdec SFX frame conversion: the frame description the converters read, the converter
+ * handle and the library work (sfx_lib.c, sfx_sud.c, sfx_alp.c, sfx_zmv.c). */
 #include "CRI/cri_xpt.h"
 #include "layout_check.h"
 
@@ -31,8 +32,70 @@ typedef struct {
 typedef struct SFXZ_OBJ SFXZ_OBJ;
 typedef struct SFXA_OBJ SFXA_OBJ;
 
+/* A converter handle (sfx_lib.c). Fields are named where SFX_Create or SFX_Destroy establishes
+ * their role (handle flag, Z and alpha objects, work buffers); the rest keep offset names and are
+ * used by the converters. */
+typedef struct SFX_OBJ {
+    Sint32 used;          /* 0x00 handle is taken */
+    Sint32 field_0x04;    /* 0x04 cleared by SFX_Create */
+    Sint32 field_0x08;    /* 0x08 cleared by SFX_Create */
+    Sint32 field_0x0C;    /* 0x0C cleared by SFX_Create */
+    Sint32 field_0x10[5]; /* 0x10 */
+    SFXZ_OBJ *sfxz;       /* 0x24 */
+    Sint32 field_0x28;    /* 0x28 set to 1 by SFX_Create */
+    Sint32 field_0x2C;    /* 0x2C cleared by SFX_Create */
+    SFXA_OBJ *sfxa;       /* 0x30 */
+    Sint32 field_0x34;    /* 0x34 cleared by SFX_Create */
+    Uint8 *buf[4];        /* 0x38 four consecutive 0x400-byte buffers carved from the work */
+    Sint32 field_0x48[2]; /* 0x48 */
+    void *work;           /* 0x50 the work area handed to SFX_Create */
+    Sint32 wsize;         /* 0x54 its size */
+    Sint32 field_0x58;    /* 0x58 set to -1 by SFX_Create */
+    Sint32 field_0x5C[2]; /* 0x5C */
+    Sint32 field_0x64;    /* 0x64 cleared by SFX_Create */
+    void *field_0x68;     /* 0x68 converter callback, called by fn_803CFF44 */
+    void *field_0x6C;     /* 0x6C converter callback, called by fn_803CFCB8 */
+    void *field_0x70;     /* 0x70 callback, called with buf[0] by fn_803CFF44 */
+    Sint32 field_0x74[9]; /* 0x74 */
+} SFX_OBJ;
+CHECK_SIZEOF(SFX_OBJ, 0x98);
+
+/* Error callback installed by SFX_SetErrFn. */
+typedef void (*SFX_ERRFN)(void *obj, const Char8 *msg);
+
+#define SFX_MAX_HN 8
+#define SFX_BUF_SIZE 0x400
+
+/* Smallest work area SFX_Create accepts: 0x3000 plus the slack for rounding its start up to 32
+ * bytes. */
+#define SFX_MIN_WORK_SIZE (0x3000 + 0x1F)
+
+/* The library work: the handle table and the error callback. */
+typedef struct {
+    Sint32 hn_cnt;          /* 0x00 handles in use */
+    Sint32 max_hn;          /* 0x04 */
+    SFX_ERRFN errfn;        /* 0x08 */
+    void *errobj;           /* 0x0C */
+    Sint32 err_cnt;         /* 0x10 errors reported so far */
+    Sint32 ccir_fx;         /* 0x14 see SFX_GetCcirFx */
+    SFX_OBJ hn[SFX_MAX_HN]; /* 0x18 */
+    Sint32 field_0x4D8[4];  /* 0x4D8 */
+} SFX_LIBWORK;
+CHECK_SIZEOF(SFX_LIBWORK, 0x4E8);
+
 /* sfx_lib.c */
+Sint32 SFX_GetForceSplit(void); /* name inferred: returns sfxcnv_forcesplit */
 Sint32 SFX_GetCcirFx(void);
+void SFXLIB_Error(SFX_OBJ *sfx, SFX_FRM *frm, const Char8 *msg);
+void SFX_Destroy(SFX_OBJ *sfx);
+SFX_OBJ *SFX_Create(void *work, Sint32 wsize);
+void SFX_SetErrFn(SFX_ERRFN fn, void *obj);
+void SFX_Finish(void); /* name inferred: the counterpart of SFX_Init */
+void SFX_Init(void);
+
+/* sfx_sud.c */
+void SFXSUD_Finish(void); /* name inferred: the counterpart of SFXSUD_Init */
+void SFXSUD_Init(void);
 
 /* frmno of the table builders below: the same argument for all four, which the caller loads from
  * offset 0x4C of its frame record. SFXZ_MakeCnvZTbl uses it as the frame index into the "ZMFDATA"
