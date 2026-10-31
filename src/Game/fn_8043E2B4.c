@@ -3,6 +3,7 @@
  * bank file loads. The original file name is unknown. Definitions are in reverse address order
  * (deferred inlining). Error code names are inferred from where they are returned. */
 #include "Game/gcaxSnd.h"
+#include <dolphin/mix.h>
 #include <stdarg.h>
 #include <string.h>
 
@@ -149,8 +150,6 @@ s32 fn_8043F8C4(void *handle) {
     return 0;
 }
 
-/* Loads the banks of a bank list file: each 16-byte entry gives a kind (1: wave and parameter
- * data, 4: sound data), a bank number and the offset of its data after the 0x20-byte header. */
 /* Loads one bank list entry; negative on failure */
 static inline s32 gcaxSndLoadEntry(GcaxLoad *load, u32 *entry, u8 *data) {
     s32 bank = (entry[1] >> 24) & 0xF;
@@ -169,6 +168,8 @@ static inline s32 gcaxSndLoadEntry(GcaxLoad *load, u32 *entry, u8 *data) {
     return status;
 }
 
+/* Loads the banks of a bank list file: each 16-byte entry gives a kind (1: wave and parameter
+ * data, 4: sound data), a bank number and the offset of its data after the 0x20-byte header. */
 s32 fn_8043F70C(void *handle) {
     GcaxFileHeader *header;
     u8 *data;
@@ -390,6 +391,8 @@ s32 fn_8043EFF0(void *handle, s8 bank, s8 song, s8 priority) {
     if (result != 0) {
         return result;
     }
+    /* the original accepts banks up to 31 although bankData and soundData have GCAX_BANKS (16)
+     * entries */
     if (bank < 0 || bank > 31) {
         return GCAX_ERR_PARAM;
     }
@@ -617,6 +620,8 @@ s32 fn_8043E6F4(void *buffer, s32 maxVoices, u32 size, u32 aramSize) {
     lbl_805F1404->config[11] = 0x5DC0;
     lbl_805F1404->config[12] = 0x61A80;
     lbl_805F1404->config[13] = 0x9C40;
+    /* the original sets config[0..13] here and fn_8043B25C then overwrites config[0..15] and
+     * field_0x13A44 */
     fn_8043B25C();
     gcaxSndNewBanks();
     OSReport("AX SDLIB: aramRest=%d\n", lbl_805F1404->aramRest);
@@ -638,6 +643,7 @@ void fn_8043E624(void) {
         lbl_805F1404->lock++;
         OSRestoreInterrupts(enabled);
     }
+    /* the original shuts the effects down outside the lbl_805F1404 != NULL checks */
     AXFXReverbStdShutdown(&lbl_805F1404->reverbStd);
     AXFXReverbHiShutdown(&lbl_805F1404->reverbHi);
     AXFXChorusShutdown(&lbl_805F1404->chorus);
