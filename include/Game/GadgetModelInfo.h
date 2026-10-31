@@ -2,6 +2,7 @@
 #define GAME_GADGETMODELINFO_H
 
 #include "Game/fn_8040_vector_types.h"
+#include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include <dolphin/types.h>
 #include "layout_check.h"
@@ -38,5 +39,9 @@ class GadgetModelInfo {
     /* 0x04 */ u8 field_0x4[0x70];
 };
 CHECK_SIZEOF(GadgetModelInfo, 0x74);
+
+/* Loads the model file fileName into a new GadgetModelInfo owned by the returned pointer (behaviour
+ * inferred; arg0 is the first argument of the GadgetModelInfo constructor, always 1 in callers). */
+extern "C" boost::shared_ptr<GadgetModelInfo> fn_8015F800(int arg0, const char *fileName);
 
 #endif
