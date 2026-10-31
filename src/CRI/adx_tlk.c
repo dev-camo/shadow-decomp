@@ -772,7 +772,8 @@ void adxt_start_sj(ADXT adxt, SJ sj) {
  * `nsct` sectors, no-wait) on the ADXSTM, starts the transfer and the decoder on the file stream
  * joint. */
 void adxt_start_stm(ADXT adxt, void *fname, void *dir, Sint32 ofst, Sint32 nsct) {
-    ADXSTM_SetBufSize(adxt->stm, adxt->reload_nsct * ADXT_SCT_SIZE, adxt->ibuf_nsct * ADXT_SCT_SIZE);
+    ADXSTM_SetBufSize(adxt->stm, adxt->reload_nsct * ADXT_SCT_SIZE,
+                      adxt->ibuf_nsct * ADXT_SCT_SIZE);
     ADXSTM_SetEos(adxt->stm, adxstm_seteos_sct);
     ADXSTM_EntryEosFunc(adxt->stm, 0, 0);
     ADXSTM_Seek(adxt->stm, 0);
