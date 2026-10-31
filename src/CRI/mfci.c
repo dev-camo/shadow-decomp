@@ -40,7 +40,9 @@ CHECK_SIZEOF(MFCI_OBJ, 0x38);
 
 typedef MFCI_OBJ *MFCI;
 
-/* volatile: mfCiGetInterface reads the build string pointer without using it. */
+/* Matching workaround: volatile. The original's mfCiGetInterface loads the build string pointer and
+ * discards it; without volatile MWCC drops the load (mfCiGetInterface 3 words instead of the
+ * original's 5). Revisit when the original's form of the dead load is known. */
 const Char8 *const volatile mfci_build = "\nMFCI/GC Ver.1.10 Build:Feb 28 2005 15:49:14\n";
 
 CVFS_USRERRFN mfci_err_func;
@@ -186,11 +188,11 @@ Sint32 mfCiOptFn(void *hn, Sint32 fnid, Sint32 a, Sint32 b) {
     return ret;
 }
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. Its messages
- * (which name it, mfCiOpenEntry) remain in .rodata between those of the functions around it, and
- * MWCC lays out .bss by first reference. This never-called function refers to the messages, then
- * to mfci_obj and mfci_init_flag in storage order. Storing the addresses keeps the references.
- */
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game; its
+ * body is unknown. Its messages (which name it, mfCiOpenEntry) remain in .rodata between those of
+ * the functions around it, and MWCC lays out .bss by first reference. This never-called function
+ * refers to the messages, then to mfci_obj and mfci_init_flag in storage order. Storing the
+ * addresses keeps the references. Revisit when mfCiOpenEntry's body is known. */
 static void mfci_DataOrder(const void **out) {
     out[0] = "E1041001:invalid entry number.(mfCiOpenEntry)";
     out[1] = "E1041002:rw is illigal.(mfCiOpenEntry)";
@@ -402,7 +404,8 @@ void mfCiEntryErrFunc(CVFS_USRERRFN func, void *obj) {
     mfci_err_obj = obj;
 }
 
-/* Nothing to do per pass (reads complete in mfCiReqRd). */
+/* Nothing to do per pass (reads complete in mfCiReqRd). Original quirk: the loop over the 40
+ * handle slots has an empty body. */
 void mfCiExecServer(void) {
     Sint32 i;
 

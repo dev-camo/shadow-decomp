@@ -107,6 +107,7 @@ void lsc_ExecHndl(LSC_OBJ *lsc) {
                 lsc->cur_nsct = ent->nsct;
                 ent->pos = 0;
                 lsc->stm_start = 0;
+                /* Original quirk: the flag stored just above is tested again. */
                 if (lsc->stm_start == 0) {
                     ADXSTM_SetBufSize(lsc->stm, lsc->min_val, lsc->bufsize);
                     ADXSTM_Seek(lsc->stm, 0);

@@ -97,7 +97,7 @@ Sint32 LSC_EntryFileRange(LSC lsc, Char8 *fname, void *dir, Sint32 ofst, Sint32 
         LSC_CallErrFunc("E2005012804: Illigal parameter fname=%s\n", fname);
         return -1;
     }
-    prev = lsc->tbl[(Sint32)((Uint32)lsc->wr_idx + (LSC_MAX_ENTRY - 1)) % LSC_MAX_ENTRY].id;
+    prev = lsc->tbl[(lsc->wr_idx + (LSC_MAX_ENTRY - 1)) % LSC_MAX_ENTRY].id;
     id = (prev == LSC_ID_MAX) ? 0 : prev + 1;
     ent = &lsc->tbl[lsc->wr_idx];
     ent->id = id;
@@ -113,8 +113,8 @@ Sint32 LSC_EntryFileRange(LSC lsc, Char8 *fname, void *dir, Sint32 ofst, Sint32 
     ent->stat = LSC_ENT_WAIT;
     ent->pos = 0;
     lsc->num_stm++;
-    lsc->wr_idx = (Sint32)((Uint32)lsc->wr_idx + 1) % LSC_MAX_ENTRY;
-    if ((Sint32)(Uint8)lsc->stat == LSC_STAT_PREP) {
+    lsc->wr_idx = (lsc->wr_idx + 1) % LSC_MAX_ENTRY;
+    if (lsc->stat == LSC_STAT_PREP) {
         lsc->stat = LSC_STAT_EXEC;
     }
     return id;
@@ -171,10 +171,10 @@ void LSC_Stop(LSC lsc) {
     }
 }
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. Its error
- * message (E2005012808) remains in .rodata; this never-called function refers to it at this
- * position. Storing the address keeps the reference.
- */
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game; its
+ * body is unknown. Its error message (E2005012808) remains in .rodata; this never-called function
+ * refers to it at this position. Storing the address keeps the reference. Revisit when that
+ * function's body is known. */
 static void lsc_RodataOrder08(const Char8 **out) {
     out[0] = "E2005012808: Illigal parameter lsc=NULL\n";
 }
@@ -213,11 +213,10 @@ Sint32 LSC_GetNumStm(LSC lsc) {
     return lsc->num_stm;
 }
 
-/* Stand-in for four functions the linker stripped from the game; their bodies are unknown. Their
- * error messages (E2005012811..18) remain in .rodata. Deferred inlining emits the four last-first,
- * so this never-called function refers to their message pairs in that order. Storing the addresses
- * keeps the references.
- */
+/* Matching workaround: as above, order-only stand-in for four functions the linker stripped from
+ * the game; their bodies are unknown. Their error messages (E2005012811..18) remain in .rodata.
+ * Deferred inlining emits the four last-first, so this never-called function refers to their
+ * message pairs in that order. Storing the addresses keeps the references. */
 static void lsc_RodataOrder11(const Char8 **out) {
     out[0] = "E2005012817: Illigal parameter lsc=NULL\n";
     out[1] = "E2005012818: Can not find stream ID =%d\n";
@@ -242,10 +241,9 @@ void LSC_SetFlowLimit(LSC lsc, Sint32 min_val) {
     lsc->min_val = min_val;
 }
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. Its error
- * message (E2005012821) remains in .rodata; this never-called function refers to it at this
- * position. Storing the address keeps the reference.
- */
+/* Matching workaround: as above, order-only stand-in for a function the linker stripped from the
+ * game; its body is unknown. Its error message (E2005012821) remains in .rodata; this never-called
+ * function refers to it at this position. Storing the address keeps the reference. */
 static void lsc_RodataOrder21(const Char8 **out) {
     out[0] = "E2005012821: Illigal parameter lsc=NULL\n";
 }

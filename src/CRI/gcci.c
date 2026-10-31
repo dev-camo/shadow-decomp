@@ -58,9 +58,9 @@ GCCI_DEBUG gcg_ci_debug;
 void *gcg_ci_err_obj;
 CVFS_USRERRFN gcg_ci_err_func;
 GCCI_OBJ gcg_ci_obj[GCCI_MAX_OBJ];
-/* volatile: gcCiGetInterface reloads and stores this pointer, which a plain
- * self-assignment would not emit.
- */
+/* Matching workaround: volatile. The original's gcCiGetInterface reloads and stores this pointer;
+ * without volatile MWCC drops the self-assignment (gcCiGetInterface 25 words instead of the
+ * original's 27). Revisit when the original's form of the dead load and store is known. */
 const Char8 *volatile gcg_ci_build_ptr;
 
 void gcCiExecServer(void);
@@ -95,9 +95,10 @@ CVFS_IF gcg_ci_vtbl = {
     (Sint32 (*)(void *))gcCiGetNumTr,
 };
 
-/* Stand-in for the stripped gcCiInit. MWCC places .bss objects in order of first reference, so
- * this never-called function refers to the debug block, error object and error callback in
- * storage order before any other code does. Storing the addresses keeps the references. */
+/* Matching workaround: order-only stand-in for the stripped gcCiInit (its body is unknown). MWCC
+ * places .bss objects in order of first reference, so this never-called function refers to the
+ * debug block, error object and error callback in storage order before any other code does. Storing
+ * the addresses keeps the references. Revisit when gcCiInit's body is known. */
 static void gcci_BssOrder(void **out) {
     out[0] = &gcg_ci_debug;
     out[1] = &gcg_ci_err_obj;
@@ -151,6 +152,7 @@ void gcCiSetSctLen(GCCI gcci, Sint32 sctlen) {
         gcci_CallErr("E0040302:handl is null.", 0);
         return;
     }
+    /* Original quirk: this checks the old sector length, not the new `sctlen` argument. */
     if (gcci->sctlen % 32 != 0) {
         gcci_CallErr("E0040303:invalidate size.", 0);
         return;
@@ -408,7 +410,10 @@ void gcCiClose(void *hn) {
     if (gcci == 0) {
         return;
     }
-    gcCiStopTr(hn); /* required: passing gcci compiles differently */
+    /* Matching workaround: the handle is passed on as received. Passing `gcci` instead lets MWCC
+     * fold the null check of the inlined gcCiStopTr (gcCiClose 112 words instead of 113, 109 of
+     * them differing). Revisit when the original's handle types are known. */
+    gcCiStopTr(hn);
     DVDClose(&gcci->fi);
     gcci->used = 0;
     memset(gcci, 0, sizeof(GCCI_OBJ));
@@ -434,7 +439,6 @@ GCCI gcCiOpen(const Char8 *fname, void *dir, Sint32 rw) {
     Char8 path[GCCI_PATH_LEN];
     GCCI gcci;
     Uint32 len;
-    Sint32 n;
 
     if (fname == 0) {
         gcci_CallErr("E0092908:fname is null.(gcCiOpen)", 0);
@@ -462,9 +466,8 @@ GCCI gcCiOpen(const Char8 *fname, void *dir, Sint32 rw) {
         len = 0x7FFFFFFF;
     }
     gcci->fsize_byte = len;
-    n = gcci->sctlen;
-    n += gcci->fsize_byte;
-    gcci->fsize_sct = (n - 1) / gcci->sctlen;
+    /* Round up to whole sectors. */
+    gcci->fsize_sct = (gcci->fsize_byte + (gcci->sctlen - 1)) / gcci->sctlen;
     gcci->pos_sct = 0;
     gcci->buf = 0;
     gcci->rqsct = 0;
