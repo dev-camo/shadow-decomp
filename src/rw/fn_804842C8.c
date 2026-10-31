@@ -3,14 +3,6 @@
 #include "rw/rwcore.h"
 #include "layout_check.h"
 
-/* object type */
-#define rwCAMERA 4
-
-#define rwPERSPECTIVE 1
-
-/* errors (inferred) */
-#define E_RW_INVCAMERAPROJ 0x80000003 /* reported with a message */
-
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \
@@ -542,7 +534,7 @@ RwCamera *fn_8048584C(RwCamera *camera, RwInt32 projection) {
         CameraUpdateZShiftScale(camera);
         return camera;
     default:
-        RWERROR((E_RW_INVCAMERAPROJ, "Invalid projection type specified"));
+        RWERROR((E_RW_BADPARAM, "Invalid projection type specified"));
         return NULL;
     }
 }

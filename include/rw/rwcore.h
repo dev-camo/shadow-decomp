@@ -92,6 +92,11 @@ typedef char RwChar;
 #define rwID_DRIVERMODULE 0x411 /* raster memory, the frame buffers and palette quantizer nodes */
 #define rwID_CHUNKGROUPMODULE 0x412 /* only creates and destroys a free list of 33-byte entries */
 
+/* RwObject types of the core's objects */
+#define rwFRAME 0
+#define rwCAMERA 4
+#define rwTEXDICTIONARY 6
+
 /* pi as a single precision constant */
 #define rwPI 3.1415926535f
 
@@ -106,24 +111,35 @@ typedef char RwChar;
 typedef RwInt32 RwPlatformID;
 #define rwID_GAMECUBE 6
 
-/* errors */
-#define E_RW_BADVERSION 0x80000004
-#define E_RW_READ 0x8000001A          /* reading a stream failed */
-#define E_RW_NOMEM 0x80000013         /* reported with the size that could not be allocated */
-#define E_RW_NOERROR 0x80000000       /* no error is pending */
-#define E_RW_NULLP 0x80000016         /* a required argument is NULL */
-#define E_RW_PLUGINNOTINIT 0x80000018 /* used before its module is ready (inferred) */
-#define E_RW_READTEXMASK 0x16         /* a texture could not be read by its name and mask */
-
-/* image and raster errors, and an error reported with a message (names inferred) */
-#define E_RW_INVIMAGEDEPTH 0x80000008      /* an image depth is not supported */
-#define E_RW_INVIMAGEFORMAT 0x80000009     /* an image format is not supported */
-#define E_RW_INVIMAGESIZE 0x8000000A       /* the image and mask sizes differ */
-#define E_RW_INVRASTERDEPTH 0x8000000C     /* a raster depth is not supported */
-#define E_RW_INVRASTERFORMAT 0x8000000D    /* a raster format or type is not supported */
-#define E_RW_INVRASTERLOCKREQ 0x8000000E   /* a raster cannot be locked as requested */
-#define E_RW_INVRASTERUNLOCKREQ 0x80000011 /* a raster cannot be unlocked */
-#define E_RW_DEBUGMESSAGE 2
+/* Errors the core reports with its plugin ID. Names marked inferred are inferred from where the
+ * codes are reported. */
+#define E_RW_NOERROR 0x80000000            /* no error is pending */
+#define E_RW_BADENGINESTATE 0x80000001     /* the engine is not in the needed status (inferred) */
+#define E_RW_FILEOPEN 0x80000002           /* reported with the file name (inferred) */
+#define E_RW_BADPARAM 0x80000003           /* an invalid argument, with a message (inferred) */
+#define E_RW_BADVERSION 0x80000004         /* a chunk version that cannot be read */
+#define E_RW_INVIMAGEDEPTH 0x80000008      /* an image depth is not supported (inferred) */
+#define E_RW_INVIMAGEFORMAT 0x80000009     /* an image format is not supported (inferred) */
+#define E_RW_INVIMAGESIZE 0x8000000A       /* the image and mask sizes differ (inferred) */
+#define E_RW_INVRASTERDEPTH 0x8000000C     /* a raster depth is not supported (inferred) */
+#define E_RW_INVRASTERFORMAT 0x8000000D    /* a raster format or type is not supported (inferred) */
+#define E_RW_INVRASTERLOCKREQ 0x8000000E   /* a raster cannot be locked as requested (inferred) */
+#define E_RW_INVRASTERUNLOCKREQ 0x80000011 /* a raster cannot be unlocked (inferred) */
+#define E_RW_NOMEM 0x80000013              /* reported with the size that could not be allocated */
+#define E_RW_NULLP 0x80000016              /* a required argument is NULL */
+#define E_RW_PLUGININIT 0x80000017         /* plugins cannot be registered now (inferred) */
+#define E_RW_PLUGINNOTINIT 0x80000018      /* used before its module is ready (inferred) */
+#define E_RW_READ 0x8000001A               /* reading a stream failed */
+#define E_RW_WRITE 0x8000001C              /* writing a file stream failed (inferred) */
+#define E_RW_STRINGTRUNCATED 0x8000001E    /* with the string, its limit and the cut (inferred) */
+#define E_RW_DEBUGMESSAGE 0x2              /* reported with a message (inferred) */
+#define E_RW_ENDOFSTREAM 0x5               /* reading or skipping past the end (inferred) */
+#define E_RW_RESOURCEENTRYALLOC 0xC        /* a resource entry could not be allocated (inferred) */
+#define E_RW_BADACCESSTYPE 0xD             /* not one of RwStreamAccessType (inferred) */
+#define E_RW_BADSTREAMTYPE 0xE             /* not one of RwStreamType (inferred) */
+#define E_RW_READTEXMASK 0x16              /* a texture could not be read by its name and mask */
+#define E_RW_DEVICEERROR 0x18              /* with the device request that failed (inferred) */
+#define E_RW_ZEROLENGTH 0x19               /* normalizing a vector of length 0 (inferred) */
 
 /* pipeline errors of the core (inferred from where they are reported) */
 #define E_RX_CYCLICPIPELINE 0x1C
@@ -1314,7 +1330,9 @@ RwMatrix *fn_8047E990(RwMatrix *matrix, const RwMatrixTolerance *tolerance);
 #define rwCOMBINEPRECONCAT 1
 #define rwCOMBINEPOSTCONCAT 2
 
-#define rwPARALLEL 2 /* the camera projection */
+/* camera projections */
+#define rwPERSPECTIVE 1
+#define rwPARALLEL 2
 
 /* matrices (inferred) */
 RwMatrix *fn_8047F994(void);             /* create */

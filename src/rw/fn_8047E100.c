@@ -6,8 +6,6 @@
 #include <math.h>
 #include "layout_check.h"
 
-#define E_RW_BADPARAM 0x80000003
-
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \

@@ -2,9 +2,6 @@
  * freed least recently used first when the heap is full. The original file name is unknown. */
 #include "rw/rwcore.h"
 
-/* A resource entry could not be allocated (inferred); reported with the size asked for */
-#define E_RW_RESOURCEENTRYALLOC 0xC
-
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \

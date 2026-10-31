@@ -15,9 +15,6 @@
         fn_8047DB84(&error_);                                                                      \
     } while (0)
 
-/* The error code of an unsupported primitive type (inferred) */
-#define E_RW_INVALIDPRIMTYPE 0x25
-
 /* The GX primitive of each RenderWare primitive type */
 GXPrimitive lbl_8056E060[7] = {
     0, GX_LINES, GX_LINESTRIP, GX_TRIANGLES, GX_TRIANGLESTRIP, GX_TRIANGLEFAN, GX_POINTS,
@@ -252,7 +249,7 @@ RwBool fn_80490E30(RwInt32 primType, RwIm2DVertex *vertices, RwInt32 numVertices
         }
         break;
     default:
-        RWERROR((E_RW_INVALIDPRIMTYPE));
+        RWERROR((E_RX_INVALIDPRIMTYPE));
         break;
     }
     fn_80490724();
@@ -318,7 +315,7 @@ RwBool fn_8049140C(RwInt32 primType, RwIm2DVertex *vertices, RwInt32 numVertices
         }
         break;
     default:
-        RWERROR((E_RW_INVALIDPRIMTYPE));
+        RWERROR((E_RX_INVALIDPRIMTYPE));
         break;
     }
     fn_80490724();
