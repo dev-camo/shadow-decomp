@@ -97,11 +97,11 @@ static inline u32 gcaxSndGetFreeSize(void); /* free heap bytes (name inferred) *
 void *gcaxSndMalloc(u32 size) {
     GcaxMemBlock *block = lbl_805F1404->heapHead;
     BOOL enabled = OSDisableInterrupts();
-    u32 aligned = (size + 31) & ~31;
     GcaxMemBlock *next;
+    u32 aligned = (size + 31) & ~31;
     u32 avail;
 
-    for (; (next = gcaxSndNextBlock(block)) != NULL; block = next) {
+    for (; (next = block->next) != NULL; block = next) {
         if (block->magic == GCAX_MEM_FREE) {
             avail = (u32)next - (u32)block - sizeof(GcaxMemBlock);
             if (avail >= aligned) {

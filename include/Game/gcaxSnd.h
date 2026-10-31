@@ -326,7 +326,7 @@ typedef struct GcaxWork {
     /* 0x052AC */ u32 aramNext;
     /* 0x052B0 */ u32 aramBase;
     /* 0x052B4 */ u32 silenceAddr; /* ARAM sample used when a region has no loop (inferred) */
-    /* 0x052B8 */ u32 config[16];  /* ARAM bank sizes */
+    /* 0x052B8 */ u32 config[GCAX_BANKS]; /* ARAM bank sizes */
     /* 0x052F8 */ GcaxRange aramBank[GCAX_BANKS];
     /* 0x05378 */ GcaxRange bankData[GCAX_BANKS];
     /* 0x053F8 */ GcaxRange soundData[GCAX_BANKS];
@@ -363,12 +363,6 @@ typedef struct GcaxFileHeader {
 } GcaxFileHeader;
 CHECK_SIZEOF(GcaxFileHeader, 0x10);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-extern GcaxWork *lbl_805F1404;
-
 #define GCAX_MAGIC 0x67636178     /* 'gcax' */
 #define GCAX_KIND_MSB 0x4D534220  /* 'MSB ' */
 #define GCAX_KIND_MPBW 0x4D504257 /* 'MPBW' */
@@ -388,6 +382,13 @@ extern GcaxWork *lbl_805F1404;
         }                                                                                          \
     } while (0)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern GcaxWork *lbl_805F1404;
+
+/* gcaxSndMemory.c: ARAM banks, loading and the sound heap */
 int gcaxNewAramBank(int bank, u32 size);
 int fn_8043B05C(int bank, u8 *file, GcaxCallback callback, void *arg, int async);
 int fn_8043AF64(int bank, GcaxFileHeader *file, GcaxCallback callback, void *arg, int notify);
@@ -504,8 +505,8 @@ void fn_8043FF5C(GcaxPlayer *player);
  *
  * Holds off the frame update while the caller changes shared state. The E3 prototype keeps
  * gcaxSndGetFreeVoice, gcaxSndCheckPlayer and the heap helpers out of line but expands the lock
- * and unlock (e.g. in the frame update at 0x8037F09C), as it does the bank-offset and next-block
- * accessors, which suggests macros or explicitly inline functions. */
+ * and unlock (e.g. in the frame update at 0x8037F09C), as it does the bank-offset accessor
+ * gcaxSndBankData (fn_8043BD80.c), which suggests macros or explicitly inline functions. */
 static inline void gcaxSndLock(void) {
     BOOL enabled = OSDisableInterrupts();
 
@@ -520,10 +521,13 @@ static inline void gcaxSndUnlock(void) {
     OSRestoreInterrupts(enabled);
 }
 
-/* Makes the whole heap one free block, ending in a used sentinel block. In the E3 prototype this
- * and gcaxSndFindPrevBlock are out-of-line functions of gcaxSndMemory.c (0x8037B3AC, 0x8037B1E4),
- * defined directly above their only callers fn_8043AEBC and fn_8043ACE8; moving them there would
- * shift that file's GCAX_PANIC lines. */
+/* Matching workaround: this and gcaxSndFindPrevBlock are defined here instead of in
+ * gcaxSndMemory.c. In the E3 prototype they are out-of-line functions of that file (0x8037B3AC,
+ * 0x8037B1E4), defined directly above their only callers fn_8043AEBC and fn_8043ACE8, but moving
+ * them there would shift the file's GCAX_PANIC lines (174 and 194). Revisit if the original line
+ * layout of gcaxSndMemory.c is recovered.
+ *
+ * Makes the whole heap one free block, ending in a used sentinel block. */
 static inline void gcaxSndResetHeap(void) {
     BOOL enabled = OSDisableInterrupts();
     GcaxMemBlock *head = lbl_805F1404->heapHead;
@@ -537,12 +541,6 @@ static inline void gcaxSndResetHeap(void) {
     tail->field_0x2 = 0;
     tail->next = 0;
     OSRestoreInterrupts(enabled);
-}
-
-/* The block after block in the heap. The E3 allocator (0x8037B24C) reads block->next directly;
- * here, writing block->next instead of this call in gcaxSndMalloc swaps two registers. */
-static inline GcaxMemBlock *gcaxSndNextBlock(GcaxMemBlock *block) {
-    return block->next;
 }
 
 /* The heap block before block, or NULL when block is the first one or not in the heap. */
