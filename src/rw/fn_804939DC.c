@@ -103,10 +103,19 @@ volatile RwInt32 lbl_805F1610;
 volatile RwInt32 lbl_805F160C;
 volatile RwInt32 lbl_805F1608;
 
-/* The two external frame buffers, the one the next frame is copied to and the one shown. The last
- * two are volatile: they are reread right after being stored and read in strict source order */
+/* The external frame buffer being shown. Volatile: the pre-retrace callback fn_80493ABC and the
+ * breakpoint callback fn_804939DC read it. */
 void *volatile lbl_805F1604;
+
+/* The external frame buffer the next frame is copied to.
+ *
+ * Matching workaround: volatile, although only task level code uses it. The original loads it at
+ * each read in source order; without the qualifier fn_80494C6C keeps its eight loads and two stores
+ * of it but schedules the loads later, and 56 of its 269 words differ (registers and scheduling).
+ * Revisit when a source form that keeps those loads in place without the qualifier is found. */
 void *volatile lbl_805F1600;
+
+/* The two external frame buffers, which the shown one and the copy target alternate between */
 void *lbl_805F15FC;
 void *lbl_805F15F8;
 
@@ -720,7 +729,10 @@ RwBool fn_80494C6C(void *out, void *inOut, RwInt32 numIn) {
     BOOL enabled;
     void *readPointer;
     void *writePointer;
-    /* Volatile (inferred): the original stores the flag and reloads it at once */
+    /* Matching workaround: volatile. The original stores the flag to the stack and reloads it at
+     * once before the compare, which the compiler only emits for a volatile object; without the
+     * qualifier fn_80494C6C is 264 words against the original 269, 244 of them differing. Revisit
+     * when a source form without the qualifier reproduces the reload. */
     volatile RwBool full;
 
     enabled = OSDisableInterrupts();
