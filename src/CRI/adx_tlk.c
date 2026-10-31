@@ -34,10 +34,6 @@
 #define ADXT_OBUF_STRIDE 0x2060
 #define ADXT_RNA_WORK 0x40C0
 #define ADXT_IBUF_XSIZE 0x24
-#define ADXT_SCT_SIZE 0x800
-
-/* ADXT_OBJ.stat (public) */
-#define ADXT_STAT_PLAYEND 5
 
 /* the vsync-based time position in adxt_time_unit units from the current sample time */
 #define ADXT_SET_TIME_POS(adxt, nc, ts)                                                            \
@@ -101,32 +97,7 @@ static inline void adxt_DestroyAll(void);
 void adxt_Destroy(ADXT adxt);
 ADXT adxt_Create(Sint32 maxnch, void *work, Sint32 worksize);
 static inline void adxt_get_smpl_time(ADXT adxt, Sint32 *ncount, Sint32 *tscale);
-static inline void adxt_start_sjd(ADXT adxt, SJ sj);
 void adxt_start_sj(ADXT adxt, SJ sj);
-
-/* start the decoder on the input stream joint sj (shared by the file stream and SJ starts) */
-static inline void adxt_start_sjd(ADXT adxt, SJ sj) {
-    Sint32 i;
-
-    for (i = 0; i < adxt->maxnch; i++) {
-        SJ_Reset(adxt->sjo[i]);
-    }
-    ADXSJD_SetInSj(adxt->sjd, sj);
-    adxt->sji = sj;
-    ADXSJD_Start(adxt->sjd);
-    adxt->stat = ADXT_ISTAT_DECINFO;
-    adxt->lpcnt = 0;
-    adxt->x71 = 0;
-    adxt->lpendsct = 0x7FFFFFFF;
-    adxt->trapnsmpl = -1;
-    adxt->x9c = 0;
-    adxt->decsmpl = 0;
-    adxt->startvsync = adxt_vsync_cnt;
-    adxt->xc0 = 0;
-    if (adxt->amp != 0) {
-        ADXAMP_Start(adxt->amp);
-    }
-}
 
 /* Destroys every live handle (ADXT_Finish). */
 static inline void adxt_DestroyAll(void) {
@@ -149,7 +120,7 @@ static inline void adxt_StartSj(ADXT adxt, SJ sj) {
     }
     adxt_Stop(adxt);
     ADXCRS_Lock();
-    adxt_start_sjd(adxt, sj);
+    adxt_start_sj(adxt, sj);
     adxt->mode = 3;
     adxt_SetLnkSw(adxt, 1);
     ADXCRS_Unlock();
@@ -772,7 +743,7 @@ void ADXT_DestroyAll(void) {
     ADXCRS_Leave();
 }
 
-/* Starts the decoder on the input stream joint sj (same steps as adxt_start_sjd). */
+/* Starts the decoder on the input stream joint sj (shared by the file stream and SJ starts). */
 void adxt_start_sj(ADXT adxt, SJ sj) {
     Sint32 i;
 
@@ -801,7 +772,7 @@ void adxt_start_sj(ADXT adxt, SJ sj) {
  * `nsct` sectors, no-wait) on the ADXSTM, starts the transfer and the decoder on the file stream
  * joint. */
 void adxt_start_stm(ADXT adxt, void *fname, void *dir, Sint32 ofst, Sint32 nsct) {
-    ADXSTM_SetBufSize(adxt->stm, adxt->reload_nsct << 11, adxt->ibuf_nsct << 11);
+    ADXSTM_SetBufSize(adxt->stm, adxt->reload_nsct * ADXT_SCT_SIZE, adxt->ibuf_nsct * ADXT_SCT_SIZE);
     ADXSTM_SetEos(adxt->stm, adxstm_seteos_sct);
     ADXSTM_EntryEosFunc(adxt->stm, 0, 0);
     ADXSTM_Seek(adxt->stm, 0);
@@ -809,7 +780,7 @@ void adxt_start_stm(ADXT adxt, void *fname, void *dir, Sint32 ofst, Sint32 nsct)
     ADXSTM_ReleaseFileNw(adxt->stm);
     ADXSTM_BindFileNw(adxt->stm, fname, dir, ofst, nsct);
     ADXSTM_Start(adxt->stm);
-    adxt_start_sjd(adxt, adxt->sjf);
+    adxt_start_sj(adxt, adxt->sjf);
 }
 
 void ADXT_StartSj(ADXT adxt, SJ sj) {

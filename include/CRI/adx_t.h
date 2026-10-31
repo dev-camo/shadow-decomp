@@ -16,6 +16,8 @@
 #include "layout_check.h"
 
 #define ADXT_MAX_OBJ 16
+/* the disc sector size of the stream buffers */
+#define ADXT_SCT_SIZE 0x800
 
 /* ADXT_OBJ.stat (internal) */
 #define ADXT_ISTAT_STOP 0

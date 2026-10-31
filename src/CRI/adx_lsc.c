@@ -40,7 +40,7 @@ void ADXT_StartSeamless(ADXT adxt) {
         adxt_start_sj(adxt, adxt->sjf);
         SJ_Reset(adxt->sji);
         adxt->mode = 4;
-        LSC_SetFlowLimit(lsc, adxt->reload_nsct << 11);
+        LSC_SetFlowLimit(lsc, adxt->reload_nsct * ADXT_SCT_SIZE);
         LSC_Start(lsc);
         ADXT_SetLnkSw(adxt, 1);
         ADXCRS_Unlock();
