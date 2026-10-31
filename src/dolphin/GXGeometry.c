@@ -121,8 +121,10 @@ void GXSetCullMode(GXCullMode mode) {
         break;
     }
 #else
-    hwMode = (mode >> 1) & 1;
-    __rlwimi(hwMode, mode, 1, 30, 30);
+    // Matching workaround: swap the front and back cull bits with shifts and masks instead of the
+    // switch above. The switch compiles GXSetCullMode to 17 instructions instead of 10. Revisit
+    // when the original's release-build form of this swap is found.
+    hwMode = ((mode & 1) << 1) | ((mode >> 1) & 1);
 #endif
 
     SET_REG_FIELD(570, __GXData->genMode, 2, 14, hwMode);

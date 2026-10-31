@@ -71,6 +71,7 @@ void GXSetFog(GXFogType type, f32 startz, f32 endz, f32 nearz, f32 farz, GXColor
         }
 
         a = A / (f32)(1 << (B_expn + 1));
+        // The original constant is 8388638.0f, not 2^23 (8388608.0f).
         b_m = 8.388638e6f * B_mant;
         b_s = B_expn + 1;
         c = C;
@@ -195,6 +196,10 @@ void GXSetBlendMode(GXBlendMode type, GXBlendFactor src_factor, GXBlendFactor ds
 #if DEBUG
     SET_REG_FIELD(392, reg, 1, 0, blend_en);
 #else
+    // Matching workaround: the low bit of the blend type is written as the blend-enable field
+    // (GX_BM_BLEND and GX_BM_SUBTRACT are the values with it set). Computing blend_en with
+    // comparisons as above compiles GXSetBlendMode to 29 instructions instead of 21. Revisit when
+    // the original's release-build form is found.
     SET_REG_FIELD(392, reg, 1, 0, type);
 #endif
     SET_REG_FIELD(393, reg, 1, 1, (type == GX_BM_LOGIC));

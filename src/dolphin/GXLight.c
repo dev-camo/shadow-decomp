@@ -268,6 +268,8 @@ void GXInitSpecularDirHA(GXLightObj *lt_obj, f32 nx, f32 ny, f32 nz, f32 hx, f32
     obj->lpos[2] = nz * -1000000000000000000.0f;
 }
 
+#define GXCOLOR_AS_U32(color) (*((u32 *)&(color)))
+
 void GXInitLightColor(GXLightObj *lt_obj, GXColor color) {
     __GXLightObjInt_struct *obj;
 
@@ -275,7 +277,7 @@ void GXInitLightColor(GXLightObj *lt_obj, GXColor color) {
     obj = (__GXLightObjInt_struct *)lt_obj;
     CHECK_GXBEGIN(463, "GXInitLightColor");
 
-    obj->Color = *(u32 *)&color;
+    obj->Color = GXCOLOR_AS_U32(color);
 }
 
 void GXGetLightColor(const GXLightObj *lt_obj, GXColor *color) {
@@ -285,20 +287,20 @@ void GXGetLightColor(const GXLightObj *lt_obj, GXColor *color) {
     obj = (__GXLightObjInt_struct *)lt_obj;
     CHECK_GXBEGIN(477, "GXGetLightColor");
 
-    *(u32 *)color = obj->Color;
+    GXCOLOR_AS_U32(*color) = obj->Color;
 }
 
 #if DEBUG
 #define WRITE_SOME_LIGHT_REG1(val, addr)                                                           \
     do {                                                                                           \
-        u32 xfData = val;                                                                          \
+        u32 xfData = (val);                                                                        \
         GX_WRITE_U32(val);                                                                         \
         VERIF_MTXLIGHT(addr, xfData);                                                              \
     } while (0)
 
 #define WRITE_SOME_LIGHT_REG2(val, addr)                                                           \
     do {                                                                                           \
-        f32 xfData = val;                                                                          \
+        f32 xfData = (val);                                                                        \
         GX_WRITE_F32(val);                                                                         \
         VERIF_MTXLIGHT(addr, *(u32 *)&xfData);                                                     \
     } while (0)
@@ -371,6 +373,9 @@ void GXLoadLightObjImm(const GXLightObj *lt_obj, GXLightID light) {
 #if DEBUG
     idx = ConvLightID2Num(light);
 #else
+    // Matching workaround: the single-bit light mask is turned into its index with cntlzw
+    // instead of the ConvLightID2Num switch above, which compiles GXLoadLightObjImm to 70
+    // instructions instead of 31. Revisit when the original's release-build form is found.
     idx = 31 - __cntlzw(light);
 #endif
 
@@ -415,6 +420,8 @@ void GXLoadLightObjIndx(u32 lt_obj_indx, GXLightID light) {
 #if DEBUG
     idx = ConvLightID2Num(light);
 #else
+    // Written as in GXLoadLightObjImm. GXLoadLightObjIndx has no symbol in the final binary, so
+    // this form is unverified against original bytes.
     idx = 31 - __cntlzw(light);
 #endif
 
@@ -433,8 +440,6 @@ void GXLoadLightObjIndx(u32 lt_obj_indx, GXLightID light) {
 #endif
     __GXData->bpSentNot = 1;
 }
-
-#define GXCOLOR_AS_U32(color) (*((u32 *)&(color)))
 
 void GXSetChanAmbColor(GXChannelID chan, GXColor amb_color) {
     u32 reg;
@@ -559,6 +564,9 @@ void GXSetChanCtrl(GXChannelID chan, GXBool enable, GXColorSrc amb_src, GXColorS
     else
         idx = chan;
 #else
+    // Matching workaround: GX_COLOR0A0 and GX_COLOR1A1 (4 and 5) map to channels 0 and 1 by
+    // masking the low two bits instead of the comparisons above, which compile GXSetChanCtrl to
+    // 52 instructions instead of 44. Revisit when the original's release-build form is found.
     idx = chan & 0x3;
 #endif
 
@@ -567,9 +575,9 @@ void GXSetChanCtrl(GXChannelID chan, GXBool enable, GXColorSrc amb_src, GXColorS
     SET_REG_FIELD(908, reg, 1, 0, mat_src);
     SET_REG_FIELD(909, reg, 1, 6, amb_src);
 
-    SET_REG_FIELD(911, reg, 2, 7, (attn_fn == 0) ? 0 : diff_fn);
-    SET_REG_FIELD(912, reg, 1, 9, (attn_fn != 2));
-    SET_REG_FIELD(913, reg, 1, 10, (attn_fn != 0));
+    SET_REG_FIELD(911, reg, 2, 7, (attn_fn == GX_AF_SPEC) ? GX_DF_NONE : diff_fn);
+    SET_REG_FIELD(912, reg, 1, 9, (attn_fn != GX_AF_NONE));
+    SET_REG_FIELD(913, reg, 1, 10, (attn_fn != GX_AF_SPEC));
 
     SET_REG_FIELD(925, reg, 4, 2, light_mask & 0xF);
     SET_REG_FIELD(926, reg, 4, 11, (light_mask >> 4) & 0xF);
