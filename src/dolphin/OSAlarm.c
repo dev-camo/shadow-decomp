@@ -56,9 +56,9 @@ static void SetTimer(OSAlarm *alarm) {
 }
 
 void OSInitAlarm(void) {
-    if (__OSGetExceptionHandler(8) != DecrementerExceptionHandler) {
+    if (__OSGetExceptionHandler(__OS_EXCEPTION_DECREMENTER) != DecrementerExceptionHandler) {
         AlarmQueue.head = AlarmQueue.tail = NULL;
-        __OSSetExceptionHandler(8, DecrementerExceptionHandler);
+        __OSSetExceptionHandler(__OS_EXCEPTION_DECREMENTER, DecrementerExceptionHandler);
         OSRegisterResetFunction(&ResetFunctionInfo);
     }
 }
@@ -240,7 +240,7 @@ static void DecrementerExceptionCallback(register __OSException exception,
 // clang-format off
 static asm void DecrementerExceptionHandler(register __OSException exception,
                                             register OSContext* context) {
-    nofralloc 
+    nofralloc
     OS_EXCEPTION_SAVE_GPRS(context)
     stwu r1, -8(r1)
     b DecrementerExceptionCallback

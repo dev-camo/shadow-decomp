@@ -4,13 +4,13 @@
 #include <dolphin/si.h>
 #include <dolphin/db.h>
 
+#include "__dvd.h"
 #include "__os.h"
 
 #define NOP 0x60000000
 
 // external functions
 extern void EnableMetroTRKInterrupts(void);
-extern void __OSInitMemoryProtection(void);
 
 #define DB_EXCEPTIONRET_OFFSET 0xC
 #define DB_EXCEPTIONDEST_OFFSET 0x8
@@ -44,7 +44,6 @@ static DVDDriveInfo DriveInfo;
 static DVDCommandBlock DriveBlock;
 OSExecParams __OSRebootParams;
 
-extern u32 __DVDLongFileNameFlag;
 extern u32 __PADSpec;
 
 // defined in link script
@@ -83,11 +82,9 @@ u32 __OSIsDebuggerPresent(void) {
     return *(u32 *)OSPhysicalToCached(0x40);
 }
 
-/* clang-format off */
 #ifdef __GEKKO__
 // clang-format off
 asm void __OSFPRInit(void) {
-    // clang-format off
     nofralloc
 
     mfmsr r3
@@ -169,7 +166,6 @@ skip_ps_init:
 
     mtfsf 0xff, f0
     blr
-    // clang-format on
 }
 // clang-format on
 #endif
@@ -178,7 +174,7 @@ static void DisableWriteGatherPipe(void) {
     u32 hid2;
 
     hid2 = PPCMfhid2();
-    hid2 &= ~0x40000000;
+    hid2 &= ~HID2_WPE;
     PPCMthid2(hid2);
 }
 
@@ -189,30 +185,29 @@ u32 OSGetConsoleType(void) {
     return BootInfo->consoleType;
 }
 
-// needed for assert
-#undef NULL
-#define NULL 0
-
 static void ClearArena(void) {
+    // Matching workaround: the restart-code test is written as a ternary TRUE/FALSE before it is
+    // negated. The plain form !(OSGetResetCode() & 0x80000000) changes OSInit, where ClearArena is
+    // inlined, from 312 to 307 instructions. Revisit if a natural form that matches is found.
     if (!((OSGetResetCode() & 0x80000000) ? TRUE : FALSE)) {
         memset(OSGetArenaLo(), 0, (u32)OSGetArenaHi() - (u32)OSGetArenaLo());
         return;
     }
 
-    if (*(u32 *)&__OSRebootParams.regionStart == 0) {
+    if (__OSRebootParams.regionStart == NULL) {
         memset(OSGetArenaLo(), 0, (u32)OSGetArenaHi() - (u32)OSGetArenaLo());
         return;
     }
 
     ASSERTLINE(683, __OSRebootParams.regionEnd != NULL);
 
-    if ((u32)OSGetArenaLo() < *(u32 *)&__OSRebootParams.regionStart) {
-        if ((u32)OSGetArenaHi() <= *(u32 *)&__OSRebootParams.regionStart) {
+    if ((u32)OSGetArenaLo() < (u32)__OSRebootParams.regionStart) {
+        if ((u32)OSGetArenaHi() <= (u32)__OSRebootParams.regionStart) {
             memset(OSGetArenaLo(), 0, (u32)OSGetArenaHi() - (u32)OSGetArenaLo());
             return;
         }
 
-        memset(OSGetArenaLo(), 0, *(u32 *)&__OSRebootParams.regionStart - (u32)OSGetArenaLo());
+        memset(OSGetArenaLo(), 0, (u32)__OSRebootParams.regionStart - (u32)OSGetArenaLo());
 
         if ((u32)OSGetArenaHi() > (u32)__OSRebootParams.regionEnd) {
             memset(__OSRebootParams.regionEnd, 0,
@@ -271,8 +266,8 @@ void OSInit(void) {
         __DVDLongFileNameFlag = 1;
 
         OSSetArenaLo((!BootInfo->arenaLo) ? &__ArenaLo : BootInfo->arenaLo);
-        if ((!BootInfo->arenaLo) && (BI2DebugFlag) && (*(u32 *)BI2DebugFlag < 2)) {
-            OSSetArenaLo((void *)(((u32)(char *)&_stack_addr + 0x1F) & 0xFFFFFFE0));
+        if ((!BootInfo->arenaLo) && (BI2DebugFlag) && (*BI2DebugFlag < 2)) {
+            OSSetArenaLo((void *)OSRoundUp32B(&_stack_addr));
         }
         OSSetArenaHi((!BootInfo->arenaHi) ? &__ArenaHi : BootInfo->arenaHi);
 
@@ -281,7 +276,7 @@ void OSInit(void) {
         OSInitAlarm();
         __OSModuleInit();
         __OSInterruptInit();
-        __OSSetInterruptHandler(0x16, &__OSResetSWInterruptHandler);
+        __OSSetInterruptHandler(__OS_INTERRUPT_PI_RSW, &__OSResetSWInterruptHandler);
         __OSContextInit();
         __OSCacheInit();
         EXIInit();
@@ -590,8 +585,6 @@ entry __OSEVEnd
 // clang-format on
 #endif
 
-void __OSUnhandledException(__OSException exception, OSContext *context, u32 dsisr, u32 dar);
-
 #ifdef __GEKKO__
 // clang-format off
 asm void OSDefaultExceptionHandler(register __OSException exception, register OSContext* context) {
@@ -608,7 +601,7 @@ asm void OSDefaultExceptionHandler(register __OSException exception, register OS
 
 #ifdef __GEKKO__
 void __OSPSInit(void) {
-    PPCMthid2(PPCMfhid2() | 0x80000000 | 0x20000000);
+    PPCMthid2(PPCMfhid2() | HID2_LSQE | HID2_PSE);
     ICFlashInvalidate();
     __sync();
 

@@ -12,7 +12,7 @@ typedef int OSHeapHandle;
 extern volatile OSHeapHandle __OSCurrHeap;
 
 void *OSAllocFromHeap(int heap, u32 size);
-void *OSAllocFixed(void *rstart, void *rend);
+void *OSAllocFixed(void **rstart, void **rend);
 void OSFreeToHeap(int heap, void *ptr);
 int OSSetCurrentHeap(int heap);
 void *OSInitAlloc(void *arenaStart, void *arenaEnd, int maxHeaps);

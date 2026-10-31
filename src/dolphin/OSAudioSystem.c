@@ -13,14 +13,15 @@ static u8 DSPInitCode[128] = {
     0x16, 0xFD, 0x43, 0x48, 0x00, 0x21, 0x02, 0xFF, 0x02, 0xFF, 0x02, 0xFF, 0x02, 0xFF, 0x02, 0xFF,
     0x02, 0xFF, 0x02, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-#define __DSPWorkBuffer (void *)0x81000000
+#define __DSPWorkBuffer ((void *)0x81000000)
 
 void __OSInitAudioSystem(void) {
     u8 errFlag;
     u16 reg16;
     u32 start_tick;
 
-    memcpy((void *)((u32)OSGetArenaHi() - 0x80), __DSPWorkBuffer, sizeof(DSPInitCode));
+    memcpy((void *)((u32)OSGetArenaHi() - sizeof(DSPInitCode)), __DSPWorkBuffer,
+           sizeof(DSPInitCode));
     memcpy(__DSPWorkBuffer, (void *)DSPInitCode, sizeof(DSPInitCode));
     DCFlushRange(__DSPWorkBuffer, sizeof(DSPInitCode));
 
@@ -41,6 +42,7 @@ void __OSInitAudioSystem(void) {
     while (((__DSPRegs[2] << 16) | __DSPRegs[3]) & 0x80000000)
         ;
 
+    // Registers 16-21 are written as 32-bit words, each a pair of 16-bit registers.
     *(u32 *)&__DSPRegs[16] = 0x1000000;
     *(u32 *)&__DSPRegs[18] = 0;
     *(u32 *)&__DSPRegs[20] = 0x20;
@@ -89,7 +91,8 @@ void __OSInitAudioSystem(void) {
     while (__DSPRegs[5] & 1)
         ;
 
-    memcpy(__DSPWorkBuffer, (void *)((u32)OSGetArenaHi() - 0x80), sizeof(DSPInitCode));
+    memcpy(__DSPWorkBuffer, (void *)((u32)OSGetArenaHi() - sizeof(DSPInitCode)),
+           sizeof(DSPInitCode));
 }
 
 void __OSStopAudioSystem(void) {
@@ -97,10 +100,12 @@ void __OSStopAudioSystem(void) {
     u32 start_tick;
 
 #define waitUntil(load, mask)                                                                      \
-    reg16 = (load);                                                                                \
-    while (reg16 & (mask)) {                                                                       \
+    do {                                                                                           \
         reg16 = (load);                                                                            \
-    }
+        while (reg16 & (mask)) {                                                                   \
+            reg16 = (load);                                                                        \
+        }                                                                                          \
+    } while (0)
 
     __DSPRegs[5] = 0x804;
     reg16 = __DSPRegs[27];

@@ -3,8 +3,6 @@
 
 #include "__os.h"
 
-#define HID2 920
-
 volatile OSContext *__OSCurrentContext AT_ADDRESS(OS_BASE_CACHED | 0x00D4);
 volatile OSContext *__OSFPUContext AT_ADDRESS(OS_BASE_CACHED | 0x00D8);
 
@@ -12,7 +10,7 @@ volatile OSContext *__OSFPUContext AT_ADDRESS(OS_BASE_CACHED | 0x00D8);
 // clang-format off
 static asm void __OSLoadFPUContext(register u32 dummy, register OSContext* fpucontext) {
     nofralloc
-    lhz r5, fpucontext->state;
+    lhz r5, fpucontext->state
     clrlwi. r5, r5, 31
     beq _return
 
@@ -307,7 +305,7 @@ _notInRAS:
     b       misc
 notexc:
     lmw    r13, context->gpr[13]
-    misc:
+misc:
 
     lwz     r4, context->gqr[1]
     mtspr   GQR1, r4
@@ -352,8 +350,8 @@ notexc:
 
 // clang-format off
 asm u32 OSGetStackPointer() {
-    nofralloc 
-    mr r3, r1 
+    nofralloc
+    mr r3, r1
     blr
 }
 // clang-format on
@@ -402,7 +400,7 @@ asm void OSInitContext(register OSContext* context, register u32 pc, register u3
     stw     pc,  OS_CONTEXT_SRR0(context)
     stw     newsp,  OS_CONTEXT_R1(context)
     li      r11, 0
-    ori     r11, r11, 0x00008000 | 0x00000020 | 0x00000010 | 0x00000002 | 0x00001000
+    ori     r11, r11, MSR_EE | MSR_IR | MSR_DR | MSR_RI | MSR_ME
     stw     r11, OS_CONTEXT_SRR1(context)
     li      r0,  0x0
     stw     r0,  OS_CONTEXT_CR(context)
@@ -486,6 +484,7 @@ void OSDumpContext(OSContext *context) {
         OSClearContext(&fpucontext);
         OSSetCurrentContext(&fpucontext);
 
+        // The original prints the floating-point registers converted to u32, with integer formats.
         OSReport("\n\nFPRs----------\n");
         for (i = 0; i < 32; i += 2) {
             OSReport("fr%d \t= %d \t fr%d \t= %d\n", i, (u32)context->fpr[i], i + 1,
@@ -520,7 +519,7 @@ static asm void OSSwitchFPUContext(register __OSException exception, register OS
     ori     r5, r5, 0x2000
     mtsrr1  r5
     addis   r3, r0, OS_CACHED_REGION_PREFIX
-    lwz     r5, 0x00D8(r3) 
+    lwz     r5, 0x00D8(r3)
     stw     context, 0x00D8(r3)
     cmpw    r5, r4
     beq     _restoreAndExit
