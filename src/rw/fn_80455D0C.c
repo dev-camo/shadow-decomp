@@ -543,11 +543,7 @@ RpAtomic *fn_80456DD8(void) {
         return NULL;
     }
 
-    atomic->object.type = rpATOMIC;
-    atomic->object.subType = 0;
-    atomic->object.flags = 0;
-    atomic->object.privateFlags = 0;
-    atomic->object.parent = NULL;
+    RWOBJECTINITIALIZE(&atomic->object, rpATOMIC, 0);
     atomic->sync = fn_80455E6C;
     atomic->repEntry = NULL;
     atomic->object.flags = rpATOMICCOLLISIONTEST | rpATOMICRENDER;
@@ -624,12 +620,8 @@ static inline RpAtomic *AtomicClone(RpAtomic *atomic) {
     if (newAtomic == NULL) {
         return NULL;
     }
-    newAtomic->object.type = atomic->object.type;
-    newAtomic->object.subType = atomic->object.subType;
-    newAtomic->object.flags = atomic->object.flags;
-    newAtomic->object.privateFlags = atomic->object.privateFlags;
-    newAtomic->object.parent = NULL;
-    newAtomic->object.flags = atomic->object.flags;
+    RWOBJECTCOPY(&newAtomic->object, &atomic->object);
+    newAtomic->object.flags = atomic->object.flags; /* stored again, as in the original */
     fn_80458CBC(newAtomic, NULL);
     fn_80456F0C(newAtomic, atomic->geometry, 0);
     newAtomic->boundingSphere = atomic->boundingSphere;
@@ -710,12 +702,8 @@ RpClump *fn_804573A8(void) {
     if (clump == NULL) {
         return clump;
     }
-    clump->object.type = rpCLUMP;
-    clump->object.subType = 0;
-    clump->object.flags = 0;
-    clump->object.privateFlags = 0;
-    clump->object.parent = NULL;
-    clump->object.parent = NULL;
+    RWOBJECTINITIALIZE(&clump->object, rpCLUMP, 0);
+    clump->object.parent = NULL; /* stored again, as in the original */
     rwLinkListInitialize(&clump->atomicList);
     rwLinkListInitialize(&clump->lightList);
     rwLinkListInitialize(&clump->cameraList);
