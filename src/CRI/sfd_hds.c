@@ -6,8 +6,6 @@
 #define SFHDS_SFH_NUM 0x20
 #define SFHDS_SFH_WORK_SIZE 0x204
 
-/* SFD condition ids */
-
 typedef void (*SFHDS_HDRCB)(void *obj, Uint8 *data, Sint32 size);
 
 static Uint8 sfhds_sfhlib_work[SFHDS_SFH_WORK_SIZE];
@@ -347,17 +345,13 @@ static Bool sfhds_SetHdrPkt(SFD sfd, Uint8 *p, Sint32 len, Sint32 *result) {
     return 1;
 }
 
-/* the file header travels in a private stream 2 packet: `data` points at its payload. Matching
- * constraint: the original keeps a copy of `result` in a callee-saved register (`mr r30, r7`); the
- * codeless register move below keeps that copy (COMPILER-DIFF M1; both moves are deleted). */
+/* the file header travels in a private stream 2 packet: `data` points at its payload.
+ * NonMatching (register choice only): see configure.py. */
 Bool SFHDS_SetHdr(SFD sfd, Sint32 type, Uint8 *data, Sint32 size, Sint32 *result) {
-    register Sint32 *res;
-    Sint32 len;
     Uint8 *p;
+    Sint32 len;
 
-    res = (Sint32 *)(void *)result;
-    asm { mr r11, res; mr res, r11 } /* COMPILER-DIFF: M1 (codeless neighbour pin) */
-    *res = 0;
+    *result = 0;
     if (type != 2) {
         return 0;
     }
@@ -370,7 +364,7 @@ Bool SFHDS_SetHdr(SFD sfd, Sint32 type, Uint8 *data, Sint32 size, Sint32 *result
             return 0;
         }
     }
-    return sfhds_SetHdrPkt(sfd, p, len, res);
+    return sfhds_SetHdrPkt(sfd, p, len, result);
 }
 
 /* Invalidates the header analysis (handle reset). */

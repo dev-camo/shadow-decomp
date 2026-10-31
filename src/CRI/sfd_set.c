@@ -72,25 +72,21 @@ static void sfset_SetCondDef(SFD sfd, Sint32 id, Sint32 val) {
 }
 
 /* Sets the condition on one handle (its value and its default), or with sfd 0 on every live handle
- * and the library defaults. COMPILER-DIFF: the library slot is addressed through the byte offset
- * `ofs`, which the inlined SFSET_SetCond calls also use for their index; writing
- * SFLIB_libwork.cond[id] directly, or through an index local, compiles differently. */
+ * and the library defaults. NonMatching (register choice only): see configure.py. */
 Sint32 SFD_SetCond(SFD sfd, Sint32 id, Sint32 val) {
-    SFD hn;
     Sint32 i;
     SFD *p;
-    Sint32 ofs;
+    SFD hn;
 
     if (sfd == 0) {
         p = SFLIB_libwork.hn;
-        ofs = id << 2;
         for (i = 0; i < 8; i++, p++) {
             hn = *p;
             if (SFLIB_CheckHn(hn) == 0) {
                 SFSET_SetCond(hn, id, val);
             }
         }
-        *(Sint32 *)((Uint8 *)SFLIB_libwork.cond + ofs) = val; /* SFLIB_libwork.cond[id] */
+        SFLIB_libwork.cond[id] = val;
     } else {
         if (SFLIB_CheckHn(sfd) != 0) {
             return SFLIB_SetErr(0, 0xFF000112);

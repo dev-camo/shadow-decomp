@@ -580,14 +580,15 @@ static Bool sfply_IsAudBufFull(SFD sfd) {
     return 0;
 }
 
-/* start a buffering pause? */
+/* start a buffering pause? Written in the same if/return form as sfply_IsBpaOff. The original
+ * calls this function from sfply_StatPlay; with one statement fewer (`return SFD_CmpTime(...) ==
+ * 0`) it is small enough for -inline auto and is inlined there (sfply_StatPlay 2152 bytes instead
+ * of 1504). */
 static Bool sfply_IsBpaOn(SFD sfd) {
     Sint32 t;
     Sint32 u;
     Sint32 a;
     Sint32 b;
-    Sint32 i;
-    Bool term;
 
     if (SFSET_GetCond(sfd, 0x43) == 0) {
         return 0;
@@ -601,23 +602,7 @@ static Bool sfply_IsBpaOn(SFD sfd) {
     if (sfd->stat != SFD_STAT_PLAYING) {
         return 0;
     }
-    /* sfply_IsTermAny written out: as a helper call the function would be small enough to be
-     * inlined into sfply_StatPlay */
-    if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) && SFTRN_GetTermFlg(sfd, 6)) {
-        term = 1;
-    } else if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) && SFTRN_GetTermFlg(sfd, 7)) {
-        term = 1;
-    } else {
-        for (i = 0; i < SFD_BUF_NUM; i++) {
-            if (SFBUF_GetTermFlg(sfd, i)) {
-                term = 1;
-                goto term_end;
-            }
-        }
-        term = 0;
-    }
-term_end:
-    if (term) {
+    if (sfply_IsTermAny(sfd)) {
         return 0;
     }
     if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 1 && sfd->plyinf.x28 == 0) {
@@ -641,7 +626,10 @@ term_end:
     if (t <= 0 || a <= 0) {
         return 0;
     }
-    return SFD_CmpTime(t, u, a, b) == 0;
+    if (SFD_CmpTime(t, u, a, b)) {
+        return 0;
+    }
+    return 1;
 }
 
 /* end a buffering pause? */
@@ -984,8 +972,6 @@ void sfply_ExecOne(SFD sfd) {
         SFTRN_CallTrSetup(sfd, 2);
         SFSEE_ExecServer(sfd);
     }
-    /* the three idle states re-read the state: MWCC only builds the jump table for 7 separate
-     * case bodies, and the re-read folds into the loaded value */
     stat = sfd->stat;
     switch (stat) {
     case SFD_STAT_STOP:
@@ -1007,6 +993,13 @@ void sfply_ExecOne(SFD sfd) {
     case SFD_STAT_PLAYING:
         stat = sfply_StatPlay(sfd);
         break;
+    /* Matching workaround: each idle state keeps the current state in an arm of its own. The
+     * original's jump table has separate entries for states 0, 5 and 6 that all branch to the
+     * common store; MWCC builds a table only for at least nine case ranges, so states 5 and 6
+     * need distinct arms, and arms without a statement (fall-through or a bare break) merge into
+     * the switch exit: no table, sfply_ExecOne 624 bytes instead of 608 (134 differing words) and
+     * the 28-byte table in .data missing. The re-reads compile to nothing. Revisit if the
+     * original's arm contents are found. */
     case 5:
         stat = sfd->stat;
         break;

@@ -28,12 +28,12 @@ Sint32 SFPTS_IsPtsQueFull(SFD sfd, Sint32 strm) {
     return PQ(sfd, strm).cnt >= PQ(sfd, strm).num;
 }
 
-/* Matching constraint: the original keeps each found test's branch as a separate `b found`; the
- * codeless self moves of `i` keep those arms (COMPILER-DIFF M1; they generate no code). */
+/* Finds the queue entry that covers ring position `pos` and consumes the entries before it.
+ * NonMatching (branch layout of the two found tests): see configure.py. */
 Sint32 SFPTS_ReadPtsQue(SFD sfd, Sint32 strm, Uint32 pos, SFPTS_ENT *out) {
     Sint32 idx;
     SFBUF_HN *hn;
-    register Sint32 i;
+    Sint32 i;
     SFPTS_ENT *e;
     Uint32 end;
     SFPTS_ENT *ent;
@@ -42,7 +42,6 @@ Sint32 SFPTS_ReadPtsQue(SFD sfd, Sint32 strm, Uint32 pos, SFPTS_ENT *out) {
     Uint32 ofst;
     Uint32 size;
     Sint32 cnt;
-    Sint32 n;
 
     out->pts = -1;
     hn = SFBUF_GET_HN(sfd, strm);
@@ -65,22 +64,14 @@ Sint32 SFPTS_ReadPtsQue(SFD sfd, Sint32 strm, Uint32 pos, SFPTS_ENT *out) {
             e = &ent[idx];
             if (e->pos + e->len <= end) {
                 if (e->pos <= pos && pos < e->pos + e->len) {
-                    asm { mr i, i
-                    } /* COMPILER-DIFF: M1 (codeless arm: keeps the found block as `b found`) */
                     goto found;
                 }
             } else {
                 if ((e->pos <= pos && pos < end) || (ofst <= pos && pos < e->pos + e->len - size)) {
-                    asm { mr i, i
-                    } /* COMPILER-DIFF: M1 (codeless arm: keeps the found block as `b found`) */
                     goto found;
                 }
             }
-            n = idx + 1; /* sfpts_Wrap(idx + 1, num) written into idx (no helper copy) */
-            idx = n - num;
-            if (n < num) {
-                idx = n;
-            }
+            idx = sfpts_Wrap(idx + 1, num);
         }
         i = -1;
     found:
