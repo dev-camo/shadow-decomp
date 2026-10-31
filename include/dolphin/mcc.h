@@ -2,6 +2,7 @@
 #define _DOLPHIN_MCC_H_
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,6 +33,7 @@ typedef struct {
     /* 0x02 */ u8 connect;
     /* 0x03 */ u8 isLocked;
 } MCC_Info;
+CHECK_SIZEOF(MCC_Info, 0x4);
 
 typedef enum {
     MCC_EXI_0 = 0,
@@ -57,11 +59,13 @@ typedef struct {
     /* 0x04 */ u16 rsvd;
     /* 0x06 */ u16 protocol;
 } MCC_Hdr;
+CHECK_SIZEOF(MCC_Hdr, 0x8);
 
 typedef struct {
     /* 0x00 */ u32 code;
     /* 0x04 */ u32 number;
 } MCC_HdrFio;
+CHECK_SIZEOF(MCC_HdrFio, 0x8);
 
 typedef struct {
     /* 0x00 */ MCC_Info info;
@@ -71,6 +75,7 @@ typedef struct {
     /* 0x10 */ int isStreamConnection;
     /* 0x14 */ int isStreamOpened;
 } MCC_ChannelInfo;
+CHECK_SIZEOF(MCC_ChannelInfo, 0x18);
 
 typedef enum {
     MCC_MODE_MIN = 0,
@@ -113,6 +118,7 @@ typedef struct {
     /* 0x02 */ u8 month;
     /* 0x03 */ u8 day;
 } FIO_Date;
+CHECK_SIZEOF(FIO_Date, 0x4);
 
 typedef struct {
     /* 0x00 */ u8 hour;
@@ -120,11 +126,13 @@ typedef struct {
     /* 0x02 */ u8 second;
     /* 0x03 */ u8 reserved;
 } FIO_Daytime;
+CHECK_SIZEOF(FIO_Daytime, 0x4);
 
 typedef struct {
     /* 0x00 */ FIO_Date date;
     /* 0x04 */ FIO_Daytime time;
 } FIO_Timestamp;
+CHECK_SIZEOF(FIO_Timestamp, 0x8);
 
 typedef struct {
     /* 0x00 */ u32 fileAttributes;
@@ -134,11 +142,13 @@ typedef struct {
     /* 0x1C */ u32 fileSizeHigh;
     /* 0x20 */ u32 fileSizeLow;
 } FIO_Stat;
+CHECK_SIZEOF(FIO_Stat, 0x24);
 
 typedef struct {
     /* 0x00 */ FIO_Stat stat;
     /* 0x24 */ char filename[256];
 } FIO_Finddata;
+CHECK_SIZEOF(FIO_Finddata, 0x124);
 
 #define FIO_ERROR_NONE 0x00
 #define FIO_ERROR_WRONG_CODE 0x81

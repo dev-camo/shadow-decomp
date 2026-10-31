@@ -2,6 +2,7 @@
 #define _DOLPHIN_SEQ_H_
 
 #include <dolphin/syn.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,6 +20,7 @@ typedef struct _SEQTRACK {
     /* 0x20 */ u32 delay;
     /* 0x24 */ u32 state;
 } SEQTRACK;
+CHECK_SIZEOF(SEQTRACK, 0x28);
 
 typedef struct _SEQSEQUENCE {
     /* 0x0000 */ void *next;
@@ -31,6 +33,7 @@ typedef struct _SEQSEQUENCE {
     /* 0x3154 */ void (*callback[128])(void *, u8);
     /* 0x3354 */ SEQTRACK track[64];
 } SEQSEQUENCE;
+CHECK_SIZEOF(SEQSEQUENCE, 0x3D54);
 
 #define SEQ_ALL_TRACKS -1
 

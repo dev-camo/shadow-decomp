@@ -3,6 +3,7 @@
 
 #include <dolphin/types.h>
 #include <dolphin/ax.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,6 +14,7 @@ extern "C" {
 typedef struct WTINST {
     /* 0x00 */ u16 keyRegion[128];
 } WTINST;
+CHECK_SIZEOF(WTINST, 0x100);
 
 typedef struct WTREGION {
     /* 0x00 */ u8 unityNote;
@@ -24,6 +26,7 @@ typedef struct WTREGION {
     /* 0x10 */ u32 articulationIndex;
     /* 0x14 */ u32 sampleIndex;
 } WTREGION;
+CHECK_SIZEOF(WTREGION, 0x18);
 
 typedef struct WTART {
     /* 0x00 */ s32 lfoFreq;
@@ -47,6 +50,7 @@ typedef struct WTART {
     /* 0x48 */ s32 eg2Pitch;
     /* 0x4C */ s32 pan;
 } WTART;
+CHECK_SIZEOF(WTART, 0x50);
 
 typedef struct WTSAMPLE {
     /* 0x00 */ u16 format;
@@ -55,6 +59,7 @@ typedef struct WTSAMPLE {
     /* 0x08 */ u32 length;
     /* 0x0C */ u16 adpcmIndex;
 } WTSAMPLE;
+CHECK_SIZEOF(WTSAMPLE, 0x10);
 
 typedef struct WTADPCM {
     /* 0x00 */ u16 a[8][2];
@@ -66,6 +71,7 @@ typedef struct WTADPCM {
     /* 0x2A */ u16 loop_yn1;
     /* 0x2C */ u16 loop_yn2;
 } WTADPCM;
+CHECK_SIZEOF(WTADPCM, 0x2E);
 
 typedef struct SYNSYNTH {
     /* 0x0000 */ void *next;
@@ -102,6 +108,7 @@ typedef struct SYNSYNTH {
     /* 0x0D40 */ void *keyGroup[16][16];
     /* 0x1140 */ void *voice[16][128];
 } SYNSYNTH;
+CHECK_SIZEOF(SYNSYNTH, 0x3140);
 
 typedef struct SYNVOICE {
     /* 0x00 */ void *next;
@@ -145,6 +152,7 @@ typedef struct SYNVOICE {
     /* 0x8C */ s32 peRelease;
     /* 0x90 */ s32 pePitch;
 } SYNVOICE;
+CHECK_SIZEOF(SYNVOICE, 0x94);
 
 // sample formats
 #define SYN_SAMPLE_FORMAT_ADPCM 0

@@ -2,6 +2,7 @@
 #define _DOLPHIN_G2D_H_
 
 #include <dolphin/gx.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,6 +26,7 @@ typedef struct G2DSprite {
     f32 rS1;
     f32 rT1;
 } G2DSprite;
+CHECK_SIZEOF(G2DSprite, 0x1C);
 
 typedef struct G2DPosOri {
     f32 rPosX;
@@ -32,6 +34,7 @@ typedef struct G2DPosOri {
     f32 rOriX;
     f32 rOriY;
 } G2DPosOri;
+CHECK_SIZEOF(G2DPosOri, 0x10);
 
 typedef struct G2DGlob {
     u16 nViewportTlcX;
@@ -44,6 +47,7 @@ typedef struct G2DGlob {
     f32 rHalfX;
     f32 rHalfY;
 } G2DGlob;
+CHECK_SIZEOF(G2DGlob, 0x28);
 
 typedef struct G2DMatDesc {
     s32 nReserved;
@@ -52,6 +56,7 @@ typedef struct G2DMatDesc {
     GXTexObj *to;
     u8 *clut; // Color Look-Up Table
 } G2DMatDesc;
+CHECK_SIZEOF(G2DMatDesc, 0x14);
 
 typedef struct G2DTileDesc {
     u8 nMaterial;
@@ -60,6 +65,7 @@ typedef struct G2DTileDesc {
     u8 nCI; // Color Index
     u8 aUser[4];
 } G2DTileDesc;
+CHECK_SIZEOF(G2DTileDesc, 0x8);
 
 typedef struct G2DLayer {
     void *map;
@@ -73,6 +79,7 @@ typedef struct G2DLayer {
     G2DTileDesc *tileDesc;
     G2DMatDesc *matDesc;
 } G2DLayer;
+CHECK_SIZEOF(G2DLayer, 0x18);
 
 void G2DInitSprite(G2DSprite *sprite);
 void G2DDrawSprite(G2DSprite *sprite, G2DPosOri *po);

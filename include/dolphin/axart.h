@@ -3,6 +3,7 @@
 
 #include <dolphin/types.h>
 #include <dolphin/ax.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,6 +36,7 @@ typedef struct {
     void *next;
     u32 type;
 } AXART_ART;
+CHECK_SIZEOF(AXART_ART, 0x8);
 
 typedef struct {
     f32 *lfo;
@@ -46,6 +48,7 @@ typedef struct {
     f32 sample;
     f32 output;
 } AXART_LFO;
+CHECK_SIZEOF(AXART_LFO, 0x20);
 
 typedef struct {
     AXART_ART art;
@@ -62,28 +65,33 @@ typedef struct {
     f32 pitch;
     s32 attenuation;
 } AXART_3D;
+CHECK_SIZEOF(AXART_3D, 0x2C);
 
 typedef struct {
     AXART_ART art;
     u8 pan;
     u8 span;
 } AXART_PANNING;
+CHECK_SIZEOF(AXART_PANNING, 0xC);
 
 typedef struct {
     AXART_ART art;
     u16 itdL;
     u16 itdR;
 } AXART_ITD;
+CHECK_SIZEOF(AXART_ITD, 0xC);
 
 typedef struct {
     AXART_ART art;
     u8 src;
 } AXART_SRC;
+CHECK_SIZEOF(AXART_SRC, 0xC);
 
 typedef struct {
     AXART_ART art;
     s32 cents;
 } AXART_PITCH;
+CHECK_SIZEOF(AXART_PITCH, 0xC);
 
 typedef struct {
     AXART_ART art;
@@ -91,27 +99,32 @@ typedef struct {
     s32 target;
     s32 cents;
 } AXART_PITCH_ENV;
+CHECK_SIZEOF(AXART_PITCH_ENV, 0x14);
 
 typedef struct {
     AXART_ART art;
     AXART_LFO lfo;
     s32 cents;
 } AXART_PITCH_MOD;
+CHECK_SIZEOF(AXART_PITCH_MOD, 0x2C);
 
 typedef struct {
     AXART_ART art;
     s32 attenuation;
 } AXART_VOLUME;
+CHECK_SIZEOF(AXART_VOLUME, 0xC);
 
 typedef struct {
     AXART_ART art;
     s32 attenuation;
 } AXART_AUXA_VOLUME;
+CHECK_SIZEOF(AXART_AUXA_VOLUME, 0xC);
 
 typedef struct {
     AXART_ART art;
     s32 attenuation;
 } AXART_AUXB_VOLUME;
+CHECK_SIZEOF(AXART_AUXB_VOLUME, 0xC);
 
 typedef struct {
     AXART_ART art;
@@ -119,6 +132,7 @@ typedef struct {
     s32 target;
     s32 attenuation;
 } AXART_VOLUME_ENV;
+CHECK_SIZEOF(AXART_VOLUME_ENV, 0x14);
 
 typedef struct {
     AXART_ART art;
@@ -126,6 +140,7 @@ typedef struct {
     s32 target;
     s32 attenuation;
 } AXART_AUXA_VOLUME_ENV;
+CHECK_SIZEOF(AXART_AUXA_VOLUME_ENV, 0x14);
 
 typedef struct {
     AXART_ART art;
@@ -133,24 +148,28 @@ typedef struct {
     s32 target;
     s32 attenuation;
 } AXART_AUXB_VOLUME_ENV;
+CHECK_SIZEOF(AXART_AUXB_VOLUME_ENV, 0x14);
 
 typedef struct {
     AXART_ART art;
     AXART_LFO lfo;
     s32 attenuation;
 } AXART_VOLUME_MOD;
+CHECK_SIZEOF(AXART_VOLUME_MOD, 0x2C);
 
 typedef struct {
     AXART_ART art;
     AXART_LFO lfo;
     s32 attenuation;
 } AXART_AUXA_VOLUME_MOD;
+CHECK_SIZEOF(AXART_AUXA_VOLUME_MOD, 0x2C);
 
 typedef struct {
     AXART_ART art;
     AXART_LFO lfo;
     s32 attenuation;
 } AXART_AUXB_VOLUME_MOD;
+CHECK_SIZEOF(AXART_AUXB_VOLUME_MOD, 0x2C);
 
 typedef struct {
     AXART_ART art;
@@ -158,6 +177,7 @@ typedef struct {
     u32 frequency;
     u32 update;
 } AXART_LPF;
+CHECK_SIZEOF(AXART_LPF, 0x14);
 
 typedef struct {
     void *next;
@@ -166,6 +186,7 @@ typedef struct {
     f32 sampleRate;
     AXART_ART *articulators;
 } AXART_SOUND;
+CHECK_SIZEOF(AXART_SOUND, 0x14);
 
 #define AXART_SINE_CNT 64
 extern f32 AXARTSine[AXART_SINE_CNT];
