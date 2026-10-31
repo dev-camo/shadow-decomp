@@ -94,18 +94,20 @@ typedef void (*SFX_TBLFN)(void *tbl);
 typedef struct SFXZ_OBJ SFXZ_OBJ;
 typedef struct SFXA_OBJ SFXA_OBJ;
 
-/* Table makers registered in the alpha object (cftyp422_ppc.c). */
+/* Table makers registered in the alpha object (cftyp422_ppc.c). SFXA_MakeAlpLumiTbl passes the
+ * object's lumi_mode, lumi_lo and lumi_hi as the first three arguments of the luma maker. */
 typedef void (*SFXA_MakeAlp3Fn)(void *tbl, Uint8 alp0, Uint8 alp1, Uint8 alp2);
-typedef void (*SFXA_MakeLumiFn)(Sint32 lumi_min, Sint32 lumi_max, Sint32 lumi_rate, void *tbl);
+typedef void (*SFXA_MakeLumiFn)(Sint32 mode, Sint32 lo, Sint32 hi, void *tbl);
 
-/* The alpha object (sfx_alp.c): either three fixed alpha levels or a luma-driven ramp between
- * lumi_min and lumi_max. */
+/* The alpha object (sfx_alp.c): either three fixed alpha levels or an alpha ramp over the luma
+ * values lumi_lo..lumi_hi. The three luma field names are inferred from the way
+ * CFT_MakeArgb8888AlpLumiTbl uses the arguments they are passed as. */
 struct SFXA_OBJ {
     Sint32 used;                  /* 0x00 */
     Sint32 need_update;           /* 0x04 luma settings changed since the table was built */
-    Sint32 lumi_min;              /* 0x08 */
-    Sint32 lumi_max;              /* 0x0C */
-    Sint32 lumi_rate;             /* 0x10 */
+    Sint32 lumi_mode;             /* 0x08 1: the alpha falls over the ramp, else it rises */
+    Sint32 lumi_lo;               /* 0x0C first luma value of the ramp */
+    Sint32 lumi_hi;               /* 0x10 last luma value of the ramp */
     Uint8 alp0;                   /* 0x14 */
     Uint8 alp1;                   /* 0x15 */
     Uint8 alp2;                   /* 0x16 */

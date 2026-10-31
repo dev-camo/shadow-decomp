@@ -1,8 +1,8 @@
 /* Sofdec SFX alpha tables (sfx_alp.c, SFXA): per-converter alpha settings, either three fixed
- * alpha levels or a luma-driven ramp between lumi_min and lumi_max, and the calls that build the
- * ARGB8888 conversion tables from them through the table makers registered in the object.
+ * alpha levels or an alpha ramp over a luma range, and the calls that build the ARGB8888
+ * conversion tables from them through the table makers registered in the object.
  *
- * Names follow the RE4 GameCube decompilation of the same file.
+ * Function names follow the RE4 GameCube decompilation of the same file.
  */
 #include <string.h>
 
@@ -51,12 +51,12 @@ void SFXA_MakeAlp3110Tbl(SFXA_OBJ *sfxa, Sint32 frmno, void *tbl) {
 /* Builds the table with alpha following the luma, and clears the update flag. */
 void SFXA_MakeAlpLumiTbl(SFXA_OBJ *sfxa, Sint32 frmno, void *tbl) {
     SFXA_MakeLumiFn make = sfxa->make_lumi;
-    Sint32 lumi_min = sfxa->lumi_min;
-    Sint32 lumi_max = sfxa->lumi_max;
-    Sint32 lumi_rate = sfxa->lumi_rate;
+    Sint32 lumi_mode = sfxa->lumi_mode;
+    Sint32 lumi_lo = sfxa->lumi_lo;
+    Sint32 lumi_hi = sfxa->lumi_hi;
 
     if (make != NULL) {
-        make(lumi_min, lumi_max, lumi_rate, tbl);
+        make(lumi_mode, lumi_lo, lumi_hi, tbl);
     }
     sfxa->need_update = 0;
 }
@@ -85,8 +85,8 @@ static SFXA_OBJ *sfxa_search_free(void) {
     return NULL;
 }
 
-/* Takes an alpha object with the default settings: luma range 0 to 31 at rate 100, alpha levels
- * 0, 127 and 255, and a table update pending. */
+/* Takes an alpha object with the default settings: an alpha ramp rising over the luma values
+ * 31..100, alpha levels 0, 127 and 255, and a table update pending. */
 SFXA_OBJ *SFXA_Create(void) {
     SFXA_OBJ *sfxa;
 
@@ -94,9 +94,9 @@ SFXA_OBJ *SFXA_Create(void) {
     if (sfxa == NULL) {
         return sfxa;
     }
-    sfxa->lumi_min = 0;
-    sfxa->lumi_max = 31;
-    sfxa->lumi_rate = 100;
+    sfxa->lumi_mode = 0;
+    sfxa->lumi_lo = 31;
+    sfxa->lumi_hi = 100;
     sfxa->need_update = 1;
     sfxa->alp0 = 0;
     sfxa->alp1 = 127;
