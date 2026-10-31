@@ -20,6 +20,8 @@ namespace CSD {
  * with fopen's mode "rb". Only the vtable pointer and the directory at 0x4 are mapped. */
 class CFileSystem {
   public:
+    CFileSystem() : m_directory("") {}
+
     /* The size of the file at path (the name with the library directory prefixed). */
     virtual u32 GetFileSize(const char *path) = 0;
     /* Reads the file at path (the name with the library directory prefixed) into buffer. The

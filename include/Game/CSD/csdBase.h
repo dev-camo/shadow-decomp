@@ -1,6 +1,6 @@
 /* csdBase.h (original name from the library's allocation calls, which pass __FILE__): CBase, the
- * base class of the library's heap objects, whose operator new passes __LINE__ 40 of the original
- * header. The other Chao::CSD base services are assumed to be declared here too. */
+ * base class of the library's heap objects. Its operator new must stay on line 40 (see the
+ * Matching workaround below the class). Other Chao::CSD base services are assumed declared here. */
 #ifndef GAME_CSD_CSDBASE_H
 #define GAME_CSD_CSDBASE_H
 
@@ -26,11 +26,6 @@ void Free(void *ptr);
 CPlatform *GetPlatform();
 void SetPlatform(CPlatform *platform);
 
-/* Set up and tear down the matrix stack and the registry of texture-list types (names
- * inferred). */
-void InitLibrary();
-void TermLibrary();
-
 /* Formats a printf-style message and passes it to the platform's Print (name inferred). */
 void PrintError(const char *format, ...);
 
@@ -47,8 +42,22 @@ class CBase {
     static void operator delete(void *ptr) {
         GetMemoryAlloc()->FreeObject(ptr);
     }
+
+    /* An empty constructor: with it the constructors of derived classes are emitted out of line,
+     * as in the original. */
+    CBase() {}
 };
 CHECK_SIZEOF(Chao::CSD::CBase, 0x1);
+
+/* Matching workaround: InitLibrary and TermLibrary are declared after CBase so that the
+ * allocation in CBase::operator new is on line 40, the __LINE__ the original's CBase allocations
+ * pass (declared above the class, they put it on line 45). Keep that line when editing above it;
+ * revisit if the original header layout is recovered. */
+
+/* Set up and tear down the matrix stack and the registry of texture-list types (names
+ * inferred). */
+void InitLibrary();
+void TermLibrary();
 
 } // namespace CSD
 } // namespace Chao
