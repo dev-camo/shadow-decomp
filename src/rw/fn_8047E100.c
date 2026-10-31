@@ -88,6 +88,7 @@ RwMatrix *fn_8047E298(RwMatrix *dst, const RwMatrix *matrix) {
     RwReal recipRight;
     RwReal recipUp;
     RwReal recipAt;
+    RwReal recip;
     RwV3d *first;
     RwV3d *second;
     RwV3d *rebuilt;
@@ -140,11 +141,11 @@ RwMatrix *fn_8047E298(RwMatrix *dst, const RwMatrix *matrix) {
     rebuilt->x = first->y * second->z - first->z * second->y;
     rebuilt->y = first->z * second->x - first->x * second->z;
     rebuilt->z = first->x * second->y - first->y * second->x;
-    NORMALIZEV3D(*rebuilt, recipRight);
+    NORMALIZEV3D(*rebuilt, recip);
     second->x = rebuilt->y * first->z - rebuilt->z * first->y;
     second->y = rebuilt->z * first->x - rebuilt->x * first->z;
     second->z = rebuilt->x * first->y - rebuilt->y * first->x;
-    NORMALIZEV3D(*second, recipRight);
+    NORMALIZEV3D(*second, recip);
 
     dst->right = right;
     dst->up = up;
