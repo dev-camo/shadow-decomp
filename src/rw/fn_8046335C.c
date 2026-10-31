@@ -65,11 +65,11 @@ void *fn_80463428(void *object, RpGameCubeRenderMesh *renderMesh) {
         lbl_805F15B4->lightFrame++;
 
         tieEnd = &atomic->llWorldSectorsInAtomic.link;
-        tieLink = atomic->llWorldSectorsInAtomic.link.next;
+        tieLink = tieEnd->next;
         while (tieLink != tieEnd) {
             RpWorldSector *sector = TIEFROMATOMICLINK(tieLink)->worldSector;
             RwLLLink *lightEnd = &sector->lightsInWorldSector.link;
-            RwLLLink *lightLink = sector->lightsInWorldSector.link.next;
+            RwLLLink *lightLink = lightEnd->next;
 
             while (lightLink != lightEnd) {
                 RpLight *light = ((RpLightTie *)lightLink)->light;
