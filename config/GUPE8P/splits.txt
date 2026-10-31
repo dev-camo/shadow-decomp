@@ -1459,14 +1459,10 @@ CRI/mwsfdsee.c:
 Game/fn_80403E44.c:
 	.text       start:0x80403E44 end:0x80403E4C
 
-Game/fn_80406B70.c:
-	.text       start:0x80406B70 end:0x80406B90
-
-Game/fn_80406E88.c:
-	.text       start:0x80406E88 end:0x80406EB0
-
-Game/fn_80406EB0.c:
-	.text       start:0x80406EB0 end:0x80406EBC
+CRI/mwsfdlib.c:
+	.text       start:0x80406894 end:0x80406EBC
+	.rodata     start:0x80519950 end:0x80519D00
+	.bss        start:0x805DD878 end:0x805DEF80
 
 Game/fn_80406EBC.c:
 	.text       start:0x80406EBC end:0x80406F08

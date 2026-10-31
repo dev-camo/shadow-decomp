@@ -9,6 +9,7 @@
 #include "CRI/lsc.h"
 #include "CRI/sfd.h"
 #include "CRI/sj.h"
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,16 +54,59 @@ typedef struct {
     /* 0x04 */ Sint32 cnt; /* number of created handles */
 } MWSST_MNG;
 
-/* MW player object */
+/* MW player object (0x2A8 bytes; the libwork holds eight) */
 struct MWPLY_OBJ {
-    /* 0x00 */ Uint8 x00[0x3C];
-    /* 0x3C */ SFD sfd;
-    /* 0x40 */ ADXSTM stm;
-    /* 0x44 */ Sint32 x44;
-    /* 0x48 */ LSC lsc;
-    /* 0x4C */ Uint8 x4c[0x280 - 0x4C];
+    /* 0x000 */ Sint32 used; /* 1 for a created handle */
+    /* 0x004 */ Uint8 x04[0x38];
+    /* 0x03C */ SFD sfd;
+    /* 0x040 */ ADXSTM stm;
+    /* 0x044 */ Sint32 x44;
+    /* 0x048 */ LSC lsc;
+    /* 0x04C */ Uint8 x4c[0x280 - 0x4C];
     /* 0x280 */ MWSST_OBJ sst;
+    /* 0x298 */ Uint8 x298[0x2A8 - 0x298];
 };
+CHECK_SIZEOF(MWPLY_OBJ, 0x2A8);
+
+#define MWSFD_MAX_HN 8
+
+/* Parameters of mwPlyInitSfdFx. */
+typedef struct {
+    /* 0x00 */ Float32 vfreq;    /* video refresh rate in Hz */
+    /* 0x04 */ Sint32 x04;       /* copied to MWSFD_LIBWORK.x08 */
+    /* 0x08 */ Sint32 nfrm_pool; /* frame pool size; the library reserves two for itself */
+    /* 0x0C */ Sint32 x0c;       /* copied to MWSFD_LIBWORK.main_decode */
+    /* 0x10 */ Sint32 x10;
+    /* 0x14 */ Sint32 x14;
+    /* 0x18 */ Sint32 x18;
+    /* 0x1C */ Sint32 x1c;
+} MWSFD_INIT_PRM;
+CHECK_SIZEOF(MWSFD_INIT_PRM, 0x20);
+
+/* Library work (mwsfdlib.c, 0x15AC bytes): the player handles and the library-wide settings. */
+typedef struct {
+    /* 0x00 */ Sint32 x00;
+    /* 0x04 */ Float32 vfreq;
+    /* 0x08 */ Sint32 x08;
+    /* 0x0C */ Sint32 nfrm_pool;
+    /* 0x10 */ Sint32 x10;
+    /* 0x14 */ Uint8 x14[0x24 - 0x14];
+    /* 0x24 */ Sint32 svr_bdr; /* a handle is sleeping at the idle border */
+    /* 0x28 */ Uint8 x28[0x38 - 0x28];
+    /* 0x38 */ Sint32 use_picusr; /* picture user data is captured */
+    /* 0x3C */ Sint32 pause_bdr; /* pausing waits for the decode server border */
+    /* 0x40 */ Uint8 x40[0x58 - 0x40];
+    /* 0x58 */ Sint32 svr_flg; /* decode server running */
+    /* 0x5C */ Sint32 x5c;
+    /* 0x60 */ Uint8 x60[0x68 - 0x60];
+    /* 0x68 */ Sint32 errcode; /* last library error */
+    /* 0x6C */ MWPLY_OBJ hn[MWSFD_MAX_HN];
+} MWSFD_LIBWORK;
+CHECK_SIZEOF(MWSFD_LIBWORK, 0x15AC);
+
+extern MWSFD_LIBWORK mwsfd_libwork;
+extern Sint32 mwsfd_init_flag;
+extern Sint32 mwg_vcnt;
 
 /* mwsfdsst.c */
 extern MWSST_MNG mwsstmng;
@@ -74,6 +118,28 @@ void MWSST_Pause(MWSST sst, Sint32 sw);
 Sint32 MWSST_GetStat(MWSST sst);
 void MWSST_Stop(MWSST sst);
 void MWSST_StartSj(MWSST sst);
+
+/* mwsfdlib.c */
+void mwPlyFinishSfdFx(void);
+void MWSFLIB_SfdErrFunc(void *obj, Sint32 code);
+Sint32 MWSFLIB_SetErrCode(Sint32 code);
+Sint32 MWSFD_GetPauseBdr(void);
+Sint32 MWSFD_GetUsePicUsr(void);
+void mwPlyInitSfdFx(MWSFD_INIT_PRM *iprm);
+void mwsflib_LscErrFunc(void *obj, Char8 *msg);
+MWSFD_LIBWORK *MWSFLIB_GetLibWorkPtr(void);
+
+/* other units of the player used by mwsfdlib.c */
+void MWSFD_SetCond(MWPLY mwply, Sint32 id, Sint32 val);
+SFD mwPlyGetSfdHn(MWPLY mwply);
+void mwSfdDestroy(MWPLY mwply);
+void MWSFSFX_Init(void);
+void MWSFSFX_Finish(void); /* inferred name: the counterpart of MWSFSFX_Init */
+void MWSFSVR_SetMwsfdSvrFlg(Sint32 flg);
+void mwsfd_SetSleepBdr(MWPLY mwply, Sint32 sw); /* inferred name */
+Sint32 MWSFSVR_VsyncThrdProc(void *obj);
+Sint32 MWSFSVR_MainThrdProc(void *obj);
+Sint32 MWSFSVR_IdleThrdProc(void *obj);
 
 /* mwsfdrna.c */
 Sint32 MWSFRNA_GetOutVol(MWPLY mwply);
