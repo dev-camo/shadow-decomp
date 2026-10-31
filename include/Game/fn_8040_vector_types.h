@@ -180,6 +180,38 @@ void fn_8040BEF8(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Applies the three angles of rotation in the axis order selected by order, 0 to 2 (behaviour
  * inferred). */
 void fn_8001E070(Fn8040Matrix34 *matrix, const Fn8040Vector3 *rotation, int order);
+/* Quaternion, vector, interpolation and rotation-vector helpers used by the matrix and vector
+ * math units, wherever they are defined. Their original names are unknown and the descriptions
+ * are inferred from the code. A rotation vector holds the angles about the x, y and z axes; order
+ * 0 to 2 selects the order in which they are applied. */
+/* Stores the rotation of the matrix as a quaternion. */
+void fn_8040C55C(Fn8040Vector4 *quaternion, Fn8040Matrix34 *matrix);
+/* Spherical interpolation from one quaternion to another by t, 0 to 1. */
+void fn_8040C3EC(Fn8040Vector4 *result, const Fn8040Vector4 *from, const Fn8040Vector4 *to,
+                 float t);
+/* Copies a 4-float vector (out-of-line copy constructor or assignment; inferred). */
+void fn_801B1DD4(Fn8040Vector4 *destination, const Fn8040Vector4 *source);
+/* Scales the vector: result = vector * factor. A by-value wrapper: it keeps the result pointer and
+ * calls fn_8040CDA8. */
+void fn_800091A4(Fn8040Vector3 *result, const Fn8040Vector3 *vector, float factor);
+/* result = left - right (fn_8000AD64, a by-value wrapper that keeps the result pointer and calls
+ * fn_8040CD74), and result = left + right (fn_8040CDD0). */
+void fn_8000AD64(Fn8040Vector3 *result, const Fn8040Vector3 *left, const Fn8040Vector3 *right);
+void fn_8040CDD0(Fn8040Vector3 *result, const Fn8040Vector3 *left, const Fn8040Vector3 *right);
+/* Wraps an angle in radians into the range -pi to pi (behaviour inferred). */
+float fn_8040E99C(float angle);
+/* Converts a rotation vector to a quaternion, and a quaternion to a rotation vector (behaviour
+ * inferred; the second returns the zero vector for every order except 2). */
+void fn_804102F4(Fn8040Vector4 *quaternion, const Fn8040Vector3 *rotation, int order);
+Fn8040Vector3 fn_80410204(const Fn8040Vector4 *quaternion, int order);
+/* Interpolation of the segment in fn_8040EFA4.cpp: matrices through quaternions with a linear
+ * translation, rotation vectors through quaternions, positions linearly, and angles the shorter
+ * way round. */
+void fn_8040EFA4(Fn8040Matrix34 *result, Fn8040Matrix34 *from, Fn8040Matrix34 *to, float t);
+Fn8040Vector3 fn_8040F16C(const Fn8040Vector3 *from, const Fn8040Vector3 *to, int order, float t);
+void fn_8040F268(Fn8040Vector3 *result, const Fn8040Vector3 *from, const Fn8040Vector3 *to,
+                 float t);
+float fn_8040F314(float from, float to, float t);
 /* The identity and zero matrices, built at startup (a __sinit_ function and a .ctors entry in
  * fn_8040B034.cpp). */
 extern Fn8040Matrix34 lbl_805E0720; /* identity */
