@@ -1,16 +1,16 @@
 #ifndef PPC_EABI_UART_H
 #define PPC_EABI_UART_H
 
-/* Serial console interface the MSL console driver uses (implemented by the OS EXI UART code). */
-#include <cstddef>
-
+/* Serial console interface shared by the MSL console driver and MetroTRK (implemented by the OS EXI
+ * UART code). */
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef int UARTError;
 
-typedef enum UARTBaudRate {
+typedef enum {
+    kBaudHWSet = -1, // baud rate taken from the hardware setting
     kBaud300 = 300,
     kBaud600 = 600,
     kBaud1200 = 1200,

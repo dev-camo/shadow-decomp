@@ -72,8 +72,9 @@ int InitMetroTRKCommTable(int hwId) {
     return result;
 }
 
-DSError TRKInitializeIntDrivenUART(u32, u32, u32, void *init_arg) {
-    gDBCommTable.initialize_func(init_arg, TRKEXICallBack);
+DSError TRKInitializeIntDrivenUART(UARTBaudRate baudRate, u32 unknown1, u32 unknown2,
+                                   void *inputPendingPtrRef) {
+    gDBCommTable.initialize_func(inputPendingPtrRef, TRKEXICallBack);
     gDBCommTable.open_func();
     return DS_NoError;
 }

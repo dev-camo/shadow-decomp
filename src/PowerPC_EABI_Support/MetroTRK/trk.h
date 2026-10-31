@@ -199,10 +199,10 @@ DSError HandlePositionFileSupportRequest(u32 handle, u32 *position, u8 mode, DSI
 
 ////////// OTHER FUNCTIONS /////////
 DSError TRK_main(void);
-UARTError InitializeUART(UARTBaudRate baudRate);
-DSError TRKInitializeIntDrivenUART(u32, u32, u32, void *);
+DSError TRKInitializeIntDrivenUART(UARTBaudRate baudRate, u32 unknown1, u32 unknown2,
+                                   void *inputPendingPtrRef);
 int TRKPollUART(void);
-UARTError TRKReadUARTN(void *, u32);
+UARTError TRKReadUARTN(void *bytes, u32 length);
 UARTError TRKWriteUARTN(const void *bytes, u32 length);
 void usr_put_initialize(void);
 void TRKTargetSetInputPendingPtr(void *);
