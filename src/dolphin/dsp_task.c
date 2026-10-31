@@ -1,11 +1,12 @@
+// Dolphin SDK DSP library: DSP task scheduling.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: __DSP_add_task.
 #include <stddef.h>
 
 #include <dolphin.h>
 #include <dolphin/hw_regs.h>
 
 #include "__dsp.h"
-
-static u32 t0, t1, t2; // unused
 
 DSPTaskInfo *__DSP_curr_task;
 DSPTaskInfo *__DSP_first_task;
@@ -15,14 +16,17 @@ DSPTaskInfo *__DSP_rude_task;
 int __DSP_rude_task_pending;
 
 void __DSPHandler(__OSInterrupt intr, OSContext *context) {
-    u8 unused[4]; // keeps the 0x2E8-byte stack frame (0x2E0 without it); its use is unknown
+    // Matching workaround: unused storage that keeps the original 0x2E8-byte stack frame (0x2E0
+    // without it, 5 differing words); the public dolsdk2004 SDK decompilation uses the same form.
+    // Revisit when the original locals are known.
+    u8 unused[4];
     OSContext exceptionContext;
     u16 tmp;
     u32 mail;
 
-    tmp = __DSPRegs[5];
+    tmp = __DSPRegs[DSP_CONTROL_STATUS];
     tmp = (tmp & ~0x28) | 0x80;
-    __DSPRegs[5] = tmp;
+    __DSPRegs[DSP_CONTROL_STATUS] = tmp;
 
     OSClearContext(&exceptionContext);
     OSSetCurrentContext(&exceptionContext);
@@ -33,7 +37,7 @@ void __DSPHandler(__OSInterrupt intr, OSContext *context) {
         ;
 
     mail = DSPReadMailFromDSP();
-    if ((__DSP_curr_task->flags & (1 << (31 - 0x1E))) && (mail + 0x232F0000) == 2)
+    if ((__DSP_curr_task->flags & 2) && mail == 0xDCD10002)
         mail = 0xDCD10003;
 
     switch (mail) {
@@ -227,6 +231,10 @@ void __DSP_exec_task(DSPTaskInfo *curr, DSPTaskInfo *next) {
 }
 
 void __DSP_boot_task(DSPTaskInfo *task) {
+    // Matching workaround: volatile so that the received mail is stored to the stack as in the
+    // original (a plain u32 drops that store, one word shorter); the public dolsdk2004 SDK
+    // decompilation uses the same form. Revisit when the original release-build use of mail is
+    // known.
     volatile u32 mail;
 
     ASSERTMSGLINE(634, task != NULL, "__DSP_boot_task(): NULL task!\n");
@@ -281,6 +289,7 @@ void __DSP_boot_task(DSPTaskInfo *task) {
     __DSP_debug_printf("__DSP_boot_task()  : IRAM MMEM ADDR: 0x%08X\n", (u32)task->iram_mmem_addr);
     __DSP_debug_printf("__DSP_boot_task()  : IRAM DSP ADDR : 0x%08X\n", task->iram_addr);
     __DSP_debug_printf("__DSP_boot_task()  : IRAM LENGTH   : 0x%08X\n", task->iram_length);
+    // The value printed under "DRAM MMEM ADDR" is dram_length.
     __DSP_debug_printf("__DSP_boot_task()  : DRAM MMEM ADDR: 0x%08X\n", task->dram_length);
     __DSP_debug_printf("__DSP_boot_task()  : Start Vector  : 0x%08X\n", task->dsp_init_vector);
 }

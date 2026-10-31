@@ -1,3 +1,7 @@
+// Dolphin SDK OS library: memory protection.
+// OSGetConsoleSimulatedMemSize and OSGetPhysicalMemSize are not present as separate functions in
+// this game's DOL; their bodies are verified through __OSInitMemoryProtection, which inlines them.
+// OSProtectRange is not present, so its body is unverified.
 #include <dolphin.h>
 #include <dolphin/os.h>
 #include <dolphin/dvd.h>
@@ -12,23 +16,15 @@ static BOOL OnReset(BOOL final);
 static OSResetFunctionInfo ResetFunctionInfo = {OnReset, 0x7F, NULL, NULL};
 
 u32 OSGetPhysicalMemSize(void) {
-#if DEBUG
     OSBootInfo *BootInfo = (OSBootInfo *)OSPhysicalToCached(0);
 
     return BootInfo->memorySize;
-#else
-    return __OSPhysicalMemSize;
-#endif
 }
 
 u32 OSGetConsoleSimulatedMemSize(void) {
-#if DEBUG
     u32 *memSize = (u32 *)OSPhysicalToCached(0xF0);
 
     return *memSize;
-#else
-    return __OSSimulatedMemSize;
-#endif
 }
 
 static BOOL OnReset(BOOL final) {
@@ -191,10 +187,6 @@ static asm void RealMode(register u32 addr) {
 #endif
 
 void __OSInitMemoryProtection(void) {
-#ifndef DEBUG
-    u32 padding[9]; // keeps the 0x50-byte stack frame (0x28 without it); its use is unknown
-    u32 temp;
-#endif
     BOOL enabled;
     u32 size;
 
@@ -213,15 +205,8 @@ void __OSInitMemoryProtection(void) {
     __OSSetInterruptHandler(__OS_INTERRUPT_MEM_ADDRESS, MEMIntrruptHandler);
     OSRegisterResetFunction(&ResetFunctionInfo);
 
-#ifdef DEBUG
     if (OSGetConsoleSimulatedMemSize() < OSGetPhysicalMemSize() &&
-        OSGetConsoleSimulatedMemSize() == 0x1800000)
-#else
-    // The release library reads the simulated size once for both comparisons.
-    temp = OSGetConsoleSimulatedMemSize();
-    if (temp < OSGetPhysicalMemSize() && temp == 0x1800000)
-#endif
-    {
+        OSGetConsoleSimulatedMemSize() == 0x1800000) {
         DCInvalidateRange((void *)0x81800000, 0x1800000);
         __MEMRegs[20] = 2;
     }

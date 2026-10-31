@@ -1,3 +1,9 @@
+// Dolphin SDK OS library: real-time clock and SRAM settings.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: OSGetVideoMode,
+// OSSetLanguage, OSSetVideoMode, __OSCheckSram, __OSGetBootMode, __OSGetRTC, __OSReadROMAsync,
+// __OSSetBootMode, __OSSetRTC. OSGetEuRgb60Mode and OSSetEuRgb60Mode are also absent in USA and
+// Japan, and OSGetProgressiveMode and OSSetProgressiveMode in PAL.
 #include <dolphin/exi.h>
 #include <dolphin/os.h>
 
@@ -5,7 +11,6 @@
 
 static SramControl Scb ATTRIBUTE_ALIGN(DOLPHIN_ALIGNMENT);
 
-// prototypes
 static int GetRTC(u32 *rtc);
 static int ReadSram(void *buffer);
 static void WriteSramCallback(s32, OSContext *);
@@ -304,7 +309,10 @@ u32 OSGetSoundMode(void) {
 
 void OSSetSoundMode(u32 mode) {
     OSSram *sram;
-    int unused; // keeps the 0x20-byte stack frame (0x18 without it)
+    // Matching workaround: unused local that keeps the original 0x20-byte stack frame (0x18 without
+    // it, 7 differing words); the public dolsdk2004 SDK decompilation uses the same form. Revisit
+    // when the original locals are known.
+    int unused;
 
     ASSERTLINE(617, mode == OS_SOUND_MODE_MONO || mode == OS_SOUND_MODE_STEREO);
     mode *= 4;
@@ -330,8 +338,11 @@ u32 OSGetProgressiveMode(void) {
 }
 
 void OSSetProgressiveMode(u32 on) {
+    // Matching workaround: frame padding that keeps the original 0x20-byte stack frame (0x18
+    // without it, 7 differing words); the public dolsdk2004 SDK decompilation uses the same form.
+    // Revisit when the original locals are known.
 #ifndef DEBUG
-    u32 padding[1]; // keeps the 0x20-byte stack frame (0x18 without it)
+    u32 padding[1];
 #endif
     OSSram *sram;
 
@@ -366,7 +377,6 @@ u32 OSGetVideoMode(void) {
 
 void OSSetVideoMode(u32 mode) {
     OSSram *sram;
-    int unused; // keeps the 0x20-byte stack frame (0x18 without it)
 
     ASSERTLINE(731, OS_VIDEO_MODE_NTSC <= mode && mode <= OS_VIDEO_MODE_MPAL);
 
@@ -395,7 +405,6 @@ u8 OSGetLanguage(void) {
 
 void OSSetLanguage(u8 language) {
     OSSram *sram = __OSLockSram();
-    int unused; // keeps the 0x20-byte stack frame (0x18 without it)
 
     if (language == sram->language) {
         __OSUnlockSram(0);
@@ -414,7 +423,6 @@ u8 __OSGetBootMode(void) {
 
 void __OSSetBootMode(u8 ntd) {
     OSSram *sram;
-    int unused; // keeps the 0x20-byte stack frame (0x18 without it)
 
     ntd &= 0x80;
     sram = __OSLockSram();
@@ -438,8 +446,11 @@ u32 OSGetEuRgb60Mode(void) {
 }
 
 void OSSetEuRgb60Mode(u32 on) {
+    // Matching workaround: frame padding that keeps the original 0x20-byte stack frame (0x18
+    // without it, 7 differing words); the public dolsdk2004 SDK decompilation uses the same form.
+    // Revisit when the original locals are known.
 #ifndef DEBUG
-    u32 padding[1]; // keeps the 0x20-byte stack frame (0x18 without it)
+    u32 padding[1];
 #endif
     OSSram *sram;
 
@@ -491,8 +502,11 @@ u16 OSGetGbsMode(void) {
 }
 
 void OSSetGbsMode(u16 mode) {
+    // Matching workaround: frame padding that keeps the original 0x20-byte stack frame (0x18
+    // without it, 7 differing words); the public dolsdk2004 SDK decompilation uses the same form.
+    // Revisit when the original locals are known.
 #ifndef DEBUG
-    u32 padding[1]; // keeps the 0x20-byte stack frame (0x18 without it)
+    u32 padding[1];
 #endif
     OSSramEx *sram;
 
