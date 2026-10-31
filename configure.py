@@ -739,9 +739,11 @@ config.libs = [
                     extra_cflags=["-Cpp_exceptions on"],
                 ),
                 Object(
-                    NonMatching,
+                    Matching,
                     "Game/fn_8040D044.cpp",
-                    extra_cflags=["-Cpp_exceptions on"],
+                    # The original saves its two callee-saved registers with stmw/lmw, which this
+                    # unit's code only gets when optimized for size with -use_lmw_stmw.
+                    extra_cflags=["-Cpp_exceptions on", "-O4,s", "-use_lmw_stmw on"],
                 ),
                 Object(
                     Matching,
