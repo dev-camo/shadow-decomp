@@ -93,35 +93,39 @@ void fn_8048A50C(const RwImage *image, RwFixed x0, RwFixed x1, RwFixed y0, RwFix
     }
 }
 
+/* Resamples a 32-bit image into destImage, each pixel the average of the source rectangle it
+ * covers */
 RwImage *fn_8048A790(RwImage *destImage, const RwImage *sourceImage) {
+    RwInt32 column;
     RwInt32 row;
+    RwFixed x;
     RwFixed xStep;
     RwFixed y;
     RwFixed yStep;
     RwInt32 destWidth;
     RwInt32 destHeight;
+    RwInt32 sourceWidth;
+    RwInt32 sourceHeight;
 
     destWidth = destImage->width;
     destHeight = destImage->height;
-    y = 0;
-    row = 0;
-    xStep = (RwFixed)(65536.0f * ((RwReal)sourceImage->width / (RwReal)destWidth));
-    yStep = (RwFixed)(65536.0f * ((RwReal)sourceImage->height / (RwReal)destHeight));
+    sourceWidth = sourceImage->width;
+    sourceHeight = sourceImage->height;
     destImage->flags |= sourceImage->flags & rwIMAGEGAMMACORRECTED;
 
-    for (; row < destHeight; row++) {
-        RwRGBA *pixel = (RwRGBA *)(destImage->cpPixels + destImage->stride * row);
-        RwFixed yEnd = y + yStep - 1;
-        RwInt32 column;
-        RwFixed x;
+    xStep = (RwFixed)(65536.0f * ((RwReal)sourceWidth / (RwReal)destWidth));
+    yStep = (RwFixed)(65536.0f * ((RwReal)sourceHeight / (RwReal)destHeight));
+
+    y = 0;
+    for (row = 0; row < destHeight; row++) {
+        RwRGBA *const destRow = (RwRGBA *)(destImage->cpPixels + destImage->stride * row);
 
         x = 0;
         for (column = 0; column < destWidth; column++) {
             RwRGBAReal color;
 
-            fn_8048A50C(sourceImage, x, x + xStep - 1, y, yEnd, &color);
-            RwRGBAFromRwRGBAReal(pixel, &color);
-            pixel++;
+            fn_8048A50C(sourceImage, x, x + xStep - 1, y, y + yStep - 1, &color);
+            RwRGBAFromRwRGBAReal(&destRow[column], &color);
             x += xStep;
         }
         y += yStep;
@@ -129,6 +133,7 @@ RwImage *fn_8048A790(RwImage *destImage, const RwImage *sourceImage) {
     return destImage;
 }
 
+/* Creates a 32-bit resampled copy of an image (a 4 or 8-bit image goes through a 32-bit copy) */
 RwImage *fn_8048A96C(const RwImage *sourceImage, RwInt32 width, RwInt32 height) {
     RwImage *resampled = fn_80487D08(width, height, 32);
 
