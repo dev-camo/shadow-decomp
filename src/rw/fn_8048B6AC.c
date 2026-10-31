@@ -724,24 +724,32 @@ RwTexture *fn_8048CCDC(RwRaster *raster) {
     return texture;
 }
 
+/* Frees a texture whose last reference was released, with its raster (inferred) */
+static inline RwBool TextureFree(RwTexture *texture) {
+    /* The plugins see the texture referenced while they are deinitialized */
+    texture->refCount++;
+    fn_80482144(&lbl_8056E030, texture);
+    if (texture->dict != NULL) {
+        rwLinkListRemoveLLLink(&texture->lInDictionary);
+    }
+    if (texture->raster != NULL) {
+        fn_80489BDC(texture->raster);
+        texture->raster = NULL;
+    }
+    texture->refCount--;
+    RwFreeListFree(RWTEXTUREGLOBAL(textureFreeList), texture);
+    return TRUE;
+}
+
 /* Releases a reference to a texture; the last one destroys it and its raster */
 RwBool fn_8048CD8C(RwTexture *texture) {
+    RwBool result = TRUE;
+
     texture->refCount--;
     if (texture->refCount <= 0) {
-        /* The plugins see the texture referenced while they are deinitialized */
-        texture->refCount++;
-        fn_80482144(&lbl_8056E030, texture);
-        if (texture->dict != NULL) {
-            rwLinkListRemoveLLLink(&texture->lInDictionary);
-        }
-        if (texture->raster != NULL) {
-            fn_80489BDC(texture->raster);
-            texture->raster = NULL;
-        }
-        texture->refCount--;
-        RwFreeListFree(RWTEXTUREGLOBAL(textureFreeList), texture);
+        result = TextureFree(texture);
     }
-    return TRUE;
+    return result;
 }
 
 RwTexture *fn_8048CE54(RwTexture *texture, const RwChar *name) {
@@ -868,18 +876,20 @@ void *fn_8048D300(void *instance, RwInt32 offset, RwInt32 size) {
         RWTEXTUREGLOBAL(field_0x28) = 0;
     }
     if (RWTEXTUREGLOBAL(textureFreeList) != NULL && RWTEXTUREGLOBAL(texDictFreeList) != NULL) {
-        RwLinkList *list = &RWTEXTUREGLOBAL(texDictList);
-        RwLLLink *link = list->link.next;
+        RwLLLink *link = RWTEXTUREGLOBAL(texDictList).link.next;
+        RwLLLink *end = &RWTEXTUREGLOBAL(texDictList).link;
 
-        while (link != &list->link) {
+        /* only the dictionary created when the module was opened is removed here */
+        while (link != end) {
             RwTexDictionary *dict = DICTFROMLINK(link);
+            RwLLLink *next = link->next;
 
-            link = link->next;
             if (dict == lbl_805F15D0) {
                 fn_8048CB38(lbl_805F15D0);
                 lbl_805F15D0 = NULL;
                 break;
             }
+            link = next;
         }
     }
     if (RWTEXTUREGLOBAL(textureFreeList) != NULL) {
