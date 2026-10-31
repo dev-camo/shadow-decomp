@@ -28,7 +28,8 @@ class AttackCallbackParam {
     /* 0x34 */ Fn8040Vector3 field_0x34; /* the stick writes field_0x18 relative to its owner */
     /* 0x40 */ u8 field_0x40[0x50 - 0x40];
     /* 0x50 */ float field_0x50; /* ThreatObj subtracts it from its health */
-    /* 0x54 */ u32 field_0x54;   /* bit 0 makes the stick count a hit; ThreatObj stores 1, 3 or 8 */
+    /* Bit 0 makes the stick count a hit; ThreatObj stores 1, 3 or 8, the Chao 1 or 8. */
+    /* 0x54 */ u32 field_0x54;
 };
 CHECK_OFFSETOF(SonicteamUSA::System::CharaColli::AttackCallbackParam, field_0x50, 0x50);
 CHECK_OFFSETOF(SonicteamUSA::System::CharaColli::AttackCallbackParam, field_0x54, 0x54);
@@ -40,6 +41,15 @@ CHECK_OFFSETOF(SonicteamUSA::System::CharaColli::AttackCallbackParam, field_0x54
 typedef boost::function1<void, SonicteamUSA::System::CharaColli::AttackCallbackParam &>
     AttackCallback;
 CHECK_SIZEOF(AttackCallback, 0xC);
+
+extern "C" {
+/* The character info that made the attack described by param (behaviour inferred). */
+boost::shared_ptr<CharInfo>
+fn_8015D570(SonicteamUSA::System::CharaColli::AttackCallbackParam *param);
+/* True when the attacker of the attack described by param has the value 1, 2 or 3 in its word at
+ * 0x50 (behaviour inferred). */
+bool fn_8015D4E4(SonicteamUSA::System::CharaColli::AttackCallbackParam *param);
+}
 
 /* The class of the attack object's callback members (placeholder name: the binary does not name
  * it). Its constructor (0x8005A98C) only runs function1's default constructor (0x8005A9BC), and
@@ -85,6 +95,9 @@ class UnkAttack_8005A840 {
      * meanings are unknown). */
     void fn_80054DD0(int arg0, int arg1, const AttackCallback &callback0,
                      const AttackCallback &callback1, float arg4);
+    /* Sets the byte at 0x55, stores arg0 at 0x3C and assigns callback to the second callback
+     * member (behaviour inferred from its body). */
+    void fn_80096B64(int arg0, const AttackCallback &callback);
     /* Passes the attack on to the member at 0x44 (behaviour inferred). */
     void fn_800532F8(boost::weak_ptr<UnkAttack_8005A840> attack);
 

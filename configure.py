@@ -614,6 +614,12 @@ config.libs = [
                 Object(Matching, "rw/fn_804A869C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804A90F8.c", cflags=cflags_game),
                 Object(Matching, "Game/BackDrop.cpp", cflags=cflags_game_cpp),
+                # 49 of 52 functions have identical instructions. Chao::Update is one word shorter:
+                # the original reads the word at 0xC of the object that fn_800740E4 returns through
+                # shared_ptr's out-of-line operator->, which this build expands in place. The
+                # checked_deleter call operator differs by one word and checked_delete is absent, as
+                # in CityLaserHolder.cpp.
+                Object(NonMatching, "Game/ChaoHolder.cpp", cflags=cflags_game_cpp),
                 # Every function but the ThreatObj constructor is instruction-identical, and so is the
                 # data. Two differences remain: the constructor's two table loads (model table and
                 # holder) use r6 and r7 the other way round (four words), and the destructor of

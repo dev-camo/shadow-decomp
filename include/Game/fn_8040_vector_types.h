@@ -273,6 +273,9 @@ Fn8040Vector3 fn_8040F5F4(const Fn8040Vector3 *forward, const Fn8040Vector3 *up,
 Fn8040Vector2 fn_8040F664(const Fn8040Vector3 *direction);
 Fn8040Vector2 fn_8040F760(const Fn8040Vector3 *direction);
 Fn8040Vector3 fn_8040F7F8(const Fn8040Vector3 *direction);
+/* Stores the pitch and the yaw of a direction (behaviour inferred from its body, which takes
+ * atan2 of the x and z components and corrects the quadrant). */
+void fn_8003B9E8(const Fn8040Vector3 *direction, float *pitch, float *yaw);
 /* Angle between two vectors, in radians. */
 float fn_8040F8FC(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 /* Splits vector into its part along onto (parallel) and the remainder (perpendicular); either
@@ -313,6 +316,8 @@ extern Fn8040Matrix34 lbl_805E0750; /* zero */
 
 /* Returns whether the value is close enough to 0 to count as 0 (behaviour inferred). */
 extern "C" bool fn_8000A950(float value);
+/* True when |value| < 0.0001 (behaviour inferred). */
+extern "C" bool fn_8000B044(float value);
 
 /* Whether the point lies between the planes through the segment's ends (behaviour inferred). */
 extern "C" bool fn_8040FB88(const UnkSegment_80020A20 *segment, const Fn8040Vector3 *point);

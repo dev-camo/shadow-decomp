@@ -14,6 +14,9 @@ UnkManager_800CB69C *fn_800CB69C(void);
 /* Returns the state of entry id, or 0 when there is no table or id is outside 0-255 (behaviour
  * inferred). */
 u32 fn_8016904C(UnkManager_800CB69C *manager, int id);
+/* Sets the state of entry id and bit 0 of the flag word after it; ignored when there is no table
+ * or id is outside 0-255 (behaviour inferred). */
+void fn_8016907C(UnkManager_800CB69C *manager, int id, u32 state);
 /* Sets the state of entry id; ignored when there is no table or id is outside 0-255 (behaviour
  * inferred). */
 void fn_801690D0(UnkManager_800CB69C *manager, int id, u32 state);

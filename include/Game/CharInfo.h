@@ -59,6 +59,9 @@ boost::weak_ptr<CharInfo> fn_800A8A7C(UnkManager_80074194 *manager, const Fn8040
 /* Returns the listed character info whose object has the word id at 0x298, or an empty pointer
  * when there is none (behaviour inferred). */
 boost::weak_ptr<CharInfo> fn_800A8B74(UnkManager_80074194 *manager, s32 id);
+/* Returns 0 for arg1 0x27, otherwise fn_802063BC's result (return type inferred, the gadgets
+ * ignore it). */
+int fn_8020642C(const boost::shared_ptr<CharInfo> &charInfo, int arg1);
 }
 
 /* The id that callers pass to fn_800A8B74 (the meaning is unknown; 43 functions read it). */

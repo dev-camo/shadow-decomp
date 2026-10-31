@@ -64,6 +64,18 @@ boost::shared_ptr<UnkProbeTarget_800587A0> fn_800C7A84(UnkWorld_80021B08 *world,
                                                        float arg2, float arg3, int arg4, int arg5,
                                                        int arg6, const Fn8040Vector3 *arg7,
                                                        const Fn8040Vector3 *arg8, int arg9);
+/* Creates a probe sphere of the given radius around the character info that owner refers to, and
+ * returns it (behaviour inferred; arg2, arg3, arg4 and arg5 are passed on and not understood). */
+boost::shared_ptr<UnkProbeTarget_800587A0> fn_800C7DEC(UnkWorld_80021B08 *world,
+                                                       const boost::weak_ptr<CharInfo> &owner,
+                                                       int arg2, int arg3, int arg4,
+                                                       const Fn8040Vector3 *arg5, float radius);
+/* Creates the attack object of a probe and returns it (behaviour inferred). */
+boost::weak_ptr<UnkAttack_8005A840> fn_800C4374(UnkWorld_80021B08 *world,
+                                                boost::shared_ptr<UnkProbeTarget_800587A0> probe);
+/* True when one of the probe hits in the list is a character info whose virtual function at
+ * vtable offset 0x24 reports true (behaviour inferred). */
+bool fn_8015D2EC(UnkProbeList_80021FE4 *hits);
 /* Resets the probe pointer (behaviour inferred; the world argument is unused and the pointer is
  * passed by address). */
 void fn_800C78B0(UnkWorld_80021B08 *world, boost::shared_ptr<UnkProbeTarget_800587A0> *probe);

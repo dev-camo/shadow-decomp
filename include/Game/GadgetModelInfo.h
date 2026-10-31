@@ -16,6 +16,15 @@ class UnkMotionControl_801602B4;
 extern "C" int stMtnControlWorkFlag(UnkMotionControl_801602B4 *control, int arg1, int arg2,
                                     int arg3);
 
+/* Motion control calls with behaviour inferred from the names: prepare a blend towards the target
+ * motion, set the blend length and set the frame speed. The Chao gadget passes 0, -1 and -1, then a
+ * blend length of 15, and speeds of 1 and of its movement; the meaning of the other arguments is
+ * unknown, and the return types are unknown (the Chao ignores them). */
+extern "C" void stMtnPrepareBlendWithTarget(UnkMotionControl_801602B4 *control, int arg1, int arg2,
+                                            int arg3);
+extern "C" void stMtnRequestBlendFrame(UnkMotionControl_801602B4 *control, int arg1, float frames);
+extern "C" void stMtnRequestFrameSpeed(UnkMotionControl_801602B4 *control, int arg1, float speed);
+
 /* The three words that fn_8015FA78 passes to its callback for each part (names and meaning
  * unknown). */
 struct UnkModelPart_8015FA78 {

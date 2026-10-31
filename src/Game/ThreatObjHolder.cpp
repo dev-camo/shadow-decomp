@@ -33,16 +33,6 @@
 
 class ThreatObjHolder;
 
-extern "C" {
-/* True when |value| < 0.0001 (behaviour inferred). */
-bool fn_8000B044(float value);
-boost::shared_ptr<CharInfo>
-fn_8015D570(SonicteamUSA::System::CharaColli::AttackCallbackParam *param);
-/* Returns 0 for arg1 0x27, otherwise fn_802063BC's result (return type inferred, ThreatObj
- * ignores it). */
-int fn_8020642C(const boost::shared_ptr<CharInfo> &charInfo, int arg1);
-}
-
 /* One model that a ThreatObj can use (name inferred). The first word is the second argument of the
  * model's fn_80160A84 when the object becomes active; the second word is that argument once
  * stMtnControlWorkFlag(motion, 0, 3, 1) is set (inferred: the motion has finished), or -1 to call
