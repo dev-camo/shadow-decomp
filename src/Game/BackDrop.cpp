@@ -7,6 +7,7 @@
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
 #include "Game/GadgetTypeInfo.h"
+#include "Game/UnkStartupFloat_800E2570.h"
 #include "Game/fn_8006_resource_list.h"
 #include "layout_check.h"
 
@@ -35,17 +36,10 @@ CHECK_SIZEOF(BackDrop, 0x40);
 const char *BackDrop::s_name = "BackDrop";
 
 /* The original sets these two floats in the static initialiser instead of placing them in .sdata;
- * their declared type is unknown. A one-float class with a constructor reproduces this; a plain
- * float initialiser would place them in .sdata. */
-struct UnkFloatParam {
-    UnkFloatParam(float initial) : value(initial) {}
-
-    float value;
-};
-CHECK_SIZEOF(UnkFloatParam, 0x4);
-
-static UnkFloatParam s_riseSpeed(100.0f);
-static UnkFloatParam s_riseLimit(400.0f);
+ * their declared type is unknown. The shared startup float class reproduces this; a plain float
+ * initialiser would place them in .sdata. */
+static UnkStartupFloat_800E2570 s_riseSpeed(100.0f);
+static UnkStartupFloat_800E2570 s_riseLimit(400.0f);
 
 BackDrop::BackDrop(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(parent, owner) {
     m_name = s_name;

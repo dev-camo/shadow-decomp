@@ -7,18 +7,14 @@
 #include "Game/GadgetTypeInfo.h"
 #include "Game/SharedConstants.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
+#include "Game/fn_8040_vector_types.h"
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
+#include "rw/rwcore.h"
 #include <cstring>
 #include "layout_check.h"
 
-struct RwFrame;
-struct RwMatrix;
-
-extern "C" {
-RwMatrix *RwFrameGetLTM(RwFrame *frame);
-void fn_800635A4(void *dst, RwMatrix *matrix);
-}
+extern "C" void fn_800635A4(void *dst, RwMatrix *matrix);
 
 /* fn_802C7FC0 to fn_802C8068 precede the gadget in this unit. Their owning class and real (C++)
  * link names are unknown, so they keep their placeholder names through C linkage. */
@@ -70,16 +66,7 @@ CHECK_SIZEOF(ElecCircuitExit, 0x50);
 const char *ElecCircuitExit::s_name = "ElecCircuitExit";
 
 /* Three angles (in radians) built at startup; nothing in this unit reads them (purpose unknown). */
-struct UnkAngles_80584590 {
-    UnkAngles_80584590(float x, float y, float z) : x(x), y(y), z(z) {}
-
-    float x;
-    float y;
-    float z;
-};
-CHECK_SIZEOF(UnkAngles_80584590, 0xC);
-
-static UnkAngles_80584590 lbl_80584590(0.5f * lbl_805FAD38, 0.0f, 0.0f);
+static Fn8040Vector3 lbl_80584590(0.5f * lbl_805FAD38, 0.0f, 0.0f);
 
 ElecCircuitExit::ElecCircuitExit(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
     : Gadget(parent, owner) {
