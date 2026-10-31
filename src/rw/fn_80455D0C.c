@@ -33,7 +33,7 @@ typedef struct ClumpGlobals {
 } ClumpGlobals;
 CHECK_SIZEOF(ClumpGlobals, 0x8);
 
-#define CLUMPGLOBALS() ((ClumpGlobals *)((RwUInt8 *)lbl_805F15B4 + lbl_805F14C8.globalsOffset))
+#define CLUMPGLOBALS() RWPLUGINOFFSET(ClumpGlobals, lbl_805F15B4, lbl_805F14C8.globalsOffset)
 #define CLUMPGLOBAL(var) (CLUMPGLOBALS()->var)
 
 RwPluginRegistry lbl_8056D7E0 = {sizeof(RpAtomic), sizeof(RpAtomic), 0, 0, NULL, NULL};
@@ -54,8 +54,8 @@ RwUInt32 lbl_805F14C0; /* atomic pipeline plugin data */
 RwInt32 lbl_805F14BC;  /* light plugin offset of the clump data */
 RwInt32 lbl_805F14B8;  /* camera plugin offset of the clump data */
 
-#define CLUMPLIGHTEXT(light) ((RpClumpObjectExtension *)((RwUInt8 *)(light) + lbl_805F14BC))
-#define CLUMPCAMERAEXT(camera) ((RpClumpObjectExtension *)((RwUInt8 *)(camera) + lbl_805F14B8))
+#define CLUMPLIGHTEXT(light) RWPLUGINOFFSET(RpClumpObjectExtension, light, lbl_805F14BC)
+#define CLUMPCAMERAEXT(camera) RWPLUGINOFFSET(RpClumpObjectExtension, camera, lbl_805F14B8)
 
 /* the light or camera of a clump list link */
 #define CLUMPLIGHTFROMLINK(link)                                                                   \
@@ -419,6 +419,8 @@ void *fn_80456A50(void *instance, RwInt32 offset, RwInt32 size) {
     ClumpGlobals *globals;
 
     lbl_805F14C8.globalsOffset = offset;
+    /* the memory hints are swapped in the original: the atomic free list carries the clump ID and
+     * the clump free list the atomic ID */
     CLUMPGLOBAL(atomicFreeList) =
         fn_8047FC04(lbl_8056D7E0.sizeOfStruct, lbl_805EDDA0, 4, lbl_805EDDA4, &lbl_805E1580,
                     rwMEMHINTDUR_GLOBAL | rwID_CLUMP);

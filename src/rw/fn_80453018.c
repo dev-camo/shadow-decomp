@@ -3,7 +3,8 @@
  * unknown. */
 #include "rw/rpuvanim.h"
 
-/* Sets a keyframe to a transform matrix in the animation's scheme */
+/* Sets a keyframe to a transform matrix in the animation's scheme. The original returns FALSE on
+ * every path, whether or not the matrix conversion succeeds. */
 RwBool fn_80453018(const RtAnimAnimation *animation, RpUVAnimKeyFrame *keyFrame,
                    RpUVAnimKeyFrame *prevFrame, RwReal time, const RwMatrix *matrix) {
     keyFrame->prevFrame = prevFrame;

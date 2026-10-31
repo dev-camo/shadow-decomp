@@ -5,7 +5,7 @@
 #include "layout_check.h"
 
 /* a sector type that is freed without being deinitialised (inferred) */
-#define rpSECTORTYPEEMPTY -2
+#define rpSECTORTYPEEMPTY (-2)
 
 RwPluginRegistry lbl_8056D880 = {sizeof(RpWorldSector), sizeof(RpWorldSector), 0, 0, NULL, NULL};
 

@@ -64,6 +64,7 @@ RpGeometry *fn_80458D24(RwReal radius) {
         morphTarget->boundingSphere.center.z = 0.0f;
         morphTarget->boundingSphere.radius = radius;
     }
+    /* as in the original, a NULL geometry (creation failed) is passed on to these two calls */
     if (fn_804591C4(geometry) == NULL) {
         fn_8045985C(geometry);
         return NULL;
@@ -356,6 +357,7 @@ RpGeometry *fn_80459464(RwInt32 numVertices, RwInt32 numTriangles, RwUInt32 form
     geometry->preLitLum = NULL;
     geometry->triangles = NULL;
     geometry->numTriangles = numTriangles;
+    /* the high format bits (the native flags and the two above them) pass through unchanged */
     geometry->flags = flags | (format & 0x0F000000);
     geometry->numVertices = numVertices;
 
@@ -560,6 +562,7 @@ RpGeometry *fn_804599C8(RwStream *stream) {
     }
 
     if (!fn_8047CF50(stream, rwID_MATLIST, NULL, &version)) {
+        /* as in the original, the geometry is not destroyed here */
         return NULL;
     }
     if (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION) {

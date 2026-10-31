@@ -21,8 +21,7 @@ typedef struct MaterialGlobals {
 } MaterialGlobals;
 CHECK_SIZEOF(MaterialGlobals, 0x4);
 
-#define MATERIALGLOBALS()                                                                          \
-    ((MaterialGlobals *)((RwUInt8 *)lbl_805F15B4 + lbl_805F14E8.globalsOffset))
+#define MATERIALGLOBALS() RWPLUGINOFFSET(MaterialGlobals, lbl_805F15B4, lbl_805F14E8.globalsOffset)
 #define MATERIALGLOBAL(var) (MATERIALGLOBALS()->var)
 
 RwPluginRegistry lbl_8056D840 = {sizeof(RpMaterial), sizeof(RpMaterial), 0, 0, NULL, NULL};

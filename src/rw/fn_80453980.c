@@ -20,9 +20,9 @@ const RwV3d lbl_8051BD4C = {0.5f, 0.5f, 0.0f};
 
 RtDictSchema lbl_8056D748 = {
     "UVAnim",
-    0x2B, /* dictionary chunk */
-    0x1B, /* animation chunk */
-    0x36000,
+    0x2B,    /* dictionary chunk */
+    0x1B,    /* animation chunk */
+    0x36000, /* compatibility version */
     NULL,
     NULL,
     (RtDictEntryAddRefCallBack)fn_80454618,
@@ -287,7 +287,7 @@ RwStream *fn_80453FB0(RwStream *stream, RwInt32 length, void *object, RwInt32 of
     RwChar name[rpUVANIMNAMELENGTH];
     RtAnimAnimation *animation;
     RwStream *result;
-    void *dict;
+    RtDict *dict;
     RtAnimInterpolator *interp;
     RwInt32 slots;
     RwUInt32 i;
