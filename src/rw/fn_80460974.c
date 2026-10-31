@@ -513,78 +513,83 @@ void *fn_804615B4(void *object, RwInt32 offset, RwInt32 size) {
     return object;
 }
 
+/* Makes room for more sectors in a camera's frustum sector list (inferred) */
+static inline RwBool FrustumSectorsAddSpace(CameraExt *ext, RwInt32 amount) {
+    RwInt32 bytes = (ext->space + amount) * sizeof(RpWorldSector *);
+    RpWorldSector **sectors;
+
+    if (ext->frustumSectors != NULL) {
+        sectors = RwRealloc(ext->frustumSectors, bytes,
+                            rwMEMHINTDUR_EVENT | rwID_WORLDMODULE | rwMEMHINTFLAG_RESIZABLE);
+    } else {
+        sectors = RwMalloc(bytes, rwMEMHINTDUR_EVENT | rwID_WORLDMODULE | rwMEMHINTFLAG_RESIZABLE);
+    }
+    if (sectors != NULL) {
+        ext->frustumSectors = sectors;
+        ext->space += amount;
+        return TRUE;
+    }
+    RWERROR((E_RW_NOMEM, bytes));
+    return FALSE;
+}
+
 /* Collects the world sectors in a camera's view frustum, nearer or farther first by the world's
  * render order */
 RpWorld *fn_80461658(RpWorld *world, RwCamera *camera) {
-    RwInt32 numSectors = 0;
-    RpSector *sector;
-    RwInt32 depth = 0;
-    CameraExt *ext = CAMERAEXT(camera);
-    RwInt32 index = 0;
-    RwV3d position = RwFrameGetLTM(camera->object.parent)->pos;
-    RwBool backToFront = world->renderOrder == rpWORLDRENDERBACK2FRONT;
-    const RwFrustumPlane *frustumPlanes = camera->frustumPlanes;
-    RwV3d inf = camera->frustumBoundBox.inf;
-    RwV3d sup = camera->frustumBoundBox.sup;
     RpSector *sectorStack[rpWORLDMAXBSPDEPTH];
+    RpSector *sector;
+    RwV3d position;
+    RwV3d inf;
+    RwV3d sup;
+    const RwFrustumPlane *frustumPlanes;
+    CameraExt *ext;
+    RwBool backToFront;
+    RwInt32 depth = 0;
+    RwInt32 numSectors = 0;
+
+    ext = CAMERAEXT(camera);
+    position = RwFrameGetLTM(camera->object.parent)->pos;
+    inf = camera->frustumBoundBox.inf;
+    sup = camera->frustumBoundBox.sup;
+    frustumPlanes = camera->frustumPlanes;
+    backToFront = world->renderOrder == rpWORLDRENDERBACK2FRONT;
 
     sector = ext->world->rootSector;
-
     do {
         RwInt32 type = sector->type;
 
         if (type < 0) {
-            const RwFrustumPlane *plane = frustumPlanes;
-            RwInt32 outside;
+            RwBool outside;
             RwInt32 i;
-            const RwV3d *corners = &((RpWorldSector *)sector)->field_0x48.sup;
+            RpWorldSector *worldSector = (RpWorldSector *)sector;
+            /* The box's two corners, indexed by each plane's closestX/Y/Z */
+            const RwV3d *const corners = (const RwV3d *)&worldSector->field_0x48;
 
             for (i = 0; i < 6; i++) {
-                RwSplitBits distance;
                 RwV3d corner;
+                RwSplitBits side;
 
-                corner.x = corners[plane->closestX].x;
-                corner.y = corners[plane->closestY].y;
-                corner.z = corners[plane->closestZ].z;
-                distance.nReal = corner.x * plane->plane.normal.x +
-                                 corner.y * plane->plane.normal.y +
-                                 corner.z * plane->plane.normal.z - plane->plane.distance;
+                corner.x = corners[frustumPlanes[i].closestX].x;
+                corner.y = corners[frustumPlanes[i].closestY].y;
+                corner.z = corners[frustumPlanes[i].closestZ].z;
+                side.nReal = corner.x * frustumPlanes[i].plane.normal.x +
+                             corner.y * frustumPlanes[i].plane.normal.y +
+                             corner.z * frustumPlanes[i].plane.normal.z -
+                             frustumPlanes[i].plane.distance;
 
-                outside = distance.nInt > 0;
+                outside = side.nInt > 0;
                 if (outside) {
                     break;
                 }
-                plane++;
             }
             if (!outside) {
                 if (numSectors >= ext->space) {
-                    RwUInt32 bytes = (ext->space + rpFRUSTUMSECTORGRANULARITY) * sizeof(void *);
-                    RpWorldSector **sectors;
-                    RwBool grown;
-
-                    if (ext->frustumSectors != NULL) {
-                        sectors = RwRealloc(ext->frustumSectors, bytes,
-                                            rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_EVENT |
-                                                rwID_WORLDMODULE);
-                    } else {
-                        sectors = RwMalloc(bytes, rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_EVENT |
-                                                      rwID_WORLDMODULE);
-                    }
-                    if (sectors != NULL) {
-                        ext->frustumSectors = sectors;
-                        grown = TRUE;
-                        ext->space += rpFRUSTUMSECTORGRANULARITY;
-                    } else {
-                        RWERROR((E_RW_NOMEM, bytes));
-                        grown = FALSE;
-                    }
-                    if (!grown) {
+                    if (!FrustumSectorsAddSpace(ext, rpFRUSTUMSECTORGRANULARITY)) {
                         ext->numFrustumSectors = numSectors;
                         return world;
                     }
                 }
-                numSectors++;
-                ext->frustumSectors[index++] = (RpWorldSector *)sector;
+                ext->frustumSectors[numSectors++] = worldSector;
             }
             sector = sectorStack[depth--];
         } else {
@@ -600,11 +605,11 @@ RpWorld *fn_80461658(RpWorld *world, RwCamera *camera) {
                 RwBool beyond = GETCOORD(position, type) > planeSector->value;
 
                 if ((backToFront && beyond) || (!backToFront && !beyond)) {
-                    sectorStack[++depth] = planeSector->rightSubTree;
                     sector = planeSector->leftSubTree;
+                    sectorStack[++depth] = planeSector->rightSubTree;
                 } else {
-                    sectorStack[++depth] = planeSector->leftSubTree;
                     sector = planeSector->rightSubTree;
+                    sectorStack[++depth] = planeSector->leftSubTree;
                 }
             } else {
                 /* the frustum is on one side */
