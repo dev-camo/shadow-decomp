@@ -73,7 +73,7 @@ Bool SFTIM_IsVideoTerm(SFD sfd) {
     tim = SFD_TIM(sfd);
     vterm = tim->vterm;
     unit = tim->vterm_unit;
-    if (sfd->plyinf.raw[0] == 0) {
+    if (sfd->plyinf.ndecpic == 0) {
         return TRUE;
     }
     if (vterm == SFTIM_NONE) {
@@ -416,7 +416,7 @@ static Bool sftim_IsClockRunning(SFD sfd) {
     if (sfd->pause_sw != 0) {
         return FALSE;
     }
-    if (sfd->plyinf.raw[8] != 0) {
+    if (sfd->plyinf.bpa != 0) {
         return FALSE;
     }
     return TRUE;
