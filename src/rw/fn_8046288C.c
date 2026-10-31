@@ -161,18 +161,19 @@ RwInt32 fn_80462C28(void) {
 
 /* Sets the GX vertex descriptors, formats and arrays of a mesh's instanced data */
 void fn_80462C30(RpGameCubeVertexFormat *format, RpGameCubeRenderMesh *renderMesh) {
-    RpGameCubeInstanceData *instance = (RpGameCubeInstanceData *)(renderMesh->repEntry + 1);
-    RwUInt32 index;
+    RwUInt32 index = 0;
+    RpGameCubeInstanceData *instance;
 
     if (format == NULL) {
         format = &lbl_805E1688;
     }
+    instance = (RpGameCubeInstanceData *)(renderMesh->repEntry + 1);
     GXClearVtxDesc();
-    GXSetVtxDesc(GX_VA_POS, instance->vertexDescriptors[0].type);
+    GXSetVtxDesc(GX_VA_POS, instance->vertexDescriptors[index].type);
     GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, format->posType, format->posFrac);
-    GXSetArray(GX_VA_POS, instance->vertexDescriptors[0].data,
-               instance->vertexDescriptors[0].stride);
-    index = 1;
+    GXSetArray(GX_VA_POS, instance->vertexDescriptors[index].data,
+               instance->vertexDescriptors[index].stride);
+    index++;
 
     if (renderMesh->geometryFlags & rpGEOMETRYNORMALS) {
         if (format->normalNbt) {
@@ -180,13 +181,13 @@ void fn_80462C30(RpGameCubeVertexFormat *format, RpGameCubeRenderMesh *renderMes
             GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_NBT, GX_NRM_NBT, format->normalType, 0);
             GXSetArray(GX_VA_NBT, instance->vertexDescriptors[index].data,
                        instance->vertexDescriptors[index].stride);
-            index = 2;
+            index++;
         } else {
             GXSetVtxDesc(GX_VA_NRM, instance->vertexDescriptors[index].type);
             GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_NRM, GX_NRM_XYZ, format->normalType, 0);
             GXSetArray(GX_VA_NRM, instance->vertexDescriptors[index].data,
                        instance->vertexDescriptors[index].stride);
-            index = 2;
+            index++;
         }
     }
     if (renderMesh->geometryFlags & rpGEOMETRYPRELIT) {
