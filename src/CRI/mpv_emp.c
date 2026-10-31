@@ -88,12 +88,12 @@ Sint32 MPV_IsEmptyPpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb) {
     }
     /* the picture must be followed by a delimiter inside the buffer */
     for (;;) {
-        p = MPV_SearchDelim(q, nbyte - pos, 0xCC);
+        p = MPV_SearchDelim(q, nbyte - pos, MPV_DLM_PIC_BOUND);
         if (p == 0) {
             return 0;
         }
         flg = MPV_CheckDelim(p);
-        if (flg & 0x04) {
+        if (flg & MPV_DLM_PIC) {
             /* picture_start_code: only a following B picture keeps this one empty */
             if ((((p[5] & 3) << 1) | ((p[6] >> 7) & 1)) != 3) {
                 return 0;
@@ -102,18 +102,18 @@ Sint32 MPV_IsEmptyPpic(Sint8 *buf, Sint32 nbyte, Sint32 nmb) {
             pos = q - buf;
             continue;
         }
-        if (flg & 0x40) {
+        if (flg & MPV_DLM_SEQ) {
             q = p + 1;
             pos = q - buf;
             continue;
         }
-        if (flg & 0x80) {
+        if (flg & MPV_DLM_END) {
             if (p + 4 - buf > nbyte) {
                 return 0;
             }
             break;
         }
-        if (flg & 0x08) {
+        if (flg & MPV_DLM_GOP) {
             if (p[7] & 0x40) {
                 if (p + 7 - buf > nbyte) {
                     return 0;

@@ -297,6 +297,20 @@ CHECK_SIZEOF(MPV_IXA, 0x1C60);
 #define MPV_DLM_UD 0x20
 #define MPV_DLM_SEQ 0x40
 #define MPV_DLM_END 0x80
+/* classes that bound a picture: picture, GOP, sequence header and sequence end */
+#define MPV_DLM_PIC_BOUND (MPV_DLM_PIC | MPV_DLM_GOP | MPV_DLM_SEQ | MPV_DLM_END)
+
+/* macroblock_type flags as the VLC tables (mpv_vlc.c) store them */
+#define MPV_MBT_INTRA 0x01
+#define MPV_MBT_PATTERN 0x02
+#define MPV_MBT_BACKWARD 0x04
+#define MPV_MBT_FORWARD 0x08
+#define MPV_MBT_QUANT 0x10
+#define MPV_MBT_FIXED 0x20 /* macroblock_type already given by the address increment table */
+/* macroblock_address_increment codes that are not an increment */
+#define MPV_MBAI_STUFFING 34
+#define MPV_MBAI_ESCAPE 35
+#define MPV_MBAI_ERROR 36
 
 #define MPV_ERR_INVALID_HN 0xFF030200
 

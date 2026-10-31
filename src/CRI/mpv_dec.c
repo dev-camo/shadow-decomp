@@ -12,17 +12,6 @@
 #include "CRI/mpv_bit.h"
 #include "CRI/sj.h"
 
-#define MPVDEC_MBT_INTRA 0x01
-#define MPVDEC_MBT_PATTERN 0x02
-#define MPVDEC_MBT_BACKWARD 0x04
-#define MPVDEC_MBT_FORWARD 0x08
-#define MPVDEC_MBT_QUANT 0x10
-#define MPVDEC_MBT_FIXED 0x20 /* macroblock_type already given by the address increment table */
-
-#define MPVDEC_MBAI_STUFFING 34
-#define MPVDEC_MBAI_ESCAPE 35
-#define MPVDEC_MBAI_ERROR 36
-
 #define MPVDEC_ERR ((Uint32)(-2))
 
 #define MPVDEC_REFILL_SIZE 0x800
@@ -73,14 +62,14 @@ Sint32 mpvdec_MotionSub(MPV mpv, MPV_MV *mv, Sint32 *vec, Sint32 *pred);
         len = val & 0xF;                                                                           \
         MPVBIT_SKIP(len);                                                                          \
         inc = (Uint8)(val >> 2) >> 2;                                                              \
-        if (inc == MPVDEC_MBAI_STUFFING) {                                                         \
+        if (inc == MPV_MBAI_STUFFING) {                                                            \
             continue;                                                                              \
         }                                                                                          \
-        if (inc == MPVDEC_MBAI_ESCAPE) {                                                           \
+        if (inc == MPV_MBAI_ESCAPE) {                                                              \
             (mpv)->mb_addr += 33;                                                                  \
             continue;                                                                              \
         }                                                                                          \
-        if (inc == MPVDEC_MBAI_ERROR) {                                                            \
+        if (inc == MPV_MBAI_ERROR) {                                                               \
             n = MPVDEC_ERR;                                                                        \
             break;                                                                                 \
         }                                                                                          \
@@ -101,7 +90,7 @@ Sint32 mpvdec_MotionSub(MPV mpv, MPV_MV *mv, Sint32 *vec, Sint32 *pred);
 
 /* macroblock_type (when not implied by the address increment) */
 #define MPVDEC_MBTYPE(mpv, tbl, nbit)                                                              \
-    if (((mpv)->mbtype & MPVDEC_MBT_FIXED) == 0) {                                                 \
+    if (((mpv)->mbtype & MPV_MBT_FIXED) == 0) {                                                    \
         MPVBIT_PEEK(code, nbit);                                                                   \
         val = tbl[code];                                                                           \
         (mpv)->mbtype = val >> 8;                                                                  \
@@ -109,13 +98,13 @@ Sint32 mpvdec_MotionSub(MPV mpv, MPV_MV *mv, Sint32 *vec, Sint32 *pred);
     }
 
 #define MPVDEC_QUANT(mpv)                                                                          \
-    if ((mpv)->mbtype & MPVDEC_MBT_QUANT) {                                                        \
+    if ((mpv)->mbtype & MPV_MBT_QUANT) {                                                           \
         MPVBIT_GET(val, 5);                                                                        \
         (mpv)->qscale = val;                                                                       \
     }
 
 #define MPVDEC_CBP(mpv)                                                                            \
-    if ((mpv)->mbtype & MPVDEC_MBT_PATTERN) {                                                      \
+    if ((mpv)->mbtype & MPV_MBT_PATTERN) {                                                         \
         MPVBIT_PEEK(code, 9);                                                                      \
         val = mpvvlc_cbp[code];                                                                    \
         (mpv)->cbp_code = (val >> 4) << 20;                                                        \
@@ -240,7 +229,7 @@ Sint32 MPVDEC_DecBpicMb(MPV mpv, SJ sj) {
         }
         MPVDEC_MBTYPE(mpv, mpvvlc_b_mbtype, 6);
         MPVDEC_QUANT(mpv);
-        if (mpv->mbtype & MPVDEC_MBT_FORWARD) {
+        if (mpv->mbtype & MPV_MBT_FORWARD) {
             MPVDEC_SAVE(mpv);
             ret = mpvdec_MotionSub(mpv, &mpv->fwd, &mpv->fwd.vec[0], &mpv->fwd.pred[0]);
             ret2 = mpvdec_MotionSub(mpv, &mpv->fwd, &mpv->fwd.vec[1], &mpv->fwd.pred[1]);
@@ -249,7 +238,7 @@ Sint32 MPVDEC_DecBpicMb(MPV mpv, SJ sj) {
                 break;
             }
         }
-        if (mpv->mbtype & MPVDEC_MBT_BACKWARD) {
+        if (mpv->mbtype & MPV_MBT_BACKWARD) {
             MPVDEC_SAVE(mpv);
             ret = mpvdec_MotionSub(mpv, &mpv->bwd, &mpv->bwd.vec[0], &mpv->bwd.pred[0]);
             ret2 = mpvdec_MotionSub(mpv, &mpv->bwd, &mpv->bwd.vec[1], &mpv->bwd.pred[1]);
@@ -260,13 +249,13 @@ Sint32 MPVDEC_DecBpicMb(MPV mpv, SJ sj) {
         }
         MPVDEC_CBP(mpv);
         MPVDEC_SAVE(mpv);
-        if (mpv->mbtype & MPVDEC_MBT_INTRA) {
+        if (mpv->mbtype & MPV_MBT_INTRA) {
             mpv->intra_blocks(mpv);
             mpv->mc_intra_func(mpv);
             MPVDEC_RESET_MV(&mpv->fwd);
             MPVDEC_RESET_MV(&mpv->bwd);
         } else {
-            mc = mpv->mc_func[(mpv->mbtype & (MPVDEC_MBT_FORWARD | MPVDEC_MBT_BACKWARD)) >> 2];
+            mc = mpv->mc_func[(mpv->mbtype & (MPV_MBT_FORWARD | MPV_MBT_BACKWARD)) >> 2];
             mpv->mc_func[0] = mc;
             if (mpv->cbp_code != 0) {
                 mpv->nintra_blocks(mpv);
@@ -389,7 +378,7 @@ Sint32 MPVDEC_DecPpicMb(MPV mpv, SJ sj) {
         }
         MPVDEC_MBTYPE(mpv, mpvvlc_p_mbtype, 5);
         MPVDEC_QUANT(mpv);
-        if (mpv->mbtype & MPVDEC_MBT_FORWARD) {
+        if (mpv->mbtype & MPV_MBT_FORWARD) {
             MPVDEC_SAVE(mpv);
             ret = mpvdec_MotionSub(mpv, &mpv->fwd, &mpv->fwd.vec[0], &mpv->fwd.pred[0]);
             ret2 = mpvdec_MotionSub(mpv, &mpv->fwd, &mpv->fwd.vec[1], &mpv->fwd.pred[1]);
@@ -402,7 +391,7 @@ Sint32 MPVDEC_DecPpicMb(MPV mpv, SJ sj) {
         }
         MPVDEC_CBP(mpv);
         MPVDEC_SAVE(mpv);
-        if (mpv->mbtype & MPVDEC_MBT_INTRA) {
+        if (mpv->mbtype & MPV_MBT_INTRA) {
             mpv->intra_blocks(mpv);
             mpv->mc_intra_func(mpv);
         } else {
