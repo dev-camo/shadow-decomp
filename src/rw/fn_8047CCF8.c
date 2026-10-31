@@ -11,7 +11,8 @@
 /* The bytes converted at a time when writing */
 #define rwSTREAMCONVERTBUFFER 0x100
 
-/* The chunk types (only those that hold other chunks are named here) */
+/* The chunk types that rwcore.h does not define */
+#define rwID_STRING 0x2
 #define rwID_CAMERA 0x5
 #define rwID_MATERIAL 0x7
 #define rwID_MATRIX 0xD
@@ -22,7 +23,6 @@
 #define rwID_UNICODESTRING 0x13
 #define rwID_ATOMIC 0x14
 #define rwID_GEOMETRYLIST 0x1A
-#define rwID_STRING 0x2
 
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
@@ -42,47 +42,74 @@ typedef struct rwChunkHeader {
 } rwChunkHeader;
 CHECK_SIZEOF(rwChunkHeader, 0xC);
 
+/* Whether a chunk of this type holds other chunks.
+ * Matching workaround: the result is set in each case and returned once. With a return in each
+ * case the compiler inlines this function into fn_8047CDB4, fn_8047CF50 and fn_8047D94C, which
+ * call it out of line in the original. Revisit if the original's form or another inline setting
+ * is found. */
 RwBool fn_8047CCF8(const RwChunkHeaderInfo *chunkHeaderInfo) {
+    RwBool result;
+
     switch (chunkHeaderInfo->type) {
     case rwID_STRUCT:
-        return FALSE;
+        result = FALSE;
+        break;
     case rwID_STRING:
-        return FALSE;
+        result = FALSE;
+        break;
     case rwID_EXTENSION:
-        return FALSE;
+        result = FALSE;
+        break;
     case rwID_CAMERA:
-        return TRUE;
+        result = TRUE;
+        break;
     case rwID_TEXTURE:
-        return TRUE;
+        result = TRUE;
+        break;
     case rwID_MATERIAL:
-        return TRUE;
+        result = TRUE;
+        break;
     case rwID_MATLIST:
-        return TRUE;
+        result = TRUE;
+        break;
     case rwID_ATOMICSECT:
-        return TRUE;
+        result = TRUE;
+        break;
     case rwID_PLANESECT:
-        return TRUE;
+        result = TRUE;
+        break;
     case rwID_WORLD:
-        return TRUE;
+        result = TRUE;
+        break;
     case rwID_MATRIX:
-        return FALSE;
+        result = FALSE;
+        break;
     case rwID_FRAMELIST:
-        return TRUE;
+        result = TRUE;
+        break;
     case rwID_GEOMETRY:
-        return TRUE;
+        result = TRUE;
+        break;
     case rwID_CLUMP:
-        return TRUE;
+        result = TRUE;
+        break;
     case rwID_LIGHT:
-        return TRUE;
+        result = TRUE;
+        break;
     case rwID_UNICODESTRING:
-        return FALSE;
+        result = FALSE;
+        break;
     case rwID_ATOMIC:
-        return TRUE;
+        result = TRUE;
+        break;
     case rwID_GEOMETRYLIST:
-        return TRUE;
+        result = TRUE;
+        break;
     default:
-        return FALSE;
+        result = FALSE;
+        break;
     }
+    return result;
 }
 
 /* Decodes a stored chunk header's library ID into its version and build number */
@@ -95,9 +122,9 @@ RwBool fn_8047CCF8(const RwChunkHeaderInfo *chunkHeaderInfo) {
             (info).version = (header).libraryID << 8;                                              \
             (info).buildNum = 0;                                                                   \
         } else {                                                                                   \
-            (info).buildNum = (header).libraryID & 0xFFFF;                                         \
             (info).version = ((((header).libraryID >> 14) & 0x3FF00) + 0x30000) |                  \
                              (((header).libraryID >> 16) & 0x3F);                                  \
+            (info).buildNum = (header).libraryID & 0xFFFF;                                         \
         }                                                                                          \
         (info).isComplex = fn_8047CCF8(&(info));                                                   \
     } while (0)
@@ -106,8 +133,11 @@ RwBool fn_8047CDB4(RwStream *stream, RwUInt32 *type, RwUInt32 *length, RwUInt32 
                    RwUInt32 *buildNum) {
     rwChunkHeader header;
     RwChunkHeaderInfo info;
+    RwBool readOk;
 
-    if (fn_80480D4C(stream, &header, sizeof(header)) != sizeof(header)) {
+    /* the original computes the read check as a value before testing it */
+    readOk = fn_80480D4C(stream, &header, sizeof(header)) == sizeof(header);
+    if (!readOk) {
         RWERROR((E_RW_READ));
         return FALSE;
     }
