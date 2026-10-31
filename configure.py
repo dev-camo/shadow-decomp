@@ -687,15 +687,15 @@ config.libs = [
                 # The range 0x8035C5CC-0x8035F81C is the one gap between csdAccess and csdMatrix;
                 # its .rodata holds the file name string "csdLoader.cpp", which only
                 # ExtractFileParts uses (the __FILE__ of its allocations), so the other functions
-                # are in this unit because they share its address range. 44 of its 53 functions
-                # are sourced; fn_8035CDCC, fn_8035D66C, fn_8035DAA8, fn_8035DC68, fn_8035DE60,
-                # fn_8035E15C (updates a scene's elements, inferred) and the RCPtr template
-                # instances at 0x8035EC38 (declared only), fn_8035EC6C and fn_8035EE4C are not.
+                # are in this unit because they share its address range. All 53 of its functions
+                # are sourced (the RCPtr<CTexList> members from 0x8035EC38 are template instances).
                 # The RenderState functions, ResolveProject, LoadProject, the Normalize*
                 # functions, FindSceneNameIndex, ApplyScreenAspect, DrawScene, DrawLayer,
                 # DrawElement, UnpackPatternBlend, PackPatternBlend, SplitFloat, SetEntryColors,
-                # TintEntryColors, HoldKeyValue, InterpolateLinear, InterpolateColor and
-                # TransformPoint match (rodata operands compared by target). SwapBytes differs by
+                # TintEntryColors, HoldKeyValue, InterpolateLinear, InterpolateColor,
+                # TransformPoint, UpdateEntries, UpdateEntry, EvaluateChannels,
+                # UpdateEntryTransform, RCPtr::Reset and the constructor of its holder match
+                # (rodata operands and the holder's vtable compared by target). SwapBytes differs by
                 # the register of the loaded value in four instructions. InterpolateKeys differs
                 # in that the original saves its first argument to pass it again in the default
                 # case. InterpolateHermite differs in instruction order, registers and one extra
@@ -714,7 +714,21 @@ config.libs = [
                 # where the original expands it in place (and first copies the interpolated value
                 # to a second stack slot); outside case 6 it differs only in branch displacements,
                 # stack frame offsets (the original's frame is 16 bytes larger) and the register
-                # of one comparison operand.
+                # of one comparison operand. Counting differing words at the same position (and,
+                # in parentheses, the original's words outside the runs that still match once the
+                # instruction streams are aligned): UpdatePalette (244 words, the original's 243)
+                # differs in 164 (111): the registers of the arguments and locals, plus the
+                # branches of the early exit and of the loop heads (the opcode counts differ only
+                # in b, beq, bne and mr). SetEntryPattern (317 words, the original's 319) differs
+                # in 201 (105): the original copies the vertices that change layout word by word
+                # through integer registers and addresses some of the stores differently.
+                # RCPtr::Assign (117 words, the original's 120) differs in 100 (24): the original
+                # keeps the object to release in r4 and copies it to r3 for each call, and the
+                # allocation of the holder passes line 88 of csdRCObject.h where the original
+                # passes 410. Reset and the holder's constructor come after RenderState::End, as
+                # in the original; the out-of-line CMemoryAlloc::AllocObject that the holder
+                # allocation emits after them is a weak copy of a function the game has at
+                # 0x8003DF84.
                 Object(NonMatching, "Game/CSD/csdLoader.cpp", cflags=cflags_csd),
                 # Every function matches except InitMatrixStack, whose allocations pass lines 64 and
                 # 65 instead of the original 53 and 54. .rodata also starts with the two static

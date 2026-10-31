@@ -16,31 +16,31 @@ static MatrixValue *s_pMatrixPool;
 static int s_matrixPoolSize;
 static int s_matrixPoolUsed;
 
-u32 ElementData::fn_8036172C() const {
+int ElementData::fn_8036172C() const {
     return packed & 0xFF;
 }
 
-u32 ElementData::fn_80361720() const {
+int ElementData::fn_80361720() const {
     return (packed >> 8) & 3;
 }
 
-u32 ElementData::fn_80361714() const {
+int ElementData::fn_80361714() const {
     return (packed >> 12) & 3;
 }
 
-u32 ElementData::fn_80361708() const {
+int ElementData::fn_80361708() const {
     return (packed >> 10) & 1;
 }
 
-u32 ElementData::fn_803616FC() const {
+int ElementData::fn_803616FC() const {
     return (packed >> 11) & 1;
 }
 
-u32 ElementData::fn_803616F0() const {
+int ElementData::fn_803616F0() const {
     return (packed >> 16) & 3;
 }
 
-u32 ElementData::fn_803616E4() const {
+int ElementData::fn_803616E4() const {
     return (packed >> 18) & 3;
 }
 
@@ -85,11 +85,11 @@ void InitPalette(MotionPalette *palette, const SceneData *scene, const FontList 
     }
 
     palette->field_0x8 = 0;
-    palette->field_0xC = -1.0f;
-    palette->field_0x10 = 1.0f;
-    palette->field_0x14 = 0;
+    palette->lastFrame = -1.0f;
+    palette->lastFrameStep = 1.0f;
+    palette->lastParent = NULL;
     palette->field_0x30 = 0;
-    palette->field_0x34 = 0;
+    palette->lastMotion = NULL;
     palette->matrixPool = NULL;
 
     int matrixCount = CountPaletteMatrices(palette, scene);
@@ -184,7 +184,7 @@ static void BuildQuadEntry(MotionPaletteEntry *entry, const ElementData *element
         ToScreenB(&vertices[i].x, &vertices[i].y);
     }
 
-    entry->field_0x40 = -100000.0f;
+    entry->channels.named.pattern = -100000.0f;
     entry->flags = 0;
     entry->field_0x140 = 0;
 }
@@ -277,22 +277,22 @@ static void BuildTextEntry(MotionPaletteEntry *entry, const ElementData *element
             f32 scale = glyphHeight / height;
             quad[0].x = left;
             quad[0].y = element->corners[0][1] * scale;
-            quad[0].color = entry->colors[0];
+            quad[0].color = entry->channels.named.colors[0];
             quad[0].u = 0.0f;
             quad[0].v = 0.0f;
             quad[1].x = left;
             quad[1].y = element->corners[1][1] * scale;
-            quad[1].color = entry->colors[1];
+            quad[1].color = entry->channels.named.colors[1];
             quad[1].u = 0.0f;
             quad[1].v = 0.0f;
             quad[2].x = glyphWidth + left;
             quad[2].y = element->corners[2][1] * scale;
-            quad[2].color = entry->colors[2];
+            quad[2].color = entry->channels.named.colors[2];
             quad[2].u = 0.0f;
             quad[2].v = 0.0f;
             quad[3].x = glyphWidth + left;
             quad[3].y = element->corners[3][1] * scale;
-            quad[3].color = entry->colors[3];
+            quad[3].color = entry->channels.named.colors[3];
             quad[3].u = 0.0f;
             quad[3].v = 0.0f;
             cursor += glyphWidth + spacing;
@@ -301,28 +301,28 @@ static void BuildTextEntry(MotionPaletteEntry *entry, const ElementData *element
             entry->textures[quadCount] = data->texture;
             TextureSize *size = &scene->textureSizes[data->texture];
             f32 left = element->corners[0][0] + cursor;
-            f32 scale = size->height * (data->v1 - data->v0) / height;
-            f32 right = size->width * (data->u1 - data->u0) + left;
+            f32 scale = size->height * (data->corner[1].v - data->corner[0].v) / height;
+            f32 right = size->width * (data->corner[1].u - data->corner[0].u) + left;
             quad[0].x = left;
             quad[0].y = element->corners[0][1] * scale;
-            quad[0].color = entry->colors[0];
-            quad[0].u = data->u0;
-            quad[0].v = data->v0;
+            quad[0].color = entry->channels.named.colors[0];
+            quad[0].u = data->corner[0].u;
+            quad[0].v = data->corner[0].v;
             quad[1].x = left;
             quad[1].y = element->corners[1][1] * scale;
-            quad[1].color = entry->colors[1];
-            quad[1].u = data->u0;
-            quad[1].v = data->v1;
+            quad[1].color = entry->channels.named.colors[1];
+            quad[1].u = data->corner[0].u;
+            quad[1].v = data->corner[1].v;
             quad[2].x = right;
             quad[2].y = element->corners[2][1] * scale;
-            quad[2].color = entry->colors[2];
-            quad[2].u = data->u1;
-            quad[2].v = data->v0;
+            quad[2].color = entry->channels.named.colors[2];
+            quad[2].u = data->corner[1].u;
+            quad[2].v = data->corner[0].v;
             quad[3].x = right;
             quad[3].y = element->corners[3][1] * scale;
-            quad[3].color = entry->colors[3];
-            quad[3].u = data->u1;
-            quad[3].v = data->v1;
+            quad[3].color = entry->channels.named.colors[3];
+            quad[3].u = data->corner[1].u;
+            quad[3].v = data->corner[1].v;
             cursor += spacing + (quad[2].x - quad[0].x);
         }
         quadCount++;
@@ -347,11 +347,11 @@ static void BuildTextEntry(MotionPaletteEntry *entry, const ElementData *element
 
     entry->textWidth = textWidth;
     entry->field_0x140 = 0;
-    entry->flags &= ~0x200000;
-    entry->flags &= ~0x80;
-    entry->flags &= ~0x80000;
-    entry->flags &= ~0xF00;
-    entry->field_0x44 = -1;
+    entry->flags &= ~ENTRY_TRANSFORM_SET;
+    entry->flags &= ~ENTRY_TINT_CHANNEL;
+    entry->flags &= ~ENTRY_ALL_CHANNELS_SET;
+    entry->flags &= ~ENTRY_COLOR_CHANNELS;
+    entry->channels.named.tint = -1;
 }
 
 static void BuildEntries(MotionPaletteLayer *layer, int index, const LayerData *src,
@@ -361,7 +361,8 @@ static void BuildEntries(MotionPaletteLayer *layer, int index, const LayerData *
     ElementData *element = src->elements[index];
 
     BuildEntry(entry, element, scene, fonts);
-    if (!(element->flags & 0x400) || !(element->flags & 0x800) || !(element->flags & 0x2)) {
+    if (!(element->flags & ELEMENT_FLAG_0x400) || !(element->flags & ELEMENT_FLAG_0x800) ||
+        !(element->flags & ELEMENT_FLAG_0x2)) {
         AllocEntryMatrices(entry);
     }
     if (src->links[index].child >= 0) {
@@ -424,11 +425,11 @@ void ReleaseEntry(MotionPaletteEntry *entry) {
     }
 }
 
-/* Clears the up-to-date flag (0x100000) of an entry and its ancestors and marks the root's layer
+/* Clears ENTRY_SUBTREE_SET of an entry and its ancestors and marks the root's layer
  * and palette for an update. The original's out-of-line copy came from a caller removed at link;
  * it is not emitted here although other units call it. */
 inline void MarkEntryDirty(MotionPaletteEntry *entry) {
-    entry->flags &= ~0x100000;
+    entry->flags &= ~ENTRY_SUBTREE_SET;
     if (entry->parent != NULL) {
         MarkEntryDirty(entry->parent);
     } else {
@@ -486,7 +487,8 @@ static inline void MarkMatrixUsers(MotionPaletteLayer *layer, int index, const L
     MotionPaletteEntry *entry = &layer->entries[index];
     u32 flags = src->elements[index]->flags;
 
-    if (!(flags & 0x400) || !(flags & 0x800) || !(flags & 0x2)) {
+    if (!(flags & ELEMENT_FLAG_0x400) || !(flags & ELEMENT_FLAG_0x800) ||
+        !(flags & ELEMENT_FLAG_0x2)) {
         entry->matrix.sub0 = reinterpret_cast<MatrixValue *>(1);
     }
     if (src->links[index].child >= 0) {
