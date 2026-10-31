@@ -1,6 +1,7 @@
-/* CRI Sofdec decoder core (SFD) object layout, from the field offsets used by the DOL. */
 #ifndef CRI_SFD_H
 #define CRI_SFD_H
+
+/* CRI Sofdec decoder core (SFD) object layout, from the field offsets used by the DOL. */
 
 #include "CRI/adx_rna.h"
 #include "CRI/cri_xpt.h"
@@ -493,6 +494,14 @@ typedef struct {
 } SFBUF_PRM;
 CHECK_SIZEOF(SFBUF_PRM, 0x2C);
 
+/* readable / writable regions of a ring buffer (two chunks each, sfd_buf.c) */
+typedef struct {
+    SJCK ck1;      /* 0x00 */
+    SJCK ck2;      /* 0x08 */
+    Sint32 rsv[3]; /* 0x10 */
+} SFBUF_RINF;
+CHECK_SIZEOF(SFBUF_RINF, 0x1C);
+
 /* creation parameters passed to SFTRN_InitHn: trif_tbl[n] is driver n's function table
  * (0 input, 1 system, 2 video, 3 audio, 4 video out, 5 audio out, 6/7 output, 8 user) */
 typedef struct {
@@ -858,167 +867,164 @@ extern SFLIB_WORK SFLIB_libwork;
 /* the handle last validated by SFLIB_CheckHn (sfd_lib.c) */
 extern SFD sfd_hn_last;
 
-Sint32 SFLIB_SetErr(SFD sfd, Sint32 code);
-Sint32 SFLIB_CheckHn(SFD sfd);
-void SFLIB_LockCs(Sint32 *cs);
+/* sfd_lib.c */
+/* SFD structure size version of this build, checked by SFD_IsVersionCompatible */
+#define SFD_VERSION 0x3640
 void SFLIB_UnlockCs(Sint32 *cs);
-void SFSET_SetCond(SFD sfd, Sint32 id, Sint32 val);
-void SFTIM_Pause(SFD sfd, Sint32 sw);
-void SFTIM_SetSpeed(SFD sfd, Sint32 speed);
-void SFAOAP_SetSpeed(SFD sfd, Sint32 speed);
-Sint32 SFD_SetElementOutSj(SFD sfd, Sint32 stmid, void *sj, void (*fn)(void *obj, Sint32 stmid),
-                           void *obj);
-Sint32 SFD_GetOutVol(SFD sfd);
-Sint32 SFD_SetOutVol(SFD sfd, Sint32 vol);
-Sint32 SFTRN_CallTrtTrif(SFD sfd, Sint32 strm, Sint32 fn, Sint32 a, Sint32 b);
-Sint32 SFTRN_IsSetup(SFD sfd, Sint32 strm);
-void SFBUF_SetUoch(SFD sfd, Sint32 n, Sint32 chno, SFUO_CH *ch);
+void SFLIB_LockCs(Sint32 *cs);
+Sint32 SFLIB_CheckHn(SFD sfd);
+Sint32 SFD_SetErrFn(SFD sfd, void (*fn)(void *obj, Sint32 code), void *obj);
+Sint32 SFLIB_SetErr(SFD sfd, Sint32 code);
+void SFLIB_InitErrInf(SFLIB_ERRINF *err);
+Sint32 SFD_Finish(void);
+Sint32 SFD_Init(SFD_INIT_PRM *prm);
+Sint32 SFD_IsVersionCompatible(const Char8 *version, Sint32 ver);
+
+/* sfd_set.c */
 Sint32 SFSET_GetCond(SFD sfd, Sint32 id);
+void SFSET_SetCond(SFD sfd, Sint32 id, Sint32 val);
+Sint32 SFD_SetCond(SFD sfd, Sint32 id, Sint32 val);
+Sint32 SFD_GetHnStat(SFD sfd);
+
+/* sfd_ply.c */
+/* default conditions; one entry longer than the SFD_COND_NUM copied into each handle */
+extern const Sint32 SFPLY_cond_dfl[101];
+Sint32 SFD_TermSupply(SFD sfd);
+Sint32 SFPLY_GetResetFlg(void);
+Sint32 SFD_Destroy(SFD sfd);
+Sint32 SFD_ExecOne(SFD sfd);
+Bool SFD_IsSvrWait(void);
+Bool SFD_IsHnSvrWait(SFD sfd);
+void SFD_VbIn(void);
+void SFPLY_Init(void);
+
+/* sfd_pl2.c */
+Sint32 SFD_SetSpeed(SFD sfd, Sint32 speed);
+Sint32 SFPL2_Standby(SFD sfd);
+Sint32 SFPL2_Pause(SFD sfd, Sint32 sw);
+
+/* sfd_trn.c */
+Sint32 SFTRN_IsSetup(SFD sfd, Sint32 strm);
 Sint32 SFTRN_GetTermFlg(SFD sfd, Sint32 strm);
 void SFTRN_SetTermFlg(SFD sfd, Sint32 strm, Sint32 flg);
 Sint32 SFTRN_GetPrepFlg(SFD sfd, Sint32 strm);
 void SFTRN_SetPrepFlg(SFD sfd, Sint32 strm, Sint32 flg);
+Sint32 SFTRN_CallTrtTrif(SFD sfd, Sint32 strm, Sint32 fn, Sint32 a, Sint32 b);
+Sint32 SFTRN_CallTrSetup(SFD sfd, Sint32 fn);
+Sint32 SFTRN_InitHn(SFD sfd, SFD_TR *tr, SFTRN_PRM *prm, Sint32 x);
+Sint32 SFTRN_Finish(SFTRN_TRIF_TBL *tbl);
+Sint32 SFTRN_Init(SFTRN_TRIF_TBL *dst, SFTRN_TRIF_TBL *src);
+
+/* sfd_buf.c */
+Sint64 SFBUF_UpdateFlowCnt(Sint64 cnt, Uint32 pos);
+void SFBUF_GetFlowCnt(SJ sj, Sint32 *wcnt, Sint32 *rcnt);
+Sint32 SFBUF_RingGetDataSiz(SFD sfd, Sint32 n);
 Sint32 SFBUF_GetTermFlg(SFD sfd, Sint32 n);
+void SFBUF_SetTermFlg(SFD sfd, Sint32 n, Sint32 flg);
 Sint32 SFBUF_GetPrepFlg(SFD sfd, Sint32 n);
 void SFBUF_SetPrepFlg(SFD sfd, Sint32 n, Sint32 flg);
-/* readable / writable regions of a ring buffer (two chunks each, sfd_buf.c) */
-typedef struct {
-    SJCK ck1;      /* 0x00 */
-    SJCK ck2;      /* 0x08 */
-    Sint32 rsv[3]; /* 0x10 */
-} SFBUF_RINF;
-CHECK_SIZEOF(SFBUF_RINF, 0x1C);
-
-Sint32 SFBUF_RingAddWrite(SFD sfd, Sint32 n, Sint32 nbyte,
-                          Sint32 rsv); /* rsv: SFBUF_RINF.rsv[1] of the caller, unused */
-Sint32 SFBUF_RingGetWrite(SFD sfd, Sint32 n, SFBUF_RINF *inf);
 Sint32 SFBUF_VfrmAddRead(SFD sfd, Sint32 n, void *frm, Sint32 arg);
 Sint32 SFBUF_VfrmGetRead(SFD sfd, Sint32 n, void **frm, Sint32 arg);
-Sint32 SFCON_IsEndcodeSkip(SFD sfd);
-Sint32 SFHDS_GetMuxVerNum(SFD sfd);
+Sint32 SFBUF_RingGetSj(SFD sfd, Sint32 n, SJ *sj);
+Sint32 SFBUF_GetWTot(SFD sfd, Sint32 n);
+Sint32 SFBUF_GetRTot(SFD sfd, Sint32 n);
+Sint32 SFBUF_RingAddRead(SFD sfd, Sint32 n, Sint32 nbyte);
+Sint32 SFBUF_RingAddWrite(SFD sfd, Sint32 n, Sint32 nbyte,
+                          Sint32 rsv); /* rsv: SFBUF_RINF.rsv[1] of the caller, unused */
+Sint32 SFBUF_RingGetRead(SFD sfd, Sint32 n, SFBUF_RINF *inf);
+Sint32 SFBUF_RingGetWrite(SFD sfd, Sint32 n, SFBUF_RINF *inf);
+void SFBUF_GetUoch(SFD sfd, Sint32 n, Sint32 chno, SFUO_CH *ch);
+void SFBUF_SetUoch(SFD sfd, Sint32 n, Sint32 chno, SFUO_CH *ch);
+Sint32 SFBUF_SetSupplySj(SFD sfd, SFBUF_SUP *sup);
+void SFBUF_DestroySj(SFD sfd);
+Sint32 SFBUF_InitHn(SFD sfd, SFBUF_WORK *wk, SFBUF_PRM *prm);
+void fn_803F052C(void *work);
+void SFBUF_Init(void *work);
+
+/* sfd_hds.c */
 Sint32 SFHDS_GetColType(SFD sfd);
+Sint32 SFHDS_GetMuxVerNum(SFD sfd);
 void SFHDS_ProcessHdr(SFHDS_FHD *fhd);
 void SFHDS_ReprocessHdr(SFD sfd);
 Bool SFHDS_IsSfdHeader(void *data, Sint32 size);
 Bool SFHDS_SetHdr(SFD sfd, Sint32 type, Uint8 *data, Sint32 size, Sint32 *result);
 void SFHDS_FinishFhd(SFHDS_FHD *fhd);
 void SFHDS_InitFhd(SFHDS_FHD *fhd);
-void SFHDS_Init(void);
-Sint32 SFMPS_GetConcatCnt(SFD sfd);
-void SFSEE_InitHn(SFSEE_HN *see);
-void SFSEE_ExecServer(SFD sfd);
-void SFSEE_FixAvPlay(SFD sfd, Sint32 a, Sint32 b);
-Sint32 SFD_TermSupply(SFD sfd);
-Sint32 SFD_SetCond(SFD sfd, Sint32 id, Sint32 val);
-Sint32 SFD_GetHnStat(SFD sfd);
-Sint32 SFD_ExecOne(SFD sfd);
-Bool SFD_IsSvrWait(void);
-Bool SFD_IsHnSvrWait(SFD sfd);
-void SFD_VbIn(void);
-Sint32 SFD_SetConcatPlay(SFD sfd);
-Sint32 SFD_GetTime(SFD sfd, Sint32 *ncount, Sint32 *tscale);
-Sint32 SFD_EntrySeek(SFD sfd, SFSEE_WORK *wk);
-Sint32 SFD_SetSpeed(SFD sfd, Sint32 speed);
-Bool SFTIM_IsGetFrmTime(SFD sfd, SFD_VFRM *frm);
-Bool SFTIM_IsGetFrmTimeTunit(SFD sfd, Sint32 ftime, Sint32 tunit);
-Bool SFTIM_IsVideoTerm(SFD sfd);
-Bool SFTIM_ChkRegularTime(SFD sfd, Sint32 *ncount, Sint32 *tscale);
-void SFTIM_GetTimeOneFrmVideo(SFD sfd, Sint32 *ncount, Sint32 *tscale);
-void SFTIM_SetTimeFn(SFD sfd, SFTIM_FN fn, Sint32 type);
-Sint32 SFTIM_GetAudioStartSample(SFTIM tim, Sint32 sfreq);
-Sint32 SFTIM_GetVideoStartSample(SFTIM tim, Sint32 sfreq, Sint32 *ofstflg);
-void SFTIM_SetStartTime(SFTIM tim, Sint32 smpl, Sint32 sfreq);
-
-/* sfd_lib.c */
-Sint32 SFD_SetErrFn(SFD sfd, void (*fn)(void *obj, Sint32 code), void *obj);
-Sint32 SFD_Finish(void);
-Sint32 SFD_Init(SFD_INIT_PRM *prm);
-/* SFD structure size version of this build, checked by SFD_IsVersionCompatible */
-#define SFD_VERSION 0x3640
-Sint32 SFD_IsVersionCompatible(const Char8 *version, Sint32 ver);
-void SFLIB_InitErrInf(SFLIB_ERRINF *err);
-
-/* sfd_ply.c */
-/* default conditions; one entry longer than the SFD_COND_NUM copied into each handle */
-extern const Sint32 SFPLY_cond_dfl[101];
-void SFPLY_Init(void);
-Sint32 SFD_Destroy(SFD sfd);
-Sint32 SFPLY_GetResetFlg(void);
-
-/* sfd_trn.c */
-Sint32 SFTRN_Init(SFTRN_TRIF_TBL *dst, SFTRN_TRIF_TBL *src);
-Sint32 SFTRN_Finish(SFTRN_TRIF_TBL *tbl);
-Sint32 SFTRN_InitHn(SFD sfd, SFD_TR *tr, SFTRN_PRM *prm, Sint32 x);
-Sint32 SFTRN_CallTrSetup(SFD sfd, Sint32 fn);
-
-/* sfd_buf.c */
-void SFBUF_Init(void *work);
-Sint32 SFBUF_InitHn(SFD sfd, SFBUF_WORK *wk, SFBUF_PRM *prm);
-Sint32 SFBUF_GetWTot(SFD sfd, Sint32 n);
-Sint32 SFBUF_RingGetDataSiz(SFD sfd, Sint32 n);
-void fn_803F052C(void *work);
-Sint32 SFBUF_SetSupplySj(SFD sfd, SFBUF_SUP *sup);
-void SFBUF_DestroySj(SFD sfd);
-void SFBUF_SetTermFlg(SFD sfd, Sint32 n, Sint32 flg);
-Sint32 SFBUF_GetRTot(SFD sfd, Sint32 n);
-Sint32 SFBUF_RingGetRead(SFD sfd, Sint32 n, SFBUF_RINF *inf);
-Sint32 SFBUF_RingAddRead(SFD sfd, Sint32 n, Sint32 nbyte);
-Sint32 SFBUF_RingGetSj(SFD sfd, Sint32 n, SJ *sj);
-void SFBUF_GetFlowCnt(SJ sj, Sint32 *wcnt, Sint32 *rcnt);
-Sint64 SFBUF_UpdateFlowCnt(Sint64 cnt, Uint32 pos);
-void SFBUF_GetUoch(SFD sfd, Sint32 n, Sint32 chno, SFUO_CH *ch);
-
-/* sfd_hds.c */
 void fn_803F12EC(void);
+void SFHDS_Init(void);
 
-/* sfd_pts.c */
-void SFPTS_InitPtsQue(SFPTS_QUE *que);
-Sint32 SFPTS_IsPtsQueFull(SFD sfd, Sint32 strm);
-Sint32 SFPTS_WritePtsQue(SFD sfd, Sint32 strm, SFPTS_ENT *in, Sint32 *full);
-Sint32 SFD_SetVideoPts(SFD sfd, void *buf, Sint32 size);
+/* sfd_mps.c */
+Sint32 SFMPS_GetConcatCnt(SFD sfd);
+Sint32 SFD_SetElementOutSj(SFD sfd, Sint32 stmid, void *sj, void (*fn)(void *obj, Sint32 stmid),
+                           void *obj);
 
-/* sfd_con.c */
-Sint32 SFCON_IsSystemEndcodeSkip(SFD sfd);
-Sint32 SFCON_WriteTotSmplQue(SFD sfd, Sint32 val, Sint32 last);
+/* sfd_mpv.c (not decompiled) */
+Sint32 SFMPV_SaveCond(SFD sfd, void *buf, Sint32 size);
+void SFMPV_RestoreCond(SFD sfd, void *buf, Sint32 n);
 
-/* sfd_see.c */
-Sint32 SFD_SetByteRate(SFD sfd, Sint32 rate);
-Sint32 SFD_SetFileSize(SFD sfd, Sint32 fsize);
-Sint32 SFD_SetTotTime(SFD sfd, Sint32 tottime, Sint32 tunit);
-Sint32 SFD_SetSeekPos(SFD sfd, Sint32 pos);
+/* sfd_aoap.c */
+void SFAOAP_SetSpeed(SFD sfd, Sint32 speed);
+Sint32 SFD_GetOutVol(SFD sfd);
+Sint32 SFD_SetOutVol(SFD sfd, Sint32 vol);
 
 /* sfd_adxt.c */
 extern Sint32 sfadxt_stat;
 extern Sint32 sfadxt_adxterr;
 void SFD_SetAdxtPara(SFADXT_PARA *para);
 
-/* sfd_tmr.c */
-void SFTMR_InitTsum(SFTMR_TSUM *ts);
-void SFTMR_AddTsum(SFTMR_TSUM *ts, Sint64 t);
-/* Sofdec profiling clock (sfd_tmr.c): the first returns the clock units per second, the second the
- * current clock value (the time base, the last handle's external clock, or the vsync count) */
-Sint64 fn_803FE96C(void);
-Sint64 fn_803FEA5C(void);
+/* sfd_pts.c */
+Sint32 SFPTS_IsPtsQueFull(SFD sfd, Sint32 strm);
+Sint32 SFPTS_WritePtsQue(SFD sfd, Sint32 strm, SFPTS_ENT *in, Sint32 *full);
+Sint32 SFD_SetVideoPts(SFD sfd, void *buf, Sint32 size);
+void SFPTS_InitPtsQue(SFPTS_QUE *que);
 
-/* sfd_pl2.c */
-Sint32 SFPL2_Standby(SFD sfd);
-Sint32 SFPL2_Pause(SFD sfd, Sint32 sw);
+/* sfd_con.c */
+Sint32 SFCON_WriteTotSmplQue(SFD sfd, Sint32 val, Sint32 last);
+Sint32 SFCON_IsSystemEndcodeSkip(SFD sfd);
+Sint32 SFCON_IsEndcodeSkip(SFD sfd);
+Sint32 SFD_SetConcatPlay(SFD sfd);
+
+/* sfd_see.c */
+Sint32 SFD_SetSeekPos(SFD sfd, Sint32 pos);
+Sint32 SFD_SetByteRate(SFD sfd, Sint32 rate);
+Sint32 SFD_SetTotTime(SFD sfd, Sint32 tottime, Sint32 tunit);
+Sint32 SFD_SetFileSize(SFD sfd, Sint32 fsize);
+void SFSEE_ExecServer(SFD sfd);
+void SFSEE_FixAvPlay(SFD sfd, Sint32 a, Sint32 b);
+Sint32 SFD_EntrySeek(SFD sfd, SFSEE_WORK *wk);
+void SFSEE_InitHn(SFSEE_HN *see);
 
 /* sfd_tim.c */
-void SFTIM_Init(SFTIM_LIB *lib, Sint32 vrate);
-void fn_803FDCD0(SFTIM_LIB *lib); /* empty; the library finish SFD_Finish calls it */
-void SFTIM_InitHn(SFD sfd, SFTIM tim);
-void SFTIM_VbIn(void);
-Sint32 SFMPV_SaveCond(SFD sfd, void *buf, Sint32 size);
-void SFMPV_RestoreCond(SFD sfd, void *buf, Sint32 n);
-Sint32 SFD_SetUsrTimeFn(SFD sfd, SFTIM_FN fn);
+void SFTIM_SetSpeed(SFD sfd, Sint32 speed);
+Bool SFTIM_IsVideoTerm(SFD sfd);
+Bool SFTIM_IsGetFrmTimeTunit(SFD sfd, Sint32 ftime, Sint32 tunit);
+Bool SFTIM_IsGetFrmTime(SFD sfd, SFD_VFRM *frm);
+void SFTIM_GetTimeOneFrmVideo(SFD sfd, Sint32 *ncount, Sint32 *tscale);
+void SFTIM_Pause(SFD sfd, Sint32 sw);
+void SFTIM_SetTimeFn(SFD sfd, SFTIM_FN fn, Sint32 type);
 Sint32 SFD_SetExtClockFn(SFD sfd, SFTIM_FN fn, Sint32 wrap, void *obj);
+Sint32 SFD_SetUsrTimeFn(SFD sfd, SFTIM_FN fn);
+Sint32 SFD_CmpTime(Sint32 a, Sint32 aunit, Sint32 b, Sint32 bunit);
 Sint32 SFD_SetUsrIsSkipFn(SFD sfd, Bool (*fn)());
-/* sfd_tim.c */
+Bool SFTIM_ChkRegularTime(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 Sint32 SFTIM_GetTime(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 Sint32 SFTIM_GetTimeSub(SFD sfd, Sint32 *ncount, Sint32 *tscale);
+void SFTIM_SetStartTime(SFTIM tim, Sint32 smpl, Sint32 sfreq);
+Sint32 SFTIM_GetVideoStartSample(SFTIM tim, Sint32 sfreq, Sint32 *ofstflg);
+Sint32 SFTIM_GetAudioStartSample(SFTIM tim, Sint32 sfreq);
 Bool SFTIM_IsStagnant(SFD sfd);
-Sint32 SFD_CmpTime(Sint32 a, Sint32 aunit, Sint32 b, Sint32 bunit);
+void SFTIM_VbIn(void);
+void SFTIM_InitHn(SFD sfd, SFTIM tim);
+void fn_803FDCD0(SFTIM_LIB *lib); /* empty; the library finish SFD_Finish calls it */
+void SFTIM_Init(SFTIM_LIB *lib, Sint32 vrate);
+
+/* sfd_tmr.c */
+/* Sofdec profiling clock: fn_803FE96C returns the clock units per second, fn_803FEA5C the current
+ * clock value (the time base, the last handle's external clock, or the vsync count) */
+Sint64 fn_803FEA5C(void);
+Sint64 fn_803FE96C(void);
+void SFTMR_InitTsum(SFTMR_TSUM *ts);
+void SFTMR_AddTsum(SFTMR_TSUM *ts, Sint64 t);
 
 #ifdef __cplusplus
 }
