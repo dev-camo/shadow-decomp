@@ -38,6 +38,11 @@ void fn_802E0B58(const UnkSegment_80020A20 &segment, const UnkDebugColor_802E0E8
  * queues it (behaviour inferred). */
 void fn_802E0B7C(const Fn8040Vector3 *center, const Fn8040Vector3 *rotation,
                  const UnkDebugColor_802E0E84 &color, int arg3, float halfLength, float radius);
+/* Forwards to fn_802E0C88 (the same family as fn_802E0B7C) with the colour lbl_805F06D8 and arg2 as
+ * its integer flag (behaviour inferred from the 0x28-byte wrapper; the original function name is
+ * unknown). */
+void fn_802E0D6C(const Fn8040Vector3 *position, const Fn8040Vector3 *rotation, int arg2, float arg3,
+                 float arg4);
 }
 
 /* A zero-filled .sbss colour that several gadgets pass when they draw their range (purpose

@@ -113,10 +113,18 @@ extern "C" {
  * fn_8040CC6C/fn_8040CE74 return them for a vector too short to normalise, and lbl_805E07A0 is
  * read throughout the game code. */
 extern Fn8040Vector2 lbl_805F1358;
-/* float constants in .sdata2: lbl_805FAD78 (2D clear value), lbl_805FAD80 (3D clear value, also
- * the length fn_8040CE74 returns for a too-short vector) */
+/* Float literals in .sdata2: lbl_805FAD78 (2D clear value), lbl_805FAD80 (3D clear value, also
+ * the length fn_8040CE74 returns for a too-short vector), and the 1e-6f literals lbl_805FAD7C and
+ * lbl_805FAD84 of the 2D and 3D normalising functions (fn_8040CC6C and fn_8040CE74): a vector
+ * whose length is below these is replaced by the zero vector.
+ *
+ * Matching workaround: referenced as external symbols because no split owns the .sdata2 range
+ * 0x805FAD78-0x805FAD88, where the four literals sit interleaved. A literal in the source would
+ * emit a unit-local .sdata2 copy. Revisit when these units are merged into their original files. */
 extern float lbl_805FAD78;
+extern float lbl_805FAD7C;
 extern float lbl_805FAD80;
+extern float lbl_805FAD84;
 extern Fn8040Vector3 lbl_805E07A0;
 /* A zero vector that the startup code at 0x8040EA64 stores (together with a 2D one at 0x805E07B0);
  * the GravityChangeCollision gadget passes it to the box probe factory fn_800C7C34. */

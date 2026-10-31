@@ -15,6 +15,7 @@
 #include "Game/CharaColliBase.h"
 #include "Game/CharCommand.h"
 #include "Game/CharInfo.h"
+#include "Game/DebugDisp.h"
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetTypeInfo.h"
@@ -82,9 +83,6 @@ extern "C" void fn_8015AA84(ColliDetectArgs *args,
                             void (*callback)(boost::shared_ptr<CharInfo> hit,
                                              UnkHitContext_801F7E28 *context),
                             UnkHitContext_801F7E28 *context);
-
-extern "C" void fn_802E0D6C(const Fn8040Vector3 *position, const Fn8040Vector3 *rotation, int arg2,
-                            float arg3, float arg4);
 
 class ElecCircuitEntrance : public Gadget {
   public:
@@ -214,8 +212,9 @@ void ElecCircuitEntrance::fn_801F7F9C() {
         fn_801F8040(&position.x, &position.z, m_charInfo->m_rotation.y, -10.0f);
         AddVector(&position, m_charInfo->m_position);
 
-        /* Read into a local first: written inside the constructor call, operator-> is called out of
-         * line, which the original does not do. */
+        /* Matching workaround: read into a local first. Written inside the constructor call,
+         * operator-> is called out of line, which the original does not do. Revisit if the
+         * original's expression form is found. */
         float angle = m_charInfo->m_rotation.y;
         Fn8040Vector3 rotation(0.0f, angle, 0.0f);
 
