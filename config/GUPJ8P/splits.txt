@@ -1296,4 +1296,9 @@ CRI/cftfx.c:
 
 CRI/cftcoladj.c:
 	.text       start:0x8040AAE8 end:0x8040B1D4
-	.rodata     start:0x8051A8F0 end:0x8051A8F4
+	.rodata     start:0x8051A8F0 end:0x8051A8F8
+
+CRI/cft_lib.c:
+	.text       start:0x8040B1D4 end:0x8040B208
+	.rodata     start:0x8051A8F8 end:0x8051A950
+	.bss        start:0x805E0D38 end:0x805E0D40
