@@ -2577,6 +2577,25 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # NonMatching: 19 of 39 functions are not written yet (see the file comment). Of the 20
+            # written, 15 match; raw words differ in SFMPV_Seek (24 of 93), SFMPV_Destroy (40 of
+            # 68) and SFMPV_Create (61 of 156), and the sizes differ (original vs source words) in
+            # sfmpv_InitInf (228 vs 231) and SFMPV_Stop (4 vs 2).
+            # Deferred inlining: the original .bss holds the variables in the reverse of their
+            # declaration order (sfmpv_discard_wsiz first, sfmpv_work last), as a deferred compile
+            # lays them out; without it they come out in the order of first use (sfmpv_para first)
+            # and SFMPV_Init, SFMPV_Destroy, SFMPV_Create and SFD_SetMpvParaTbl differ.
+            Object(
+                NonMatching,
+                "CRI/sfd_mpv.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                    "-inline auto,deferred",
+                ],
+            ),
             Object(
                 Matching,
                 "CRI/sfd_mpvf.c",

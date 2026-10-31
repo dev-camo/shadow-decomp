@@ -1526,6 +1526,11 @@ CRI/sfd_mps.c:
 	.rodata     start:0x80518688 end:0x805186D0
 	.bss        start:0x805CADD0 end:0x805CB5E8
 
+CRI/sfd_mpv.c:
+	.text       start:0x803F3564 end:0x803F8974
+	.rodata     start:0x805186D0 end:0x80518770
+	.bss        start:0x805CB5E8 end:0x805DD688
+
 CRI/sfd_mpvf.c:
 	.text       start:0x803F8974 end:0x803F90A8
 
