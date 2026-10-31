@@ -518,7 +518,7 @@ void fn_8044DD1C(RpSkin *skin, RwInt32 meshIndex, RwBool normals) {
     RwUInt8 run;
 
     for (run = 0; run < numRuns; run++) {
-        SkinRLE *bones = &skin->skinSplitData.meshRLE[firstRun + run];
+        SkinRLE *bones = skin->skinSplitData.meshRLE + firstRun + run;
         RwUInt32 bone = bones->start;
         RwUInt32 numBones = bones->length;
         RwUInt32 i;
