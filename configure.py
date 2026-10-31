@@ -742,7 +742,6 @@ config.libs = [
                 Object(Matching, "Game/fn_80406EBC.c"),
                 # Target addresses the conversion constants through .rodata.
                 Object(Matching, "Game/fn_80406F08.c", extra_cflags=["-sdata2 0"]),
-                Object(Matching, "Game/fn_8040773C.c"),
                 Object(Matching, "Game/fn_80407920.c"),
                 Object(Matching, "Game/fn_80407930.c"),
                 Object(Matching, "Game/fn_804110EC.c"),
@@ -1863,6 +1862,17 @@ config.libs = [
                     "-sdata2 0",
                     "-str readonly",
                     "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/mwsfdset.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                    "-inline auto,deferred",
                 ],
             ),
             Object(

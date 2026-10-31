@@ -54,15 +54,25 @@ typedef struct {
     /* 0x04 */ Sint32 cnt; /* number of created handles */
 } MWSST_MNG;
 
+/* player states (MWPLY_OBJ.stat) */
+#define MWSFD_STAT_STOP 0
+#define MWSFD_STAT_PREP 1
+#define MWSFD_STAT_PLAYING 2
+#define MWSFD_STAT_PLAYEND 3
+#define MWSFD_STAT_ERROR 4
+
 /* MW player object (0x2A8 bytes; the libwork holds eight) */
 struct MWPLY_OBJ {
     /* 0x000 */ Sint32 used; /* 1 for a created handle */
-    /* 0x004 */ Uint8 x04[0x38];
+    /* 0x004 */ Sint32 stat; /* MWSFD_STAT_* */
+    /* 0x008 */ Uint8 x08[0x34];
     /* 0x03C */ SFD sfd;
     /* 0x040 */ ADXSTM stm;
     /* 0x044 */ Sint32 x44;
     /* 0x048 */ LSC lsc;
-    /* 0x04C */ Uint8 x4c[0x280 - 0x4C];
+    /* 0x04C */ Uint8 x4c[0x1C8 - 0x4C];
+    /* 0x1C8 */ Sint32 flow_nsct; /* the largest refill size (sectors) */
+    /* 0x1CC */ Uint8 x1cc[0x280 - 0x1CC];
     /* 0x280 */ MWSST_OBJ sst;
     /* 0x298 */ Uint8 x298[0x2A8 - 0x298];
 };
@@ -130,16 +140,24 @@ void mwsflib_LscErrFunc(void *obj, Char8 *msg);
 MWSFD_LIBWORK *MWSFLIB_GetLibWorkPtr(void);
 
 /* other units of the player used by mwsfdlib.c */
-void MWSFD_SetCond(MWPLY mwply, Sint32 id, Sint32 val);
-SFD mwPlyGetSfdHn(MWPLY mwply);
 void mwSfdDestroy(MWPLY mwply);
 void MWSFSFX_Init(void);
 void MWSFSFX_Finish(void); /* inferred name: the counterpart of MWSFSFX_Init */
 void MWSFSVR_SetMwsfdSvrFlg(Sint32 flg);
+void MWSFPLY_SetFlowLimit(MWPLY mwply);
 void mwsfd_SetSleepBdr(MWPLY mwply, Sint32 sw); /* inferred name */
 Sint32 MWSFSVR_VsyncThrdProc(void *obj);
 Sint32 MWSFSVR_MainThrdProc(void *obj);
 Sint32 MWSFSVR_IdleThrdProc(void *obj);
+
+/* mwsfdset.c */
+SFD mwPlyGetSfdHn(MWPLY mwply);
+void MWSFD_SetCond(MWPLY mwply, Sint32 id, Sint32 val);
+void MWSFD_SetFlowLimit(MWPLY mwply, Sint32 min_nsct, Sint32 max_nsct);
+Bool MWSFD_IsEnableHndl(MWPLY mwply);
+Sint32 mwPlyGetStat(MWPLY mwply);
+void mwPlySetOutVol(void *hn, Sint32 vol);
+Sint32 mwPlyGetOutVol(void *hn);
 
 /* mwsfdsl.c */
 void MWSFLSC_SetFlowLimit(MWPLY mwply, Sint32 nsct);
