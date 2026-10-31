@@ -33,7 +33,7 @@ typedef struct {
     Sint8 maxnch;             /* 0x03 */
     ADXSJD sjd;               /* 0x04 decoder */
     ADXSTM stm;               /* 0x08 stream controller */
-    AXRNA rna;                /* 0x0C renderer (fn_803EDD18 copies it into SFAOAP.x00) */
+    AXRNA rna;                /* 0x0C renderer (SFADXT_Create copies it into SFAOAP.x00) */
     SJ sjf;                   /* 0x10 file stream joint */
     SJ sji;                   /* 0x14 decoder input stream joint */
     SJ sjo[2];                /* 0x18 decoder output stream joints (one per channel) */
@@ -132,6 +132,27 @@ void ADXT_SetOutPan(ADXT adxt, Sint32 ch, Sint32 pan);
 void ADXT_SetTranspose(ADXT adxt, Sint32 oct, Sint32 cent);
 void ADXT_GetTranspose(ADXT adxt, Sint32 *oct, Sint32 *cent);
 void adxt_start_stm(ADXT adxt, void *fname, void *dir, Sint32 ofst, Sint32 nsct);
+ADXT ADXT_Create(Sint32 maxnch, void *work, Sint32 worksize);
+void ADXT_StartSj(ADXT adxt, SJ sj);
+Sint32 ADXT_GetNumSmpl(ADXT adxt);
+Sint32 ADXT_GetOutVol(ADXT adxt);
+void ADXT_SetSvrFreq(ADXT adxt, Sint32 freq);
+void ADXT_SetAutoRcvr(ADXT adxt, Sint32 sw);
+Sint32 ADXT_GetErrCode(ADXT adxt);
+void ADXT_Pause(ADXT adxt, Sint32 sw);
+void ADXT_TermSupply(ADXT adxt);
+Sint32 ADXT_DiscardSmpl(ADXT adxt, Sint32 nsmpl);
+void ADXT_SetTimeOfst(ADXT adxt, Sint32 ofst);
+Bool ADXT_IsHeader(Uint8 *data, Sint32 size, Sint32 *hdrsiz);
+Bool ADXT_IsEndcode(Uint8 *data, Sint32 size, Sint32 *ecsiz);
+Sint32 ADXT_InsertSilence(ADXT adxt, Sint32 nch, Sint32 nsmpl);
+
+/* adx_gc.c */
+void ADXGC_SetAdjsfreqFlg(ADXT_OBJ *adxt, Sint32 flg);
+
+/* adx_sfa.c */
+void SFA_Init(void);
+void SFA_Finish(void);
 
 /* adx_lsc.c; ADXT_ExecLscSvr's name is inferred */
 void ADXT_EntryFname(ADXT adxt, Char8 *fname);

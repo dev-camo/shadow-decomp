@@ -6,7 +6,6 @@
  * Source adapted from the RE4 GameCube decompilation with this game's SFD_OBJ layout. */
 #include "CRI/sfd.h"
 
-#define SFAOAP_TR 7
 #define SFAOAP_COND 6
 
 /* No seek (0). */
