@@ -120,10 +120,15 @@ Rt2dPath *fn_80476C4C(RwStream *stream) {
         if (brush->flag & FIELDRGBA) {                                                             \
             STROKECOLOR(vertex, brush->edge.col, brush->dedge.col, (dist) * invLength);            \
         } else {                                                                                   \
-            (vertex)->color.red = brush->colorCache.red;                                           \
-            (vertex)->color.green = brush->colorCache.green;                                       \
-            (vertex)->color.blue = brush->colorCache.blue;                                         \
-            (vertex)->color.alpha = brush->colorCache.alpha;                                       \
+            RwUInt8 red_ = brush->colorCache.red;                                                  \
+            RwUInt8 green_ = brush->colorCache.green;                                              \
+            RwUInt8 blue_ = brush->colorCache.blue;                                                \
+            RwUInt8 alpha_ = brush->colorCache.alpha;                                              \
+                                                                                                   \
+            (vertex)->color.red = red_;                                                            \
+            (vertex)->color.green = green_;                                                        \
+            (vertex)->color.blue = blue_;                                                          \
+            (vertex)->color.alpha = alpha_;                                                        \
         }                                                                                          \
         if (brush->flag & FIELDUV) {                                                               \
             RwReal t_ = (dist) * invLength;                                                        \
