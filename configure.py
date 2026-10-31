@@ -790,6 +790,53 @@ config.libs = [
                 # unreferenced weak copy (0x2C bytes); the original's copy was removed at link, and
                 # the game keeps its own at 0x8003CB64.
                 Object(NonMatching, "Game/CSD/csdTexList.cpp", cflags=cflags_csd),
+                # Matching workaround: -inline auto for this unit only (the rest of the library uses
+                # -inline noauto). The texture array's constructor (0xA0 bytes) and destructor (0x54
+                # bytes) are emitted out of line and also expanded in CTexListRW::Load and in the
+                # destructor of CTexListRW, as in the original; under -inline noauto a function is
+                # expanded only when it is declared inline, and then no out-of-line copy is emitted.
+                # Revisit if the original's flags or an inline declaration that reproduces this are
+                # found.
+                #
+                # The RenderWare implementations of the library's file system, drawing, allocator
+                # and texture list, and the function that installs them (the file name is the one
+                # its allocation calls pass). 39 of its 45 functions match in raw instruction words.
+                # DrawPrimitive2D (49 words) differs in 10: the registers of the source vertex
+                # pointer and the colour word are swapped. The draw without texture coordinates (52
+                # words) differs in 27: the original copies the vertex count to r5 before the loop,
+                # where this build copies it after the loop, so the loop uses other registers.
+                # CTexListRW::Load (79 words) differs in 8: the registers of the dictionary and of
+                # the array's first element are swapped, and the allocation passes line 141 of this
+                # file where the original passes 70. The texture array's destructor matches; its
+                # constructor differs only in passing line 141 for line 70.
+                # InitLibraryRW (139 words) differs in 25 only by the .bss offsets of its
+                # function-local statics: the original has 12 more bytes before the first record.
+                # The holder's Assign (at 0x8036342C, 117 words, the original's 120) shows the
+                # difference described for csdLoader.cpp: the original keeps the object to release
+                # in r4, and the holder allocation passes line 410 of csdRCObject.h. The weak copies
+                # of the allocator's default slots and of the CTexList, CMemoryAlloc and RCObject
+                # vtables, which the link discards, are also emitted here. .data differs as well:
+                # the vtables come out in a different order from the original's. .rodata differs
+                # too (0x9D bytes, the original's 0xA8): the original aligns the assertion text and
+                # the empty string to 8 bytes.
+                # Matching workaround: -inline auto,deferred,level=1 here, while the rest of Chao::CSD uses
+                # -inline noauto. The original expands the TexArray constructor and destructor in
+                # CTexListRW::Load and ~CTexListRW and also keeps their out-of-line copies; -inline noauto
+                # cannot produce both. Revisit if the original's flags or an inline declaration that
+                # reproduces both are found.
+                Object(
+                    NonMatching,
+                    "Game/CSD/csdTexListRW.cpp",
+                    cflags=[*cflags_csd, "-inline auto,deferred,level=1"],
+                ),
+                # The texture list over an existing RenderWare texture dictionary (file name
+                # unknown). 6 of its 7 functions match in raw instruction words; the holder's
+                # Assign (117 words, the original's 120) differs as in csdTexListRW.cpp. The
+                # constructor and destructor of the texture array are called out of line, as in the
+                # original. The constructors of CTexListRW2, CTexListRW and CTexList and the
+                # allocator's AllocObject and FreeObject are also emitted as weak copies, as are the
+                # CTexList and RCObject vtables; the link discards them.
+                Object(NonMatching, "Game/CSD/fn_80364058.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/fn_80008D48.c"),
                 Object(Matching, "Game/fn_80008DA4.c"),
                 Object(Matching, "Game/fn_80008E1C.c"),
