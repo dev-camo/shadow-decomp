@@ -2626,8 +2626,9 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # NonMatching: MPVMC16_OneRef4p_TuneC differs in 106 of 139 words (registers and order).
             Object(
-                Matching,
+                NonMatching,
                 "CRI/mpv_mcy.c",
                 extra_cflags=[
                     "-sdata 0",

@@ -560,10 +560,10 @@ row_pair:
     }
 }
 
-/* the generic (non-tuned) versions were dead-stripped; the table keeps their slots */
+/* The table is all NULL in this build: no generic (non-tuned) kernels are installed. */
 void (*const mpvmc_oneref1p_func_table[4])(MPVMC *mc) = {0, 0, 0, 0};
 
-/* Fills the handle's 8x8 kernel slots (generic table, stripped to NULLs). */
+/* Fills the handle's 8x8 kernel slots (from the generic table, which is all NULL). */
 void MPVMC08_Init(MPVMC *mc) {
     mc->oneref08[0] = mpvmc_oneref1p_func_table[0];
     mc->oneref08[1] = mpvmc_oneref1p_func_table[1];
