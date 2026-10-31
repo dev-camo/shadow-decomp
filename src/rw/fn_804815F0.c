@@ -97,6 +97,9 @@ RwPluginRegistry *fn_804816AC(RwPluginRegistry *registry, RwStream *stream, void
             if (!fn_8047CDB4(stream, &type, &size, NULL, NULL)) {
                 return NULL;
             }
+            /* Matching workaround: the search is written out instead of calling
+             * PluginRegistryFindEntry, with which two loads in fn_804816AC (lwz r7,16(r31) and
+             * lwz r3,12(r1)) swap order. Revisit when the original's form of the search is found. */
             entry = registry->firstRegEntry;
             while (entry != NULL) {
                 if (entry->pluginID == type) {

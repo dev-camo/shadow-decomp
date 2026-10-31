@@ -265,6 +265,7 @@ RwImage *fn_8048BA30(const RwChar *name, const RwChar *maskName, RwInt32 rasterT
         fn_80487DB0(image);
         image = other;
 
+        /* The original has a call for each depth */
         if (imageDepth == 4) {
             fn_8048B774(&image, imageDepth);
         } else if (imageDepth == 8) {
@@ -637,6 +638,8 @@ RwBool fn_8048CB38(RwTexDictionary *dict) {
     if (RWTEXTUREGLOBAL(currentTexDict) == dict) {
         RWTEXTUREGLOBAL(currentTexDict) = NULL;
     }
+    /* fn_8048CD8C returns a RwBool, which the walk reads as its texture result: the walk continues
+     * while it is not FALSE */
     fn_8048CBE0(dict, (RwTextureCallBack)fn_8048CD8C, NULL);
     fn_80482144(&lbl_8056E048, dict);
     rwLinkListRemoveLLLink(&dict->lInInstance);
@@ -775,6 +778,7 @@ RwTexture *fn_8048CFFC(RwTexDictionary *dict, const RwChar *name) {
     for (; link != end; link = link->next) {
         RwTexture *texture = TEXTUREFROMDICTLINK(link);
 
+        /* name is an array inside the texture, so this test is always true; the original makes it */
         if (texture->name != NULL && TextureNamesMatch(texture->name, name)) {
             return texture;
         }
