@@ -72,7 +72,7 @@ void fn_8043FF5C(GcaxPlayer *player) {
 
 restart:
     player->seq.beatTime = 60.0f / player->seq.tempo;
-    frameTicks = (u32)(lbl_805F1404->elapsed * 8) / ((OS_BUS_CLOCK >> 2) / 125000);
+    frameTicks = OSTicksToMicroseconds((u32)lbl_805F1404->elapsed);
     frameTicks *= lbl_805F1404->field_0x13A44;
     frameTicks *= player->seq.division;
     frameTicks *= player->seq.tempo;
@@ -214,6 +214,8 @@ found:
         player->notes.head = NULL;
     }
     seq = &player->seq;
+    /* The original reads the entry again here and recomputes file (lwz r0,0(r28) and
+     * add r30,r29,r0 at fn_8043FDF8+0xE0, after OSDisableInterrupts and fn_8043B840). */
     file = (u8 *)table + GCAX_OFFSET(*entry);
     /* the original sets this before clearing the whole state */
     seq->field_0x0 = *(u16 *)(file + 0x10);

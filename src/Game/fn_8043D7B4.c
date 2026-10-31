@@ -16,6 +16,8 @@ static inline void gcaxSndResetChannel(GcaxPlayer *player, int channel) {
     player->channels[channel].field_0x20 = 0;
     player->channels[channel].field_0x28 = 0;
     player->channels[channel].field_0x24 = -1;
+    /* the original assigns the integer pattern 0x88888888 to all three fields; the two f32 fields
+     * get it converted to float (a constant load plus stfs), field_0x38 as an integer (stw) */
     player->channels[channel].field_0x38 = 0x88888888;
     player->channels[channel].field_0x3C = 0x88888888;
     player->channels[channel].field_0x40 = 0x88888888;

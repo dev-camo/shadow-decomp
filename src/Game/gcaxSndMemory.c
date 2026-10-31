@@ -1,5 +1,5 @@
-/* gcaxSndMemory.c (name from its panic messages): sound heap, ARAM banks and ARAM requests of
- * Sega's GameCube AX sound library, in reverse address order (deferred inlining). */
+/* gcaxSndMemory.c (from its panics): sound heap, ARAM banks and ARAM requests of Sega's GameCube
+ * AX sound library, in reverse address order (deferred inlining). Panics stay on lines 174, 194. */
 #include "Game/gcaxSnd.h"
 #include <string.h>
 
@@ -213,6 +213,10 @@ void fn_8043AB6C(u32 source, u32 dest, u32 length, GcaxCallback callback, void *
 /* Copies main memory to ARAM; waits for the transfer unless async. Returns the request slot. */
 int fn_8043AA7C(u32 source, u32 dest, u32 length, GcaxCallback callback, void *arg, int async) {
     int i = gcaxSndPostRequest(source, dest, length, callback, arg);
+    /* Matching workaround: the address of the busy flag is taken before the async test (the flag
+     * itself is already volatile in the work area). Indexing requestBusy[i] inside the test
+     * instead moves the load of lbl_805F1404 and the branch of fn_8043AA7C. Revisit when the
+     * original's form of the wait is known. */
     volatile u8 *busy = &lbl_805F1404->requestBusy[i];
 
     if (!async) {
