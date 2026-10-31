@@ -54,6 +54,13 @@ UnkWorld_80021B08 *fn_80021B08(void);
 boost::shared_ptr<UnkProbeTarget_800587A0>
 fn_800C7EA8(UnkWorld_80021B08 *world, const Fn8040Vector3 *position, int flags, int arg3, int arg4,
             const boost::weak_ptr<CharInfo> &owner, const Fn8040Vector3 *arg6, float radius);
+/* Creates a probe in the world that fn_80021B08 returns (placeholder name; the arguments are not
+ * understood). */
+boost::shared_ptr<UnkProbeTarget_800587A0> fn_800C7A84(UnkWorld_80021B08 *world,
+                                                       const boost::weak_ptr<CharInfo> &owner,
+                                                       float arg2, float arg3, int arg4, int arg5,
+                                                       int arg6, const Fn8040Vector3 *arg7,
+                                                       const Fn8040Vector3 *arg8, int arg9);
 /* The character info that the probe belongs to, or an empty pointer (behaviour inferred). */
 boost::weak_ptr<CharInfo> fn_800C4568(UnkWorld_80021B08 *world,
                                       boost::weak_ptr<UnkProbeTarget_800587A0> target);
