@@ -1,10 +1,13 @@
+// Dolphin SDK AR library: ARAM access.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: ARCheckInit, ARClear,
+// ARGetBaseAddress, ARGetInternalSize, ARGetSize, ARReset, ARSetSize.
 #include <dolphin.h>
 #include <dolphin/ar.h>
-#include "fake_tgmath.h"
 
 #include "__ar.h"
 
-#ifdef DEBUG
+#if DEBUG
 const char *__ARVersion = "<< Dolphin SDK - AR\tdebug build: Apr  5 2004 03:56:19 (0x2301) >>";
 #else
 const char *__ARVersion = "<< Dolphin SDK - AR\trelease build: Apr  5 2004 04:15:03 (0x2301) >>";
@@ -19,7 +22,6 @@ static u32 __AR_FreeBlocks;
 static u32 *__AR_BlockLength;
 static BOOL __AR_init_flag;
 
-// prototypes
 static void __ARHandler(__OSInterrupt exception, OSContext *context);
 static void __ARWaitForDMA(void);
 static void __ARWriteDMA(u32 mmem_addr, u32 aram_addr, u32 length);
@@ -43,7 +45,7 @@ u32 ARGetDMAStatus(void) {
     u32 val;
 
     old = OSDisableInterrupts();
-    val = __DSPRegs[5] & 0x200;
+    val = __DSPRegs[DSP_CONTROL_STATUS] & 0x200;
     OSRestoreInterrupts(old);
     return val;
 }
@@ -52,18 +54,25 @@ void ARStartDMA(u32 type, u32 mainmem_addr, u32 aram_addr, u32 length) {
     BOOL old;
 
     old = OSDisableInterrupts();
-    ASSERTMSGLINE(376, !(__DSPRegs[5] & 0x200), "ARAM DMA already in progress\n");
+    ASSERTMSGLINE(376, !(__DSPRegs[DSP_CONTROL_STATUS] & 0x200), "ARAM DMA already in progress\n");
     ASSERTMSGLINE(377, !(mainmem_addr & 0x1F),
                   "AR: Main memory address is not a multiple of 32 bytes!\n");
     ASSERTMSGLINE(378, !(length & 0x1F),
                   "AR: DMA transfer length is not a multiple of 32 bytes!\n");
-    __DSPRegs[16] = (__DSPRegs[16] & 0xFFFFFC00 | (mainmem_addr >> 0x10));
-    __DSPRegs[17] = (__DSPRegs[17] & 0xFFFF001F | ((u16)mainmem_addr));
-    __DSPRegs[18] = (__DSPRegs[18] & 0xFFFFFC00 | (aram_addr >> 0x10));
-    __DSPRegs[19] = (__DSPRegs[19] & 0xFFFF001F | ((u16)aram_addr));
-    __DSPRegs[20] = __DSPRegs[20] & ~0x8000 | ((type << 0xF) & ~0x7FFF);
-    __DSPRegs[20] = (__DSPRegs[20] & 0xFFFFFC00) | (length >> 0x10);
-    __DSPRegs[21] = (__DSPRegs[21] & 0xFFFF001F) | (length & 0x0000FFFF);
+    __DSPRegs[DSP_ARAM_DMA_MM_HI] =
+        (__DSPRegs[DSP_ARAM_DMA_MM_HI] & 0xFFFFFC00 | (mainmem_addr >> 0x10));
+    __DSPRegs[DSP_ARAM_DMA_MM_LO] =
+        (__DSPRegs[DSP_ARAM_DMA_MM_LO] & 0xFFFF001F | ((u16)mainmem_addr));
+    __DSPRegs[DSP_ARAM_DMA_ARAM_HI] =
+        (__DSPRegs[DSP_ARAM_DMA_ARAM_HI] & 0xFFFFFC00 | (aram_addr >> 0x10));
+    __DSPRegs[DSP_ARAM_DMA_ARAM_LO] =
+        (__DSPRegs[DSP_ARAM_DMA_ARAM_LO] & 0xFFFF001F | ((u16)aram_addr));
+    __DSPRegs[DSP_ARAM_DMA_SIZE_HI] =
+        __DSPRegs[DSP_ARAM_DMA_SIZE_HI] & ~0x8000 | ((type << 0xF) & ~0x7FFF);
+    __DSPRegs[DSP_ARAM_DMA_SIZE_HI] =
+        (__DSPRegs[DSP_ARAM_DMA_SIZE_HI] & 0xFFFFFC00) | (length >> 0x10);
+    __DSPRegs[DSP_ARAM_DMA_SIZE_LO] =
+        (__DSPRegs[DSP_ARAM_DMA_SIZE_LO] & 0xFFFF001F) | (length & 0x0000FFFF);
     OSRestoreInterrupts(old);
 }
 
@@ -115,15 +124,15 @@ u32 ARInit(u32 *stack_index_addr, u32 num_entries) {
 
     old = OSDisableInterrupts();
     __AR_Callback = NULL;
-    __OSSetInterruptHandler(6, __ARHandler);
-    __OSUnmaskInterrupts(0x02000000);
+    __OSSetInterruptHandler(__OS_INTERRUPT_DSP_ARAM, __ARHandler);
+    __OSUnmaskInterrupts(OS_INTERRUPTMASK_DSP_ARAM);
     __AR_StackPointer = 0x4000;
     __AR_FreeBlocks = num_entries;
     __AR_BlockLength = stack_index_addr;
-    refresh = __DSPRegs[13] & 0xFF;
+    refresh = __DSPRegs[DSP_ARAM_REFRESH] & 0xFF;
 
     ASSERTMSGLINE(590, (refresh <= 196.0f), "ARInit(): ILLEGAL SDRAM REFRESH VALUE\n");
-    __DSPRegs[13] = (u16)((__DSPRegs[13] & ~0xFF) | (refresh & 0xFF));
+    __DSPRegs[DSP_ARAM_REFRESH] = (u16)((__DSPRegs[DSP_ARAM_REFRESH] & ~0xFF) | (refresh & 0xFF));
 
     __ARChecksize();
     __AR_init_flag = TRUE;
@@ -136,7 +145,7 @@ void ARReset(void) {
 }
 
 void ARSetSize(void) {
-#ifdef DEBUG
+#if DEBUG
     OSReport("ARSetSize(): I don't do anything anymore!\n");
 #endif
 }
@@ -180,9 +189,9 @@ static void __ARHandler(__OSInterrupt exception, OSContext *context) {
     OSContext exceptionContext;
     u16 tmp;
 
-    tmp = __DSPRegs[5];
+    tmp = __DSPRegs[DSP_CONTROL_STATUS];
     tmp = (tmp & ~0x88) | 0x20;
-    __DSPRegs[5] = (tmp);
+    __DSPRegs[DSP_CONTROL_STATUS] = (tmp);
     OSClearContext(&exceptionContext);
     OSSetCurrentContext(&exceptionContext);
     if (__AR_Callback) {
@@ -195,34 +204,31 @@ static void __ARHandler(__OSInterrupt exception, OSContext *context) {
 void __ARClearInterrupt(void) {
     u16 tmp;
 
-    tmp = __DSPRegs[5];
+    tmp = __DSPRegs[DSP_CONTROL_STATUS];
     tmp = (tmp & ~0x88) | 0x20;
-    __DSPRegs[5] = (tmp);
+    __DSPRegs[DSP_CONTROL_STATUS] = (tmp);
 }
 
 u16 __ARGetInterruptStatus(void) {
-    return __DSPRegs[5] & 0x20;
+    return __DSPRegs[DSP_CONTROL_STATUS] & 0x20;
 }
 
 static void __ARWaitForDMA(void) {
-    while (__DSPRegs[5] & 0x200)
+    while (__DSPRegs[DSP_CONTROL_STATUS] & 0x200)
         ;
 }
 
 static void __ARWriteDMA(u32 mmem_addr, u32 aram_addr, u32 length) {
-    // Main mem address
     __DSPRegs[DSP_ARAM_DMA_MM_HI] =
         (u16)((__DSPRegs[DSP_ARAM_DMA_MM_HI] & ~0x03ff) | (u16)(mmem_addr >> 16));
     __DSPRegs[DSP_ARAM_DMA_MM_LO] =
         (u16)((__DSPRegs[DSP_ARAM_DMA_MM_LO] & ~0xffe0) | (u16)(mmem_addr & 0xffff));
 
-    // ARAM address
     __DSPRegs[DSP_ARAM_DMA_ARAM_HI] =
         (u16)((__DSPRegs[DSP_ARAM_DMA_ARAM_HI] & ~0x03ff) | (u16)(aram_addr >> 16));
     __DSPRegs[DSP_ARAM_DMA_ARAM_LO] =
         (u16)((__DSPRegs[DSP_ARAM_DMA_ARAM_LO] & ~0xffe0) | (u16)(aram_addr & 0xffff));
 
-    // DMA buffer size
     __DSPRegs[DSP_ARAM_DMA_SIZE_HI] = (u16)(__DSPRegs[DSP_ARAM_DMA_SIZE_HI] & ~0x8000);
 
     __DSPRegs[DSP_ARAM_DMA_SIZE_HI] =
@@ -235,19 +241,16 @@ static void __ARWriteDMA(u32 mmem_addr, u32 aram_addr, u32 length) {
 }
 
 static void __ARReadDMA(u32 mmem_addr, u32 aram_addr, u32 length) {
-    // Main mem address
     __DSPRegs[DSP_ARAM_DMA_MM_HI] =
         (u16)((__DSPRegs[DSP_ARAM_DMA_MM_HI] & ~0x03ff) | (u16)(mmem_addr >> 16));
     __DSPRegs[DSP_ARAM_DMA_MM_LO] =
         (u16)((__DSPRegs[DSP_ARAM_DMA_MM_LO] & ~0xffe0) | (u16)(mmem_addr & 0xffff));
 
-    // ARAM address
     __DSPRegs[DSP_ARAM_DMA_ARAM_HI] =
         (u16)((__DSPRegs[DSP_ARAM_DMA_ARAM_HI] & ~0x03ff) | (u16)(aram_addr >> 16));
     __DSPRegs[DSP_ARAM_DMA_ARAM_LO] =
         (u16)((__DSPRegs[DSP_ARAM_DMA_ARAM_LO] & ~0xffe0) | (u16)(aram_addr & 0xffff));
 
-    // DMA buffer size
     __DSPRegs[DSP_ARAM_DMA_SIZE_HI] = (u16)(__DSPRegs[DSP_ARAM_DMA_SIZE_HI] | 0x8000);
 
     __DSPRegs[DSP_ARAM_DMA_SIZE_HI] =
@@ -281,11 +284,11 @@ static void __ARChecksize(void) {
     u32 i;
 
     do {
-    } while (!(__DSPRegs[11] & 1));
+    } while (!(__DSPRegs[DSP_ARAM_MODE] & 1));
 
     ARAM_mode = 3;
     ARAM_size = __AR_InternalSize = 0x1000000;
-    __DSPRegs[9] = ((__DSPRegs[9] & 0xFFFFFFC0) | 3) | 0x20;
+    __DSPRegs[DSP_ARAM_SIZE] = ((__DSPRegs[DSP_ARAM_SIZE] & 0xFFFFFFC0) | 3) | 0x20;
 
     test_data = (u32 *)(OSRoundUp32B((u32)(test_data_pad)));
     dummy_data = (u32 *)(OSRoundUp32B((u32)(dummy_data_pad)));
@@ -421,10 +424,10 @@ static void __ARChecksize(void) {
             }
         }
 
-#ifdef DEBUG
+#if DEBUG
         OSReport("__ARChecksize(): ARAM Expansion present.\n");
 #endif
-        __DSPRegs[9] = (u16)((__DSPRegs[9] & ~(0x07 | 0x38)) | ARAM_mode);
+        __DSPRegs[DSP_ARAM_SIZE] = (u16)((__DSPRegs[DSP_ARAM_SIZE] & ~(0x07 | 0x38)) | ARAM_mode);
     }
 
     *(u32 *)OSPhysicalToUncached(0x00D0) = ARAM_size;
@@ -446,7 +449,7 @@ static void __ARClearArea(u32 start_addr, u32 length) {
     ptr = (u8 *)(OSRoundUp32B((u32)(zero_buffer)));
 
     do {
-    } while (!(__DSPRegs[11] & 1));
+    } while (!(__DSPRegs[DSP_ARAM_MODE] & 1));
 
     memset(ptr, 0, 0x800);
     DCFlushRange(ptr, 0x800);

@@ -1,9 +1,13 @@
+// Dolphin SDK PAD library: controller input.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: PADGetSpec, PADGetType,
+// PADIsBarrel, PADSetAnalogMode, PADSetSamplingRate, PADSync, __PADDisableRumble,
+// __PADDisableXPatch.
 #include <dolphin.h>
 #include <dolphin/pad.h>
 #include <dolphin/si.h>
 
 #include "__si.h"
-#include "layout_check.h"
 
 #if DEBUG
 const char *__PADVersion = "<< Dolphin SDK - PAD\tdebug build: Apr  5 2004 03:56:05 (0x2301) >>";
@@ -35,28 +39,20 @@ static PADStatus Origin[4];
 
 u32 __PADSpec;
 
-// prototypes
 static void PADTypeAndStatusCallback(s32 chan, u32 type);
-static u16 GetWirelessID(s32 chan);
-static void SetWirelessID(s32 chan, u16 id);
-static void DoReset();
+static void DoReset(void);
 static void PADEnable(s32 chan);
-static void ProbeWireless(s32 chan);
 static void PADProbeCallback(s32 chan, u32 error, OSContext *context);
 static void PADDisable(s32 chan);
 static void UpdateOrigin(s32 chan);
 static void PADOriginCallback(s32 chan, u32 error, OSContext *context);
-static void PADFixCallback(s32 unused, u32 error, struct OSContext *context);
-static void PADResetCallback(s32 unused, u32 error, struct OSContext *context);
-static void PADReceiveCheckCallback(s32 chan, u32 error);
+static void PADReceiveCheckCallback(s32 chan, u32 type);
 static void SPEC0_MakeStatus(s32 chan, PADStatus *status, u32 data[2]);
 static void SPEC1_MakeStatus(s32 chan, PADStatus *status, u32 data[2]);
 static s8 ClampS8(s8 var, s8 org);
 static u8 ClampU8(u8 var, u8 org);
 static void SPEC2_MakeStatus(s32 chan, PADStatus *status, u32 data[2]);
 static BOOL OnReset(BOOL f);
-void __PADDisableXPatch(void);
-BOOL __PADDisableRumble(BOOL disable);
 
 typedef void (*SPECCallback)(s32, PADStatus *, u32 *);
 static SPECCallback MakeStatus = SPEC2_MakeStatus;
@@ -102,7 +98,7 @@ static void PADDisable(s32 chan) {
     OSRestoreInterrupts(enabled);
 }
 
-static void DoReset() {
+static void DoReset(void) {
     u32 chanBit;
 
     ResettingChan = __cntlzw(ResettingBits);
@@ -304,7 +300,7 @@ int PADReset(u32 mask) {
     EnabledBits &= ~mask;
     BarrelBits &= ~mask;
 
-    if (Spec == 4) {
+    if (Spec == PAD_SPEC_4) {
         RecalibrateBits |= mask;
     }
 
@@ -345,7 +341,7 @@ BOOL PADRecalibrate(u32 mask) {
     return 1;
 }
 
-BOOL PADInit() {
+BOOL PADInit(void) {
     s32 chan;
     if (Initialized) {
         return 1;
@@ -384,6 +380,8 @@ u32 PADRead(PADStatus *status) {
     u32 data[2];
     u32 chanBit;
     u32 sr;
+    // Matching workaround: chanShift is assigned but never read. Removing it and its assignment
+    // changes PADRead (4 differing words). Revisit when the original PADRead source is known.
     int chanShift;
     u32 motor;
 
@@ -464,12 +462,6 @@ u32 PADRead(PADStatus *status) {
     return motor;
 }
 
-typedef struct XY {
-    u8 line;
-    u8 count;
-} XY;
-CHECK_SIZEOF(XY, 0x2);
-
 void PADSetSamplingRate(u32 msec) {
     SISetSamplingRate(msec);
 }
@@ -492,7 +484,7 @@ void PADControlAllMotors(const u32 *commandArray) {
 
     for (chan = 0; chan < SI_MAX_CHAN; chan++, commandArray++) {
         chanBit = PAD_CHAN0_BIT >> chan;
-        if ((EnabledBits & chanBit) && !(SIGetType(chan) & 0x20000000)) {
+        if ((EnabledBits & chanBit) && !(SIGetType(chan) & SI_GC_NOMOTOR)) {
             command = *commandArray;
             ASSERTMSGLINE(0x4B5, !(command & 0xFFFFFFFC), "PADControlAllMotors(): invalid command");
             if (Spec < PAD_SPEC_2 && command == PAD_MOTOR_STOP_HARD)
@@ -719,7 +711,7 @@ int PADGetType(s32 chan, u32 *type) {
 }
 
 BOOL PADSync(void) {
-    return ResettingBits == 0 && (s32)ResettingChan == 32 && !SIBusy();
+    return ResettingBits == 0 && ResettingChan == 32 && !SIBusy();
 }
 
 void PADSetAnalogMode(u32 mode) {
@@ -740,7 +732,7 @@ void PADSetAnalogMode(u32 mode) {
     OSRestoreInterrupts(enabled);
 }
 
-static void (*SamplingCallback)();
+static PADSamplingCallback SamplingCallback;
 
 static BOOL OnReset(BOOL final) {
     BOOL sync;
