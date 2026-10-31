@@ -2,7 +2,9 @@
 #ifndef CRI_SFD_H
 #define CRI_SFD_H
 
+#include "CRI/adx_rna.h"
 #include "CRI/cri_xpt.h"
+#include "CRI/sfd_tst.h"
 #include "CRI/sj.h"
 #include "CRI/uty.h"
 #include "layout_check.h"
@@ -46,7 +48,7 @@ CHECK_SIZEOF(SFUO, 0x34);
 
 /* audio output (auto-play) driver work (sfd_aoap.c), at SFD_OBJ + 0x34FC: user callbacks */
 typedef struct {
-    Sint32 x00;                                          /* 0x00 */
+    AXRNA x00;                                           /* 0x00 ADXT renderer (sfd_adxt.c) */
     Sint32 (*SetOutPan)(SFD sfd, Sint32 ch, Sint32 pan); /* 0x04 */
     Sint32 (*GetOutPan)(SFD sfd, Sint32 ch);             /* 0x08 */
     Sint32 (*SetOutVol)(SFD sfd, Sint32 vol);            /* 0x0C */
@@ -314,6 +316,10 @@ typedef struct {
 CHECK_SIZEOF(SFD_TR, 0x44);
 
 #define SFD_TR_NUM 9
+/* transfer driver slots of the ADX audio driver (sfd_adxt.c) and the auto-play audio output driver
+ * (sfd_aoap.c) */
+#define SFADXT_TR 3
+#define SFAOAP_TR 7
 #define SFD_COND_NUM 100
 
 /* condition ids (SFSET_GetCond / SFD_SetCond) */
@@ -598,12 +604,23 @@ typedef struct {
 } SFSEE_SHDR;          /* 0x198 */
 CHECK_SIZEOF(SFSEE_SHDR, 0x198);
 
+/* audio stream header analysis kept in the seek work (SFSEE_WORK.aud) */
+typedef struct {
+    Sint32 analyzed; /* 0x00 header analysed (driver 3) */
+    Sint32 ncount;   /* 0x04 byte rate with tscale 1 (sfadxt_AnalyAhdr: sfreq * nch * 9 / 16) */
+    Sint32 tscale;   /* 0x08 */
+    Sint32 nch;      /* 0x0C channels */
+    Sint32 sfreq;    /* 0x10 sampling rate */
+    Sint32 nsmpl;    /* 0x14 samples */
+} SFSEE_AHDR;
+CHECK_SIZEOF(SFSEE_AHDR, 0x18);
+
 /* seek support work supplied by the user through SFD_EntrySeek (sfd_see.c); the header analysis
  * results of the video / audio streams are kept here, followed by the user-set totals */
 typedef struct {
     Sint32 analyzed; /* 0x000 header analysis done (sfsee_ExecHeadAnaly) */
     /* rate from the header analysis (sfsee_ExecHeadAnaly): a byte rate with a system stream, else
-     * copied from vid_ncount/aud_ncount (meaning unverified); sfsee_CalcByteRate falls back to it */
+     * copied from vid_ncount/aud.ncount (meaning unverified); sfsee_CalcByteRate falls back to it */
     Sint32 ncount;               /* 0x004 */
     Sint32 tscale;               /* 0x008 */
     SFHDS_FHD fhd;               /* 0x00C system header analysis */
@@ -613,10 +630,8 @@ typedef struct {
     Sint32 vid_ncount;           /* 0xAD4 */
     Sint32 vid_tscale;           /* 0xAD8 */
     Uint8 padadc[0xD0C - 0xADC]; /* 0xADC */
-    Sint32 aud_analyzed;         /* 0xD0C audio header analysed (driver 3) */
-    Sint32 aud_ncount;           /* 0xD10 */
-    Sint32 aud_tscale;           /* 0xD14 */
-    Uint8 padd18[0xDA8 - 0xD18]; /* 0xD18 */
+    SFSEE_AHDR aud;              /* 0xD0C audio header analysis (driver 3) */
+    Uint8 padd24[0xDA8 - 0xD24]; /* 0xD24 */
     Sint32 rate;                 /* 0xDA8 estimated byte rate */
     Sint32 fsize_est;            /* 0xDAC file size seen by the input driver */
     Sint32 tot_est;              /* 0xDB0 total time from the concatenation work */
@@ -796,14 +811,14 @@ typedef struct SFD_OBJ {
     Uint8 padD2C[4];               /* 0x0D2C */
     SFCON con;                     /* 0xD30 (also the SFTIM handle: &sfd->con; sfd_con.c) */
     Uint8 padFAC[0x1020 - 0xD30 - sizeof(SFCON)]; /* 0x0FB0 */
-    Uint8 tst[0x1C0];               /* 0x1020 time stabiliser work (sfd_tst.c SFTST_WORK) */
-    Uint8 pad11E0[0x12E0 - 0x11E0]; /* 0x11E0 */
-    SFPLY_PTSM ptsm;                /* 0x12E0 */
-    Uint8 pad12EC[0x1310 - 0x12EC]; /* 0x12EC */
-    SFBUF_WORK buf[SFD_BUF_NUM];    /* 0x1310 */
-    SFD_VFRM vfrm[SFD_VFRM_NUM];    /* 0x16B0 */
-    /* tr[2].hn = SFMPV_WORK *, tr[3].hn = SFADXT_WORK *, tr[8].hn = SFUO *,
-     * tr[8].bufin = user-output SFBUF id */
+    SFTST_WORK tst;                               /* 0x1020 time stabiliser work */
+    Uint8 pad11E0[0x12E0 - 0x11E0];               /* 0x11E0 */
+    SFPLY_PTSM ptsm;                              /* 0x12E0 */
+    Uint8 pad12EC[0x1310 - 0x12EC];               /* 0x12EC */
+    SFBUF_WORK buf[SFD_BUF_NUM];                  /* 0x1310 */
+    SFD_VFRM vfrm[SFD_VFRM_NUM];                  /* 0x16B0 */
+    /* tr[2].hn = SFMPV_WORK *, tr[SFADXT_TR].hn = SFADXT_WORK *, tr[SFAOAP_TR].hn = SFAOAP *,
+     * tr[8].hn = SFUO *, tr[8].bufin = user-output SFBUF id */
     SFD_TR tr[SFD_TR_NUM];          /* 0x1F30 */
     Sint32 pad2194;                 /* 0x2194 */
     SFMPS_WORK mps;                 /* 0x2198 system stream driver work (tr[1].hn) */
@@ -864,7 +879,7 @@ typedef struct {
     Sint32 buf;                /* 0x1BC SFBUF work */
     SFTRN_TRIF_TBL trif;       /* 0x1C0 */
     Sint32 x1fc;               /* 0x1FC */
-    Sint32 x200;               /* 0x200 */
+    void *x200;                /* 0x200 ADXT kept across a player reset (sfd_adxt.c) */
     SFD hn[8];                 /* 0x204 created handles */
     Sint32 x224;               /* 0x224 */
 } SFLIB_WORK;
@@ -936,6 +951,12 @@ Sint32 SFD_SetSpeed(SFD sfd, Sint32 speed);
 Bool SFTIM_IsGetFrmTime(SFD sfd, SFD_VFRM *frm);
 Bool SFTIM_IsGetFrmTimeTunit(SFD sfd, Sint32 ftime, Sint32 tunit);
 Bool SFTIM_IsVideoTerm(SFD sfd);
+Bool SFTIM_ChkRegularTime(SFD sfd, Sint32 *ncount, Sint32 *tscale);
+void SFTIM_GetTimeOneFrmVideo(SFD sfd, Sint32 *ncount, Sint32 *tscale);
+void SFTIM_SetTimeFn(SFD sfd, SFTIM_FN fn, Sint32 type);
+Sint32 SFTIM_GetAudioStartSample(SFTIM tim, Sint32 sfreq);
+Sint32 SFTIM_GetVideoStartSample(SFTIM tim, Sint32 sfreq, Sint32 *ofstflg);
+void SFTIM_SetStartTime(SFTIM tim, Sint32 smpl, Sint32 sfreq);
 
 /* sfd_lib.c */
 Sint32 SFD_SetErrFn(SFD sfd, void (*fn)(void *obj, Sint32 code), void *obj);
@@ -946,6 +967,7 @@ void SFLIB_InitErrInf(SFLIB_ERRINF *err);
 extern const Sint32 SFPLY_cond_dfl[101];
 void SFPLY_Init(void);
 Sint32 SFD_Destroy(SFD sfd);
+Sint32 SFPLY_GetResetFlg(void);
 
 /* sfd_trn.c */
 Sint32 SFTRN_Init(SFTRN_TRIF_TBL *dst, SFTRN_TRIF_TBL *src);
@@ -965,6 +987,7 @@ void SFBUF_SetTermFlg(SFD sfd, Sint32 n, Sint32 flg);
 Sint32 SFBUF_GetRTot(SFD sfd, Sint32 n);
 Sint32 SFBUF_RingGetRead(SFD sfd, Sint32 n, SFBUF_RINF *inf);
 Sint32 SFBUF_RingAddRead(SFD sfd, Sint32 n, Sint32 nbyte);
+Sint32 SFBUF_RingGetSj(SFD sfd, Sint32 n, SJ *sj);
 void SFBUF_GetFlowCnt(SJ sj, Sint32 *wcnt, Sint32 *rcnt);
 Sint64 SFBUF_UpdateFlowCnt(Sint64 cnt, Uint32 pos);
 void SFBUF_GetUoch(SFD sfd, Sint32 n, Sint32 chno, SFUO_CH *ch);
@@ -980,12 +1003,18 @@ Sint32 SFD_SetVideoPts(SFD sfd, void *buf, Sint32 size);
 
 /* sfd_con.c */
 Sint32 SFCON_IsSystemEndcodeSkip(SFD sfd);
+Sint32 SFCON_WriteTotSmplQue(SFD sfd, Sint32 val, Sint32 last);
 
 /* sfd_see.c */
 Sint32 SFD_SetByteRate(SFD sfd, Sint32 rate);
 Sint32 SFD_SetFileSize(SFD sfd, Sint32 fsize);
 Sint32 SFD_SetTotTime(SFD sfd, Sint32 tottime, Sint32 tunit);
 Sint32 SFD_SetSeekPos(SFD sfd, Sint32 pos);
+
+/* sfd_adxt.c */
+extern Sint32 sfadxt_stat;
+extern Sint32 sfadxt_adxterr;
+void SFD_SetAdxtPara(SFADXT_PARA *para);
 
 /* sfd_tmr.c */
 void SFTMR_InitTsum(SFTMR_TSUM *ts);

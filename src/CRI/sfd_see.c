@@ -107,7 +107,7 @@ Sint32 SFD_SetFileSize(SFD sfd, Sint32 fsize) {
 }
 
 /* Sets the rate from the header analysis (SFSEE_WORK.ncount) once every enabled decoder's header is
- * analysed: a byte rate with a system stream (driver 1), else copied from vid_ncount/aud_ncount
+ * analysed: a byte rate with a system stream (driver 1), else copied from vid_ncount/aud.ncount
  * (meaning unverified); sfsee_CalcByteRate falls back to it. */
 static void sfsee_ExecHeadAnaly(SFD sfd) {
     SFSEE_WORK *wk;
@@ -124,9 +124,9 @@ static void sfsee_ExecHeadAnaly(SFD sfd) {
     if (wk->analyzed != 0) {
         return;
     }
-    if (SFTRN_IsSetup(sfd, 3) != 0 && SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 1) {
+    if (SFTRN_IsSetup(sfd, SFADXT_TR) != 0 && SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 1) {
         use_audio = 1;
-        if (wk->aud_analyzed == 0) {
+        if (wk->aud.analyzed == 0) {
             wait = 1;
         } else {
             wait = 0;
@@ -173,8 +173,8 @@ static void sfsee_ExecHeadAnaly(SFD sfd) {
         ncount = wk->vid_ncount;
         tscale = wk->vid_tscale;
     } else if (use_audio != 0) {
-        ncount = wk->aud_ncount;
-        tscale = wk->aud_tscale;
+        ncount = wk->aud.ncount;
+        tscale = wk->aud.tscale;
     } else {
         return;
     }

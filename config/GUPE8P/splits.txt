@@ -1275,8 +1275,13 @@ CRI/mpv_m2v.c:
 
 CRI/mpvabdec.c:
 	.text       start:0x803E0D08 end:0x803ED5D8
-	.rodata     start:0x80518548 end:0x8051855C
+	.rodata     start:0x80518548 end:0x80518560
 	.data       start:0x805690B0 end:0x80569CB0
+
+CRI/sfd_adxt.c:
+	.text       start:0x803ED5D8 end:0x803EEB60
+	.rodata     start:0x80518560 end:0x805185C0
+	.bss        start:0x805CA960 end:0x805CA988
 
 CRI/sfd_aoap.c:
 	.text       start:0x803EEB60 end:0x803EF03C

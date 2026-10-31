@@ -1827,6 +1827,16 @@ config.libs = [
                 ],
             ),
             Object(
+                NonMatching,
+                "CRI/sfd_adxt.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
                 Matching,
                 "CRI/sfd_aoap.c",
                 extra_cflags=[
