@@ -1,6 +1,7 @@
-/* CRI Sofdec file header analyser (sfh_main.c) interface, as used by sfd_hds.c. */
 #ifndef CRI_SFH_H
 #define CRI_SFH_H
+
+/* CRI Sofdec file header analyser (sfh_main.c) interface, as used by sfd_hds.c. */
 
 #include "CRI/cri_xpt.h"
 
