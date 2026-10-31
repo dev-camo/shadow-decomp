@@ -167,7 +167,7 @@ void LSC_Stop(LSC lsc) {
         }
         lsc->cur_nsct = 0;
         LSC_ResetEntry(lsc);
-        lsc->pad34 = 0;
+        lsc->x34 = 0;
     }
 }
 

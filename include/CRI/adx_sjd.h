@@ -57,11 +57,6 @@ void *ADXSJD_GetSpsdInfo(ADXSJD sjd);
 void ADXSJD_TakeSnapshot(ADXSJD sjd);
 void ADXSJD_RestoreSnapshot(ADXSJD sjd);
 
-/* Not in this executable: only unreferenced (linker-stripped) ADXT functions call these. */
-void ADXSJD_SetKeyString(ADXSJD sjd, Char8 *str);
-Sint32 ADXSJD_GetFmtBps(ADXSJD sjd);
-Sint32 ADXSJD_GetHdrLen(ADXSJD sjd);
-
 #ifdef __cplusplus
 }
 #endif

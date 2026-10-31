@@ -1,8 +1,8 @@
 #ifndef CRI_ADX_H
 #define CRI_ADX_H
 
-/* CRI ADX library services shared by the ADX modules: the critical section (adx_crs.c) and
- * error reporting (adx_errs.c).
+/* CRI ADX library services shared by the ADX modules: the critical section (adx_crs.c), the
+ * vsync wait (adx_mgc.c) and error reporting (adx_errs.c).
  */
 #include "CRI/cri_xpt.h"
 
