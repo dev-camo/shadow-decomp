@@ -1,9 +1,14 @@
+// Dolphin SDK ARQ library: ARAM request queue.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: ARQCheckInit,
+// ARQFlushQueue, ARQGetChunkSize, ARQRemoveOwnerRequest, ARQRemoveRequest, ARQReset,
+// ARQSetChunkSize, __ARQInitTempQueue, __ARQPopTaskQueueHi, __ARQPushTempQueue.
 #include <dolphin.h>
 #include <dolphin/ar.h>
 
 #include "__ar.h"
 
-#ifdef DEBUG
+#if DEBUG
 const char *__ARQVersion = "<< Dolphin SDK - ARQ\tdebug build: Apr  5 2004 03:56:20 (0x2301) >>";
 #else
 const char *__ARQVersion = "<< Dolphin SDK - ARQ\trelease build: Apr  5 2004 04:15:04 (0x2301) >>";
@@ -69,7 +74,7 @@ void __ARQServiceQueueLo(void) {
 
 void __ARQCallbackHack(u32 unused) {}
 
-void __ARQInterruptServiceRoutine() {
+void __ARQInterruptServiceRoutine(void) {
     if (__ARQCallbackHi) {
         __ARQCallbackHi((u32)__ARQRequestPendingHi);
         __ARQRequestPendingHi = NULL;

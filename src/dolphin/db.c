@@ -1,3 +1,7 @@
+// Dolphin SDK DB library: debugger interface.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: DBIsDebuggerPresent,
+// __DBMarkException, __DBSetPresent.
 #include <dolphin/base/PPCArch.h>
 #include <dolphin/db.h>
 #include <dolphin/os.h>

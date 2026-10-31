@@ -1,3 +1,4 @@
+// Dolphin SDK AXFX library: delay effect.
 #include <dolphin.h>
 #include <dolphin/ax.h>
 #include <dolphin/axfx.h>
@@ -35,9 +36,9 @@ void AXFXDelayCallback(AXFX_BUFFERUPDATE *bufferUpdate, AXFX_DELAY *delay) {
         *sur++ = (s32)(s * delay->currentOutput[2]) >> 7;
     }
 
-    delay->currentPos[0] = (s32)((delay->currentPos[0] + 1) % delay->currentSize[0]);
-    delay->currentPos[1] = (s32)((delay->currentPos[1] + 1) % delay->currentSize[1]);
-    delay->currentPos[2] = (s32)((delay->currentPos[2] + 1) % delay->currentSize[2]);
+    delay->currentPos[0] = (delay->currentPos[0] + 1) % delay->currentSize[0];
+    delay->currentPos[1] = (delay->currentPos[1] + 1) % delay->currentSize[1];
+    delay->currentPos[2] = (delay->currentPos[2] + 1) % delay->currentSize[2];
 }
 
 int AXFXDelaySettings(AXFX_DELAY *delay) {

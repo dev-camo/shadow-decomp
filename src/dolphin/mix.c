@@ -1,3 +1,8 @@
+// Dolphin SDK MIX library: AX channel mixing controls.
+// 29 global functions of this file are not present as separate functions in this game's DOL; their
+// bodies are unverified unless they are inlined into a function that is present. The global
+// functions present in the DOL are: MIXInit, MIXInitChannel, MIXQuit, MIXReleaseChannel,
+// MIXSetInput, MIXSetPan, MIXSetSoundMode, MIXUpdateSettings.
 #include <dolphin.h>
 #include <dolphin/mix.h>
 
@@ -134,7 +139,6 @@ static int __MIXDvdStreamAttenCurrent;
 static int __MIXDvdStreamAttenUser;
 static u32 __MIXSoundMode;
 
-// prototypes
 static u16 __MIXGetVolume(int db);
 static int __MIXGetPanL(int pan);
 static int __MIXGetPanR(int pan);
@@ -142,6 +146,11 @@ static void __MIXResetChannel(MIXChannel *channel);
 static void __MIXSetPan(MIXChannel *channel);
 static int __MIXClampPan(int pan);
 
+// Matching workaround: the parameter is copied into a local. Without the copy MIXInitChannel and
+// MIXUpdateSettings, which inline this function 43 times each, have 0x38- and 0x18-byte stack
+// frames instead of the original 0xE8 and 0xC0 (11 and 5 differing words); a u16 or int result
+// local or a table pointer local does not restore them. The public dolsdk2004 SDK decompilation
+// uses the same form. Revisit when the original body is known.
 static u16 __MIXGetVolume(int db_) {
     int db = db_;
     if (db <= -0x388) {
@@ -613,16 +622,13 @@ int MIXGetFader(AXVPB *p) {
 }
 
 void MIXSetDvdStreamFader(int dB) {
-    int db;
-
-    db = dB;
-    if (db < -0x31) {
-        db = -0x31;
+    if (dB < -0x31) {
+        dB = -0x31;
     }
-    if (db > 0) {
-        db = 0;
+    if (dB > 0) {
+        dB = 0;
     }
-    __MIXDvdStreamAttenUser = db;
+    __MIXDvdStreamAttenUser = dB;
 }
 
 int MIXGetDvdStreamFader(void) {
@@ -764,7 +770,7 @@ void MIXUpdateSettings(void) {
             if (setNewInputLevel) {
                 axvpb->pb.ve.currentVolume = c->v;
                 axvpb->pb.ve.currentDelta = (s16)((c->v1 - c->v) / 160);
-                axvpb->sync |= 0x200;
+                axvpb->sync |= AX_SYNC_FLAG_COPYVOL;
             }
 
             if (setNewMixLevel) {
@@ -825,11 +831,13 @@ void MIXUpdateSettings(void) {
                     mixerCtrl |= 0x100;
 
                 axvpb->pb.mixerCtrl = mixerCtrl;
-                axvpb->sync |= 0x12;
+                axvpb->sync |= (AX_SYNC_FLAG_COPYMXRCTRL | AX_SYNC_FLAG_COPYAXPBMIX);
             }
         }
     }
 
+    // The attenuation is kept in -49..0 (see MIXSetDvdStreamFader), so any non-zero value indexes
+    // before the start of __MIXAIVolumeTable; reproduced as is.
     if (__MIXDvdStreamAttenUser > __MIXDvdStreamAttenCurrent) {
         __MIXDvdStreamAttenCurrent++;
         AISetStreamVolLeft(__MIXAIVolumeTable[__MIXDvdStreamAttenCurrent]);
