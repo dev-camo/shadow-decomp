@@ -1,3 +1,4 @@
+/* Length of a 2-float vector (behaviour inferred; the original name is unknown). */
 #include <cmath>
 
 #include "Game/fn_8040_vector_types.h"
