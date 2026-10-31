@@ -13,6 +13,7 @@
 ###
 
 import argparse
+import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, List
@@ -392,7 +393,6 @@ def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "lib": lib_name,
         "mw_version": "GC/1.2.5n",
         "cflags": cflags_sdk,
-        "progress_category": "sdk",
         "objects": objects,
     }
 
@@ -403,7 +403,6 @@ def Rel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "lib": lib_name,
         "mw_version": "GC/1.3.2",
         "cflags": cflags_rel,
-        "progress_category": "game",
         "objects": objects,
     }
 
@@ -423,7 +422,6 @@ config.libs = [
         "lib": "MetroTRK",
         "mw_version": config.linker_version,
         "cflags": [*cflags_runtime, "-str reuse,nopool,readonly", "-inline deferred", "-sdata 0", "-sdata2 0"],
-        "progress_category": "sdk",
         "objects": [
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/mainloop.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/nubevent.c"),
@@ -472,7 +470,6 @@ config.libs = [
         "lib": "Runtime.PPCEABI.H",
         "mw_version": config.linker_version,
         "cflags": cflags_runtime,
-        "progress_category": "sdk",  # str | List[str]
         "objects": [
             Object(
                 NonMatching,
@@ -499,7 +496,6 @@ config.libs = [
         "lib": "Game",
         "mw_version": config.linker_version,
         "cflags": cflags_game,
-        "progress_category": "game",
         "objects": (
             [
                 Object(Matching, "Game/gcaxSndMemory.c", cflags=cflags_game_gcax),
@@ -1311,7 +1307,6 @@ config.libs = [
         "lib": "PowerPC_EABI_Support",
         "mw_version": config.linker_version,
         "cflags": cflags_eabi,
-        "progress_category": "sdk",
         "objects": [
             Object(Matching, "PowerPC_EABI_Support/Runtime/Src/ptmf.c"),
             Object(
@@ -1426,7 +1421,6 @@ config.libs = [
         "lib": "CRI",
         "mw_version": config.linker_version,
         "cflags": cflags_game,
-        "progress_category": "game",
         "objects": [
             Object(
                 Matching,
@@ -2706,14 +2700,119 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
 # config.link_order_callback = link_order_callback
 
 
-# Optional extra categories for progress tracking
-# Adjust as desired for your project
-# Categories cover only the configured source units; original code without a configured unit
-# belongs to no category, so the labels say so.
+# Progress categories (decomp.dev). Every configured unit belongs to exactly one
+# top-level category (game, renderware, cri, sdk, runtime). Game units may also carry a
+# subtag (csd, stlib, gcax) that overlaps "game". Categories cover only the configured
+# source units; original code without a configured unit belongs to no category, so the
+# labels say so. categorize_object below assigns these categories; the libraries above
+# carry no progress_category of their own.
 config.progress_categories = [
-    ProgressCategory("game", "Game Code (configured units)"),
-    ProgressCategory("sdk", "SDK Code (configured units)"),
+    ProgressCategory("game", "Game code (configured units)"),
+    ProgressCategory("renderware", "RenderWare (configured units)"),
+    ProgressCategory("cri", "CRI middleware, ADX/Sofdec (configured units)"),
+    ProgressCategory("sdk", "Dolphin SDK (configured units)"),
+    ProgressCategory("runtime", "CodeWarrior runtime, MSL/MetroTRK (configured units)"),
+    ProgressCategory("csd", "Chao CSD UI library (subset of game code)"),
+    ProgressCategory(
+        "stlib", "Sonic Team middleware and effect library (subset of game code)"
+    ),
+    ProgressCategory("gcax", "Sega GameCube AX sound library (subset of game code)"),
 ]
+
+# USA DOL address ranges [start, end) of the src/Game units that are not core game
+# code, taken from the split layout. A unit is placed by the .text start address that
+# config/GUPE8P/splits.txt gives it, so renaming or merging a unit keeps its category.
+# CRI ADX/Sofdec objects that sit under src/Game:
+CRI_ADDRESS_RANGE = (0x803B61F0, 0x8040ABC8)
+# Sonic Team middleware, from Sonicteam::System::Heap (Game/fn_8040ABC8.cpp) up to the
+# gcax library: Sonicteam::System::Peripheral, SonicUSA::System::Random, the stMtn*
+# motion API and, for most of the range, the Effect::System and Effect::RW3 effect
+# library (EffectManager, EffectParticle, EffectRay, EffectLocus, the EffCmd*Exec
+# commands and their RW3 renderers):
+STLIB_ADDRESS_RANGE = (0x8040ABC8, 0x8043AA7C)
+# Sega's GameCube AX sound library (gcaxSndMemory.c and the gcax* units after it):
+GCAX_ADDRESS_RANGE = (0x8043AA7C, 0x80440410)
+
+
+def read_text_start_addresses(splits_path: Path) -> Dict[str, int]:
+    """Map each unit name in a splits.txt to the start address of its .text split."""
+    text_starts: Dict[str, int] = {}
+    unit_name = None
+    for line in splits_path.read_text(encoding="utf-8").splitlines():
+        # Unit headers are unindented "name:" lines; their sections are indented.
+        if line and not line[0].isspace() and line.endswith(":"):
+            unit_name = line[:-1]
+            continue
+
+        text_match = re.match(r"\s+\.text\s+start:0x([0-9A-Fa-f]+)", line)
+        if unit_name is not None and text_match is not None:
+            text_starts[unit_name] = int(text_match.group(1), 16)
+    return text_starts
+
+
+# The ranges above are USA addresses, so every region categorises by the USA splits.
+USA_TEXT_START_ADDRESSES = read_text_start_addresses(
+    Path("config") / "GUPE8P" / "splits.txt"
+)
+
+
+def categorize_object(unit_name: str) -> List[str]:
+    """Return the progress categories of a unit from its unit name.
+
+    rw/, CRI/, dolphin/ and the runtime directories are matched by path, Game/CSD by
+    path, and the other Game units by their USA .text start address, so a new or
+    renamed unit needs no category edit as long as it keeps that layout.
+    """
+    # Path prefix -> top-level category (checked in order)
+    prefix_categories = [
+        ("rw/", "renderware"),
+        ("CRI/", "cri"),
+        ("dolphin/", "sdk"),
+        ("PowerPC_EABI_Support/", "runtime"),  # MSL C/C++, Runtime, MetroTRK
+        ("Runtime.PPCEABI.H/", "runtime"),
+    ]
+    for prefix, category in prefix_categories:
+        if unit_name.startswith(prefix):
+            return [category]
+
+    # Everything else lives in src/Game and is game code unless it is middleware.
+    if unit_name.startswith("Game/CSD/"):
+        # Chao::CSD UI library (csd*.cpp __FILE__ strings, Chao::CSD RTTI names)
+        return ["game", "csd"]
+
+    address = USA_TEXT_START_ADDRESSES.get(unit_name)
+    if address is not None:
+        if CRI_ADDRESS_RANGE[0] <= address < CRI_ADDRESS_RANGE[1]:
+            return ["cri"]
+        if STLIB_ADDRESS_RANGE[0] <= address < STLIB_ADDRESS_RANGE[1]:
+            return ["game", "stlib"]
+        if GCAX_ADDRESS_RANGE[0] <= address < GCAX_ADDRESS_RANGE[1]:
+            return ["game", "gcax"]
+    else:
+        # Without a USA .text start (a misspelt unit name or a unit absent from the USA
+        # splits) the unit cannot be checked against the ranges above, so it falls back
+        # to "game". Warn so a middleware unit is not misfiled silently.
+        print(
+            f"Warning: {unit_name} has no .text split in config/GUPE8P/splits.txt; "
+            "categorised as game",
+            file=sys.stderr,
+        )
+    return ["game"]
+
+
+for library in config.libs:
+    # A library-level progress_category (the dtk-template convention) would be
+    # overridden by object-level categories, so leave such a library's objects alone.
+    if library.get("progress_category") is not None:
+        continue
+
+    for library_object in library["objects"]:
+        # An explicit Object(..., progress_category=...) overrides the rules above.
+        if library_object.options["progress_category"] is None:
+            library_object.options["progress_category"] = categorize_object(
+                library_object.name
+            )
+
 config.progress_each_module = args.verbose
 # Optional extra arguments to `objdiff-cli report generate`
 config.progress_report_args = [
