@@ -11,11 +11,13 @@
  *   publicData member of the tank's RpPTankAtomicExtPrv, so the tank's constants (center, size,
  *   corner colors and texture coordinates) are read relative to it (PTANKCONSTANT).
  * - The condition register and the non-volatile registers are saved in a 0xE8-byte frame.
- * - The platform flags are tested once into condition fields: cr7 any colors (0x70000), cr2 a
- *   color per particle (0x10000), cr1 a color per corner (0x20000), r10 the constant corner
- *   colors (0x40000); cr6 any texture coordinates (0xF00000), cr4 two per particle (0x100000),
- *   cr3 four per particle (0x200000), r8 the constant two (0x400000), r9 the constant four
- *   (0x800000); cr5 normals (0x1000000).
+ * - The platform flags are tested once into condition fields: cr7 any colors
+ *   (PTANKPLATFLAGCOLORSTREAMS), cr2 a color per particle (PTANKPLATFLAGCOLOR), cr1 a color per
+ *   corner (PTANKPLATFLAGVTXCOLOR), r10 the constant corner colors (PTANKPLATFLAGCNSVTXCOLOR);
+ *   cr6 any texture coordinates (0xF00000, the four PTANKPLATFLAG*TEXCOORDS flags), cr4 two per
+ *   particle (PTANKPLATFLAGVTX2TEXCOORDS), cr3 four per particle (PTANKPLATFLAGVTX4TEXCOORDS), r8
+ *   the constant two (PTANKPLATFLAGCNSVTX2TEXCOORDS), r9 the constant four
+ *   (PTANKPLATFLAGCNSVTX4TEXCOORDS); cr5 normals (PTANKPLATFLAGNORMAL).
  * - Stream pointers and strides: r23/r19 the positions (or matrices), r24/r20 the colors,
  *   r25/r21 the texture coordinates and r26/r22 the normals; where used, r18/r17 the sizes and
  *   r16/r15 the rotations. r27 holds the vertex FIFO address, r11 the camera axes, r12 the

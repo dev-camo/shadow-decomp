@@ -65,7 +65,7 @@ RwBool fn_804476B8(RpPTankAtomicExtPrv *ptank, RwUInt32 dataFlags, RwUInt32 plat
     RwInt32 offset;
     RwUInt8 *data;
 
-    ptank->format.dataFlags &= ~0x1FF;
+    ptank->format.dataFlags &= ~rpPTANKDFLAGSTREAMS;
     ptank->format.numClusters = 0;
     ptank->lockFlags = 0;
 
@@ -191,7 +191,7 @@ RwBool fn_80447AF8(RpPTankAtomicExtPrv *ptank, RwUInt32 dataFlags, RwUInt32 plat
     RwInt32 offset;
     RwUInt8 *data;
 
-    ptank->format.dataFlags &= ~0x1FF;
+    ptank->format.dataFlags &= ~rpPTANKDFLAGSTREAMS;
     ptank->format.numClusters = 0;
 
     if (hasPosition == TRUE) {

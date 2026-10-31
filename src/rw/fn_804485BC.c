@@ -38,77 +38,77 @@ void fn_80448658(RpAtomic *atomic) {
     if (ptank->format.dataFlags & rpPTANKDFLAGMATRIX) {
         if (ptank->format.dataFlags & rpPTANKDFLAGUSECENTER) {
             ptank->kernel = fn_804495D0;
-            platFlags |= 0x2;
+            platFlags |= PTANKPLATFLAGKERNELMATRIXCENTER;
         } else {
             ptank->kernel = fn_8044920C;
-            platFlags |= 0x1;
+            platFlags |= PTANKPLATFLAGKERNELMATRIX;
         }
     } else if (ptank->format.dataFlags & rpPTANKDFLAGCNSMATRIX) {
         if (ptank->format.dataFlags & rpPTANKDFLAGUSECENTER) {
             ptank->kernel = fn_80449D5C;
-            platFlags |= 0x8;
+            platFlags |= PTANKPLATFLAGKERNELBASICCENTER;
         } else {
             ptank->kernel = fn_80449994;
-            platFlags |= 0x4;
+            platFlags |= PTANKPLATFLAGKERNELBASIC;
         }
     } else if (ptank->format.dataFlags & rpPTANKDFLAG2DROTATE) {
         if (ptank->format.dataFlags & rpPTANKDFLAGSIZE) {
             if (ptank->format.dataFlags & rpPTANKDFLAGUSECENTER) {
                 ptank->kernel = fn_8044B654;
-                platFlags |= 0x200;
+                platFlags |= PTANKPLATFLAGKERNELROTATESIZECENTER;
             } else {
                 ptank->kernel = fn_8044B210;
-                platFlags |= 0x100;
+                platFlags |= PTANKPLATFLAGKERNELROTATESIZE;
             }
         } else {
             if (ptank->format.dataFlags & rpPTANKDFLAGUSECENTER) {
                 ptank->kernel = fn_8044ADA8;
-                platFlags |= 0x80;
+                platFlags |= PTANKPLATFLAGKERNELROTATECENTER;
             } else {
                 ptank->kernel = fn_8044A93C;
-                platFlags |= 0x40;
+                platFlags |= PTANKPLATFLAGKERNELROTATE;
             }
         }
     } else if (ptank->format.dataFlags & rpPTANKDFLAGSIZE) {
         if (ptank->format.dataFlags & rpPTANKDFLAGUSECENTER) {
             ptank->kernel = fn_8044A540;
-            platFlags |= 0x20;
+            platFlags |= PTANKPLATFLAGKERNELSIZECENTER;
         } else {
             ptank->kernel = fn_8044A168;
-            platFlags |= 0x10;
+            platFlags |= PTANKPLATFLAGKERNELSIZE;
         }
     } else {
         if (ptank->format.dataFlags & rpPTANKDFLAGUSECENTER) {
             ptank->kernel = fn_80449D5C;
-            platFlags |= 0x8;
+            platFlags |= PTANKPLATFLAGKERNELBASICCENTER;
         } else {
             ptank->kernel = fn_80449994;
-            platFlags |= 0x4;
+            platFlags |= PTANKPLATFLAGKERNELBASIC;
         }
     }
 
     if (ptank->format.dataFlags & rpPTANKDFLAGVTX2TEXCOORDS) {
-        platFlags |= 0x100000;
+        platFlags |= PTANKPLATFLAGVTX2TEXCOORDS;
     } else if (ptank->format.dataFlags & rpPTANKDFLAGVTX4TEXCOORDS) {
-        platFlags |= 0x200000;
+        platFlags |= PTANKPLATFLAGVTX4TEXCOORDS;
     } else if (ptank->format.dataFlags & rpPTANKDFLAGCNSVTX2TEXCOORDS) {
-        platFlags |= 0x400000;
+        platFlags |= PTANKPLATFLAGCNSVTX2TEXCOORDS;
     } else if (ptank->format.dataFlags & rpPTANKDFLAGCNSVTX4TEXCOORDS) {
-        platFlags |= 0x800000;
+        platFlags |= PTANKPLATFLAGCNSVTX4TEXCOORDS;
     }
 
     if (ptank->format.dataFlags & rpPTANKDFLAGCOLOR) {
-        platFlags |= 0x10000;
+        platFlags |= PTANKPLATFLAGCOLOR;
     } else if (ptank->format.dataFlags & rpPTANKDFLAGVTXCOLOR) {
-        platFlags |= 0x20000;
+        platFlags |= PTANKPLATFLAGVTXCOLOR;
     } else if (ptank->format.dataFlags & rpPTANKDFLAGCNSVTXCOLOR) {
-        platFlags |= 0x40000;
+        platFlags |= PTANKPLATFLAGCNSVTXCOLOR;
     } else {
         platFlags |= PTANKPLATFLAGCNSCOLOR;
     }
 
     if (ptank->format.dataFlags & rpPTANKDFLAGNORMAL) {
-        platFlags |= 0x1000000;
+        platFlags |= PTANKPLATFLAGNORMAL;
     }
     ptank->platFlags = platFlags;
 }
