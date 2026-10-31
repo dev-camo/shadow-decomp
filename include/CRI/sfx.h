@@ -2,7 +2,7 @@
 #define CRI_SFX_H
 
 /* CRI Sofdec SFX frame conversion: the frame description the converters read, the converter
- * handle and the library work (sfx_lib.c, sfx_set.c, sfx_inf.c, sfx_sud.c, sfx_alp.c,
+ * handle and the library work (sfx_lib.c, sfx_set.c, sfx_cnv.c, sfx_inf.c, sfx_sud.c, sfx_alp.c,
  * sfx_zmv.c). */
 #include "CRI/cri_xpt.h"
 #include "layout_check.h"
@@ -54,11 +54,12 @@ typedef struct {
     Uint8 *usrdat;         /* 0x88 picture user data, NULL when there is none */
     Sint32 usrsiz;         /* 0x8C its size */
     Sint32 field_0x90;     /* 0x90 */
-    Sint32 field_0x94;     /* 0x94 */
+    Sint32 field_0x94;     /* 0x94 component layout given with the frame (SFX_COMPO_*) */
 } SFX_SRCFRM;
 CHECK_SIZEOF(SFX_SRCFRM, 0x98);
 
-/* Component layouts: values of SFX_OBJ.compo and results of SFXINF_GetStmInf (names inferred). */
+/* Component layouts: values of SFX_OBJ.compo and of SFX_SRCFRM.field_0x94, and results of
+ * SFXINF_GetStmInf (names inferred). */
 #define SFX_COMPO_YCC420PLN 0x11
 #define SFX_COMPO_YCC420PLN_UPHALF 0x21
 #define SFX_COMPO_0x31 0x31
@@ -93,6 +94,37 @@ typedef void (*SFX_TBLFN)(void *tbl);
 typedef struct SFXZ_OBJ SFXZ_OBJ;
 typedef struct SFXA_OBJ SFXA_OBJ;
 
+/* Table makers registered in the alpha object (cftyp422_ppc.c). */
+typedef void (*SFXA_MakeAlp3Fn)(void *tbl, Uint8 alp0, Uint8 alp1, Uint8 alp2);
+typedef void (*SFXA_MakeLumiFn)(Sint32 lumi_min, Sint32 lumi_max, Sint32 lumi_rate, void *tbl);
+
+/* The alpha object (sfx_alp.c): either three fixed alpha levels or a luma-driven ramp between
+ * lumi_min and lumi_max. */
+struct SFXA_OBJ {
+    Sint32 used;                  /* 0x00 */
+    Sint32 need_update;           /* 0x04 luma settings changed since the table was built */
+    Sint32 lumi_min;              /* 0x08 */
+    Sint32 lumi_max;              /* 0x0C */
+    Sint32 lumi_rate;             /* 0x10 */
+    Uint8 alp0;                   /* 0x14 */
+    Uint8 alp1;                   /* 0x15 */
+    Uint8 alp2;                   /* 0x16 */
+    SFXA_MakeLumiFn make_lumi;    /* 0x18 */
+    SFXA_MakeAlp3Fn make_alp3110; /* 0x1C */
+    SFXA_MakeAlp3Fn make_alp3211; /* 0x20 */
+};
+CHECK_SIZEOF(struct SFXA_OBJ, 0x24);
+
+/* Values of SFX_OBJ.tbl: the conversion table currently built in buf[0] (names inferred). */
+#define SFX_TBL_LUMI 1     /* luma range expansion */
+#define SFX_TBL_ALP_LUMI 2 /* alpha from the luma (sfx_alp.c) */
+#define SFX_TBL_ALP3110 4  /* three alpha levels, "3110" (sfx_alp.c) */
+#define SFX_TBL_ALP3211 5  /* three alpha levels, "3211" (sfx_alp.c) */
+#define SFX_TBL_Z32 0x0B   /* 32-bit Z (sfx_zmv.c) */
+#define SFX_TBL_Z16 0x0D   /* 16-bit Z (sfx_zmv.c) */
+#define SFX_TBL_USER 0x15  /* built by the function registered with SFX_SetTblFn */
+#define SFX_TBL_NONE 0x64  /* no table is used */
+
 /* A converter handle (sfx_lib.c, sfx_set.c, sfx_cnv.c). Fields are named where SFX_Create,
  * SFX_Destroy or the converter establishes their role; the rest keep offset names. */
 typedef struct SFX_OBJ {
@@ -109,7 +141,7 @@ typedef struct SFX_OBJ {
     Sint32 field_0x28;    /* 0x28 set to 1 by SFX_Create */
     Sint32 field_0x2C;    /* 0x2C cleared by SFX_Create */
     SFXA_OBJ *sfxa;       /* 0x30 */
-    Sint32 tbl;           /* 0x34 the conversion table built in buf[0] */
+    Sint32 tbl;           /* 0x34 SFX_TBL_*: the table in buf[0] */
     Uint8 *buf[4];        /* 0x38 four consecutive 0x400-byte buffers carved from the work */
     Sint32 field_0x48[2]; /* 0x48 */
     void *work;           /* 0x50 the work area handed to SFX_Create */
@@ -171,6 +203,22 @@ void SFX_SetTagInf(SFX_OBJ *sfx, Uint8 *tag_ptr, Sint32 tag_len);
 void SFX_SetColAdj(SFX_OBJ *sfx, Sint32 coladj);
 void SFX_SetOutBufSize(SFX_OBJ *sfx, Sint32 width, Sint32 height);
 void SFX_SetCompoMode(SFX_OBJ *sfx, Sint32 compo);
+
+/* sfx_cnv.c. sfxcnv_ExecCopyAlphaByCbFunc, sfxcnv_MakeCftSrcBuf and sfxcnv_ChkCompoByCbFunc are
+ * named by the messages inside them and SFX_SetUnitWidth as in the RE4 GameCube map; the other
+ * names are inferred. */
+void sfxcnv_MakeDstFrm(SFX_OBJ *sfx, SFX_SRCFRM *frm, Uint8 *buf, SFX_FRM *dst, Sint32 x, Sint32 y,
+                       Sint32 width, Sint32 height);
+void SFX_SetUnitWidth(SFX_OBJ *sfx, Sint32 unit_width);
+void sfxcnv_ExecCopyAlphaByCbFunc(SFX_OBJ *sfx, SFX_SRCFRM *frm, SFX_FRM *dst);
+void sfxcnv_MakeCftSrcBuf(SFX_OBJ *sfx, SFX_SRCFRM *frm, SFX_FRM *out);
+void sfxcnv_ChkCompoByCbFunc(SFX_OBJ *sfx, SFX_SRCFRM *frm, SFX_FRM *dst);
+void SFX_SetTblFn(SFX_OBJ *sfx, SFX_TBLFN fn);
+void SFX_SetMakeAlp3110Fn(SFX_OBJ *sfx, SFXA_MakeAlp3Fn fn);
+void SFX_SetMakeAlp3211Fn(SFX_OBJ *sfx, SFXA_MakeAlp3Fn fn);
+void SFX_SetMakeLumiFn(SFX_OBJ *sfx, SFXA_MakeLumiFn fn);
+void SFX_SetAlpFn(SFX_OBJ *sfx, SFX_CNVFN fn);
+void SFX_SetCnvFn(SFX_OBJ *sfx, SFX_CNVFN fn);
 
 /* sfx_inf.c */
 Sint32 SFXINF_GetStmInf(SFX_SRCFRM *frm, const Char8 *tag);

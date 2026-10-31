@@ -10,26 +10,6 @@
 
 #define SFXA_MAX_HN 8
 
-/* table makers registered in the object (cftyp422_ppc.c) */
-typedef void (*SFXA_MakeAlp3Fn)(void *tbl, Uint8 alp0, Uint8 alp1, Uint8 alp2);
-typedef void (*SFXA_MakeLumiFn)(Sint32 lumi_min, Sint32 lumi_max, Sint32 lumi_rate, void *tbl);
-
-/* alpha object */
-struct SFXA_OBJ {
-    Sint32 used;                  /* 0x00 */
-    Sint32 need_update;           /* 0x04 luma settings changed since the table was built */
-    Sint32 lumi_min;              /* 0x08 */
-    Sint32 lumi_max;              /* 0x0C */
-    Sint32 lumi_rate;             /* 0x10 */
-    Uint8 alp0;                   /* 0x14 */
-    Uint8 alp1;                   /* 0x15 */
-    Uint8 alp2;                   /* 0x16 */
-    SFXA_MakeLumiFn make_lumi;    /* 0x18 */
-    SFXA_MakeAlp3Fn make_alp3110; /* 0x1C */
-    SFXA_MakeAlp3Fn make_alp3211; /* 0x20 */
-};
-CHECK_SIZEOF(SFXA_OBJ, 0x24);
-
 typedef struct {
     Sint32 cnt;                /* 0x00 objects in use */
     Sint32 nobj;               /* 0x04 */
