@@ -8,9 +8,10 @@
 
 namespace std {
 
-// lower_bound, upper_bound, find, fill, copy and copy_backward are unused and unverified against the
-// game's bytes (find takes val by non-const reference, copy compares iterators with <). Kept only
-// because removing a template shifts the @N literal numbering of the Game units.
+// lower_bound, upper_bound, find, fill, copy and copy_backward are unused and unverified against
+// the game's bytes (find takes val by non-const reference, copy compares iterators with <).
+// Deleting an unused template renumbers the compiler's @N labels in several Game objects (no code
+// or data bytes change), which needs a symbol rename pass over those units first.
 template <class ForwardIterator, class T, typename Predicate>
 inline ForwardIterator lower_bound(ForwardIterator first, ForwardIterator last, const T& val, Predicate p) {
     typedef typename iterator_traits<ForwardIterator>::difference_type difference_type;

@@ -382,7 +382,9 @@ DSError TRKDoWriteRegisters(MessageBuffer *b) {
     }
 }
 
-/* Stripped from the game's code; kept for its string, which remains in the DOL. */
+/* Matching workaround: order-only stand-in. TRKDoFlushCache is stripped from the game (not in the
+   DOL); this body only keeps its trace string in the string pool. Revisit when the original
+   TRKDoFlushCache is found. */
 void TRKDoFlushCache(void) {
     MWTRACE(1, "DoFlushCache unimplemented!!!\n");
 }
