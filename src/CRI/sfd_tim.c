@@ -811,7 +811,7 @@ void SFTIM_InitHn(SFD sfd, SFTIM tim) {
     tim->x5b8 = 0;
 }
 
-/* Empty; called by the library finish (fn_803F1570) with the library timing work. */
+/* Empty; called by the library finish (SFD_Finish) with the library timing work. */
 void fn_803FDCD0(SFTIM_LIB *lib) {}
 
 /* Library timing work: vsync count 0 and the refresh rate x1000 passed to SFD_Init. */

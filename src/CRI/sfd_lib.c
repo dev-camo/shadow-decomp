@@ -6,8 +6,6 @@
 #include "CRI/sfd.h"
 #include "CRI/svm.h"
 
-#define SFD_VERSION 0x3640
-
 const Char8 SFLIB_version_str[] =
     "\nCRI SFD/GC Ver.1.958 Build:Feb 28 2005 19:36:28\n\0Append: MW2407 GC20Apr2004Patch2\n";
 
@@ -109,9 +107,10 @@ static Sint32 sflib_ChkRet(Sint32 r) {
     return ret;
 }
 
-/* This game only: library finish (inferred SFD_Finish): destroys the remaining handles and
- * finishes every module; returns the transfer drivers' error, else the last destroy error */
-Sint32 fn_803F1570(void) {
+/* Library finish: destroys the remaining handles and finishes every module; returns the transfer
+ * drivers' error, else the last destroy error. The name is inferred: the counterpart of SFD_Init,
+ * called by the MW player's library finish. */
+Sint32 SFD_Finish(void) {
     SFD *hn;
     Sint32 ret;
     Sint32 trnret;
@@ -171,7 +170,8 @@ Sint32 SFD_Init(SFD_INIT_PRM *prm) {
     return 0;
 }
 
-/* Header/library version check: the caller's structure size must be this build's 0x3640. */
-Sint32 SFD_IsVersionCompatible(Sint32 a, Sint32 ver) {
+/* Header/library version check: the caller's structure size must be this build's 0x3640 (the
+ * caller's version string is not looked at). */
+Sint32 SFD_IsVersionCompatible(const Char8 *version, Sint32 ver) {
     return ver == SFD_VERSION;
 }

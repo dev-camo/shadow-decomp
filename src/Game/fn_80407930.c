@@ -1,5 +1,6 @@
-#include "Game/fn_80406B70_work.h"
+#include "CRI/mwsfd.h"
 
-void fn_80407930(void *value) {
-    fn_80406EB0()->field_58 = value;
+/* Sets the library work's "decode server running" flag. */
+void MWSFSVR_SetMwsfdSvrFlg(Sint32 flg) {
+    MWSFLIB_GetLibWorkPtr()->svr_flg = flg;
 }

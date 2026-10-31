@@ -151,8 +151,8 @@ typedef struct {
     Sint32 x2c4;          /* 0x2C4 last frame decision */
     Float32 x2c8;         /* 0x2C8 (-1.0) frame time (ft) of the last decided frame */
     /* volatile: written on another thread. SFD_VbIn runs as an SVM vsync server (the MW player
-     * registers fn_80407C9C with MWSFSVM_EntryIdVfunc), i.e. on the ADXM vsync thread; there
-     * sftim_VbInHn updates vcnt and chg_base, and ext_last through clock source 5
+     * registers MWSFSVR_VsyncThrdProc with MWSFSVM_EntryIdVfunc), i.e. on the ADXM vsync thread;
+     * there sftim_VbInHn updates vcnt and chg_base, and ext_last through clock source 5
      * (sftim_GetTimeExtClock), while the server step reads them. */
     volatile Sint32 vcnt;     /* 0x2CC (-1) vsync count while requested */
     volatile Sint32 chg_base; /* 0x2D0 clock at the last time change */
@@ -297,6 +297,15 @@ typedef struct {
     Sint32 (*Seek)();       /* 0x34 */
 } SFD_TR_IF;
 CHECK_SIZEOF(SFD_TR_IF, 0x38);
+
+/* the driver interfaces the MW player registers, in the driver table's order */
+extern const SFD_TR_IF SFD_tr_in_mem;
+extern const SFD_TR_IF SFD_tr_sd_mps;
+extern const SFD_TR_IF SFD_tr_vd_mpv;
+extern const SFD_TR_IF SFD_tr_vo_manu;
+extern const SFD_TR_IF SFD_tr_ad_adxt;
+extern const SFD_TR_IF SFD_tr_ao_auto_p;
+extern const SFD_TR_IF SFD_tr_uo;
 
 typedef Sint32 (*SFD_TR_FUNC)();
 
@@ -964,6 +973,11 @@ void SFTIM_SetStartTime(SFTIM tim, Sint32 smpl, Sint32 sfreq);
 
 /* sfd_lib.c */
 Sint32 SFD_SetErrFn(SFD sfd, void (*fn)(void *obj, Sint32 code), void *obj);
+Sint32 SFD_Finish(void);
+Sint32 SFD_Init(SFD_INIT_PRM *prm);
+/* SFD structure size version of this build, checked by SFD_IsVersionCompatible */
+#define SFD_VERSION 0x3640
+Sint32 SFD_IsVersionCompatible(const Char8 *version, Sint32 ver);
 void SFLIB_InitErrInf(SFLIB_ERRINF *err);
 
 /* sfd_ply.c */
@@ -1034,7 +1048,7 @@ Sint32 SFPL2_Pause(SFD sfd, Sint32 sw);
 
 /* sfd_tim.c */
 void SFTIM_Init(SFTIM_LIB *lib, Sint32 vrate);
-void fn_803FDCD0(SFTIM_LIB *lib); /* empty; the library finish fn_803F1570 calls it */
+void fn_803FDCD0(SFTIM_LIB *lib); /* empty; the library finish SFD_Finish calls it */
 void SFTIM_InitHn(SFD sfd, SFTIM tim);
 void SFTIM_VbIn(void);
 Sint32 SFMPV_SaveCond(SFD sfd, void *buf, Sint32 size);
