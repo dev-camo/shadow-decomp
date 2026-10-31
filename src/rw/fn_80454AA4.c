@@ -172,7 +172,6 @@ RpWorldSector *fn_80454CE4(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
     RpWorldSector *sector;
     RwBool status = TRUE;
     RwInt32 i;
-    RwUInt32 size;
 
     if (!fn_8047CF50(stream, rwID_STRUCT, NULL, &version)) {
         return NULL;
@@ -211,51 +210,55 @@ RpWorldSector *fn_80454CE4(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
 
     if (!(world->flags & rpWORLDNATIVE)) {
         if (header.numVertices != 0) {
-            size = header.numVertices * sizeof(RwV3d);
-            sector->vertices = (RwV3d *)WorldMemoryTake(memory, size);
+            RwUInt32 vertexSize = header.numVertices * sizeof(RwV3d);
+
+            sector->vertices = (RwV3d *)WorldMemoryTake(memory, vertexSize);
             if (sector->vertices == NULL) {
-                RWERROR((E_RW_NOMEM, size));
+                RWERROR((E_RW_NOMEM, vertexSize));
                 status = FALSE;
             }
-            if (status && fn_8047D784(stream, (RwReal *)sector->vertices, size) == NULL) {
+            if (status && fn_8047D784(stream, (RwReal *)sector->vertices, vertexSize) == NULL) {
                 status = FALSE;
             }
 
             if (status && (format & rpWORLDNORMALS)) {
-                size = header.numVertices * sizeof(RpVertexNormal);
-                sector->normals = (RpVertexNormal *)WorldMemoryTake(memory, size);
+                RwUInt32 normalSize = header.numVertices * sizeof(RpVertexNormal);
+
+                sector->normals = (RpVertexNormal *)WorldMemoryTake(memory, normalSize);
                 if (sector->normals == NULL) {
-                    RWERROR((E_RW_NOMEM, size));
+                    RWERROR((E_RW_NOMEM, normalSize));
                     status = FALSE;
                 }
-                if (status && size != fn_80480D4C(stream, sector->normals, size)) {
+                if (status && normalSize != fn_80480D4C(stream, sector->normals, normalSize)) {
                     status = FALSE;
                 }
             }
 
             if (status && (format & rpWORLDPRELIT)) {
-                size = header.numVertices * sizeof(RwRGBA);
-                sector->preLitLum = (RwRGBA *)WorldMemoryTake(memory, size);
+                RwUInt32 preLitSize = header.numVertices * sizeof(RwRGBA);
+
+                sector->preLitLum = (RwRGBA *)WorldMemoryTake(memory, preLitSize);
                 if (sector->preLitLum == NULL) {
-                    RWERROR((E_RW_NOMEM, size));
+                    RWERROR((E_RW_NOMEM, preLitSize));
                     status = FALSE;
                 }
-                if (status && fn_80480D4C(stream, sector->preLitLum, size) == 0) {
+                if (status && fn_80480D4C(stream, sector->preLitLum, preLitSize) == 0) {
                     status = FALSE;
                 }
             }
 
             if (status && world->numTexCoordSets > 0) {
-                size = sector->numVertices * sizeof(RwTexCoords);
+                RwInt32 texCoordSize = sector->numVertices * sizeof(RwTexCoords);
+
                 for (i = 0; i < world->numTexCoordSets; i++) {
-                    sector->texCoords[i] = (RwTexCoords *)WorldMemoryTake(memory, size);
+                    sector->texCoords[i] = (RwTexCoords *)WorldMemoryTake(memory, texCoordSize);
                     if (status && sector->texCoords[i] == NULL) {
-                        RWERROR((E_RW_NOMEM, size));
+                        RWERROR((E_RW_NOMEM, texCoordSize));
                         status = FALSE;
                         break;
                     }
                     if (status &&
-                        fn_8047D784(stream, (RwReal *)sector->texCoords[i], size) == NULL) {
+                        fn_8047D784(stream, (RwReal *)sector->texCoords[i], texCoordSize) == NULL) {
                         status = FALSE;
                         break;
                     }
@@ -264,13 +267,14 @@ RpWorldSector *fn_80454CE4(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
         }
 
         if (status && header.numTriangles != 0) {
-            size = header.numTriangles * sizeof(RpTriangle);
-            sector->triangles = (RpTriangle *)WorldMemoryTake(memory, size);
+            RwUInt32 triangleSize = header.numTriangles * sizeof(RpTriangle);
+
+            sector->triangles = (RpTriangle *)WorldMemoryTake(memory, triangleSize);
             if (sector->triangles == NULL) {
-                RWERROR((E_RW_NOMEM, size));
+                RWERROR((E_RW_NOMEM, triangleSize));
                 status = FALSE;
             }
-            if (status && fn_8047D684(stream, (RwInt16 *)sector->triangles, size) == NULL) {
+            if (status && fn_8047D684(stream, (RwInt16 *)sector->triangles, triangleSize) == NULL) {
                 status = FALSE;
             }
 
@@ -464,8 +468,10 @@ RpWorld *fn_804556F4(RwStream *stream) {
     }
     fn_8047D254(&header, sizeof(header));
 
-    size = lbl_8056D898.sizeOfStruct + header.numPlaneSectors * sizeof(RpPlaneSector) +
-           header.numWorldSectors * lbl_8056D880.sizeOfStruct;
+    size = lbl_8056D898.sizeOfStruct;
+    size += header.numPlaneSectors * sizeof(RpPlaneSector);
+    size += header.numWorldSectors * lbl_8056D880.sizeOfStruct;
+    format = header.format;
     texCoordSetBits = header.format & 0xFF0000;
     if (texCoordSetBits != 0) {
         numTexCoordSets = texCoordSetBits >> 16;
@@ -474,7 +480,6 @@ RpWorld *fn_804556F4(RwStream *stream) {
     } else {
         numTexCoordSets = (header.format & rpWORLDTEXTURED) ? 1 : 0;
     }
-    format = header.format;
     if (!(format & rpWORLDNATIVE)) {
         size += header.numVertices * sizeof(RwV3d);
         if (format & rpWORLDNORMALS) {
