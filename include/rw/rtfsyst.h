@@ -42,13 +42,15 @@ typedef struct RtFileSystem RtFileSystem;
 #define RTFILE_ASYNC_SETPOSITION 4 /* a seek; reports the new position when it completes */
 #define RTFILE_ASYNC_READ 5        /* a read; reports the bytes read when it completes */
 
-/* The modes a file is opened with (inferred; 4 and 8 are set by the "w", "a" and "+" modes and
- * their meanings are not established) */
-#define RTFILE_MODE_READ 0x1
-#define RTFILE_MODE_WRITE 0x2
-#define RTFILE_MODE_FLAG4 0x4
-#define RTFILE_MODE_FLAG8 0x8
-#define RTFILE_MODE_ASYNC 0x10 /* completion is reported to the file's callback */
+/* The flags a file is opened with. Only the meanings of 4 and 8 are inferred and not established:
+ * the "w", "a" and "r+" mode strings set them in combinations that do not fix their names. */
+typedef enum RtFileAccessFlag {
+    RTFILE_MODE_READ = 0x1,
+    RTFILE_MODE_WRITE = 0x2,
+    RTFILE_MODE_FLAG4 = 0x4,
+    RTFILE_MODE_FLAG8 = 0x8,
+    RTFILE_MODE_ASYNC = 0x10 /* completion is reported to the file's callback */
+} RtFileAccessFlag;
 
 /* The origins of a file system's set-position function (inferred) */
 #define RTFILE_POS_BEGIN 1
@@ -146,9 +148,9 @@ RwBool fn_80479B48(void);                      /* whether another one fits */
 RwBool fn_80479BAC(RtFileSystem *fileSystem);  /* registers */
 RtFileSystem *fn_80479C74(const RwChar *name); /* by name, or NULL */
 RwBool fn_80479D08(const RwChar *name);        /* whether a name is in use */
-RtFile *fn_80479DCC(RtFileSystem *fileSystem, const RwChar *name, RwUInt32 mode,
+RtFile *fn_80479DCC(RtFileSystem *fileSystem, const RwChar *name, RtFileAccessFlag mode,
                     RtFileCallBack callBack, void *callBackData); /* opens a file */
-RtFile *fn_80479F50(const RwChar *name, RwUInt32 mode, RtFileCallBack callBack,
+RtFile *fn_80479F50(const RwChar *name, RtFileAccessFlag mode, RtFileCallBack callBack,
                     void *callBackData);             /* opens a file by its path */
 RtFSManager *fn_80479FC4(void);                      /* the manager */
 RtFileSystem *fn_80479FD0(const RwChar *deviceName); /* by device name, or NULL */
