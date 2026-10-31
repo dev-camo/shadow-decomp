@@ -58,8 +58,7 @@ RwUInt32 fn_8046EEA0(RpGameCubeVertexDescBuilder *builder, RpGameCubeVertexSourc
         }
         case GX_VA_CLR0:
         case GX_VA_CLR1: {
-            RwInt32 channel = attribute - GX_VA_CLR0;
-            RwUInt32 type = (builder->vcd[0] >> (channel * 2 + 13)) & 3;
+            RwUInt32 type = (builder->vcd[0] >> ((attribute - GX_VA_CLR0) * 2 + 13)) & 3;
 
             if (INDEXED(type)) {
                 size += ARRAYBYTES(source->numElements[attribute] *
@@ -165,8 +164,7 @@ void fn_8046F208(RpGameCubeVertexDescBuilder *builder, RpGameCubeInstanceData *i
         }
         case GX_VA_CLR0:
         case GX_VA_CLR1: {
-            RwInt32 channel = attribute - GX_VA_CLR0;
-            RwUInt32 type = (builder->vcd[0] >> (channel * 2 + 13)) & 3;
+            RwUInt32 type = (builder->vcd[0] >> ((attribute - GX_VA_CLR0) * 2 + 13)) & 3;
 
             if (INDEXED(type)) {
                 RwUInt32 elementSize = fn_804669EC(builder, attribute - GX_VA_CLR0);
@@ -206,9 +204,12 @@ void fn_8046F208(RpGameCubeVertexDescBuilder *builder, RpGameCubeInstanceData *i
     instance->numVertexDescriptors = numDescriptors;
 }
 
-/* Writes texture coordinate set n's array with its component type and fixed point scale. The
- * component type is held in a byte, as the vertex format stores the component types
- * (texCoordType); with a plain int the setup of the sets compiles to a different instruction order. */
+/* Writes texture coordinate set n's array with its component type and fixed point scale.
+ *
+ * Matching workaround: the component type is held in a byte, as the vertex format stores the
+ * component types (texCoordType); with an RwInt32 or RwUInt32 local, or with compType used
+ * directly, fn_8046F6CC differs in 49 words instead of 8. Revisit when the original type of the
+ * local is found. */
 #define WRITETEXCOORDS(n, compType, scale)                                                         \
     do {                                                                                           \
         RwUInt32 type = (builder->vcd[1] >> (2 * (n))) & 3;                                        \
@@ -282,8 +283,7 @@ void fn_8046F6CC(RpGameCubeVertexDescBuilder *builder, RpGameCubeInstanceData *i
         }
         case GX_VA_CLR0:
         case GX_VA_CLR1: {
-            RwInt32 channel = attribute - GX_VA_CLR0;
-            RwUInt32 type = (builder->vcd[0] >> (channel * 2 + 13)) & 3;
+            RwUInt32 type = (builder->vcd[0] >> ((attribute - GX_VA_CLR0) * 2 + 13)) & 3;
 
             if (INDEXED(type)) {
                 fn_804699F0(instance->vertexDescriptors[numDescriptors].data,

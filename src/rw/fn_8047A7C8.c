@@ -13,6 +13,15 @@
 #define RTGCNFS_OPEN_BADMODE 4 /* the disc cannot be written */
 #define RTGCNFS_OPEN_PATHTOOLONG 5
 
+/* The device state (RTGCNFS_ERROR_*).
+ *
+ * Matching workaround: the state is declared volatile. After each store fn_8047B154 loads it back
+ * as the error callback's argument (USA: the store at 0x8047B1A4 and the load at 0x8047B1AC), and
+ * the compiler emits that reload only for a volatile object; as a plain global it passes the
+ * stored constant and fn_8047B154 differs in 20 words. Nothing is known to write the state
+ * asynchronously (the DVD callback fn_8047A970 does not touch it), so the qualifier is taken as the
+ * original declaration of a device status global, not as a threading need. Revisit when the
+ * original declaration is found. */
 volatile RwInt32 lbl_805EDE90 = RTGCNFS_ERROR_NONE;
 
 /* Tells the file system's error callback of a device state */

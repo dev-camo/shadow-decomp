@@ -67,7 +67,10 @@ void fn_80464814(RpGeometry *geometry, RpGameCubeInstanceData *instance,
 /* Writes numVertices three-component vectors interpolated between start and end by *t to dst,
  * reading floats and writing in the GQR6 quantization. srcSize is the size of a source component,
  * dstSize that of a destination component, and padding is skipped after each written vector. Two
- * vectors are interpolated per loop iteration, after a single one for an odd count. */
+ * vectors are interpolated per loop iteration, after a single one for an odd count.
+ *
+ * Hand-written paired-single code, as in the original: the quantizing psq stores have no C form,
+ * so this is an asm function rather than a transcription of C. */
 asm void fn_804649C0(register void *dst, register const RwV3d *start, register const RwV3d *end,
                      register const RwReal *t, register RwInt32 numVertices,
                      register RwInt32 srcSize, register RwInt32 dstSize, register RwInt32 padding) {

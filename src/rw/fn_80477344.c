@@ -342,21 +342,21 @@ RwBool fn_80477ED4(RtAnimInterpolator *anim, RwReal deltaTime) {
         endFrame =
             (RwUInt8 *)animation->pFrames + animation->numFrames * anim->currentAnimKeyFrameSize;
         while ((RwUInt8 *)anim->pNextFrame < endFrame) {
-            RtAnimInterpFrameHeader *iFrame;
+            RtAnimInterpFrameHeader *nodeFrame;
             RtAnimKeyFrameHeader *prevFrame = ((RtAnimKeyFrameHeader *)anim->pNextFrame)->prevFrame;
 
             if (prevFrame->time > anim->currentTime) {
                 break;
             }
             do {
-                iFrame = rtANIMGETINTERPFRAME(anim, node);
+                nodeFrame = rtANIMGETINTERPFRAME(anim, node);
                 node++;
                 if (node >= numNodes) {
                     node = 0;
                 }
-            } while (iFrame->keyFrame2 != prevFrame);
-            iFrame->keyFrame1 = iFrame->keyFrame2;
-            iFrame->keyFrame2 = anim->pNextFrame;
+            } while (nodeFrame->keyFrame2 != prevFrame);
+            nodeFrame->keyFrame1 = nodeFrame->keyFrame2;
+            nodeFrame->keyFrame2 = anim->pNextFrame;
             anim->pNextFrame = (RwUInt8 *)anim->pNextFrame + anim->currentAnimKeyFrameSize;
         }
 

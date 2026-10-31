@@ -189,7 +189,9 @@ void fn_8046E3E0(RxVertexIndex *indices, RwUInt32 numIndices, RwInt32 triStrip, 
     }
 }
 
-/* Writes an index or direct attribute into the display list and returns its bytes per vertex */
+/* Writes the indices of an indexed attribute into the display list and adds the bytes they take
+ * per vertex (one for GX_INDEX8, two for GX_INDEX16) to offset; the direct attributes are written
+ * by the callers */
 #define FILLINDEXED(offset, type)                                                                  \
     do {                                                                                           \
         if ((type) != GX_NONE) {                                                                   \
@@ -307,6 +309,10 @@ void fn_8046E594(RpGameCubeVertexDescBuilder *builder, void *displayListRecord,
             RwInt32 channel = attribute - GX_VA_CLR0;
             RwUInt32 type = (builder->vcd[0] >> (channel * 2 + 13)) & 3;
 
+            /* Matching workaround: the channel is recomputed from the attribute for the size
+             * below. Passing `channel` makes fn_8046E594 an instruction shorter (0x8F4 against
+             * 0x8F8 bytes) and it then differs in 496 words instead of 322. Revisit when the
+             * function matches or the original form of the size call is found. */
             if (type == GX_DIRECT) {
                 fn_804699F0(position, indexSource->indices[attribute],
                             (builder->vat[0] >> (channel * 4 + 14)) & 7, numIndices, stride);

@@ -36,7 +36,10 @@ RwInt32 fn_8047832C(const RwChar *string, RwUInt32 count, RtCharset *charSet, Rw
                     RwIm2DVertex *vertices, RwImVertexIndex *indices, RwImVertexIndex baseIndex,
                     RwBool hideSpaces) {
     RtCharsetDesc desc;
-    RwInt32 screenHeight; /* first the font raster size, then the camera raster height */
+    /* One variable with two uses, as in the original, which stores the camera raster height back
+     * into the stack slot that fn_80478AE8 wrote the font raster size to: first that size
+     * (discarded), then the camera raster height */
+    RwInt32 screenHeight;
     RwRaster *cameraRaster;
     RwInt32 screenWidth;
     RwReal recipHeight;
