@@ -293,39 +293,12 @@ RwInt32 fn_80481D98(RwPluginRegistry *registry, RwUInt32 pluginID) {
     return -1;
 }
 
-/* Adds a registry to the registries closing must empty, unless it is there (inferred) */
-static inline void PluginRegistryTrack(RwPluginRegistry *registry) {
-    RwUInt32 i;
-
-    for (i = 0; i < lbl_805F158C; i++) {
-        if (registry == lbl_805F1588[i]) {
-            break;
-        }
-    }
-    if (lbl_805F158C == i) {
-        RwPluginRegistry **registries =
-            RwMalloc((lbl_805F158C + 1) * sizeof(RwPluginRegistry *), rwMEMHINTDUR_GLOBAL);
-
-        i = 0;
-        if (lbl_805F1588 != NULL) {
-            while (i < lbl_805F158C) {
-                registries[i] = lbl_805F1588[i];
-                i++;
-            }
-            RwFree(lbl_805F1588);
-            lbl_805F1588 = NULL;
-        }
-        registries[i] = registry;
-        lbl_805F1588 = registries;
-        lbl_805F158C++;
-    }
-}
-
 /* Registers a plugin of size bytes in the registry's objects */
 RwInt32 fn_80481DC8(RwPluginRegistry *registry, RwInt32 size, RwUInt32 pluginID,
                     RwPluginObjectConstructor constructor, RwPluginObjectDestructor destructor,
                     RwPluginObjectCopy copy) {
     RwPluginRegEntry *entry;
+    RwInt32 newSize;
 
     if (lbl_805F1590 == NULL) {
         return -1;
@@ -337,7 +310,29 @@ RwInt32 fn_80481DC8(RwPluginRegistry *registry, RwInt32 size, RwUInt32 pluginID,
 
     /* With a replaced free list allocator, closing must find the registry */
     if (lbl_805F15B4->rwfreelistalloc != fn_8047FDB0) {
-        PluginRegistryTrack(registry);
+        RwUInt32 i;
+
+        for (i = 0; i < lbl_805F158C; i++) {
+            if (registry == lbl_805F1588[i]) {
+                break;
+            }
+        }
+        if (lbl_805F158C == i) {
+            RwPluginRegistry **registries =
+                RwMalloc((lbl_805F158C + 1) * sizeof(RwPluginRegistry *), rwMEMHINTDUR_GLOBAL);
+            RwUInt32 j = 0;
+
+            if (lbl_805F1588 != NULL) {
+                for (; j < lbl_805F158C; j++) {
+                    registries[j] = lbl_805F1588[j];
+                }
+                RwFree(lbl_805F1588);
+                lbl_805F1588 = NULL;
+            }
+            registries[j] = registry;
+            lbl_805F158C++;
+            lbl_805F1588 = registries;
+        }
     }
 
     for (entry = registry->firstRegEntry; entry != NULL; entry = entry->nextRegEntry) {
@@ -347,42 +342,40 @@ RwInt32 fn_80481DC8(RwPluginRegistry *registry, RwInt32 size, RwUInt32 pluginID,
         }
     }
 
-    {
-        RwInt32 newSize = registry->sizeOfStruct + ((size + 3) & ~3);
+    newSize = registry->sizeOfStruct + ((size + 3) & ~3);
 
-        if (registry->maxSizeOfStruct != 0 && newSize > registry->maxSizeOfStruct) {
-            return -1;
-        }
-        entry = RwFreeListAlloc(lbl_805F1590, rwMEMHINTDUR_GLOBAL);
-        if (entry != NULL) {
-            entry->offset = registry->sizeOfStruct;
-            registry->sizeOfStruct = newSize;
-            entry->size = size;
-            entry->pluginID = pluginID;
-            entry->readCB = NULL;
-            entry->writeCB = NULL;
-            entry->getSizeCB = NULL;
-            entry->alwaysCB = NULL;
-            entry->rightsCB = NULL;
-            entry->constructCB = constructor != NULL ? constructor : fn_80481D8C;
-            entry->destructCB = destructor != NULL ? destructor : fn_80481D90;
-            entry->copyCB = copy != NULL ? copy : fn_80481D94;
-            entry->errStrCB = NULL;
-            entry->nextRegEntry = NULL;
-            entry->prevRegEntry = NULL;
-            entry->parentRegistry = registry;
-            if (registry->firstRegEntry == NULL) {
-                registry->firstRegEntry = entry;
-                registry->lastRegEntry = entry;
-            } else {
-                registry->lastRegEntry->nextRegEntry = entry;
-                entry->prevRegEntry = registry->lastRegEntry;
-                registry->lastRegEntry = entry;
-            }
-            return entry->offset;
-        }
+    if (registry->maxSizeOfStruct != 0 && newSize > registry->maxSizeOfStruct) {
         return -1;
     }
+    entry = RwFreeListAlloc(lbl_805F1590, rwMEMHINTDUR_GLOBAL);
+    if (entry != NULL) {
+        entry->offset = registry->sizeOfStruct;
+        registry->sizeOfStruct = newSize;
+        entry->size = size;
+        entry->pluginID = pluginID;
+        entry->readCB = NULL;
+        entry->writeCB = NULL;
+        entry->getSizeCB = NULL;
+        entry->alwaysCB = NULL;
+        entry->rightsCB = NULL;
+        entry->constructCB = constructor != NULL ? constructor : fn_80481D8C;
+        entry->destructCB = destructor != NULL ? destructor : fn_80481D90;
+        entry->copyCB = copy != NULL ? copy : fn_80481D94;
+        entry->errStrCB = NULL;
+        entry->nextRegEntry = NULL;
+        entry->prevRegEntry = NULL;
+        entry->parentRegistry = registry;
+        if (registry->firstRegEntry == NULL) {
+            registry->firstRegEntry = entry;
+            registry->lastRegEntry = entry;
+        } else {
+            registry->lastRegEntry->nextRegEntry = entry;
+            entry->prevRegEntry = registry->lastRegEntry;
+            registry->lastRegEntry = entry;
+        }
+        return entry->offset;
+    }
+    return -1;
 }
 
 /* Constructs the plugins' data in an object; when one fails, the ones before it are destructed */
