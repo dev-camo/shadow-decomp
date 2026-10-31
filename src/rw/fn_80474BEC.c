@@ -338,6 +338,8 @@ Rt2dPath *fn_80476490(void) {
 
 /* Turns the points of each subpath into lists for adding to */
 Rt2dPath *fn_80476510(Rt2dPath *path) {
+    Rt2dPath *result = path;
+
     if (path != NULL && path->numPoints != -1) {
         RwSList *list = fn_8047DC90(sizeof(rt2dPathNode), rwMEMHINTDUR_EVENT | RT2DPATHMEMID);
 
@@ -366,10 +368,10 @@ Rt2dPath *fn_80476510(Rt2dPath *path) {
             path->points = list;
             fn_80476510(path->next);
         } else {
-            path = NULL;
+            result = NULL;
         }
     }
-    return path;
+    return result;
 }
 
 /* Turns the points of each subpath back into arrays */
