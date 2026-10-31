@@ -5,21 +5,21 @@
 #define SIGDIGLEN 36
 
 typedef struct decimal {
-    char sign;
-    char unk1;
-    short exp;
+    /* 0x00 */ char sign;
+    /* 0x01 */ char field_0x1;
+    /* 0x02 */ short exp;
     struct {
-        unsigned char length;
-        unsigned char text[36];
-        unsigned char unk41;
+        /* 0x04 */ unsigned char length;
+        /* 0x05 */ unsigned char text[SIGDIGLEN];
+        /* 0x29 */ unsigned char field_0x29;
     } sig;
 } decimal;
 CHECK_SIZEOF(decimal, 0x2A);
 
 typedef struct decform {
-    char style;
-    char unk1;
-    short digits;
+    /* 0x0 */ char style;
+    /* 0x1 */ char field_0x1;
+    /* 0x2 */ short digits;
 } decform;
 CHECK_SIZEOF(decform, 0x4);
 

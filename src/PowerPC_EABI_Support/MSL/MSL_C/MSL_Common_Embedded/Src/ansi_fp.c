@@ -41,6 +41,7 @@ static int __count_trailing_zero(double x) {
     return (int)(sizeof(unsigned long) * CHAR_BIT + __count_trailing_zerol(l[0] | 0x00100000));
 }
 
+/* Returns 1 to round the digits up and -1 to truncate them. */
 static int __must_round(const decimal *d, int digits) {
     unsigned char const *i = d->sig.text + digits;
 
@@ -89,10 +90,10 @@ static void __dorounddecup(decimal *d, int digits) {
 
 static void __rounddec(decimal *d, int digits) {
     if (digits > 0 && digits < d->sig.length) {
-        int unkBool = __must_round(d, digits);
+        int round_direction = __must_round(d, digits);
         d->sig.length = digits;
 
-        if (unkBool >= 0) {
+        if (round_direction >= 0) {
             __dorounddecup(d, digits);
         }
     }
@@ -108,6 +109,7 @@ void __ull2dec(decimal *result, unsigned long long val) {
         return;
     }
 
+    /* val is unsigned, so this test is always false. */
     if (val < 0) {
         val = -val;
         result->sign = 1;
@@ -211,6 +213,7 @@ void __str2dec(decimal *d, const char *s, short exp) {
     d->sig.length = i;
 
     if (*s != 0) {
+        /* The library compares the next digit character with the integer 5 rather than '5'. */
         if (*s < 5)
             return;
         if (*s > 5)
@@ -601,7 +604,7 @@ double __dec2num(const decimal *d) {
                 if (isdigit(c)) {
                     c -= '0';
                 } else {
-                    c = (unsigned char)(_tolower(c) - 'a' + 10);
+                    c = (unsigned char)(tolower(c) - 'a' + 10);
                 }
 
                 if (c != 0) {

@@ -1,6 +1,4 @@
 
-#include <locale>
-
 #include "global.h"
 
 /* emits the cctype inlines as weak functions; the ones the game does not call are stripped */
