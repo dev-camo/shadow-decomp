@@ -9,8 +9,6 @@
 #include "CRI/mpv.h"
 #include "CRI/uty.h"
 
-/* run/level VLC table entry pointers (mpv_vlc.c) */
-
 static const Uint16 mpvbdec_bitmsk[16] = {
     0xFFFF, 0x7FFF, 0x3FFF, 0x1FFF, 0x0FFF, 0x07FF, 0x03FF, 0x01FF,
     0x00FF, 0x007F, 0x003F, 0x001F, 0x000F, 0x0007, 0x0003, 0x0001,
@@ -35,9 +33,11 @@ static const Uint8 group_tbl[32] = {
 Uint8 mpvbdec_dfl_iqm[64];
 Sint8 mpvbdec_zigzag[64];
 
-/* Unreferenced, so the linker strips it (body from RE4, not verified); its reference puts
- * mpvbdec_dfl_iqm first in .bss. */
-Uint8 *MPVBDEC_GetDflIqm(void) {
+/* Matching workaround: order-only stand-in for a stripped function (its body is unknown). MWCC
+ * places .bss objects in order of first reference, so this never-called function refers to
+ * mpvbdec_dfl_iqm before any other code does. Returning the address keeps the reference. Revisit
+ * when the stripped function is known. */
+static Uint8 *mpvbdec_BssOrder(void) {
     return mpvbdec_dfl_iqm;
 }
 

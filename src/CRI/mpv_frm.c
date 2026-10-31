@@ -8,9 +8,10 @@
 #include "CRI/mpv.h"
 #include "CRI/uty.h"
 
-/* These two entry points take the handle untyped and convert it to MPV_OBJ: the original
- * allocates registers for a separate handle parameter, which an MPV_OBJ * parameter does not give.
- */
+/* Matching workaround: MPV_SkipFrmSj and MPV_DecodeFrmSj (like MPV_DecodePicAtrSj in mpv_hdec.c)
+ * take the handle as void * and convert it to MPV_OBJ in a local. With an MPV_OBJ * parameter they
+ * differ in 9 and 50 words (MPV_DecodePicAtrSj in 98): the handle and the stream joint are
+ * allocated to other registers. Revisit when the original handle type is known. */
 
 /* Advances the stream joint past the current picture: consumes start codes until one of the
  * MPV_DLM_PIC_BOUND classes is reached. Error 0xFF030305 if the data ends first.

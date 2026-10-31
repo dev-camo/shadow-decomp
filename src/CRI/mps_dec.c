@@ -62,8 +62,9 @@ typedef void (*MPSDEC_PESFN)(void *obj, Uint8 stmid);
         pos += (n);                                                                                \
     }
 
-/* the last field of a header: only the value is needed (BS_GET's dead state updates would compile
- * differently: the original recomputes `pos - 10` twice) */
+/* the last field of a header: only the value is needed, so the stream state is not updated. The
+ * original recomputes `pos - 10` twice; with BS_GET for the last field of mpsdec_DecPackHd, 31 of
+ * its 155 words differ (154 words long). */
 #define BS_GET_LAST(n, val)                                                                        \
     if (pos >= 32 - (n)) {                                                                         \
         if (pos - (32 - (n)) != 0) {                                                               \
@@ -77,7 +78,8 @@ typedef void (*MPSDEC_PESFN)(void *obj, Uint8 stmid);
     }
 
 /* the 2-bit read at the start of the pack header: the original has the wrap shifts as the
- * constant 1 (pos can only be 31 there) */
+ * constant 1 (pos can only be 31 there); with BS_GET(2, ...) mpsdec_DecPackHd is 156 words instead
+ * of 155, 145 of them differing. */
 #define BS_GET2_FIRST(val)                                                                         \
     if (pos >= 30) {                                                                               \
         pos -= 30;                                                                                 \
