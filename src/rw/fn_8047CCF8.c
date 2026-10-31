@@ -42,13 +42,11 @@ typedef struct rwChunkHeader {
 } rwChunkHeader;
 CHECK_SIZEOF(rwChunkHeader, 0xC);
 
-/* Whether a chunk of this type holds other chunks.
- * Matching workaround: the result is set in each case and returned once. With a return in each
- * case the compiler inlines this function into fn_8047CDB4, fn_8047CF50 and fn_8047D94C, which
- * call it out of line in the original. Revisit if the original's form or another inline setting
- * is found. */
+/* Whether a chunk of this type holds other chunks. The result is set in each case and returned
+ * once: with a return in each case the compiler inlines this function into its callers, which
+ * call it out of line in the original. */
 RwBool fn_8047CCF8(const RwChunkHeaderInfo *chunkHeaderInfo) {
-    RwBool result;
+    RwBool result = FALSE;
 
     switch (chunkHeaderInfo->type) {
     case rwID_STRUCT:
@@ -204,16 +202,12 @@ RwInt32 fn_8047CF50(RwStream *stream, RwUInt32 type, RwUInt32 *lengthOut, RwUInt
 }
 
 /* Converts 32-bit words between the native byte order and the stream's little-endian order (the
- * compiler turns the byte swap and the store into stwbrx). The local is declared outside the loop:
- * declaring it per iteration changes the generated code */
+ * compiler turns the byte swap and the store into stwbrx) */
 void *fn_8047D158(void *mem, RwUInt32 size) {
-    RwUInt32 value;
-    RwUInt32 count;
     RwUInt32 *word = mem;
 
-    for (count = size >> 2; count != 0; count--) {
-        value = *word;
-        *word = (value >> 24) | ((value >> 8) & 0xFF00) | ((value << 8) & 0xFF0000) | (value << 24);
+    for (size >>= 2; size > 0; size--) {
+        *word = (*word >> 24) | ((*word >> 8) & 0xFF00) | ((*word << 8) & 0xFF0000) | (*word << 24);
         word++;
     }
     return mem;
@@ -221,39 +215,30 @@ void *fn_8047D158(void *mem, RwUInt32 size) {
 
 /* Converts 16-bit words between the native byte order and the stream's little-endian order */
 void *fn_8047D1C8(void *mem, RwUInt32 size) {
-    RwUInt32 count;
     RwUInt16 *word = mem;
 
-    for (count = size >> 1; count != 0; count--) {
-        RwUInt16 value = *word;
-
-        *word = (value >> 8) | (value << 8);
+    for (size >>= 1; size > 0; size--) {
+        *word = (*word >> 8) | (*word << 8);
         word++;
     }
     return mem;
 }
 
 void *fn_8047D254(void *mem, RwUInt32 size) {
-    RwUInt32 value;
-    RwUInt32 count;
     RwUInt32 *word = mem;
 
-    for (count = size >> 2; count != 0; count--) {
-        value = *word;
-        *word = (value >> 24) | ((value >> 8) & 0xFF00) | ((value << 8) & 0xFF0000) | (value << 24);
+    for (size >>= 2; size > 0; size--) {
+        *word = (*word >> 24) | ((*word >> 8) & 0xFF00) | ((*word << 8) & 0xFF0000) | (*word << 24);
         word++;
     }
     return mem;
 }
 
 void *fn_8047D2C4(void *mem, RwUInt32 size) {
-    RwUInt32 count;
     RwUInt16 *word = mem;
 
-    for (count = size >> 1; count != 0; count--) {
-        RwUInt16 value = *word;
-
-        *word = (value >> 8) | (value << 8);
+    for (size >>= 1; size > 0; size--) {
+        *word = (*word >> 8) | (*word << 8);
         word++;
     }
     return mem;
