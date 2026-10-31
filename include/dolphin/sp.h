@@ -3,6 +3,7 @@
 
 #include <dolphin/types.h>
 #include <dolphin/ax.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,6 +13,7 @@ typedef struct {
     AXPBADPCM adpcm;
     AXPBADPCMLOOP adpcmloop;
 } SPADPCM;
+CHECK_SIZEOF(SPADPCM, 0x2E);
 
 typedef struct {
     u32 type;
@@ -22,11 +24,13 @@ typedef struct {
     u32 currentAddr;
     SPADPCM *adpcm;
 } SPSoundEntry;
+CHECK_SIZEOF(SPSoundEntry, 0x1C);
 
 typedef struct {
     u32 entries;
     SPSoundEntry sound[1];
 } SPSoundTable;
+CHECK_SIZEOF(SPSoundTable, 0x20);
 
 void SPInitSoundTable(SPSoundTable *table, u32 aramBase, u32 zeroBase);
 SPSoundEntry *SPGetSoundEntry(SPSoundTable *table, u32 index);

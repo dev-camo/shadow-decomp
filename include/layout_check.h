@@ -6,9 +6,10 @@
  *     CHECK_SIZEOF(RwRaster, 0x34);
  *     CHECK_OFFSETOF(RwRaster, cType, 0x20);
  *
- * They emit no code or data. A failed check stops the build with an error about the negative
- * array size of struct_layout_check, so a header edit that moves a member or changes a size is
- * caught in every file that includes it, not only in the files whose objects are compared.
+ * They emit no code or data. A failed check stops the build with MWCC's "illegal constant
+ * expression" error on the struct_layout_check line, so a header edit that moves a member or
+ * changes a size is caught in every file that includes it, not only in the files whose objects
+ * are compared.
  *
  * Every passing check redeclares the same one-element array, which both C and C++ allow. C++
  * uses a typedef, so checks inside and outside extern "C" blocks do not conflict.

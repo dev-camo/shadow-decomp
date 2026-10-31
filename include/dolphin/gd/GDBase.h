@@ -4,6 +4,7 @@
 #include <dolphin/types.h>
 #include <dolphin/gx/GXEnum.h>
 #include <dolphin/gx/GXCommandList.h>
+#include "layout_check.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,6 +18,7 @@ typedef struct _GDLObj {
     u8 *ptr;
     u8 *top;
 } GDLObj;
+CHECK_SIZEOF(GDLObj, 0x10);
 
 extern GDLObj *__GDCurrentDL;
 
