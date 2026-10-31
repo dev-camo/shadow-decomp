@@ -12,10 +12,9 @@ static u32 BarnacleEnabled;
 #define UART_ENABLED_MAGIC 0xA5FF005A
 
 // The MSL console driver (UART.h) declares these as UARTError InitializeUART(UARTBaudRate) and
-// UARTError WriteUARTN(void *, unsigned long). This unit does not include that header and keeps
-// int and u32 for the same symbols. The definition takes no parameter, so the baud rate the MSL
-// caller passes is ignored.
-int InitializeUART(void);
+// UARTError WriteUARTN(void *, unsigned long). UART.h is not on the dolphin units' include path, so
+// this unit keeps int and u32 for the same symbols.
+int InitializeUART(u32 baudRate);
 int ReadUARTN(void);
 int WriteUARTN(void *buf, u32 len);
 
@@ -98,7 +97,8 @@ void __OSEnableBarnacle(s32 chan, u32 dev) {
     }
 }
 
-int InitializeUART(void) {
+// The EXI UART ignores the requested baud rate.
+int InitializeUART(u32 baudRate) {
     if (BarnacleEnabled == UART_ENABLED_MAGIC) {
         return 0;
     }

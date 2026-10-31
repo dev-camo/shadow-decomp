@@ -4,6 +4,7 @@
 #include <dolphin/types.h>
 #include <dolphin/os.h>
 #include "MetroTRK/trkenum.h"
+#include "UART.h"
 #include "layout_check.h"
 
 #ifdef __cplusplus
@@ -11,9 +12,6 @@ extern "C" {
 #endif // ifdef __cplusplus
 
 /////// TRK STRUCTS AND TYPES //////
-// UART error type (also typedef'd in the MSL UART.h).
-typedef int UARTError;
-
 // Function types for DB communications.
 typedef int (*DBCommFunc)(void);
 typedef int (*DBCommInitFunc)(void *, __OSInterruptHandler);

@@ -30,7 +30,7 @@ DSError TRKInitializeNub(void) {
     }
     if (ret == DS_NoError) {
 
-        uartErr = TRKInitializeIntDrivenUART(0x0000e100, 1, 0, &gTRKInputPendingPtr);
+        uartErr = TRKInitializeIntDrivenUART(kBaud57600, 1, 0, &gTRKInputPendingPtr);
         TRKTargetSetInputPendingPtr(gTRKInputPendingPtr);
         if (uartErr != DS_NoError) {
             ret = uartErr;
