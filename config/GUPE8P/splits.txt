@@ -1445,6 +1445,14 @@ Game/fn_8040ABC8.cpp:
 	.data       start:0x80569E60 end:0x80569E98
 	.sdata      start:0x805EDD10 end:0x805EDD20
 
+Game/fn_8040B034.cpp:
+	extab       start:0x8000577C end:0x800057EC
+	extabindex  start:0x80007670 end:0x80007718
+	.text       start:0x8040B034 end:0x8040C204
+	.ctors      start:0x804AA048 end:0x804AA04C
+	.bss        start:0x805E0720 end:0x805E0780
+	.sdata2     start:0x805FAD40 end:0x805FAD50
+
 Game/fn_8040C244.c:
 	.text       start:0x8040C244 end:0x8040C25C
 

@@ -27,8 +27,56 @@ typedef struct Fn8040Vector3 {
 } Fn8040Vector3;
 CHECK_SIZEOF(Fn8040Vector3, 0xC);
 
-/* 3x4 matrix (three rows of rotation and translation) used by the fn_8040xxxx matrix helpers. */
+/* 4-float vector; the matrix helpers read a rotation quaternion (x, y, z, w) from it. */
+typedef struct Fn8040Vector4 {
+    /* 0x00 */ float x;
+    /* 0x04 */ float y;
+    /* 0x08 */ float z;
+    /* 0x0C */ float w;
+} Fn8040Vector4;
+CHECK_SIZEOF(Fn8040Vector4, 0x10);
+
+/* 3x4 matrix (three rows of rotation and translation) used by the fn_8040xxxx matrix helpers. The
+ * original builds a whole matrix from twelve element values, which it evaluates before the first
+ * store, and constructs its identity and zero matrices at startup, so the C++ view has a
+ * twelve-value constructor and setter (names inferred). */
 typedef struct Fn8040Matrix34 {
+#ifdef __cplusplus
+    Fn8040Matrix34() {}
+    /* Stores the elements itself: delegating to Set changes the startup code of the identity and
+     * zero matrices (37 instead of 29 instructions). */
+    Fn8040Matrix34(float m00, float m01, float m02, float m03, float m10, float m11, float m12,
+                   float m13, float m20, float m21, float m22, float m23) {
+        values[0][0] = m00;
+        values[0][1] = m01;
+        values[0][2] = m02;
+        values[0][3] = m03;
+        values[1][0] = m10;
+        values[1][1] = m11;
+        values[1][2] = m12;
+        values[1][3] = m13;
+        values[2][0] = m20;
+        values[2][1] = m21;
+        values[2][2] = m22;
+        values[2][3] = m23;
+    }
+
+    void Set(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13,
+             float m20, float m21, float m22, float m23) {
+        values[0][0] = m00;
+        values[0][1] = m01;
+        values[0][2] = m02;
+        values[0][3] = m03;
+        values[1][0] = m10;
+        values[1][1] = m11;
+        values[1][2] = m12;
+        values[1][3] = m13;
+        values[2][0] = m20;
+        values[2][1] = m21;
+        values[2][2] = m22;
+        values[2][3] = m23;
+    }
+#endif
     /* 0x00 */ float values[3][4];
 } Fn8040Matrix34;
 CHECK_SIZEOF(Fn8040Matrix34, 0x30);
@@ -54,10 +102,19 @@ float fn_8040CCEC(const Fn8040Vector2 *vector);
 float fn_8040CF50(const Fn8040Vector3 *vector);
 /* Squared length. */
 float fn_8040CF2C(Fn8040Vector3 *vector);
+/* Squared length of a 4-float vector. */
+float fn_8040CA84(const Fn8040Vector4 *vector);
 /* Stores sin(angle) and cos(angle) through the two pointers. The E3 2005 prototype (G9SJ8P) calls
  * sin and cos directly in fn_8040D044, so this is probably an inline helper whose out-of-line copy
  * retail calls (inferred). */
 void fn_80031568(float *sine, float *cosine, float angle);
+/* Normalises the vector in place and returns its previous length, or sets it to the zero vector
+ * and returns 0 when it is too short to normalise (behaviour inferred). */
+float fn_8040CE74(Fn8040Vector3 *vector);
+/* Dot product (behaviour inferred). */
+float fn_8040CF90(const Fn8040Vector3 *left, const Fn8040Vector3 *right);
+/* result = left x right (behaviour inferred). */
+void fn_8040CFB8(Fn8040Vector3 *result, const Fn8040Vector3 *left, const Fn8040Vector3 *right);
 /* destination = a - b (behaviour inferred). */
 void fn_8040CD74(Fn8040Vector3 *destination, const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 /* result += value (behaviour inferred). */
@@ -65,23 +122,68 @@ void fn_8040CFF8(Fn8040Vector3 *result, const Fn8040Vector3 *value);
 void fn_800091D0(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
 void fn_800091EC(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
 void fn_80008E1C(Fn8040Vector3 *vector, float x, float y, float z);
-/* Matrix helpers (behaviour inferred): copy, translate by matrix * offset, rotate by an angle. */
+/* Matrix helpers of the segment in fn_8040B034.cpp. Their original names are unknown and their
+ * descriptions are inferred from the code. */
+/* Copies source to destination. */
 void fn_8040C148(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
-/* Sets matrix to the identity rotation with the given translation (behaviour inferred). */
+/* Returns the address of the element at the given row and column. */
+float *fn_8040C17C(Fn8040Matrix34 *matrix, int row, int column);
+/* Returns the element at the given row and column. */
+float fn_8040C168(Fn8040Matrix34 *matrix, int row, int column);
+/* A second copy of fn_8040C148 in the original. */
+void fn_8040BCB4(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
+/* Sets matrix to the identity rotation with the given translation. */
 void fn_8040B034(Fn8040Matrix34 *matrix, const Fn8040Vector3 *translation);
+/* Builds a scale matrix from the components of the vector. */
+void fn_8040B07C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *scale);
+/* Build the rotation matrices about the z, y and x axes (the angle is passed to the sine and
+ * cosine helper fn_80031568). */
+void fn_8040B0C0(Fn8040Matrix34 *matrix, float angle);
+void fn_8040B138(Fn8040Matrix34 *matrix, float angle);
+void fn_8040B1B0(Fn8040Matrix34 *matrix, float angle);
+/* Builds the rotation matrix of a quaternion (x, y, z, w). */
+void fn_8040B228(Fn8040Matrix34 *matrix, const Fn8040Vector4 *quaternion);
+/* Builds the matrix that looks from eye towards target with the given up direction. */
+void fn_8040B33C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *eye, const Fn8040Vector3 *up,
+                 const Fn8040Vector3 *target);
+/* Stores the transpose of the source's rotation, without a translation. */
+void fn_8040B4D0(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
+/* Translates the matrix by an offset that the matrix's rotation turns first. */
+void fn_8040B52C(Fn8040Matrix34 *matrix, float x, float y, float z);
 void fn_8040B59C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *offset);
+/* result = the matrix's rotation applied to vector, without and with the translation. */
+void fn_8040B618(Fn8040Vector3 *result, const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector);
+void fn_8040B67C(Fn8040Vector3 *result, const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector);
+/* Copy constructor or assignment operator of the matrix class (inferred), out of line (the
+ * original has its weak instance at 0x80325384): calls fn_8040C148 and returns destination. */
+Fn8040Matrix34 *fn_80325384(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
+/* Sets the matrix to the identity. */
+void fn_8040B6F8(Fn8040Matrix34 *matrix);
+/* Scales the matrix's three rotation columns by x, y and z, or by the components of a vector. */
+void fn_8040B720(Fn8040Matrix34 *matrix, float x, float y, float z);
+void fn_8040B790(Fn8040Matrix34 *matrix, const Fn8040Vector3 *scale);
+/* The three rotations that fn_8001E070 builds from the y, x and z angles of a rotation vector:
+ * multiply the matrix by the rotation about the y, x and z axes. */
 void fn_8040B848(Fn8040Matrix34 *matrix, float angle);
-/* The same for the other two axes: fn_8040B848, fn_8040B884 and fn_8040B80C apply the rotations
- * that fn_8001E070 builds from the y, x and z angles of a rotation vector (behaviour inferred). */
 void fn_8040B884(Fn8040Matrix34 *matrix, float angle);
 void fn_8040B80C(Fn8040Matrix34 *matrix, float angle);
+/* Multiplies the matrix by the rotation of a quaternion. */
+void fn_8040B8C0(Fn8040Matrix34 *matrix, const Fn8040Vector4 *quaternion);
+/* result = left * right, applying right first. */
+void fn_8040B8FC(Fn8040Matrix34 *result, const Fn8040Matrix34 *left, const Fn8040Matrix34 *right);
+/* matrix = matrix * other, applying other first. */
+void fn_8040BAC4(Fn8040Matrix34 *matrix, const Fn8040Matrix34 *other);
+/* Inverts the matrix in place; a matrix without an inverse stays unchanged. */
+void fn_8040BCD4(Fn8040Matrix34 *matrix);
+/* Stores the inverse of source in destination, or a copy of source when it has no inverse. */
+void fn_8040BEF8(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Applies the three angles of rotation in the axis order selected by order, 0 to 2 (behaviour
  * inferred). */
 void fn_8001E070(Fn8040Matrix34 *matrix, const Fn8040Vector3 *rotation, int order);
-/* Scales the matrix's three rotation columns by x, y and z (behaviour inferred). */
-void fn_8040B720(Fn8040Matrix34 *matrix, float x, float y, float z);
-/* identity matrix, set up at startup by fn_8040C190 */
-extern Fn8040Matrix34 lbl_805E0720;
+/* The identity and zero matrices, built at startup (a __sinit_ function and a .ctors entry in
+ * fn_8040B034.cpp). */
+extern Fn8040Matrix34 lbl_805E0720; /* identity */
+extern Fn8040Matrix34 lbl_805E0750; /* zero */
 
 #ifdef __cplusplus
 }
