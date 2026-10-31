@@ -11,7 +11,7 @@ Sint32 SFVOM_Seek(void) {
 
 /* SFD_RelFrm: gives the frame back to the video decoder through the frame table buffer. */
 Sint32 SFVOM_AddRead(SFD sfd, void *frm, Sint32 arg) {
-    return SFBUF_VfrmAddRead(sfd, sfd->tr[6].bufin, frm, arg);
+    return SFBUF_VfrmAddRead(sfd, sfd->tr[SFVOM_TR].bufin, frm, arg);
 }
 
 /* SFD_GetFrm: in STBY/PLAYING asks the frame table for the oldest decoded frame. */
@@ -23,7 +23,7 @@ Sint32 SFVOM_GetRead(SFD sfd, void **frm, Sint32 arg) {
         *frm = 0;
         return 0;
     }
-    ret = SFBUF_VfrmGetRead(sfd, sfd->tr[6].bufin, frm, arg);
+    ret = SFBUF_VfrmGetRead(sfd, sfd->tr[SFVOM_TR].bufin, frm, arg);
     err = 0;
     if (ret != 0) {
         err = ret;
@@ -73,8 +73,8 @@ Sint32 SFVOM_ExecServer(SFD sfd) {
     if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 0) {
         return 0;
     }
-    if (SFTRN_GetTermFlg(sfd, 6) != 1) {
-        if (SFBUF_GetTermFlg(sfd, sfd->tr[6].bufin) == 1) {
+    if (SFTRN_GetTermFlg(sfd, SFVOM_TR) != 1) {
+        if (SFBUF_GetTermFlg(sfd, sfd->tr[SFVOM_TR].bufin) == 1) {
             if (SFSET_GetCond(sfd, 15) == 0) {
                 term = 1;
             } else if (SFTIM_IsVideoTerm(sfd) == 0) {
@@ -83,13 +83,13 @@ Sint32 SFVOM_ExecServer(SFD sfd) {
                 term = 1;
             }
             if (term != 0) {
-                SFTRN_SetTermFlg(sfd, 6, 1);
+                SFTRN_SetTermFlg(sfd, SFVOM_TR, 1);
             }
         }
     }
-    if (SFTRN_GetPrepFlg(sfd, 6) != 1) {
-        if (SFBUF_GetPrepFlg(sfd, sfd->tr[6].bufin) == 1) {
-            SFTRN_SetPrepFlg(sfd, 6, 1);
+    if (SFTRN_GetPrepFlg(sfd, SFVOM_TR) != 1) {
+        if (SFBUF_GetPrepFlg(sfd, sfd->tr[SFVOM_TR].bufin) == 1) {
+            SFTRN_SetPrepFlg(sfd, SFVOM_TR, 1);
         }
     }
     return 0;

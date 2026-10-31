@@ -68,6 +68,10 @@ void AXRNA_EntryErrFunc(void (*func)(void *obj, Char8 *msg), void *obj);
 void AXRNA_Finish(void);
 void AXRNA_Init(void);
 
+/* rna_crs.c */
+void GCRNA_UnlockCs(void);
+void GCRNA_LockCs(void);
+
 #ifdef __cplusplus
 }
 #endif

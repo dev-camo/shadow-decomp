@@ -41,7 +41,7 @@ static Sint32 sfpl2_PauseSub(SFD sfd, Sint32 sw) {
         ret = 0;
     } else {
         SFTIM_Pause(sfd, sw);
-        r = SFTRN_CallTrtTrif(sfd, 7, 8, sw, 0);
+        r = SFTRN_CallTrtTrif(sfd, SFAOAP_TR, 8, sw, 0);
         ret = 0;
         if (r != 0) {
             ret = r;

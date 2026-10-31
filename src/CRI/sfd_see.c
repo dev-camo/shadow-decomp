@@ -138,7 +138,7 @@ static void sfsee_ExecHeadAnaly(SFD sfd) {
     if (wait != 0) {
         return;
     }
-    if (SFTRN_IsSetup(sfd, 2) != 0 && SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 1) {
+    if (SFTRN_IsSetup(sfd, SFMPV_TR) != 0 && SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 1) {
         use_video = 1;
         if (wk->vid_analyzed == 0) {
             wait = 1;

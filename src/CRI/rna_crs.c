@@ -5,6 +5,7 @@
  * game, so they are left out.
  */
 #include "CRI/sj.h"
+#include "CRI/adx_rna.h"
 
 /* Leaves the renderer critical section. */
 void GCRNA_UnlockCs(void) {

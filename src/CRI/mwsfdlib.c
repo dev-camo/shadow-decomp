@@ -60,9 +60,10 @@ Sint32 mwg_sfd_errcode[MWSFD_MAX_ERRCODE];
 MWSFD_LIBWORK mwsfd_libwork;
 static const Char8 *cri_verstr_ptr;
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. MWCC lays out
- * .bss by first reference, so this never-called function refers to the library globals in storage
- * order before the functions below do. Storing the addresses keeps the references. */
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game (its
+ * body is unknown). MWCC lays out .bss by first reference, so this never-called function refers to
+ * the library globals in storage order before the functions below do; storing the addresses keeps
+ * the references. Revisit when the stripped function is recovered. */
 static void mwsfdlib_BssOrder(void **out) {
     out[0] = &mwsfd_init_cnt;
     out[1] = &mwsfd_init_flag;
@@ -234,9 +235,10 @@ static void mwsflib_SetLibPrm(MWSFD_LIBWORK *lw, MWSFD_INIT_PRM *prm) {
     }
 }
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. The original
- * pools the server names ahead of the messages of mwPlyInitSfdFx, so this never-called function
- * refers to them first. Storing the texts keeps the references. */
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game (its
+ * body is unknown). The original pools the server names ahead of the messages of mwPlyInitSfdFx,
+ * so this never-called function refers to them first; storing the texts keeps the references.
+ * Revisit when the stripped function is recovered. */
 static void mwsfdlib_SvrNameOrder(const Char8 **out) {
     out[0] = "MWSFSVR_VsyncThrdProc";
     out[1] = "MWSFSVR_MainThrdProc";

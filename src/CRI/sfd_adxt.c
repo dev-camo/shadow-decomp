@@ -258,7 +258,9 @@ static inline Sint32 sfadxt_ReleaseAdxt(SFD sfd, ADXT adxt) {
         ADXT_Destroy(adxt);
         return 0;
     }
-    /* required: ADXT_Stop(adxt) changes the code */
+    /* Matching workaround: the work's adxt is read again for ADXT_Stop. Passing the parameter
+     * `adxt` changes SFADXT_Destroy by 51 words (220 bytes instead of 228). Revisit when the
+     * original source of the reset path is known. */
     ADXT_Stop(SFADXT_WK(sfd)->adxt);
     SFLIB_libwork.x200 = adxt;
     return 0;
@@ -396,8 +398,9 @@ static inline ADXT sfadxt_CreateAdxt(SFADXT_WORK *wk) {
     return adxt;
 }
 
-/* Kept as a helper: as locals of SFADXT_Create, the work pointer and the ADXT handle swap
- * registers. */
+/* Matching workaround: kept as a separate inline function. Written in SFADXT_Create itself, that
+ * function differs by 20 words (same size). Revisit when the original split of the creation code
+ * is known. */
 static inline Sint32 sfadxt_CreateSub(SFD sfd) {
     SFADXT_WORK *wk;
     ADXT adxt;
@@ -615,7 +618,10 @@ void sfadxt_AdjustSync(SFD sfd, Uint8 *data, Sint32 len, Sint32 *nbyte) {
         if (skipbyte > 0) {
             frmbyte = nch * SFADXT_FRMSIZ;
             lim = skipbyte;
-            /* required: `len / frmbyte * frmbyte` changes the code */
+            /* Matching workaround: `len / frmbyte * nch * SFADXT_FRMSIZ` stands for the frame
+             * count times frmbyte; the shorter `len / frmbyte * frmbyte` changes sfadxt_AdjustSync
+             * by 88 words (636 bytes instead of 640). Revisit when the original expression is
+             * known. */
             n = len / frmbyte * nch * SFADXT_FRMSIZ;
             if (n < skipbyte) {
                 lim = n;
@@ -636,7 +642,8 @@ void sfadxt_AdjustSync(SFD sfd, Uint8 *data, Sint32 len, Sint32 *nbyte) {
         if (vflg != 0) {
             cnt = (-diff) / SFADXT_FRMSMPL * SFADXT_FRMSMPL;
             if (cnt > 0) {
-                /* required: wk->adxt changes the code */
+                /* Matching workaround: the ADXT is read through SFADXT_WK(sfd); `wk->adxt` changes
+                 * sfadxt_AdjustSync by 32 words. Revisit when the original access is known. */
                 ins = ADXT_InsertSilence(SFADXT_WK(sfd)->adxt, nch, cnt);
                 cnt -= ins;
                 wk->smplofst -= ins;
@@ -708,7 +715,8 @@ static inline Sint32 sfadxt_Transfer(SFD sfd, Sint32 *len) {
 
     wk = SFADXT_WK(sfd);
     ret = SFBUF_RingGetRead(sfd, sfd->tr[SFADXT_TR].bufin, &inf);
-    /* reading inf.ck1 after the error check moves the code further from the original */
+    /* inf.ck1 is read before the error check; reading it after the check differs further from the
+     * original */
     data = inf.ck1.data;
     n = inf.ck1.len;
     if (ret != 0) {
@@ -894,8 +902,9 @@ void SFD_SetAdxtPara(SFADXT_PARA *para) {
     sfadxt_para.work = (void *)(((Uint32)para->work + 31) & ~31);
 }
 
-/* pool_data off: each of the four literals is addressed with its own lis/lfs (or lis/lfd) pair
- * instead of one pooled base. */
+/* Matching workaround: pool_data off. Each of the four literals is addressed with its own lis/lfs
+ * (or lis/lfd) pair instead of one pooled base; without the pragma SFADXT_SetSpeed differs by 42
+ * words. Revisit when the original unit's compiler settings are known. */
 #pragma pool_data off
 /* Speed (1000 = normal) as a pitch shift of 1200 * ln(speed/1000) / ln 2 cents, passed to
  * ADXT_SetTranspose as cents / 100 and the remaining cents;
@@ -930,8 +939,9 @@ static Sint32 SFADXT_GetOutVol(SFD sfd) {
 }
 
 /* ADXT output volume (1/10 dB).
- * No return statement: ADXT_SetOutVol is void, and the original returns whatever the call leaves in
- * the result register (`return 0` would add an instruction). */
+ * Matching workaround: no return statement. ADXT_SetOutVol is void, and the original returns
+ * whatever the call leaves in the result register; `return 0` adds an instruction. Revisit
+ * when the original body is known. */
 Sint32 SFADXT_SetOutVol(SFD sfd, Sint32 vol) {
     ADXT_SetOutVol(SFADXT_WK(sfd)->adxt, vol);
 }
@@ -942,7 +952,7 @@ Sint32 SFADXT_GetOutPan(SFD sfd, Sint32 ch) {
 }
 
 /* ADXT channel pan.
- * No return statement, as in SFADXT_SetOutVol: ADXT_SetOutPan is void. */
+ * Matching workaround: no return statement, as in SFADXT_SetOutVol (ADXT_SetOutPan is void). */
 Sint32 SFADXT_SetOutPan(SFD sfd, Sint32 ch, Sint32 pan) {
     ADXT_SetOutPan(SFADXT_WK(sfd)->adxt, ch, pan);
 }

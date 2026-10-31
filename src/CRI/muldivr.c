@@ -2,6 +2,7 @@
  * Body from the RE4 GameCube decompilation of the same file.
  */
 #include "CRI/cri_xpt.h"
+#include "CRI/uty.h"
 
 /* Rounded (a * b) / c in 64 bits; saturates when c is 0. */
 Sint64 UTY_MulDivRound64(Sint64 a, Sint64 b, Sint64 c) {

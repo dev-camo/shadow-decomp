@@ -14,6 +14,8 @@
 #define MPVABDEC_ESCAPE_RUN 0x40
 #define MPVABDEC_D_PICTURE 4
 
+/* The statement macros below (SAVE_BIT, PEEK32, FINISH, and the AC macros further down) expand to
+ * several statements: use them only as full statements inside a braced block. */
 #define MPVABDEC_SAVE_BIT()                                                                        \
     mpv->bbuf = bbuf;                                                                              \
     mpv->nbuf = nbuf;                                                                              \
@@ -684,7 +686,10 @@ static inline Uint32 mpvabdec_EscapeCode(Uint32 code) {
 
 /* the whole non-intra decoder is one function: the first-coefficient helpers are inlined into
  * the AC loop body */
-/* Compiler setting: lets the helpers be inlined into the one large decoder. */
+/* Matching workaround: raised inline limits so the helpers are inlined into the one large
+ * decoder. With the default limits MPVABDEC_NintraBlock is 172 bytes instead of 17560 and
+ * MPVABDEC_IntraBlockDc11 differs by 4224 words. Revisit when the original unit's compiler
+ * settings are known. */
 #pragma inline_max_size(100000)
 #pragma inline_max_total_size(100000)
 
@@ -843,7 +848,8 @@ Sint32 MPVABDEC_NintraBlock(MPV mpv, MPV_BLKPRM *prm) {
     return mpvabdec_NintraDecode(mpv, prm);
 }
 
-/* intra dequantisation: 2 * level * quantiser_scale * iqm / 16 */
+/* intra dequantisation: 2 * level * quantiser_scale * iqm / 16 (MPVABDEC_LEVEL is redefined for the
+ * intra decoders below; the macros that use it expand at their point of use) */
 #undef MPVABDEC_LEVEL
 #define MPVABDEC_LEVEL(level) ((level) * 2)
 

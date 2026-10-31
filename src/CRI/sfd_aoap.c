@@ -6,8 +6,6 @@
  * Source adapted from the RE4 GameCube decompilation with this game's SFD_OBJ layout. */
 #include "CRI/sfd.h"
 
-#define SFAOAP_COND 6
-
 /* No seek (0). */
 Sint32 SFAOAP_Seek(void) {
     return 0;
@@ -46,34 +44,34 @@ static Sint32 sfaoap_ChkRet(Sint32 r) {
 
 /* Pauses/resumes the audio decoder driver (slot 3, fn 8) when audio is on. */
 Sint32 SFAOAP_Pause(SFD sfd, Sint32 sw) {
-    if (SFSET_GetCond(sfd, SFAOAP_COND) == 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         return 0;
     }
-    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, 3, 8, sw, 0));
+    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, SFADXT_TR, 8, sw, 0));
 }
 
 /* Stops the audio decoder driver (fn 7). */
 Sint32 SFAOAP_Stop(SFD sfd) {
-    if (SFSET_GetCond(sfd, SFAOAP_COND) == 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         return 0;
     }
-    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, 3, 7, 0, 0));
+    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, SFADXT_TR, 7, 0, 0));
 }
 
 /* Starts the audio decoder driver (fn 6): the ADXT begins playing. */
 Sint32 SFAOAP_Start(SFD sfd) {
-    if (SFSET_GetCond(sfd, SFAOAP_COND) == 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         return 0;
     }
-    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, 3, 6, 0, 0));
+    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, SFADXT_TR, 6, 0, 0));
 }
 
 /* Puts the audio decoder driver in standby (fn 5). */
 Sint32 SFAOAP_Standby(SFD sfd) {
-    if (SFSET_GetCond(sfd, SFAOAP_COND) == 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         return 0;
     }
-    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, 3, 5, 0, 0));
+    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, SFADXT_TR, 5, 0, 0));
 }
 
 Sint32 SFAOAP_Destroy(void) {
@@ -83,7 +81,7 @@ Sint32 SFAOAP_Destroy(void) {
 /* With audio on: attaches the handle's SFAOAP callback block (filled by the ADXT driver) to slot
  * 7. */
 Sint32 SFAOAP_Create(SFD sfd) {
-    if (SFSET_GetCond(sfd, SFAOAP_COND) == 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         return 0;
     }
     sfd->tr[SFAOAP_TR].hn = &sfd->aoap;
@@ -92,7 +90,7 @@ Sint32 SFAOAP_Create(SFD sfd) {
 
 /* Mirrors the audio output buffer's prepared/terminated flags onto the driver. */
 Sint32 SFAOAP_ExecServer(SFD sfd) {
-    if (SFSET_GetCond(sfd, SFAOAP_COND) == 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         return 0;
     }
     if (SFTRN_GetPrepFlg(sfd, SFAOAP_TR) != 1) {
@@ -120,7 +118,7 @@ Sint32 SFAOAP_Init(void) {
 void SFAOAP_SetSpeed(SFD sfd, Sint32 speed) {
     SFAOAP *aoap;
 
-    if (SFSET_GetCond(sfd, SFAOAP_COND) != 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) != 0) {
         aoap = sfd->tr[SFAOAP_TR].hn;
         if (aoap->SetSpeed != 0) {
             aoap->SetSpeed(sfd, speed);
@@ -136,7 +134,7 @@ Sint32 SFD_GetOutVol(SFD sfd) {
         SFLIB_SetErr(0, 0xFF0001A4);
         return 0;
     }
-    if (SFSET_GetCond(sfd, SFAOAP_COND) == 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         return 0;
     }
     aoap = sfd->tr[SFAOAP_TR].hn;
@@ -151,13 +149,14 @@ Sint32 SFD_SetOutVol(SFD sfd, Sint32 vol) {
     if (SFLIB_CheckHn(sfd) != 0) {
         return SFLIB_SetErr(0, 0xFF0001A3);
     }
-    cond = SFSET_GetCond(sfd, SFAOAP_COND);
+    cond = SFSET_GetCond(sfd, SFD_COND_AUDIO_ON);
     if (cond != 0) {
         aoap = sfd->tr[SFAOAP_TR].hn;
         return aoap->SetOutVol(sfd, vol);
     }
-    /* Without audio the result is the condition value, 0, left in r3 for the epilogue; a literal
-     * `return 0` would add a branch and an `li r3, 0`. */
+    /* Matching workaround: without audio the result is the condition value, which is 0 here;
+     * a literal `return 0` adds a branch and a constant load. Revisit when the original body is
+     * known. */
     return cond;
 }
 

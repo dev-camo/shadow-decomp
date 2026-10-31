@@ -47,9 +47,9 @@ Sint32 SFD_GetCond(SFD sfd, Sint32 id, Sint32 *val) {
 static Sint32 sfset_IsSettable(SFD sfd, Sint32 id, Sint32 val) {
     Sint32 ok;
 
-    if (id == 6 && val == 1 && SFTRN_IsSetup(sfd, 3) == 0) {
+    if (id == SFD_COND_AUDIO_ON && val == 1 && SFTRN_IsSetup(sfd, SFADXT_TR) == 0) {
         ok = 0;
-    } else if (id == 5 && val == 1 && SFTRN_IsSetup(sfd, 2) == 0) {
+    } else if (id == SFD_COND_VIDEO_ON && val == 1 && SFTRN_IsSetup(sfd, SFMPV_TR) == 0) {
         ok = 0;
     } else {
         ok = 1;
@@ -99,6 +99,7 @@ Sint32 SFD_SetCond(SFD sfd, Sint32 id, Sint32 val) {
 
 /* Handle state: 1 stop, 2 prep, 3 standby, 4 playing, 6 playend, negative after an error. */
 Sint32 SFD_GetHnStat(SFD sfd) {
+    /* original: the state is read from sfd even after the handle check failed */
     if (SFLIB_CheckHn(sfd) != 0) {
         SFLIB_SetErr(0, 0xFF000111);
     }

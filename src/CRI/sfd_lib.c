@@ -15,7 +15,7 @@ SFD sfd_hn_last = 0;
 static const Char8 *cri_verstr_ptr = 0;
 SFLIB_WORK SFLIB_libwork;
 
-/* Leaves the SFD critical section (SVM_Unlock, a no-op in this game). */
+/* Leaves the SFD critical section (SVM_Unlock). */
 void SFLIB_UnlockCs(Sint32 *cs) {
     SVM_Unlock();
 }
@@ -146,6 +146,7 @@ Sint32 SFD_Init(SFD_INIT_PRM *prm) {
     sflib_sizeof_sfdhn = SFD_VERSION;
     cri_verstr_ptr = SFLIB_version_str;
     SJRBF_Init();
+    /* original: the count stops one word short, so the last word of the work is not cleared */
     UTY_MemsetDword(&SFLIB_libwork, 0, sizeof(SFLIB_libwork) / 4 - 1);
     MEM_Copy(&SFLIB_libwork, SFPLY_cond_dfl, sizeof(SFLIB_libwork.cond));
     p1 = prm->prm1;

@@ -10,9 +10,12 @@ typedef void (*SFHDS_HDRCB)(void *obj, Uint8 *data, Sint32 size);
 
 static Uint8 sfhds_sfhlib_work[SFHDS_SFH_WORK_SIZE];
 
-/* the seek work's copy of the file header, when the seek work is attached and no concatenation
- * is going on (a macro: `#pragma dont_inline` around sfhds_SetHdrRaw would keep a static helper
- * out of line there) */
+/* Matching workaround: a macro instead of a static helper. The seek work's copy of the file header
+ * (0 unless the seek work is attached and no concatenation is going on); the original has no
+ * out-of-line copy and a static helper would be kept out of line by the dont_inline regions
+ * below. Written as the nested conditional because `a || b ? 0 : x` changes the code
+ * (SFHDS_ReprocessHdr 188 bytes instead of 172). Revisit when the original unit's inline settings
+ * are known. */
 #define SFHDS_GET_SEE_FHD(sfd)                                                                     \
     ((sfd)->see.wk == 0 ? 0 : SFMPS_GetConcatCnt(sfd) > 0 ? 0 : &(sfd)->see.wk->fhd)
 
@@ -193,6 +196,8 @@ void sfhds_DoProcessHdr(SFH sfh, SFHDS_FHD *fhd) {
     }
     fhd->vid.ftr_eff = (eff != 0);
     if (eff != 0) {
+        /* each feature value goes through a v_ temporary in if/else form: conditional expressions
+         * change sfhds_DoProcessHdr by 111 words */
         if (SFH_AnlyFtrColType(sfh, id, &coltype) == 0) {
             v_coltype = -1;
         } else {
@@ -239,6 +244,10 @@ void sfhds_DoProcessHdr(SFH sfh, SFHDS_FHD *fhd) {
     fhd->valid = 1;
 }
 
+/* Matching workaround: #pragma dont_inline around SFHDS_ProcessHdr and sfhds_SetHdrRaw. Without it
+ * they are inlined into their callers (with both regions removed SFHDS_ReprocessHdr is 208 bytes
+ * instead of 172, sfhds_SetHdrRaw 352 instead of 324, SFHDS_SetHdr 548 instead of 280). Revisit
+ * when the original unit's inline settings are known. */
 #pragma dont_inline on
 /* Parses the raw 0x800-byte header packet through the SFH analyser into the SFHDS_FHD fields
  * (stream counts and ids, audio codec/rate/channels, video size/rate/bitrate, feature block). */
@@ -268,6 +277,7 @@ void SFHDS_ReprocessHdr(SFD sfd) {
     }
 }
 
+/* Matching workaround: as above (dont_inline). */
 #pragma dont_inline on
 /* A Sofdec header packet arrived from the demuxer: calls the header callback (cond 0x4B/0x4C:
  * the MW player's mwsffrm_AnalySofdecHeader), and on the first header copies up to 0x800 bytes

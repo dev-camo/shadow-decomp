@@ -82,8 +82,8 @@ static inline Sint32 sfply_LockFrmAccess(SFD sfd) {
     return SFLIB_SetErr(sfd, 0xFF000207);
 }
 
-/* Returns a decoded frame to the video output driver (tr 6, AddRead) and counts the release while
- * a frame is out (relcnt catches up with getcnt); mwPlyRelCurFrm. */
+/* Returns a decoded frame to the video output driver (SFVOM_TR, AddRead) and counts the release
+ * while a frame is out (relcnt catches up with getcnt); mwPlyRelCurFrm. */
 Sint32 SFD_RelFrm(SFD sfd, void *frm) {
     Sint32 ret;
 
@@ -97,10 +97,10 @@ Sint32 SFD_RelFrm(SFD sfd, void *frm) {
     if (sfd->plyinf.relcnt < sfd->plyinf.getcnt) {
         sfd->plyinf.relcnt++;
     }
-    return SFTRN_CallTrtTrif(sfd, 6, 12, (Sint32)frm, 0);
+    return SFTRN_CallTrtTrif(sfd, SFVOM_TR, 12, (Sint32)frm, 0);
 }
 
-/* Asks the selected video output driver (tr 6, GetRead) for the next frame; *frm = 0 when it
+/* Asks the selected video output driver (SFVOM_TR, GetRead) for the next frame; *frm = 0 when it
  * returns none. Counts the frame when none is out (recording the time of the first) and calls
  * the optional record hook. */
 Sint32 SFD_GetFrm(SFD sfd, void **frm) {
@@ -114,7 +114,7 @@ Sint32 SFD_GetFrm(SFD sfd, void **frm) {
     if (ret != 0) {
         return ret;
     }
-    ret = SFTRN_CallTrtTrif(sfd, 6, 11, (Sint32)frm, 0);
+    ret = SFTRN_CallTrtTrif(sfd, SFVOM_TR, 11, (Sint32)frm, 0);
     if (*frm != 0 && sfd->plyinf.getcnt == sfd->plyinf.relcnt) {
         if (sfd->plyinf.getcnt == 0) {
             sfd->frmstat.t0 = fn_803FEA5C();
@@ -127,9 +127,10 @@ Sint32 SFD_GetFrm(SFD sfd, void **frm) {
     return ret;
 }
 
-/* Stand-in for the stripped SFPLY_GetLastHnCtrlWkSiz and SFPLY_SetPtsmFn. MWCC places .bss objects
- * in order of first reference; this never-called function refers to these three in storage order
- * right after SFD_GetFrm's SFPLY_recordgetfrm. Storing the addresses keeps the references. */
+/* Matching workaround: order-only stand-in for the stripped SFPLY_GetLastHnCtrlWkSiz and
+ * SFPLY_SetPtsmFn. MWCC places .bss objects in order of first reference; this never-called function
+ * refers to these three in storage order right after SFD_GetFrm's SFPLY_recordgetfrm, and storing
+ * the addresses keeps the references. Revisit when the stripped functions are recovered. */
 static void sfply_BssOrder(void **out) {
     out[0] = &sfply_last_hnctrl_wksiz;
     out[1] = &SFPLY_SetPtsInfo;
@@ -142,6 +143,7 @@ Sint32 SFD_TermSupply(SFD sfd) {
     Sint32 buf;
 
     if (SFLIB_CheckHn(sfd) != 0) {
+        /* original: reports the same code as SFD_AddSupply */
         return SFLIB_SetErr(0, 0xFF000135);
     }
     buf = sfd->tr[0].bufout;
@@ -287,7 +289,7 @@ static Sint32 sfply_StopTr(SFD sfd) {
     Sint32 ret;
 
     if (sfd->stat == SFD_STAT_PLAYING) {
-        ret = SFTRN_CallTrtTrif(sfd, 7, 7, 0, 0);
+        ret = SFTRN_CallTrtTrif(sfd, SFAOAP_TR, 7, 0, 0);
         if (ret != 0) {
             return ret;
         }
@@ -542,10 +544,10 @@ SFD SFD_Create(SFD_CREPRM *prm, Sint32 x) {
 static Bool sfply_IsTermAny(SFD sfd) {
     Sint32 i;
 
-    if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) && SFTRN_GetTermFlg(sfd, 6)) {
+    if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) && SFTRN_GetTermFlg(sfd, SFVOM_TR)) {
         return 1;
     }
-    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) && SFTRN_GetTermFlg(sfd, 7)) {
+    if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) && SFTRN_GetTermFlg(sfd, SFAOAP_TR)) {
         return 1;
     }
     for (i = 0; i < SFD_BUF_NUM; i++) {
@@ -558,10 +560,10 @@ static Bool sfply_IsTermAny(SFD sfd) {
 
 /* the video input ring holds 80% of its size or the configured amount */
 static Bool sfply_IsVidBufFull(SFD sfd) {
-    SFBUF_RING *ring = &sfd->buf[sfd->tr[2].bufin].u.ring;
+    SFBUF_RING *ring = &sfd->buf[sfd->tr[SFMPV_TR].bufin].u.ring;
     Sint32 ndata;
 
-    ndata = SJ_GetNumData(ring->sup.sj, 1);
+    ndata = SJ_GetNumData(ring->sup.sj, SJ_CK_DATA);
     if (ndata >= ring->sup.size * 80 / 100 || ndata >= SFSET_GetCond(sfd, 0x46)) {
         return 1;
     }
@@ -570,10 +572,10 @@ static Bool sfply_IsVidBufFull(SFD sfd) {
 
 /* The audio input ring holds >= 80% of its size. */
 static Bool sfply_IsAudBufFull(SFD sfd) {
-    SFBUF_RING *ring = &sfd->buf[sfd->tr[3].bufin].u.ring;
+    SFBUF_RING *ring = &sfd->buf[sfd->tr[SFADXT_TR].bufin].u.ring;
     Sint32 ndata;
 
-    ndata = SJ_GetNumData(ring->sup.sj, 1);
+    ndata = SJ_GetNumData(ring->sup.sj, SJ_CK_DATA);
     if (ndata >= ring->sup.size * 80 / 100) {
         return 1;
     }
@@ -694,8 +696,8 @@ static Bool sfply_IsTermAll(SFD sfd) {
         return 1;
     }
     term = 0;
-    vterm = SFTRN_GetTermFlg(sfd, 6);
-    aterm = SFTRN_GetTermFlg(sfd, 7);
+    vterm = SFTRN_GetTermFlg(sfd, SFVOM_TR);
+    aterm = SFTRN_GetTermFlg(sfd, SFAOAP_TR);
     switch (SFSET_GetCond(sfd, 0x19)) {
     case 1:
         term = aterm;
@@ -837,15 +839,15 @@ static Bool sfply_IsPrepared(SFD sfd) {
     if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 0) {
         vprep = 1;
     } else {
-        prep = SFTRN_GetPrepFlg(sfd, 6);
-        term = SFTRN_GetTermFlg(sfd, 6);
+        prep = SFTRN_GetPrepFlg(sfd, SFVOM_TR);
+        term = SFTRN_GetTermFlg(sfd, SFVOM_TR);
         vprep = prep | term;
     }
     if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         aprep = 1;
     } else {
-        prep = SFTRN_GetPrepFlg(sfd, 7);
-        term = SFTRN_GetTermFlg(sfd, 7);
+        prep = SFTRN_GetPrepFlg(sfd, SFAOAP_TR);
+        term = SFTRN_GetTermFlg(sfd, SFAOAP_TR);
         aprep = prep | term;
     }
     if (vprep == 0 || aprep == 0) {
@@ -921,7 +923,7 @@ static Sint32 sfply_StatPrep(SFD sfd) {
     case SFD_REQ_START:
     case SFD_REQ_END:
         if (sfply_IsStartable(sfd)) {
-            SFTRN_CallTrtTrif(sfd, 7, 6, 0, 0);
+            SFTRN_CallTrtTrif(sfd, SFAOAP_TR, 6, 0, 0);
             stat = SFD_STAT_PLAYING;
         } else {
             stat = SFD_STAT_STBY;
@@ -943,7 +945,7 @@ static Sint32 sfply_StatStby(SFD sfd, Sint32 stat) {
     case SFD_REQ_START:
     case SFD_REQ_END:
         if (sfply_IsStartable(sfd)) {
-            SFTRN_CallTrtTrif(sfd, 7, 6, 0, 0);
+            SFTRN_CallTrtTrif(sfd, SFAOAP_TR, 6, 0, 0);
             stat = SFD_STAT_PLAYING;
         }
         break;
@@ -1058,7 +1060,7 @@ Bool SFD_IsSvrWait(void) {
 
 /* 1 when this handle has nothing to do (inactive state or no change flagged). */
 Bool SFD_IsHnSvrWait(SFD sfd) {
-    /* !SFD_STAT_IS_ACTIVE, written out */
+    /* SFD_STAT_IS_ACTIVE negated, written out: the macro form changes this function by 6 words */
     if ((Uint32)(sfd->stat - SFD_STAT_STOP) > SFD_STAT_PLAYING - SFD_STAT_STOP) {
         return 1;
     }

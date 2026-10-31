@@ -38,7 +38,8 @@ ADXSTM MWSTM_Create(SJ sj) {
     return ADXSTM_Create(sj, 0);
 }
 
-/* Refill policy in bytes (min = refill when below, max = request size). */
+/* Refill policy in bytes (min = refill when below, max = request size); the parameters keep the
+ * sector names of the header although ADXSTM_SetBufSize takes byte counts. */
 void MWSTM_SetFlowLimit(ADXSTM stm, Sint32 min_nsct, Sint32 max_nsct) {
     if (stm != 0) {
         ADXSTM_SetBufSize(stm, min_nsct, max_nsct);
@@ -47,7 +48,7 @@ void MWSTM_SetFlowLimit(ADXSTM stm, Sint32 min_nsct, Sint32 max_nsct) {
 
 /* Whether the controller is in ADXSTM_STAT_ERROR. */
 Bool MWSTM_IsFsStatErr(ADXSTM stm) {
-    return ADXSTM_GetStat(stm) == 4;
+    return ADXSTM_GetStat(stm) == ADXSTM_STAT_ERROR;
 }
 
 /* Nothing to finish on this platform; the MW player's library finish calls it. The name is inferred

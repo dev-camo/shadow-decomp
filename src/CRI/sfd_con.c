@@ -63,10 +63,10 @@ void SFCON_UpdateConcatTime(SFD sfd, Sint32 t) {
     SFLIB_UnlockCs(&cs);
 }
 
-/* Concatenated play (cond 0x31) or video end-code skip (0x39): a sequence end code does not end
- * the video. */
+/* Concatenated play (SFD_COND_CONCAT) or video end-code skip (0x39): a sequence end code does not
+ * end the video. */
 Sint32 SFCON_IsVideoEndcodeSkip(SFD sfd) {
-    if (SFSET_GetCond(sfd, 0x31) != 0 || SFSET_GetCond(sfd, 0x39) != 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_CONCAT) != 0 || SFSET_GetCond(sfd, 0x39) != 0) {
         return 1;
     }
     return 0;
@@ -74,15 +74,15 @@ Sint32 SFCON_IsVideoEndcodeSkip(SFD sfd) {
 
 /* Concatenated play or system end-code skip (0x38): a program end code does not end the demux. */
 Sint32 SFCON_IsSystemEndcodeSkip(SFD sfd) {
-    if (SFSET_GetCond(sfd, 0x31) != 0 || SFSET_GetCond(sfd, 0x38) != 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_CONCAT) != 0 || SFSET_GetCond(sfd, 0x38) != 0) {
         return 1;
     }
     return 0;
 }
 
-/* Concatenated play is on (cond 0x31). */
+/* Concatenated play is on (SFD_COND_CONCAT). */
 Sint32 SFCON_IsEndcodeSkip(SFD sfd) {
-    return SFSET_GetCond(sfd, 0x31) != 0;
+    return SFSET_GetCond(sfd, SFD_COND_CONCAT) != 0;
 }
 
 /* Enables concatenated play: the streams continue across end codes (linked file playback,
@@ -91,6 +91,6 @@ Sint32 SFD_SetConcatPlay(SFD sfd) {
     if (SFLIB_CheckHn(sfd) != 0) {
         return SFLIB_SetErr(0, 0xFF000161);
     }
-    SFSET_SetCond(sfd, 0x31, 1);
+    SFSET_SetCond(sfd, SFD_COND_CONCAT, 1);
     return 0;
 }
