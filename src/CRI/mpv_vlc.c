@@ -2,7 +2,7 @@
  * MPVVLC_Init time into static .bss arrays; the run/level tables are then copied into the shared
  * table area (MPV_IXA vlc block) when one is given. Compiled with `-inline auto,deferred`: the
  * functions are emitted in reverse source order and the .bss order follows the reversed
- * code-generation order (see configure.py CRI_CFLAG_OVERRIDES).
+ * code-generation order (see the unit's extra_cflags in configure.py).
  *
  * Entry formats (all Sint16 unless noted):
  *   run/level (Uint32):        (len << 16) | (level << 8) | run
@@ -19,17 +19,6 @@
 #include "CRI/uty.h"
 
 #define MPVVLC_VLC_AREA_SIZE 0x5B0
-
-#define MBT_INTRA 0x01
-#define MBT_PATTERN 0x02
-#define MBT_BACKWARD 0x04
-#define MBT_FORWARD 0x08
-#define MBT_QUANT 0x10
-#define MBT_FIXED 0x20
-
-#define MBAI_STUFFING 34
-#define MBAI_ESCAPE 35
-#define MBAI_ERROR 36
 
 #define RL(len, level, run) (((len) << 16) | ((level) << 8) | (run))
 /* packed table entries; DCSIZ fills Sint8 tables and CBP Sint16 tables, so both narrow
@@ -242,10 +231,10 @@ void MPVVLC_Init(Uint8 *vlc, MPV_IXA *ixa) {
         Sint32 i;                                                                                  \
         Sint16 v;                                                                                  \
         for (k = (kmax); k >= (kmin); k--) {                                                       \
-            v = MBAI(MBT_INTRA | MBT_QUANT, k, (len) + 2);                                         \
+            v = MBAI(MPV_MBT_INTRA | MPV_MBT_QUANT, k, (len) + 2);                                 \
             for (i = 0; i < (n); i++)                                                              \
                 *p++ = v;                                                                          \
-            v = MBAI(MBT_INTRA, k, (len) + 1);                                                     \
+            v = MBAI(MPV_MBT_INTRA, k, (len) + 1);                                                 \
             for (i = 0; i < (n); i++)                                                              \
                 *p++ = v;                                                                          \
         }                                                                                          \
@@ -259,15 +248,15 @@ static void mpvvlc_InitMbaiIpic(void) {
 
     p = mpvvlt_mbai_i_0;
     for (i = 0; i < 16; i++)
-        *p++ = MBAI(0, MBAI_ERROR, 0);
+        *p++ = MBAI(0, MPV_MBAI_ERROR, 0);
     for (i = 0; i < 2; i++)
-        *p++ = MBAI(0, MBAI_ESCAPE, 11);
+        *p++ = MBAI(0, MPV_MBAI_ESCAPE, 11);
     for (i = 0; i < 12; i++)
-        *p++ = MBAI(0, MBAI_ERROR, 0);
+        *p++ = MBAI(0, MPV_MBAI_ERROR, 0);
     for (i = 0; i < 2; i++)
-        *p++ = MBAI(0, MBAI_STUFFING, 11);
+        *p++ = MBAI(0, MPV_MBAI_STUFFING, 11);
     for (i = 0; i < 16; i++)
-        *p++ = MBAI(0, MBAI_ERROR, 0);
+        *p++ = MBAI(0, MPV_MBAI_ERROR, 0);
     MPVVLC_SET_MBAI_I(33, 22, 11, 1);
     MPVVLC_SET_MBAI_I(21, 16, 10, 2);
     MPVVLC_SET_MBAI_I(15, 10, 8, 8);
@@ -275,16 +264,16 @@ static void mpvvlc_InitMbaiIpic(void) {
 
     p = mpvvlt_mbai_i_1;
     for (i = 0; i < 4; i++)
-        *p++ = MBAI(0, MBAI_ERROR, 0);
+        *p++ = MBAI(0, MPV_MBAI_ERROR, 0);
     MPVVLC_SET_MBAI_I(7, 6, 5, 1);
     MPVVLC_SET_MBAI_I(5, 4, 4, 2);
     MPVVLC_SET_MBAI_I(3, 2, 3, 4);
     MPVVLC_SET_MBAI_I(1, 1, 1, 16);
 }
 
-#define MBT_P_MC (MBT_FIXED | MBT_FORWARD)
-#define MBT_P_PAT (MBT_FIXED | MBT_PATTERN)
-#define MBT_P_MCPAT (MBT_FIXED | MBT_FORWARD | MBT_PATTERN)
+#define MBT_P_MC (MPV_MBT_FIXED | MPV_MBT_FORWARD)
+#define MBT_P_PAT (MPV_MBT_FIXED | MPV_MBT_PATTERN)
+#define MBT_P_MCPAT (MPV_MBT_FIXED | MPV_MBT_FORWARD | MPV_MBT_PATTERN)
 
 /* P picture: the increments of one code length `len` with 0..4 bits of the macroblock_type
  * ('1' mc+pattern, '01' pattern, '001' mc) in the look-ahead */
@@ -350,13 +339,13 @@ void mpvvlc_InitMbaiPpic(void) {
 
     p = mpvvlt_mbai_p_0;
     for (i = 0; i < 8; i++)
-        *p++ = MBAI(0, MBAI_ERROR, 0);
-    *p++ = MBAI(0, MBAI_ESCAPE, 11);
+        *p++ = MBAI(0, MPV_MBAI_ERROR, 0);
+    *p++ = MBAI(0, MPV_MBAI_ESCAPE, 11);
     for (i = 0; i < 6; i++)
-        *p++ = MBAI(0, MBAI_ERROR, 0);
-    *p++ = MBAI(0, MBAI_STUFFING, 11);
+        *p++ = MBAI(0, MPV_MBAI_ERROR, 0);
+    *p++ = MBAI(0, MPV_MBAI_STUFFING, 11);
     for (i = 0; i < 8; i++)
-        *p++ = MBAI(0, MBAI_ERROR, 0);
+        *p++ = MBAI(0, MPV_MBAI_ERROR, 0);
     MPVVLC_SET_MBAI_P0(33, 22, 11);
     MPVVLC_SET_MBAI_P1(21, 16, 10);
     MPVVLC_SET_MBAI_P3(15, 10, 8);
@@ -364,19 +353,19 @@ void mpvvlc_InitMbaiPpic(void) {
 
     p = mpvvlt_mbai_p_1;
     for (i = 0; i < 2; i++)
-        *p++ = MBAI(0, MBAI_ERROR, 0);
+        *p++ = MBAI(0, MPV_MBAI_ERROR, 0);
     MPVVLC_SET_MBAI_P0(7, 6, 5);
     MPVVLC_SET_MBAI_P1(5, 4, 4);
     MPVVLC_SET_MBAI_P2(3, 2, 3);
     MPVVLC_SET_MBAI_P4(1, 1, 1);
 }
 
-#define MBT_B_FWD (MBT_FIXED | MBT_FORWARD)
-#define MBT_B_FWDPAT (MBT_FIXED | MBT_FORWARD | MBT_PATTERN)
-#define MBT_B_BWD (MBT_FIXED | MBT_BACKWARD)
-#define MBT_B_BWDPAT (MBT_FIXED | MBT_BACKWARD | MBT_PATTERN)
-#define MBT_B_BI (MBT_FIXED | MBT_FORWARD | MBT_BACKWARD)
-#define MBT_B_BIPAT (MBT_FIXED | MBT_FORWARD | MBT_BACKWARD | MBT_PATTERN)
+#define MBT_B_FWD (MPV_MBT_FIXED | MPV_MBT_FORWARD)
+#define MBT_B_FWDPAT (MPV_MBT_FIXED | MPV_MBT_FORWARD | MPV_MBT_PATTERN)
+#define MBT_B_BWD (MPV_MBT_FIXED | MPV_MBT_BACKWARD)
+#define MBT_B_BWDPAT (MPV_MBT_FIXED | MPV_MBT_BACKWARD | MPV_MBT_PATTERN)
+#define MBT_B_BI (MPV_MBT_FIXED | MPV_MBT_FORWARD | MPV_MBT_BACKWARD)
+#define MBT_B_BIPAT (MPV_MBT_FIXED | MPV_MBT_FORWARD | MPV_MBT_BACKWARD | MPV_MBT_PATTERN)
 
 /* B picture: the increments of one code length `len` with 0..4 bits of the macroblock_type
  * ('10' fwd+bwd, '11' fwd+bwd+pattern, '010' bwd, '011' bwd+pattern, '0010' fwd, '0011'
@@ -450,13 +439,13 @@ static void mpvvlc_InitMbaiBpic(void) {
 
     p = mpvvlt_mbai_b_0;
     for (i = 0; i < 8; i++)
-        *p++ = MBAI(0, MBAI_ERROR, 0);
-    *p++ = MBAI(0, MBAI_ESCAPE, 11);
+        *p++ = MBAI(0, MPV_MBAI_ERROR, 0);
+    *p++ = MBAI(0, MPV_MBAI_ESCAPE, 11);
     for (i = 0; i < 6; i++)
-        *p++ = MBAI(0, MBAI_ERROR, 0);
-    *p++ = MBAI(0, MBAI_STUFFING, 11);
+        *p++ = MBAI(0, MPV_MBAI_ERROR, 0);
+    *p++ = MBAI(0, MPV_MBAI_STUFFING, 11);
     for (i = 0; i < 8; i++)
-        *p++ = MBAI(0, MBAI_ERROR, 0);
+        *p++ = MBAI(0, MPV_MBAI_ERROR, 0);
     MPVVLC_SET_MBAI_B0(33, 22, 11);
     MPVVLC_SET_MBAI_B1(21, 16, 10);
     MPVVLC_SET_MBAI_B3(15, 10, 8);
@@ -464,32 +453,34 @@ static void mpvvlc_InitMbaiBpic(void) {
 
     p = mpvvlt_mbai_b_1;
     for (i = 0; i < 2; i++)
-        *p++ = MBAI(0, MBAI_ERROR, 0);
+        *p++ = MBAI(0, MPV_MBAI_ERROR, 0);
     MPVVLC_SET_MBAI_B0(7, 6, 5);
     MPVVLC_SET_MBAI_B1(5, 4, 4);
     MPVVLC_SET_MBAI_B2(3, 2, 3);
     MPVVLC_SET_MBAI_B4(1, 1, 1);
 }
 
-/* P picture macroblock_type, 5-bit look-ahead. Compiler setting: small enough for the
- * auto-inliner, but called out of line. */
+/* macroblock_type table for P pictures (B.2b), 5-bit look-ahead.
+ * Matching workaround: dont_inline. The original calls this function out of line although it is
+ * small enough for the auto-inliner; without the pragma MPVVLC_Init expands it (180 words
+ * instead of 139) and an out-of-line copy remains. Revisit when the original's inline settings are
+ * known. */
 #pragma dont_inline on
-/* macroblock_type table for P pictures (B.2b). */
 void mpvvlc_InitMbTypePpic(void) {
     Sint16 *p;
     Sint32 i;
 
     p = mpvvlt_p_mbtype;
-    *p++ = MBTYPE(MBT_INTRA | MBT_QUANT, 6);
-    *p++ = MBTYPE(MBT_PATTERN | MBT_QUANT, 5);
-    *p++ = MBTYPE(MBT_FORWARD | MBT_PATTERN | MBT_QUANT, 5);
-    *p++ = MBTYPE(MBT_INTRA, 5);
+    *p++ = MBTYPE(MPV_MBT_INTRA | MPV_MBT_QUANT, 6);
+    *p++ = MBTYPE(MPV_MBT_PATTERN | MPV_MBT_QUANT, 5);
+    *p++ = MBTYPE(MPV_MBT_FORWARD | MPV_MBT_PATTERN | MPV_MBT_QUANT, 5);
+    *p++ = MBTYPE(MPV_MBT_INTRA, 5);
     for (i = 0; i < 4; i++)
-        *p++ = MBTYPE(MBT_FORWARD, 3);
+        *p++ = MBTYPE(MPV_MBT_FORWARD, 3);
     for (i = 0; i < 8; i++)
-        *p++ = MBTYPE(MBT_PATTERN, 2);
+        *p++ = MBTYPE(MPV_MBT_PATTERN, 2);
     for (i = 0; i < 16; i++)
-        *p++ = MBTYPE(MBT_FORWARD | MBT_PATTERN, 1);
+        *p++ = MBTYPE(MPV_MBT_FORWARD | MPV_MBT_PATTERN, 1);
 }
 #pragma dont_inline off
 
@@ -500,25 +491,25 @@ void mpvvlc_InitMbTypeBpic(void) {
 
     p = mpvvlt_b_mbtype;
     *p++ = MBTYPE(0x1F, 0);
-    *p++ = MBTYPE(MBT_INTRA | MBT_QUANT, 6);
-    *p++ = MBTYPE(MBT_BACKWARD | MBT_PATTERN | MBT_QUANT, 6);
-    *p++ = MBTYPE(MBT_FORWARD | MBT_PATTERN | MBT_QUANT, 6);
+    *p++ = MBTYPE(MPV_MBT_INTRA | MPV_MBT_QUANT, 6);
+    *p++ = MBTYPE(MPV_MBT_BACKWARD | MPV_MBT_PATTERN | MPV_MBT_QUANT, 6);
+    *p++ = MBTYPE(MPV_MBT_FORWARD | MPV_MBT_PATTERN | MPV_MBT_QUANT, 6);
     for (i = 0; i < 2; i++)
-        *p++ = MBTYPE(MBT_FORWARD | MBT_BACKWARD | MBT_PATTERN | MBT_QUANT, 5);
+        *p++ = MBTYPE(MPV_MBT_FORWARD | MPV_MBT_BACKWARD | MPV_MBT_PATTERN | MPV_MBT_QUANT, 5);
     for (i = 0; i < 2; i++)
-        *p++ = MBTYPE(MBT_INTRA, 5);
+        *p++ = MBTYPE(MPV_MBT_INTRA, 5);
     for (i = 0; i < 4; i++)
-        *p++ = MBTYPE(MBT_FORWARD, 4);
+        *p++ = MBTYPE(MPV_MBT_FORWARD, 4);
     for (i = 0; i < 4; i++)
-        *p++ = MBTYPE(MBT_FORWARD | MBT_PATTERN, 4);
+        *p++ = MBTYPE(MPV_MBT_FORWARD | MPV_MBT_PATTERN, 4);
     for (i = 0; i < 8; i++)
-        *p++ = MBTYPE(MBT_BACKWARD, 3);
+        *p++ = MBTYPE(MPV_MBT_BACKWARD, 3);
     for (i = 0; i < 8; i++)
-        *p++ = MBTYPE(MBT_BACKWARD | MBT_PATTERN, 3);
+        *p++ = MBTYPE(MPV_MBT_BACKWARD | MPV_MBT_PATTERN, 3);
     for (i = 0; i < 16; i++)
-        *p++ = MBTYPE(MBT_FORWARD | MBT_BACKWARD, 2);
+        *p++ = MBTYPE(MPV_MBT_FORWARD | MPV_MBT_BACKWARD, 2);
     for (i = 0; i < 16; i++)
-        *p++ = MBTYPE(MBT_FORWARD | MBT_BACKWARD | MBT_PATTERN, 2);
+        *p++ = MBTYPE(MPV_MBT_FORWARD | MPV_MBT_BACKWARD | MPV_MBT_PATTERN, 2);
 }
 
 /* the +-code pairs of one motion_code length: n entries each */
@@ -532,6 +523,23 @@ void mpvvlc_InitMbTypeBpic(void) {
             for (i = 0; i < (n); i++)                                                              \
                 *p++ = v;                                                                          \
             v = MV(len, -k);                                                                       \
+            for (i = 0; i < (n); i++)                                                              \
+                *p++ = v;                                                                          \
+        }                                                                                          \
+    }
+
+/* the codes of one motion_code length without a negative half: n entries each (used for code 0).
+ * Matching workaround: the row of code 0 is written as this loop over the single code k = 0. A
+ * plain 16-entry loop (also with the value in a local) gives mpvvlc_InitMotion 245 words instead of
+ * the original's 247, 55 of them differing. Revisit when the original macro for this row is known.
+ */
+#define MPVVLC_SET_MOTION1(len, kmax, kmin, n)                                                     \
+    {                                                                                              \
+        Sint32 k;                                                                                  \
+        Sint32 i;                                                                                  \
+        Sint16 v;                                                                                  \
+        for (k = (kmax); k >= (kmin); k--) {                                                       \
+            v = MV(len, k);                                                                        \
             for (i = 0; i < (n); i++)                                                              \
                 *p++ = v;                                                                          \
         }                                                                                          \
@@ -556,16 +564,7 @@ static void mpvvlc_InitMotion(void) {
     MPVVLC_SET_MOTION(5, 3, 3, 1);
     MPVVLC_SET_MOTION(4, 2, 2, 2);
     MPVVLC_SET_MOTION(3, 1, 1, 4);
-    {
-        Sint32 k;
-        Sint32 i;
-        Sint16 v;
-        for (k = 0; k >= 0; k--) {
-            v = MV(1, k);
-            for (i = 0; i < 16; i++)
-                *p++ = v;
-        }
-    }
+    MPVVLC_SET_MOTION1(1, 0, 0, 16);
 }
 
 /* coded_block_pattern, 9-bit look-ahead: the 64 entries of the codes with three leading zeros */

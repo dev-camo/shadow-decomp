@@ -1,24 +1,19 @@
 /* CRI Sofdec MPV frame entry points (mpv_frm.c): MPV_DecodeFrmSj decodes one picture from a stream
- * joint into the frame buffers described by MPV_FRM, MPV_SkipFrmSj skips to the next picture, GOP
- * or sequence start code. The graphics quantisation registers are saved and set for the
- * paired-single motion compensation and IDCT kernels around the decode.
+ * joint into the frame buffers described by MPV_FRM, MPV_SkipFrmSj skips to the next picture, GOP,
+ * sequence header or sequence end code. The graphics quantisation registers are saved and set for
+ * the paired-single motion compensation and IDCT kernels around the decode.
  * Bodies from the RE4 GameCube decompilation of the same file.
  */
 #include "CRI/dct.h"
 #include "CRI/mpv.h"
 #include "CRI/uty.h"
 
-/* Start code classes that end a skip: picture 0x04, GOP 0x08, sequence header 0x40, sequence end
- * 0x80.
- */
-#define MPVFRM_SKIP_DELIM 0xCC
-
 /* These two entry points take the handle untyped and convert it to MPV_OBJ: the original
  * allocates registers for a separate handle parameter, which an MPV_OBJ * parameter does not give.
  */
 
 /* Advances the stream joint past the current picture: consumes start codes until one of the
- * MPVFRM_SKIP_DELIM classes is reached. Error 0xFF030305 if the data ends first.
+ * MPV_DLM_PIC_BOUND classes is reached. Error 0xFF030305 if the data ends first.
  */
 Sint32 MPV_SkipFrmSj(void *hn, SJ sj) {
     MPV_OBJ *mpv = hn;
@@ -34,7 +29,7 @@ Sint32 MPV_SkipFrmSj(void *hn, SJ sj) {
         if (delim == 0) {
             break;
         }
-        if (delim & MPVFRM_SKIP_DELIM) {
+        if (delim & MPV_DLM_PIC_BOUND) {
             code = 0;
             break;
         }

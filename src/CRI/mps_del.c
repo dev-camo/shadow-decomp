@@ -3,21 +3,23 @@
  * Body from the RE4 GameCube decompilation of the same file.
  */
 #include "CRI/cri_xpt.h"
+#include "CRI/mps.h"
 
-/* Start-code class of the 4 bytes at p: 0x80000 program end (0xB9), 0x10000 pack (0xBA), 0x20000
- * system header (0xBB), 0x40000 packet (0xBC..0xFF), 0 not a start code. */
+/* Start-code class of the 4 bytes at p: MPS_DELIM_END program end (0xB9), MPS_DELIM_PACK pack
+ * (0xBA), MPS_DELIM_SYSHD system header (0xBB), MPS_DELIM_PKET packet (0xBC..0xFF), 0 not a start
+ * code. */
 Uint32 MPS_CheckDelim(Uint8 *p) {
     if (p[0] == 0 && p[1] == 0 && p[2] == 1) {
         switch (p[3]) {
         case 0xB9:
-            return 0x80000;
+            return MPS_DELIM_END;
         case 0xBA:
-            return 0x10000;
+            return MPS_DELIM_PACK;
         case 0xBB:
-            return 0x20000;
+            return MPS_DELIM_SYSHD;
         default:
             if (p[3] >= 0xBC) {
-                return 0x40000;
+                return MPS_DELIM_PKET;
             }
         }
     }

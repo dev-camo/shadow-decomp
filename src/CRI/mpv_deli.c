@@ -89,9 +89,9 @@ Sint8 *MPV_BsearchDelim(Sint8 *p, Sint32 n, Sint32 mask) {
     return 0;
 }
 
-/* Start-code class of the 4 bytes at ptr: 0x04 picture (0x00), 0x03 first slice (0x01), 0x01 other
- * slices (0x02..0xAF), 0x20 user data (0xB2), 0x40 sequence header (0xB3), 0x10 extension (0xB5),
- * 0x80 sequence end (0xB7), 0x08 GOP (0xB8); 0 for anything else (the SFMPV_DLM_* masks). */
+/* Start-code class (MPV_DLM_*) of the 4 bytes at ptr: picture (0x00), first slice (0x01), other
+ * slices (0x02..0xAF), user data (0xB2), sequence header (0xB3), extension (0xB5), sequence end
+ * (0xB7), GOP (0xB8); 0 for anything else. */
 Sint32 MPV_CheckDelim(void *ptr) {
     Uint8 *p = ptr;
     Sint32 code;
@@ -103,21 +103,21 @@ Sint32 MPV_CheckDelim(void *ptr) {
     code <<= 8;
     code |= p[3];
     if (code == 0x100) {
-        ret = 0x04;
+        ret = MPV_DLM_PIC;
     } else if (code == 0x101) {
-        ret = 0x03;
+        ret = MPV_DLM_SLICE | MPV_DLM_SLICE1;
     } else if (code > 0x101 && code <= 0x1AF) {
-        ret = 0x01;
+        ret = MPV_DLM_SLICE;
     } else if (code == 0x1B2) {
-        ret = 0x20;
+        ret = MPV_DLM_UD;
     } else if (code == 0x1B3) {
-        ret = 0x40;
+        ret = MPV_DLM_SEQ;
     } else if (code == 0x1B5) {
-        ret = 0x10;
+        ret = MPV_DLM_EXT;
     } else if (code == 0x1B7) {
-        ret = 0x80;
+        ret = MPV_DLM_END;
     } else if (code == 0x1B8) {
-        ret = 0x08;
+        ret = MPV_DLM_GOP;
     } else {
         ret = 0;
     }
