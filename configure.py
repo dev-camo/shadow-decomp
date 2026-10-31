@@ -1610,6 +1610,26 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "CRI/adx_dcd3.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                NonMatching,
+                "CRI/adx_dcd5.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
                 "CRI/adx_fini.c",
                 extra_cflags=["-sdata 0", "-sdata2 0", "-str readonly"],
             ),

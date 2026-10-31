@@ -32,6 +32,14 @@ Sint32 ADX_DecodeMono4(Sint8 *src, Sint32 nfrm, Sint16 *out, Sint16 *hist, Sint1
                        Sint16 *scl, Sint16 smul, Sint16 sadd);
 Sint32 ADX_DecodeSte4(Sint8 *src, Sint32 nfrm, Sint16 *outl, Sint16 *histl, Sint16 *outr,
                       Sint16 *histr, Sint16 c1, Sint16 c2, Sint16 *scl, Sint16 smul, Sint16 sadd);
+Sint32 ADX_DecodeSte4AsSte(Sint8 *src, Sint32 nfrm, Sint16 *outl, Sint16 *histl, Sint16 *outr,
+                           Sint16 *histr, Sint16 c1, Sint16 c2, Sint16 *scl, Sint16 smul,
+                           Sint16 sadd);
+Sint32 ADX_DecodeSte4AsMono(Sint8 *src, Sint32 nfrm, Sint16 *outl, Sint16 *histl, Sint16 *outr,
+                            Sint16 *histr, Sint16 c1, Sint16 c2, Sint16 *scl, Sint16 smul,
+                            Sint16 sadd);
+extern Sint32 adx_decode_output_mono_flag;
+extern const Sint32 AdxQtbl[16];
 
 #ifdef __cplusplus
 }
