@@ -59,6 +59,16 @@ Game/FallBuildingHolder.cpp:
 	.sbss       start:0x805EE870 end:0x805EE888
 	.sdata2     start:0x805F3398 end:0x805F33B0
 
+Game/CandleStick.cpp:
+	.text       start:0x8012C900 end:0x8012DACC
+	.ctors      start:0x804A9D50 end:0x804A9D54
+	.rodata     start:0x804BE5A8 end:0x804BE6F8
+	.data       start:0x80528448 end:0x80528520
+	.bss        start:0x805800A0 end:0x805800D8
+	.sdata      start:0x805E5E38 end:0x805E5E70
+	.sbss       start:0x805EEE50 end:0x805EEE68
+	.sdata2     start:0x805F4140 end:0x805F4160
+
 Game/ChaoHolder.cpp:
 	.text       start:0x8012DACC end:0x8012F674
 	.ctors      start:0x804A9D54 end:0x804A9D58

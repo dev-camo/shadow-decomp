@@ -614,6 +614,12 @@ config.libs = [
                 Object(Matching, "rw/fn_804A869C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804A90F8.c", cflags=cflags_game),
                 Object(Matching, "Game/BackDrop.cpp", cflags=cflags_game_cpp),
+                # 34 of 35 functions have identical instructions. The startup function is 12 words
+                # instead of 25: the original builds each of its two vectors in a temporary and
+                # copies it with the out-of-line vector copy. The unit's own data and its order are
+                # the original's; the accessor of the switch counter is emitted after the template
+                # instances that follow ApplyState here, directly after ApplyState in the original.
+                Object(NonMatching, "Game/CandleStick.cpp", cflags=cflags_game_cpp),
                 # 49 of 52 functions have identical instructions. Chao::Update is one word shorter:
                 # the original reads the word at 0xC of the object that fn_800740E4 returns through
                 # shared_ptr's out-of-line operator->, which this build expands in place. The
