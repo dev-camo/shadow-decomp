@@ -1,9 +1,9 @@
 #ifndef FN_8042_NAME_REGISTRY_H
 #define FN_8042_NAME_REGISTRY_H
 
-/* The name registry and byte-order helpers at 0x80420C74-0x804211D4 that the pack loader in
- * fn_80410630.c calls. The original names and types are unknown; the descriptions are inferred
- * from the code. */
+/* The name registry, byte-order and ARAM helpers at 0x80420C74-0x80421300 that the pack loader in
+ * fn_80410630.c and the resource groups in fn_80411714.c call. The original names and types are
+ * unknown; the descriptions are inferred from the code. */
 
 /* A reference-counted table that maps a name to the identifiers registered under it (inferred).
  * Its layout is private to the registry functions declared below (fn_80420C74 to fn_804210AC). */
@@ -33,6 +33,11 @@ void fn_804210E4(void *destination, const void *source, int count);
 /* Returns the byte-order setting (set by fn_804211D4) that the pack loader compares with a file's
  * own byte-order flag. */
 int fn_804211CC(void);
+
+/* Reads size bytes from ARAM into main memory (the 32-byte aligned copy that fn_80413318 makes). */
+void fn_804211E4(void *destination, unsigned int aramAddress, int size);
+/* Releases the ARAM block that starts at an address (called by fn_804129D4). */
+void fn_80421300(unsigned int aramAddress);
 
 #ifdef __cplusplus
 }

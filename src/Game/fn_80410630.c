@@ -7,6 +7,7 @@
 
 #include "Game/fn_804110EC_allocator_hooks.h"
 #include "Game/fn_80410630_pack.h"
+#include "Game/fn_8042_byte_order.h"
 
 /* The uninitialised globals are laid out last-defined first, so they are listed from the highest
  * address down: the registry of node names, the registry of entry names and the list of loaded
@@ -14,11 +15,6 @@
 NameRegistry *lbl_805F1390;
 NameRegistry *lbl_805F138C;
 PackFile *lbl_805F1388;
-
-/* Whether a file's byte-order flag differs from the one that fn_804211CC returns. A macro: an
- * inline function would keep the inline functions that use it from being inlined. */
-#define NEEDS_BYTE_SWAP(byteOrderFlag)                                                             \
-    (((byteOrderFlag) && !fn_804211CC()) || (!(byteOrderFlag) && fn_804211CC()))
 
 /* Returns the id of the entry that the last component of the path names, or 0. */
 unsigned int fn_80410630(const char *path) {
