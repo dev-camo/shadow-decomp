@@ -1748,6 +1748,16 @@ config.libs = [
                 ],
             ),
             Object(
+                NonMatching,
+                "CRI/ax_rna.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
                 Matching,
                 "CRI/mpv_cmc.c",
                 extra_cflags=[

@@ -50,7 +50,7 @@ void RNARES_Init(void);
 
 /* AX renderer */
 void AXRNA_SetAdjsfreqFlg(AXRNA rna, Sint32 flg);
-void AXRNA_SetStmHdInfo(AXRNA rna, void *hdinfo);
+Sint32 AXRNA_SetStmHdInfo(AXRNA rna, void *hdinfo);
 Sint32 AXRNA_DiscardData(AXRNA rna, Sint32 nsmpl);
 void AXRNA_SetBitPerSmpl(AXRNA rna, Sint32 bps);
 void AXRNA_SetOutPan(AXRNA rna, Sint32 ch, Sint32 pan);
