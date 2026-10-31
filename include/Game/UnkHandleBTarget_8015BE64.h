@@ -47,7 +47,7 @@ extern "C" {
 boost::shared_ptr<UnkHandleBTarget_8015BE64>
 fn_8015B8C4(boost::shared_ptr<UnkProbeTarget_800587A0> probe);
 void fn_8015BE64(UnkHandleBTarget_8015BE64 *target);
-void fn_8015BE9C(UnkHandleBTarget_8015BE64 *target);
+void fn_8015BE9C(UnkHandleBTarget_8015BE64 *target, float dt);
 }
 
 #endif
