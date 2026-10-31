@@ -614,6 +614,13 @@ config.libs = [
                 Object(Matching, "rw/fn_804A869C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804A90F8.c", cflags=cflags_game),
                 Object(Matching, "Game/BackDrop.cpp", cflags=cflags_game_cpp),
+                # Every function but the ThreatObj constructor is instruction-identical, and so is the
+                # data. Two differences remain: the constructor's two table loads (model table and
+                # holder) use r6 and r7 the other way round (four words), and the destructor of
+                # ThreatObj is emitted after its only caller, checked_delete (original 0x8013EFE4),
+                # instead of at 0x8013FED8 in front of the constructor (0x5C bytes of displacement
+                # for the functions in between).
+                Object(NonMatching, "Game/ThreatObjHolder.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitEntrance.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),

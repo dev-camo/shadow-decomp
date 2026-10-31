@@ -15,9 +15,9 @@ namespace SonicteamUSA {
 namespace System {
 namespace CharaColli {
 
-/* SonicteamUSA::System::CharaColli::AttackCallbackParam (class name from the RTTI name of the
- * weapon stick's bound callbacks): what an attack object passes to its callbacks. Only the members
- * the weapon stick reads and writes are mapped, so the size is not known. */
+/* SonicteamUSA::System::CharaColli::AttackCallbackParam (class name from the RTTI names of the
+ * weapon stick's and ThreatObj's bound callbacks): what an attack object passes to its callbacks.
+ * Only the members those callbacks read and write are mapped, so the size is not known. */
 class AttackCallbackParam {
   public:
     /* 0x00 */ boost::weak_ptr<UnkAttack_8005A840> field_0x0;
@@ -26,9 +26,11 @@ class AttackCallbackParam {
     /* 0x18 */ Fn8040Vector3 field_0x18;
     /* 0x24 */ u8 field_0x24[0x34 - 0x24];
     /* 0x34 */ Fn8040Vector3 field_0x34; /* the stick writes field_0x18 relative to its owner */
-    /* 0x40 */ u8 field_0x40[0x54 - 0x40];
-    /* 0x54 */ u32 field_0x54; /* bit 0 makes the stick count a hit */
+    /* 0x40 */ u8 field_0x40[0x50 - 0x40];
+    /* 0x50 */ float field_0x50; /* ThreatObj subtracts it from its health */
+    /* 0x54 */ u32 field_0x54;   /* bit 0 makes the stick count a hit; ThreatObj stores 1, 3 or 8 */
 };
+CHECK_OFFSETOF(SonicteamUSA::System::CharaColli::AttackCallbackParam, field_0x50, 0x50);
 CHECK_OFFSETOF(SonicteamUSA::System::CharaColli::AttackCallbackParam, field_0x54, 0x54);
 
 } // namespace CharaColli

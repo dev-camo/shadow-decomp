@@ -41,6 +41,8 @@ class weak_count;
  * offset 0x10, after the destructor and dispose. */
 class sp_counted_base {
   public:
+    sp_counted_base() : use_count_(1), weak_count_(1) {}
+
     virtual ~sp_counted_base() {}
 
     /* Destroys the managed object. */
@@ -191,6 +193,9 @@ template <class T> class shared_ptr {
     template <class Y> explicit shared_ptr(Y *p) : px(p), pn(p, checked_deleter<Y>()) {
         detail::sp_enable_shared_from_this(pn, p, p);
     }
+
+    /* A shared pointer to a base class of the pointee. */
+    template <class Y> shared_ptr(const shared_ptr<Y> &r) : px(r.px), pn(r.pn) {}
 
     /* A shared pointer to the object a weak pointer refers to. */
     template <class Y> explicit shared_ptr(const weak_ptr<Y> &r) : pn(r.pn) {

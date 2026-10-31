@@ -56,6 +56,12 @@ UnkManager_80074194 *fn_80074194(void);
 /* Returns the listed character info nearest to position, or an empty pointer when the list is
  * empty (behaviour inferred). */
 boost::weak_ptr<CharInfo> fn_800A8A7C(UnkManager_80074194 *manager, const Fn8040Vector3 *position);
+/* Returns the listed character info whose object has the word id at 0x298, or an empty pointer
+ * when there is none (behaviour inferred). */
+boost::weak_ptr<CharInfo> fn_800A8B74(UnkManager_80074194 *manager, s32 id);
 }
+
+/* The id that callers pass to fn_800A8B74 (the meaning is unknown; 43 functions read it). */
+extern s32 lbl_805EE588;
 
 #endif

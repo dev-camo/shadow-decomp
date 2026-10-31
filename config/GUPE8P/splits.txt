@@ -42,6 +42,15 @@ Game/TornadoCollision.cpp:
 	.sbss       start:0x805EE840 end:0x805EE848
 	.sdata2     start:0x805F3330 end:0x805F3348
 
+Game/ThreatObjHolder.cpp:
+	.text       start:0x8013EDCC end:0x80140278
+	.ctors      start:0x804A9D64 end:0x804A9D68
+	.rodata     start:0x804C0200 end:0x804C0440
+	.data       start:0x80529380 end:0x80529490
+	.sdata      start:0x805E6160 end:0x805E61A0
+	.sbss       start:0x805EEFD8 end:0x805EEFF8
+	.sdata2     start:0x805F4470 end:0x805F44A0
+
 Game/ElecCircuit.cpp:
 	.text       start:0x801F78B8 end:0x801F7D24
 	.rodata     start:0x804EB930 end:0x804EB958

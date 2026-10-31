@@ -28,6 +28,13 @@ bool fn_800C9D14(UnkGadgetOwner_800C9CD0 *owner);
 void fn_800C9CF8(UnkGadgetOwner_800C9CD0 *owner);
 bool fn_800C9A64(UnkGadgetOwner_800C9CD0 *owner);
 bool fn_800C996C(UnkGadgetOwner_800C9CD0 *owner);
+/* The writing counterpart of fn_800C9DBC: copies size bytes of params into the owner's parameter
+ * block when its size equals size, and otherwise flags the owner (behaviour inferred). */
+void fn_800C9D68(UnkGadgetOwner_800C9CD0 *owner, const void *params, int size);
+/* Clears bit 0 of the word at 0x18 of the record that owner points to, then calls fn_800C9BE8,
+ * fn_800C9B84 and fn_800CB534 (purpose unknown). ThreatObjHolder calls it when its ThreatObj is
+ * finished. */
+void fn_800C9B34(UnkGadgetOwner_800C9CD0 *owner);
 }
 
 /* Gadget (class name from RTTI): a stage object task registered with an owner object. */
