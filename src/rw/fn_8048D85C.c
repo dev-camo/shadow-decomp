@@ -171,12 +171,13 @@ static inline void PalQuantAddColor(rwPalQuantLeafNode *leaf, RwRGBA *color, RwR
 /* Adds an image's colors to the quantizer, each with the weight */
 void fn_8048DEB0(RwPalQuant *palQuant, RwImage *image, RwReal weight) {
     RwInt32 columns;
+    RwInt32 rows;
     RwInt32 stride;
     RwUInt8 *row;
-    RwInt32 rows;
     RwRGBA *palette;
     RwUInt8 *pixel;
     RwRGBA *color;
+    RwRGBA *rgba;
     rwPalQuantOctNode *leaf;
     RwInt32 level;
 
@@ -204,13 +205,12 @@ void fn_8048DEB0(RwPalQuant *palQuant, RwImage *image, RwReal weight) {
     case 32:
         while (rows-- != 0) {
             columns = image->width;
-            color = (RwRGBA *)row;
+            rgba = (RwRGBA *)row;
             while (columns-- != 0) {
                 level = lbl_805EDF20;
-                leaf =
-                    fn_8048DBEC(palQuant, palQuant->root, PalQuantIndex(color, 8 - level), level);
-                PalQuantAddColor(&leaf->leaf, color, weight);
-                color++;
+                leaf = fn_8048DBEC(palQuant, palQuant->root, PalQuantIndex(rgba, 8 - level), level);
+                PalQuantAddColor(&leaf->leaf, rgba, weight);
+                rgba++;
             }
             row += stride;
         }
