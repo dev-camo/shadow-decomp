@@ -1,16 +1,17 @@
+// Dolphin SDK DVD library: loading the file system table at boot.
 #include <dolphin.h>
 #include <dolphin/os.h>
 #include <dolphin/dvd.h>
 
 #include "__dvd.h"
 
-static u8 bb2Buf[63];
+// Large enough for a 32-byte aligned DVDBB2 (OSRoundUp32B moves the start up by at most 31 bytes).
+static u8 bb2Buf[sizeof(DVDBB2) + 31];
 
 static u32 status;
 static DVDBB2 *bb2;
 static DVDDiskID *idTmp;
 
-// prototypes
 static void cb(s32 result, DVDCommandBlock *block);
 
 static void cb(s32 result, DVDCommandBlock *block) {
@@ -29,7 +30,7 @@ static void cb(s32 result, DVDCommandBlock *block) {
         }
     }
 
-    if (result == -1) {
+    if (result == DVD_RESULT_FATAL_ERROR) {
         return;
     } else if (result == -4) {
         status = 0;
@@ -41,13 +42,13 @@ static void cb(s32 result, DVDCommandBlock *block) {
 void __fstLoad(void) {
     OSBootInfo *bootInfo;
     DVDDiskID *id;
-    u8 idTmpBuf[63];
+    u8 idTmpBuf[sizeof(DVDDiskID) + 31];
     s32 state;
     void *arenaHi;
     static DVDCommandBlock block;
 
     arenaHi = OSGetArenaHi();
-    bootInfo = (void *)OSPhysicalToCached(0);
+    bootInfo = OSPhysicalToCached(0);
     idTmp = (void *)OSRoundUp32B(idTmpBuf);
     bb2 = (void *)OSRoundUp32B(bb2Buf);
 
@@ -56,24 +57,7 @@ void __fstLoad(void) {
 
     while (1) {
         state = DVDGetDriveStatus();
-        if (state == 0) {
-            break;
-        }
-
-        switch (state) {
-        case DVD_STATE_FATAL_ERROR:
-            break;
-        case DVD_STATE_BUSY:
-            break;
-        case DVD_STATE_WAITING:
-            break;
-        case DVD_STATE_COVER_CLOSED:
-            break;
-        case DVD_STATE_NO_DISK:
-            break;
-        case DVD_STATE_COVER_OPEN:
-            break;
-        case DVD_STATE_MOTOR_STOPPED:
+        if (state == DVD_STATE_END) {
             break;
         }
     }

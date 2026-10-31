@@ -1,3 +1,4 @@
+// Dolphin SDK DVD library: drive error categorisation.
 #include <dolphin.h>
 #include <dolphin/os.h>
 #include <dolphin/dvd.h>

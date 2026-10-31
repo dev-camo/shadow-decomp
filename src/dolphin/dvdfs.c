@@ -1,3 +1,11 @@
+// Dolphin SDK DVD library: file system.
+// 11 global functions of this file are not present as separate functions in this game's DOL; their
+// bodies are unverified unless they are inlined into a function that is present. The global
+// functions present in the DOL are: DVDClose, DVDConvertPathToEntrynum, DVDGetCurrentDir,
+// DVDGetTransferredSize, DVDOpen, DVDOpenDir, DVDReadAsyncPrio, DVDReadDir, DVDReadPrio,
+// __DVDFSInit.
+#include <stddef.h>
+
 #include <dolphin.h>
 #include <dolphin/dvd.h>
 
@@ -20,7 +28,6 @@ static u32 currentDirectory;
 OSThreadQueue __DVDThreadQueue;
 u32 __DVDLongFileNameFlag;
 
-// prototypes
 static BOOL isSame(const char *path, const char *string);
 static u32 myStrncpy(char *dest, char *src, u32 maxlen);
 static u32 entryToPath(u32 entry, char *path, u32 maxlen);
@@ -33,7 +40,7 @@ static void cbForPrepareStreamAsync(s32 result, DVDCommandBlock *block);
 static void cbForPrepareStreamSync(s32 result, DVDCommandBlock *block);
 
 void __DVDFSInit(void) {
-    BootInfo = (void *)OSPhysicalToCached(0);
+    BootInfo = OSPhysicalToCached(0);
     FstStart = BootInfo->FSTLocation;
     if (FstStart) {
         MaxEntryNum = FstStart->nextEntryOrLength;
@@ -332,10 +339,6 @@ BOOL DVDReadAsyncPrio(DVDFileInfo *fileInfo, void *addr, s32 length, s32 offset,
     return TRUE;
 }
 
-#ifndef offsetof
-#define offsetof(type, memb) ((u32) & ((type *)0)->memb)
-#endif
-
 static void cbForReadAsync(s32 result, DVDCommandBlock *block) {
     DVDFileInfo *fileInfo;
 
@@ -376,10 +379,10 @@ s32 DVDReadPrio(DVDFileInfo *fileInfo, void *addr, s32 length, s32 offset, s32 p
 
     while (1) {
         state = ((volatile DVDCommandBlock *)block)->state;
-        if (state == 0) {
+        if (state == DVD_STATE_END) {
             retVal = (s32)block->transferredSize;
             break;
-        } else if (state == -1) {
+        } else if (state == DVD_STATE_FATAL_ERROR) {
             retVal = -1;
             break;
         } else if (state == DVD_STATE_CANCELED) {
@@ -440,10 +443,10 @@ s32 DVDSeekPrio(DVDFileInfo *fileInfo, s32 offset, s32 prio) {
 
     while (1) {
         state = ((volatile DVDCommandBlock *)block)->state;
-        if (state == 0) {
+        if (state == DVD_STATE_END) {
             retVal = 0;
             break;
-        } else if (state == -1) {
+        } else if (state == DVD_STATE_FATAL_ERROR) {
             retVal = -1;
             break;
         } else if (state == DVD_STATE_CANCELED) {
@@ -536,7 +539,6 @@ void *DVDGetFSTLocation(void) {
     return BootInfo->FSTLocation;
 }
 
-#define RoundUp32KB(x) (((u32)(x) + 32 * 1024 - 1) & ~(32 * 1024 - 1))
 #define Is32KBAligned(x) (((u32)(x) & (32 * 1024 - 1)) == 0)
 
 BOOL DVDPrepareStreamAsync(DVDFileInfo *fileInfo, u32 length, u32 offset, DVDCallback callback) {

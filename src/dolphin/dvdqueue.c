@@ -1,3 +1,7 @@
+// Dolphin SDK DVD library: command queue.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: DVDDumpWaitingQueue,
+// __DVDIsBlockInWaitingQueue.
 #include <dolphin.h>
 #include <dolphin/dvd.h>
 
@@ -8,7 +12,6 @@ static struct {
     /* 0x04 */ DVDCommandBlock *prev;
 } WaitingQueue[4];
 
-// prototypes
 static DVDCommandBlock *PopWaitingQueuePrio(s32 prio);
 
 void __DVDClearWaitingQueue(void) {
