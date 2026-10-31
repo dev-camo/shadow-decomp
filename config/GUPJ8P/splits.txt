@@ -1253,7 +1253,7 @@ CRI/mwsfdsvm.c:
 	.bss        start:0x805DDD18 end:0x805DDE28
 
 CRI/mwstm.c:
-	.text       start:0x804039D8 end:0x80403B4C
+	.text       start:0x804039D8 end:0x80403B54
 
 CRI/mwsfdsee.c:
 	.text       start:0x80403B54 end:0x80403B60

@@ -1451,10 +1451,7 @@ CRI/mwsfdsvm.c:
 	.bss        start:0x805DD6F8 end:0x805DD808
 
 CRI/mwstm.c:
-	.text       start:0x80403398 end:0x8040350C
-
-Game/fn_8040350C.c:
-	.text       start:0x8040350C end:0x80403514
+	.text       start:0x80403398 end:0x80403514
 
 CRI/mwsfdsee.c:
 	.text       start:0x80403514 end:0x80403520

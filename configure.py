@@ -740,7 +740,6 @@ config.libs = [
                 # CRI middleware units named after their original source files.
                 Object(Matching, "Game/fn_804030A8.c"),
                 Object(Matching, "Game/fn_8040307C.c"),
-                Object(Matching, "Game/fn_8040350C.c"),
                 Object(Matching, "Game/fn_80403E44.c"),
                 Object(Matching, "Game/fn_80406EB0.c"),
                 Object(Matching, "Game/fn_80406E88.c"),

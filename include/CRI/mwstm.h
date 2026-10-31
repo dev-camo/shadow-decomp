@@ -17,6 +17,7 @@ void MWSTM_Destroy(ADXSTM stm);
 ADXSTM MWSTM_Create(SJ sj);
 void MWSTM_SetFlowLimit(ADXSTM stm, Sint32 min_nsct, Sint32 max_nsct);
 Bool MWSTM_IsFsStatErr(ADXSTM stm);
+Sint32 MWSTM_FinishStatic(void);
 Sint32 MWSTM_InitStatic(void);
 
 #ifdef __cplusplus
