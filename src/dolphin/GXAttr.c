@@ -375,13 +375,13 @@ static inline void SETVAT(u32 *va, u32 *vb, u32 *vc, GXAttr attr, GXCompCnt cnt,
         SET_REG_FIELD(606, *va, 3, 14, type);
         break;
     case GX_VA_CLR1:
-        SET_REG_FIELD(609, *va, 1, 0x11, cnt);
+        SET_REG_FIELD(609, *va, 1, 17, cnt);
         SET_REG_FIELD(610, *va, 3, 18, type);
         break;
     case GX_VA_TEX0:
-        SET_REG_FIELD(613, *va, 1, 0x15, cnt);
-        SET_REG_FIELD(614, *va, 3, 0x16, type);
-        SET_REG_FIELD(615, *va, 5, 0x19, shft);
+        SET_REG_FIELD(613, *va, 1, 21, cnt);
+        SET_REG_FIELD(614, *va, 3, 22, type);
+        SET_REG_FIELD(615, *va, 5, 25, shft);
         break;
     case GX_VA_TEX1:
         SET_REG_FIELD(618, *vb, 1, 0, cnt);
@@ -524,7 +524,7 @@ void GXGetVtxAttrFmt(GXVtxFmt fmt, GXAttr attr, GXCompCnt *cnt, GXCompType *type
     case GX_VA_POS:
         *cnt = GET_REG_FIELD(*va, 1, 0);
         *type = GET_REG_FIELD(*va, 3, 1);
-        *frac = (u8)(*va >> 4) & 0x1F; // GET_REG_FIELD(*va, 5, 4)
+        *frac = (u8)(*va >> 4) & 0x1F;
         return;
     case GX_VA_NRM:
     case GX_VA_NBT:
@@ -578,12 +578,12 @@ void GXGetVtxAttrFmt(GXVtxFmt fmt, GXAttr attr, GXCompCnt *cnt, GXCompType *type
     case GX_VA_TEX6:
         *cnt = GET_REG_FIELD(*vc, 1, 14);
         *type = GET_REG_FIELD(*vc, 3, 15);
-        *frac = (u8)(*vc >> 0x12) & 0x1F;
+        *frac = (u8)(*vc >> 18) & 0x1F;
         return;
     case GX_VA_TEX7:
         *cnt = GET_REG_FIELD(*vc, 1, 23);
         *type = GET_REG_FIELD(*vc, 3, 24);
-        *frac = (int)(*vc >> 0x1B);
+        *frac = *vc >> 27;
         return;
     default:
         *cnt = GX_TEX_ST;
@@ -635,7 +635,6 @@ void GXSetTexCoordGen2(GXTexCoordID dst_coord, GXTexGenType func, GXTexGenSrc sr
                        GXBool normalize, u32 pt_texmtx) {
     u32 reg = 0;
     u32 row;
-    u32 bumprow; // unused
     u32 form;
     GXAttr mtxIdAttr;
 
@@ -731,14 +730,14 @@ void GXSetTexCoordGen2(GXTexCoordID dst_coord, GXTexGenType func, GXTexGenSrc sr
     case GX_TG_BUMP5:
     case GX_TG_BUMP6:
     case GX_TG_BUMP7:
-        ASSERTMSGLINE(1091, src_param >= 12 && src_param <= 18,
+        ASSERTMSGLINE(1091, src_param >= GX_TG_TEXCOORD0 && src_param <= GX_TG_TEXCOORD6,
                       "GXSetTexCoordGen:  Bump source texture value is invalid");
         SET_REG_FIELD(1093, reg, 1, 1, 0);
         SET_REG_FIELD(1093, reg, 1, 2, form);
         SET_REG_FIELD(1095, reg, 3, 4, 1);
         SET_REG_FIELD(1095, reg, 5, 7, row);
-        SET_REG_FIELD(1096, reg, 3, 12, src_param - 12);
-        SET_REG_FIELD(1097, reg, 3, 15, func - 2);
+        SET_REG_FIELD(1096, reg, 3, 12, src_param - GX_TG_TEXCOORD0);
+        SET_REG_FIELD(1097, reg, 3, 15, func - GX_TG_BUMP0);
         break;
     case GX_TG_SRTG:
         SET_REG_FIELD(1102, reg, 1, 1, 0);
@@ -757,7 +756,7 @@ void GXSetTexCoordGen2(GXTexCoordID dst_coord, GXTexGenType func, GXTexGenSrc sr
 
     GX_WRITE_XF_REG(dst_coord + 0x40, reg);
     reg = 0;
-    SET_REG_FIELD(1132, reg, 6, 0, pt_texmtx - 64);
+    SET_REG_FIELD(1132, reg, 6, 0, pt_texmtx - GX_PTTEXMTX0);
     SET_REG_FIELD(1133, reg, 1, 8, normalize);
     GX_WRITE_XF_REG(dst_coord + 0x50, reg);
 
@@ -788,7 +787,7 @@ void GXSetTexCoordGen2(GXTexCoordID dst_coord, GXTexGenType func, GXTexGenSrc sr
         break;
     }
 
-    mtxIdAttr = dst_coord + 1;
+    mtxIdAttr = dst_coord + GX_VA_TEX0MTXIDX;
     __GXSetMatrixIndex(mtxIdAttr);
 }
 

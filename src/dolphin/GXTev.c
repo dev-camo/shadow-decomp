@@ -83,12 +83,6 @@ static struct {
     {193, 0, 0, 1, 0, 0, 7, 7, 7, 0, 0, 0}, // passclr
 };
 
-#define SOME_SET_REG_MACRO(reg, size, shift, val)                                                  \
-    do {                                                                                           \
-        (reg) =                                                                                    \
-            (u32)__rlwimi((u32)(reg), (val), (shift), (32 - (shift) - (size)), (31 - (shift)));    \
-    } while (0);
-
 void GXSetTevOp(GXTevStageID id, GXTevMode mode) {
     u32 *ctmp;
     u32 *atmp;
