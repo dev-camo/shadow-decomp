@@ -8,6 +8,8 @@
 #include "layout_check.h"
 
 class CharInfo;
+class UnkAttack_8005A840;
+class UnkMotionControl_801602B4;
 
 /* The three words that fn_8015FA78 passes to its callback for each part (names and meaning
  * unknown). */
@@ -56,6 +58,17 @@ class GadgetModelInfo {
      * (behaviour inferred). */
     void fn_8015FA78(int (*callback)(UnkModelPart_8015FA78 part, const void *userData),
                      const void *userData);
+    /* Methods that ThreatObj calls (purposes unknown). */
+    void fn_8016271C();
+    void fn_80162790();
+    void fn_80160480(int arg0);
+    /* Attaches a character info to the part with id arg0 (behaviour inferred). */
+    void fn_80161FC8(int arg0, const boost::weak_ptr<CharInfo> &info);
+    /* Returns the attack object of the part with id arg0 (behaviour inferred). */
+    boost::weak_ptr<UnkAttack_8005A840> fn_80161428(int arg0);
+    /* Returns the motion control of the part with id arg0 (placeholder type; behaviour
+     * inferred). */
+    boost::weak_ptr<UnkMotionControl_801602B4> fn_801602B4(int arg0);
 
     /* 0x04 */ u8 field_0x4[0x70];
 };

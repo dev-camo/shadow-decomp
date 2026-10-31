@@ -211,6 +211,14 @@ inline const T& min(const T& a, const T& b) {
 	return b < a ? b : a;
 }
 
+// Not declared inline, unlike min: the game calls an out-of-line instance (ThreatObjHolder.cpp's
+// startup code calls a 6-instruction weak function at 0x80140260; that it is max<unsigned> is
+// inferred from its body). Declared inline, max is expanded into the startup code instead.
+template <typename T>
+const T& max(const T& a, const T& b) {
+	return a < b ? b : a;
+}
+
 }  // namespace std
 
 #endif
