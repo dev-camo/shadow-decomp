@@ -513,22 +513,28 @@ config.libs = [
                 Object(NonMatching, "rw/fn_8044E6BC.c", cflags=[*cflags_game, "-inline auto"]),
                 Object(Matching, "rw/fn_80450D6C.c", cflags=[*cflags_game, "-inline noauto"]),
                 Object(Matching, "rw/fn_80451A6C.c", cflags=[*cflags_game, "-inline noauto"]),
-                Object(NonMatching, "rw/fn_80451F48.c", cflags=[*cflags_game, "-inline noauto"]),
-                Object(NonMatching, "rw/fn_80453018.c", cflags=[*cflags_game, "-inline noauto"]),
-                Object(Matching, "rw/fn_804535C8.c", cflags=[*cflags_game, "-inline noauto"]),
-                Object(NonMatching, "rw/fn_80453980.c", cflags=[*cflags_game, "-inline noauto"]),
-                Object(Matching, "rw/fn_80454AA4.c", cflags=[*cflags_game, "-inline noauto"]),
-                Object(Matching, "rw/fn_80455D0C.c", cflags=[*cflags_game, "-inline auto", "-pragma \"inline_max_size(1024)\""]),
+                Object(NonMatching, "rw/fn_80451F48.c", cflags=cflags_game),
+                Object(NonMatching, "rw/fn_80453018.c", cflags=cflags_game),
+                Object(Matching, "rw/fn_804535C8.c", cflags=cflags_game),
+                Object(NonMatching, "rw/fn_80453980.c", cflags=cflags_game),
+                Object(Matching, "rw/fn_80454AA4.c", cflags=cflags_game),
+                Object(Matching, "rw/fn_80455D0C.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80458CF8.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8045A760.c", cflags=[*cflags_game, "-inline noauto"]),
+                Object(Matching, "rw/fn_8045A760.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8045AF28.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8045B6F0.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8045BF30.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8045CA38.c", cflags=cflags_game),
+                # Matching workaround: -inline noauto. At the default (-inline auto) fn_8045F2A0.o
+                # has a .text of 0x758 bytes instead of the original 0x748 (measured). Revisit
+                # when the unit's real flags are found.
                 Object(Matching, "rw/fn_8045F2A0.c", cflags=[*cflags_game, "-inline noauto"]),
                 Object(Matching, "rw/fn_8045F9E8.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80460974.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_804626F8.c", cflags=cflags_game),
+                # Matching workaround: -inline noauto. At the default (-inline auto) fn_8046288C.o
+                # has a .text of 0xB58 bytes instead of the original 0xAD0 (measured). Revisit
+                # when the unit's real flags are found.
                 Object(Matching, "rw/fn_8046288C.c", cflags=[*cflags_game, "-inline noauto"]),
                 Object(NonMatching, "rw/fn_8046335C.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80463D28.c", cflags=cflags_game),
