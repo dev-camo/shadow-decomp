@@ -4,7 +4,7 @@
 /* CRI ADXT (ADX talk: stream playback handle) internals shared by the adx_*.c units. Layout
  * from the RE4 GameCube decompilation (Ver.9.31); this game's Ver.9.44 handle is 4 bytes
  * longer (ADXT_Init clears 16 * 0xC4 bytes): the extra field is at 0xC0, where the stream end
- * callback at 0x803C3980 compares it with the decoded data length.
+ * callback (adxt_eos_entry) compares it with the decoded data length.
  */
 #include "CRI/cri_xpt.h"
 #include "CRI/adx_amp.h"
@@ -29,7 +29,7 @@
 typedef struct {
     Sint8 used;               /* 0x00 */
     Sint8 stat;               /* 0x01 ADXT_ISTAT_* */
-    Sint8 mode;               /* 0x02 input kind (0/1: file stream, 2: memory, 3: stream joint) */
+    Sint8 mode;               /* 0x02 input kind (0/1: file stream, 2: memory, 3: stream joint, 4: seamless LSC file list) */
     Sint8 maxnch;             /* 0x03 */
     ADXSJD sjd;               /* 0x04 decoder */
     ADXSTM stm;               /* 0x08 stream controller */

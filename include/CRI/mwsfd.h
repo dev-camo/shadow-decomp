@@ -32,6 +32,7 @@ struct MWSST_OBJ {
     /* 0x10 */ Sint32 stmno; /* element stream number: the stream id is 0xC0 + stmno */
     /* 0x14 */ MWSST hn;
 };
+CHECK_SIZEOF(MWSST_OBJ, 0x18);
 
 /* Core side-stream library interface (registered in mwsstmng.ifc). Only the slots the
  * wrappers call are named. */
@@ -49,11 +50,13 @@ typedef struct {
     /* 0x28 */ void (*SetOutVol)(MWSST hn, Sint32 vol);
     /* 0x2C */ Sint32 (*GetOutVol)(MWSST hn);
 } MWSST_IF;
+CHECK_SIZEOF(MWSST_IF, 0x30);
 
 typedef struct {
     /* 0x00 */ MWSST_IF *ifc;
     /* 0x04 */ Sint32 cnt; /* number of created handles */
 } MWSST_MNG;
+CHECK_SIZEOF(MWSST_MNG, 0x8);
 
 /* player states (MWPLY_OBJ.stat) */
 #define MWSFD_STAT_STOP 0

@@ -44,7 +44,6 @@ void ADXSTM_ReleaseFile(ADXSTM stm);
 void ADXSTM_ReleaseFileNw(ADXSTM stm);
 void ADXSTM_BindFile(ADXSTM stm, const Char8 *fname, void *dir, Sint32 ofst, Sint32 nsct);
 void ADXSTM_BindFileNw(ADXSTM stm, const Char8 *fname, void *dir, Sint32 ofst, Sint32 nsct);
-Sint32 ADXSTM_GetNumSctIbuf(ADXSTM stm); /* not yet decompiled */
 
 #ifdef __cplusplus
 }

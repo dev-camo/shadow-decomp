@@ -43,10 +43,9 @@ typedef struct {
     /* 0x02 */ Sint8 stm_start;
     /* 0x03 */ Sint8 loop_flag;
     /* 0x04 */ Sint8 pause_flag;
-    /* 0x05 */ Uint8 pad5[3];
     /* 0x08 */ SJ sj;
-    /* 0x0C */ Sint32 pad0c;
-    /* 0x10 */ Sint32 pad10;
+    /* 0x0C */ Sint32 x0c;
+    /* 0x10 */ Sint32 x10;
     /* 0x14 */ Sint32 min_val; /* flow limit */
     /* 0x18 */ Sint32 bufsize;
     /* 0x1C */ Sint32 wr_idx;
@@ -54,8 +53,8 @@ typedef struct {
     /* 0x24 */ Sint32 num_stm;
     /* 0x28 */ ADXSTM stm;
     /* 0x2C */ Sint32 cur_nsct;
-    /* 0x30 */ Sint32 pad30;
-    /* 0x34 */ Sint32 pad34;
+    /* 0x30 */ Sint32 x30;
+    /* 0x34 */ Sint32 x34;
     /* 0x38 */ LSC_ENTRY tbl[LSC_MAX_ENTRY];
 } LSC_OBJ;
 CHECK_SIZEOF(LSC_OBJ, 0x238);
