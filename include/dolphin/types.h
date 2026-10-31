@@ -23,8 +23,7 @@ typedef int BOOL;
 #if defined(__MWERKS__)
 #define AT_ADDRESS(addr) : (addr)
 #elif defined(__GNUC__)
-//#define AT_ADDRESS(addr) __attribute__((address((addr))))
-#define AT_ADDRESS(addr) // was removed in GCC. define in linker script instead.
+#define AT_ADDRESS(addr) // GCC has no equivalent; place the object with a linker script instead.
 #else
 #error unknown compiler
 #endif
@@ -41,6 +40,10 @@ typedef int BOOL;
 #else
 #define INT_MAX 2147483647
 
+/* NULL is defined here and in <stddef.h> (`0L`), both under #ifndef NULL, so a unit gets the
+ * definition of whichever of the two headers it includes first. `(void *)0` in <stddef.h> changes
+ * CRI/mpv_lib.o and breaks the final DOL; unifying both on `0L` changes the code of NonMatching
+ * units, so it waits until they are matched. */
 #ifndef NULL
 #define NULL ((void *)0)
 #endif
@@ -60,9 +63,7 @@ typedef int BOOL;
 #endif
 
 #ifndef __MWERKS__
-#define fabsf fabsf_libm // math_sub.h defines its own inline fabsf
 #include <math.h>
-#undef fabsf
 #endif
 
 #endif

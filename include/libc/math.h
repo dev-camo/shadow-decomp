@@ -1,13 +1,18 @@
 #ifndef _MATH_H_
 #define _MATH_H_
 
+#include "libc/cmath.h"
+
 #define M_PI 3.14159265358979323846f
 
 /* Quiet NaN bit pattern defined by MSL (float.c); NAN reads it as a float, as MSL does. */
 extern int __float_nan[];
 #define NAN (*(float *)__float_nan)
-#define HUGE_VALF (1.0f / 0.0f)
-#define INFINITY (1.0f / 0.0f)
+
+/* The MSL wrappers keep their C names when C++ calls them. */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 double fabs(double x);
 double pow(double x, double y);
@@ -16,38 +21,17 @@ double log10(double x);
 double sin(double x);
 double cos(double x);
 double atan2(double y, double x);
-
-/* the MSL wrapper keeps its C name when C++ calls it */
-#ifdef __cplusplus
-extern "C" {
-#endif
 double fmod(double x, double y);
-#ifdef __cplusplus
-}
-#endif
-
-float sinf(float x);
-float cosf(float x);
-float tanf(float x);
-float acosf(float x);
-float powf(float base, float exponent);
-
 double ldexp(double x, int exp);
-
 double scalbn(double x, int n);
-
 double copysign(double x, double y);
-
-#ifdef __MWERKS__
-#pragma cplusplus on
-#endif
-
 double floor(double x);
-/* Retail calls an out-of-line copy of the MSL inline floorf (floor, then frsp), with C linkage. */
-#ifdef __cplusplus
-extern "C" {
-#endif
+/* Retail calls an out-of-line copy of the MSL inline floorf (floor, then frsp). */
 float floorf(float x);
+
+long __fpclassifyf(float x);
+long __fpclassifyd(double x);
+
 #ifdef __cplusplus
 }
 #endif
@@ -57,12 +41,7 @@ extern inline float sqrtf(float x) {
     const double _three = 3.0;
     volatile float y;
     if (x > 0.0f) {
-#ifdef __MWERKS__
-        double guess = __frsqrte((double)x); // returns an approximation to
-#else
-        double guess;
-        asm("frsqrte %0, %1" : "=f"(guess) : "f"(x));
-#endif
+        double guess = __frsqrte((double)x);                  // returns an approximation to
         guess = _half * guess * (_three - guess * guess * x); // now have 12 sig bits
         guess = _half * guess * (_three - guess * guess * x); // now have 24 sig bits
         guess = _half * guess * (_three - guess * guess * x); // now have 32 sig bits
@@ -72,16 +51,8 @@ extern inline float sqrtf(float x) {
     return x;
 }
 
-#ifdef __MWERKS__
 #define fabs(x) __fabs(x)
 #define fabsf(x) __fabsf(x)
-#else
-double fabs(double x);
-float fabsf(float x);
-#endif
-
-long __fpclassifyf(float x);
-long __fpclassifyd(double x);
 
 #define FP_NAN 1
 #define FP_INFINITE 2
@@ -103,9 +74,5 @@ inline float fmodf(float x, float m) {
         return x - m * c;
     }
 }
-
-#ifdef __MWERKS__
-#pragma cplusplus reset
-#endif
 
 #endif
