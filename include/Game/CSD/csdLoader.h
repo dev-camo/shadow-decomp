@@ -109,8 +109,8 @@ void DrawQuadElement(const SceneData *scene, const ElementData *element,
 void DrawTextElement(const SceneData *scene, const ElementData *element,
                      const RCPtr<CTexList> &texList, void *unused, MotionPaletteEntry *entry);
 
-/* Returns the index the scene's name table gives the name, or -1 (name inferred; the table's
- * meaning is not known). */
+/* Returns the index the scene's name table gives the name, or -1 (name inferred). The table holds
+ * the names of the scene's motions; the index selects an entry of SceneData::motions. */
 int FindSceneNameIndex(const SceneData *scene, const char *name);
 
 /* Sets the texture region of a type 1 element's quad from the entry's pattern (called by code
