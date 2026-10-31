@@ -7,16 +7,8 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* module ID */
-#define rwID_TEXTUREMODULE 0x408
-
 /* object type */
 #define rwTEXDICTIONARY 6
-
-/* raster lock modes */
-#define rwRASTERLOCKWRITE 0x1
-#define rwRASTERLOCKREAD 0x2
-#define rwRASTERLOCKNOFETCH 0x4
 
 /* errors (inferred) */
 #define E_RW_INVIMAGEFORMAT 0x80000009  /* the image cannot be put in a raster */

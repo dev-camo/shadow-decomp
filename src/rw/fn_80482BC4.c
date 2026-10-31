@@ -1,23 +1,17 @@
-/* RenderWare strings: the engine's string functions, the free list of short strings, and string
- * stream chunks. The original file name is unknown. */
+/* RenderWare strings: the engine's string functions and string stream chunks, and the chunk group
+ * module, whose only code creates and destroys its free list. The original file name is unknown. */
 #include "rw/rwcore.h"
 #include <stdio.h>
 #include <string.h>
 #include "layout_check.h"
 
-/* chunk IDs */
-#define rwID_STRING 0x2
-#define rwID_UNICODESTRING 0x13
-
-/* The string module's ID (inferred) */
-#define rwID_STRINGMODULE 0x412
-
 /* The bytes a string chunk is read in at a time */
 #define rwSTRINGREADCHUNK 64
 #define rwUNICODESTRINGREADCHUNK 128
 
-/* The size of the strings in the string free list */
-#define rwSTRINGFREELISTENTRYSIZE 0x21
+/* The size of the entries of the chunk group free list: room for a 32-character group name and its
+ * terminator (inferred). Nothing in the game allocates from the list. */
+#define rwCHUNKGROUPENTRYSIZE 0x21
 
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
@@ -29,31 +23,31 @@
         fn_8047DB84(&error_);                                                                      \
     } while (0)
 
-/* The engine globals of the string module */
-typedef struct rwStringGlobals {
-    /* 0x0 */ RwFreeList *stringFreeList;
-} rwStringGlobals;
-CHECK_SIZEOF(rwStringGlobals, 0x4);
+/* The engine globals of the chunk group module */
+typedef struct rwChunkGroupGlobals {
+    /* 0x0 */ RwFreeList *freeList;
+} rwChunkGroupGlobals;
+CHECK_SIZEOF(rwChunkGroupGlobals, 0x4);
 
-#define RWSTRINGGLOBAL(var)                                                                        \
-    (RWPLUGINOFFSET(rwStringGlobals, lbl_805F15B4, lbl_805F15A0.globalsOffset)->var)
+#define RWCHUNKGROUPGLOBAL(var)                                                                    \
+    (RWPLUGINOFFSET(rwChunkGroupGlobals, lbl_805F15B4, lbl_805F15A0.globalsOffset)->var)
 
-RwFreeList lbl_805E2AF8; /* the string free list */
+RwFreeList lbl_805E2AF8; /* the chunk group free list */
 
-RwInt32 lbl_805EDEC8 = 16; /* strings per free list block */
+RwInt32 lbl_805EDEC8 = 16; /* entries per free list block */
 RwInt32 lbl_805EDECC = 1;  /* free list blocks to preallocate */
 
-RwModuleInfo lbl_805F15A0; /* the string module */
+RwModuleInfo lbl_805F15A0; /* the chunk group module */
 
 /* The string a NULL string is written as */
 static const RwChar lbl_805FB2D0[] = "";
 
 void *fn_80482BC4(void *instance, RwInt32 offset, RwInt32 size) {
     lbl_805F15A0.globalsOffset = offset;
-    RWSTRINGGLOBAL(stringFreeList) =
-        fn_8047FC04(rwSTRINGFREELISTENTRYSIZE, lbl_805EDEC8, 4, lbl_805EDECC, &lbl_805E2AF8,
-                    rwMEMHINTDUR_GLOBAL | rwID_STRINGMODULE);
-    if (RWSTRINGGLOBAL(stringFreeList) == NULL) {
+    RWCHUNKGROUPGLOBAL(freeList) =
+        fn_8047FC04(rwCHUNKGROUPENTRYSIZE, lbl_805EDEC8, 4, lbl_805EDECC, &lbl_805E2AF8,
+                    rwMEMHINTDUR_GLOBAL | rwID_CHUNKGROUPMODULE);
+    if (RWCHUNKGROUPGLOBAL(freeList) == NULL) {
         return NULL;
     }
     lbl_805F15A0.numInstances++;
@@ -61,8 +55,8 @@ void *fn_80482BC4(void *instance, RwInt32 offset, RwInt32 size) {
 }
 
 void *fn_80482C50(void *instance, RwInt32 offset, RwInt32 size) {
-    if (RWSTRINGGLOBAL(stringFreeList) != NULL) {
-        fn_8047FCDC(RWSTRINGGLOBAL(stringFreeList));
+    if (RWCHUNKGROUPGLOBAL(freeList) != NULL) {
+        fn_8047FCDC(RWCHUNKGROUPGLOBAL(freeList));
     }
     lbl_805F15A0.numInstances--;
     return instance;

@@ -5,12 +5,6 @@
 #include <dolphin/gx.h>
 #include <dolphin/os.h>
 
-/* the vertex format plugin ID, which owns the instanced data allocation (inferred) */
-#define rwID_VTXFMTPLUGIN 0x50D
-
-/* the plugin that reports native data errors (inferred) */
-#define rwID_NATIVEDATAPLUGIN 2
-
 /* The size of a resource entry's native data chunk; the original subtracts 7 from the entry size,
  * whose meaning is not established */
 #define NATIVEDATASIZE(repEntry) ((repEntry)->size - 7)
@@ -20,7 +14,7 @@
     do {                                                                                           \
         RwError error_;                                                                            \
                                                                                                    \
-        error_.pluginID = rwID_NATIVEDATAPLUGIN;                                                   \
+        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
         error_.errorCode = fn_8047DC28 args;                                                       \
         fn_8047DB84(&error_);                                                                      \
     } while (0)
@@ -60,7 +54,7 @@ void *fn_80464A94(RwStream *stream, void *object, RwResEntry **repEntryRef, RwUI
     }
 
     *repEntryRef = RwMalloc(sizeof(RwResEntry) + headerSize + vertexSize + 31,
-                            rwMEMHINTDUR_EVENT | rwID_VTXFMTPLUGIN);
+                            rwMEMHINTDUR_EVENT | rwID_WORLDPIPEMODULE);
     instance = (RpGameCubeInstanceData *)(*repEntryRef + 1);
     if (fn_80480D4C(stream, instance, headerSize) != headerSize) {
         return NULL;

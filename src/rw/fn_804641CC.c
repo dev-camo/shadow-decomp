@@ -5,9 +5,6 @@
 #include <dolphin/gx.h>
 #include "layout_check.h"
 
-/* the light plugin ID (inferred) */
-#define rwID_GAMECUBELIGHTPLUGIN 0x505
-
 /* the GX hardware lights */
 #define rwGAMECUBEMAXLIGHTS 8
 
@@ -194,7 +191,7 @@ void *fn_804647C4(void *dstObject, const void *srcObject, RwInt32 offset, RwInt3
 
 /* Attaches the light plugin: TRUE on success */
 RwBool fn_804647C8(void) {
-    lbl_805F1530.attenuationOffset = fn_8045AAA0(sizeof(LightAttenuation), rwID_GAMECUBELIGHTPLUGIN,
+    lbl_805F1530.attenuationOffset = fn_8045AAA0(sizeof(LightAttenuation), rwID_LIGHTMODULE,
                                                  fn_804647B0, fn_804647C0, fn_804647C4);
     return lbl_805F1530.attenuationOffset >= 0;
 }

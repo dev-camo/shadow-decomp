@@ -4,9 +4,6 @@
 #include "rw/rpworld.h"
 #include "layout_check.h"
 
-/* chunk IDs */
-#define rwID_WORLDMODULE 0x507 /* (inferred) */
-
 /* a sector type that is freed without being deinitialised (inferred) */
 #define rpSECTORTYPEEMPTY -2
 

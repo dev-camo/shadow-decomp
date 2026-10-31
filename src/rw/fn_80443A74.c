@@ -4,8 +4,6 @@
 #include "rw/rpdmorph.h"
 #include <string.h>
 
-#define rwMEMHINT_DMORPH 0x30122
-
 /* Reports an error of this plugin; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \

@@ -2,21 +2,12 @@
 #include "rw/rwcore.h"
 #include "layout_check.h"
 
-/* chunk IDs */
-#define rwID_TEXTURENATIVE 0x15
-
 /* rwRASTERFORMATAUTOMIPMAP in a raster's cFormat */
 #define rwRASTERFORMATAUTOMIPMAP_CFORMAT 0x10
 
 /* A texture's flags in a stream: its filtering and addressing, and above them whether its
  * mipmaps were not generated (inferred) */
 #define rwTEXTURESTREAMUSERMIPMAPS 0x10000
-
-/* The system request for the device's ID (inferred) */
-#define rwDEVICESYSTEMGETID 0x16
-
-/* The standard function that reads a native texture */
-#define rwSTANDARDNATIVETEXTUREREAD 26
 
 /* The characters a texture name is read into */
 #define rwTEXTURENAMEBUFFERLENGTH (rwTEXTUREBASENAMELENGTH * 4)

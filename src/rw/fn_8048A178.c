@@ -3,9 +3,6 @@
  * point. The original file name is unknown. */
 #include "rw/rwcore.h"
 
-/* rwIMAGEGAMMACORRECTED: the pixels are gamma corrected */
-#define rwIMAGEGAMMACORRECTED 0x2
-
 /* The average color of row y (16.16) from x0 to x1 (16.16), weighing the edge pixels by how much
  * of them the span covers */
 void fn_8048A178(const RwImage *image, RwFixed x0, RwFixed x1, RwFixed y, RwRGBAReal *result) {

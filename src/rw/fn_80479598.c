@@ -3,9 +3,6 @@
 #include "rw/rtfsyst.h"
 #include <string.h>
 
-/* The toolkit's plugin ID, for its memory hints (inferred) */
-#define rwID_FILESYSTEM 0x1BE
-
 RwInt32 fn_80479598(RtFileSystem *fileSystem, RwInt32 maxNbOpenFiles, const RwChar *name,
                     const RwChar *deviceName) {
     RwInt32 i;

@@ -4,9 +4,6 @@
 #include <math.h>
 #include "layout_check.h"
 
-/* The vector module's ID (inferred) */
-#define rwID_VECTORMODULE 0x401
-
 /* errors (inferred) */
 #define E_RW_ZEROLENGTH 0x19 /* normalizing a vector of length 0 */
 

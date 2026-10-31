@@ -4,10 +4,6 @@
 #include "rw/rt2d.h"
 #include <string.h>
 
-/* The object IDs of the memory hints (inferred) */
-#define RT2DMEMID 0x190
-#define RT2DBRUSHMEMID 0x1A2
-
 RwFreeList lbl_805E18E0; /* the brush free list */
 
 RwInt32 lbl_805EDDF0 = 8; /* brush free list entries per block */
@@ -21,9 +17,9 @@ void fn_80470474(void) {
 }
 
 RwBool fn_804704D4(void) {
-    lbl_805E1950.vertexBuffer = RwMalloc(0x900, rwMEMHINTDUR_GLOBAL | RT2DMEMID);
+    lbl_805E1950.vertexBuffer = RwMalloc(0x900, rwMEMHINTDUR_GLOBAL | rwID_2DPLUGIN);
     lbl_805E1950.brushFreeList = fn_8047FC04(sizeof(Rt2dBrush), lbl_805EDDF0, 16, lbl_805EDDF4,
-                                             &lbl_805E18E0, rwMEMHINTDUR_GLOBAL | RT2DBRUSHMEMID);
+                                             &lbl_805E18E0, rwMEMHINTDUR_GLOBAL | rwID_2DBRUSH);
     return TRUE;
 }
 
@@ -31,7 +27,7 @@ RwBool fn_804704D4(void) {
 Rt2dBrush *fn_8047054C(void) {
     Rt2dBrush *brush;
 
-    brush = RwFreeListAlloc(lbl_805E1950.brushFreeList, rwMEMHINTDUR_EVENT | RT2DBRUSHMEMID);
+    brush = RwFreeListAlloc(lbl_805E1950.brushFreeList, rwMEMHINTDUR_EVENT | rwID_2DBRUSH);
     if (brush != NULL) {
         RwRGBA white;
         RwV2d zero;

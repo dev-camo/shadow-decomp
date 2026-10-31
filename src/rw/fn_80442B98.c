@@ -3,8 +3,7 @@
 #include "rw/rpdmorph.h"
 #include <string.h>
 
-#define rwMEMHINT_DMORPHANIMATION 0x3001E
-#define rwMEMHINT_DMORPHFRAMES 0x30122
+#define rwMEMHINT_DMORPHANIMATION (rwMEMHINTDUR_EVENT | rwID_DMORPHANIMATION)
 
 /* Reports an error of this plugin; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
@@ -45,7 +44,7 @@ static inline RpDMorphAnimation *DMorphAnimationCreateFrames(RpDMorphAnimation *
     RwInt32 size = numFrames * sizeof(RpDMorphFrame);
     RwUInt32 i;
 
-    frameList->frames = RwMalloc(size, rwMEMHINT_DMORPHFRAMES);
+    frameList->frames = RwMalloc(size, rwMEMHINT_DMORPH);
     if (frameList->frames == NULL) {
         RWERROR((0x80000013, size));
         return NULL;

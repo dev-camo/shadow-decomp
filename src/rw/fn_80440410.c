@@ -7,7 +7,7 @@
 #include "rw/rwmath.h"
 #include "layout_check.h"
 
-#define rwMEMHINT_COLLTREE 0x3002C
+#define rwMEMHINT_COLLTREE (rwMEMHINTDUR_EVENT | rwID_COLLTREE)
 
 /* An intersection primitive (0x1C bytes). */
 typedef struct RpIntersection {

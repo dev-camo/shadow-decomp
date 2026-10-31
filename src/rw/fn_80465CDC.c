@@ -5,9 +5,6 @@
 #include <dolphin/gx.h>
 #include <string.h>
 
-/* the vertex format plugin ID, which owns the build allocations (inferred) */
-#define rwID_VTXFMTPLUGIN 0x50D
-
 /* The size of an element of a stream of the kind. The kinds are element layouts: 1 one byte, 2 two
  * bytes, 3 three bytes, 4 and 6 and 10 one word, 7 two words, 8 three words, 9 four words. */
 static inline RwUInt32 StreamElementSize(RwInt32 kind) {
@@ -98,7 +95,7 @@ RxVertexIndex **fn_80465CDC(RpGameCubeStreamRemap *remaps, RxVertexIndex **indic
     RwUInt32 indicesSize = numIndices * sizeof(RxVertexIndex);
     RwUInt32 headerSize = numStreams * sizeof(RxVertexIndex *);
     RxVertexIndex **remapped =
-        RwMalloc(headerSize + numStreams * indicesSize, rwMEMHINTDUR_EVENT | rwID_VTXFMTPLUGIN);
+        RwMalloc(headerSize + numStreams * indicesSize, rwMEMHINTDUR_EVENT | rwID_WORLDPIPEMODULE);
     RwUInt32 offset;
     RwUInt32 i;
 
@@ -151,7 +148,7 @@ RpGameCubeBuiltStream *fn_80465ED4(RpGameCubeStreamRemap *remaps, RpGameCubeStre
     for (i = 0; i < numStreams; i++) {
         size += remaps[i].numValues * StreamElementSize(streams[i].kind);
     }
-    built = RwMalloc(size, rwMEMHINTDUR_EVENT | rwID_VTXFMTPLUGIN);
+    built = RwMalloc(size, rwMEMHINTDUR_EVENT | rwID_WORLDPIPEMODULE);
     if (built == NULL) {
         return NULL;
     }
@@ -188,8 +185,8 @@ RpGameCubeStreamRemap *fn_80466194(RpGameCubeStreamSource *streams, RwInt32 numS
                                    RwInt32 numVertices) {
     RwUInt32 numEntries = numStreams * numVertices;
     RwUInt32 headerSize = numStreams * sizeof(RpGameCubeStreamRemap);
-    RpGameCubeStreamRemap *remaps =
-        RwMalloc(headerSize + numEntries * sizeof(RwInt32), rwMEMHINTDUR_EVENT | rwID_VTXFMTPLUGIN);
+    RpGameCubeStreamRemap *remaps = RwMalloc(headerSize + numEntries * sizeof(RwInt32),
+                                             rwMEMHINTDUR_EVENT | rwID_WORLDPIPEMODULE);
     RwUInt32 offset;
     RwUInt32 i;
 

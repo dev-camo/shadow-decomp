@@ -4,9 +4,6 @@
 #include <dolphin/os.h>
 #include <string.h>
 
-/* The file system toolkit's plugin ID, for its memory hints (inferred) */
-#define rwID_FILESYSTEM 0x1BE
-
 /* The longest path the device is opened with, its prefix included */
 #define rtGCNFSMAXPATH 0x100
 

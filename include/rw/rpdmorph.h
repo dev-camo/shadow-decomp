@@ -14,6 +14,9 @@ extern "C" {
 #define rpID_DMORPHPLUGIN 0x122
 #define rwID_DMORPHANIMATION 0x1E
 
+/* the plugin's memory hint: event lifetime under the plugin's ID */
+#define rwMEMHINT_DMORPH (rwMEMHINTDUR_EVENT | rpID_DMORPHPLUGIN)
+
 /* RpDMorphTarget flags: the vertex streams a target has (the geometry flag bits) */
 #define rpDMORPHTARGETPOSITIONS 0x2
 #define rpDMORPHTARGETTEXCOORDS 0x4

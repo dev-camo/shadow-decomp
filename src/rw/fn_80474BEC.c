@@ -4,10 +4,6 @@
 #include "rw/rt2d.h"
 #include <string.h>
 
-/* The object IDs of the memory hints (inferred) */
-#define RT2DMEMID 0x190
-#define RT2DPATHMEMID 0x1A1
-
 RwFreeList lbl_805E26A8; /* the path free list */
 
 RwInt32 lbl_805EDE50 = 32; /* path free list entries per block */
@@ -33,7 +29,7 @@ Rt2dPath *fn_80474BEC(Rt2dPath *path) {
 #define PATHADDLINE(subpath, px, py)                                                               \
     do {                                                                                           \
         RwInt32 numPoints_ = fn_8047E03C((subpath)->points);                                       \
-        rt2dPathNode *node_ = fn_8047DDBC((subpath)->points, rwMEMHINTDUR_EVENT | RT2DMEMID);      \
+        rt2dPathNode *node_ = fn_8047DDBC((subpath)->points, rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);  \
         RwReal dy_;                                                                                \
         RwReal dx_;                                                                                \
         RwReal lengthSq_;                                                                          \
@@ -69,7 +65,7 @@ Rt2dPath *fn_80474BEC(Rt2dPath *path) {
 /* Starts a subpath at a point; a subpath that has points continues in a new one */
 Rt2dPath *fn_80474C7C(Rt2dPath *path, RwReal x, RwReal y) {
     if (fn_8047E03C(path->curr->points) == 0) {
-        rt2dPathNode *node = fn_8047DDBC(path->curr->points, rwMEMHINTDUR_EVENT | RT2DMEMID);
+        rt2dPathNode *node = fn_8047DDBC(path->curr->points, rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);
 
         node->type = rt2dMOVETO;
         node->pos.x = x;
@@ -117,7 +113,7 @@ Rt2dPath *fn_80474EA0(Rt2dPath *path, RwReal x, RwReal y) {
 Rt2dPath *fn_80474FF8(Rt2dPath *path, RwReal x1, RwReal y1, RwReal x2, RwReal y2, RwReal x3,
                       RwReal y3) {
     RwInt32 numPoints = fn_8047E03C(path->curr->points);
-    rt2dPathNode *node = fn_8047DEA0(path->curr->points, 3, rwMEMHINTDUR_EVENT | RT2DMEMID);
+    rt2dPathNode *node = fn_8047DEA0(path->curr->points, 3, rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);
 
     CURVEPOINT(&node[0], &node[-1], x1, y1);
     if (numPoints > 1) {
@@ -274,7 +270,7 @@ Rt2dPath *fn_804758C8(Rt2dPath *flat, const Rt2dPath *path) {
         } else if (node->type == rt2dLINETO) {
             PATHADDLINE(flat, node->pos.x, node->pos.y);
         } else {
-            *(rt2dPathNode *)fn_8047DDBC(flat->points, rwMEMHINTDUR_EVENT | RT2DPATHMEMID) = *node;
+            *(rt2dPathNode *)fn_8047DDBC(flat->points, rwMEMHINTDUR_EVENT | rwID_2DPATH) = *node;
         }
     }
     if (path->closed) {
@@ -321,7 +317,7 @@ void fn_804760C8(Rt2dPath *path) {
 }
 
 Rt2dPath *fn_80476490(void) {
-    Rt2dPath *path = RwFreeListAlloc(lbl_805E1950.pathFreeList, rwMEMHINTDUR_EVENT | RT2DPATHMEMID);
+    Rt2dPath *path = RwFreeListAlloc(lbl_805E1950.pathFreeList, rwMEMHINTDUR_EVENT | rwID_2DPATH);
 
     if (path != NULL) {
         path->points = NULL;
@@ -341,7 +337,7 @@ Rt2dPath *fn_80476510(Rt2dPath *path) {
     Rt2dPath *result = path;
 
     if (path != NULL && path->numPoints != -1) {
-        RwSList *list = fn_8047DC90(sizeof(rt2dPathNode), rwMEMHINTDUR_EVENT | RT2DPATHMEMID);
+        RwSList *list = fn_8047DC90(sizeof(rt2dPathNode), rwMEMHINTDUR_EVENT | rwID_2DPATH);
 
         if (list != NULL) {
             void *points;
@@ -357,7 +353,7 @@ Rt2dPath *fn_80476510(Rt2dPath *path) {
                 numPoints = fn_8047E03C(path->points);
             }
             if (numPoints != 0) {
-                void *entries = fn_8047DEA0(list, numPoints, rwMEMHINTDUR_EVENT | RT2DPATHMEMID);
+                void *entries = fn_8047DEA0(list, numPoints, rwMEMHINTDUR_EVENT | rwID_2DPATH);
 
                 if (entries != NULL) {
                     memcpy(entries, points, numPoints * sizeof(rt2dPathNode));
@@ -394,7 +390,7 @@ void fn_80476A0C(void) {
 
 RwBool fn_80476A58(void) {
     lbl_805E1950.pathFreeList = fn_8047FC04(sizeof(Rt2dPath), lbl_805EDE50, 4, lbl_805EDE54,
-                                            &lbl_805E26A8, rwMEMHINTDUR_GLOBAL | RT2DPATHMEMID);
+                                            &lbl_805E26A8, rwMEMHINTDUR_GLOBAL | rwID_2DPATH);
     lbl_805E1950.scratchPath = fn_80476490();
     fn_80476510(lbl_805E1950.scratchPath);
     return TRUE;

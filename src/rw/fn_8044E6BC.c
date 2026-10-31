@@ -5,13 +5,6 @@
 #include <dolphin/gx.h>
 #include <string.h>
 
-#define rwMEMHINT_SKIN (rwMEMHINTDUR_EVENT | rpID_SKINPLUGIN)
-/* for memory freed before the allocating function returns */
-#define rwMEMHINT_SKINTEMP (rwMEMHINTDUR_FUNCTION | rpID_SKINPLUGIN)
-
-/* the platform of a native skin in the stream */
-#define rwPLATFORMGAMECUBE 6
-
 /* The mesh at an index of a geometry's mesh header: the meshes follow the header */
 #define GEOMETRYMESH(geometry, index) (((RpMesh *)((geometry)->mesh + 1)) + (index))
 
@@ -90,7 +83,7 @@ RwInt32 fn_8044E7D0(RpGeometry *geometry) {
  * indices and weights, the matrices and the split data */
 RwStream *fn_8044E89C(RwStream *stream, RpGeometry *geometry) {
     RwUInt32 maxNumWeights;
-    RwInt32 platform = rwPLATFORMGAMECUBE;
+    RwInt32 platform = rwID_GAMECUBE;
     RwInt32 numVertices;
     RwUInt32 size;
     RwUInt32 counts;
@@ -156,7 +149,7 @@ RwStream *fn_8044EAD0(RwStream *stream, RpGeometry *geometry) {
     if (fn_8047D868(stream, &platform, sizeof(RwInt32)) == NULL) {
         return NULL;
     }
-    if (platform != rwPLATFORMGAMECUBE) {
+    if (platform != rwID_GAMECUBE) {
         return NULL;
     }
 
@@ -664,17 +657,17 @@ RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
 
         /* whether the colors need alpha */
         if (format == NULL) {
-            instance->flags &= ~1;
+            instance->flags &= ~rpGAMECUBEINSTANCEPRELITALPHA;
             for (j = 0; j < geometry->numVertices; j++) {
                 if (geometry->preLitLum[j].alpha < 255) {
-                    instance->flags |= 1;
+                    instance->flags |= rpGAMECUBEINSTANCEPRELITALPHA;
                     break;
                 }
             }
         } else if (format->colorType > GX_RGBX8) {
-            instance->flags |= 1;
+            instance->flags |= rpGAMECUBEINSTANCEPRELITALPHA;
         } else {
-            instance->flags &= ~1;
+            instance->flags &= ~rpGAMECUBEINSTANCEPRELITALPHA;
         }
     }
 
@@ -901,17 +894,17 @@ RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
 
         /* whether the colors need alpha */
         if (format == NULL) {
-            instance->flags &= ~1;
+            instance->flags &= ~rpGAMECUBEINSTANCEPRELITALPHA;
             for (j = 0; j < geometry->numVertices; j++) {
                 if (geometry->preLitLum[j].alpha < 255) {
-                    instance->flags |= 1;
+                    instance->flags |= rpGAMECUBEINSTANCEPRELITALPHA;
                     break;
                 }
             }
         } else if (format->colorType > GX_RGBX8) {
-            instance->flags |= 1;
+            instance->flags |= rpGAMECUBEINSTANCEPRELITALPHA;
         } else {
-            instance->flags &= ~1;
+            instance->flags &= ~rpGAMECUBEINSTANCEPRELITALPHA;
         }
     }
 

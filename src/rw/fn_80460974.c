@@ -7,32 +7,19 @@
 #include <stddef.h>
 #include "layout_check.h"
 
-/* engine and object plugin IDs (inferred) */
-#define rwID_WORLDMODULE 0x507
-#define rwID_WORLDOBJMODULE 0x509
-#define rwID_BINMESHPLUGIN 0x50E
-#define rwID_NATIVEDATAPLUGIN 0x510
-#define rwID_RIGHTTORENDER 0x1F
-
 /* errors */
 #define E_RW_ERROR16 0x80000016      /* an engine error code; its name is unknown */
 #define E_RP_WORLD_CLUMPNOTINWORLD 4 /* the world plugin's error code (inferred) */
-
-/* the plugin ID the world module reports errors with (inferred) */
-#define rwWORLDERRORPLUGIN 2
 
 /* Reports an error: the arguments are the error code and its parameters */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \
         RwError error_;                                                                            \
                                                                                                    \
-        error_.pluginID = rwWORLDERRORPLUGIN;                                                      \
+        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
         error_.errorCode = fn_8047DC28 args;                                                       \
         fn_8047DB84(&error_);                                                                      \
     } while (0)
-
-/* the deepest sector tree that the tree walks handle */
-#define rpWORLDMAXBSPDEPTH 64
 
 /* how many sectors a camera's frustum sector list grows by */
 #define rpFRUSTUMSECTORGRANULARITY 50
@@ -40,9 +27,6 @@
 /* world render orders */
 #define rpWORLDRENDERFRONT2BACK 1
 #define rpWORLDRENDERBACK2FRONT 2
-
-/* the engine standard function that hints the world sector render order */
-#define rwSTANDARDHINTRENDERF2B 22
 
 /* light types with a position (rpLIGHTPOINT and up) */
 #define rpLIGHTPOSITIONINGSTART 0x80

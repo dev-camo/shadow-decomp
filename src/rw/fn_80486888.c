@@ -6,7 +6,6 @@
 
 /* object type and free list ID */
 #define rwFRAME 0
-#define rwID_FRAMELIST 0xE
 
 /* The engine globals of the frame module */
 typedef struct rwFrameGlobals {

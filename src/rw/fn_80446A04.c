@@ -5,7 +5,7 @@
 #include <string.h>
 #include "layout_check.h"
 
-#define rwMEMHINT_HANIM 0x3011E
+#define rwMEMHINT_HANIM (rwMEMHINTDUR_EVENT | rpID_HANIMPLUGIN)
 
 /* The plugin's globals (inferred) */
 typedef struct HAnimGlobals {

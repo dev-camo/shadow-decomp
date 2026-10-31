@@ -557,8 +557,9 @@ RpAtomic *fn_8044DE74(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
         fn_80462E1C();
     }
 
-    setMaterialColor = fn_804655D4(renderMesh->geometryFlags, renderMesh->lightMask,
-                                   renderMesh->hasAmbient, instance->flags & 1);
+    setMaterialColor =
+        fn_804655D4(renderMesh->geometryFlags, renderMesh->lightMask, renderMesh->hasAmbient,
+                    instance->flags & rpGAMECUBEINSTANCEPRELITALPHA);
     numMeshes = renderMesh->meshHeader->numMeshes;
     mesh = (RpMesh *)(renderMesh->meshHeader + 1);
 

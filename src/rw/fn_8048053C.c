@@ -2,9 +2,6 @@
  * freed least recently used first when the heap is full. The original file name is unknown. */
 #include "rw/rwcore.h"
 
-/* The resources module's ID (inferred) */
-#define rwID_RESOURCESMODULE 0x40B
-
 /* A resource entry could not be allocated (inferred); reported with the size asked for */
 #define E_RW_RESOURCEENTRYALLOC 0xC
 

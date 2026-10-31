@@ -21,24 +21,6 @@
 #define ERRORINVALIDRASTERDEPTH 0x8000000C
 #define ERRORINVALIDRASTERFORMAT 0x8000000D
 
-/* raster types */
-#define rwRASTERTYPENORMAL 0x0
-#define rwRASTERTYPEZBUFFER 0x1
-#define rwRASTERTYPECAMERA 0x2
-#define rwRASTERTYPECAMERATEXTURE 0x5
-#define rwRASTERTYPEMASK 0x7
-
-/* raster private flags */
-#define rwRASTERPIXELLOCKEDREAD 0x02
-#define rwRASTERPIXELLOCKEDWRITE 0x04
-#define rwRASTERPALETTELOCKEDREAD 0x08
-#define rwRASTERPALETTELOCKEDWRITE 0x10
-
-/* raster lock modes */
-#define rwRASTERLOCKWRITE 0x1
-#define rwRASTERLOCKREAD 0x2
-#define rwRASTERLOCKNOFETCH 0x4
-
 /* The largest raster side made from an image */
 #define MAXRASTERSIZE 1024
 

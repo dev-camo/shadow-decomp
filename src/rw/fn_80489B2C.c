@@ -4,28 +4,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* module ID */
-#define rwID_RASTERMODULE 0x407
-
-/* raster types and flags */
-#define rwRASTERTYPENORMAL 0x00
-
-/* raster private flags: the palette locked for reading and for writing */
-#define rwRASTERPALETTELOCKEDREAD 0x08
-#define rwRASTERPALETTELOCKEDWRITE 0x10
-#define rwRASTERPALETTELOCKED (rwRASTERPALETTELOCKEDREAD | rwRASTERPALETTELOCKEDWRITE)
-
-/* standard functions */
-#define rwSTANDARDRASTERCREATE 4
-#define rwSTANDARDRASTERDESTROY 5
-#define rwSTANDARDRASTERSUBRASTER 12
-#define rwSTANDARDRASTERLOCK 15
-#define rwSTANDARDRASTERUNLOCK 16
-#define rwSTANDARDRASTERSHOWRASTER 20
-#define rwSTANDARDRASTERLOCKPALETTE 23
-#define rwSTANDARDRASTERUNLOCKPALETTE 24
-#define rwSTANDARDRASTERGETMIPLEVELS 28
-
 /* The depth of the raster context stack */
 #define rwRASTERCONTEXTSTACKSIZE 10
 

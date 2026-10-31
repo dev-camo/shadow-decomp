@@ -11,19 +11,6 @@
 /* The bytes converted at a time when writing */
 #define rwSTREAMCONVERTBUFFER 0x100
 
-/* The chunk types that rwcore.h does not define */
-#define rwID_STRING 0x2
-#define rwID_CAMERA 0x5
-#define rwID_MATERIAL 0x7
-#define rwID_MATRIX 0xD
-#define rwID_FRAMELIST 0xE
-#define rwID_GEOMETRY 0xF
-#define rwID_CLUMP 0x10
-#define rwID_LIGHT 0x12
-#define rwID_UNICODESTRING 0x13
-#define rwID_ATOMIC 0x14
-#define rwID_GEOMETRYLIST 0x1A
-
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \

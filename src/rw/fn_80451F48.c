@@ -5,8 +5,8 @@
 #include <string.h>
 #include "layout_check.h"
 
-#define rwMEMHINT_USERDATA 0x3011F
-#define rwMEMHINT_STRING 0x30002
+#define rwMEMHINT_USERDATA (rwMEMHINTDUR_EVENT | rpID_USERDATAPLUGIN)
+#define rwMEMHINT_STRING (rwMEMHINTDUR_EVENT | rwID_STRING)
 
 /* duplicates a string, or gives NULL for NULL */
 #define rwstrdup(result, string)                                                                   \

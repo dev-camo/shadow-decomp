@@ -2,14 +2,6 @@
  * lists of three more kinds of toolkit object. The original file name is unknown. */
 #include "rw/rt2d.h"
 
-/* The object IDs of the memory hints (inferred) */
-#define RT2DMEMID 0x190
-#define RT2DPATHMEMID 0x1A1
-#define RT2DOBJECTMEMID 0x1A3
-
-/* The chunk ID of a path */
-#define rwID_2DPATH 0x1A1
-
 /* The stream path flags */
 #define rt2dSTREAMPATHCLOSED 0x1
 #define rt2dSTREAMPATHFLAT 0x2
@@ -38,7 +30,7 @@ Rt2dPath *fn_80476ABC(Rt2dPath *path, rt2dStreamPath *header, RwStream *stream) 
     path->closed = header->flags & rt2dSTREAMPATHCLOSED;
     path->flat = (header->flags & rt2dSTREAMPATHFLAT) != 0;
     path->field_0x10 = header->inset;
-    points = RwMalloc(path->numPoints * sizeof(rt2dPathNode), rwMEMHINTDUR_EVENT | RT2DPATHMEMID);
+    points = RwMalloc(path->numPoints * sizeof(rt2dPathNode), rwMEMHINTDUR_EVENT | rwID_2DPATH);
     if (points == NULL) {
         return NULL;
     }
@@ -248,7 +240,7 @@ void fn_804771E0(void) {
 
 RwBool fn_8047721C(void) {
     lbl_805E1950.field_0x16C = fn_8047FC04(0x100, lbl_805EDE58, 16, lbl_805EDE5C, &lbl_805E26D0,
-                                           rwMEMHINTDUR_GLOBAL | RT2DOBJECTMEMID);
+                                           rwMEMHINTDUR_GLOBAL | rwID_2DOBJECT);
     return TRUE;
 }
 
@@ -261,8 +253,8 @@ void fn_8047726C(void) {
 
 RwBool fn_804772C4(void) {
     lbl_805E1950.field_0x174 = fn_8047FC04(8, lbl_805EDE68, 4, lbl_805EDE6C, &lbl_805E26F8,
-                                           rwMEMHINTDUR_GLOBAL | RT2DMEMID);
+                                           rwMEMHINTDUR_GLOBAL | rwID_2DPLUGIN);
     lbl_805E1950.field_0x178 = fn_8047FC04(0x14, lbl_805EDE60, 4, lbl_805EDE64, &lbl_805E271C,
-                                           rwMEMHINTDUR_GLOBAL | RT2DMEMID);
+                                           rwMEMHINTDUR_GLOBAL | rwID_2DPLUGIN);
     return TRUE;
 }
