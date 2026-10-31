@@ -1,3 +1,11 @@
+// Dolphin SDK VI library: video interface.
+// 13 global functions of this file (14 in PAL) are not present as separate functions in this
+// game's DOL; their bodies are unverified unless they are inlined into a function that is present.
+// The global functions present in the DOL are: VIConfigure, VIConfigurePan, VIFlush,
+// VIGetCurrentLine, VIGetDTVStatus (not in PAL), VIGetNextField, VIGetNextFrameBuffer,
+// VIGetRetraceCount, VIGetTvFormat, VIInit, VISetBlack, VISetNextFrameBuffer,
+// VISetPostRetraceCallback, VISetPreRetraceCallback, VIWaitForRetrace, __VIDisplayPositionToXY,
+// __VIGetCurrentPosition, __VIInit.
 #include <dolphin/gx.h>
 #include <dolphin/os.h>
 #include <dolphin/vi.h>
@@ -9,71 +17,71 @@
 #include "__vi.h"
 #include "layout_check.h"
 
-#ifdef DEBUG
+#if DEBUG
 const char *__VIVersion = "<< Dolphin SDK - VI\tdebug build: Apr  7 2004 03:55:59 (0x2301) >>";
 #else
 const char *__VIVersion = "<< Dolphin SDK - VI\trelease build: Apr  7 2004 04:13:59 (0x2301) >>";
 #endif
 
 typedef struct {
-    u8 equ;
-    u16 acv;
-    u16 prbOdd;
-    u16 prbEven;
-    u16 psbOdd;
-    u16 psbEven;
-    u8 bs1;
-    u8 bs2;
-    u8 bs3;
-    u8 bs4;
-    u16 be1;
-    u16 be2;
-    u16 be3;
-    u16 be4;
-    u16 nhlines;
-    u16 hlw;
-    u8 hsy;
-    u8 hcs;
-    u8 hce;
-    u8 hbe640;
-    u16 hbs640;
-    u8 hbeCCIR656;
-    u16 hbsCCIR656;
+    /* 0x00 */ u8 equ;
+    /* 0x02 */ u16 acv;
+    /* 0x04 */ u16 prbOdd;
+    /* 0x06 */ u16 prbEven;
+    /* 0x08 */ u16 psbOdd;
+    /* 0x0A */ u16 psbEven;
+    /* 0x0C */ u8 bs1;
+    /* 0x0D */ u8 bs2;
+    /* 0x0E */ u8 bs3;
+    /* 0x0F */ u8 bs4;
+    /* 0x10 */ u16 be1;
+    /* 0x12 */ u16 be2;
+    /* 0x14 */ u16 be3;
+    /* 0x16 */ u16 be4;
+    /* 0x18 */ u16 nhlines;
+    /* 0x1A */ u16 hlw;
+    /* 0x1C */ u8 hsy;
+    /* 0x1D */ u8 hcs;
+    /* 0x1E */ u8 hce;
+    /* 0x1F */ u8 hbe640;
+    /* 0x20 */ u16 hbs640;
+    /* 0x22 */ u8 hbeCCIR656;
+    /* 0x24 */ u16 hbsCCIR656;
 } VITiming;
 CHECK_SIZEOF(VITiming, 0x26);
 
 typedef struct {
-    u16 DispPosX;
-    u16 DispPosY;
-    u16 DispSizeX;
-    u16 DispSizeY;
-    u16 AdjustedDispPosX;
-    u16 AdjustedDispPosY;
-    u16 AdjustedDispSizeY;
-    u16 AdjustedPanPosY;
-    u16 AdjustedPanSizeY;
-    u16 FBSizeX;
-    u16 FBSizeY;
-    u16 PanPosX;
-    u16 PanPosY;
-    u16 PanSizeX;
-    u16 PanSizeY;
-    VIXFBMode FBMode;
-    u32 nonInter;
-    u32 tv;
-    u8 wordPerLine;
-    u8 std;
-    u8 wpl;
-    u32 bufAddr;
-    u32 tfbb;
-    u32 bfbb;
-    u8 xof;
-    BOOL black;
-    BOOL threeD;
-    u32 rbufAddr;
-    u32 rtfbb;
-    u32 rbfbb;
-    VITiming *timing;
+    /* 0x00 */ u16 DispPosX;
+    /* 0x02 */ u16 DispPosY;
+    /* 0x04 */ u16 DispSizeX;
+    /* 0x06 */ u16 DispSizeY;
+    /* 0x08 */ u16 AdjustedDispPosX;
+    /* 0x0A */ u16 AdjustedDispPosY;
+    /* 0x0C */ u16 AdjustedDispSizeY;
+    /* 0x0E */ u16 AdjustedPanPosY;
+    /* 0x10 */ u16 AdjustedPanSizeY;
+    /* 0x12 */ u16 FBSizeX;
+    /* 0x14 */ u16 FBSizeY;
+    /* 0x16 */ u16 PanPosX;
+    /* 0x18 */ u16 PanPosY;
+    /* 0x1A */ u16 PanSizeX;
+    /* 0x1C */ u16 PanSizeY;
+    /* 0x20 */ VIXFBMode FBMode;
+    /* 0x24 */ u32 nonInter;
+    /* 0x28 */ u32 tv;
+    /* 0x2C */ u8 wordPerLine;
+    /* 0x2D */ u8 std;
+    /* 0x2E */ u8 wpl;
+    /* 0x30 */ u32 bufAddr;
+    /* 0x34 */ u32 tfbb;
+    /* 0x38 */ u32 bfbb;
+    /* 0x3C */ u8 xof;
+    /* 0x40 */ BOOL black;
+    /* 0x44 */ BOOL threeD;
+    /* 0x48 */ u32 rbufAddr;
+    /* 0x4C */ u32 rtfbb;
+    /* 0x50 */ u32 rbfbb;
+    /* 0x54 */ VITiming *timing;
 } VIPositionInfo;
 CHECK_SIZEOF(VIPositionInfo, 0x58);
 
@@ -130,7 +138,6 @@ static VIPositionInfo HorVer;
 static u32 FBSet;
 static VITiming *timingExtra;
 
-// prototypes
 static u32 getCurrentFieldEvenOdd(void);
 VITiming *__VISetExtraTiming(VITiming *t); // VITiming is private to this file
 
@@ -289,7 +296,6 @@ VITiming *__VISetExtraTiming(VITiming *t) {
     return old;
 }
 
-#pragma dont_inline on
 static VITiming *getTiming(VITVMode mode) {
     switch (mode) {
     case VI_TVMODE_NTSC_INT:
@@ -328,7 +334,6 @@ static VITiming *getTiming(VITVMode mode) {
         return NULL;
     }
 }
-#pragma dont_inline reset
 
 void __VIInit(VITVMode mode) {
     VITiming *tm;
@@ -381,7 +386,7 @@ void __VIInit(VITVMode mode) {
     __VIRegs[26] = 0x1001;
     hct = tm->hlw + 1;
     vct = (tm->nhlines / 2) + 1;
-    __VIRegs[25] = (u16)(u32)hct;
+    __VIRegs[25] = hct;
     __VIRegs[24] = vct | 0x1000;
 
     switch (tv) {
@@ -491,7 +496,7 @@ void VIInit(void) {
         HorVer.tv = VI_EURGB60;
     }
 
-    tv = (HorVer.tv == 3) ? 0 : HorVer.tv;
+    tv = (HorVer.tv == VI_DEBUG) ? 0 : HorVer.tv;
     HorVer.timing = getTiming((tv << 2) + HorVer.nonInter);
     regs[1] = dspCfg;
 
@@ -519,21 +524,15 @@ void VIInit(void) {
     HorVer.threeD = 0;
     OSInitThreadQueue(&retraceQueue);
     value = __VIRegs[24];
-    value &= ~0x8000;
-#if !DEBUG
-    value = (u16)value;
-#endif
+    value &= 0x7FFF;
     __VIRegs[24] = value;
     value = __VIRegs[26];
-    value = value & ~0x8000;
-#if !DEBUG
-    value = (u16)value;
-#endif
+    value = value & 0x7FFF;
     __VIRegs[26] = value;
     PreCB = NULL;
     PostCB = NULL;
-    __OSSetInterruptHandler(0x18, __VIRetraceHandler);
-    __OSUnmaskInterrupts(0x80);
+    __OSSetInterruptHandler(__OS_INTERRUPT_PI_VI, __VIRetraceHandler);
+    __OSUnmaskInterrupts(OS_INTERRUPTMASK_PI_VI);
 }
 
 void VIWaitForRetrace(void) {
@@ -549,11 +548,7 @@ void VIWaitForRetrace(void) {
 }
 
 static void setInterruptRegs(VITiming *tm) {
-#if DEBUG
-    u16 vct, hct;
-#else
     u16 hct, vct;
-#endif
     u16 borrow;
 
     vct = tm->nhlines / 2;
@@ -565,7 +560,7 @@ static void setInterruptRegs(VITiming *tm) {
     }
     vct++;
     hct++;
-    regs[25] = (u16)(u32)hct;
+    regs[25] = hct;
     MARK_CHANGED(25);
     regs[24] = vct | 0x1000;
     MARK_CHANGED(24);
@@ -577,8 +572,8 @@ static void setPicConfig(u16 fbSizeX, VIXFBMode xfbMode, u16 panPosX, u16 panSiz
     *std = (xfbMode == VI_XFBMODE_SF) ? *wordPerLine : (u8)(*wordPerLine * 2);
     *xof = panPosX % 16;
     *wpl = (*xof + panSizeX + 15) / 16;
-    regs[0x24] = *std | (*wpl << 8);
-    changed |= 0x8000000;
+    regs[36] = *std | (*wpl << 8);
+    MARK_CHANGED(36);
 }
 
 static void setBBIntervalRegs(VITiming *tm) {
@@ -586,19 +581,19 @@ static void setBBIntervalRegs(VITiming *tm) {
 
     val = tm->bs1 | (tm->be1 << 5);
     regs[11] = val;
-    changed |= 0x10000000000000;
+    MARK_CHANGED(11);
 
     val = tm->bs3 | (tm->be3 << 5);
     regs[10] = val;
-    changed |= 0x20000000000000;
+    MARK_CHANGED(10);
 
     val = tm->bs2 | (tm->be2 << 5);
     regs[13] = val;
-    changed |= 0x4000000000000;
+    MARK_CHANGED(13);
 
     val = tm->bs4 | (tm->be4 << 5);
     regs[12] = val;
-    changed |= (1LL << (63 - 12));
+    MARK_CHANGED(12);
 }
 
 static void setScalingRegs(u16 panSizeX, u16 dispSizeX, BOOL threeD) {
@@ -608,12 +603,12 @@ static void setScalingRegs(u16 panSizeX, u16 dispSizeX, BOOL threeD) {
     if (panSizeX < dispSizeX) {
         scale = (u32)(dispSizeX + (panSizeX << 8) - 1) / dispSizeX;
         regs[37] = scale | 0x1000;
-        changed |= 0x04000000;
+        MARK_CHANGED(37);
         regs[56] = (u32)panSizeX;
-        changed |= 0x80;
+        MARK_CHANGED(56);
     } else {
         regs[37] = 0x100;
-        changed |= 0x04000000;
+        MARK_CHANGED(37);
     }
 }
 
@@ -687,7 +682,7 @@ static void setHorizontalRegs(VITiming *tm, u16 dispPosX, u16 dispSizeX) {
     u32 hbeLo;
     u32 hbeHi;
 
-    regs[3] = (u16)(u32)tm->hlw;
+    regs[3] = tm->hlw;
     MARK_CHANGED(3);
     regs[2] = tm->hce | (tm->hcs << 8);
     MARK_CHANGED(2);
@@ -743,13 +738,16 @@ static void setVerticalRegs(u16 dispPosY, u16 dispSizeY, u8 equ, u16 acv, u16 pr
 
     regs[0] = equ | (actualAcv << 4);
     MARK_CHANGED(0);
-    regs[7] = (u16)(u32)actualPrbOdd;
+    // Matching workaround: the (u32) casts of the four porch values change no value (u16 variables
+    // stored to u16 registers). Without them setVerticalRegs differs (7 words); setScalingRegs
+    // stores panSizeX the same way. Revisit when the original expression form is known.
+    regs[7] = (u32)actualPrbOdd;
     MARK_CHANGED(7);
-    regs[6] = (u16)(u32)actualPsbOdd;
+    regs[6] = (u32)actualPsbOdd;
     MARK_CHANGED(6);
-    regs[9] = (u16)(u32)actualPrbEven;
+    regs[9] = (u32)actualPrbEven;
     MARK_CHANGED(9);
-    regs[8] = (u16)(u32)actualPsbEven;
+    regs[8] = (u32)actualPsbEven;
     MARK_CHANGED(8);
 }
 
@@ -788,7 +786,7 @@ void VIConfigure(const GXRenderModeObj *rm) {
     ASSERTMSGLINEV(1926, (rm->viHeight & 1) == 0,
                    "VIConfigure(): Odd number(%d) is specified to viHeight\n", rm->viHeight);
 
-#ifdef DEBUG
+#if DEBUG
     if (rm->xFBmode == VI_XFBMODE_DF || newNonInter == VI_PROGRESSIVE || newNonInter == 3) {
         ASSERTMSGLINEV(
             1933, rm->xfbHeight == rm->viHeight,
@@ -867,7 +865,7 @@ void VIConfigure(const GXRenderModeObj *rm) {
         rm->viXOrigin + rm->viWidth, 680 - tm->hbs640);
 
     if (encoderType == 0) {
-        HorVer.tv = 3;
+        HorVer.tv = VI_DEBUG;
     }
     setInterruptRegs(tm);
 
@@ -883,7 +881,7 @@ void VIConfigure(const GXRenderModeObj *rm) {
 
     OLD_SET_REG_FIELD(2056, regDspCfg, 1, 3, HorVer.threeD);
 
-    if ((HorVer.tv == VI_PAL) || (HorVer.tv == VI_MPAL) || (HorVer.tv == 3)) {
+    if ((HorVer.tv == VI_PAL) || (HorVer.tv == VI_MPAL) || (HorVer.tv == VI_DEBUG)) {
         OLD_SET_REG_FIELD(2060, regDspCfg, 2, 8, HorVer.tv);
     } else {
         regDspCfg = (((u32)(regDspCfg)) & ~0x00000300);
@@ -1159,7 +1157,6 @@ void __VIGetAdjustingValues(s16 *x, s16 *y) {
     OSRestoreInterrupts(enabled);
 }
 
-// DEBUG NONMATCHING - wrong reg use, equivalent
 void __VIEnableRawPositionInterrupt(s16 x, s16 y, void (*callback)(s16, s16)) {
     BOOL enabled;
     u32 halfLine;
@@ -1280,7 +1277,6 @@ void __VISetLatchMode(u32 mode) {
     __VIRegs[1] = reg;
 }
 
-#pragma dont_inline on
 int __VIGetLatch0Position(s16 *px, s16 *py) {
     u32 hcount;
     u32 vcount;
@@ -1297,9 +1293,7 @@ int __VIGetLatch0Position(s16 *px, s16 *py) {
     *px = *py = -1;
     return 0;
 }
-#pragma dont_inline reset
 
-#pragma dont_inline on
 int __VIGetLatch1Position(s16 *px, s16 *py) {
     u32 hcount;
     u32 vcount;
@@ -1316,7 +1310,6 @@ int __VIGetLatch1Position(s16 *px, s16 *py) {
     *px = *py = -1;
     return 0;
 }
-#pragma dont_inline reset
 
 int __VIGetLatchPosition(u32 port, s16 *px, s16 *py) {
     if (port == 0) {
