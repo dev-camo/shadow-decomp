@@ -36,6 +36,16 @@ Game/ElecCircuit.cpp:
 	.sdata      start:0x805E9008 end:0x805E9028
 	.sdata2     start:0x805F6628 end:0x805F6640
 
+Game/ElecCircuitEntrance.cpp:
+	.text       start:0x801F7D24 end:0x801F8C58
+	.ctors      start:0x804A9E04 end:0x804A9E08
+	.rodata     start:0x804EB958 end:0x804EBA80
+	.data       start:0x80542328 end:0x805423D8
+	.bss        start:0x80583B78 end:0x80583B88
+	.sdata      start:0x805E9028 end:0x805E905C
+	.sbss       start:0x805EFB60 end:0x805EFB70
+	.sdata2     start:0x805F6640 end:0x805F6670
+
 Game/ElecCristalWallSwitch.cpp:
 	.text       start:0x801F9F9C end:0x801FA2DC
 	.rodata     start:0x804EBBE0 end:0x804EBC08
