@@ -1,7 +1,8 @@
 #ifndef CRI_CFT_H
 #define CRI_CFT_H
 
-/* CRI Sofdec colour format transforms (cftcoladj.c, cftfx.c) and their library init (cft_lib.c). */
+/* CRI Sofdec colour format transforms (cftcoladj.c, cftfx.c, cftyp422_ppc.c) and their library init
+ * (cft_lib.c). */
 #include "CRI/cri_xpt.h"
 #include "CRI/sfx.h"
 #include "layout_check.h"
@@ -32,6 +33,18 @@ typedef struct {
 } CFT_ARGBDST;
 CHECK_SIZEOF(CFT_ARGBDST, 0x18);
 
+/* One entry of the ARGB conversion table: the contribution of a component value to the alpha, red,
+ * green and blue channels. The table makers of cftyp422_ppc.c fill 256 entries each for Y, Cb and
+ * Cr; CFT_MakeArgb8888ColAdjTbl (cftfx.c) fills the same layout through its Float32 table
+ * pointers. */
+typedef struct {
+    Float32 a;
+    Float32 r;
+    Float32 g;
+    Float32 b;
+} CFT_ARGBENT;
+CHECK_SIZEOF(CFT_ARGBENT, 0x10);
+
 /* cftcoladj.c */
 void CFT_MakeInverseMtx3D(Float32 *m, Float32 *inv);
 void CFT_MakeInvConvTableCustom(Uint8 *ytbl, Uint8 *cbtbl, Uint8 *crtbl);
@@ -40,9 +53,19 @@ void CFT_MakeInvConvTableCustom(Uint8 *ytbl, Uint8 *cbtbl, Uint8 *crtbl);
 void CFT_Finish(void); /* name inferred: the counterpart of CFT_Init */
 void CFT_Init(void);   /* name inferred: the library start called from SFX_Init */
 
-/* Fills the static YCC to RGB coefficient tables. Name and file (cftyp422_ppc.c) from the RE4
- * GameCube decompilation, whose function of that name computes the same coefficients (1.596,
- * 2.017, -0.392, -0.813). Not yet sourced. */
+/* cftyp422_ppc.c */
+void CFT_MakeArgb8888Alp3211Tbl(void *tbl, Uint8 alp0, Uint8 alp1, Uint8 alp2);
+void CFT_MakeArgb8888Alp3110Tbl(void *tbl, Uint8 alp0, Uint8 alp1, Uint8 alp2);
+void CFT_MakeArgb8888AlpLumiTbl(Sint32 mode, Sint32 lo, Sint32 hi, void *tbl);
+/* The paired-single converters called by CFT_Ycc420plnToArgb8888 (not yet decompiled): the one
+ * that takes the conversion table and the plain one. tbl has the type of SFX_CNVARG.tbl, which is
+ * shared with the byte-sized A256 user table; for this converter it holds the CFT_ARGBENT entries
+ * built by the table makers above. */
+void cnvDynamicYcc420plnToArgb8888(const CFT_YCC420PLN *src, const CFT_ARGBDST *dst,
+                                   const Uint8 *tbl);
+void cnvStaticYcc420plnToArgb8888(const CFT_YCC420PLN *src, const CFT_ARGBDST *dst);
+void CFT_Ycc420plnToArgb8888(const SFX_FRM *frm, const SFX_FRM *dstfrm, const SFX_CNVARG *arg);
+/* Fills the static YCC to RGB coefficient tables. */
 void CFT_Ycc420plnToArgb8888Init(void);
 
 /* cftfx.c */

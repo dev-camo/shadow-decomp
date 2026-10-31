@@ -1568,11 +1568,16 @@ CRI/mwsfdset.c:
 CRI/mwsfdsvr.c:
 	.text       start:0x8040780C end:0x80408048
 	.rodata     start:0x8051A108 end:0x8051A1F0
-	.bss        start:0x805DEF80 end:0x805DEF90
+	.bss        start:0x805DEF80 end:0x805DEFA0
 
 CRI/mwsfdsst.c:
 	.text       start:0x80408048 end:0x80408680
 	.data       start:0x80569E30 end:0x80569E38
+
+CRI/cftyp422_ppc.c:
+	.text       start:0x80408740 end:0x80409E1C
+	.rodata     start:0x8051A1F0 end:0x8051A240
+	.bss        start:0x805DEFA0 end:0x805E03C0 align:32
 
 CRI/cftfx.c:
 	.text       start:0x80409E1C end:0x8040A4A8
