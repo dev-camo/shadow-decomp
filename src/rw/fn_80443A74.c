@@ -4,16 +4,6 @@
 #include "rw/rpdmorph.h"
 #include <string.h>
 
-/* Reports an error of this plugin; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rpID_DMORPHPLUGIN;                                                       \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 RwInt32 lbl_805F1430;
 
 /* The render callback of a delta morphed atomic: applies the change of each target's weight since
@@ -201,7 +191,7 @@ static inline RpAtomic *DMorphAtomicCreateValues(RpAtomic *atomic) {
 
     dmorphAtomic->values = RwMalloc(size, rwMEMHINT_DMORPH);
     if (dmorphAtomic->values == NULL) {
-        RWERROR((0x80000013, size));
+        RWERRORPLUGIN(rpID_DMORPHPLUGIN, (E_RW_NOMEM, size));
         return NULL;
     }
     memset(dmorphAtomic->values, 0, size);
@@ -289,7 +279,7 @@ RwReal *fn_804442E4(RpAtomic *atomic) {
 
         dmorphAtomic->values = RwMalloc(size, rwMEMHINT_DMORPH);
         if (dmorphAtomic->values == NULL) {
-            RWERROR((0x80000013, size));
+            RWERRORPLUGIN(rpID_DMORPHPLUGIN, (E_RW_NOMEM, size));
         } else {
             memset(dmorphAtomic->values, 0, size);
         }
@@ -305,7 +295,7 @@ static inline RpAtomic *DMorphAtomicCreateInterpolator(RpAtomic *atomic) {
     RpDMorphInterpolator *interpolator = RwMalloc(size, rwMEMHINT_DMORPH);
 
     if (interpolator == NULL) {
-        RWERROR((0x80000013, size));
+        RWERRORPLUGIN(rpID_DMORPHPLUGIN, (E_RW_NOMEM, size));
         return NULL;
     }
     memset(interpolator, 0, size);

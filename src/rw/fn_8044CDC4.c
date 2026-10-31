@@ -8,19 +8,6 @@
 #include <dolphin/mtx.h>
 #include <dolphin/os.h>
 
-#define rpHANIMHIERARCHYLOCALSPACEMATRICES 0x4000
-
-/* GameCube skin pipeline types (inferred) */
-#define SKINPIPELINETOON 3
-
-/* the instancing of the skin's geometry (inferred) */
-RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef);
-RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef);
-
-/* matrices and vectors */
-RwMatrix *fn_8047EBB8(RwMatrix *out, const RwMatrix *a, const RwMatrix *b); /* out = a * b */
-RwMatrix *fn_8047F0B0(RwMatrix *out, const RwMatrix *in);                   /* inverts */
-
 /* Destroy callback of a skinned geometry's instance data, run before its resource entry is freed:
  * frees the separate entry the skinned vertices are computed into, restores the borrowed bind-pose
  * buffers to the vertex descriptors and clears the skin's or atomic's pointers to them */
@@ -389,7 +376,7 @@ RpAtomic *fn_8044D924(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
     }
 
     if (skin->maxNumWeightsForVertex > 1 || skin->pipelineType == SKINPIPELINETOON) {
-        if (geometry->flags & 0x02000000) {
+        if (geometry->flags & rpGEOMETRYNATIVEINSTANCE) {
             if (lbl_805EDDD8 == 1) {
                 renderMesh->repEntry = fn_8044F9E4(geometry, owner, ownerRef);
             } else {
@@ -398,7 +385,7 @@ RpAtomic *fn_8044D924(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
         } else {
             renderMesh->repEntry = fn_8046C0D4(geometry, owner, ownerRef);
         }
-    } else if (geometry->flags & 0x02000000) {
+    } else if (geometry->flags & rpGEOMETRYNATIVEINSTANCE) {
         if (lbl_805EDDD8 == 1) {
             renderMesh->repEntry = fn_8044F9E4(geometry, owner, ownerRef);
         } else {

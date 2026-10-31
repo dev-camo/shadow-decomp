@@ -4,16 +4,6 @@
 #include "rw/rpdmorph.h"
 #include <string.h>
 
-/* Reports an error of this plugin; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rpID_DMORPHPLUGIN;                                                       \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 RwInt32 lbl_805F1428;
 
 /* The size of a vertex in a target's vertex data */
@@ -69,7 +59,7 @@ RwStream *fn_804430B0(RwStream *stream, RwInt32 length, void *object, RwInt32 of
         if (nameLength != 0) {
             target->name = RwMalloc(nameLength, rwMEMHINT_DMORPH);
             if (target->name == NULL) {
-                RWERROR((0x80000013, nameLength));
+                RWERRORPLUGIN(rpID_DMORPHPLUGIN, (E_RW_NOMEM, nameLength));
                 return NULL;
             }
             if (fn_80480D4C(stream, target->name, nameLength) == 0) {
@@ -90,7 +80,7 @@ RwStream *fn_804430B0(RwStream *stream, RwInt32 length, void *object, RwInt32 of
         byteSize = target->rle.numCodeElements;
         target->rle.code = RwMalloc(byteSize, rwMEMHINT_DMORPH);
         if (target->rle.code == NULL) {
-            RWERROR((0x80000013, byteSize));
+            RWERRORPLUGIN(rpID_DMORPHPLUGIN, (E_RW_NOMEM, byteSize));
             return NULL;
         }
         if (fn_80480D4C(stream, target->rle.code, byteSize) == 0) {
@@ -106,7 +96,7 @@ RwStream *fn_804430B0(RwStream *stream, RwInt32 length, void *object, RwInt32 of
             byteSize *= target->rle.numDataElements;
             target->rle.data = RwMalloc(byteSize, rwMEMHINT_DMORPH);
             if (target->rle.data == NULL) {
-                RWERROR((0x80000013, byteSize));
+                RWERRORPLUGIN(rpID_DMORPHPLUGIN, (E_RW_NOMEM, byteSize));
                 return NULL;
             }
             data = target->rle.data;

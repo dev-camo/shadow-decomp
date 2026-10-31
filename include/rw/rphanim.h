@@ -44,6 +44,7 @@ CHECK_SIZEOF(RpHAnimInterpFrame, 0x24);
 /* RpHAnimHierarchy flags */
 #define rpHANIMHIERARCHYSUBHIERARCHY 0x1 /* shares its parent's matrices and node data */
 #define rpHANIMHIERARCHYNOMATRICES 0x2
+#define rpHANIMHIERARCHYLOCALSPACEMATRICES 0x4000 /* (inferred) the matrices are in local space */
 
 /* A node of a hierarchy (0x10 bytes) */
 typedef struct RpHAnimNodeInfo {
