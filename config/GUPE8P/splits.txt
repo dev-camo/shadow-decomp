@@ -1472,11 +1472,10 @@ CRI/mwsfdset.c:
 	.text       start:0x80407568 end:0x8040780C
 	.rodata     start:0x8051A058 end:0x8051A108
 
-Game/fn_80407920.c:
-	.text       start:0x80407920 end:0x80407930
-
-Game/fn_80407930.c:
-	.text       start:0x80407930 end:0x80407960
+CRI/mwsfdsvr.c:
+	.text       start:0x8040780C end:0x80408048
+	.rodata     start:0x8051A108 end:0x8051A1F0
+	.bss        start:0x805DEF80 end:0x805DEF90
 
 CRI/mwsfdsst.c:
 	.text       start:0x80408048 end:0x80408680

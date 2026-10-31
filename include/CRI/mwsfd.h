@@ -61,7 +61,8 @@ typedef struct {
 #define MWSFD_STAT_PLAYEND 3
 #define MWSFD_STAT_ERROR 4
 
-/* MW player object (0x2A8 bytes; the libwork holds eight) */
+/* MW player object (0x2A8 bytes; the libwork holds eight). Only the fields the matched units use
+ * are named. */
 struct MWPLY_OBJ {
     /* 0x000 */ Sint32 used; /* 1 for a created handle */
     /* 0x004 */ Sint32 stat; /* MWSFD_STAT_* */
@@ -70,7 +71,24 @@ struct MWPLY_OBJ {
     /* 0x040 */ ADXSTM stm;
     /* 0x044 */ Sint32 x44;
     /* 0x048 */ LSC lsc;
-    /* 0x04C */ Uint8 x4c[0x1C8 - 0x4C];
+    /* 0x04C */ Uint8 x4c[0x10];
+    /* 0x05C */ Sint32 sleep_bdr;     /* sleeping at the SVM idle border */
+    /* 0x060 */ Sint32 mwply_svr_flg; /* the handle's server step is running */
+    /* 0x064 */ Sint32 sfd_svr_flg;   /* SFD_ExecOne is running for the handle */
+    /* 0x068 */ Sint32 dec_svr_flg;   /* the player state machine is running */
+    /* 0x06C */ Uint8 x6c[4];
+    /* 0x070 */ Sint8 linkstm;     /* concatenated play is on */
+    /* 0x071 */ Sint8 linkstm_req; /* end of the linked streams requested */
+    /* 0x072 */ Sint8 pause_flg;
+    /* 0x073 */ Uint8 x73[0x1A4 - 0x73];
+    /* 0x1A4 */ const Char8 *fname;
+    /* 0x1A8 */ Sint32 x1a8;
+    /* 0x1AC */ Sint32 stm_start_req; /* start the file stream on the next server step */
+    /* 0x1B0 */ void *dir;
+    /* 0x1B4 */ Sint32 ofst;
+    /* 0x1B8 */ Sint32 nsct;
+    /* 0x1BC */ SJ sji;
+    /* 0x1C0 */ Uint8 x1c0[0x1C8 - 0x1C0];
     /* 0x1C8 */ Sint32 flow_nsct; /* the largest refill size (sectors) */
     /* 0x1CC */ Uint8 x1cc[0x280 - 0x1CC];
     /* 0x280 */ MWSST_OBJ sst;
@@ -99,15 +117,20 @@ typedef struct {
     /* 0x04 */ Float32 vfreq;
     /* 0x08 */ Sint32 x08;
     /* 0x0C */ Sint32 nfrm_pool;
-    /* 0x10 */ Sint32 x10;
+    /* 0x10 */ Sint32 main_decode; /* decode in the main server, not the idle one; inferred */
     /* 0x14 */ Uint8 x14[0x24 - 0x14];
     /* 0x24 */ Sint32 svr_bdr; /* a handle is sleeping at the idle border */
     /* 0x28 */ Uint8 x28[0x38 - 0x28];
-    /* 0x38 */ Sint32 use_picusr; /* picture user data is captured */
-    /* 0x3C */ Sint32 pause_bdr;  /* pausing waits for the decode server border */
-    /* 0x40 */ Uint8 x40[0x58 - 0x40];
-    /* 0x58 */ Sint32 svr_flg; /* decode server running */
-    /* 0x5C */ Sint32 x5c;
+    /* 0x38 */ Sint32 use_picusr;             /* picture user data is captured */
+    /* 0x3C */ Sint32 pause_bdr;              /* pausing waits for the decode server border */
+    /* 0x40 */ Sint32 (*pre_func)(void *obj); /* run before the decode server step */
+    /* 0x44 */ void *pre_obj;
+    /* 0x48 */ Sint32 (*post_func)(void *obj); /* run after it */
+    /* 0x4C */ void *post_obj;
+    /* 0x50 */ Sint32 (*idle_func)(void *obj); /* run when no handle has work */
+    /* 0x54 */ void *idle_obj;
+    /* 0x58 */ Sint32 svr_flg;   /* decode server running */
+    /* 0x5C */ Sint32 vsync_flg; /* the vsync server step is running; inferred */
     /* 0x60 */ Uint8 x60[0x68 - 0x60];
     /* 0x68 */ Sint32 errcode; /* last library error */
     /* 0x6C */ MWPLY_OBJ hn[MWSFD_MAX_HN];
@@ -145,6 +168,8 @@ void MWSFSFX_Init(void);
 void MWSFSFX_Finish(void); /* inferred name: the counterpart of MWSFSFX_Init */
 void MWSFSVR_SetMwsfdSvrFlg(Sint32 flg);
 void MWSFPLY_SetFlowLimit(MWPLY mwply);
+void MWSFSVR_SetHnSfdSvrFlg(MWPLY mwply, Sint32 flg);
+void MWSFSVR_SetHnMwplySvrFlg(MWPLY mwply, Sint32 flg);
 void mwsfd_SetSleepBdr(MWPLY mwply, Sint32 sw); /* inferred name */
 Sint32 MWSFSVR_VsyncThrdProc(void *obj);
 Sint32 MWSFSVR_MainThrdProc(void *obj);
@@ -158,6 +183,22 @@ Bool MWSFD_IsEnableHndl(MWPLY mwply);
 Sint32 mwPlyGetStat(MWPLY mwply);
 void mwPlySetOutVol(void *hn, Sint32 vol);
 Sint32 mwPlyGetOutVol(void *hn);
+
+/* other units of the player used by mwsfdsvr.c */
+void MWSFCRE_SetSupplySj(MWPLY mwply);
+void mwPlySfdStart(MWPLY mwply);
+void mwPlyPause(MWPLY mwply, Sint32 sw);
+void mwPlyChkSupply(MWPLY mwply);
+
+/* mwsfdsvr.c */
+void mwlSfdSleepDecSvr(MWPLY mwply);
+Sint32 mwPlyExecSvrHndl(MWPLY mwply);
+Sint32 MWSFSVR_DecodeServer(void *obj);
+Sint32 mwSfdExecDecSvrHndl(MWPLY mwply);
+Sint32 mwSfdExecSvrHndl(MWPLY mwply);
+
+/* mwsfdsee.c */
+void MWSFSEE_ChkSupply(MWPLY mwply);
 
 /* mwsfdsl.c */
 void MWSFLSC_SetFlowLimit(MWPLY mwply, Sint32 nsct);
