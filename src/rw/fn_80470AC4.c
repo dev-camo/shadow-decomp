@@ -246,14 +246,13 @@ Rt2dFont *fn_80470C54(Rt2dFont *font, const RwChar *string, RwReal height, RwV2d
 
 /* Builds a font's extended map from the codes of its characters at and above 0x80 */
 Rt2dFont *fn_80471300(Rt2dFont *font) {
-    RwInt32 *codes = lbl_805E1950.charCodes;
     RwInt32 minCode = 0xFFFF;
     RwInt32 maxCode = 0;
     RwInt32 found = 0;
     RwInt32 i;
 
     for (i = 0; i < font->numChars; i++) {
-        RwInt32 code = codes[i];
+        RwInt32 code = lbl_805E1950.charCodes[i];
 
         if (code > 0) {
             if (code < minCode) {
@@ -266,14 +265,13 @@ Rt2dFont *fn_80471300(Rt2dFont *font) {
         }
     }
     if (found > 0) {
-        RwInt32 range = maxCode - minCode;
-        RwInt32 size = range + 1;
-        RwInt16 *extMap = RwMalloc(size * sizeof(RwInt16), rwMEMHINTDUR_EVENT | RT2DMEMID);
+        RwInt16 *extMap =
+            RwMalloc((maxCode - minCode + 1) * sizeof(RwInt16), rwMEMHINTDUR_EVENT | RT2DMEMID);
 
         if (extMap == NULL) {
             return NULL;
         }
-        for (i = 0; i < size; i++) {
+        for (i = 0; i < maxCode - minCode + 1; i++) {
             extMap[i] = -1;
         }
         for (i = 0; i < font->numChars; i++) {
@@ -283,7 +281,7 @@ Rt2dFont *fn_80471300(Rt2dFont *font) {
                 extMap[code - minCode] = i;
             }
         }
-        font->extMapSize = size;
+        font->extMapSize = maxCode - minCode + 1;
         font->extMapOffset = minCode;
         font->extMap = extMap;
     }
@@ -312,17 +310,6 @@ Rt2dFont *fn_80471300(Rt2dFont *font) {
         }                                                                                          \
     } while (0)
 
-/* Maps a code to the next character: through the extended map at and above 0x80 */
-#define MAPCHARCODE(font, codes, code)                                                             \
-    do {                                                                                           \
-        if ((code) >= rt2dFONTMAPSIZE) {                                                           \
-            (font)->flag |= rt2dFONTFLAGWIDECHARS;                                                 \
-            (codes)[numChars] = (code);                                                            \
-        } else {                                                                                   \
-            (font)->map[code] = numChars;                                                          \
-        }                                                                                          \
-    } while (0)
-
 /* Makes room for 32 more characters when they are used up */
 #define GROWCHARRECTS(font)                                                                        \
     do {                                                                                           \
@@ -338,13 +325,14 @@ Rt2dFont *fn_80471300(Rt2dFont *font) {
  * the baseline, then a rectangle of the texture per character */
 Rt2dFont *fn_8047149C(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *line) {
     RwTexDictionary *oldDict = fn_8048D0D8();
-    Rt2dFont *result;
-    RwInt32 numChars;
     RwInt32 maxChars;
-    RwInt32 *codes;
-    rt2dCharRect *charRects;
-    RwInt32 numNames;
+    RwInt32 numChars;
     RwChar *maskName;
+    rt2dCharRect *charRects;
+    RwInt32 *codes;
+    Rt2dFont *result;
+    RwInt32 numNames;
+    RwInt16 *map;
 
     fn_8048D0C4(lbl_805E1950.fontTexDictCurrent);
     result = font;
@@ -355,6 +343,7 @@ Rt2dFont *fn_8047149C(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
         maxChars = 0x100;
     }
     codes = lbl_805E1950.charCodes;
+    map = font->map;
     fn_8047DEA0(font->charRects, maxChars, rwMEMHINTDUR_EVENT | RT2DMEMID);
     charRects = fn_8047DFAC(font->charRects);
     memset(charRects, 0, maxChars * sizeof(rt2dCharRect));
@@ -406,9 +395,13 @@ Rt2dFont *fn_8047149C(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
                         rt2dCharRect *charRect;
 
                         GROWCHARCODES(codes);
-                        MAPCHARCODE(font, codes, code);
-                        charRect = &charRects[numChars];
-                        numChars++;
+                        if (code >= rt2dFONTMAPSIZE) {
+                            font->flag |= rt2dFONTFLAGWIDECHARS;
+                            codes[numChars] = code;
+                        } else {
+                            map[code] = numChars;
+                        }
+                        charRect = &charRects[numChars++];
                         charRect->uvTopLeft.x = (0.5f + left) * invWidth;
                         charRect->uvTopLeft.y = (0.5f + top) * invHeight;
                         charRect->uvBottomRight.x = (0.5f + right) * invWidth;
@@ -1204,8 +1197,8 @@ Rt2dFont *fn_804737E4(const RwChar *name) {
                 fileName[length] = '\0';
                 rwstrcat(fileName, name);
                 rwstrcat(fileName, ".met");
-                length = 0;
                 fp = fn_8047A178(fileName, "r");
+                length = 0;
             } else {
                 fileName[length] = c;
                 length++;
