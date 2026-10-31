@@ -118,7 +118,7 @@ Sint32 SFD_Finish(void) {
 
     hn = SFLIB_libwork.hn;
     ret = 0;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < SFD_HN_MAX; i++) {
         if (hn[i] != 0) {
             ret = SFD_Destroy(hn[i]);
         }
@@ -158,7 +158,7 @@ Sint32 SFD_Init(SFD_INIT_PRM *prm) {
     SFBUF_Init(&SFLIB_libwork.buf);
     SFLIB_libwork.x1fc = 0;
     SFLIB_libwork.x200 = 0;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < SFD_HN_MAX; i++) {
         SFLIB_libwork.hn[i] = 0;
     }
     ret = sflib_ChkRet(SFTRN_Init(&SFLIB_libwork.trif, prm->trif_tbl));

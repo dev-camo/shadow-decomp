@@ -5,7 +5,6 @@
 #include "CRI/uty.h"
 #include "layout_check.h"
 
-#define SFD_HN_MAX 8
 /* stat is one of STOP..PLAYING */
 #define SFD_STAT_IS_ACTIVE(stat)                                                                   \
     ((Uint32)((stat) - SFD_STAT_STOP) <= SFD_STAT_PLAYING - SFD_STAT_STOP)
@@ -932,7 +931,7 @@ static Sint32 sfply_StatPrep(SFD sfd) {
         stat = SFD_STAT_STBY;
         break;
     case SFD_REQ_START:
-    case SFD_REQ_STARTEND:
+    case SFD_REQ_END:
         if (sfply_IsStartable(sfd)) {
             SFTRN_CallTrtTrif(sfd, 7, 6, 0, 0);
             stat = SFD_STAT_PLAYING;
@@ -954,7 +953,7 @@ static Sint32 sfply_StatStby(SFD sfd, Sint32 stat) {
         stat = SFD_STAT_STBY;
         break;
     case SFD_REQ_START:
-    case SFD_REQ_STARTEND:
+    case SFD_REQ_END:
         if (sfply_IsStartable(sfd)) {
             SFTRN_CallTrtTrif(sfd, 7, 6, 0, 0);
             stat = SFD_STAT_PLAYING;
@@ -994,7 +993,7 @@ void sfply_ExecOne(SFD sfd) {
         case SFD_REQ_PREP:
         case SFD_REQ_STBY:
         case SFD_REQ_START:
-        case SFD_REQ_STARTEND:
+        case SFD_REQ_END:
             stat = SFD_STAT_PREP;
             break;
         }

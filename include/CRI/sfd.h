@@ -16,6 +16,9 @@ extern "C" {
 
 typedef struct SFD_OBJ *SFD;
 
+/* handles that can exist at once (SFLIB_WORK.hn) */
+#define SFD_HN_MAX 8
+
 /* handle states (SFD_OBJ.stat, SFD_GetHnStat) and state requests (SFD_OBJ.req) */
 #define SFD_STAT_NONE 0
 #define SFD_STAT_STOP 1
@@ -29,7 +32,8 @@ typedef struct SFD_OBJ *SFD;
 #define SFD_REQ_PREP 2
 #define SFD_REQ_STBY 3
 #define SFD_REQ_START 4
-#define SFD_REQ_STARTEND 6
+/* left by the end of playback (sfply_StopPlay); the STOP, PREP and STBY steps handle it like a
+ * start request */
 #define SFD_REQ_END 6
 
 /* user-output (usr sj) channel */
@@ -376,9 +380,8 @@ typedef struct {
     Sint32 x50;           /* 0x50 ttu.val + concatenation time */
     SFMPV_PICUSR *picusr; /* 0x54 */
     Sint32 x58;           /* 0x58 -1 when the frame is released for drawing */
-    MPV_PICATR
-        picatr; /* 0x5C attributes of the picture; picatr.x68 is the last ordering key in sfmpvf_IsPrior */
-    Sint64 pts; /* 0xE0 */
+    MPV_PICATR picatr;    /* 0x5C picture attributes (x68: ordering key of sfmpvf_IsPrior) */
+    Sint64 pts;           /* 0xE0 */
 } SFMPV_FRM;
 CHECK_SIZEOF(SFMPV_FRM, 0xE8);
 CHECK_OFFSETOF(SFMPV_FRM, picatr, 0x5C);
@@ -420,7 +423,7 @@ typedef struct {
     Sint32 pts_tmpref;            /* 0x118 temporal reference of the picture carrying the PTS */
     Sint32 pts_ofst;              /* 0x11C pictures since the PTS */
     Sint32 pts_max;               /* 0x120 */
-    Sint32 pad124;                /* 0x0124 */
+    Sint32 x124;                  /* 0x124 */
     SFPTS_ENT ptsent;             /* 0x128 last PTS queue entry seen */
     Sint32 refidx[2];             /* 0x138 reference frame buffer indices (forward, backward) */
     MPV_RFB rfbuf[2];             /* 0x140 reference frame planes handed to the decoder */
@@ -430,7 +433,7 @@ typedef struct {
     Sint32 dlmwait;               /* 0x170 */
     Sint32 tmpref_adj;            /* 0x174 */
     Sint32 nfrm;                  /* 0x178 */
-    Sint32 pad17c;                /* 0x017C */
+    Sint32 x17c;                  /* 0x17C */
     SFMPV_FRM frm[SFMPV_FRM_NUM]; /* 0x180 */
     void *picusr_buf;             /* 0x1000 */
     Sint32 picusr_num;            /* 0x1004 */
@@ -438,7 +441,7 @@ typedef struct {
     Uint8 *picusr_dat;            /* 0x100C user data of the picture being decoded */
     Sint32 picusr_len;            /* 0x1010 */
     SFMPV_PICUSR picusr[SFMPV_FRM_NUM]; /* 0x1014 */
-    Sint32 pad1094;                     /* 0x1094 */
+    Sint32 x1094;                       /* 0x1094 */
     Sint64 pts;                         /* 0x1098 PTS of the picture being decoded */
 } SFMPV_WORK;
 CHECK_SIZEOF(SFMPV_WORK, 0x10A0);
@@ -582,7 +585,7 @@ typedef struct {
     Sint32 tscale;     /* 0x08 */
     Sint32 nvid;       /* 0x0C video streams of the system header */
     Sint32 naud;       /* 0x10 audio streams */
-    Sint32 pad14;      /* 0x14 */
+    Sint32 x14;        /* 0x14 */
     Sint64 pts_base;   /* 0x18 video PTS base saved from SFTIM_WORK.pts_base (inferred) */
     Sint64 pts_min;    /* 0x20 */
     Sint32 stmid_vid;  /* 0x28 first video stream id */
@@ -625,7 +628,7 @@ typedef struct {
     Sint32 tunit_est;            /* 0xDB4 */
     Sint32 av_a;                 /* 0xDB8 */
     Sint32 av_b;                 /* 0xDBC */
-    Sint32 paddc0;               /* 0xDC0 */
+    Sint32 xdc0;                 /* 0xDC0 */
     Sint32 fsize;                /* 0xDC4 SFD_SetFileSize */
     Sint32 tottime;              /* 0xDC8 SFD_SetTotTime */
     Sint32 tunit;                /* 0xDCC */
@@ -763,26 +766,26 @@ typedef struct SFD_OBJ {
     Sint32 pause_cnt;              /* 0x54 */
     Sint32 x58;                    /* 0x58 frame access claimed by SFD_GetFrm/SFD_RelFrm */
     Sint32 x5c;                    /* 0x5C */
-    Uint8 pad60[0x74 - 0x60];      /* 0x0060 */
-    Sint32 pad74;                  /* 0x0074 */
+    Uint8 pad60[0x74 - 0x60];      /* 0x60 */
+    Sint32 x74;                    /* 0x74 */
     SFHDS_FHD fhd;                 /* 0x78 file header analysis */
     Sint32 x90c;                   /* 0x90C stream information (16 words cleared by sfply_InitHn) */
-    Sint32 x910;                   /* 0x0910 */
-    Sint32 x914;                   /* 0x0914 */
-    Sint32 x918;                   /* 0x0918 */
-    Sint32 x91c;                   /* 0x091C */
+    Sint32 x910;                   /* 0x910 */
+    Sint32 x914;                   /* 0x914 */
+    Sint32 x918;                   /* 0x918 */
+    Sint32 x91c;                   /* 0x91C */
     Sint32 picrate;                /* 0x920 frame rate type (index into SFTIM_prate, 0: unknown) */
-    Sint32 x924;                   /* 0x0924 last positive pack-header mux_rate (sfmps_ProcPrep) */
+    Sint32 x924;                   /* 0x924 last positive pack-header mux_rate (sfmps_ProcPrep) */
     Sint32 x928;                   /* 0x928 (1) */
-    Sint32 x92c;                   /* 0x092C */
+    Sint32 x92c;                   /* 0x92C */
     Sint32 numelem_aud;            /* 0x930 copied from fhd after (re)processing */
     Sint32 numelem_vid;            /* 0x934 */
     Sint32 numelem_prv;            /* 0x938 */
-    Sint32 x93c;                   /* 0x093C */
-    Sint32 x940;                   /* 0x0940 */
-    Sint32 x944;                   /* 0x0944 */
-    Sint32 x948;                   /* 0x0948 */
-    Sint32 x94c;                   /* 0x094C */
+    Sint32 x93c;                   /* 0x93C */
+    Sint32 x940;                   /* 0x940 */
+    Sint32 x944;                   /* 0x944 */
+    Sint32 x948;                   /* 0x948 */
+    Sint32 x94c;                   /* 0x94C */
     SFD_PLYINF plyinf;             /* 0x950 */
     SFLIB_ERRINF err;              /* 0x9F8 */
     Sint32 cond[SFD_COND_NUM];     /* 0xA0C (SFSET_GetCond) */
@@ -796,7 +799,7 @@ typedef struct SFD_OBJ {
     /* tr[2].hn = SFMPV_WORK *, tr[SFADXT_TR].hn = SFADXT_WORK *, tr[SFAOAP_TR].hn = SFAOAP *,
      * tr[8].hn = SFUO *, tr[8].bufin = user-output SFBUF id */
     SFD_TR tr[SFD_TR_NUM];          /* 0x1F30 */
-    Sint32 pad2194;                 /* 0x2194 */
+    Sint32 x2194;                   /* 0x2194 */
     SFMPS_WORK mps;                 /* 0x2198 system stream driver work (tr[1].hn) */
     Uint8 pad2300[0x23A8 - 0x2300]; /* 0x2300 */
     SFMPV_WORK mpv;                 /* 0x23A8 video driver work (tr[2].hn) */
@@ -804,7 +807,7 @@ typedef struct SFD_OBJ {
     Uint8 pad3498[0x34FC - 0x3498]; /* 0x3498 */
     SFAOAP aoap;                    /* 0x34FC (tr[7].hn) */
     SFUO uo_tbl;                    /* 0x3518 */
-    Sint32 pad354c;                 /* 0x354C */
+    Sint32 x354c;                   /* 0x354C */
     SFSEE_HN see;                   /* 0x3550 (SFD_EntrySeek) */
     SFTMR_TSUM tsum[6];             /* 0x3560 server time statistics (tsum[5]: sfply_ExecOne) */
     SFPLY_FRMSTAT frmstat;          /* 0x3620 */
@@ -817,7 +820,7 @@ CHECK_OFFSETOF(SFD_OBJ, tim.ptsm, 0x12E0);
  * handle and keeps buf[0]'s offset (0x1310) in each load/store displacement, where &sfd->buf[n]
  * would add 0x1310 to the base register instead. */
 typedef struct {
-    Uint8 pad[0x1310]; /* 0x0000 */
+    Uint8 pad[0x1310]; /* 0x00 */
     SFBUF_WORK w;      /* 0x1310 sfd->buf[n] */
 } SFBUF_HN;
 CHECK_SIZEOF(SFBUF_HN, 0x1384);
@@ -839,7 +842,7 @@ typedef struct {
     SFTRN_TRIF_TBL trif;       /* 0x1C0 */
     Sint32 x1fc;               /* 0x1FC */
     void *x200;                /* 0x200 ADXT kept across a player reset (sfd_adxt.c) */
-    SFD hn[8];                 /* 0x204 created handles */
+    SFD hn[SFD_HN_MAX];        /* 0x204 created handles */
     Sint32 x224;               /* 0x224 */
 } SFLIB_WORK;
 CHECK_SIZEOF(SFLIB_WORK, 0x228);
