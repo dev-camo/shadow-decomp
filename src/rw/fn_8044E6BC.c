@@ -12,6 +12,9 @@
 /* the platform of a native skin in the stream */
 #define rwPLATFORMGAMECUBE 6
 
+/* The mesh at an index of a geometry's mesh header: the meshes follow the header */
+#define GEOMETRYMESH(geometry, index) (((RpMesh *)((geometry)->mesh + 1)) + (index))
+
 /* the destroy callback of generic GameCube instanced data (inferred) */
 void fn_8046288C(RwResEntry *repEntry);
 
@@ -249,11 +252,10 @@ RwBool fn_8044EEAC(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
     RpSkin *skin;
     RpGameCubeStreamRemap *remaps;
     RxVertexIndex **meshIndices;
-    RwInt32 numStreams;
+    RwUInt32 numStreams;
     RwInt32 numMeshes;
-    RwInt32 numIndexedStreams;
     RwInt32 i;
-    RwUInt32 j; /* compared unsigned */
+    RwUInt32 j;
 
     if (GAMECUBEVERTEXFORMAT(geometry) == NULL) {
         fn_80462E1C();
@@ -362,17 +364,16 @@ RwBool fn_8044EEAC(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
 
     /* each mesh's indices, once per stream other than the bone indices and weights */
     numMeshes = geometry->mesh->numMeshes;
-    numIndexedStreams = numStreams - 2;
     meshIndices =
-        RwMalloc(numIndexedStreams * (numMeshes * sizeof(RxVertexIndex *)), rwMEMHINT_SKINTEMP);
+        RwMalloc((numStreams - 2) * (numMeshes * sizeof(RxVertexIndex *)), rwMEMHINT_SKINTEMP);
     if (meshIndices == NULL) {
         RwFree(*builtStreams);
         RwFree(remaps);
         return FALSE;
     }
-    memset(meshIndices, 0, numIndexedStreams * (numMeshes * sizeof(RxVertexIndex *)));
+    memset(meshIndices, 0, (numStreams - 2) * (numMeshes * sizeof(RxVertexIndex *)));
     for (i = 0; i < numMeshes; i++) {
-        RpMesh *mesh = (RpMesh *)(geometry->mesh + 1) + i;
+        RpMesh *mesh = GEOMETRYMESH(geometry, i);
 
         for (j = 0; j < numStreams - 2; j++) {
             meshIndices[i * (numStreams - 2) + j] = mesh->indices;
@@ -387,7 +388,7 @@ RwBool fn_8044EEAC(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
         return FALSE;
     }
     for (i = 0; i < numMeshes; i++) {
-        RpMesh *mesh = (RpMesh *)(geometry->mesh + 1) + i;
+        RpMesh *mesh = GEOMETRYMESH(geometry, i);
 
         (*meshIndexLists)[i] = fn_80465CDC(remaps, &meshIndices[i * (numStreams - 2)],
                                            numStreams - 2, mesh->numIndices);
@@ -628,17 +629,18 @@ RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     size = vertexDataSize + displayListsSize;
     size += 31; /* slack to align the display lists to 32 bytes */
     primitive = (geometry->flags & rpGEOMETRYTRISTRIP) ? GX_TRIANGLESTRIP : GX_TRIANGLES;
+    /* the original reloads geometry->mesh after the calls in the second loop, so each mesh is
+     * read through the geometry at every use */
     for (i = 0; i < geometry->mesh->numMeshes; i++) {
-        RpMesh *mesh = (RpMesh *)(geometry->mesh + 1) + i;
-
         if (geometry->flags & rpGEOMETRYTRISTRIP) {
             RwInt32 meshStrips;
             RwUInt32 meshStripIndices;
 
-            fn_8046D8C8(meshIndexLists[i][0], mesh->numIndices, &meshStrips, &meshStripIndices, 1);
+            fn_8046D8C8(meshIndexLists[i][0], GEOMETRYMESH(geometry, i)->numIndices, &meshStrips,
+                        &meshStripIndices, 1);
             size += fn_8046B094(builder, meshStrips, meshStripIndices);
         } else {
-            size += fn_8046B094(builder, 1, mesh->numIndices);
+            size += fn_8046B094(builder, 1, GEOMETRYMESH(geometry, i)->numIndices);
         }
     }
     size += fn_8046EEA0(builder, &vertexSource);
@@ -680,14 +682,14 @@ RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     displayListData = (RwUInt8 *)(((RwUInt32)displayList + displayListsSize + 31) & ~31);
     skin = fn_8044CCAC(geometry);
     for (i = 0; i < geometry->mesh->numMeshes; i++) {
-        RpMesh *mesh = (RpMesh *)(geometry->mesh + 1) + i;
         RwUInt16 *slots = NULL;
         RwUInt32 displayListSize;
 
         if (geometry->flags & rpGEOMETRYTRISTRIP) {
-            fn_8046D8C8(meshIndexLists[i][0], mesh->numIndices, &numStrips, &numStripIndices, 1);
+            fn_8046D8C8(meshIndexLists[i][0], GEOMETRYMESH(geometry, i)->numIndices, &numStrips,
+                        &numStripIndices, 1);
         } else {
-            numStripIndices = mesh->numIndices;
+            numStripIndices = GEOMETRYMESH(geometry, i)->numIndices;
             numStrips = 1;
         }
         displayListSize = fn_8046B094(builder, numStrips, numStripIndices);
@@ -696,12 +698,12 @@ RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
         if (skin->maxNumWeightsForVertex > 1) {
             SkinSetMeshIndices(&indexSource, geometry, meshIndexLists[i], NULL);
         } else {
-            slots =
-                fn_8044F740(skin, meshIndexLists[i][0],
-                            builtStreams[SkinNumVertexStreams(geometry)].data, mesh->numIndices, i);
+            slots = fn_8044F740(skin, meshIndexLists[i][0],
+                                builtStreams[SkinNumVertexStreams(geometry)].data,
+                                GEOMETRYMESH(geometry, i)->numIndices, i);
             SkinSetMeshIndices(&indexSource, geometry, meshIndexLists[i], slots);
         }
-        fn_8046E594(builder, displayList, &indexSource, mesh->numIndices,
+        fn_8046E594(builder, displayList, &indexSource, GEOMETRYMESH(geometry, i)->numIndices,
                     geometry->flags & rpGEOMETRYTRISTRIP, fn_8046ACBC(builder), 1, primitive, 0);
         if (slots != NULL) {
             RwFree(slots);
@@ -872,7 +874,7 @@ RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     size += 31; /* slack to align the display lists to 32 bytes */
     primitive = (geometry->flags & rpGEOMETRYTRISTRIP) ? GX_TRIANGLESTRIP : GX_TRIANGLES;
     for (i = 0; i < geometry->mesh->numMeshes; i++) {
-        size += fn_8046B094(builder, 1, ((RpMesh *)(geometry->mesh + 1))[i].numIndices);
+        size += fn_8046B094(builder, 1, GEOMETRYMESH(geometry, i)->numIndices);
     }
     size += fn_8046EEA0(builder, &vertexSource);
 
@@ -916,7 +918,7 @@ RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     displayList = (RwUInt8 *)instance + vertexDataSize;
     displayListData = (RwUInt8 *)(((RwUInt32)displayList + displayListsSize + 31) & ~31);
     for (i = 0; i < geometry->mesh->numMeshes; i++) {
-        RpMesh *mesh = (RpMesh *)(geometry->mesh + 1) + i;
+        RpMesh *mesh = GEOMETRYMESH(geometry, i);
         RwUInt32 displayListSize = fn_8046B094(builder, 1, mesh->numIndices);
         RwUInt16 *slots;
         RxVertexIndex *indices;
