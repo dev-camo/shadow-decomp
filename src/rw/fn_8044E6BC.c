@@ -238,20 +238,20 @@ RwInt32 fn_8044EE3C(const void *object, RwInt32 offset, RwInt32 size) {
     return 0;
 }
 
-/* Builds the native vertex data and per-mesh display lists of a skinned geometry from its source
- * streams: positions, normals, prelit colors and texture coordinates, then the bone indices and
+/* Builds the distinct values of a skinned geometry's vertex streams and each mesh's indices into
+ * them: positions, normals, prelit colors and texture coordinates, then the bone indices and
  * weights (bytes for skins with several weights per vertex). Positions and normals depend on the
- * indices and weights, and those on the positions and normals. */
+ * indices and weights, and those on the positions and normals. Returns TRUE on success. */
 RwBool fn_8044EEAC(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
                    RxVertexIndex ****meshIndexLists) {
     RpGameCubeStreamSource streams[16];
     RpMorphTarget *morphTarget;
     RpSkin *skin;
-    void *builder;
+    RpGameCubeStreamRemap *remaps;
     RxVertexIndex **meshIndices;
     RwInt32 numStreams;
     RwInt32 numMeshes;
-    RwInt32 numSkinned;
+    RwInt32 numIndexedStreams;
     RwInt32 i;
     RwUInt32 j; /* compared unsigned */
 
@@ -260,15 +260,16 @@ RwBool fn_8044EEAC(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
     }
 
     morphTarget = geometry->morphTarget;
-    numStreams = 1;
-    streams[0].data = morphTarget->verts;
-    streams[0].kind = 8;
-    streams[0].dependencies[0] = -1;
+    numStreams = 0;
+    streams[numStreams].data = morphTarget->verts;
+    streams[numStreams].kind = 8;
+    streams[numStreams].dependencies[0] = -1;
+    numStreams++;
     if (geometry->flags & rpGEOMETRYNORMALS) {
         streams[numStreams].data = morphTarget->normals;
-        numStreams = 2;
-        streams[1].kind = 8;
-        streams[1].dependencies[0] = -1;
+        streams[numStreams].kind = 8;
+        streams[numStreams].dependencies[0] = -1;
+        numStreams++;
     }
     if (geometry->flags & rpGEOMETRYPRELIT) {
         streams[numStreams].data = geometry->preLitLum;
@@ -307,16 +308,17 @@ RwBool fn_8044EEAC(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
         streams[numStreams].kind = 4;
     }
     streams[numStreams].dependencies[0] = -1;
+    numStreams++;
     if (skin->maxNumWeightsForVertex > 1) {
-        streams[numStreams + 1].data = skin->weights;
-        streams[numStreams + 1].kind = streams[numStreams].kind;
-        streams[numStreams + 1].dependencies[0] = -1;
-        numStreams += 2;
+        streams[numStreams].data = skin->weights;
+        streams[numStreams].kind = streams[numStreams - 1].kind;
+        streams[numStreams].dependencies[0] = -1;
+        numStreams++;
     } else {
-        streams[numStreams + 1].data = skin->vertexBoneWeights;
-        streams[numStreams + 1].kind = 9;
-        streams[numStreams + 1].dependencies[0] = -1;
-        numStreams += 2;
+        streams[numStreams].data = skin->vertexBoneWeights;
+        streams[numStreams].kind = 9;
+        streams[numStreams].dependencies[0] = -1;
+        numStreams++;
     }
 
     if (geometry->flags & rpGEOMETRYNORMALS) {
@@ -348,26 +350,27 @@ RwBool fn_8044EEAC(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
         streams[numStreams - 1].dependencies[2] = -1;
     }
 
-    builder = fn_80466194(streams, numStreams, geometry->numVertices);
-    if (builder == NULL) {
+    remaps = fn_80466194(streams, numStreams, geometry->numVertices);
+    if (remaps == NULL) {
         return FALSE;
     }
-    *builtStreams = fn_80465ED4(builder, streams, numStreams, geometry->numVertices);
+    *builtStreams = fn_80465ED4(remaps, streams, numStreams, geometry->numVertices);
     if (*builtStreams == NULL) {
-        RwFree(builder);
+        RwFree(remaps);
         return FALSE;
     }
 
-    /* each mesh's indices, once per stream that is not skinned */
+    /* each mesh's indices, once per stream other than the bone indices and weights */
     numMeshes = geometry->mesh->numMeshes;
-    numSkinned = numStreams - 2;
-    meshIndices = RwMalloc(numSkinned * (numMeshes * sizeof(RxVertexIndex *)), rwMEMHINT_SKINTEMP);
+    numIndexedStreams = numStreams - 2;
+    meshIndices =
+        RwMalloc(numIndexedStreams * (numMeshes * sizeof(RxVertexIndex *)), rwMEMHINT_SKINTEMP);
     if (meshIndices == NULL) {
         RwFree(*builtStreams);
-        RwFree(builder);
+        RwFree(remaps);
         return FALSE;
     }
-    memset(meshIndices, 0, numSkinned * (numMeshes * sizeof(RxVertexIndex *)));
+    memset(meshIndices, 0, numIndexedStreams * (numMeshes * sizeof(RxVertexIndex *)));
     for (i = 0; i < numMeshes; i++) {
         RpMesh *mesh = (RpMesh *)(geometry->mesh + 1) + i;
 
@@ -380,16 +383,16 @@ RwBool fn_8044EEAC(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
     if (*meshIndexLists == NULL) {
         RwFree(meshIndices);
         RwFree(*builtStreams);
-        RwFree(builder);
+        RwFree(remaps);
         return FALSE;
     }
     for (i = 0; i < numMeshes; i++) {
         RpMesh *mesh = (RpMesh *)(geometry->mesh + 1) + i;
 
-        (*meshIndexLists)[i] = fn_80465CDC(builder, &meshIndices[i * (numStreams - 2)],
+        (*meshIndexLists)[i] = fn_80465CDC(remaps, &meshIndices[i * (numStreams - 2)],
                                            numStreams - 2, mesh->numIndices);
         if ((*meshIndexLists)[i] == NULL) {
-            /* (sic) frees the earlier display lists but the first */
+            /* (sic) frees the earlier index lists but the first */
             while (--i > 0) {
                 RwFree((*meshIndexLists)[i]);
             }
@@ -398,7 +401,7 @@ RwBool fn_8044EEAC(RpGeometry *geometry, RpGameCubeBuiltStream **builtStreams,
     }
 
     RwFree(meshIndices);
-    RwFree(builder);
+    RwFree(remaps);
     return TRUE;
 }
 
@@ -582,6 +585,7 @@ RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     RwUInt8 *displayListData;
     RwUInt32 vertexDataSize;
     RwUInt32 size;
+    RwUInt32 displayListsSize;
     RwInt32 primitive;
     RwUInt32 i;
     RwInt32 j;
@@ -620,11 +624,10 @@ RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
 
     /* the vertex data header, the display list records, then the display lists */
     vertexDataSize = fn_8046EE8C(builder);
-    size = vertexDataSize + geometry->mesh->numMeshes * sizeof(RpGameCubeDisplayList) + 31;
-    primitive = GX_TRIANGLES;
-    if (geometry->flags & rpGEOMETRYTRISTRIP) {
-        primitive = GX_TRIANGLESTRIP;
-    }
+    displayListsSize = geometry->mesh->numMeshes * sizeof(RpGameCubeDisplayList);
+    size = vertexDataSize + displayListsSize;
+    size += 31; /* slack to align the display lists to 32 bytes */
+    primitive = (geometry->flags & rpGEOMETRYTRISTRIP) ? GX_TRIANGLESTRIP : GX_TRIANGLES;
     for (i = 0; i < geometry->mesh->numMeshes; i++) {
         RpMesh *mesh = (RpMesh *)(geometry->mesh + 1) + i;
 
@@ -674,9 +677,7 @@ RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     }
 
     displayList = (RwUInt8 *)instance + vertexDataSize;
-    displayListData = (RwUInt8 *)(((RwUInt32)displayList +
-                                   geometry->mesh->numMeshes * sizeof(RpGameCubeDisplayList) + 31) &
-                                  ~31);
+    displayListData = (RwUInt8 *)(((RwUInt32)displayList + displayListsSize + 31) & ~31);
     skin = fn_8044CCAC(geometry);
     for (i = 0; i < geometry->mesh->numMeshes; i++) {
         RpMesh *mesh = (RpMesh *)(geometry->mesh + 1) + i;
@@ -718,7 +719,7 @@ RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
         memcpy(skin->weights, indices[1].data, skin->maxNumWeightsForVertex * indices[1].count);
     }
     geometry->numVertices = builtStreams[0].count;
-    DCFlushRange(instance, repEntry->size);
+    DCFlushRange(instance, size);
     GXInvalidateVtxCache();
 
     for (i = 0; i < geometry->mesh->numMeshes; i++) {
@@ -837,6 +838,7 @@ RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     RwUInt8 *displayListData;
     RwUInt32 vertexDataSize;
     RwUInt32 size;
+    RwUInt32 displayListsSize;
     RwInt32 primitive;
     RwUInt32 i;
     RwInt32 j;
@@ -865,11 +867,10 @@ RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
 
     /* the vertex data header, the display list records, then the display lists */
     vertexDataSize = fn_8046EE8C(builder);
-    size = vertexDataSize + geometry->mesh->numMeshes * sizeof(RpGameCubeDisplayList) + 31;
-    primitive = GX_TRIANGLES;
-    if (geometry->flags & rpGEOMETRYTRISTRIP) {
-        primitive = GX_TRIANGLESTRIP;
-    }
+    displayListsSize = geometry->mesh->numMeshes * sizeof(RpGameCubeDisplayList);
+    size = vertexDataSize + displayListsSize;
+    size += 31; /* slack to align the display lists to 32 bytes */
+    primitive = (geometry->flags & rpGEOMETRYTRISTRIP) ? GX_TRIANGLESTRIP : GX_TRIANGLES;
     for (i = 0; i < geometry->mesh->numMeshes; i++) {
         size += fn_8046B094(builder, 1, ((RpMesh *)(geometry->mesh + 1))[i].numIndices);
     }
@@ -913,9 +914,7 @@ RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     }
 
     displayList = (RwUInt8 *)instance + vertexDataSize;
-    displayListData = (RwUInt8 *)(((RwUInt32)displayList +
-                                   geometry->mesh->numMeshes * sizeof(RpGameCubeDisplayList) + 31) &
-                                  ~31);
+    displayListData = (RwUInt8 *)(((RwUInt32)displayList + displayListsSize + 31) & ~31);
     for (i = 0; i < geometry->mesh->numMeshes; i++) {
         RpMesh *mesh = (RpMesh *)(geometry->mesh + 1) + i;
         RwUInt32 displayListSize = fn_8046B094(builder, 1, mesh->numIndices);
@@ -950,7 +949,7 @@ RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
 
     fn_8046F208(builder, instance, &vertexSource, displayListData);
     fn_8046F6CC(builder, instance, &vertexSource, 0, 0);
-    DCFlushRange(instance, repEntry->size);
+    DCFlushRange(instance, size);
     GXInvalidateVtxCache();
     return repEntry;
 }
