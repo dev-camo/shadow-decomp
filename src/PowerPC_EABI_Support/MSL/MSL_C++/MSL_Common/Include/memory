@@ -54,7 +54,11 @@ template <class T> class allocator {
 
     allocator() {}
 
-    pointer allocate(size_type n, const void *hint) {
+    template <class U> struct rebind {
+        typedef allocator<U> other;
+    };
+
+    pointer allocate(size_type n, const void *hint = 0) {
         pointer p = static_cast<pointer>(::operator new(n * sizeof(T)));
         if (p == 0) {
             __msl_error("Memory allocation failure");

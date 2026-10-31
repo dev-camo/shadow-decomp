@@ -169,6 +169,14 @@ inline float sqrt(float x) {
     return ::sqrtf(x);
 }
 
+inline float sin(float x) {
+    return ::sinf(x);
+}
+
+inline float cos(float x) {
+    return ::cosf(x);
+}
+
 inline float abs(float x) {
     return ::fabsf(x);
 }

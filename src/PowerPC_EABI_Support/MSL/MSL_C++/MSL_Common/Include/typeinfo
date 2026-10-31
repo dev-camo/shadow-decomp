@@ -1,0 +1,32 @@
+#ifndef MSL_TYPEINFO_H_
+#define MSL_TYPEINFO_H_
+
+#include <cstring>
+
+namespace std {
+
+/* The run-time type information record the compiler emits for each class: the class name and the
+ * list of its base classes. typeid(T) yields a reference to the record of T. */
+class type_info {
+  public:
+    const char *name() const {
+        return tname_;
+    }
+
+    /* Records are compared by class name, so two units' copies of a record are equal. */
+    bool operator==(const type_info &rhs) const {
+        return std::strcmp(tname_, rhs.tname_) == 0;
+    }
+
+    bool operator!=(const type_info &rhs) const {
+        return std::strcmp(tname_, rhs.tname_) != 0;
+    }
+
+  private:
+    const char *tname_;
+    const void *bases_;
+};
+
+} // namespace std
+
+#endif

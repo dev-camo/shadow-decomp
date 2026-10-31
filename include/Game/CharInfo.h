@@ -6,6 +6,8 @@
 #include <dolphin/types.h>
 #include "layout_check.h"
 
+class CharCommand;
+
 /* CharInfo (class name from RTTI): the 0x64-byte base class of the character infos of gadgets,
  * enemies, bosses and other objects (GadgetCharInfo, EnemyCharInfo, BossCharInfo, ...). The layout
  * comes from its constructor; only the position and rotation are named (names inferred). The vtable
@@ -24,8 +26,15 @@ class CharInfo {
      * which may be ids. */
     CharInfo(int arg0);
     virtual ~CharInfo();
+    /* The next two virtual functions are named after their implementations in CharInfo's vtable;
+     * their purpose is unknown. The second takes a command (behaviour inferred from its caller in
+     * ElecCircuitEntrance). */
+    virtual void fn_8007A4CC();
+    virtual void fn_801DC980(CharCommand *command);
 
-    /* 0x3C */ u8 field_0x3C[0x5C - 0x3C];
+    /* 0x3C */ u8 field_0x3C[0x50 - 0x3C];
+    /* 0x50 */ s32 field_0x50; /* the constructor's arg0 */
+    /* 0x54 */ u8 field_0x54[0x5C - 0x54];
     /* 0x5C */ s32 field_0x5C;         /* cleared by the constructor */
     /* 0x60 */ const void *field_0x60; /* the constructor stores a data address here */
 };
