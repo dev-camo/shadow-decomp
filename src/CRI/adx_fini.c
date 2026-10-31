@@ -27,10 +27,10 @@ ADX_FS adxf_obj[ADXF_OBJ_MAX];
 /* Address of the build string, set by ADXF_Init (name inferred). */
 const Char8 *adxf_build_ptr;
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. MWCC lays out
- * .bss by first reference, so this never-called function refers to every global in storage order
- * before ADXF_Finish does. Storing the addresses keeps those references from being optimized away.
- */
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game;
+ * its body is unknown. MWCC lays out .bss by first reference, so this never-called function
+ * refers to every global in storage order before ADXF_Finish does. Storing the addresses keeps
+ * those references from being optimized away. Revisit when the stripped body is found. */
 static void adxf_BssOrder(void **out) {
     out[0] = &adxf_init_cnt;
     out[1] = &adxf_ldptnw_last_stat;

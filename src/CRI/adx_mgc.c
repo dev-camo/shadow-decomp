@@ -93,9 +93,10 @@ static void adxm_border_cb(void *obj);
 static void adxm_lock_cb(void *obj);
 static void adxm_unlock_cb(void *obj);
 
-/* Stand-in for stripped ADXM code: MWCC lays out .bss in order of first use, and the original
- * layout has these statics (adxgc_exec_svr, adxm_mwidle_exec_flag and adxm_x24 are used nowhere
- * else) first used ahead of ADXM_SetupThrd. Never called; the linker discards it. */
+/* Matching workaround: order-only stand-in for stripped ADXM code: MWCC lays out .bss in order
+ * of first use, and the original layout has these statics (adxgc_exec_svr,
+ * adxm_mwidle_exec_flag and adxm_x24 are used nowhere else) first used ahead of ADXM_SetupThrd.
+ * Never called; the linker discards it. Revisit when the stripped body is found. */
 static void adxm_BssOrder(void) {
     adxgc_exec_svr = NULL;
     adxm_init_level = 0;

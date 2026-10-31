@@ -129,10 +129,10 @@ static ADXSJE_PRDFLT adxsje_prdflt_obj[ADXSJE_MAX_FLT];
 static ADXSJE_IIRFLT adxsje_iirflt_obj[ADXSJE_MAX_FLT];
 static ADXSJE_OBJ adxsje_obj[ADXSJE_MAX_OBJ];
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. MWCC lays out
- * .bss by first reference, so this never-called function refers to the two filter tables before
- * any code refers to the handle table. Storing the addresses keeps the references.
- */
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game;
+ * its body is unknown. MWCC lays out .bss by first reference, so this never-called function
+ * refers to the two filter tables before any code refers to the handle table. Storing the
+ * addresses keeps the references. Revisit when the stripped body is found. */
 static void adxsje_BssOrder(void **out) {
     out[0] = adxsje_prdflt_obj;
     out[1] = adxsje_iirflt_obj;

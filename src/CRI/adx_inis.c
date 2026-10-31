@@ -60,10 +60,10 @@ void ADXT_Finish(void) {
     }
 }
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. MWCC lays out
- * .bss by first reference, so this never-called function refers to adxt_obj before ADXT_Init
- * refers to cri_verstr_ptr. Storing the address keeps the reference from being optimized away.
- */
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game;
+ * its body is unknown. MWCC lays out .bss by first reference, so this never-called function
+ * refers to adxt_obj before ADXT_Init refers to cri_verstr_ptr. Storing the address keeps the
+ * reference from being optimized away. Revisit when the stripped body is found. */
 static void adxini_BssOrder(void **out) {
     out[0] = adxt_obj;
 }
