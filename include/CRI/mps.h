@@ -97,32 +97,34 @@ CHECK_SIZEOF(MPSLIB_WORK, 0x110);
 
 extern MPSLIB_WORK *MPSLIB_libwork;
 
-Sint32 MPSLIB_CheckHn(MPS mps);
-Sint32 MPSLIB_SetErr(MPS mps, Sint32 code);
-MPS MPS_Create(void);
+/* mps_lib.c */
 Sint32 MPS_Destroy(MPS mps);
-Uint32 MPS_CheckDelim(Uint8 *p);
-Sint32 MPS_DecHd(MPS mps, Uint8 *adr, Sint32 len, Sint32 *used, Sint32 *flags);
-Sint32 MPS_GetPackHd(MPS mps, MPS_PACKHD *hd);
-Sint32 MPS_GetSysHd(MPS mps, MPS_SYSHD *hd, Sint32 no);
-Sint32 MPS_GetLastSysHd(MPS mps, MPS_SYSHD *hd);
-Sint32 MPS_GetPketHd(MPS mps, MPS_PKETHD *hd);
-void MPS_SetPesFn(MPS mps, void *fn, void *obj);
-void MPS_SetPsMapFn(MPS mps, void *fn, void *obj);
-void MPS_SetSystemFn(MPS mps, void *fn, void *obj);
-
-Sint32 MPS_Init(Sint32 num_hn, void *work);
-void MPS_Finish(void);
+MPS MPS_Create(void);
+Sint32 MPSLIB_CheckHn(MPS mps);
 Sint32 MPS_SetErrFn(MPS mps, void (*fn)(void *obj, Sint32 code), void *obj);
+Sint32 MPSLIB_SetErr(MPS mps, Sint32 code);
+void MPS_Finish(void);
+Sint32 MPS_Init(Sint32 num_hn, void *work);
+
+/* mps_del.c */
+Uint32 MPS_CheckDelim(Uint8 *p);
 
 /* mps_dec.c */
 Sint32 MPSDEC_DecHdMpeg1(MPS mps, Uint8 *adr, Sint32 len, Sint32 *used, Sint32 *flags);
-void MPSDEC_Init(void);
+Sint32 MPS_DecHd(MPS mps, Uint8 *adr, Sint32 len, Sint32 *used, Sint32 *flags);
+void MPS_SetPesFn(MPS mps, void *fn, void *obj);
+void MPS_SetPsMapFn(MPS mps, void *fn, void *obj);
+void MPS_SetSystemFn(MPS mps, void *fn, void *obj);
 void MPSDEC_Finish(void);
+void MPSDEC_Init(void);
 
 /* mps_get.c */
-void MPSGET_Init(void);
+Sint32 MPS_GetPketHd(MPS mps, MPS_PKETHD *hd);
+Sint32 MPS_GetLastSysHd(MPS mps, MPS_SYSHD *hd);
+Sint32 MPS_GetSysHd(MPS mps, MPS_SYSHD *hd, Sint32 no);
+Sint32 MPS_GetPackHd(MPS mps, MPS_PACKHD *hd);
 void MPSGET_Finish(void);
+void MPSGET_Init(void);
 
 #ifdef __cplusplus
 }
