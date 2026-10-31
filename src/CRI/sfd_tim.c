@@ -83,11 +83,13 @@ Bool SFTIM_IsVideoTerm(SFD sfd) {
     return UTY_CmpTime(vterm, unit, tim->cur, tim->cur_unit) != 0;
 }
 
-/* Matching workaround: literal-order device, not a recovered function (it is not in the executable
- * and is unused). Its int -> float conversion creates the unit's 0x43300000_80000000 conversion
- * constant before the 10000.0f literal of the helper below, giving the .rodata order
- * [double][10000.0f][-1.0f] (a literal is placed by creation order, not by first use). Revisit
- * when the function that converts an integer here is recovered. */
+/* Matching workaround: stand-in for a function the linker stripped (the body is not the original's,
+ * and the function is unused). The compiler creates all float literals of a function before its code,
+ * and the 0x43300000_80000000 int -> float conversion constant only while generating code, so the
+ * original .rodata order [double][10000.0f][-1.0f] needs an earlier function that converts an integer
+ * and has no float literal. No surviving function before SFTIM_IsGetFrmTimeTunit does, so the
+ * original most likely had one that was stripped; this stand-in reproduces its conversion. Revisit
+ * when that function's body is known. */
 static Float32 sftim_ConstOrder(Sint32 v) {
     return (Float32)v;
 }
