@@ -974,9 +974,9 @@ static Sint32 sfmps_ExecServerLoop(SFD sfd, Sint32 *len) {
     }
     if (sfd->buf[0].u.ring.sup.sj != 0) {
         SFBUF_GetFlowCnt(sfd->buf[0].u.ring.sup.sj, &wcnt, &rcnt);
-        SFD_CNT(sfd)->s_flow = SFBUF_UpdateFlowCnt(SFD_CNT(sfd)->s_flow, wcnt);
-        SFD_CNT(sfd)->s_byte += tot;
-        SFD_CNT(sfd)->s_skip += skiptot;
+        sfd->plyinf.s_flow = SFBUF_UpdateFlowCnt(sfd->plyinf.s_flow, wcnt);
+        sfd->plyinf.s_byte += tot;
+        sfd->plyinf.s_skip += skiptot;
     }
     if (sfd->stat == SFD_STAT_PREP) {
         sfmps_ProcPrep(sfd);

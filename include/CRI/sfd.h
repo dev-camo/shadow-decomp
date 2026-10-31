@@ -496,9 +496,37 @@ typedef struct {
 CHECK_SIZEOF(SFMPV_WORK, 0x10A0);
 
 /* 0xA8-byte player information block (SFD_OBJ + 0x950): cleared by sfply_InitHn and passed to the
- * picture hooks (conditions 0x24/0x25); sfd_ply.c SFPLY_PLYINF is the field view */
+ * picture hooks (conditions 0x24/0x25). The 64-bit counters are the stream flow statistics: the
+ * system stream ones are written by sfd_mps.c and the audio ones by sfd_adxt.c; the video ones
+ * are updated only by the video driver (sfd_mpv.c, not decompiled), so their meaning is
+ * inferred. */
 typedef struct {
-    Sint32 raw[0x2A]; /* 0x00 */
+    Sint32 ndecpic;   /* 0x00 decoded pictures (SFPLY_AddDecPic) */
+    Sint32 nskippic;  /* 0x04 skipped pictures (SFPLY_AddSkipPic) */
+    Sint32 x08;       /* 0x08 */
+    Sint32 x0c;       /* 0x0C */
+    Sint32 x10;       /* 0x10 */
+    Sint32 x14;       /* 0x14 */
+    Sint32 getcnt;    /* 0x18 frames taken by SFD_GetFrm */
+    Sint32 relcnt;    /* 0x1C frames returned by SFD_RelFrm */
+    Sint32 bpa;       /* 0x20 buffering pause active */
+    Sint32 nbpa;      /* 0x24 buffering pauses so far */
+    Sint32 x28;       /* 0x28 */
+    Sint32 x2c;       /* 0x2C */
+    Sint32 x30;       /* 0x30 */
+    Sint64 s_flow;    /* 0x38 system stream ring: flow count (sfd_mps.c) */
+    Sint64 s_byte;    /* 0x40 system stream bytes demultiplexed (sfd_mps.c) */
+    Sint64 s_skip;    /* 0x48 system stream bytes skipped (sfd_mps.c) */
+    Sint64 v_flow;    /* 0x50 video input ring: flow count (inferred) */
+    Sint64 v_byte;    /* 0x58 video bytes handed to the decoder (inferred) */
+    Sint64 v_skip;    /* 0x60 video bytes skipped up to a start code (inferred) */
+    Sint64 a_in_wcnt; /* 0x68 audio input ring: written (sfd_adxt.c) */
+    Sint64 a_in_rcnt; /* 0x70 audio input ring: read (sfd_adxt.c) */
+    Sint64 a_byte;    /* 0x78 audio bytes handed to the decoder (sfd_adxt.c) */
+    Sint64 a_sj_wcnt; /* 0x80 decoder stream joint: written (sfd_adxt.c) */
+    Sint64 a_sj_rcnt; /* 0x88 decoder stream joint: read (sfd_adxt.c) */
+    Sint64 x90;       /* 0x90 */
+    Sint32 rsv[4];    /* 0x98 */
 } SFD_PLYINF;
 CHECK_SIZEOF(SFD_PLYINF, 0xA8);
 
@@ -854,26 +882,6 @@ CHECK_SIZEOF(SFBUF_HN, 0x1384);
 
 #define SFBUF_GET_HN(sfd, n) ((SFBUF_HN *)((SFBUF_WORK *)(sfd) + (n)))
 
-/* 64-bit stream counters inside plyinf, seen through a view of the whole handle (SFD_PLYINF is a
- * word array). s_flow, s_byte and s_skip are confirmed by sfd_mps.c; the video and audio counters
- * are not yet used by any decompiled unit (unverified). */
-typedef struct {
-    Uint8 pad0[0x988]; /* 0x000 */
-    Sint64 s_flow;     /* 0x988 system stream ring: flow count (sfd_mps.c) */
-    Sint64 s_byte;     /* 0x990 system stream bytes demultiplexed */
-    Sint64 s_skip;     /* 0x998 system stream bytes skipped */
-    Sint64 v_flow;     /* 0x9A0 video input ring: flow count (inferred) */
-    Sint64 v_byte;     /* 0x9A8 video bytes handed to the decoder (inferred) */
-    Sint64 v_skip;     /* 0x9B0 video bytes skipped up to a start code (inferred) */
-    Sint64 a_in_wcnt;  /* 0x9B8 audio input ring: written (inferred) */
-    Sint64 a_in_rcnt;  /* 0x9C0 audio input ring: read (inferred) */
-    Sint64 a_byte;     /* 0x9C8 audio bytes handed to the decoder (inferred) */
-    Sint64 a_sj_wcnt;  /* 0x9D0 decoder stream joint: written (inferred) */
-    Sint64 a_sj_rcnt;  /* 0x9D8 decoder stream joint: read (inferred) */
-} SFD_CNT64;
-CHECK_SIZEOF(SFD_CNT64, 0x9E0);
-
-#define SFD_CNT(sfd) ((SFD_CNT64 *)(sfd))
 #define SFD_TIM(sfd) ((SFTIM) & (sfd)->con)
 #define SFTIM_LIBWK ((SFTIM_LIB *)SFLIB_libwork.tim)
 

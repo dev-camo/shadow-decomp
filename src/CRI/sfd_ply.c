@@ -12,32 +12,9 @@
 #define SFD_HNWORK_MIN 0x3660
 #define SFD_HNCTRL_WKSIZ_MAX 0x6CC0
 
-/* player information block as sfply_InitHn clears it (SFD_OBJ + 0x950): 12 counters, 12 64-bit
- * counters, reserve */
-typedef struct {
-    Sint32 ndecpic;   /* 0x00 decoded pictures (SFPLY_AddDecPic) */
-    Sint32 nskippic;  /* 0x04 skipped pictures (SFPLY_AddSkipPic) */
-    Sint32 x08;       /* 0x08 */
-    Sint32 x0c;       /* 0x0C */
-    Sint32 x10;       /* 0x10 */
-    Sint32 x14;       /* 0x14 */
-    Sint32 getcnt;    /* 0x18 frames taken by SFD_GetFrm */
-    Sint32 relcnt;    /* 0x1C frames returned by SFD_RelFrm */
-    Sint32 bpa;       /* 0x20 buffering pause active */
-    Sint32 nbpa;      /* 0x24 buffering pauses so far */
-    Sint32 x28;       /* 0x28 */
-    Sint32 x2c;       /* 0x2C */
-    Sint32 x30;       /* 0x30 */
-    Sint64 cnt64[12]; /* 0x38 */
-    Sint32 rsv[4];    /* 0x98 */
-} SFPLY_PLYINF;
-CHECK_SIZEOF(SFPLY_PLYINF, 0xA8);
-
-#define PLYINF(sfd) ((SFPLY_PLYINF *)&(sfd)->plyinf)
-
 /* playing and not paused by the user or the buffering pause */
 #define SFPLY_IS_PLAYING(sfd)                                                                      \
-    ((sfd)->stat == SFD_STAT_PLAYING && (sfd)->pause_sw != 1 && PLYINF(sfd)->bpa != 1)
+    ((sfd)->stat == SFD_STAT_PLAYING && (sfd)->pause_sw != 1 && (sfd)->plyinf.bpa != 1)
 
 void (*SFPLY_recordgetfrm)(SFD sfd, void *frm);
 Sint32 sfply_last_hnctrl_wksiz;
@@ -118,8 +95,8 @@ Sint32 SFD_RelFrm(SFD sfd, void *frm) {
     if (ret != 0) {
         return ret;
     }
-    if (PLYINF(sfd)->relcnt < PLYINF(sfd)->getcnt) {
-        PLYINF(sfd)->relcnt++;
+    if (sfd->plyinf.relcnt < sfd->plyinf.getcnt) {
+        sfd->plyinf.relcnt++;
     }
     return SFTRN_CallTrtTrif(sfd, 6, 12, (Sint32)frm, 0);
 }
@@ -139,11 +116,11 @@ Sint32 SFD_GetFrm(SFD sfd, void **frm) {
         return ret;
     }
     ret = SFTRN_CallTrtTrif(sfd, 6, 11, (Sint32)frm, 0);
-    if (*frm != 0 && PLYINF(sfd)->getcnt == PLYINF(sfd)->relcnt) {
-        if (PLYINF(sfd)->getcnt == 0) {
+    if (*frm != 0 && sfd->plyinf.getcnt == sfd->plyinf.relcnt) {
+        if (sfd->plyinf.getcnt == 0) {
             sfd->frmstat.t0 = fn_803FEA5C();
         }
-        PLYINF(sfd)->getcnt++;
+        sfd->plyinf.getcnt++;
     }
     if (SFPLY_recordgetfrm != 0) {
         SFPLY_recordgetfrm(sfd, *frm);
@@ -403,7 +380,7 @@ void SFPLY_AddSkipPic(SFD sfd, Sint32 n, void *arg) {
     void (*fn)(SFD sfd, void *arg, SFD_PLYINF *inf);
     SFD_PLYINF *inf = &sfd->plyinf;
 
-    PLYINF(sfd)->nskippic += n;
+    inf->nskippic += n;
     fn = (void (*)(SFD, void *, SFD_PLYINF *))SFSET_GetCond(sfd, 0x25);
     if (fn != 0) {
         fn(sfd, arg, inf);
@@ -415,7 +392,7 @@ void SFPLY_AddDecPic(SFD sfd, Sint32 n, void *arg) {
     void (*fn)(SFD sfd, void *arg, SFD_PLYINF *inf);
     SFD_PLYINF *inf = &sfd->plyinf;
 
-    PLYINF(sfd)->ndecpic += n;
+    inf->ndecpic += n;
     fn = (void (*)(SFD, void *, SFD_PLYINF *))SFSET_GetCond(sfd, 0x24);
     if (fn != 0) {
         fn(sfd, arg, inf);
@@ -473,30 +450,30 @@ static SFD sfply_InitHn(SFD_CREPRM *prm, Sint32 x) {
     hn->numelem_vid = -1;
     hn->numelem_prv = -1;
     UTY_MemsetDword(&hn->plyinf, 0, sizeof(SFD_PLYINF) / 4);
-    PLYINF(hn)->ndecpic = 0;
-    PLYINF(hn)->nskippic = 0;
-    PLYINF(hn)->x08 = 0;
-    PLYINF(hn)->x0c = 0;
-    PLYINF(hn)->x10 = 0;
-    PLYINF(hn)->getcnt = 0;
-    PLYINF(hn)->relcnt = 0;
-    PLYINF(hn)->bpa = 0;
-    PLYINF(hn)->nbpa = 0;
-    PLYINF(hn)->x28 = 0;
-    PLYINF(hn)->x2c = 0;
-    PLYINF(hn)->x30 = 0;
-    PLYINF(hn)->cnt64[0] = 0;
-    PLYINF(hn)->cnt64[1] = 0;
-    PLYINF(hn)->cnt64[2] = 0;
-    PLYINF(hn)->cnt64[3] = 0;
-    PLYINF(hn)->cnt64[4] = 0;
-    PLYINF(hn)->cnt64[5] = 0;
-    PLYINF(hn)->cnt64[6] = 0;
-    PLYINF(hn)->cnt64[7] = 0;
-    PLYINF(hn)->cnt64[8] = 0;
-    PLYINF(hn)->cnt64[9] = 0;
-    PLYINF(hn)->cnt64[10] = 0;
-    PLYINF(hn)->cnt64[11] = 0;
+    hn->plyinf.ndecpic = 0;
+    hn->plyinf.nskippic = 0;
+    hn->plyinf.x08 = 0;
+    hn->plyinf.x0c = 0;
+    hn->plyinf.x10 = 0;
+    hn->plyinf.getcnt = 0;
+    hn->plyinf.relcnt = 0;
+    hn->plyinf.bpa = 0;
+    hn->plyinf.nbpa = 0;
+    hn->plyinf.x28 = 0;
+    hn->plyinf.x2c = 0;
+    hn->plyinf.x30 = 0;
+    hn->plyinf.s_flow = 0;
+    hn->plyinf.s_byte = 0;
+    hn->plyinf.s_skip = 0;
+    hn->plyinf.v_flow = 0;
+    hn->plyinf.v_byte = 0;
+    hn->plyinf.v_skip = 0;
+    hn->plyinf.a_in_wcnt = 0;
+    hn->plyinf.a_in_rcnt = 0;
+    hn->plyinf.a_byte = 0;
+    hn->plyinf.a_sj_wcnt = 0;
+    hn->plyinf.a_sj_rcnt = 0;
+    hn->plyinf.x90 = 0;
     /* clears tsum[] and the frame statistics behind it in one call */
     UTY_MemsetDword(hn->tsum, 0, (sizeof(hn->tsum) + sizeof(hn->frmstat)) / 4);
     for (i = 0, ts = hn->tsum; i < 5; i++, ts++) {
@@ -644,7 +621,7 @@ term_end:
     if (term) {
         return 0;
     }
-    if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 1 && PLYINF(sfd)->x28 == 0) {
+    if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 1 && sfd->plyinf.x28 == 0) {
         return 0;
     }
     if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 1 && SFBUF_RingGetDataSiz(sfd, 2) > 0) {
@@ -811,7 +788,7 @@ static Sint32 sfply_StopPlay(SFD sfd) {
     sfd->req = SFD_REQ_END;
     sfd->frmstat.t1 = fn_803FEA5C();
     sfd->frmstat.tunit = fn_803FE96C();
-    sfd->frmstat.nfrm = PLYINF(sfd)->getcnt;
+    sfd->frmstat.nfrm = sfd->plyinf.getcnt;
     if (sfd->frmstat.t1 - sfd->frmstat.t0 != 0) {
         sfd->frmstat.rate = (Float32)(sfd->frmstat.nfrm * sfd->frmstat.tunit) /
                             (Float32)(sfd->frmstat.t1 - sfd->frmstat.t0);
@@ -838,14 +815,14 @@ Sint32 sfply_StatPlay(SFD sfd) {
     }
     SFLIB_LockCs(&cs);
     ret = 0;
-    if (PLYINF(sfd)->bpa == 0) {
+    if (sfd->plyinf.bpa == 0) {
         if (sfply_IsBpaOn(sfd)) {
-            PLYINF(sfd)->bpa = 1;
-            PLYINF(sfd)->nbpa++;
+            sfd->plyinf.bpa = 1;
+            sfd->plyinf.nbpa++;
             ret = SFPL2_Pause(sfd, 1);
         }
     } else if (sfply_IsBpaOff(sfd)) {
-        PLYINF(sfd)->bpa = 0;
+        sfd->plyinf.bpa = 0;
         ret = SFPL2_Pause(sfd, 0);
     }
     SFLIB_UnlockCs(&cs);

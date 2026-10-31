@@ -469,7 +469,7 @@ void sfadxt_ExcludeSilence(SFD sfd, Uint8 *data, Sint32 len, Sint32 *nbyte) {
         p += SFADXT_FRMSIZ;
     }
     *nbyte = ofst;
-    SFD_CNT(sfd)->a_byte += ofst;
+    sfd->plyinf.a_byte += ofst;
     if (sfadxt_GetAudioInf(sfd, &nch, &sfreq) != 0) {
         return;
     }
@@ -544,7 +544,7 @@ void sfadxt_ExcludeHdr(SFD sfd, Uint8 *data, Sint32 len, Sint32 *nbyte) {
     }
     wk->func = sfadxt_AdjustSync;
     *nbyte = skip;
-    SFD_CNT(sfd)->a_byte += skip;
+    sfd->plyinf.a_byte += skip;
 }
 
 /* bytes up to the first end code within lim */
@@ -647,7 +647,7 @@ void sfadxt_AdjustSync(SFD sfd, Uint8 *data, Sint32 len, Sint32 *nbyte) {
         }
     }
     *nbyte = skip;
-    SFD_CNT(sfd)->a_byte += skip;
+    sfd->plyinf.a_byte += skip;
 }
 
 /* transfer state 4: copy the audio data into the ADXT stream joint */
@@ -690,11 +690,11 @@ static inline void sfadxt_UpdateFlowCnt(SFD sfd) {
         return;
     }
     SFBUF_GetFlowCnt(sj, &wcnt, &rcnt);
-    SFD_CNT(sfd)->a_in_wcnt = SFBUF_UpdateFlowCnt(SFD_CNT(sfd)->a_in_wcnt, wcnt);
-    SFD_CNT(sfd)->a_in_rcnt = SFBUF_UpdateFlowCnt(SFD_CNT(sfd)->a_in_rcnt, rcnt);
+    sfd->plyinf.a_in_wcnt = SFBUF_UpdateFlowCnt(sfd->plyinf.a_in_wcnt, wcnt);
+    sfd->plyinf.a_in_rcnt = SFBUF_UpdateFlowCnt(sfd->plyinf.a_in_rcnt, rcnt);
     SFBUF_GetFlowCnt(wk->sj, &wcnt, &rcnt);
-    SFD_CNT(sfd)->a_sj_wcnt = SFBUF_UpdateFlowCnt(SFD_CNT(sfd)->a_sj_wcnt, wcnt);
-    SFD_CNT(sfd)->a_sj_rcnt = SFBUF_UpdateFlowCnt(SFD_CNT(sfd)->a_sj_rcnt, rcnt);
+    sfd->plyinf.a_sj_wcnt = SFBUF_UpdateFlowCnt(sfd->plyinf.a_sj_wcnt, wcnt);
+    sfd->plyinf.a_sj_rcnt = SFBUF_UpdateFlowCnt(sfd->plyinf.a_sj_rcnt, rcnt);
 }
 
 /* read the demuxed audio ring and run the transfer state function on it */
