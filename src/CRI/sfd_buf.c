@@ -569,11 +569,9 @@ static void sfbuf_InitAout(SFBUF_WORK *wk, Uint32 *adr, Sint32 *size) {
     wk->u.aout.rsv2[2] = 0;
 }
 
-/* Lays the eight buffers out back to back from prm->adr: adr[i] is the start of buffer i. adr has
- * one spare element; with exactly eight MWCC keeps the array in registers rather than on the
- * stack. */
+/* Lays the eight buffers out back to back from prm->adr: adr[i] is the start of buffer i. */
 Sint32 SFBUF_InitHn(SFD sfd, SFBUF_WORK *wk, SFBUF_PRM *prm) {
-    Uint32 adr[9];
+    Uint32 adr[SFD_BUF_NUM];
     Sint32 xsize;
     Sint32 err;
     Sint32 i;

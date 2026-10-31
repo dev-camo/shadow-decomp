@@ -13,8 +13,6 @@
 #define SFMPS_NUM_HN 8
 #define SFMPS_WORK_MAX 0x200
 
-/* SFD condition ids */
-
 /* error codes */
 #define SFMPS_ERR_INIT 0xFF000D01
 #define SFMPS_ERR_DECHD 0xFF000D03
@@ -734,8 +732,7 @@ Sint32 sfmps_DecodeOneUnit(SFD sfd, Uint8 *data, Sint32 len, Sint32 *nbyte, Sint
                            Sint32 total) {
     Sint8 *p;
     Sint32 delim;
-    register Sint32 ret = 0;
-    register Sint32 err;
+    Sint32 ret = 0;
     SFMPS_WORK *wk;
     MPS mps;
     Sint32 bufin;
@@ -807,15 +804,13 @@ Sint32 sfmps_DecodeOneUnit(SFD sfd, Uint8 *data, Sint32 len, Sint32 *nbyte, Sint
     if (flags & MPS_DECHD_SYSHD) {
         shdr = sfmps_GetSeeShdr(sfd);
         if (shdr != 0 && shdr->analyzed == 0) {
-            /* dst walks the raw system-header copies; the lengths are stored through it (dst is
-             * &shdr->syshd at that point). */
             dst = shdr->syshd.data[0];
             MPS_GetLastSysHd(mps, &syshd);
             n = (len < 0xB0) ? len : 0xB0;
             if (syshd.raw[3] > 0) {
-                ((SFSEE_SYSHD *)dst)->len[0] = n;
+                shdr->syshd.len[0] = n;
             } else if (syshd.raw[2] > 0) {
-                ((SFSEE_SYSHD *)dst)->len[1] = n;
+                shdr->syshd.len[1] = n;
                 dst += sizeof(shdr->syshd.data[0]);
             } else {
                 goto no_syshd;
@@ -834,9 +829,7 @@ no_syshd:
     } else if (delim == 0) {
         *nskip = 0;
         p = (Sint8 *)data;
-        /* COMPILER-DIFF: the unit for the compare is read through the creation-parameter view of
-         * the handle; reading sfd->prm.unit here merges it with the later reads */
-        if (len >= ((SFD_CREPRM *)sfd)->unit + 3 && sfmps_IsZero(p, sfd->prm.unit)) {
+        if (len >= sfd->prm.unit + 3 && sfmps_IsZero(p, sfd->prm.unit)) {
             *nskip = sfd->prm.unit;
         } else {
             cnt = 0;
@@ -893,8 +886,7 @@ no_syshd:
     } else {
         data += hdrlen;
         len -= hdrlen;
-        err = sfmps_CopyPketData(sfd, data, len, &copied, &cres);
-        ret = err;
+        ret = sfmps_CopyPketData(sfd, data, len, &copied, &cres);
         if (cres == 1) {
             *nbyte = hdrlen + copied;
         }

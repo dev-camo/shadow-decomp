@@ -2436,6 +2436,8 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # sfadxt_ExecServerSub 239 differing words (1048 vs 1064 bytes),
+            # sfadxt_ExcludeHdr 38 words.
             Object(
                 NonMatching,
                 "CRI/sfd_adxt.c",
@@ -2466,8 +2468,10 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # SFD_SetCond: 8 differing words (r28/r31 swapped between the handle pointer and the
+            # shifted condition index).
             Object(
-                Matching,
+                NonMatching,
                 "CRI/sfd_set.c",
                 extra_cflags=[
                     "-sdata 0",
@@ -2516,8 +2520,10 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # SFBUF_InitHn: 429 differing words (1712 vs 1744 bytes; adr kept on the stack in the
+            # original).
             Object(
-                Matching,
+                NonMatching,
                 "CRI/sfd_buf.c",
                 extra_cflags=[
                     "-sdata 0",
@@ -2526,8 +2532,9 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # SFHDS_SetHdr: 11 differing words (register choice for result).
             Object(
-                Matching,
+                NonMatching,
                 "CRI/sfd_hds.c",
                 extra_cflags=[
                     "-sdata 0",
@@ -2536,8 +2543,9 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # SFPTS_ReadPtsQue: 11 differing words (branch layout of the two found arms).
             Object(
-                Matching,
+                NonMatching,
                 "CRI/sfd_pts.c",
                 extra_cflags=[
                     "-sdata 0",
@@ -2606,8 +2614,10 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # sfmps_DecodeOneUnit: 16 differing words (register and base choice for the syshd
+            # stores).
             Object(
-                Matching,
+                NonMatching,
                 "CRI/sfd_mps.c",
                 extra_cflags=[
                     "-sdata 0",
