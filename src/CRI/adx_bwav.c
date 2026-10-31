@@ -222,7 +222,12 @@ Sint32 ADX_DecodeInfoWav(Uint8 *buf, Sint32 bsize, Sint16 *hdrlen, Sint8 *x0c, S
     if (i % 4 != 0) {
         return -1;
     }
-    p = (Uint8 *)(i + (Sint32)buf);
+    /* Matching workaround: the chunk address is an integer sum with the offset first. MWCC emits
+     * every pointer spelling (`buf + i`, `&buf[i]`, `i + buf`, `p = buf; p += i`) as
+     * add r31,r20,r18 with the pointer first; the original has add r31,r18,r20, the operand order
+     * of an integer addition written offset first. Revisit when a pointer form with that order is
+     * found. */
+    p = (Uint8 *)((Uint32)i + (Uint32)buf);
     if ((Sint16)SWAP16(*(Uint16 *)(p + 8)) > 1) {
         return -1;
     }

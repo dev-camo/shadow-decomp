@@ -140,6 +140,11 @@ Sint32 ADX_DecodeInfoAinf(Uint8 *data, Sint32 len, Sint32 *ainfsiz, void *ainf, 
     if (ver == 4) {
         ofs = 0x20;
     }
+    /* Matching workaround: the header address is an integer sum with the offset first. MWCC emits
+     * every pointer spelling (`data + ofs`, `&data[ofs]`, `ofs + data`, `p = data; p += ofs`) as
+     * add r3,r29,r28 with the pointer first; the original has add r3,r28,r29, the operand order
+     * of an integer addition written offset first. Revisit when a pointer form with that order is
+     * found. */
     p = (Uint8 *)((Uint32)ofs + (Uint32)data);
     ofs += 4;
     if (*(Sint16 *)(p + 2) != 0) {
