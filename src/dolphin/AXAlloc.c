@@ -14,11 +14,11 @@ static u32 __AXCheckStacks(void) {
     AXVPB *voice;
 
     voices = 0;
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < AX_PRIORITY_STACKS; i++) {
         voice = __AXStackHead[i];
         while (voice != 0) {
             voices++;
-            if (voices > 64) {
+            if (voices > AX_MAX_VOICES) {
                 return 0;
             }
 

@@ -21,7 +21,7 @@ u32 __AXGetCommandListAddress(void) {
     address = (u32)&__AXCommandList[__AXCommandListPosition][0];
     __AXCommandListPosition += 1;
     __AXCommandListPosition &= 1;
-    __AXClWrite = (void *)&__AXCommandList[__AXCommandListPosition][0];
+    __AXClWrite = &__AXCommandList[__AXCommandListPosition][0];
     return address;
 }
 
@@ -140,7 +140,7 @@ void __AXNextFrame(void *sbuffer, void *buffer) {
     __AXCommandListCycles += 0x2710;
     __AXWriteToCommandList(0xF);
     __AXCommandListCycles += 2;
-    DCFlushRange(pCommandList, 0x300);
+    DCFlushRange(pCommandList, sizeof(__AXCommandList[0]));
 }
 
 void __AXClInit(void) {
@@ -151,7 +151,7 @@ void __AXClInit(void) {
     ASSERTLINE(339, ((u32)&__AXCommandList[1][0] & 0x1F) == 0);
     __AXClMode = 0;
     __AXCommandListPosition = 0;
-    __AXClWrite = (void *)&__AXCommandList;
+    __AXClWrite = &__AXCommandList[0][0];
     __AXCompressor = 1;
 }
 

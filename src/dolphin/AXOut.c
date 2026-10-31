@@ -10,19 +10,18 @@ static u16 __AXDramImage[8192];
 static DSPTaskInfo __AXDSPTask;
 AXPROFILE __AXLocalProfile;
 
-volatile static u32 __AXOutFrame;
-volatile static u32 __AXAiDmaFrame;
-volatile static u32 __AXOutDspReady;
-volatile static OSTime __AXOsTime;
-static void (*__AXUserFrameCallback)();
-volatile static int __AXDSPInitFlag;
+static volatile u32 __AXOutFrame;
+static volatile u32 __AXAiDmaFrame;
+static volatile u32 __AXOutDspReady;
+static volatile OSTime __AXOsTime;
+static AXCallback __AXUserFrameCallback;
+static volatile int __AXDSPInitFlag;
 static int __AXDSPDoneFlag;
 
 static volatile u32 __AXDebugSteppingMode;
 static OSThreadQueue __AXOutThreadQueue;
 static u32 __AXOutputBufferMode;
 
-// prototypes
 static void __AXDSPInitCallback(void *task);
 static void __AXDSPResumeCallback(void *task);
 static void __AXDSPDoneCallback(void *task);
@@ -65,7 +64,7 @@ void __AXOutNewFrame(u32 lessDspCycles) {
         __AXOutFrame %= 3;
     } else {
         __AXOutFrame &= 1;
-        AIInitDMA((u32)&__AXOutBuffer[__AXOutFrame][0], 0x280);
+        AIInitDMA((u32)&__AXOutBuffer[__AXOutFrame][0], sizeof(__AXOutBuffer[0]));
     }
 
     __AXLocalProfile.axFrameEnd = OSGetTime();
@@ -73,7 +72,7 @@ void __AXOutNewFrame(u32 lessDspCycles) {
     profile = __AXGetCurrentProfile();
 
     if (profile) {
-        i = 56;
+        i = sizeof(AXPROFILE);
         dest = (u8 *)profile;
         src = (u8 *)&__AXLocalProfile;
 
@@ -100,7 +99,7 @@ void __AXOutAiCallback(void) {
     }
 
     if (__AXOutputBufferMode == 1) {
-        AIInitDMA((u32)__AXOutBuffer[__AXAiDmaFrame], 0x280);
+        AIInitDMA((u32)__AXOutBuffer[__AXAiDmaFrame], sizeof(__AXOutBuffer[0]));
         __AXAiDmaFrame++;
         __AXAiDmaFrame %= 3;
     }
@@ -115,7 +114,7 @@ void AXSetStepMode(u32 i) {
 }
 
 static void __AXDSPResumeCallback(void *task) {
-#if DEBUG
+#ifdef DEBUG
     if (__AXDebugSteppingMode != 0) {
         __AXOutDspReady = 1;
         return;
@@ -135,11 +134,12 @@ static void __AXDSPDoneCallback(void *task) {
     OSWakeupThread(&__AXOutThreadQueue);
 }
 
-#define BUFFER_MEMSET(buffer, size)                                                                \
+// Zeroes the first count words of a buffer.
+#define BUFFER_MEMSET(buffer, count)                                                               \
     {                                                                                              \
-        u32 *p = (u32 *)&buffer;                                                                   \
+        u32 *p = (u32 *)&(buffer);                                                                 \
         int i;                                                                                     \
-        for (i = 0; i < size; i++) {                                                               \
+        for (i = 0; i < (count); i++) {                                                            \
             *p = 0;                                                                                \
             p++;                                                                                   \
         }                                                                                          \
@@ -186,6 +186,7 @@ void __AXOutInit(u32 outputBufferMode) {
     __AXAiDmaFrame = 0;
     __AXDebugSteppingMode = 0;
 
+    // 0x1E0 and 0xA0 are the word counts of the two whole buffers.
     BUFFER_MEMSET(__AXOutBuffer, 0x1E0);
     DCFlushRange(__AXOutBuffer, sizeof(__AXOutBuffer));
 
