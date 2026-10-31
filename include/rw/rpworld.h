@@ -35,6 +35,13 @@ extern "C" {
 /* the deepest sector tree that the tree walks handle */
 #define rpWORLDMAXBSPDEPTH 64
 
+/* world render orders */
+#define rpWORLDRENDERFRONT2BACK 1
+#define rpWORLDRENDERBACK2FRONT 2
+
+/* A coordinate of a vector, by its byte offset (a plane sector's type) */
+#define GETCOORD(vector, offset) (*(RwReal *)((RwUInt8 *)&(vector) + (offset)))
+
 #define rpGEOMETRY 8 /* RwObject type of a geometry */
 
 typedef struct RpGeometry RpGeometry;

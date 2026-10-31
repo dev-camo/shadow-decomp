@@ -508,7 +508,7 @@ RpWorld *fn_804556F4(RwStream *stream) {
     fn_8045FCFC(world, size);
 
     world->flags = format;
-    world->renderOrder = 2;
+    world->renderOrder = rpWORLDRENDERBACK2FRONT;
     world->worldOrigin.x = -1.0f * header.invWorldOrigin.x;
     world->worldOrigin.y = -1.0f * header.invWorldOrigin.y;
     world->worldOrigin.z = -1.0f * header.invWorldOrigin.z;

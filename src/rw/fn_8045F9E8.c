@@ -17,9 +17,6 @@
         fn_8047DB84(&error_);                                                                      \
     } while (0)
 
-/* A coordinate of a vector, by its byte offset (a plane sector's type) */
-#define GETCOORD(vector, offset) (*(RwReal *)((RwUInt8 *)&(vector) + (offset)))
-
 /* An entry in the world module's list of worlds: a world and the size of its allocation */
 typedef struct WorldListEntry {
     /* 0x0 */ RpWorld *world;
@@ -305,7 +302,7 @@ RpWorld *fn_80460138(RwBBox *boundingBox) {
     world->object.privateFlags = 0;
     world->object.parent = NULL;
     fn_8045B788(&world->matList);
-    world->renderOrder = 2;
+    world->renderOrder = rpWORLDRENDERBACK2FRONT;
     world->flags = 0;
 
     sector = RwMalloc(lbl_8056D880.sizeOfStruct, rwMEMHINTDUR_EVENT | rwID_WORLD);
