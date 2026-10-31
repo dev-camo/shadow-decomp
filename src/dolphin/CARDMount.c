@@ -13,7 +13,6 @@ static u32 LatencyTable[8] = {
     4, 8, 16, 32, 64, 128, 256, 512,
 };
 
-// prototypes
 static s32 DoMount(s32 chan);
 static void DoUnmount(s32 chan, s32 result);
 

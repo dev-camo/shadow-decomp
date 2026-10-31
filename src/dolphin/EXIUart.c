@@ -11,9 +11,10 @@ static u32 BarnacleEnabled;
 // Value stored in Enabled and BarnacleEnabled once a UART channel is usable.
 #define UART_ENABLED_MAGIC 0xA5FF005A
 
-// The MSL console driver declares these as UARTError InitializeUART(UARTBaudRate) and
-// UARTError WriteUARTN(void *, unsigned long). The bytes do not depend on those types, so the
-// definitions below use the types of the values they actually produce and consume.
+// The MSL console driver (UART.h) declares these as UARTError InitializeUART(UARTBaudRate) and
+// UARTError WriteUARTN(void *, unsigned long). This unit does not include that header and keeps
+// int and u32 for the same symbols. The definition takes no parameter, so the baud rate the MSL
+// caller passes is ignored.
 int InitializeUART(void);
 int ReadUARTN(void);
 int WriteUARTN(void *buf, u32 len);

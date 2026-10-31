@@ -2,7 +2,6 @@
 
 #include "__card.h"
 
-// prototypes
 static void WriteCallback(s32 chan, s32 result);
 static void EraseCallback(s32 chan, s32 result);
 

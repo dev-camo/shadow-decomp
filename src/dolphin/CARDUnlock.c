@@ -31,7 +31,6 @@ static u8 CardData[352] ATTRIBUTE_ALIGN(DOLPHIN_ALIGNMENT) = {
 
 static u32 next = 1;
 
-// prototypes
 static u32 exnor_1st(u32 data, u32 rshift);
 static u32 exnor(u32 data, u32 lshift);
 static u32 bitrev(u32 data);
