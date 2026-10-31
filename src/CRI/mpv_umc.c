@@ -667,9 +667,10 @@ void mpvumc_OneReadMb(MPV mpv, Uint8 *dst, Sint32 *ofs, MPV_RFB *rfb, MPV_MV *mv
     Sint32 mby16;
     Sint32 mbx8;
 
-    /* The unsigned masks of yhx/chx, the second read of rfb->ypitch and the operand order of the
-     * luma src2 sum are required: with & 1, ypitch or src + ypitch + yhx, 45, 91 and 8 words
-     * differ. */
+    /* Matching workaround: the unsigned masks of yhx/chx, the second read of rfb->ypitch and the
+     * operand order of the luma src2 sum. With `& 1`, with ypitch instead of the second read, or
+     * with src + ypitch + yhx, 45, 91 and 8 words differ. Revisit when the original expressions are
+     * known. */
     mby = mpv->mb_y;
     cpitch = rfb->cpitch;
     mbx = mpv->mb_x;
@@ -767,7 +768,8 @@ void MPVUMC_Forward(MPV mpv) {
 void mpvumc_OutputIntra6blk(Sint16 *blk, MPVCMC_OUTBLK *ob, Uint8 *clip) {
     asm {
         addi r4, r4, MPVCMC_OUTBLK.oi
-            /* addi, not li: with li MWCC schedules the preceding addi after it (2 words) */
+            /* Matching workaround: addi, not li (the same encoding). With li MWCC schedules the
+             * preceding addi after it (2 words). Revisit when the original instruction is known. */
         addi r5, 0, 0x6
 L17:
         lwz r7, MPVCMC_REF.p(r4)
@@ -880,8 +882,8 @@ void MPVUMC_Intra(MPV mpv) {
     Sint32 ypitch;
     MPVCMC_OUTBLK *ob;
 
-    /* the nested assignments are required: separate statements in any order tried give 16 or 17
-     * differing words */
+    /* Matching workaround: the nested assignments. Separate statements in any order tried give 16
+     * or 17 differing words. Revisit when the original expressions are known. */
     x8 = (mbx = mpv->mb_x) * 8;
     y8 = (mby = mpv->mb_y) * 8;
     cofs = x8 + y8 * mpv->out.cpitch;

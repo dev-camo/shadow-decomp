@@ -293,8 +293,11 @@ void DCT_FsriSetGqr(void) {
 
 /* Fills PreIDCT: row Idx(n) holds the double-precision reference IDCT of a block whose only
  * coefficient is n, set to 1 / sfsd_scale_tbl[n]. Nothing in this file reads the table.
- * opt_loop_invariants off is required: the original recomputes the row index dctfsri_Idx(n) for
- * every stored element; by default MWCC hoists it out of the inner loop. */
+ *
+ * Matching workaround: opt_loop_invariants off. The original recomputes the row index
+ * dctfsri_Idx(n) for every stored element; by default MWCC hoists it out of the inner loop
+ * (initSparseTbl 143 words instead of the original's 148, 75 of them differing). Revisit when the
+ * original's compiler flags or loop form are known. */
 #pragma opt_loop_invariants off
 void initSparseTbl(void) {
     Float64 in[64];

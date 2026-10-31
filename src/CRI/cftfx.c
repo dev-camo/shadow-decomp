@@ -119,9 +119,9 @@ void cnvDynamicYcc420plnToA256UserTable(const CFT_YCC420PLN *src, const CFT_ARGB
 }
 
 /* Registered converter (SFX_CNVFN): alpha masked by the luma. A NULL table in the argument block
- * selects the conversion without a table. The const frame records and argument block are
- * required: with a non-const argument block the table load moves after the frame copies, and with
- * non-const records each copy is loaded and stored in turn. */
+ * selects the conversion without a table. The const frame records and argument block follow the
+ * SFX_CNVFN type (sfx.h); with a non-const argument block the table load moves after the frame
+ * copies, and with non-const records each copy is loaded and stored in turn. */
 void CFT_Ycc420plnToA256V(const SFX_FRM *frm, const SFX_FRM *dstfrm, const SFX_CNVARG *arg) {
     CFT_YCC420PLN src;
     CFT_ARGBDST dst;

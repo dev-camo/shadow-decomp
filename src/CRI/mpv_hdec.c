@@ -36,11 +36,10 @@ MPVHDEC_MCFUNC mc_forward_func[2][5];
 static MPVHDEC_MCFUNC mc_intra_func[2][2][5];
 static MPVHDEC_SKIPFUNC skip_func[2][5];
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. MWCC lays out
- * .bss by first reference, so this never-called function refers to the tables in storage order
- * before mpvhdec_DecPscSj does. Storing the addresses keeps those references from being optimized
- * away.
- */
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game; its
+ * body is unknown. MWCC lays out .bss by first reference, so this never-called function refers to
+ * the tables in storage order before mpvhdec_DecPscSj does. Storing the addresses keeps those
+ * references from being optimized away. Revisit when the stripped function's body is known. */
 static void mpvhdec_BssOrder(void **out) {
     out[0] = &mc_bidirect_func;
     out[1] = &mc_backward_func;
@@ -51,7 +50,8 @@ static void mpvhdec_BssOrder(void **out) {
 
 /* Byte position of the first bit not yet read after `nbit` bits of the window (rounded up to a
  * whole byte); the window words were loaded from the two words before ptr. MPVBIT_BYTEPTR
- * (mpv_bit.h) computes the same address but compiles to a different register assignment here.
+ * (mpv_bit.h) computes the same address from the current bit position into an Sint8 pointer; this
+ * form takes the bit count as a parameter and yields a Uint8 pointer.
  */
 #define MPVHDEC_BYTEPOS(q, nbit) (q) = (Uint8 *)(ptr - 2) + (((nbit) + 7) >> 3)
 
@@ -127,9 +127,11 @@ Sint32 MPV_MoveChunk(SJ sj, Sint32 id, Sint32 nbyte) {
 }
 
 /* Discards data up to the next start code; returns its class (MPV_CheckDelim), 0 if none is found
- * before the data ends. The same body as MPV_GoNextDelimSj, which is defined after its callers in
- * this file and so is not inlined into them.
- */
+ * before the data ends.
+ * Matching workaround: the same body as MPV_GoNextDelimSj, which is defined after its callers in
+ * this file and so is not inlined into them. Calling MPV_GoNextDelimSj from the callers instead
+ * leaves MPVHDEC_DecPicture 121 words long (the original's 182), 176 of them differing. Revisit
+ * when the original's inline arrangement is known. */
 static inline Sint32 mpvhdec_GoNextDelim(SJ sj) {
     SJCK ck;
     SJCK rest;
@@ -324,7 +326,10 @@ Sint32 mpvhdec_AnalyUd(MPV mpv, Uint8 *buf, Sint32 len) {
     Sint32 n;
     SJ sj;
     Sint32 siz;
-    int i; /* int: n is a separate copy of i in the original, which a Sint32 i does not give */
+    /* Matching workaround: i is declared int rather than Sint32 (signed long). With Sint32,
+     * mpvhdec_AnalyUd is 109 words instead of the original's 110, 93 of them differing. Revisit
+     * when the original type is known. */
+    int i;
 
     ret2 = 0;
     ret = 0;
@@ -576,11 +581,10 @@ static inline Sint32 mpvhdec_GetM2vMode(MPV mpv, Sint8 *data, Sint32 len) {
     return mpv->m2v_mode;
 }
 
-/* Places the bit reader at `buf` without loading the window. The word pointer is assigned inside
- * the bit position expression; written as two statements, the position computation in
- * MPV_DecodePicAtrSj (where both skip helpers are inlined) is allocated and scheduled differently
- * from the original.
- */
+/* Places the bit reader at `buf` without loading the window.
+ * Matching workaround: the word pointer is assigned inside the bit position expression. Written as
+ * two statements, MPV_DecodePicAtrSj (where both skip helpers are inlined) is 473 words instead of
+ * the original's 472, 115 of them differing. Revisit when the original macro is known. */
 #define MPVHDEC_SETPOS(buf)                                                                        \
     bitpos = ((Uint32)(buf) - (Uint32)(ptr = (Uint32 *)((Uint32)(buf) & ~3))) << 3
 
@@ -622,8 +626,8 @@ static inline void mpvhdec_SkipUd(MPV mpv, SJ sj) {
 
 /* Header pass of one picture: reads sequence, GOP and picture headers and user data and skips
  * extensions until the first slice, filling the picture attributes. A sequence end code ends it
- * with -2. The handle is taken untyped and converted, as in MPV_DecodeFrmSj (mpv_frm.c): with an
- * MPV parameter the handle and the stream joint get each other's registers.
+ * with -2. The handle is taken untyped and converted, as in MPV_DecodeFrmSj (mpv_frm.c); see the
+ * matching workaround note there.
  */
 Sint32 MPV_DecodePicAtrSj(void *hn, SJ sj) {
     MPV_OBJ *mpv = hn;

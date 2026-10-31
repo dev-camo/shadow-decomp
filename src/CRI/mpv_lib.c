@@ -65,12 +65,12 @@ Sint32 mpvlib_iix;
 static MPVLIB_WORK mpvlib_libwork;
 static const Char8 *cri_verstr_ptr;
 
-/* Stand-ins for functions the linker stripped from the game; their bodies are unknown. MWCC lays
- * out .bss by first reference, so these never-called functions refer to the variables whose first
- * use in the remaining functions comes too late for their storage order. Each refers to one
- * variable: one function for the first three makes MWCC pool the .bss addresses earlier, which
- * changes MPV_Init's register assignment (18 words); the last two follow the same form.
- */
+/* Matching workaround: order-only stand-ins for functions the linker stripped from the game; their
+ * bodies are unknown. MWCC lays out .bss by first reference, so these never-called functions refer
+ * to the variables whose first use in the remaining functions comes too late for their storage
+ * order. Each refers to one variable: one function for the first three makes MWCC pool the .bss
+ * addresses earlier, which changes MPV_Init's register assignment (18 words); the last two follow
+ * the same form. Revisit when the stripped functions' bodies are known. */
 static void *mpvlib_BssOrder1(void) {
     return &mpvlib_use_lc;
 }
@@ -95,7 +95,8 @@ Sint32 MPVLIB_CheckHn(MPV mpv) {
     return 0;
 }
 
-/* stand-ins as above, for the two words after mpvlib_mpvobj (no surviving function uses them) */
+/* Matching workaround: as above, order-only stand-ins for the two words after mpvlib_mpvobj (no
+ * surviving function uses them). */
 static void *mpvlib_BssOrder4(void) {
     return &mpvlib_oix;
 }
@@ -388,6 +389,7 @@ Sint32 MPV_Init(Sint32 nhn, void *work) {
         ret = 0;
     }
     if (ret != 0) {
+        /* Original behaviour: no check above produces this code, so the return is dead. */
         if (ret == 0xFF03FF05) {
             return ret;
         }
@@ -396,6 +398,7 @@ Sint32 MPV_Init(Sint32 nhn, void *work) {
         }
     }
 
+    /* HID2 is SPR 920; written as HID2 the mfspr assembles to a different word (1 word differs). */
     asm {
         mfspr r0, 920
         stw r0, hid2

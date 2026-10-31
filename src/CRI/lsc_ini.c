@@ -7,8 +7,8 @@
 #include "CRI/lsc.h"
 
 /* Matching workaround: volatile. The original's LSC_Init loads the build string pointer and
- * discards it; without volatile MWCC drops the load (LSC_Init 28 words instead of the original's 30).
- * Revisit when the original's form of the dead load is known. */
+ * discards it; without volatile MWCC drops the load (LSC_Init 28 words instead of the original's
+ * 30). Revisit when the original's form of the dead load is known. */
 const Char8 *const volatile lsc_build = "\nLSC/GC Ver.2.22 Build:Feb 28 2005 15:48:30\n";
 
 static Sint32 lsc_init_cnt = 0;
