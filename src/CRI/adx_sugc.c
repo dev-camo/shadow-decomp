@@ -11,7 +11,11 @@ typedef struct {
 } ADXGC_DVDFS_PRM;
 CHECK_SIZEOF(ADXGC_DVDFS_PRM, 0x4);
 
-/* volatile: ADXGC_SetupDvdFs reads the build string pointer without using it. */
+/* Matching workaround: the build string pointer is volatile and ADXGC_SetupDvdFs reads it without
+ * using the value. The original function has that unused load (lwz r0,0x3C(r31) at offset 0x1C),
+ * so its source referenced the pointer; declared without volatile, the read is dropped and
+ * ADXGC_SetupDvdFs is 46 instead of 48 instructions (46 words differ). Revisit when the original
+ * reference to the string is found. */
 const Char8 *const volatile adxgcsdk_build =
     "\nADXGCSDK Ver.20Apr2004Patch2 Build:Feb 28 2005 15:49:05\n";
 

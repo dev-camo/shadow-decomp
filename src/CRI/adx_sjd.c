@@ -1,11 +1,10 @@
 /* CRI ADX stream-joint decoder (adx_sjd.c, ADXSJD): feeds an ADXB block decoder from an input
  * stream joint and writes the PCM into one ring-buffer stream joint per channel.
  *
- * Bodies from the RE4 GameCube decompilation, in the newer source order of the Street Fighter III
- * 3rd Strike adx_sjd.c (Init/Finish first). The file is compiled with deferred inlining, so the
- * functions are emitted in reverse order and .bss is laid out in reverse declaration order. This
- * version reference-counts Init/Finish, adds ADXSJD_GetDecDtLen and checks the leading padding
- * and ADXB_GetIgnoreHdrErr in adxsjd_decode_prep; ADXSJD_EntryPl2SetSfreqFunc is not in it.
+ * Bodies from the RE4 GameCube decompilation, in the source order of the Street Fighter III 3rd
+ * Strike adx_sjd.c (Init/Finish first). The file is compiled with deferred inlining, so the
+ * functions are emitted in reverse order and .bss is laid out in reverse declaration order.
+ * ADXSJD_Init and ADXSJD_Finish reference-count; ADXSJD_EntryPl2SetSfreqFunc is not in this game.
  */
 #include <string.h>
 
@@ -55,8 +54,10 @@ typedef struct ADXSJD_OBJ ADXSJD_OBJ;
 
 ADXSJD_OBJ adxsjd_obj[ADXSJD_MAX_OBJ];
 void (*pl2setsfreqfunc)(ADXB adxb, Sint32 sfreq);
-/* volatile like the other CRI reference counts (adx_crs.c); the count is reloaded after each
- * update. */
+/* Matching workaround: volatile, read from the original bytes: ADXSJD_Finish stores the updated
+ * count and loads it again before the compare. Declared plain, the update fuses with the compare
+ * (`addic.`) and the function is 18 instead of 20 instructions. Revisit when the original
+ * declaration is found. */
 static volatile Sint32 adxsjd_init_cnt;
 
 static void adxsjd_reset(ADXSJD sjd);
@@ -320,7 +321,7 @@ void adxsjd_decexec_start(ADXSJD sjd) {
     }
     SJ_GetChunk(sji, SJ_CK_DATA, 0x7FFFFFFF, &sjd->inck);
     if (ADXB_GetFormat(adxb) == ADXB_TYPE_ADX && sjd->inck.len >= 4 &&
-        (Uint16) * (Sint16 *)sjd->inck.data == 0x8001) {
+        (Uint16)(*(Sint16 *)sjd->inck.data) == 0x8001) {
         sjd->stat = ADXSJD_STAT_END;
         if (ADX_DecodeFooter(sjd->inck.data, sjd->inck.len, &ftrlen) == 0) {
             if (ftrlen > sjd->inck.len) {
@@ -418,7 +419,6 @@ static void adxsjd_skip_out(ADXSJD sjd) {
 static void adxsjd_decode(ADXSJD sjd) {
     ADXB adxb;
     Sint32 stat;
-    Sint16 fmt;
 
     stat = sjd->stat;
     if (stat == ADXSJD_STAT_DECODE) {
@@ -430,8 +430,9 @@ static void adxsjd_decode(ADXSJD sjd) {
         if (ADXB_GetStat(adxb) == ADXB_STAT_DONE) {
             adxsjd_decexec_end(sjd);
         }
-        fmt = adxb->x98;
-        if (fmt == ADXB_TYPE_AHX || fmt == 20 || (Uint16)(fmt - 11) <= 1 || fmt == 15) {
+        /* the raw formats of ADXSJD_IS_RAW_FMT, compared in the original's order */
+        if (adxb->x98 == ADXB_TYPE_AHX || adxb->x98 == 20 || adxb->x98 == 11 || adxb->x98 == 12 ||
+            adxb->x98 == 15) {
             adxsjd_rawexec_end(sjd);
         }
     } else if (stat == ADXSJD_STAT_PREP) {

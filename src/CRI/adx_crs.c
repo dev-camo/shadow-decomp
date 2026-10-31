@@ -8,8 +8,10 @@
 #include "CRI/svm.h"
 
 Sint32 adxcrs_msk = 0;
-/* volatile: ADXCRS_Init and ADXCRS_Finish reload the counter after updating it; without volatile
- * ADXCRS_Init/ADXCRS_Finish shrink from 48 to 44/40 bytes. */
+/* Matching workaround: volatile, read from the original bytes: ADXCRS_Init and ADXCRS_Finish store
+ * the updated count and load it again before the compare. Declared plain, the compare fuses with
+ * the update and the functions are 11 and 10 instructions instead of 12. Revisit when the original
+ * declaration is found. */
 volatile Sint32 adxcrs_cnt = 0;
 
 /* Counts an ADX user; the first one clears the interrupt mask. */

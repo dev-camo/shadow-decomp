@@ -4,9 +4,9 @@
  * thread that only spins, counting. ADXM_ExecMain runs the SVM main server from the game's
  * own thread.
  *
- * Structure and the ADXM_* and adxm_* names follow the RE4 GameCube decompilation of the same file
- * (ADXGC Ver.1.21), which creates the same four threads. The thread entry points and the SVM
- * callbacks are static here; their names are inferred from the work they do.
+ * Structure and the ADXM_* and adxm_* names follow the RE4 GameCube decompilation of the same
+ * file. The thread entry points and the SVM callbacks are static here; their names are inferred
+ * from the work they do.
  *
  * Not yet matching: ADXM_SetupThrd differs in 2 words, the order of two constant loads
  * (li 0 and li 1) before the flag stores. */
@@ -43,7 +43,8 @@ typedef struct {
 } ADXM_CB;
 CHECK_SIZEOF(ADXM_CB, 8);
 
-/* The build string is read without being used. */
+/* Matching workaround: as in adx_sugc.c, the pointer is volatile and ADXM_SetupThrd reads it
+ * without using the value. */
 const Char8 *const volatile adxgc_build = "\nADXGC Ver.1.30 Build:Feb 28 2005 15:49:04\n";
 
 void (*adxgc_exec_svr)(void);

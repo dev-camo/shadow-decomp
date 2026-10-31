@@ -2,8 +2,7 @@
  * renderer stream joints. Never created in this game (ADXT_OBJ.amp stays NULL); the functions that
  * survived are called only through ADXT's NULL-guarded amp hooks.
  *
- * Source from the RE4 GameCube decompilation. RE4's map lists only these four functions; that
- * decompilation's extra volume setters (with their literals and statics) are left out.
+ * Source from the RE4 GameCube decompilation. Only these four functions are in this game.
  */
 #include <string.h>
 

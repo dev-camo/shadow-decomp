@@ -1,7 +1,7 @@
 /* CRI ADX renderer front end (adx_rnaa.c): the ADXRNA_* wrappers the ADX talk layer uses to drive
  * the platform renderer, here the AX renderer AXRNA. The balance and total-sample entries are
- * no-ops on AX. Bodies from the RE4 GameCube decompilation of the same file; this game's version
- * has no ADXRNA_GetStat.
+ * no-ops on AX. Bodies from the RE4 GameCube decompilation of the same file; ADXRNA_GetStat is
+ * not in this game.
  */
 #include "CRI/adx_rna.h"
 

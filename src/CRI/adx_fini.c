@@ -2,8 +2,8 @@
  * (handle table, AFS partition table, command history) and resets them in ADXF_Init and
  * ADXF_Finish. The handle API is in adx_fs.c.
  *
- * Names and layout follow the RE4 and Mortal Kombat: Deception decompilations (Ver.7.18 and
- * 7.17). Ver.7.30 stores the build string's address in ADXF_Init.
+ * Names and layout follow the RE4 and Mortal Kombat: Deception decompilations. ADXF_Init stores
+ * the build string's address.
  */
 #include <string.h>
 

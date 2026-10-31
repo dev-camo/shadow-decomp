@@ -136,8 +136,8 @@ void ADXB_ExecOneAu8(ADXB adxb) {
     }
 }
 
-/* The 2ch byte swap goes through a `Uint16` temporary (required: swapping inbuf[i * 2] in place
- * compiles differently). */
+/* Copies 16-bit AU samples into the PCM ring with their two bytes swapped; interleaved stereo input
+ * is split into the two channel buffers. */
 void ADXB_ExecOneAu16(ADXB adxb) {
     Uint16 *inbuf;
     Uint16 *out0;
