@@ -1,11 +1,11 @@
 #ifndef BOOST_SHARED_PTR_HPP
 #define BOOST_SHARED_PTR_HPP
 #include "boost/checked_delete.hpp"
-#include "layout_check.h"
 #include <exception>
 #include <new>
 #include <typeinfo>
 #include <utility>
+#include "layout_check.h"
 
 /* The boost smart pointers the game uses (its RTTI names boost::detail::sp_counted_base and
  * boost::checked_deleter<...>), written in the style of boost 1.32 with the single-threaded

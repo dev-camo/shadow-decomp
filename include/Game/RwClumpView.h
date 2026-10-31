@@ -44,7 +44,8 @@ CHECK_SIZEOF(UnkRwClump, 0x2C);
 
 /* The engine globals, RwGlobals; only the current camera is mapped. include/rw/rwcore.h declares
  * lbl_805F15B4 with the full RwGlobals type; this is a second, deliberately partial view of the
- * same object, so the two headers must not be included together. */
+ * same object, so the two headers must not be included together. The object's size is not mapped,
+ * so there is no size check. */
 struct UnkRwGlobals {
     /* 0x0 */ UnkRwCamera *curCamera;
 };

@@ -20,8 +20,6 @@ struct UnkDebugColor_802E0E84 {
 };
 CHECK_SIZEOF(UnkDebugColor_802E0E84, 0x4);
 
-struct UnkSegment_80020A20;
-
 extern "C" {
 /* Creates a SonicteamUSA::System::DebugDispSphere (class name from RTTI) of the given radius at
  * center and queues it (behaviour inferred; the original function name is unknown). The colour is

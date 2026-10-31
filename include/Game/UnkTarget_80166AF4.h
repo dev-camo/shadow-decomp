@@ -29,7 +29,7 @@ CHECK_SIZEOF(UnkTarget_80166AF4, 0x10);
  * (fn_800CC6F8) and destructor (fn_800CC678) on the same address, which a bare weak_ptr local does
  * not do: it compiles to inline stores and a weak_count destructor at offset 4. */
 struct UnkWeakHolder_800CC6C8 {
-    boost::weak_ptr<UnkTarget_80166AF4> ptr;
+    /* 0x0 */ boost::weak_ptr<UnkTarget_80166AF4> ptr;
 };
 CHECK_SIZEOF(UnkWeakHolder_800CC6C8, 0x8);
 

@@ -2,8 +2,8 @@
 #define GAME_UNKSTRING_8004F888_H
 
 #include <dolphin/types.h>
-#include "layout_check.h"
 #include <memory>
+#include "layout_check.h"
 
 /* A name as the original passes it around: a string object that fn_8004F888 builds from a C string
  * and an allocator (the message "string constructor: n > max_size" suggests the library's

@@ -1,5 +1,5 @@
-#ifndef FN_804110EC_ALLOCATOR_HOOKS_H
-#define FN_804110EC_ALLOCATOR_HOOKS_H
+#ifndef GAME_FN_804110EC_ALLOCATOR_HOOKS_H
+#define GAME_FN_804110EC_ALLOCATOR_HOOKS_H
 
 /* Replaceable memory functions at 0x804110EC-0x8041116C. The pack loader at 0x80410630 and the
  * other library code up to 0x8042166C allocate and free through them. The original names are
