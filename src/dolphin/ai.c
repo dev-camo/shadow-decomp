@@ -1,12 +1,19 @@
+// Dolphin SDK AI library: audio interface.
+// 14 global functions of this file are not present as separate functions in this game's DOL; their
+// bodies are unverified unless they are inlined into a function that is present. The global
+// functions present in the DOL are: AIGetDSPSampleRate, AIGetStreamPlayState,
+// AIGetStreamSampleRate, AIGetStreamVolLeft, AIGetStreamVolRight, AIInit, AIInitDMA,
+// AIRegisterDMACallback, AISetDSPSampleRate, AISetStreamPlayState, AISetStreamVolLeft,
+// AISetStreamVolRight, AIStartDMA, AIStopDMA.
 #include <dolphin/ai.h>
 #include <dolphin/gx.h>
 #include <dolphin/os.h>
 #include <dolphin/hw_regs.h>
 
+#include "__ai.h"
 #include "__gx.h"
-#include "layout_check.h"
 
-#ifdef DEBUG
+#if DEBUG
 const char *__AIVersion = "<< Dolphin SDK - AI\tdebug build: Apr  5 2004 03:56:18 (0x2301) >>";
 #else
 const char *__AIVersion = "<< Dolphin SDK - AI\trelease build: Apr  5 2004 04:15:02 (0x2301) >>";
@@ -24,23 +31,10 @@ static OSTime min_wait;
 static OSTime max_wait;
 static OSTime buffer;
 
-typedef struct {
-    OSTime t_start;
-    OSTime t1;
-    OSTime t2;
-    OSTime t3;
-    OSTime t4;
-    OSTime t_end;
-} STRUCT_TIMELOG;
-CHECK_SIZEOF(STRUCT_TIMELOG, 0x30);
 STRUCT_TIMELOG profile;
 
 OSTime __ai_src_time_start;
 OSTime __ai_src_time_end;
-
-// prototypes
-void __AI_DEBUG_set_stream_sample_rate(u32 rate);
-STRUCT_TIMELOG *__ai_src_get_time(void);
 
 static void __AI_set_stream_sample_rate(u32 rate);
 static void __AIDHandler(__OSInterrupt interrupt, OSContext *context);
@@ -63,35 +57,38 @@ void AIInitDMA(u32 start_addr, u32 length) {
     BOOL old;
 
     old = OSDisableInterrupts();
-    __DSPRegs[24] = (__DSPRegs[24] & 0xFFFFFC00) | (start_addr >> 16);
-    __DSPRegs[25] = (__DSPRegs[25] & 0xFFFF001F) | (start_addr & 0xFFFF);
+    __DSPRegs[DSP_DMA_START_HI] = (__DSPRegs[DSP_DMA_START_HI] & 0xFFFFFC00) | (start_addr >> 16);
+    __DSPRegs[DSP_DMA_START_LO] =
+        (__DSPRegs[DSP_DMA_START_LO] & 0xFFFF001F) | (start_addr & 0xFFFF);
     ASSERTMSGLINE(316, (length & 0x1F) == 0, "AIStartDMA: length must be multiple of 32 bytes");
-    __DSPRegs[27] = (__DSPRegs[27] & 0xFFFF8000) | ((length >> 5) & 0xFFFF);
+    __DSPRegs[DSP_DMA_CONTROL_LEN] =
+        (__DSPRegs[DSP_DMA_CONTROL_LEN] & 0xFFFF8000) | ((length >> 5) & 0xFFFF);
     OSRestoreInterrupts(old);
 }
 
 BOOL AIGetDMAEnableFlag(void) {
-    return (__DSPRegs[27] & (1 << 15)) >> 15;
+    return (__DSPRegs[DSP_DMA_CONTROL_LEN] & DSP_DMA_START_FLAG) >> 15;
 }
 
 void AIStartDMA(void) {
-    __DSPRegs[27] = __DSPRegs[27] | 0x8000;
+    __DSPRegs[DSP_DMA_CONTROL_LEN] = __DSPRegs[DSP_DMA_CONTROL_LEN] | DSP_DMA_START_FLAG;
 }
 
 void AIStopDMA(void) {
-    __DSPRegs[27] = __DSPRegs[27] & ~0x8000;
+    __DSPRegs[DSP_DMA_CONTROL_LEN] = __DSPRegs[DSP_DMA_CONTROL_LEN] & ~DSP_DMA_START_FLAG;
 }
 
 u32 AIGetDMABytesLeft(void) {
-    return (__DSPRegs[29] & 0x7FFF) << 5;
+    return (__DSPRegs[DSP_DMA_BYTES_LEFT] & 0x7FFF) << 5;
 }
 
 u32 AIGetDMAStartAddr(void) {
-    return ((__DSPRegs[24] << 16) & 0x03FF0000) | (__DSPRegs[25] & 0xFFE0);
+    return ((__DSPRegs[DSP_DMA_START_HI] << 16) & 0x03FF0000) |
+           (__DSPRegs[DSP_DMA_START_LO] & 0xFFE0);
 }
 
 u32 AIGetDMALength(void) {
-    return (__DSPRegs[27] & 0x7FFF) << 5;
+    return (__DSPRegs[DSP_DMA_CONTROL_LEN] & 0x7FFF) << 5;
 }
 
 BOOL AICheckInit(void) {
@@ -271,10 +268,10 @@ void AIInit(u8 *stack) {
         if (stack) {
             ASSERTMSGLINE(1107, ((u32)stack & 7) == 0, "AIInit: stack must be 8-byte aligned");
         }
-        __OSSetInterruptHandler(5, __AIDHandler);
-        __OSUnmaskInterrupts(0x04000000);
-        __OSSetInterruptHandler(8, __AISHandler);
-        __OSUnmaskInterrupts(0x800000);
+        __OSSetInterruptHandler(__OS_INTERRUPT_DSP_AI, __AIDHandler);
+        __OSUnmaskInterrupts(OS_INTERRUPTMASK_DSP_AI);
+        __OSSetInterruptHandler(__OS_INTERRUPT_AI_AI, __AISHandler);
+        __OSUnmaskInterrupts(OS_INTERRUPTMASK_AI_AI);
         __AI_init_flag = TRUE;
     }
 }
@@ -300,9 +297,9 @@ static void __AIDHandler(__OSInterrupt interrupt, OSContext *context) {
     OSContext exceptionContext;
     u16 tmp;
 
-    tmp = __DSPRegs[5];
+    tmp = __DSPRegs[DSP_CONTROL_STATUS];
     tmp = (tmp & ~0xA0) | 8;
-    __DSPRegs[5] = tmp;
+    __DSPRegs[DSP_CONTROL_STATUS] = tmp;
     OSClearContext(&exceptionContext);
     OSSetCurrentContext(&exceptionContext);
     if (__AID_Callback && !__AID_Active) {
@@ -350,12 +347,14 @@ static void __AI_SRC_INIT(void) {
     OSTime rising_32khz = 0;
     OSTime rising_48khz = 0;
     OSTime diff = 0;
+    // Matching workaround: unused local that keeps the original 0x30-byte stack frame (0x28 without
+    // it); the public dolsdk2004 SDK decompilation uses the same form. Revisit when the original
+    // locals are known.
     OSTime t1 = 0;
     OSTime temp;
     u32 temp0;
     u32 temp1;
     u32 done = 0;
-    u32 volume = 0;
     u32 Init_Cnt = 0;
     u32 walking = 0;
 

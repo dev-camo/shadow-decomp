@@ -1,3 +1,7 @@
+// Dolphin SDK SI library: serial interface transfers and device detection.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: SIDecodeType,
+// SIGetCommand, SIGetTypeString, SIProbe, SISync.
 #include <dolphin/si.h>
 #include <dolphin/vi.h>
 
@@ -5,7 +9,7 @@
 
 #define ROUND(n, a) (((u32)(n) + (a) - 1) & ~((a) - 1))
 
-#ifdef DEBUG
+#if DEBUG
 const char *__SIVersion = "<< Dolphin SDK - SI\tdebug build: Apr  5 2004 03:55:31 (0x2301) >>";
 #else
 const char *__SIVersion = "<< Dolphin SDK - SI\trelease build: Apr  5 2004 04:14:16 (0x2301) >>";
@@ -31,8 +35,7 @@ static volatile u32 InputBufferVcount[4];
 
 u32 __PADFixBits;
 
-// prototypes
-static u32 CompleteTransfer();
+static u32 CompleteTransfer(void);
 static void SITransferNext(s32 chan);
 static void SIInterruptHandler(__OSInterrupt interrupt, OSContext *context);
 static int __SITransfer(s32 chan, void *output, u32 outputBytes, void *input, u32 inputBytes,
@@ -73,7 +76,8 @@ static u32 CompleteTransfer(void) {
         input = Si.input;
         rLen = Si.inputBytes / sizeof(u32);
         for (i = 0; i < rLen; i++) {
-            *((u32 *)input)++ = __SIRegs[i + 0x20];
+            *(u32 *)input = __SIRegs[i + 32];
+            input += sizeof(u32);
         }
 
         rLen = Si.inputBytes & 3;
@@ -87,12 +91,12 @@ static u32 CompleteTransfer(void) {
         if (__SIRegs[SI_COMCSR_IDX] & SI_COMCSR_COMERR_MASK) {
             sr >>= (3 - Si.chan) * 8;
             sr &= 0xF;
-            if ((sr & 8) != 0 && (Type[Si.chan] & 0x80) == 0) {
-                Type[Si.chan] = 8;
+            if ((sr & SI_ERROR_NO_RESPONSE) != 0 && (Type[Si.chan] & SI_ERROR_BUSY) == 0) {
+                Type[Si.chan] = SI_ERROR_NO_RESPONSE;
             }
 
             if (sr == 0) {
-                sr = 4;
+                sr = SI_ERROR_COLLISION;
             }
         } else {
             TypeTime[Si.chan] = __OSGetSystemTime();
@@ -127,8 +131,6 @@ static void SITransferNext(s32 chan) {
     }
 }
 
-#define CHAN_NONE -1
-
 static void SIInterruptHandler(__OSInterrupt interrupt, OSContext *context) {
     u32 reg;
     s32 chan;
@@ -141,7 +143,7 @@ static void SIInterruptHandler(__OSInterrupt interrupt, OSContext *context) {
     reg = __SIRegs[SI_COMCSR_IDX];
     if ((reg & (SI_COMCSR_TCINT_MASK | SI_COMCSR_TCINTMSK_MASK)) ==
         (SI_COMCSR_TCINT_MASK | SI_COMCSR_TCINTMSK_MASK)) {
-        ASSERTLINE(376, Si.chan != CHAN_NONE);
+        ASSERTLINE(376, Si.chan != -1);
 
         chan = Si.chan;
         sr = CompleteTransfer();
@@ -287,8 +289,8 @@ void SIInit(void) {
     } while (__SIRegs[SI_COMCSR_IDX] & SI_COMCSR_TSTART_MASK);
 
     __SIRegs[SI_COMCSR_IDX] = SI_COMCSR_TCINT_MASK;
-    __OSSetInterruptHandler(0x14, SIInterruptHandler);
-    __OSUnmaskInterrupts(0x800);
+    __OSSetInterruptHandler(__OS_INTERRUPT_PI_SI, SIInterruptHandler);
+    __OSUnmaskInterrupts(OS_INTERRUPTMASK_PI_SI);
 
     SIGetType(0);
     SIGetType(1);
@@ -345,7 +347,7 @@ static int __SITransfer(s32 chan, void *output, u32 outputBytes, void *input, u3
 
     rLen = ROUND(outputBytes, 4) / 4;
     for (i = 0; i < rLen; i++) {
-        __SIRegs[i + 0x20] = ((u32 *)output)[i];
+        __SIRegs[i + 32] = ((u32 *)output)[i];
     }
 
     comcsr.val = __SIRegs[SI_COMCSR_IDX];
@@ -385,9 +387,9 @@ u32 SIGetStatus(s32 chan) {
     chanShift = (3 - chan) * 8;
     sr >>= chanShift;
 
-    if ((sr & 8) != 0) {
+    if ((sr & SI_ERROR_NO_RESPONSE) != 0) {
         if ((Type[chan] & SI_ERROR_BUSY) == 0) {
-            Type[chan] = 8;
+            Type[chan] = SI_ERROR_NO_RESPONSE;
         }
     }
 
@@ -476,7 +478,7 @@ static BOOL SIGetResponseRaw(s32 chan) {
     u32 sr;
 
     sr = SIGetStatus(chan);
-    if (sr & 0x20) {
+    if (sr & SI_ERROR_RDST) {
         InputBuffer[chan][0] = __SIRegs[1 + chan * 3];
         InputBuffer[chan][1] = __SIRegs[2 + chan * 3];
         InputBufferValid[chan] = TRUE;
@@ -596,8 +598,8 @@ static void GetTypeCallback(s32 chan, u32 error, OSContext *context) {
     fix = __PADFixBits & chanBit;
     __PADFixBits &= ~chanBit;
 
-    if ((error & 0xF) != 0 || (type & 0x18000000) != 0x08000000 || (type & 0x80000000) == 0 ||
-        (type & 0x04000000) != 0) {
+    if ((error & 0xF) != 0 || (type & SI_TYPE_MASK) != SI_TYPE_GC || (type & SI_GC_WIRELESS) == 0 ||
+        (type & SI_WIRELESS_IR) != 0) {
         OSSetWirelessID(chan, 0);
         CallTypeAndStatusCallback(chan, Type[chan]);
     } else {
@@ -605,18 +607,18 @@ static void GetTypeCallback(s32 chan, u32 error, OSContext *context) {
 
         id = OSGetWirelessID(chan) << 8;
 
-        if (fix != 0 && (id & 0x100000) != 0) {
-            cmdFixDevice[chan] = 0x4E000000 | (id & 0xCFFF00) | 0x100000;
+        if (fix != 0 && (id & SI_WIRELESS_FIX_ID) != 0) {
+            cmdFixDevice[chan] = 0x4E000000 | (id & SI_WIRELESS_TYPE_ID) | SI_WIRELESS_FIX_ID;
             Type[chan] = SI_ERROR_BUSY;
             SITransfer(chan, &cmdFixDevice[chan], 3, &Type[chan], 3, &GetTypeCallback, 0);
             return;
         }
 
-        if ((type & 0x00100000) != 0) {
-            if ((id & 0xCFFF00) != (type & 0xCFFF00)) {
-                if ((id & 0x100000) == 0) {
-                    id = type & 0xCFFF00;
-                    id |= 0x100000;
+        if ((type & SI_WIRELESS_FIX_ID) != 0) {
+            if ((id & SI_WIRELESS_TYPE_ID) != (type & SI_WIRELESS_TYPE_ID)) {
+                if ((id & SI_WIRELESS_FIX_ID) == 0) {
+                    id = type & SI_WIRELESS_TYPE_ID;
+                    id |= SI_WIRELESS_FIX_ID;
                     OSSetWirelessID(chan, id >> 8);
                 }
 
@@ -626,9 +628,9 @@ static void GetTypeCallback(s32 chan, u32 error, OSContext *context) {
                 return;
             }
         } else {
-            if ((type & 0x40000000) != 0) {
-                id = type & 0xCFFF00;
-                id |= 0x100000;
+            if ((type & SI_WIRELESS_RECEIVED) != 0) {
+                id = type & SI_WIRELESS_TYPE_ID;
+                id |= SI_WIRELESS_FIX_ID;
                 OSSetWirelessID(chan, id >> 8);
 
                 cmdFixDevice[chan] = 0x4E000000 | id;
@@ -655,7 +657,7 @@ u32 SIGetType(s32 chan) {
     type = Type[chan];
     diff = __OSGetSystemTime() - TypeTime[chan];
     if ((Si.poll & (0x80 >> chan)) != 0) {
-        if (type != 8) {
+        if (type != SI_ERROR_NO_RESPONSE) {
             TypeTime[chan] = __OSGetSystemTime();
             OSRestoreInterrupts(enabled);
             return type;
@@ -663,7 +665,7 @@ u32 SIGetType(s32 chan) {
 
         type = Type[chan] = SI_ERROR_BUSY;
     } else {
-        if (diff <= OSMillisecondsToTicks(50) && type != 8) {
+        if (diff <= OSMillisecondsToTicks(50) && type != SI_ERROR_NO_RESPONSE) {
             OSRestoreInterrupts(enabled);
             return type;
         }
