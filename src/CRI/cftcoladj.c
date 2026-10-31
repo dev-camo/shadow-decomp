@@ -3,7 +3,7 @@
  * in this game and is left out.
  * Bodies from the RE4 GameCube decompilation of the same file.
  */
-#include "CRI/cri_xpt.h"
+#include "CRI/cft.h"
 
 /* 3x3 matrix inverse by cofactors. */
 void CFT_MakeInverseMtx3D(Float32 *m, Float32 *inv) {

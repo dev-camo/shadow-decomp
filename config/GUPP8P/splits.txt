@@ -1279,6 +1279,12 @@ CRI/mwsfdsst.c:
 	.text       start:0x80409098 end:0x804096D0
 	.data       start:0x8056AEF0 end:0x8056AEF8
 
+CRI/cftfx.c:
+	.text       start:0x8040AE6C end:0x8040B4F8
+	.rodata     start:0x8051B358 end:0x8051B368
+	.data       start:0x8056AEF8 end:0x8056AF20
+	.bss        start:0x805E1480 end:0x805E17D8
+
 CRI/cftcoladj.c:
 	.text       start:0x8040B4F8 end:0x8040BBE4
 	.rodata     start:0x8051B368 end:0x8051B36C
