@@ -1061,7 +1061,8 @@ config.libs = [
                     cflags=cflags_game_vector_length,
                     extra_cflags=["-O4,s", "-use_lmw_stmw on"],
                 ),
-                # Groups of numbered resources.
+                # Groups of numbered resources. Not complete: fn_80411818 and fn_80411DEC are not
+                # written yet, and fn_804124DC, fn_80413058, fn_80413318 and fn_80413538 differ.
                 Object(
                     NonMatching,
                     "Game/fn_80411714.c",

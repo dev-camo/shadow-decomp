@@ -12,9 +12,14 @@ extern "C" {
  * step; with a positive drag k the velocity approaches the terminal velocity a / k exponentially:
  *     x' = x + (a / k) t + (v - a / k) (1 - e^(-k t)) / k
  *     v' = a / k + (v - a / k) e^(-k t)
- * The code computes acceleration * inverseDrag (a / k) again at each of its three uses. Each
- * vector operation keeps its result in a local of its own, declared in the order of the original's
- * stack slots. */
+ * The code computes acceleration * inverseDrag (a / k) again at each of its three uses.
+ *
+ * Matching workaround: each vector operation keeps its result in a local of its own, declared in
+ * the order of the original's stack slots (declaring them in the opposite order changes the
+ * frame offsets). The original most likely used by-value vector operations, whose result
+ * temporaries the compiler places itself; the (destination, source) prototypes of fn_8040CDA8,
+ * fn_8040CDD0 and fn_8040CD74 cannot express that. Revisit when those helpers' real signatures are
+ * known (see the fn_8040F364 entry in configure.py). */
 void fn_804103E8(Fn8040Vector3 *position, Fn8040Vector3 *velocity,
                  const Fn8040Vector3 *acceleration, float drag, float duration) {
     if (drag <= 0.0f) {
