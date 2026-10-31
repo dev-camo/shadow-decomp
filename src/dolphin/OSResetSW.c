@@ -1,3 +1,7 @@
+// Dolphin SDK OS library: reset button handling.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: OSGetResetSwitchState,
+// OSSetResetCallback, __OSSetResetButtonTimer.
 #include <dolphin.h>
 #include <dolphin/os.h>
 
@@ -9,7 +13,7 @@ static BOOL LastState;
 static OSTime HoldUp;
 static OSTime HoldDown;
 
-void __OSResetSWInterruptHandler(s16 exception, OSContext *context) {
+void __OSResetSWInterruptHandler(__OSInterrupt interrupt, OSContext *context) {
     OSResetCallback callback;
 
     HoldDown = __OSGetSystemTime();
@@ -39,9 +43,9 @@ OSResetCallback OSSetResetCallback(OSResetCallback callback) {
 
     if (callback) {
         __PIRegs[0] = 2;
-        __OSUnmaskInterrupts(0x200);
+        __OSUnmaskInterrupts(OS_INTERRUPTMASK_PI_RSW);
     } else {
-        __OSMaskInterrupts(0x200);
+        __OSMaskInterrupts(OS_INTERRUPTMASK_PI_RSW);
     }
     OSRestoreInterrupts(enabled);
     return prevCallback;

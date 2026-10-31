@@ -1,3 +1,7 @@
+// Dolphin SDK OS library: time base and calendar time.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: OSCalendarTimeToTicks,
+// OSTicksToCalendarTime, __OSSetTick, __OSSetTime, __OSTimeToSystemTime, __SetTime.
 #include <dolphin/exi.h>
 #include <dolphin/os.h>
 
@@ -19,9 +23,9 @@
 
 #define __OSSystemTime ((OSTime *)0x800030D8)
 
-// End of each month in standard year
+// Day of the year on which each month starts (days elapsed before it) in a standard year
 static int YearDays[MONTH_MAX] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
-// End of each month in leap year
+// Day of the year on which each month starts (days elapsed before it) in a leap year
 static int LeapYearDays[MONTH_MAX] = {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335};
 
 #ifdef __GEKKO__
@@ -76,7 +80,7 @@ void __OSSetTime(OSTime time) {
     OSRestoreInterrupts(enabled);
 }
 
-OSTime __OSGetSystemTime() {
+OSTime __OSGetSystemTime(void) {
     BOOL enabled;
     OSTime *timeAdjustAddr;
     OSTime result;

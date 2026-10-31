@@ -1,13 +1,13 @@
+// Dolphin SDK OS library: booting another DOL.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: OSExecl, OSExecv,
+// __OSSetExecParams.
 #include <dolphin.h>
 #include <dolphin/os.h>
 
 #include "__os.h"
 #include "__dvd.h"
 #include "layout_check.h"
-
-extern volatile u32 BOOT_REGION_START AT_ADDRESS(0x812FDFF0);
-extern volatile u32 BOOT_REGION_END AT_ADDRESS(0x812FDFEC);
-extern volatile u8 g_unk_800030E2 AT_ADDRESS(0x800030E2);
 
 static int Prepared;
 
@@ -115,7 +115,7 @@ static void Callback(s32, DVDCommandBlock *) {
     Prepared = TRUE;
 }
 
-static int IsStreamEnabled() {
+static int IsStreamEnabled(void) {
     if (DVDGetCurrentDiskID()->streaming) {
         return TRUE;
     }
@@ -136,7 +136,7 @@ void __OSSetExecParams(const OSExecParams *params, OSExecParams *addr) {
     __OSExecParams = addr;
 }
 
-static void StopStreaming() {
+static void StopStreaming(void) {
     DVDCommandBlock block;
 #if SDK_REVISION < 1
     OSTime start;
@@ -200,7 +200,7 @@ typedef struct {
 } AppLoaderStruct;
 CHECK_SIZEOF(AppLoaderStruct, 0x20);
 
-static AppLoaderStruct *LoadApploader() {
+static AppLoaderStruct *LoadApploader(void) {
     AppLoaderStruct *header;
 
     header = (AppLoaderStruct *)OSAllocFromArenaLo(sizeof(AppLoaderStruct), DOLPHIN_ALIGNMENT);
@@ -269,7 +269,7 @@ void __OSBootDolSimple(u32 doloffset, u32 restartCode, void *regionStart, void *
 
     __DVDPrepareResetAsync(Callback);
     __OSMaskInterrupts(0xFFFFFFE0);
-    __OSUnmaskInterrupts(0x400);
+    __OSUnmaskInterrupts(OS_INTERRUPTMASK_PI_DI);
     OSEnableInterrupts();
 
 #if SDK_REVISION < 1
@@ -299,9 +299,9 @@ void __OSBootDolSimple(u32 doloffset, u32 restartCode, void *regionStart, void *
         dolEntry = LoadDol(params, (AppLoaderCallback)header->entry);
         StartDol(params, dolEntry);
     } else {
-        BOOT_REGION_START = (u32)regionStart;
-        BOOT_REGION_END = (u32)regionEnd;
-        g_unk_800030E2 = 1;
+        __gUnknown812FDFF0 = (u32)regionStart;
+        __gUnknown812FDFEC = (u32)regionEnd;
+        __gUnknown800030E2 = 1;
 
         ReadDisc((void *)0x81300000, OSRoundUp32B(header->rebootSize),
                  (GetApploaderPosition() + 0x20) + header->size);
@@ -386,6 +386,9 @@ void OSExecl(const char *dolfile, const char *arg0, ...) {
     OSSetArenaLo((void *)0x81280000);
     OSSetArenaHi((void *)0x812F0000);
 
+    // Only 4 bytes are allocated, but the loop stores every argument up to the NULL terminator; the
+    // count is checked against 0x400 only afterwards, by the debug assert. OSExecl is not in this
+    // game's DOL.
     argv = OSAllocFromArenaLo(4, 0x1000);
     va_start(vl, arg0);
 #if SDK_REVISION < 2

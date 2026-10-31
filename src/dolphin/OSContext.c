@@ -3,9 +3,6 @@
 
 #include "__os.h"
 
-volatile OSContext *__OSCurrentContext AT_ADDRESS(OS_BASE_CACHED | 0x00D4);
-volatile OSContext *__OSFPUContext AT_ADDRESS(OS_BASE_CACHED | 0x00D8);
-
 #ifdef __GEKKO__
 // clang-format off
 static asm void __OSLoadFPUContext(register u32 dummy, register OSContext* fpucontext) {
@@ -349,7 +346,7 @@ misc:
 // clang-format on
 
 // clang-format off
-asm u32 OSGetStackPointer() {
+asm u32 OSGetStackPointer(void) {
     nofralloc
     mr r3, r1
     blr

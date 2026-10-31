@@ -1,10 +1,14 @@
+// Dolphin SDK OS library: reset and shutdown.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: OSSetBootDol,
+// OSUnregisterResetFunction, __OSShutdownDevices.
 #include <dolphin.h>
 #include <dolphin/os.h>
 
 #include "__os.h"
 
-// Queue helpers for the reset function list, in the style of the thread queue macros in
-// OSThread.c.
+// Queue helpers for the reset function list. They follow the thread queue macros in OSThread.c,
+// but the list is always linked through the prev/next members, so there is no link parameter.
 #define ENQUEUE_INFO(info, queue)                                                                  \
     do {                                                                                           \
         OSResetFunctionInfo *__prev = (queue)->tail;                                               \
@@ -16,7 +20,7 @@
         (info)->prev = __prev;                                                                     \
         (info)->next = 0;                                                                          \
         (queue)->tail = (info);                                                                    \
-    } while (0);
+    } while (0)
 
 #define DEQUEUE_INFO(info, queue)                                                                  \
     do {                                                                                           \
@@ -32,7 +36,7 @@
         } else {                                                                                   \
             __prev->next = __next;                                                                 \
         }                                                                                          \
-    } while (0);
+    } while (0)
 
 #define ENQUEUE_INFO_PRIO(info, queue)                                                             \
     do {                                                                                           \
@@ -55,12 +59,11 @@
                 __prev->next = (info);                                                             \
             }                                                                                      \
         }                                                                                          \
-    } while (0);
+    } while (0)
 
 static OSResetFunctionQueue ResetFunctionQueue;
 static u32 bootThisDol;
 
-// prototypes
 static int CallResetFunctions(int final);
 static void Reset(u32 resetCode);
 
@@ -98,46 +101,48 @@ int __OSCallResetFunctions(BOOL final) {
 }
 
 #ifdef __GEKKO__
+// The sequence enters through the hop_1..hop_4 branches, then sets a HID0 bit, waits on the
+// timebase, writes the reset code to the reset register and spins.
 // clang-format off
 static asm void Reset(u32 resetCode) {
     nofralloc
-    b L_000001BC
-L_000001A0:
+    b hop_1
+set_hid0:
     mfspr r8, HID0
     ori r8, r8, 0x8
     mtspr HID0, r8
     isync
     sync
     nop
-    b L_000001C0
-L_000001BC:
-    b L_000001DC
-L_000001C0:
+    b delay_start
+hop_1:
+    b hop_2
+delay_start:
     mftb r5, 268
-L_000001C4:
+delay_loop:
     mftb r6, 268
     subf r7, r5, r6
     cmplwi r7, 0x1124
-    blt L_000001C4
+    blt delay_loop
     nop
-    b L_000001E0
-L_000001DC:
-    b L_000001FC
-L_000001E0:
+    b write_reset
+hop_2:
+    b hop_3
+write_reset:
     lis r8, 0xcc00
     ori r8, r8, 0x3000
     li r4, 0x3
     stw r4, 0x24(r8)
     stw r3, 0x24(r8)
     nop
-    b L_00000200
-L_000001FC:
-    b L_00000208
-L_00000200:
+    b halt
+hop_3:
+    b hop_4
+halt:
     nop
-    b L_00000200
-L_00000208:
-    b L_000001A0
+    b halt
+hop_4:
+    b set_hid0
 }
 // clang-format on
 #endif
@@ -149,8 +154,8 @@ static void KillThreads(void) {
     for (thread = __OSActiveThreadQueue.head; thread; thread = next) {
         next = thread->linkActive.next;
         switch (thread->state) {
-        case 1:
-        case 4:
+        case OS_THREAD_STATE_READY:
+        case OS_THREAD_STATE_WAITING:
             OSCancelThread(thread);
             continue;
         default:
@@ -202,13 +207,13 @@ void OSResetSystem(BOOL reset, u32 resetCode, BOOL forceMenu) {
     if (reset == TRUE && forceMenu) {
         sram = __OSLockSram();
         sram->flags |= 0x40;
-        __OSUnlockSram(1);
+        __OSUnlockSram(TRUE);
 
         resetCode = 0;
     }
 
     if (reset == OS_RESET_SHUTDOWN ||
-        (reset == OS_RESET_RESTART && (bootThisDol || resetCode + 0x3fff0000 == 0))) {
+        (reset == OS_RESET_RESTART && (bootThisDol || resetCode == 0xC0010000))) {
         __OSShutdownDevices(FALSE);
     } else {
         __OSShutdownDevices(TRUE);
@@ -230,10 +235,11 @@ void OSResetSystem(BOOL reset, u32 resetCode, BOOL forceMenu) {
     memset(OSPhysicalToCached(0xf4), 0, 0xf8 - 0xf4);
     memset(OSPhysicalToCached(0x3000), 0, 0xc0);
     memset(OSPhysicalToCached(0x30c8), 0, 0xd4 - 0xc8);
+    // The byte at 0x800030E2 is __gUnknown800030E2, which OSExec sets to 1.
     memset(OSPhysicalToCached(0x30e2), 0, 1);
 }
 
-u32 OSGetResetCode() {
+u32 OSGetResetCode(void) {
     u32 resetCode;
     if (__OSRebootParams.valid)
         resetCode = 0x80000000 | __OSRebootParams.restartCode;

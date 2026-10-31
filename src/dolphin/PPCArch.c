@@ -1,8 +1,15 @@
+// Dolphin SDK base library: PowerPC special-register accessors.
+// 22 global functions of this file are not present as separate functions in this game's DOL; their
+// bodies are unverified unless they are inlined into a function that is present. The global
+// functions present in the DOL are: PPCDisableSpeculation, PPCHalt, PPCMffpscr, PPCMfhid0,
+// PPCMfhid2, PPCMfl2cr, PPCMfmsr, PPCMtdec, PPCMtfpscr, PPCMthid0, PPCMthid2, PPCMtl2cr,
+// PPCMtmmcr0, PPCMtmmcr1, PPCMtmsr, PPCMtpmc1, PPCMtpmc2, PPCMtpmc3, PPCMtpmc4, PPCMtwpar,
+// PPCSetFpNonIEEEMode, PPCSync.
 #include <dolphin.h>
 #include <dolphin/base/PPCArch.h>
 
 // clang-format off
-asm u32 PPCMfmsr() {
+asm u32 PPCMfmsr(void) {
     nofralloc
     mfmsr r3
     blr    
@@ -45,7 +52,7 @@ asm u32 PPCAndCMsr(register u32 value) {
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfhid0() {
+asm u32 PPCMfhid0(void) {
     nofralloc
     mfspr r3, HID0
     blr
@@ -61,7 +68,7 @@ asm void PPCMthid0(register u32 newHID0) {
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfhid1() {
+asm u32 PPCMfhid1(void) {
     nofralloc
     mfspr r3, HID1
     blr
@@ -69,7 +76,7 @@ asm u32 PPCMfhid1() {
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfl2cr() {
+asm u32 PPCMfl2cr(void) {
     nofralloc
     mfspr r3, L2CR
     blr
@@ -93,7 +100,7 @@ asm void PPCMtdec(register u32 newDec) {
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfdec() {
+asm u32 PPCMfdec(void) {
     nofralloc
     mfdec r3
     blr
@@ -101,7 +108,7 @@ asm u32 PPCMfdec() {
 // clang-format on
 
 // clang-format off
-asm void PPCSync() {
+asm void PPCSync(void) {
     nofralloc
     sc
     blr
@@ -109,7 +116,7 @@ asm void PPCSync() {
 // clang-format on
 
 // clang-format off
-asm void PPCEieio() {
+asm void PPCEieio(void) {
     nofralloc
     mfmsr r5
     rlwinm r6, r5, 0, 17, 15
@@ -128,7 +135,7 @@ asm void PPCEieio() {
 // clang-format on
 
 // clang-format off
-asm void PPCHalt() {
+asm void PPCHalt(void) {
     nofralloc
     sync
 loop:
@@ -140,7 +147,7 @@ loop:
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfmmcr0() {
+asm u32 PPCMfmmcr0(void) {
     nofralloc
     mfspr r3, MMCR0
     blr
@@ -156,7 +163,7 @@ asm void PPCMtmmcr0(register u32 newMmcr0) {
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfmmcr1() {
+asm u32 PPCMfmmcr1(void) {
     nofralloc
     mfspr r3, MMCR1
     blr
@@ -172,7 +179,7 @@ asm void PPCMtmmcr1(register u32 newMmcr1) {
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfpmc1() {
+asm u32 PPCMfpmc1(void) {
     nofralloc
     mfspr r3, PMC1
     blr
@@ -188,7 +195,7 @@ asm void PPCMtpmc1(register u32 newPmc1) {
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfpmc2() {
+asm u32 PPCMfpmc2(void) {
     nofralloc
     mfspr r3, PMC2
     blr
@@ -204,7 +211,7 @@ asm void PPCMtpmc2(register u32 newPmc2) {
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfpmc3() {
+asm u32 PPCMfpmc3(void) {
     nofralloc
     mfspr r3, PMC3
     blr
@@ -220,7 +227,7 @@ asm void PPCMtpmc3(register u32 newPmc3) {
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfpmc4() {
+asm u32 PPCMfpmc4(void) {
     nofralloc
     mfspr r3, PMC4
     blr
@@ -236,7 +243,7 @@ asm void PPCMtpmc4(register u32 newPmc4) {
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfsia() {
+asm u32 PPCMfsia(void) {
     nofralloc
     mfspr r3, SIA
     blr
@@ -250,7 +257,7 @@ asm void PPCMtsia(register u32 newSia) {
     blr
 } // clang-format on
 
-u32 PPCMffpscr() {
+u32 PPCMffpscr(void) {
     union FpscrUnion m;
 
     // clang-format off
@@ -278,7 +285,7 @@ void PPCMtfpscr(register u32 newFPSCR) {
 }
 
 // clang-format off
-asm u32 PPCMfhid2() {
+asm u32 PPCMfhid2(void) {
     nofralloc
     mfspr r3, HID2
     blr
@@ -294,7 +301,7 @@ asm void PPCMthid2(register u32 newhid2) {
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfwpar() {
+asm u32 PPCMfwpar(void) {
     nofralloc
     sync
     mfspr r3, WPAR
@@ -311,7 +318,7 @@ asm void PPCMtwpar(register u32 newwpar) {
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfdmaU() {
+asm u32 PPCMfdmaU(void) {
     nofralloc
     mfspr r3, DMA_U
     blr
@@ -319,7 +326,7 @@ asm u32 PPCMfdmaU() {
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfdmaL() {
+asm u32 PPCMfdmaL(void) {
     nofralloc
     mfspr r3, DMA_L
     blr
@@ -343,7 +350,7 @@ asm void PPCMtdmaL(register u32 newdmal) {
 // clang-format on
 
 // clang-format off
-asm u32 PPCMfpvr() {
+asm u32 PPCMfpvr(void) {
     nofralloc
     mfspr r3, PVR
     blr
@@ -359,17 +366,17 @@ void PPCDisableSpeculation(void) {
 }
 
 // clang-format off
-asm void PPCSetFpIEEEMode() {
-	nofralloc
-	mtfsb0 29
-	blr
+asm void PPCSetFpIEEEMode(void) {
+    nofralloc
+    mtfsb0 29
+    blr
 }
 // clang-format on
 
 // clang-format off
-asm void PPCSetFpNonIEEEMode() {
-	nofralloc
-	mtfsb1 29
-	blr
+asm void PPCSetFpNonIEEEMode(void) {
+    nofralloc
+    mtfsb1 29
+    blr
 }
 // clang-format on

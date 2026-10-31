@@ -1,3 +1,8 @@
+// Dolphin SDK OS library: mutexes and condition variables.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: OSInitCond, OSInitMutex,
+// OSLockMutex, OSSignalCond, OSTryLockMutex, OSUnlockMutex, OSWaitCond, __OSCheckDeadLock,
+// __OSCheckMutex, __OSCheckMutexes.
 #include <dolphin.h>
 #include <dolphin/os.h>
 
@@ -14,7 +19,7 @@
         (mutex)->link.prev = __prev;                                                               \
         (mutex)->link.next = 0;                                                                    \
         (queue)->tail = (mutex);                                                                   \
-    } while (0);
+    } while (0)
 
 #define DEQUEUE_MUTEX(mutex, queue, link)                                                          \
     do {                                                                                           \
@@ -30,24 +35,20 @@
         } else {                                                                                   \
             __prev->link.next = __next;                                                            \
         }                                                                                          \
-    } while (0);
+    } while (0)
 
 #define DEQUEUE_HEAD(mutex, queue, link)                                                           \
     do {                                                                                           \
-        OSMutex *__next = mutex->link.next;                                                        \
+        OSMutex *__next = (mutex)->link.next;                                                      \
         if (__next == NULL) {                                                                      \
             (queue)->tail = 0;                                                                     \
         } else {                                                                                   \
             __next->link.prev = 0;                                                                 \
         }                                                                                          \
         (queue)->head = __next;                                                                    \
-    } while (0);
+    } while (0)
 
-// prototypes
 static int IsMember(OSMutexQueue *queue, OSMutex *mutex);
-int __OSCheckMutex(OSMutex *mutex);
-int __OSCheckDeadLock(OSThread *thread);
-int __OSCheckMutexes(OSThread *thread);
 
 void OSInitMutex(OSMutex *mutex) {
     OSInitThreadQueue(&mutex->queue);
@@ -60,7 +61,8 @@ void OSLockMutex(OSMutex *mutex) {
     OSThread *currentThread = OSGetCurrentThread();
 
     ASSERTMSGLINE(140, currentThread, "OSLockMutex(): current thread does not exist.");
-    ASSERTMSGLINE(142, currentThread->state == 2, "OSLockMutex(): current thread is not running.");
+    ASSERTMSGLINE(142, currentThread->state == OS_THREAD_STATE_RUNNING,
+                  "OSLockMutex(): current thread is not running.");
 
     while (1) {
         OSThread *ownerThread = mutex->thread;
@@ -90,7 +92,7 @@ void OSUnlockMutex(OSMutex *mutex) {
     OSThread *currentThread = OSGetCurrentThread();
 
     ASSERTMSGLINE(189, currentThread, "OSUnlockMutex(): current thread does not exist.");
-    ASSERTMSGLINE(191, currentThread->state == 2,
+    ASSERTMSGLINE(191, currentThread->state == OS_THREAD_STATE_RUNNING,
                   "OSUnlockMutex(): current thread is not running.");
     ASSERTMSG2LINE(194, mutex->thread == currentThread,
                    "OSUnlockMutex(): current thread %p is not the owner of mutex %p.",
@@ -129,7 +131,7 @@ BOOL OSTryLockMutex(OSMutex *mutex) {
     BOOL locked;
 
     ASSERTMSGLINE(255, currentThread, "OSTryLockMutex(): current thread does not exist.");
-    ASSERTMSGLINE(257, currentThread->state == 2,
+    ASSERTMSGLINE(257, currentThread->state == OS_THREAD_STATE_RUNNING,
                   "OSTryLockMutex(): current thread is not running.");
 
     if (!mutex->thread) {
@@ -156,7 +158,8 @@ void OSWaitCond(OSCond *cond, OSMutex *mutex) {
     OSThread *currentThread = OSGetCurrentThread();
 
     ASSERTMSGLINE(313, currentThread, "OSWaitCond(): current thread does not exist.");
-    ASSERTMSGLINE(315, currentThread->state == 2, "OSWaitCond(): current thread is not running.");
+    ASSERTMSGLINE(315, currentThread->state == OS_THREAD_STATE_RUNNING,
+                  "OSWaitCond(): current thread is not running.");
     ASSERTMSG2LINE(318, mutex->thread == currentThread,
                    "OSWaitCond(): current thread %p is not the owner of mutex %p.", currentThread,
                    mutex);
@@ -217,7 +220,7 @@ int __OSCheckMutex(OSMutex *mutex) {
         if (thread->link.prev != NULL && (thread != thread->link.prev->link.next)) {
             return 0;
         }
-        if (thread->state != 4) {
+        if (thread->state != OS_THREAD_STATE_WAITING) {
             return 0;
         }
         if (thread->priority < priority) {
