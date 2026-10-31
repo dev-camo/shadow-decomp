@@ -879,6 +879,22 @@ config.libs = [
                 # allocator's AllocObject and FreeObject are also emitted as weak copies, as are the
                 # CTexList and RCObject vtables; the link discards them.
                 Object(NonMatching, "Game/CSD/fn_80364058.cpp", cflags=cflags_csd),
+                # The scene object and the handles it is built from: constructors, destructors, Clear and
+                # Copy of the handles of a scene's data, fonts, motions, palette and entries; the
+                # scene's frame range, speed, pause, motion and palette members and the setters of its
+                # root pattern. 52 of the unit's 195 functions are sourced, and each has the original's
+                # instructions and relocation targets (GetAspect's float literal is a differently named
+                # label of the same value). The other 143 are not sourced: the scene's constructor,
+                # Copy, destructor, Update and Draw, the container code (lists and trees of listeners
+                # and nodes), the RCPtr instances (for MatrixValue and for the node pointers), the
+                # listener dispatch and the root pattern's allocation. The unit's .rodata and .data are
+                # incomplete for the same reason (the strings and the vtables of the unsourced classes
+                # are missing), and it emits weak copies of RCPtr<unsigned char>::Reset, the
+                # RCObject<unsigned char> constructor and vtable and CMemoryAlloc::AllocObject and
+                # FreeObject, which the link discards. It also emits a local instance of the
+                # delete-policy Assign (0x1C0 bytes) that only the weak Reset calls: this unit's form
+                # of the original's fn_803655F8 (0x1E0 bytes), which it does not match yet.
+                Object(NonMatching, "Game/CSD/csdmScene.cpp", cflags=cflags_csd),
                 # The palette object of a scene (CMotionPalette, which owns the palette block
                 # through a reference-counted handle) and the CMotionPattern constructor that wraps
                 # one of its entries. 12 of 12 functions are sourced; 8 match in raw instruction

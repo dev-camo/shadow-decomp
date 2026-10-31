@@ -146,10 +146,19 @@ struct NodeEntry {
 };
 CHECK_SIZEOF(Chao::CSD::NodeEntry, 0xC);
 
+struct SceneMotion;
+
+/* The first and last frame of one motion of a scene (names inferred from CScene's frame range). */
+struct FrameRange {
+    /* 0x00 */ f32 start;
+    /* 0x04 */ f32 end;
+};
+CHECK_SIZEOF(Chao::CSD::FrameRange, 0x8);
+
 /* File data of a scene (only the members used by the CSD code so far). The aspect (name inferred:
  * the entry transform divides the screen's aspect ratio by it, ApplyScreenAspect divides it by
  * the screen's) is present only when the version (name inferred from that test) is at least 1;
- * otherwise they use 1.3333. */
+ * otherwise they use 1.3333. The frame ranges are present only when the version is at least 2. */
 struct SceneData {
     /* 0x00 */ s32 version;
     /* 0x04 */ u8 field_0x4[0x14];
@@ -160,13 +169,14 @@ struct SceneData {
     /* 0x28 */ LayerData *layers;
     /* 0x2C */ s32 nodeCount;
     /* 0x30 */ NodeEntry *nodes;
-    /* 0x34 */ s32 nameCount;
-    /* 0x38 */ u32 field_0x38;
+    /* 0x34 */ s32 nameCount; /* also the number of motions */
+    /* 0x38 */ const SceneMotion *motions;
     /* 0x3C */ NameEntry *names;
     /* 0x40 */ f32 aspect;
+    /* 0x44 */ const FrameRange *frameRanges;
 };
-/* Only the members up to 0x44 are known. */
-CHECK_SIZEOF(Chao::CSD::SceneData, 0x44);
+/* Only the members up to 0x48 are known. */
+CHECK_SIZEOF(Chao::CSD::SceneData, 0x48);
 
 /* A character code and its glyph index, sorted by code. */
 struct FontCharacter {
@@ -309,8 +319,6 @@ struct MotionPaletteLayer {
     /* 0x0C */ MotionPalette *palette;
 };
 CHECK_SIZEOF(Chao::CSD::MotionPaletteLayer, 0x10);
-
-struct SceneMotion;
 
 /* A palette is allocated in one block: this header, its layers, then every layer's entries. The
  * values the palette was last updated with (frame, parent, motion and fonts) are kept to tell

@@ -38,8 +38,18 @@ CHECK_SIZEOF(Chao::CSD::CMotionPaletteRef, 0xC);
 /* The handle of a scene's file data (inferred). */
 class CSceneDataRef {
   public:
+    CSceneDataRef();
     virtual ~CSceneDataRef();
     virtual void Copy(const CSceneDataRef &other);
+
+    /* Drops the reference and the data. */
+    void Clear();
+
+    /* Takes the data and the reference that counts its block. */
+    void Attach(const SceneData *scene, const RCPtr<unsigned char> &ref);
+
+    /* The scene's aspect ratio (name inferred; 1.3333 for data without one). */
+    f32 GetAspect() const;
 
     /* 0x04 */ RCPtr<unsigned char> m_ref;
     /* 0x08 */ const SceneData *m_scene;
@@ -49,8 +59,12 @@ CHECK_SIZEOF(Chao::CSD::CSceneDataRef, 0xC);
 /* The handle of a project's fonts (inferred). */
 class CFontListRef {
   public:
+    CFontListRef();
     virtual ~CFontListRef();
     virtual void Copy(const CFontListRef &other);
+
+    /* Drops the reference and the fonts. */
+    void Clear();
 
     /* 0x04 */ RCPtr<unsigned char> m_ref;
     /* 0x08 */ const FontList *m_fonts;
@@ -112,11 +126,20 @@ class CMotionPattern : public CMotionPatternRef, public CBase {
     CMotionPattern(f32 aspect);
     /* Wraps the entry of an element of a palette; ref counts the palette's block. */
     CMotionPattern(MotionPaletteEntry *entry, const RCPtr<unsigned char> &ref);
+    /* A copy of another handle of an entry (the entry and its reference; name inferred). */
+    explicit CMotionPattern(const CMotionPatternRef &other);
     virtual ~CMotionPattern() {}
     virtual void Copy(const CMotionPatternRef &other);
 
     /* Takes the entry and the reference to its block (name inferred). */
     void Attach(MotionPaletteEntry *entry, const RCPtr<unsigned char> &ref);
+
+    /* Stores the entry's own values for the hidden flag, the translation and the scale (names
+     * inferred): unlike the setters below, they do not override the channel but replace the
+     * entry's current value, and mark the entry's channels as needing an update. */
+    void SetEntryHidden(s32 hidden);
+    void SetEntryTranslation(f32 x, f32 y);
+    void SetEntryScale(f32 x, f32 y);
 
     /* Brings an entry without quads up to date: its hidden flag, tint and matrix, for the
      * screen as it is now (name inferred). */
