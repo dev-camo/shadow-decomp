@@ -1101,7 +1101,8 @@ Bool SFD_IsHnSvrWait(SFD sfd) {
     return sfd->chg_flg == 0;
 }
 
-/* Vsync tick for the SFD clock (SFTIM_VbIn); the MW player calls it once per ADXM_ExecMain. */
+/* Vsync tick for the SFD clock (SFTIM_VbIn). The MW player registers a callback that calls it as
+ * an SVM vsync server, so it runs on the ADXM vsync thread. */
 void SFD_VbIn(void) {
     SFTIM_VbIn();
 }
