@@ -678,7 +678,11 @@ typedef struct ClumpCloneData {
 CHECK_SIZEOF(ClumpCloneData, 0xC);
 
 /* Clones an atomic of the clump onto the clone of its frame; NULL stops the cloning. As in the
- * original, an atomic without a frame stops it without marking the clone failed. */
+ * original, an atomic without a frame stops it without marking the clone failed.
+ * Matching workaround: declared inline. As a plain static function it links to the same DOL
+ * bytes, because its unused out-of-line copy is dropped at link; inline only keeps that copy out
+ * of the per-object comparison. Revisit when that comparison ignores unreferenced local
+ * functions. */
 static inline RpAtomic *ClumpCloneAtomic(RpAtomic *atomic, void *data) {
     ClumpCloneData *cloneData = data;
     RpAtomic *newAtomic = AtomicClone(atomic);
@@ -704,10 +708,6 @@ static inline RpAtomic *ClumpCloneAtomic(RpAtomic *atomic, void *data) {
 /* Clones a clump: its frame hierarchy, then each atomic on the matching cloned frame */
 RpClump *fn_80457090(RpClump *clump) {
     ClumpCloneData cloneData;
-    RpAtomic *atomic;
-    RwLLLink *end;
-    RwLLLink *cur;
-    RwLLLink *next;
 
     cloneData.clump = clump;
     cloneData.newClump = fn_804573A8();
@@ -721,16 +721,7 @@ RpClump *fn_80457090(RpClump *clump) {
     }
 
     cloneData.cloned = TRUE;
-    end = &cloneData.clump->atomicList.link;
-    cur = cloneData.clump->atomicList.link.next;
-    while (cur != end) {
-        next = cur->next;
-        atomic = CLUMPATOMICFROMLINK(cur);
-        if (ClumpCloneAtomic(atomic, &cloneData) == NULL) {
-            break;
-        }
-        cur = next;
-    }
+    fn_80456C54(cloneData.clump, ClumpCloneAtomic, &cloneData);
 
     fn_80486CA4(cloneData.clump->object.parent);
     if (!cloneData.cloned) {
@@ -764,19 +755,21 @@ RpClump *fn_804573A8(void) {
     return clump;
 }
 
-/* clump destroy callbacks for its atomics, lights and cameras */
-static RpAtomic *ClumpDestroyAtomic(RpAtomic *atomic, void *data) {
+/* clump destroy callbacks for its atomics, lights and cameras.
+ * Matching workaround: declared inline for the reason given at ClumpCloneAtomic, with the same
+ * revisit trigger. */
+static inline RpAtomic *ClumpDestroyAtomic(RpAtomic *atomic, void *data) {
     fn_80456FD8(atomic);
     return atomic;
 }
 
-static RpLight *ClumpDestroyLight(RpLight *light, void *data) {
+static inline RpLight *ClumpDestroyLight(RpLight *light, void *data) {
     fn_80457630(CLUMPLIGHTEXT(light)->clump, light);
     fn_8045ACD4(light);
     return light;
 }
 
-static RwCamera *ClumpDestroyCamera(RwCamera *camera, void *data) {
+static inline RwCamera *ClumpDestroyCamera(RwCamera *camera, void *data) {
     fn_80457664(CLUMPCAMERAEXT(camera)->clump, camera);
     fn_804859F8(camera);
     return camera;
