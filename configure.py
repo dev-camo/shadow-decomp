@@ -766,6 +766,8 @@ config.libs = [
                 # doubles of MSL <cmath>'s sqrtf, unreferenced weak data that the link discards.
                 Object(NonMatching, "Game/CSD/csdMatrix.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80360528.cpp", cflags=cflags_csd),
+                # Current file system and its directory (original file name unknown).
+                Object(Matching, "Game/CSD/fn_80361738.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361A24.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361CF8.cpp", cflags=cflags_csd),
                 # Every function present matches except BuildTextEntry and InitPalette, which address
@@ -774,7 +776,7 @@ config.libs = [
                 # whose allocations pass lower __LINE__ values than the original 442 and 234. MarkEntryDirty (0x803609D4) is not emitted and MarkMatrixUsers comes after its
                 # caller: the original file has callers the game does not use (removed at link).
                 Object(NonMatching, "Game/CSD/csdMotionPalette.cpp", cflags=cflags_csd),
-                # Every function matches except LoadFile (its allocation passes __LINE__ 53 where
+                # Every function matches except LoadFile (its allocation passes __LINE__ 47 where
                 # the original passes 137) and RegisterTexList (the pair conversion takes its
                 # argument from a recomputed stack address where the original reuses make_pair's
                 # returned pointer: two words). The map's out-of-line functions also come out in a
