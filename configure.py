@@ -245,9 +245,9 @@ cflags_game = [
     "-i include/libc",
 ]
 
-# The MSL C, math and C++ library headers. The Elec and Chao::CSD C++ units (cflags_game_cpp,
-# cflags_csd) and the fn_8040 vector length helpers search them in place of include/libc; C game
-# code and the other fn_8040 C++ helpers (cflags_game) keep the C declarations in include/libc.
+# The MSL C, math and C++ library headers. The C++ units built with cflags_game_cpp or cflags_csd
+# and Game/fn_8041116C.cpp search them in place of include/libc; C game code and the other fn_8040
+# C++ helpers (cflags_game) keep the C declarations in include/libc.
 msl_includes = [
     "-i src/PowerPC_EABI_Support",
     "-i src/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Include",
@@ -297,19 +297,6 @@ cflags_csd = [
     "-inline noauto,deferred,level=1",
     "-sdata 0",
     "-sdata2 0",
-]
-
-# The fn_8040 vector length helpers (C++ with exception tables) call std::sqrt(float) from MSL
-# <cmath>. One level of inlining keeps that call out of line, because std::sqrt's body calls the
-# inline sqrtf; plain -inline auto expands both into the helper. Each object also carries weak
-# copies of std::sqrt and sqrtf with their literals, which the link discards in favour of the
-# copies at 0x8000FEE4 and 0x8000FF04. The std::sqrt and sqrtf copies at those addresses match
-# <cmath> compiled with fp_contract on (cflags_base), so the helpers do not turn it off.
-cflags_game_vector_length = [
-    *cflags_base,
-    *msl_includes,
-    "-Cpp_exceptions on",
-    "-inline noauto,level=1",
 ]
 
 # Metrowerks library flags (the runtime units include the MSL and runtime headers)
@@ -918,18 +905,29 @@ config.libs = [
                 Object(Matching, "Game/fn_80008DA4.c"),
                 Object(Matching, "Game/fn_80008E1C.c"),
                 Object(Matching, "Game/fn_800091D0.c"),
+                # Matching workaround: -sdata 0 and -use_lmw_stmw on. The target reaches lbl_805C0AF0
+                # and lbl_805C0AF4 with absolute @ha/@l addressing (lis with lwz/addi), not
+                # r13-relative small data (without -sdata 0 the unit is 69% matching), and saves its
+                # callee-saved registers with lmw/stmw (without it 87%). Both flags are also set on
+                # the CRI library units, such as its caller CRI/uty_tmr.c. Revisit when the original
+                # unit's flags are known.
                 Object(
                     Matching,
                     "Game/fn_803CC9D0.c",
                     extra_cflags=["-sdata 0", "-use_lmw_stmw on"],
                 ),
-                # CRI middleware units named after their original source files.
+                # CRI middleware functions (MWSFD); the original source file names are not yet
+                # established.
                 Object(Matching, "Game/fn_80403E44.c"),
                 Object(Matching, "Game/fn_80406EBC.c"),
-                # Target addresses the conversion constants through .rodata.
+                # Matching workaround: -sdata2 0. The target addresses the conversion constants
+                # through .rodata. Revisit when the original unit's flags are known.
                 Object(Matching, "Game/fn_80406F08.c", extra_cflags=["-sdata2 0"]),
                 Object(Matching, "Game/fn_804212F4.c"),
                 Object(Matching, "Game/fn_8040E048.c"),
+                # The units below that use -Cpp_exceptions on are those whose original object
+                # carries extab/extabindex entries (C++ exception tables), plus Game/fn_8041583C.c,
+                # the middle piece of a file whose other pieces carry them; the default is off.
                 Object(
                     Matching,
                     "Game/fn_8040ABC8.cpp",
@@ -969,18 +967,27 @@ config.libs = [
                     "Game/fn_8040CC6C.cpp",
                     extra_cflags=["-Cpp_exceptions on"],
                 ),
+                # Vector length helpers (also Game/fn_8040CF50.cpp and Game/fn_8041116C.cpp), which
+                # call std::sqrt(float) from MSL <cmath>. One level of inlining keeps that call out
+                # of line, because std::sqrt's body calls the inline sqrtf; plain -inline auto
+                # expands both into the helper. Each object also carries weak copies of std::sqrt and
+                # sqrtf with their literals, which the link discards in favour of the copies at
+                # 0x8000FEE4 and 0x8000FF04. Those copies match <cmath> compiled with fp_contract on
+                # (cflags_base).
                 Object(
                     Matching,
                     "Game/fn_8040CCEC.cpp",
-                    cflags=cflags_game_vector_length,
+                    cflags=cflags_game_cpp,
+                    extra_cflags=["-Cpp_exceptions on"],
                 ),
                 Object(Matching, "Game/fn_8040CCD4.c"),
                 Object(Matching, "Game/fn_8040D6F4.c"),
                 Object(Matching, "Game/fn_8040E38C.c"),
-                # SonicUSA::System::Random: the target keeps its doubles in .rodata and its RTTI record
-                # and twist table in .data (-sdata 0, -sdata2 0). NextFloat and NextFloatInclusive
-                # still differ: the target adds the m_state[i + 397] offset to an index register
-                # (lwzx), while this build folds it into the load displacement.
+                # SonicUSA::System::Random. Matching workaround: -sdata 0 and -sdata2 0; the target
+                # keeps its doubles in .rodata and its RTTI record and twist table in .data. Revisit
+                # when the original unit's flags are known. NextFloat and
+                # NextFloatInclusive still differ: the target adds the m_state[i + 397] offset to
+                # an index register (lwzx), while this build folds it into the load displacement.
                 Object(
                     NonMatching,
                     "Game/fn_8040EA90.cpp",
@@ -991,15 +998,16 @@ config.libs = [
                         "-sdata2 0",
                     ],
                 ),
-                # Interpolation helpers: the target keeps its float constants in .rodata
-                # (-sdata2 0).
+                # Interpolation helpers. Matching workaround: the target keeps its float constants in
+                # .rodata (-sdata2 0); revisit when the original unit's flags are known.
                 Object(
                     Matching,
                     "Game/fn_8040EFA4.cpp",
                     cflags=cflags_game_cpp,
                     extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
                 ),
-                # Rotation and segment helpers (float constants in .rodata, -sdata2 0). fn_8040FC78
+                # Rotation and segment helpers (Matching workaround: float constants in .rodata,
+                # -sdata2 0; revisit when the original unit's flags are known). fn_8040FC78
                 # (closest point on a segment) still differs: the target calls fn_800091EC (copy;
                 # start or end of the segment) and fn_8040CDD0 (add; the point in between) as
                 # by-value functions that build the point directly in its caller's result slot,
@@ -1014,7 +1022,8 @@ config.libs = [
                     cflags=cflags_game_cpp,
                     extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
                 ),
-                # Motion integration (float constants in .rodata, -sdata2 0; <cmath> leaves the weak
+                # Motion integration (Matching workaround: float constants in .rodata, -sdata2 0;
+                # revisit when the original unit's flags are known; <cmath> leaves the weak
                 # sqrtf static locals, which the link discards).
                 Object(
                     Matching,
@@ -1022,6 +1031,14 @@ config.libs = [
                     cflags=cflags_game_cpp,
                     extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
                 ),
+                # The library code at 0x80410630-0x8042166C is built with one flag set (-O4,s,
+                # -use_lmw_stmw on, -str reuse,readonly, -inline auto,level=1), taken as the
+                # library's own build settings rather than per-unit workarounds. Game/fn_80410630.c,
+                # Game/fn_8041116C.cpp, Game/fn_80411714.c, Game/fn_80413B30.c, Game/fn_804157E8.c,
+                # Game/fn_8041583C.c and Game/fn_80415854.c carry it. Game/fn_804110EC.c,
+                # Game/fn_804202B8.c, Game/fn_804212F4.c and the empty functions Game/fn_8041FD6C.c,
+                # Game/fn_8041FF08.c and Game/fn_80420438.c omit it: their objects are identical
+                # with or without it.
                 # Loader of packs of named nodes. Inlining is automatic but one level deep: the
                 # recursive node functions expand once, as in the original (with unlimited depth
                 # fn_80410C7C grows from 0xC4 to 0x304 bytes).
@@ -1055,12 +1072,22 @@ config.libs = [
                 Object(Matching, "Game/fn_8040CB2C.c"),
                 Object(Matching, "Game/fn_8040E310.c"),
                 Object(Matching, "Game/fn_8040D608.c"),
-                # Transform helpers over the current matrix stack.
+                # Transform helpers over the current matrix stack: a C++ unit of the library, built
+                # with the MSL headers for <cmath> and the library's flag set. The original keeps
+                # the functions in definition order; the deferred inlining of cflags_game_cpp emits
+                # them in reverse order and moves the 1.0f .sdata2 literal after the doubles (0x34
+                # bytes instead of 0x30).
                 Object(
                     Matching,
                     "Game/fn_8041116C.cpp",
-                    cflags=cflags_game_vector_length,
-                    extra_cflags=["-O4,s", "-use_lmw_stmw on"],
+                    cflags=[*cflags_base, *msl_includes],
+                    extra_cflags=[
+                        "-Cpp_exceptions on",
+                        "-O4,s",
+                        "-use_lmw_stmw on",
+                        "-str reuse,readonly",
+                        "-inline auto,level=1",
+                    ],
                 ),
                 # Groups of numbered resources. Not complete: fn_80411818 and fn_80411DEC are not
                 # written yet, and fn_804124DC, fn_80413058, fn_80413318 and fn_80413538 differ.
@@ -1117,21 +1144,14 @@ config.libs = [
                 Object(Matching, "Game/fn_8040CF2C.c"),
                 Object(Matching, "Game/fn_804202B8.c"),
                 Object(Matching, "Game/fn_8040CD20.c"),
-                Object(
-                    Matching,
-                    "Game/fn_8040CD60.cpp",
-                    extra_cflags=["-Cpp_exceptions on"],
-                ),
-                Object(
-                    Matching,
-                    "Game/fn_8040D02C.cpp",
-                    extra_cflags=["-Cpp_exceptions on"],
-                ),
+                Object(Matching, "Game/fn_8040CD60.cpp"),
+                Object(Matching, "Game/fn_8040D02C.cpp"),
                 Object(
                     Matching,
                     "Game/fn_8040D044.cpp",
-                    # The original saves its two callee-saved registers with stmw/lmw, which this
-                    # unit's code only gets when optimized for size with -use_lmw_stmw.
+                    # Matching workaround: the original saves its two callee-saved registers with
+                    # stmw/lmw, which this unit's code only gets when optimized for size with
+                    # -use_lmw_stmw; revisit when the original unit's flags are known.
                     extra_cflags=["-Cpp_exceptions on", "-O4,s", "-use_lmw_stmw on"],
                 ),
                 Object(
@@ -1142,13 +1162,10 @@ config.libs = [
                 Object(
                     Matching,
                     "Game/fn_8040CF50.cpp",
-                    cflags=cflags_game_vector_length,
-                ),
-                Object(
-                    Matching,
-                    "Game/fn_8040CF90.cpp",
+                    cflags=cflags_game_cpp,
                     extra_cflags=["-Cpp_exceptions on"],
                 ),
+                Object(Matching, "Game/fn_8040CF90.cpp"),
             ]
             if config.version == "GUPE8P"
             else []
