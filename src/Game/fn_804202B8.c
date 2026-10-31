@@ -1,7 +1,10 @@
-typedef struct Fn804202B8FlagData {
-    /* 0x00 */ char padding[10];
-    /* 0x0A */ unsigned short flags;
+/* Negates the components of an object that its flags select (the original file name is unknown;
+ * the member names are inferred from the code). */
 #include "layout_check.h"
+
+typedef struct Fn804202B8FlagData {
+    /* 0x00 */ char unknown00[0xA];
+    /* 0x0A */ unsigned short flags;
 } Fn804202B8FlagData;
 CHECK_SIZEOF(Fn804202B8FlagData, 0xC);
 
@@ -9,7 +12,7 @@ typedef struct Fn804202B8Object {
     /* 0x00 */ float x;
     /* 0x04 */ float y;
     /* 0x08 */ float z;
-    /* 0x0C */ unsigned int unknown[2];
+    /* 0x0C */ unsigned int unknown0C[2];
     /* 0x14 */ Fn804202B8FlagData *flag_data;
 } Fn804202B8Object;
 CHECK_SIZEOF(Fn804202B8Object, 0x18);
