@@ -119,18 +119,16 @@ RpWorldSector *fn_8045FB10(RpWorldSector *sector) {
     return NULL;
 }
 
-/* Sets each world sector's box from the world's box and the planes above it */
-void fn_8045FBA4(RpWorld *world) {
+/* Sets each world sector's box from the world's box and the planes above it; returns the world */
+RpWorld *fn_8045FBA4(RpWorld *world) {
     RwBBox box = world->boundingBox;
-    RpSector *sector = world->rootSector;
     RwInt32 depth = 0;
+    RpSector *sector = world->rootSector;
     RpSector *sectorStack[rpWORLDMAXBSPDEPTH];
     RwBBox boxStack[rpWORLDMAXBSPDEPTH];
 
     while (depth >= 0) {
-        RwInt32 type = sector->type;
-
-        if (type < 0) {
+        if (sector->type < 0) {
             ((RpWorldSector *)sector)->field_0x48 = box;
             sector = sectorStack[depth];
             box = boxStack[depth];
@@ -139,13 +137,14 @@ void fn_8045FBA4(RpWorld *world) {
             RpPlaneSector *plane = (RpPlaneSector *)sector;
 
             depth++;
-            boxStack[depth] = box;
             sectorStack[depth] = plane->rightSubTree;
-            GETCOORD(boxStack[depth].inf, type) = plane->rightValue;
-            GETCOORD(box.sup, type) = plane->leftValue;
+            boxStack[depth] = box;
+            GETCOORD(boxStack[depth].inf, plane->type) = plane->rightValue;
+            GETCOORD(box.sup, plane->type) = plane->leftValue;
             sector = plane->leftSubTree;
         }
     }
+    return world;
 }
 
 /* Adds a world to the world list with the size of its allocation */
@@ -308,7 +307,7 @@ RpWorld *fn_80460120(RpWorld *world, RpWorldSectorCallBackRender callBack) {
 }
 
 /* Creates an empty world with one world sector filling its box */
-RpWorld *fn_80460138(const RwBBox *boundingBox) {
+RpWorld *fn_80460138(RwBBox *boundingBox) {
     RpWorld *world = RwMalloc(lbl_8056D898.sizeOfStruct, rwMEMHINTDUR_EVENT | rwID_WORLD);
     RpWorldSector *sector;
 
