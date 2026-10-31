@@ -356,13 +356,16 @@ cflags_sdk = [
     "-i include/libc",
     "-i src/dolphin",
     "-D__GEKKO__",
-    "-DSDK_REVISION=1",
+    "-DSDK_REVISION=0",
 ]
-# The other SDK libraries are the Apr 2004 builds (SDK_REVISION 1). The GX and OS units are
-# Nov 10 2004 builds (revision 2). Of the GX and OS units, only OS.c, OSExec.c, GXInit.c and
-# GXFifo.c are compiled with this flag; OSArena.c's revision-2-only OSAllocFromArenaHi is left
-# uncompiled because it is not in the final binary.
-cflags_sdk_rev2 = [flag for flag in cflags_sdk if flag != "-DSDK_REVISION=1"] + ["-DSDK_REVISION=2"]
+# The GX and OS libraries in this game are the Nov 10 2004 builds (SDK_REVISION 2 in the
+# dolsdk2004 decompilation), so the os and gx libraries below are built with cflags_sdk_rev2.
+# OSArena.c's OSAllocFromArenaHi is in the os object, but the game never calls it and the
+# linker drops it. The other SDK libraries with version strings are the Apr 2004 builds
+# (Apr 5, VI Apr 7), which revision 0 corresponds to: its OS build string is Apr 5 2004
+# 04:13:58, from the same build run, although the dolsdk2004 Makefile labels it Apr 20 2004.
+# Revision 1 is the May 21 2004 patch.
+cflags_sdk_rev2 = [flag for flag in cflags_sdk if flag != "-DSDK_REVISION=0"] + ["-DSDK_REVISION=2"]
 
 
 # CodeWarrior runtime and MSL C library (PowerPC_EABI_Support) as built for this game with GC/2.7:
@@ -388,11 +391,13 @@ cflags_eabi = [
 
 
 # Helper function for Dolphin libraries
-def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
+def DolphinLib(
+    lib_name: str, objects: List[Object], cflags: List[str] = cflags_sdk
+) -> Dict[str, Any]:
     return {
         "lib": lib_name,
         "mw_version": "GC/1.2.5n",
-        "cflags": cflags_sdk,
+        "cflags": cflags,
         "objects": objects,
     }
 
@@ -1164,9 +1169,9 @@ config.libs = [
             Object(Matching, "dolphin/OSRtc.c"),
             Object(Matching, "dolphin/OSReset.c"),
             Object(Matching, "dolphin/db.c"),
-            Object(Matching, "dolphin/OS.c", cflags=cflags_sdk_rev2),
+            Object(Matching, "dolphin/OS.c"),
             Object(Matching, "dolphin/OSAlloc.c"),
-            Object(Matching, "dolphin/OSExec.c", cflags=cflags_sdk_rev2),
+            Object(Matching, "dolphin/OSExec.c"),
             # Matching workaround: -char signed. OSFatal sign-extends the characters of its message
             # (extsb); the SDK default -char unsigned makes the same source load them with lbz. Revisit
             # when the library's real compiler flags are known.
@@ -1179,6 +1184,7 @@ config.libs = [
             Object(Matching, "dolphin/__start.c"),
             Object(Matching, "dolphin/__ppc_eabi_init.c"),
         ],
+        cflags=cflags_sdk_rev2,
     ),
     DolphinLib(
         "card",
@@ -1303,7 +1309,7 @@ config.libs = [
         ],
     ),
     DolphinLib(
-        "odemustubs",
+        "OdemuExi2",
         [
             # Matching workaround: GC/1.2.5 with -inline deferred,noauto for this unit only. This
             # older compiler version schedules epilogues as the original does, and deferred
@@ -1414,8 +1420,8 @@ config.libs = [
     DolphinLib(
         "gx",
         [
-            Object(Matching, "dolphin/GXInit.c", cflags=cflags_sdk_rev2),
-            Object(Matching, "dolphin/GXFifo.c", cflags=cflags_sdk_rev2),
+            Object(Matching, "dolphin/GXInit.c"),
+            Object(Matching, "dolphin/GXFifo.c"),
             Object(Matching, "dolphin/GXAttr.c"),
             Object(Matching, "dolphin/GXMisc.c"),
             Object(Matching, "dolphin/GXGeometry.c"),
@@ -1429,6 +1435,7 @@ config.libs = [
             Object(Matching, "dolphin/GXTransform.c"),
             Object(Matching, "dolphin/GXPerf.c"),
         ],
+        cflags=cflags_sdk_rev2,
     ),
     {
         # CRI middleware units that are identical and split in every region.
