@@ -742,7 +742,6 @@ config.libs = [
                 Object(Matching, "Game/fn_80406EBC.c"),
                 # Target addresses the conversion constants through .rodata.
                 Object(Matching, "Game/fn_80406F08.c", extra_cflags=["-sdata2 0"]),
-                Object(Matching, "Game/fn_804110EC.c"),
                 Object(Matching, "Game/fn_804212F4.c"),
                 Object(Matching, "Game/fn_8040E048.c"),
                 Object(Matching, "Game/fn_8040AB94.c"),
@@ -838,6 +837,8 @@ config.libs = [
                     cflags=cflags_game_cpp,
                     extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
                 ),
+                # Replaceable memory functions of the library code at 0x80410630-0x8042166C.
+                Object(Matching, "Game/fn_804110EC.c", extra_cflags=["-Cpp_exceptions on"]),
                 Object(Matching, "Game/fn_8040DB6C.c"),
                 Object(Matching, "Game/fn_8041583C.c"),
                 Object(Matching, "Game/fn_8040CB2C.c"),
