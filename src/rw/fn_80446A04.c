@@ -271,20 +271,17 @@ RwInt32 fn_8044719C(const void *object, RwInt32 offset, RwInt32 size) {
     return 0;
 }
 
-/* Attaches the plugin to the engine and to frames */
+/* Attaches the plugin to the engine and to frames and registers its stream callbacks */
 RwBool fn_80447200(void) {
+    RwInt32 streamOffset;
+
     if (fn_80485D78(0, rpID_HANIMPLUGIN, fn_80446AA8, fn_80446B90) < 0) {
         return FALSE;
     }
     lbl_805F1440.frameOffset = fn_804878D4(sizeof(RpHAnimFrameExtension), rpID_HANIMPLUGIN,
                                            fn_80446BE0, fn_80446BFC, fn_80446C94);
-    if (fn_804836EC(rpID_HANIMPLUGIN, fn_80446F40, fn_80446D84, fn_8044719C) < 0) {
-        return FALSE;
-    }
-    if (lbl_805F1440.frameOffset < 0) {
-        return FALSE;
-    }
-    return TRUE;
+    streamOffset = fn_804836EC(rpID_HANIMPLUGIN, fn_80446F40, fn_80446D84, fn_8044719C);
+    return streamOffset >= 0 && lbl_805F1440.frameOffset >= 0;
 }
 
 /* Creates a hierarchy of numNodes nodes with the given node flags and IDs (either may be NULL) */
