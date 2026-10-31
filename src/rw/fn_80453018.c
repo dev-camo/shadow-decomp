@@ -4,18 +4,16 @@
 #include "rw/rpuvanim.h"
 
 /* Sets a keyframe to a transform matrix in the animation's scheme */
-RwBool fn_80453018(RtAnimAnimation *animation, RpUVAnimKeyFrame *keyFrame,
+RwBool fn_80453018(const RtAnimAnimation *animation, RpUVAnimKeyFrame *keyFrame,
                    RpUVAnimKeyFrame *prevFrame, RwReal time, const RwMatrix *matrix) {
-    RpUVAnimKeyFrameData *data = &keyFrame->data;
-
     keyFrame->prevFrame = prevFrame;
     keyFrame->time = time;
     if (animation->interpInfo->typeID == lbl_8056D77C.typeID &&
-        fn_80453594(&data->linear, matrix) != NULL) {
+        fn_80453594(&keyFrame->data.linear, matrix) != NULL) {
         return FALSE;
     }
     if (animation->interpInfo->typeID == lbl_8056D7AC.typeID &&
-        fn_80453820(&data->param, matrix) != NULL) {
+        fn_80453820(&keyFrame->data.param, matrix) != NULL) {
         return FALSE;
     }
     return FALSE;

@@ -177,7 +177,7 @@ RtAnimAnimation *fn_80454618(RtAnimAnimation *animation);
 /* name */
 RwChar *fn_804548E4(RtAnimAnimation *animation);
 /* sets a keyframe from a transform matrix */
-RwBool fn_80453018(RtAnimAnimation *animation, RpUVAnimKeyFrame *keyFrame,
+RwBool fn_80453018(const RtAnimAnimation *animation, RpUVAnimKeyFrame *keyFrame,
                    RpUVAnimKeyFrame *prevFrame, RwReal time, const RwMatrix *matrix);
 
 /* materials (inferred) */
