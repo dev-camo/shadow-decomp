@@ -2,15 +2,9 @@
  * and the registry of texture-list types. Function names are inferred. Definitions are in reverse
  * address order (deferred inlining emits the last definition first). */
 #include "Game/CSD/CTexList.h"
+#include "Game/CSD/CFileSystem.h"
 #include <cstring>
 #include <map>
-
-/* Undecompiled callees in the library's file-system unit: get and set the current directory, read
- * a file into a buffer and get a file's size (behaviour inferred). */
-extern "C" char *fn_80361738(char *buffer, int size);
-extern "C" void fn_80361768(const char *directory);
-extern "C" void fn_80361998(void *buffer, const char *path);
-extern "C" u32 fn_803619C8(const char *path);
 
 namespace Chao {
 namespace CSD {
@@ -49,11 +43,11 @@ RCPtr<CTexList> CreateTexList(u32 type) {
 }
 
 int CTexList::LoadFile(const char *path) {
-    u32 size = fn_803619C8(path);
+    u32 size = GetFileSize(path);
     void *buffer = Alloc(size, __FILE__, __LINE__);
-    fn_80361998(buffer, path);
+    ReadFile(buffer, path);
     char saved[256];
-    fn_80361738(saved, sizeof(saved));
+    GetDirectory(saved, sizeof(saved));
     const char *slash = strrchr(path, '/');
     if (slash == NULL) {
         slash = strrchr(path, '\\');
@@ -63,22 +57,22 @@ int CTexList::LoadFile(const char *path) {
         int length = slash - path;
         strncpy(directory, path, length);
         directory[length] = '\0';
-        fn_80361768(directory);
+        SetDirectory(directory);
     }
     int result = Load(buffer, size);
     Free(buffer);
-    fn_80361768(saved);
+    SetDirectory(saved);
     return result;
 }
 
 int CTexList::LoadInDirectory(const void *data, u32 size, const char *directory) {
     char saved[256];
-    fn_80361738(saved, sizeof(saved));
+    GetDirectory(saved, sizeof(saved));
     if (directory != NULL) {
-        fn_80361768(directory);
+        SetDirectory(directory);
     }
     int result = Load(data, size);
-    fn_80361768(saved);
+    SetDirectory(saved);
     return result;
 }
 
