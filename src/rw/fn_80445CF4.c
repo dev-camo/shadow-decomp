@@ -5,24 +5,28 @@
 #include "rw/rphanim.h"
 #include "rw/rwmath.h"
 
-/* sin(x) by its Taylor series to x^13 */
-static inline RwReal RwSin(RwReal x) {
-    RwReal x2 = x * x;
+/* Sets result to sin(x) by the degree-13 fdlibm kernel polynomial (odd terms through x^13); a
+ * macro, so that its temporaries are the caller's */
+#define RwSinMacro(result, x)                                                                      \
+    do {                                                                                           \
+        RwReal x_ = (x);                                                                           \
+        RwReal x2_ = x_ * x_;                                                                      \
+                                                                                                   \
+        (result) =                                                                                 \
+            x_ + x2_ * x_ *                                                                        \
+                     (-0.16666667f +                                                               \
+                      x2_ * (0.008333334f +                                                        \
+                             x2_ * (-0.0001984127f + x2_ * (0.0000027557314f +                     \
+                                                            x2_ * (-0.00000002505076f +            \
+                                                                   x2_ * 0.0000000001589691f))))); \
+    } while (0)
 
-    return x + x2 * x *
-                   (-0.16666667f +
-                    x2 * (0.008333334f +
-                          x2 * (-0.0001984127f +
-                                x2 * (0.0000027557314f +
-                                      x2 * (-0.00000002505076f + x2 * 0.0000000001589691f)))));
-}
-
-/* Interpolates the rotation (spherically) and translation (linearly) of two keyframes by t. When
- * the rotations are more than half a turn apart, in2's is negated in place first. */
+/* Interpolates the rotation (spherically) and translation (linearly) of two keyframes by weight.
+ * When the rotations are more than half a turn apart, in2's is negated in place first. The weight
+ * is overwritten: it ends as the factor of in2's rotation (the factor of in1's is scale1). */
 #define HAnimKeyFrameLerpMacro(out, in1, in2, weight)                                              \
     do {                                                                                           \
         RwReal cosOmega;                                                                           \
-        RwReal scale2;                                                                             \
         RwReal scale1;                                                                             \
                                                                                                    \
         cosOmega = (in1)->q.imag.x * (in2)->q.imag.x + (in1)->q.imag.y * (in2)->q.imag.y +         \
@@ -40,23 +44,26 @@ static inline RwReal RwSin(RwReal x) {
         }                                                                                          \
                                                                                                    \
         scale1 = 1.0f - (weight);                                                                  \
-        scale2 = (weight);                                                                         \
         if (!(cosOmega >= 0.999f)) { /* NaN takes this path too */                                 \
             RwReal omega;                                                                          \
+            RwReal sinOmega;                                                                       \
             RwReal recipSinOmega;                                                                  \
                                                                                                    \
             RwACosMacro(omega, cosOmega);                                                          \
             scale1 *= omega;                                                                       \
-            scale2 *= omega;                                                                       \
-            recipSinOmega = 1.0f / RwSin(omega);                                                   \
-            scale1 = RwSin(scale1) * recipSinOmega;                                                \
-            scale2 = RwSin(scale2) * recipSinOmega;                                                \
+            (weight) *= omega;                                                                     \
+            RwSinMacro(sinOmega, omega);                                                           \
+            recipSinOmega = 1.0f / sinOmega;                                                       \
+            RwSinMacro(scale1, scale1);                                                            \
+            scale1 *= recipSinOmega;                                                               \
+            RwSinMacro(weight, weight);                                                            \
+            (weight) *= recipSinOmega;                                                             \
         }                                                                                          \
                                                                                                    \
-        (out)->q.imag.x = scale1 * (in1)->q.imag.x + scale2 * (in2)->q.imag.x;                     \
-        (out)->q.imag.y = scale1 * (in1)->q.imag.y + scale2 * (in2)->q.imag.y;                     \
-        (out)->q.imag.z = scale1 * (in1)->q.imag.z + scale2 * (in2)->q.imag.z;                     \
-        (out)->q.real = scale1 * (in1)->q.real + scale2 * (in2)->q.real;                           \
+        (out)->q.imag.x = scale1 * (in1)->q.imag.x + (weight) * (in2)->q.imag.x;                   \
+        (out)->q.imag.y = scale1 * (in1)->q.imag.y + (weight) * (in2)->q.imag.y;                   \
+        (out)->q.imag.z = scale1 * (in1)->q.imag.z + (weight) * (in2)->q.imag.z;                   \
+        (out)->q.real = scale1 * (in1)->q.real + (weight) * (in2)->q.real;                         \
     } while (0)
 
 /* Writes a keyframe as a matrix: its rotation (a unit quaternion) and its translation */
