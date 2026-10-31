@@ -727,8 +727,8 @@ RwImage *fn_804893B8(RwImage *destImage, const RwImage *sourceImage) {
 }
 
 /* Gamma corrects colors through the gamma table; alpha is kept (inferred helper) */
-static void ImageGammaCorrectColors(RwRGBA *dest, const RwRGBA *source, RwInt32 numColors) {
-    const RwUInt8 *gammaTable = RWIMAGEGLOBAL(gammaTable);
+static inline void ImageGammaCorrectColors(RwRGBA *dest, const RwRGBA *source, RwInt32 numColors) {
+    RwUInt8 *gammaTable = RWIMAGEGLOBAL(gammaTable);
 
     while (numColors--) {
         dest->red = gammaTable[source->red];
