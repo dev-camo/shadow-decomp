@@ -86,13 +86,18 @@ void __CARDExiHandler(s32 chan, OSContext *context) {
         goto fatal;
     }
 
-    if ((result = __CARDReadStatus(chan, &status)) < 0 || (result = __CARDClearStatus(chan)) < 0) {
+    result = __CARDReadStatus(chan, &status);
+    if (result < 0) {
         goto error;
     }
 
-    if ((result = (status & 0x18) ? CARD_RESULT_IOERROR : CARD_RESULT_READY) ==
-            CARD_RESULT_IOERROR &&
-        --card->retry > 0) {
+    result = __CARDClearStatus(chan);
+    if (result < 0) {
+        goto error;
+    }
+
+    result = (status & 0x18) ? CARD_RESULT_IOERROR : CARD_RESULT_READY;
+    if (result == CARD_RESULT_IOERROR && --card->retry > 0) {
         result = Retry(chan);
         if (result >= 0) {
             return;
@@ -293,11 +298,13 @@ static void SetupTimeoutAlarm(CARDControl *card) {
     case 0xF3:
         break;
     case 0xF4:
-        if (card->pageSize > 0x80) {
+        if (card->pageSize > CARD_PAGE_SIZE) {
             OSSetAlarm(&card->alarm, OSSecondsToTicks((OSTime)2) * (card->cBlock / 0x40),
                        TimeoutHandler);
             break;
         }
+        // Cards with pages of CARD_PAGE_SIZE or smaller use the 0xF1 timeout for 0xF4.
+        // fallthrough
     case 0xF1:
         OSSetAlarm(&card->alarm, OSSecondsToTicks((OSTime)2) * (card->sectorSize / 0x2000),
                    TimeoutHandler);
@@ -337,7 +344,7 @@ static s32 Retry(s32 chan) {
         return CARD_RESULT_READY;
     }
 
-    if (!EXIDma(chan, card->buffer, (s32)((card->cmd[0] == 0x52) ? 512 : card->pageSize),
+    if (!EXIDma(chan, card->buffer, (s32)((card->cmd[0] == 0x52) ? CARD_SEG_SIZE : card->pageSize),
                 card->mode, __CARDTxHandler)) {
         EXIDeselect(chan);
         EXIUnlock(chan);
@@ -429,7 +436,6 @@ static s32 __CARDStart(s32 chan, CARDCallback txCallback, CARDCallback exiCallba
 }
 
 #define AD1(x) ((u8)(((x) >> 17) & 0x7f))
-#define AD1EX(x) ((u8)(AD1(x) | 0x80));
 #define AD2(x) ((u8)(((x) >> 9) & 0xff))
 #define AD3(x) ((u8)(((x) >> 7) & 0x03))
 #define BA(x) ((u8)((x) & 0x7f))
@@ -458,9 +464,8 @@ s32 __CARDReadSegment(s32 chan, CARDCallback callback) {
         result = CARD_RESULT_READY;
     } else if (result >= 0) {
         if (!EXIImmEx(chan, card->cmd, card->cmdlen, EXI_WRITE) ||
-            !EXIImmEx(chan, (u8 *)card->workArea + sizeof(CARDID), card->latency,
-                      EXI_WRITE) || // XXX use DMA if possible
-            !EXIDma(chan, card->buffer, 512, card->mode, __CARDTxHandler)) {
+            !EXIImmEx(chan, (u8 *)card->workArea + sizeof(CARDID), card->latency, EXI_WRITE) ||
+            !EXIDma(chan, card->buffer, CARD_SEG_SIZE, card->mode, __CARDTxHandler)) {
             card->txCallback = NULL;
             EXIDeselect(chan);
             EXIUnlock(chan);
@@ -484,7 +489,7 @@ s32 __CARDWritePage(s32 chan, CARDCallback callback) {
     ASSERTLINE(906, card->addr < (u32)card->size * 1024 * 1024 / 8);
     card->cmd[0] = 0xF2;
 
-    if (card->pageSize > 0x80) {
+    if (card->pageSize > CARD_PAGE_SIZE) {
         card->cmd[1] = AD1(card->addr) | 0x80;
     } else {
         card->cmd[1] = AD1(card->addr);
@@ -532,7 +537,7 @@ s32 __CARDErase(s32 chan, CARDCallback callback) {
     if (result == CARD_RESULT_BUSY) {
         result = CARD_RESULT_READY;
     } else if (result >= 0) {
-        if (EXIImmEx(chan, &card->cmd, card->cmdlen, EXI_WRITE) == 0) {
+        if (EXIImmEx(chan, card->cmd, card->cmdlen, EXI_WRITE) == 0) {
             result = CARD_RESULT_NOCARD;
             card->exiCallback = 0;
         } else {
@@ -556,7 +561,7 @@ s32 __CARDEraseSector(s32 chan, u32 addr, CARDCallback callback) {
     ASSERTLINE(1012, addr % card->sectorSize == 0);
     ASSERTLINE(1013, addr < (u32)card->size * 1024 * 1024 / 8);
 
-    if (card->pageSize > 0x80) {
+    if (card->pageSize > CARD_PAGE_SIZE) {
         if (callback) {
             callback(chan, 0);
         }
@@ -651,6 +656,7 @@ s32 CARDSetDiskID(s32 chan, const DVDDiskID *diskID) {
     enabled = OSDisableInterrupts();
 
     if (card->result == CARD_RESULT_BUSY) {
+        // This early return leaves interrupts disabled (original behaviour).
         return CARD_RESULT_BUSY;
     }
 

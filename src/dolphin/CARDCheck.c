@@ -45,6 +45,7 @@ static s32 VerifyID(CARDControl *card) {
     if (id->checkSum != checksum || id->checkSumInv != checksumInv)
         return CARD_RESULT_BROKEN;
 
+    // serial[12..19] holds the OSTime the card was formatted at (see __CARDFormatRegionAsync).
     rand = *(OSTime *)&id->serial[12];
     sramEx = __OSLockSramEx();
     for (i = 0; i < 12; i++) {
