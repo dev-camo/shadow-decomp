@@ -1282,6 +1282,10 @@ CRI/sud_lib.c:
 	.rodata     start:0x80517DA8 end:0x80517DF8
 	.bss        start:0x805C3DE8 end:0x805C3DF0
 
+CRI/sfx_set.c:
+	.text       start:0x803CF97C end:0x803CFB24
+	.rodata     start:0x80517DF8 end:0x80517E08
+
 CRI/sfx_inf.c:
 	.text       start:0x803D1024 end:0x803D102C
 

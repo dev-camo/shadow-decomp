@@ -28,7 +28,7 @@ Sint32 SFX_GetCcirFx(void) {
 }
 
 /* Counts the error and passes the message to the registered callback. */
-void SFXLIB_Error(SFX_OBJ *sfx, SFX_FRM *frm, const Char8 *msg) {
+void SFXLIB_Error(SFX_OBJ *sfx, SFX_SRCFRM *frm, const Char8 *msg) {
     SFX_ERRFN fn;
     void *obj;
 
@@ -95,20 +95,20 @@ SFX_OBJ *SFX_Create(void *work, Sint32 wsize) {
         return NULL;
     }
     memset(sfx, 0, sizeof(SFX_OBJ));
-    sfx->field_0x04 = 0;
-    sfx->field_0x08 = 0;
-    sfx->field_0x0C = 0;
+    sfx->compo = 0;
+    sfx->outbuf_width = 0;
+    sfx->outbuf_height = 0;
     sfx->field_0x28 = 1;
     sfx->field_0x2C = 0;
-    sfx->field_0x34 = 0;
+    sfx->tbl = 0;
     sfx->buf[0] = (Uint8 *)(((Uint32)work + 0x1F) & ~0x1F);
     sfx->buf[1] = sfx->buf[0] + SFX_BUF_SIZE;
     sfx->buf[2] = sfx->buf[1] + SFX_BUF_SIZE;
     sfx->buf[3] = sfx->buf[2] + SFX_BUF_SIZE;
     sfx->work = work;
     sfx->wsize = wsize;
-    sfx->field_0x58 = -1;
-    sfx->field_0x64 = 0;
+    sfx->div_mode = -1;
+    sfx->bottom_up = 0;
     sfx->used = 1;
     sfxz = SFXZ_Create();
     if (sfxz == NULL) {

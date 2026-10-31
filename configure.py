@@ -1596,6 +1596,19 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # NonMatching: sfxcnv_CropFrm, 28 of 42 words: the same instructions and relocations in a
+            # different order and with different registers (the original loads the plane height
+            # before the buffer); the other 8 functions match.
+            Object(
+                NonMatching,
+                "CRI/sfx_set.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
             Object(
                 Matching,
                 "CRI/sfx_inf.c",
