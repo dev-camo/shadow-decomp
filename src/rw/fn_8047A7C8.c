@@ -82,6 +82,19 @@ void fn_8047A970(s32 result, DVDFileInfo *fileInfo) {
     fileInfo->cb.userData = (void *)result;
 }
 
+/* Records the drive state while recovering from an error: busy sets the busy error state,
+ * anything else clears it. Returns FALSE while the drive is busy (name inferred) */
+static inline RwBool GCNFSUpdateDriveState(RtFileSystem *fileSystem, RwInt32 driveStatus) {
+    if (driveStatus == DVD_STATE_BUSY) {
+        fileSystem->field_0x8 = 1;
+        lbl_805EDE90 = RTGCNFS_ERROR_BUSY;
+        return FALSE;
+    }
+    fileSystem->field_0x8 = 2;
+    lbl_805EDE90 = RTGCNFS_ERROR_NONE;
+    return TRUE;
+}
+
 /* Reads whole 32-byte blocks from the device; an asynchronous read returns at once, and a
  * synchronous one waits, reporting device errors as it does */
 RwInt32 fn_8047A978(RtGCNFile *file, void *buffer, RwInt32 length, RwInt32 offset, RwBool async) {
@@ -138,13 +151,8 @@ RwInt32 fn_8047A978(RtGCNFile *file, void *buffer, RwInt32 length, RwInt32 offse
             break;
         case DVD_STATE_BUSY:
             if (lbl_805EDE90 != RTGCNFS_ERROR_NONE || file->file.status == RTFILE_STATUS_ERROR) {
-                if (driveStatus == DVD_STATE_BUSY) {
-                    fileSystem->field_0x8 = 1;
-                    lbl_805EDE90 = RTGCNFS_ERROR_BUSY;
-                } else {
-                    fileSystem->field_0x8 = 2;
-                    lbl_805EDE90 = RTGCNFS_ERROR_NONE;
-                }
+                /* Always busy here; the original keeps the shared helper's busy test */
+                GCNFSUpdateDriveState(fileSystem, driveStatus);
             } else {
                 file->file.status = RTFILE_STATUS_PENDING;
                 lbl_805EDE90 = RTGCNFS_ERROR_NONE;
@@ -383,18 +391,7 @@ RwInt32 fn_8047B154(RtFile *file, RwInt32 unused) {
         break;
     default:
         if (lbl_805EDE90 != RTGCNFS_ERROR_NONE || file->status == RTFILE_STATUS_ERROR) {
-            RwBool driveReady;
-
-            if (driveStatus == DVD_STATE_BUSY) {
-                fileSystem->field_0x8 = 1;
-                driveReady = FALSE;
-                lbl_805EDE90 = RTGCNFS_ERROR_BUSY;
-            } else {
-                fileSystem->field_0x8 = 2;
-                driveReady = TRUE;
-                lbl_805EDE90 = RTGCNFS_ERROR_NONE;
-            }
-            if (!driveReady) {
+            if (!GCNFSUpdateDriveState(fileSystem, driveStatus)) {
                 break;
             }
         }
