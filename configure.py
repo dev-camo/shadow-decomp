@@ -613,6 +613,7 @@ config.libs = [
                 Object(NonMatching, "rw/fn_804A6CDC.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_804A869C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804A90F8.c", cflags=cflags_game),
+                Object(Matching, "Game/BackDrop.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCristalWallSwitch.cpp", cflags=cflags_game_cpp),
