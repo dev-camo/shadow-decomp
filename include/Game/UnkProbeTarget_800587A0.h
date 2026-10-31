@@ -7,11 +7,12 @@
 #include <dolphin/types.h>
 #include "layout_check.h"
 
-/* The probe object that fn_800C7EA8 builds for the TornadoCollision gadget, with the placeholder
- * name its weak and shared pointers already use (in the original it is one of the character
- * collision shapes; which one is not known). Only the layout up to the list of touched objects
- * and the two virtual methods that the gadget calls are mapped; the 13 virtual methods before
- * SetPosition are unknown, and so is the size. */
+/* The probe object that the probe factories at 0x800C7A84-0x800C7EA8 return: the box probe
+ * (fn_800C7C34), the sphere probes (fn_800C7DEC, fn_800C7EA8) and fn_800C7A84. The placeholder
+ * name is the one its weak and shared pointers already use; the original class name is not known.
+ * Only the layout up to the list of touched objects and the virtual methods that the gadgets
+ * call (slots 3, 13, 16 and 26) are mapped; the other slots up to 26 are unknown, and so is the
+ * size. */
 class UnkProbeTarget_800587A0 {
   public:
     virtual void UnkSlot0() = 0;
@@ -33,9 +34,22 @@ class UnkProbeTarget_800587A0 {
     virtual void SetPosition(const Fn8040Vector3 *position) = 0;
     virtual void UnkSlot14() = 0;
     virtual void UnkSlot15() = 0;
-    /* Sets the probe's radius (behaviour inferred from the gadget's "Radius" parameter; the
-     * remaining arguments are unknown). */
-    virtual void SetRadius(float radius, int arg1, float arg2, float arg3) = 0;
+    /* Sets the probe's size (name inferred): TornadoCollision passes its radius as x and 0.0f as
+     * y and z, GravityChangeCollision the three half extents of its box. Both pass -2 as arg1,
+     * which is not understood. */
+    virtual void SetSize(float x, int arg1, float y, float z) = 0;
+    virtual void UnkSlot17() = 0;
+    virtual void UnkSlot18() = 0;
+    virtual void UnkSlot19() = 0;
+    virtual void UnkSlot20() = 0;
+    virtual void UnkSlot21() = 0;
+    virtual void UnkSlot22() = 0;
+    virtual void UnkSlot23() = 0;
+    virtual void UnkSlot24() = 0;
+    virtual void UnkSlot25() = 0;
+    /* Called without arguments right after slot 16 by the GravityChangeCollision gadget (purpose
+     * unknown). */
+    virtual void UnkSlot26() = 0;
 
     /* The list of the objects the probe touched (name inferred). */
     UnkProbeList_80021FE4 *GetHits() {
@@ -64,6 +78,14 @@ boost::shared_ptr<UnkProbeTarget_800587A0> fn_800C7A84(UnkWorld_80021B08 *world,
                                                        float arg2, float arg3, int arg4, int arg5,
                                                        int arg6, const Fn8040Vector3 *arg7,
                                                        const Fn8040Vector3 *arg8, int arg9);
+/* Creates a box probe for the character info that owner refers to, with the given half extents
+ * (behaviour inferred from the bytes: it stores the three vectors arg6, halfExtents and arg7 at
+ * 0x0, 0xC and 0x18 of a shape and wraps it like the other probes; arg4, arg5, arg6, arg7 and arg9
+ * are not understood, and the world argument is unused). */
+boost::shared_ptr<UnkProbeTarget_800587A0>
+fn_800C7C34(UnkWorld_80021B08 *world, const boost::weak_ptr<CharInfo> &owner,
+            const Fn8040Vector3 *halfExtents, int flags, int arg4, int arg5,
+            const Fn8040Vector3 *arg6, const Fn8040Vector3 *arg7, int arg9);
 /* Creates a probe sphere of the given radius around the character info that owner refers to, and
  * returns it (behaviour inferred; arg2, arg3, arg4 and arg5 are passed on and not understood). */
 boost::shared_ptr<UnkProbeTarget_800587A0> fn_800C7DEC(UnkWorld_80021B08 *world,

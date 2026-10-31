@@ -128,7 +128,6 @@ void fn_8016082C(GadgetModelInfo *model, int arg1);
  * it. */
 void fn_800C9E70(UnkGadgetOwner_800C9CD0 *owner, u32 *flags);
 float fn_800C9938(UnkGadgetOwner_800C9CD0 *owner);
-void fn_800C9AD4(UnkGadgetOwner_800C9CD0 *owner);
 /* Creates a path follower (behaviour inferred; the numbers are not understood). */
 boost::shared_ptr<UnkPathFollower_800096F4> fn_80009704(int arg0, int arg1);
 /* Sets the start and end of the path that the follower moves along, and its up direction. */

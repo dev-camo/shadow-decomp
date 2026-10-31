@@ -28,7 +28,12 @@ extern "C" {
  * passed by reference, so a caller may build it in a temporary at the call. */
 void fn_802E0E84(const Fn8040Vector3 *center, const UnkDebugColor_802E0E84 &color, float radius);
 /* Creates a SonicteamUSA::System::DebugDispLine (class name from RTTI) for the segment and queues
- * it (behaviour inferred). */
+ * it (behaviour inferred). fn_802E0B58 below is its caller with 0.0f (the float at 0x805F90F8); the
+ * float is handed on to the line's constructor, so it is probably a line property (not
+ * understood). */
+void fn_802E0AA0(const UnkSegment_80020A20 &segment, const UnkDebugColor_802E0E84 &color,
+                 float arg2);
+/* The same with the fixed float (behaviour inferred). */
 void fn_802E0B58(const UnkSegment_80020A20 &segment, const UnkDebugColor_802E0E84 &color);
 /* Creates a SonicteamUSA::System::DebugDispCylinder (class name from RTTI) at center with the
  * given rotation (radians), colour, flag (0 in the known callers), half length and radius and
