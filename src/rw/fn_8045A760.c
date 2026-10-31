@@ -26,13 +26,6 @@ typedef struct LightGlobals {
 } LightGlobals;
 CHECK_SIZEOF(LightGlobals, 0x4);
 
-/* The light module (inferred) */
-typedef struct LightModule {
-    /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
-    /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
-} LightModule;
-CHECK_SIZEOF(LightModule, 0x8);
-
 #define LIGHTGLOBALS() ((LightGlobals *)((RwUInt8 *)lbl_805F15B4 + lbl_805F14D8.globalsOffset))
 #define LIGHTGLOBAL(var) (LIGHTGLOBALS()->var)
 
@@ -43,7 +36,7 @@ RwFreeList lbl_805E15C8; /* the light free list */
 RwInt32 lbl_805EDDB0 = 32; /* light free list entries per block */
 RwInt32 lbl_805EDDB4 = 1;  /* light free list blocks to preallocate */
 
-LightModule lbl_805F14D8;
+RwModuleInfo lbl_805F14D8;
 
 /* the free list callback that destroys the lights still in use when the module closes */
 void fn_8045A760(void *light, void *data) {

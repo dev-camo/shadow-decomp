@@ -20,17 +20,10 @@
         }                                                                                          \
     } while (0)
 
-/* The plugin's engine globals (inferred) */
-typedef struct UserDataEngineGlobals {
-    /* 0x0 */ RwInt32 field_0x0;
-    /* 0x4 */ RwInt32 numInstances; /* the open engine instances */
-} UserDataEngineGlobals;
-CHECK_SIZEOF(UserDataEngineGlobals, 0x8);
-
 /* The plugin's globals, declared in reverse address order (the compiler places them in .sbss
- * last first): the module globals, then the plugin offsets of the user data list and its stream
- * extension per object type (inferred from the attach order) */
-UserDataEngineGlobals lbl_805F1490;
+ * last first): the user data module's registration, then the plugin offsets of the user data list
+ * and its stream extension per object type (inferred from the attach order) */
+RwModuleInfo lbl_805F1490;
 RwInt32 lbl_805F148C;
 RwInt32 lbl_805F1488; /* texture */
 RwInt32 lbl_805F1484;

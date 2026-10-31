@@ -36,16 +36,9 @@ typedef union StreamTriangle {
 } StreamTriangle;
 CHECK_SIZEOF(StreamTriangle, 0x8);
 
-/* The geometry module (inferred) */
-typedef struct GeometryModule {
-    /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
-    /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
-} GeometryModule;
-CHECK_SIZEOF(GeometryModule, 0x8);
-
 RwPluginRegistry lbl_8056D810 = {sizeof(RpGeometry), sizeof(RpGeometry), 0, 0, NULL, NULL};
 
-GeometryModule lbl_805F14D0;
+RwModuleInfo lbl_805F14D0;
 
 /* engine plugin constructor */
 void *fn_80458CF8(void *instance, RwInt32 offset, RwInt32 size) {

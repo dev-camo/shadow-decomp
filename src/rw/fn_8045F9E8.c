@@ -22,13 +22,6 @@ typedef struct WorldGlobals {
 } WorldGlobals;
 CHECK_SIZEOF(WorldGlobals, 0xC);
 
-/* The world module (inferred) */
-typedef struct WorldModule {
-    /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
-    /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
-} WorldModule;
-CHECK_SIZEOF(WorldModule, 0x8);
-
 /* The world list entry of a link */
 #define WORLDLISTENTRY(link)                                                                       \
     ((WorldListEntry *)((RwUInt8 *)(link) - offsetof(WorldListEntry, link)))
@@ -40,7 +33,7 @@ RwPluginRegistry lbl_8056D898 = {sizeof(RpWorld), sizeof(RpWorld), 0, 0, NULL, N
 
 RwFreeList lbl_805E1618; /* the world list free list */
 
-WorldModule lbl_805F1500;
+RwModuleInfo lbl_805F1500;
 
 /* engine plugin destructor */
 void *fn_8045F9E8(void *instance, RwInt32 offset, RwInt32 size) {

@@ -21,13 +21,6 @@ typedef struct MaterialGlobals {
 } MaterialGlobals;
 CHECK_SIZEOF(MaterialGlobals, 0x4);
 
-/* The material module (inferred) */
-typedef struct MaterialModule {
-    /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
-    /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
-} MaterialModule;
-CHECK_SIZEOF(MaterialModule, 0x8);
-
 #define MATERIALGLOBALS()                                                                          \
     ((MaterialGlobals *)((RwUInt8 *)lbl_805F15B4 + lbl_805F14E8.globalsOffset))
 #define MATERIALGLOBAL(var) (MATERIALGLOBALS()->var)
@@ -43,7 +36,7 @@ RwInt32 lbl_805EDDB8 = 256; /* material free list entries per block */
 RwInt32 lbl_805EDDBC = 1;   /* material free list blocks to preallocate */
 
 /* declared in reverse address order (the compiler places them in .sbss last first) */
-MaterialModule lbl_805F14E8;
+RwModuleInfo lbl_805F14E8;
 RwUInt32 lbl_805F14E4; /* material pipeline plugin, from the last material stream's rights */
 RwUInt32 lbl_805F14E0; /* material pipeline plugin data */
 
