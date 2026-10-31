@@ -24,15 +24,8 @@
 /* how many sectors a camera's frustum sector list grows by */
 #define rpFRUSTUMSECTORGRANULARITY 50
 
-/* world render orders */
-#define rpWORLDRENDERFRONT2BACK 1
-#define rpWORLDRENDERBACK2FRONT 2
-
 /* light types with a position (rpLIGHTPOINT and up) */
 #define rpLIGHTPOSITIONINGSTART 0x80
-
-/* A coordinate of a vector, by its byte offset (a plane sector's type) */
-#define GETCOORD(vector, offset) (*(RwReal *)((RwUInt8 *)&(vector) + (offset)))
 
 /* The world data of a camera */
 typedef struct CameraExt {
