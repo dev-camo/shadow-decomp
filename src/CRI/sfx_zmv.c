@@ -55,10 +55,11 @@ SFXZ_WORK sfxz_work;
 void sfxzmv_MakeOrgZ32TblByCCIR(SFXZ_OBJ *sfxz, Uint32 zorg_min, Uint32 zorg_max, Uint32 *tbl);
 void sfxzmv_MakeOrgZ32TblByDirect(SFXZ_OBJ *sfxz, Uint32 zorg_min, Uint32 zorg_max, Uint32 *tbl);
 
-/* Stand-in for the stripped frame-format converters sfxcnv_CnvZbitToCft, sfxcnv_CnvFrmZcmn,
- * SFX_CnvFrmZcmn and SFXZ_SetZclip; their bodies are unknown. Their messages, the "COMPO" tag
- * name and the 0.0 and -14.0 constants remain in .rodata in this order. Storing the addresses and
- * values keeps the references. */
+/* Matching workaround: order-only stand-in for the stripped frame-format converters
+ * sfxcnv_CnvZbitToCft, sfxcnv_CnvFrmZcmn, SFX_CnvFrmZcmn and SFXZ_SetZclip; their bodies are
+ * unknown. Their messages, the "COMPO" tag name and the 0.0 and -14.0 constants remain in .rodata
+ * in this order. Storing the addresses and values keeps the references. Revisit when the bodies
+ * of those functions are found. */
 static void sfxzmv_RodataOrder(const Char8 **msg, Float32 *val) {
     msg[0] = "E201313: sfxcnv_CnvZbitToCft : zbit is invalid.";
     msg[1] = "COMPO";
@@ -166,8 +167,12 @@ void sfxzmv_MakeCnvZTbl(SFXZ_OBJ *sfxz, Uint32 zorg_min, Uint32 zorg_max, void *
 /* Builds the Z conversion table for frame index frmno: the original Z range (the second and third
  * fields of the frame's "ZMFDATA" entry, which is frmno times the "ZMFSIZE" entry size into that
  * tag) comes from the stream information. When "ZMFSIZE" is present but "ZMFDATA" is not,
- * zorg_max is passed on uninitialised, as in the original. sfxzmv_MakeCnvZTbl is called out of
- * line in the original; without dont_inline MWCC inlines it here. */
+ * zorg_max is passed on uninitialised, as in the original.
+ *
+ * Matching workaround: sfxzmv_MakeCnvZTbl is called out of line in the original, and dont_inline
+ * keeps it out of line here. Without the pragma MWCC inlines it into SFXZ_MakeCnvZTbl, which
+ * grows from 78 to 347 words. Revisit when the original's inline setting, or a reason the call
+ * stays out of line, is found. */
 #pragma dont_inline on
 void SFXZ_MakeCnvZTbl(SFXZ_OBJ *sfxz, Sint32 frmno, void *tbl) {
     SJCK out1;
@@ -216,8 +221,13 @@ void SFXZ_MakeCnvZTbl(SFXZ_OBJ *sfxz, Sint32 frmno, void *tbl) {
 #pragma dont_inline off
 
 /* The 32-bit Z of each of the 256 Z index values: 0 below 9, zorg_min up to 16, a ramp from
- * zorg_min to zorg_max up to 0xDF, zorg_max up to 0xEF and the maximum above. A macro: as a
- * static function, or a static inline one, MWCC does not reproduce either caller. */
+ * zorg_min to zorg_max up to 0xDF, zorg_max up to 0xEF and the maximum above.
+ *
+ * Matching workaround: a statement macro instead of a helper function. As a static function the
+ * helper stays out of line (200 words) and its two callers shrink from 444 and 200 words to 267
+ * and 11; as a static inline function the callers are 443 and 199 words with 330 and 183 aligned
+ * words differing. Revisit when the original's helper, or the inline setting that reproduces
+ * both callers, is found. */
 #define SFXZ_MAKE_ORG_Z32_TBL(zorg_min, zorg_max, tbl)                                             \
     {                                                                                              \
         Sint32 i;                                                                                  \
