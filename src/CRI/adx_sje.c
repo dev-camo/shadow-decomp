@@ -8,7 +8,6 @@
  * Source adapted from the RE4 GameCube decompilation of the same file. ADXSJE_Init and
  * ADXSJE_Finish keep a reference count.
  */
-#include <stddef.h>
 #include <string.h>
 
 #include "CRI/adx.h"
@@ -122,8 +121,10 @@ static Sint32 skg_init_count = 0;
 /* the SKG error callback; unreferenced in this game but part of the original data */
 static void (*skg_err_func)(void *obj, const Char8 *msg) = 0;
 static void *skg_err_obj = 0;
-/* volatile like the other CRI reference counts (adx_crs.c); the count is reloaded after each
- * update. */
+/* Matching workaround: volatile, read from the original bytes: ADXSJE_Finish stores the updated
+ * count and loads it again before the compare. Declared plain, the compare fuses into an `addic.`
+ * and the function is 20 instead of 22 instructions. Revisit when the original declaration is
+ * found. */
 static volatile Sint32 adxsje_init_cnt = 0;
 static ADXSJE_PRDFLT adxsje_prdflt_obj[ADXSJE_MAX_FLT];
 static ADXSJE_IIRFLT adxsje_iirflt_obj[ADXSJE_MAX_FLT];
@@ -201,36 +202,24 @@ void ADXSJE_ExecServer(void) {
 }
 
 /* header stage: wait for the first sample of every input (the decoder history seed), write the
- * header and program the filter coefficients. COMPILER-DIFF: the per-channel fields are reached
- * through `Uint8 *` copies of the handle stepped by the field width plus the member offset (as in
- * adx_tsvr's ExecHndl); indexing sje->sji[ch], sje->first[ch] and sje->prd[i] compiles to a
- * different loop. */
+ * header and program the filter coefficients. */
 static inline void adxsje_header_exec(ADXSJE sje) {
     Sint32 n;
     Sint16 c1;
     Sint16 c2;
     SJCK ck;
     ADXSJE_PRDFLT *prd;
-    Uint8 *p3;
-    Uint8 *p2;
-    Sint32 i;
-    Uint8 *p;
     SJ sjo;
     Sint32 ch;
 
     sjo = sje->sjo;
-    p = (Uint8 *)sje;
-    p2 = (Uint8 *)sje;
     for (ch = 0; ch < sje->nch32; ch++) {
-        SJ_GetChunk(*(SJ *)(p + offsetof(ADXSJE_OBJ, sji)), SJ_CK_DATA, 2, &ck);
+        SJ_GetChunk(sje->sji[ch], SJ_CK_DATA, 2, &ck);
         if (ck.len == 0) {
             break;
         }
-        *(Sint16 *)(p2 + offsetof(ADXSJE_OBJ, first)) =
-            *(Sint16 *)(p2 + offsetof(ADXSJE_OBJ, first2)) = *(Sint16 *)ck.data;
-        SJ_UngetChunk(*(SJ *)(p + offsetof(ADXSJE_OBJ, sji)), SJ_CK_DATA, &ck);
-        p += 4;
-        p2 += 2;
+        sje->first[ch] = sje->first2[ch] = *(Sint16 *)ck.data;
+        SJ_UngetChunk(sje->sji[ch], SJ_CK_DATA, &ck);
     }
     if (ch < sje->nch32) {
         return;
@@ -244,13 +233,11 @@ static inline void adxsje_header_exec(ADXSJE sje) {
         return;
     }
     sje->nbyte += n;
-    p3 = (Uint8 *)sje;
-    for (i = 0; i < sje->nch32; i++) {
-        prd = *(ADXSJE_PRDFLT **)(p3 + offsetof(ADXSJE_OBJ, prd));
+    for (ch = 0; ch < sje->nch32; ch++) {
+        prd = sje->prd[ch];
         ADX_GetCoefficient((Sint16)sje->cutoff, sje->sfreq, &c1, &c2);
         adxsje_prdflt_set_coef(prd, c1, c2);
         adxsje_iirflt_set_coef(prd->iir, c1, c2);
-        p3 += 4;
     }
     sje->stat = 2;
 }
@@ -392,6 +379,7 @@ void ADXSJE_Destroy(ADXSJE sje) {
     if (sje->prd[1] != 0) {
         adxsje_prdflt_destroy(sje->prd[1]);
     }
+    /* original quirk: only the first four bytes (used, stat, nch, stopflg) are cleared */
     memset(sje, 0, 4);
     ADXCRS_Unlock();
 }
@@ -452,7 +440,7 @@ ADXSJE ADXSJE_Create(Sint32 nch, SJ *sji, SJ sjo) {
     return sje;
 }
 
-/* Clears the handles (and releases the shared SKG counter). */
+/* Clears the handles (and releases this file's SKG counter). */
 void ADXSJE_Finish(void) {
     adxsje_init_cnt--;
     if (adxsje_init_cnt == 0) {
@@ -490,8 +478,10 @@ static void adxsje_put16(SJ sj, void *src) {
     if (ck.len < 2) {
         SJ_UngetChunk(sj, SJ_CK_FREE, &ck);
     } else {
-        /* the write cursor `dp` and its unused post-increment keep the ck.data load ahead of the
-         * value load */
+        /* Matching workaround: the write cursor `dp` and its unused post-increment keep the ck.data
+         * load ahead of the value load (writing through ck.data or `*dp` alone swaps the order of
+         * the two loads: 2 words of adxsje_write_end_code, where this function is expanded,
+         * differ). Revisit when the original write idiom is found. */
         Sint16 *dp = (Sint16 *)ck.data;
         *dp++ = *(Sint16 *)src;
         SJ_PutChunk(sj, SJ_CK_DATA, &ck);
@@ -710,7 +700,7 @@ static void adxsje_encode_blocks(ADXSJE sje) {
     }
 }
 
-/* zero the tail of a short last block (a helper for the same reason) */
+/* zero the tail of a short last block */
 static void adxsje_pad_pcm(ADXSJE sje, Sint16 **bufs, Sint32 n) {
     Sint32 ch;
 
@@ -853,6 +843,7 @@ static void adxsje_prdflt_exec(ADXSJE_PRDFLT *prd, Sint16 s, Sint32 i) {
         }
         prd->maxabs = 0;
     }
+    /* original quirk: prd is already dereferenced above (when i is 0) before this test */
     if (prd == 0) {
         return;
     }
