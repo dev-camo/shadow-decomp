@@ -4,6 +4,7 @@
 
 #include "CRI/adx_rna.h"
 #include "CRI/cri_xpt.h"
+#include "CRI/mpv.h"
 #include "CRI/sfd_tst.h"
 #include "CRI/sj.h"
 #include "CRI/uty.h"
@@ -353,16 +354,6 @@ CHECK_SIZEOF(SFD_TR, 0x44);
 #define SFMPV_FRM_DRAWN 3
 #define SFMPV_FRM_REF 4
 
-/* reference frame buffer planes handed to the MPEG decoder (sfd_mpv.c, 0x10 bytes) */
-typedef struct {
-    void *cb;      /* 0x00 y + luma plane size */
-    void *cr;      /* 0x04 cb + chroma plane size */
-    void *y;       /* 0x08 */
-    Sint16 cwidth; /* 0x0C chroma row bytes */
-    Sint16 ywidth; /* 0x0E luma row bytes */
-} SFMPV_PLANE;
-CHECK_SIZEOF(SFMPV_PLANE, 0x10);
-
 /* picture user data slot of a decoded frame */
 typedef struct {
     void *buf;  /* 0x00 */
@@ -385,48 +376,13 @@ typedef struct {
     Sint32 x50;           /* 0x50 ttu.val + concatenation time */
     SFMPV_PICUSR *picusr; /* 0x54 */
     Sint32 x58;           /* 0x58 -1 when the frame is released for drawing */
-    /* 0x5C: the MPV_PICATR of the picture (mpv.h), 0x80 bytes */
-    Sint32 pa_width;          /* 0x5C */
-    Sint32 pa_height;         /* 0x60 */
-    Sint32 pa_mb_width;       /* 0x64 */
-    Sint32 pa_mb_height;      /* 0x68 */
-    Sint32 pa_frame_rate;     /* 0x6C */
-    Sint32 tmpref;            /* 0x70 temporal reference (10-bit) */
-    Sint32 pa_pic_type;       /* 0x74 */
-    Sint32 pa_tc_drop;        /* 0x78 */
-    Sint32 pa_tc_hour;        /* 0x7C */
-    Sint32 pa_tc_min;         /* 0x80 */
-    Sint32 pa_tc_sec;         /* 0x84 */
-    Sint32 pa_tc_pic;         /* 0x88 */
-    Sint32 x88;               /* 0x8C GOP headers seen */
-    Sint32 x8c;               /* 0x90 sequence headers seen */
-    Sint32 pa_x90[3];         /* 0x94 */
-    Sint32 pa_x9c[3];         /* 0xA0 */
-    Sint16 pa_xa8;            /* 0xAC */
-    Sint16 pa_xaa;            /* 0xAE */
-    Sint8 pa_xac;             /* 0xB0 */
-    Sint8 pa_xad;             /* 0xB1 */
-    Sint8 pa_xae;             /* 0xB2 */
-    Sint8 pa_xaf;             /* 0xB3 */
-    Sint8 pa_xb0;             /* 0xB4 */
-    Sint8 pa_xb1;             /* 0xB5 */
-    Sint8 pa_xb2;             /* 0xB6 */
-    Sint8 pa_xb3;             /* 0xB7 */
-    Sint8 pa_xb4;             /* 0xB8 */
-    Sint8 pa_xb5;             /* 0xB9 */
-    Sint8 pa_xb6;             /* 0xBA */
-    Sint8 pa_xb7;             /* 0xBB */
-    Sint8 pa_xb8;             /* 0xBC */
-    Sint8 pa_xb9;             /* 0xBD */
-    Sint8 pa_xba;             /* 0xBE */
-    Sint8 pa_xbb;             /* 0xBF */
-    Sint8 pa_xbc;             /* 0xC0 */
-    Uint8 padc1[0xC4 - 0xC1]; /* 0xC1 */
-    Sint32 xc4;               /* 0xC4 last key compared by SFMPVF_HoldFrm */
-    Uint8 padc8[0xE0 - 0xC8]; /* 0xC8 */
-    Sint64 pts;               /* 0xE0 */
+    MPV_PICATR
+        picatr; /* 0x5C attributes of the picture; picatr.x68 is the last ordering key in sfmpvf_IsPrior */
+    Sint64 pts; /* 0xE0 */
 } SFMPV_FRM;
 CHECK_SIZEOF(SFMPV_FRM, 0xE8);
+CHECK_OFFSETOF(SFMPV_FRM, picatr, 0x5C);
+CHECK_OFFSETOF(SFMPV_FRM, pts, 0xE0);
 
 /* MPEG video decoder parameters (mwsfd_mpvpara, SFD_SetMpvParaTbl; 0x24 bytes) */
 typedef struct {
@@ -457,7 +413,7 @@ typedef struct {
     Sint32 gopstat;               /* 0x080 */
     Sint32 nskip;                 /* 0x084 frames skipped in a row */
     Sint32 nconcat;               /* 0x088 sequence end codes passed */
-    Uint8 picatr[0x80];           /* 0x08C MPV_PICATR of the picture being decoded */
+    MPV_PICATR picatr;            /* 0x08C attributes of the picture being decoded */
     Sint32 last_ngop;             /* 0x10C */
     Sint32 newgop;                /* 0x110 the picture starts a new GOP */
     Sint32 vbvsiz;                /* 0x114 */
@@ -467,7 +423,7 @@ typedef struct {
     Sint32 pad124;                /* 0x0124 */
     SFPTS_ENT ptsent;             /* 0x128 last PTS queue entry seen */
     Sint32 refidx[2];             /* 0x138 reference frame buffer indices (forward, backward) */
-    SFMPV_PLANE rfbuf[2];         /* 0x140 */
+    MPV_RFB rfbuf[2];             /* 0x140 reference frame planes handed to the decoder */
     SFMPV_FRM *ref[2];            /* 0x160 reference frames (forward, backward) */
     SFMPV_FRM *pendfrm;           /* 0x168 B picture decoded into a standby frame */
     Sint32 skipret;               /* 0x16C */
@@ -486,6 +442,8 @@ typedef struct {
     Sint64 pts;                         /* 0x1098 PTS of the picture being decoded */
 } SFMPV_WORK;
 CHECK_SIZEOF(SFMPV_WORK, 0x10A0);
+CHECK_OFFSETOF(SFMPV_WORK, picatr, 0x8C);
+CHECK_OFFSETOF(SFMPV_WORK, rfbuf, 0x140);
 
 /* 0xA8-byte player information block (SFD_OBJ + 0x950): cleared by sfply_InitHn and passed to the
  * picture hooks (conditions 0x24/0x25). The 64-bit counters are the stream flow statistics: the

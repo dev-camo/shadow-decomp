@@ -14,19 +14,19 @@ static Bool sfmpvf_IsPrior(SFMPV_FRM *a, SFMPV_FRM *b) {
     if (a->gopno > b->gopno) {
         return FALSE;
     }
-    if (a->x8c < b->x8c) {
+    if (a->picatr.nseq < b->picatr.nseq) {
         return TRUE;
     }
-    if (a->x8c > b->x8c) {
+    if (a->picatr.nseq > b->picatr.nseq) {
         return FALSE;
     }
-    if (a->x88 < b->x88) {
+    if (a->picatr.ngop < b->picatr.ngop) {
         return TRUE;
     }
-    if (a->x88 > b->x88) {
+    if (a->picatr.ngop > b->picatr.ngop) {
         return FALSE;
     }
-    if (a->xc4 < b->xc4) {
+    if (a->picatr.x68 < b->picatr.x68) {
         return TRUE;
     }
     return FALSE;
