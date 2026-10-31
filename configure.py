@@ -1264,7 +1264,9 @@ config.libs = [
     DolphinLib(
         "exi",
         [
-            # Built without instruction scheduling (code stays in source order)
+            # Matching workaround: -schedule off for EXIBios only. With scheduling on, about 2.2k
+            # of its disassembly lines differ. Revisit when the original library build flags
+            # are known.
             Object(Matching, "dolphin/EXIBios.c", extra_cflags=["-schedule off"]),
             Object(Matching, "dolphin/EXIUart.c"),
         ],
@@ -1278,8 +1280,10 @@ config.libs = [
     DolphinLib(
         "odemustubs",
         [
-            # Older compiler (epilogue scheduling) with deferred inlining: functions come out in
-            # reverse source order, and none are auto-inlined
+            # Matching workaround: GC/1.2.5 with -inline deferred,noauto for this unit only. This
+            # older compiler version schedules epilogues as the original does, and deferred
+            # inlining emits the functions in reverse source order with no auto-inlining, as in the
+            # original object. Revisit when the original OdemuExi2 library build flags are known.
             Object(
                 Matching,
                 "dolphin/DebuggerDriver.c",

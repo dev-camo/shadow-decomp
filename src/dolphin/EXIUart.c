@@ -182,7 +182,9 @@ int WriteUARTN(void *buf, u32 len) {
                     break;
                 }
 
-                // The (long) cast keeps the conditional signed; without it MWCC emits different code.
+                // Matching workaround: len is cast to long so the conditional expression has type
+                // long; without the cast WriteUARTN compiles differently. Revisit when the original
+                // type of xLen and len is known.
                 xLen = len < 4 ? (long)len : 4;
 
                 EXIImm(Chan, buf, xLen, EXI_WRITE, 0);
