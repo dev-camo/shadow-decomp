@@ -149,11 +149,14 @@ typedef struct {
     Float32 x2c0;                    /* 0x2C0 (-1.0) frame time (ft) of the last decision count */
     Sint32 x2c4;                     /* 0x2C4 last frame decision */
     Float32 x2c8;                    /* 0x2C8 (-1.0) frame time (ft) of the last decided frame */
-    /* volatile: written on another thread. SFD_VbIn runs as an SVM vsync server (the MW player
-     * registers MWSFSVR_VsyncThrdProc with MWSFSVM_EntryIdVfunc), i.e. on the ADXM vsync thread;
-     * there sftim_VbInHn updates vcnt and chg_base, and ext_last through clock source 5
-     * (sftim_GetTimeExtClock), while the server step reads them. Without the qualifiers the
-     * branch layout of SFTIM_IsGetFrmTimeTunit changes. */
+    /* Matching workaround: volatile on vcnt, chg_base and ext_last. They are written on another
+     * thread: SFD_VbIn runs as an SVM vsync server (the MW player registers MWSFSVR_VsyncThrdProc
+     * with MWSFSVM_EntryIdVfunc), i.e. on the ADXM vsync thread; there sftim_VbInHn updates vcnt
+     * and chg_base, and ext_last through clock source 5 (sftim_GetTimeExtClock), while the server
+     * step reads them. Without the qualifiers only sfd_tim.o changes (measured):
+     * SFTIM_IsGetFrmTimeTunit, sftim_GetTimeExtClock and SFTIM_IsStagnant stop matching
+     * (SFTIM_IsGetFrmTimeTunit drops a reload of vcnt) and SFTIM_IsGetFrmTime moves further from
+     * the original. Revisit if the original declaration of the work record is found. */
     volatile Sint32 vcnt;     /* 0x2CC (-1) vsync count while requested */
     volatile Sint32 chg_base; /* 0x2D0 clock at the last time change */
     SFTIM_FN extfn;           /* 0x2D4 external clock (SFD_SetExtClockFn) */
