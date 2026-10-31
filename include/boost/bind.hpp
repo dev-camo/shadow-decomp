@@ -1,45 +1,156 @@
 #ifndef BOOST_BIND_HPP
 #define BOOST_BIND_HPP
 
-#include "boost/mem_fn.hpp"
-#include "layout_check.h"
+//
+//  bind.hpp - binds function objects to arguments
+//
+//  Copyright (c) 2001-2004 Peter Dimov and Multi Media Ltd.
+//  Copyright (c) 2001 David Abrahams
+//
+//  bind/bind_template.hpp
+//
+//  Copyright (c) 2001-2004 Peter Dimov and Multi Media Ltd.
+//
+//  bind/bind_mf_cc.hpp
+//
+//  Copyright (c) 2001 Peter Dimov and Multi Media Ltd.
+//
+//  bind/arg.hpp, bind/placeholders.hpp
+//
+//  Copyright (c) 2002 Peter Dimov and Multi Media Ltd.
+//
+//  Distributed under the Boost Software License, Version 1.0. (See
+//  accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+//
+//  See http://www.boost.org/libs/bind/bind.html for documentation.
+//
+//  Adapted from Boost 1.32: the include guard follows this project's naming, and boost/bind.hpp
+//  is merged with the pieces of boost/bind/ it includes, resolved for a compiler with void
+//  returns and a single calling convention, and cut to what the reconstructed units use
+//  (bind(&C::f, this, _1) with a member function of one argument, see boost/mem_fn.hpp): the
+//  lists and call operators of up to two arguments, the member function overload of bind() for
+//  two arguments, and the placeholders. The overloads for function pointers and const member
+//  functions are left out (the game also uses bind(f, _1) with a function pointer and cmf1, in
+//  units not yet reconstructed), as are boost::reference_wrapper and data member support. The
+//  bodies stay in the classes as in Boost: the game's inlining depends on them (see
+//  cflags_game_cpp in configure.py).
+//
 
-/* boost::bind for a member function with one argument, called with the object pointer bound and
- * the first call argument forwarded (bind(&C::f, this, _1)), in the style of boost 1.32. Only
- * what that expression needs is written: the bound pointer (value), the placeholder _1, the two
- * argument lists, bind_t, and the bind overload for member functions. The bodies are visible
- * because the game's inlining depends on them (see shared_ptr.hpp). */
+#include "boost/mem_fn.hpp"
+#include "boost/visit_each.hpp"
+
 namespace boost {
 
-/* A placeholder for the I-th argument of the call. */
 template <int I> class arg {};
 
-namespace _bi {
+template <int I> bool operator==(arg<I> const &, arg<I> const &) {
+    return true;
+}
+
+namespace _bi // implementation details
+{
+
+// result_traits
+
+template <class R, class F> struct result_traits {
+    typedef R type;
+};
+
+struct unspecified {};
+
+template <class F> struct result_traits<unspecified, F> {
+    typedef typename F::result_type type;
+};
+
+// ref_compare
+
+template <class T> bool ref_compare(T const &a, T const &b, long) {
+    return a == b;
+}
+
+// bind_t forward declaration for listN
+
+template <class R, class F, class L> class bind_t;
+
+// value
 
 template <class T> class value {
   public:
-    value(const T &t) : t_(t) {}
+    value(T const &t) : t_(t) {}
 
     T &get() {
         return t_;
     }
-
-    const T &get() const {
+    T const &get() const {
         return t_;
+    }
+
+    bool operator==(value const &rhs) const {
+        return t_ == rhs.t_;
     }
 
   private:
     T t_;
 };
 
-/* Selects the overload of a bound call that returns void. */
+// type
+
 template <class T> class type {};
+
+// unwrap
 
 template <class F> inline F &unwrap(F *f, long) {
     return *f;
 }
 
-/* The arguments of a call, as references. */
+// listN
+
+class list0 {
+  public:
+    list0() {}
+
+    template <class T> T &operator[](value<T> &v) const {
+        return v.get();
+    }
+
+    template <class T> T const &operator[](value<T> const &v) const {
+        return v.get();
+    }
+
+    template <class R, class F, class L>
+    typename result_traits<R, F>::type operator[](bind_t<R, F, L> &b) const {
+        return b.eval(*this);
+    }
+
+    template <class R, class F, class L>
+    typename result_traits<R, F>::type operator[](bind_t<R, F, L> const &b) const {
+        return b.eval(*this);
+    }
+
+    template <class R, class F, class A> R operator()(type<R>, F &f, A &, long) {
+        return unwrap(&f, 0)();
+    }
+
+    template <class R, class F, class A> R operator()(type<R>, F const &f, A &, long) const {
+        return unwrap(&f, 0)();
+    }
+
+    template <class F, class A> void operator()(type<void>, F &f, A &, int) {
+        unwrap(&f, 0)();
+    }
+
+    template <class F, class A> void operator()(type<void>, F const &f, A &, int) const {
+        unwrap(&f, 0)();
+    }
+
+    template <class V> void accept(V &) const {}
+
+    bool operator==(list0 const &) const {
+        return true;
+    }
+};
+
 template <class A1> class list1 {
   public:
     explicit list1(A1 a1) : a1_(a1) {}
@@ -48,26 +159,115 @@ template <class A1> class list1 {
         return a1_;
     }
 
+    A1 operator[](boost::arg<1> (*)()) const {
+        return a1_;
+    }
+
     template <class T> T &operator[](value<T> &v) const {
         return v.get();
+    }
+
+    template <class T> T const &operator[](value<T> const &v) const {
+        return v.get();
+    }
+
+    template <class R, class F, class L>
+    typename result_traits<R, F>::type operator[](bind_t<R, F, L> &b) const {
+        return b.eval(*this);
+    }
+
+    template <class R, class F, class L>
+    typename result_traits<R, F>::type operator[](bind_t<R, F, L> const &b) const {
+        return b.eval(*this);
+    }
+
+    template <class R, class F, class A> R operator()(type<R>, F &f, A &a, long) {
+        return unwrap(&f, 0)(a[a1_]);
+    }
+
+    template <class R, class F, class A> R operator()(type<R>, F const &f, A &a, long) const {
+        return unwrap(&f, 0)(a[a1_]);
+    }
+
+    template <class F, class A> void operator()(type<void>, F &f, A &a, int) {
+        unwrap(&f, 0)(a[a1_]);
+    }
+
+    template <class F, class A> void operator()(type<void>, F const &f, A &a, int) const {
+        unwrap(&f, 0)(a[a1_]);
+    }
+
+    template <class V> void accept(V &v) const {
+        visit_each(v, a1_, 0);
+    }
+
+    bool operator==(list1 const &rhs) const {
+        return ref_compare(a1_, rhs.a1_, 0);
     }
 
   private:
     A1 a1_;
 };
 
-/* The stored arguments of a bind expression. Boost also has a version of operator() for calls that
- * return a value; only the void one is written. */
 template <class A1, class A2> class list2 {
   public:
     list2(A1 a1, A2 a2) : a1_(a1), a2_(a2) {}
+
+    A1 operator[](boost::arg<1>) const {
+        return a1_;
+    }
+    A2 operator[](boost::arg<2>) const {
+        return a2_;
+    }
+
+    A1 operator[](boost::arg<1> (*)()) const {
+        return a1_;
+    }
+    A2 operator[](boost::arg<2> (*)()) const {
+        return a2_;
+    }
 
     template <class T> T &operator[](value<T> &v) const {
         return v.get();
     }
 
+    template <class T> T const &operator[](value<T> const &v) const {
+        return v.get();
+    }
+
+    template <class R, class F, class L>
+    typename result_traits<R, F>::type operator[](bind_t<R, F, L> &b) const {
+        return b.eval(*this);
+    }
+
+    template <class R, class F, class L>
+    typename result_traits<R, F>::type operator[](bind_t<R, F, L> const &b) const {
+        return b.eval(*this);
+    }
+
+    template <class R, class F, class A> R operator()(type<R>, F &f, A &a, long) {
+        return unwrap(&f, 0)(a[a1_], a[a2_]);
+    }
+
+    template <class R, class F, class A> R operator()(type<R>, F const &f, A &a, long) const {
+        return unwrap(&f, 0)(a[a1_], a[a2_]);
+    }
+
     template <class F, class A> void operator()(type<void>, F &f, A &a, int) {
         unwrap(&f, 0)(a[a1_], a[a2_]);
+    }
+
+    template <class F, class A> void operator()(type<void>, F const &f, A &a, int) const {
+        unwrap(&f, 0)(a[a1_], a[a2_]);
+    }
+
+    template <class V> void accept(V &v) const {
+        visit_each(v, a1_, 0);
+        visit_each(v, a2_, 0);
+    }
+
+    bool operator==(list2 const &rhs) const {
+        return ref_compare(a1_, rhs.a1_, 0) && ref_compare(a2_, rhs.a2_, 0);
     }
 
   private:
@@ -75,15 +275,61 @@ template <class A1, class A2> class list2 {
     A2 a2_;
 };
 
-/* A callable that binds the stored arguments L to F. boost's operator() returns R; here R is void
- * and the call is written for that. */
+// bind_t
+
 template <class R, class F, class L> class bind_t {
   public:
-    bind_t(F f, const L &l) : f_(f), l_(l) {}
+    typedef bind_t this_type;
 
-    template <class A1> void operator()(A1 &a1) {
+    bind_t(F f, L const &l) : f_(f), l_(l) {}
+
+    typedef typename result_traits<R, F>::type result_type;
+
+    result_type operator()() {
+        list0 a;
+        return l_(type<result_type>(), f_, a, 0);
+    }
+
+    result_type operator()() const {
+        list0 a;
+        return l_(type<result_type>(), f_, a, 0);
+    }
+
+    template <class A1> result_type operator()(A1 &a1) {
         list1<A1 &> a(a1);
-        l_(type<void>(), f_, a, 0);
+        return l_(type<result_type>(), f_, a, 0);
+    }
+
+    template <class A1> result_type operator()(A1 &a1) const {
+        list1<A1 &> a(a1);
+        return l_(type<result_type>(), f_, a, 0);
+    }
+
+    template <class A1, class A2> result_type operator()(A1 &a1, A2 &a2) {
+        list2<A1 &, A2 &> a(a1, a2);
+        return l_(type<result_type>(), f_, a, 0);
+    }
+
+    template <class A1, class A2> result_type operator()(A1 &a1, A2 &a2) const {
+        list2<A1 &, A2 &> a(a1, a2);
+        return l_(type<result_type>(), f_, a, 0);
+    }
+
+    template <class A> result_type eval(A &a) {
+        return l_(type<result_type>(), f_, a, 0);
+    }
+
+    template <class A> result_type eval(A &a) const {
+        return l_(type<result_type>(), f_, a, 0);
+    }
+
+    template <class V> void accept(V &v) const {
+        visit_each(v, f_, 0);
+        l_.accept(v);
+    }
+
+    bool compare(this_type const &rhs) const {
+        return ref_compare(f_, rhs.f_, 0) && l_ == rhs.l_;
     }
 
   private:
@@ -91,14 +337,29 @@ template <class R, class F, class L> class bind_t {
     L l_;
 };
 
-/* Wraps a bound value that is not itself an argument or a nested bind. */
+// add_value
+
 template <class T> struct add_value {
     typedef value<T> type;
 };
 
-template <int I> struct add_value<boost::arg<I> > {
+template <class T> struct add_value<value<T> > {
+    typedef value<T> type;
+};
+
+template <int I> struct add_value<arg<I> > {
     typedef boost::arg<I> type;
 };
+
+template <int I> struct add_value<arg<I> (*)()> {
+    typedef boost::arg<I> (*type)();
+};
+
+template <class R, class F, class L> struct add_value<bind_t<R, F, L> > {
+    typedef bind_t<R, F, L> type;
+};
+
+// list_av_N
 
 template <class A1, class A2> struct list_av_2 {
     typedef typename add_value<A1>::type B1;
@@ -107,6 +368,8 @@ template <class A1, class A2> struct list_av_2 {
 };
 
 } // namespace _bi
+
+// bind(member function, object, argument)
 
 template <class R, class T, class B1, class A1, class A2>
 _bi::bind_t<R, _mfi::mf1<R, T, B1>, typename _bi::list_av_2<A1, A2>::type> bind(R (T::*f)(B1),
@@ -118,10 +381,17 @@ _bi::bind_t<R, _mfi::mf1<R, T, B1>, typename _bi::list_av_2<A1, A2>::type> bind(
 
 } // namespace boost
 
-/* The placeholder is a static object in an unnamed namespace, as boost defines it for this
- * compiler; a unit that uses it gets its own copy in .sbss. */
+// The placeholders, in the form bind/placeholders.hpp uses for Metrowerks compilers.
 namespace {
 static boost::arg<1> _1;
-}
+static boost::arg<2> _2;
+static boost::arg<3> _3;
+static boost::arg<4> _4;
+static boost::arg<5> _5;
+static boost::arg<6> _6;
+static boost::arg<7> _7;
+static boost::arg<8> _8;
+static boost::arg<9> _9;
+} // unnamed namespace
 
 #endif

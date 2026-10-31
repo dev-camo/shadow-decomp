@@ -1,6 +1,46 @@
 #ifndef BOOST_FUNCTION_HPP
 #define BOOST_FUNCTION_HPP
 
+// Boost.Function library
+//
+// function/function_base.hpp
+//
+//  Copyright Douglas Gregor 2001-2004. Use, modification and
+//  distribution is subject to the Boost Software License, Version
+//  1.0. (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+//
+// function/function_template.hpp
+//
+//  Copyright Douglas Gregor 2001-2003. Use, modification and
+//  distribution is subject to the Boost Software License, Version
+//  1.0. (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+//
+// function/function1.hpp
+//
+//  Copyright Douglas Gregor 2002-2003. Use, modification and
+//  distribution is subject to the Boost Software License, Version
+//  1.0. (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+//
+// For more information, see http://www.boost.org
+//
+// Adapted from Boost 1.32, with the include guard following this project's naming:
+// boost/function/function_base.hpp and the function1 instance of
+// boost/function/function_template.hpp that boost/function/function1.hpp generates (the
+// one-argument boost::function, which the game uses directly as boost::function1). The preprocessor repetition for other argument counts is not
+// reproduced, and the pieces that depend on type traits the reconstructed units never need are
+// left out: plain function pointers, member pointers, boost::ref and stateless function objects
+// (the reconstructed units store only boost::bind expressions), target(), the comparison against
+// other functors and operator() with its bad_function_call (the units that call the callbacks are
+// not reconstructed, and the MSL C++ headers of this project have no <stdexcept> for
+// bad_function_call). The typedefs and constants no reconstructed unit refers to are also left
+// out: args, arity, sig and arg1_type. The configuration macros are resolved for MWCC
+// (BOOST_NO_SFINAE, BOOST_NO_EXCEPTIONS), and BOOST_ASSERT is resolved for an NDEBUG build, so the
+// checks in the int constructor and assignment are left out. The bodies stay in the classes as in
+// Boost: the game's inlining depends on them (see cflags_game_cpp in configure.py).
+
 #include "boost/utility/addressof.hpp"
 #include <memory>
 #include <new>
@@ -8,18 +48,18 @@
 #include <utility>
 #include "layout_check.h"
 
-/* boost::function with one argument, in the style of boost 1.32: function1 derives from
- * function_base and keeps the manager, the functor pointer and the invoker. The game's code uses
- * a function1 holding a bind expression, so only that path is written: function objects (no plain
- * function pointers, member pointers or references), one argument, and no operator() (the unit
- * that calls the callbacks is not reconstructed yet). The bodies are visible because the game's
- * inlining depends on them (see shared_ptr.hpp). */
 namespace boost {
 
 namespace detail {
 namespace function {
 
-/* The pointer a function keeps to its functor, or to the function pointer itself. */
+/**
+ * A union of a function pointer and a void pointer. This is necessary
+ * because 5.2.10/6 allows reinterpret_cast<> to safely cast between
+ * function pointer types and 5.2.9/10 allows static_cast<> to safely
+ * cast between a void pointer and an object pointer. But it is not legal
+ * to cast between a function pointer and a void* (in either direction),
+ * so function requires a union of the two. */
 union any_pointer {
     void *obj_ptr;
     const void *const_obj_ptr;
@@ -30,18 +70,26 @@ CHECK_SIZEOF(boost::detail::function::any_pointer, 0x4);
 
 inline any_pointer make_any_pointer(void *o) {
     any_pointer p;
-
     p.obj_ptr = o;
     return p;
 }
 
-/* The result type of a function returning void: invokers return this instead. */
+/**
+ * The unusable class is a placeholder for unused function arguments
+ * It is also completely unusable except that it constructable from
+ * anything. This helps compilers without partial specialization to
+ * handle Boost.Function objects returning void.
+ */
 struct unusable {
     unusable() {}
     template <typename T> unusable(const T &) {}
 };
 CHECK_SIZEOF(boost::detail::function::unusable, 0x1);
 
+/* Determine the return type. This supports compilers that do not support
+ * void returns or partial specialization by silently changing the return
+ * type to "unusable".
+ */
 template <typename T> struct function_return_type {
     typedef T type;
 };
@@ -50,22 +98,27 @@ template <> struct function_return_type<void> {
     typedef unusable type;
 };
 
+// The operation type to perform on the given functor/function pointer
 enum functor_manager_operation_type {
     clone_functor_tag,
     destroy_functor_tag,
     check_functor_type_tag
 };
 
-/* Selects the manager and invoker for a class-type functor. */
+// Tags used to decide between different types of functions
 struct function_obj_tag {};
 CHECK_SIZEOF(boost::detail::function::function_obj_tag, 0x1);
 
-/* Clones and destroys a functor of type Functor, and answers whether the functor has a given type
- * name. */
+/**
+ * The functor_manager class contains a static function "manage" which
+ * can clone or destroy the given function/function object pointer.
+ */
 template <typename Functor, typename Allocator> struct functor_manager {
   private:
     typedef Functor functor_type;
 
+    // For function object pointers, we clone the pointer to each
+    // function has its own version.
     static inline any_pointer manager(any_pointer function_obj_ptr,
                                       functor_manager_operation_type op, function_obj_tag) {
         typedef typename Allocator::template rebind<functor_type>::other allocator_type;
@@ -76,15 +129,22 @@ template <typename Functor, typename Allocator> struct functor_manager {
         if (op == clone_functor_tag) {
             functor_type *f = static_cast<functor_type *>(function_obj_ptr.obj_ptr);
 
+            // Clone the functor
             pointer_type copy = allocator.allocate(1);
             allocator.construct(copy, *f);
 
+            // Get back to the original pointer type
             functor_type *new_f = static_cast<functor_type *>(copy);
             return make_any_pointer(static_cast<void *>(new_f));
         } else {
+            /* Cast from the void pointer to the functor pointer type */
             functor_type *f = reinterpret_cast<functor_type *>(function_obj_ptr.obj_ptr);
 
+            /* Cast from the functor pointer type to the allocator's pointer
+               type */
             pointer_type victim = static_cast<pointer_type>(f);
+
+            // Destroy and deallocate the functor
             allocator.destroy(victim);
             allocator.deallocate(victim, 1);
 
@@ -93,28 +153,35 @@ template <typename Functor, typename Allocator> struct functor_manager {
     }
 
   public:
+    /* Dispatch to an appropriate manager based on whether we have a
+       function pointer or a function object pointer. */
     static any_pointer manage(any_pointer functor_ptr, functor_manager_operation_type op) {
         if (op == check_functor_type_tag) {
             std::type_info *type = static_cast<std::type_info *>(functor_ptr.obj_ptr);
-
-            return typeid(Functor) == *type ? functor_ptr
-                                            : make_any_pointer(reinterpret_cast<void *>(0));
+            return (typeid(Functor) == *type ? functor_ptr
+                                             : make_any_pointer(reinterpret_cast<void *>(0)));
         } else {
             return manager(functor_ptr, op, function_obj_tag());
         }
     }
 };
 
-} // namespace function
-} // namespace detail
+} // end namespace function
+} // end namespace detail
 
-/* The part of a function that does not depend on its signature. */
+/**
+ * The function_base class contains the basic elements needed for the
+ * function1, function2, function3, etc. classes. It is common to all
+ * functions (and as such can be used to tell if we have one of the
+ * functionN objects).
+ */
 class function_base {
   public:
     function_base() : manager(0) {
         functor.obj_ptr = 0;
     }
 
+    // Is this function empty?
     bool empty() const {
         return !manager;
     }
@@ -128,7 +195,11 @@ CHECK_SIZEOF(boost::function_base, 0x8);
 namespace detail {
 namespace function {
 
-/* Whether a functor that is itself a function is empty; any other functor is not. */
+/**
+ * Determine if the given function object is empty: a function object that is
+ * itself a boost::function is empty when it has no target; any other
+ * function object never is.
+ */
 inline bool has_empty_target(const function_base *f) {
     return f->empty();
 }
@@ -137,8 +208,6 @@ inline bool has_empty_target(...) {
     return false;
 }
 
-/* Calls a functor of type FunctionObj from the pointer a function keeps; the void version returns
- * the unusable placeholder because the signature's return type is void. */
 template <typename FunctionObj, typename R, typename T0> struct function_obj_invoker1 {
     static R invoke(any_pointer function_obj_ptr, T0 a0) {
         FunctionObj *f = (FunctionObj *)(function_obj_ptr.obj_ptr);
@@ -154,7 +223,8 @@ template <typename FunctionObj, typename R, typename T0> struct void_function_ob
     }
 };
 
-/* boost selects the invoker with a compile-time conditional on is_void. */
+// boost selects the invoker with ct_if<is_void<R>::value, ...>, resolved here with a
+// specialization for void.
 template <typename FunctionObj, typename R, typename T0> struct get_function_obj_invoker1 {
     typedef function_obj_invoker1<FunctionObj, R, T0> type;
 };
@@ -164,20 +234,29 @@ struct get_function_obj_invoker1<FunctionObj, void, T0> {
     typedef void_function_obj_invoker1<FunctionObj, void, T0> type;
 };
 
-} // namespace function
-} // namespace detail
+} // end namespace function
+} // end namespace detail
 
 template <typename R, typename T0, typename Allocator = std::allocator<function_base> >
 class function1 : public function_base {
   public:
     typedef typename detail::function::function_return_type<R>::type internal_result_type;
+
+    typedef T0 argument_type;
+
+    typedef R result_type;
+    typedef Allocator allocator_type;
     typedef function1 self_type;
 
     function1() : function_base(), invoker(0) {}
 
+    // MSVC chokes if the following two constructors are collapsed into
+    // one with a default parameter.
     template <typename Functor> function1(Functor f) : function_base(), invoker(0) {
         this->assign_to(f);
     }
+
+    function1(int zero) : function_base(), invoker(0) {}
 
     function1(const function1 &f) : function_base(), invoker(0) {
         this->assign_to_own(f);
@@ -187,25 +266,40 @@ class function1 : public function_base {
         clear();
     }
 
+    // The distinction between when to use function1 and
+    // when to use self_type is obnoxious. MSVC cannot handle self_type as
+    // the return type of these assignment operators, but Borland C++ cannot
+    // handle function1 as the type of the temporary to
+    // construct.
+    template <typename Functor> function1 &operator=(Functor f) {
+        self_type(f).swap(*this);
+        return *this;
+    }
+
+    function1 &operator=(int zero) {
+        this->clear();
+        return *this;
+    }
+
+    // Assignment from another function1
     function1 &operator=(const function1 &f) {
-        if (&f == this) {
+        if (&f == this)
             return *this;
-        }
 
         self_type(f).swap(*this);
         return *this;
     }
 
     void swap(function1 &other) {
-        if (&other == this) {
+        if (&other == this)
             return;
-        }
 
         std::swap(this->manager, other.manager);
         std::swap(this->functor, other.functor);
         std::swap(invoker, other.invoker);
     }
 
+    // Clear out a target, if there is one
     void clear() {
         if (this->manager) {
             function_base::functor =
@@ -214,6 +308,22 @@ class function1 : public function_base {
 
         this->manager = 0;
         invoker = 0;
+    }
+
+  private:
+    struct dummy {
+        void nonnull() {}
+    };
+
+    typedef void (dummy::*safe_bool)();
+
+  public:
+    operator safe_bool() const {
+        return (this->empty()) ? 0 : &dummy::nonnull;
+    }
+
+    bool operator!() const {
+        return this->empty();
     }
 
   private:
@@ -245,7 +355,9 @@ class function1 : public function_base {
             pointer_type copy = allocator.allocate(1);
             allocator.construct(copy, f);
 
+            // Get back to the original pointer type
             FunctionObj *new_f = static_cast<FunctionObj *>(copy);
+
             this->functor = detail::function::make_any_pointer(static_cast<void *>(new_f));
         }
     }
@@ -255,6 +367,18 @@ class function1 : public function_base {
     /* 0x8 */ invoker_type invoker;
 };
 
-} // namespace boost
+template <typename R, typename T0, typename Allocator>
+inline void swap(function1<R, T0, Allocator> &f1, function1<R, T0, Allocator> &f2) {
+    f1.swap(f2);
+}
+
+// Poison comparisons between boost::function objects of the same type.
+template <typename R, typename T0, typename Allocator>
+void operator==(const function1<R, T0, Allocator> &, const function1<R, T0, Allocator> &);
+
+template <typename R, typename T0, typename Allocator>
+void operator!=(const function1<R, T0, Allocator> &, const function1<R, T0, Allocator> &);
+
+} // end namespace boost
 
 #endif
