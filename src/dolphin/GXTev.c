@@ -166,14 +166,14 @@ void GXSetTevColorOp(GXTevStageID stage, GXTevOp op, GXTevBias bias, GXTevScale 
 
     tevReg = __GXData->tevc[stage];
     SET_REG_FIELD(663, tevReg, 1, 18, op & 1);
-    if (op <= 1) {
+    if (op <= GX_TEV_SUB) {
         SET_REG_FIELD(665, tevReg, 2, 20, scale);
         SET_REG_FIELD(666, tevReg, 2, 16, bias);
     } else {
         SET_REG_FIELD(668, tevReg, 2, 20, (op >> 1) & 3);
         SET_REG_FIELD(672, tevReg, 2, 16, 3);
     }
-    SET_REG_FIELD(672, tevReg, 1, 19, clamp & 0xFF);
+    SET_REG_FIELD(672, tevReg, 1, 19, clamp);
     SET_REG_FIELD(673, tevReg, 2, 22, out_reg);
 
     GX_WRITE_RAS_REG(tevReg);
@@ -190,14 +190,14 @@ void GXSetTevAlphaOp(GXTevStageID stage, GXTevOp op, GXTevBias bias, GXTevScale 
 
     tevReg = __GXData->teva[stage];
     SET_REG_FIELD(708, tevReg, 1, 18, op & 1);
-    if (op <= 1) {
+    if (op <= GX_TEV_SUB) {
         SET_REG_FIELD(710, tevReg, 2, 20, scale);
         SET_REG_FIELD(711, tevReg, 2, 16, bias);
     } else {
         SET_REG_FIELD(713, tevReg, 2, 20, (op >> 1) & 3);
         SET_REG_FIELD(717, tevReg, 2, 16, 3);
     }
-    SET_REG_FIELD(717, tevReg, 1, 19, clamp & 0xFF);
+    SET_REG_FIELD(717, tevReg, 1, 19, clamp);
     SET_REG_FIELD(718, tevReg, 2, 22, out_reg);
 
     GX_WRITE_RAS_REG(tevReg);
@@ -296,9 +296,9 @@ void GXSetTevKColorSel(GXTevStageID stage, GXTevKColorSel sel) {
 
     Kreg = &__GXData->tevKsel[stage >> 1];
     if (stage & 1) {
-        SET_REG_FIELD(0x36E, *Kreg, 5, 14, sel);
+        SET_REG_FIELD(878, *Kreg, 5, 14, sel);
     } else {
-        SET_REG_FIELD(0x370, *Kreg, 5, 4, sel);
+        SET_REG_FIELD(880, *Kreg, 5, 4, sel);
     }
 
     GX_WRITE_RAS_REG(*Kreg);
@@ -339,27 +339,18 @@ void GXSetTevSwapMode(GXTevStageID stage, GXTevSwapSel ras_sel, GXTevSwapSel tex
 void GXSetTevSwapModeTable(GXTevSwapSel table, GXTevColorChan red, GXTevColorChan green,
                            GXTevColorChan blue, GXTevColorChan alpha) {
     u32 *Kreg;
-#if !DEBUG
-    // Index of the table's first KSEL register. The release library computes it up front; the
-    // DEBUG form below indexes with table * 2 directly.
-    int index = table * 2;
-#endif
 
     CHECK_GXBEGIN(978, "GXSetTevSwapModeTable");
     ASSERTMSGLINE(979, table < GX_MAX_TEVSWAP,
                   "GXSetTevSwapModeTable: Invalid Swap Selection Index");
 
-#if DEBUG
-    Kreg = &__GXData->tevKsel[table * 2];
-#else
-    Kreg = &__GXData->tevKsel[index];
-#endif
+    Kreg = &__GXData->tevKsel[table << 1];
     SET_REG_FIELD(982, *Kreg, 2, 0, red);
     SET_REG_FIELD(983, *Kreg, 2, 2, green);
 
     GX_WRITE_RAS_REG(*Kreg);
 
-    Kreg = &__GXData->tevKsel[table * 2 + 1];
+    Kreg = &__GXData->tevKsel[(table << 1) + 1];
     SET_REG_FIELD(987, *Kreg, 2, 0, blue);
     SET_REG_FIELD(988, *Kreg, 2, 2, alpha);
 

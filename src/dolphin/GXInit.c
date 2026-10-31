@@ -70,8 +70,7 @@ static u32 GXTexRegionAddrTable[] = {
     0x80000, 0x10000, 0xA0000, 0x30000, 0x80000, 0x50000, 0xA0000, 0x70000,
 };
 
-// prototypes
-static int __GXShutdown(int final);
+static int __GXShutdown(BOOL final);
 
 static OSResetFunctionInfo GXResetFuncInfo = {__GXShutdown, 0x7F, NULL, NULL};
 
@@ -86,14 +85,14 @@ static void EnableWriteGatherPipe(void) {
     u32 hid2 = PPCMfhid2();
 
     PPCMtwpar(OSUncachedToPhysical((void *)GXFIFO_ADDR));
-    hid2 |= 0x40000000;
+    hid2 |= HID2_WPE;
     PPCMthid2(hid2);
 }
 
 static void DisableWriteGatherPipe(void) {
     u32 hid2 = PPCMfhid2();
 
-    hid2 &= ~0x40000000;
+    hid2 &= ~HID2_WPE;
     PPCMthid2(hid2);
 }
 
@@ -199,14 +198,12 @@ void __GXInitRevisionBits(void) {
     u32 i;
 
     for (i = 0; i < 8; i++) {
-        s32 regAddr;
         SET_REG_FIELD_UNCHECKED(__GXData->vatA[i], 1, 30, 1);
         SET_REG_FIELD_UNCHECKED(__GXData->vatB[i], 1, 31, 1);
 
         GX_WRITE_U8(0x8);
         GX_WRITE_U8(i | 0x80);
         GX_WRITE_U32(__GXData->vatB[i]);
-        regAddr = i - 12;
     }
 
     {
@@ -420,14 +417,14 @@ void __GXInitGX(void) {
     }
 
     GXSetCopyClear(clear, 0xFFFFFF);
-    GXSetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, 0x3C);
-    GXSetTexCoordGen(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX1, 0x3C);
-    GXSetTexCoordGen(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX2, 0x3C);
-    GXSetTexCoordGen(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX3, 0x3C);
-    GXSetTexCoordGen(GX_TEXCOORD4, GX_TG_MTX2x4, GX_TG_TEX4, 0x3C);
-    GXSetTexCoordGen(GX_TEXCOORD5, GX_TG_MTX2x4, GX_TG_TEX5, 0x3C);
-    GXSetTexCoordGen(GX_TEXCOORD6, GX_TG_MTX2x4, GX_TG_TEX6, 0x3C);
-    GXSetTexCoordGen(GX_TEXCOORD7, GX_TG_MTX2x4, GX_TG_TEX7, 0x3C);
+    GXSetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY);
+    GXSetTexCoordGen(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX1, GX_IDENTITY);
+    GXSetTexCoordGen(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX2, GX_IDENTITY);
+    GXSetTexCoordGen(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX3, GX_IDENTITY);
+    GXSetTexCoordGen(GX_TEXCOORD4, GX_TG_MTX2x4, GX_TG_TEX4, GX_IDENTITY);
+    GXSetTexCoordGen(GX_TEXCOORD5, GX_TG_MTX2x4, GX_TG_TEX5, GX_IDENTITY);
+    GXSetTexCoordGen(GX_TEXCOORD6, GX_TG_MTX2x4, GX_TG_TEX6, GX_IDENTITY);
+    GXSetTexCoordGen(GX_TEXCOORD7, GX_TG_MTX2x4, GX_TG_TEX7, GX_IDENTITY);
     GXSetNumTexGens(1);
     GXClearVtxDesc();
     GXInvalidateVtxCache();

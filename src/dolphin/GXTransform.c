@@ -160,7 +160,7 @@ static void WriteMTXPS4x3(const register f32 mtx[3][4], register volatile f32 *d
     }
 }
 
-static void WriteMTXPS3x3from3x4(register f32 mtx[3][4], register volatile f32 *dest) {
+static void WriteMTXPS3x3from3x4(const register f32 mtx[3][4], register volatile f32 *dest) {
     register f32 a00_a01;
     register f32 a02_a03;
     register f32 a10_a11;
@@ -184,7 +184,7 @@ static void WriteMTXPS3x3from3x4(register f32 mtx[3][4], register volatile f32 *
     }
 }
 
-static void WriteMTXPS3x3(register f32 mtx[3][3], register volatile f32 *dest) {
+static void WriteMTXPS3x3(const register f32 mtx[3][3], register volatile f32 *dest) {
     register f32 a00_a01;
     register f32 a02_a10;
     register f32 a11_a12;
@@ -298,7 +298,7 @@ void GXLoadNrmMtxImm(const Mtx mtx, u32 id) {
     GX_WRITE_MTX_ELEM(addr + 7, mtx[2][1]);
     GX_WRITE_MTX_ELEM(addr + 8, mtx[2][2]);
 #else
-    WriteMTXPS3x3from3x4((void *)mtx, &GXWGFifo.f32);
+    WriteMTXPS3x3from3x4(mtx, &GXWGFifo.f32);
 #endif
 }
 
@@ -324,7 +324,7 @@ void GXLoadNrmMtxImm3x3(const f32 mtx[3][3], u32 id) {
     GX_WRITE_MTX_ELEM(addr + 7, mtx[2][1]);
     GX_WRITE_MTX_ELEM(addr + 8, mtx[2][2]);
 #else
-    WriteMTXPS3x3((void *)mtx, &GXWGFifo.f32);
+    WriteMTXPS3x3(mtx, &GXWGFifo.f32);
 #endif
 }
 
@@ -402,7 +402,7 @@ void GXLoadTexMtxIndx(u16 mtx_indx, u32 id, GXTexMtxType type) {
 
     if (id >= GX_PTTEXMTX0) {
         offset = (id - GX_PTTEXMTX0) * 4 + 0x500;
-        ASSERTMSGLINE(0x337, type == GX_MTX3x4, "GXLoadTexMtx: Invalid matrix type");
+        ASSERTMSGLINE(823, type == GX_MTX3x4, "GXLoadTexMtx: Invalid matrix type");
     } else {
         offset = id * 4;
     }
@@ -519,8 +519,8 @@ void GXSetZScaleOffset(f32 scale, f32 offset) {
     sz = zmax - zmin;
     oz = oz + zmax;
 
-    GX_WRITE_XF_REG_F_(0x1C, sz);
-    GX_WRITE_XF_REG_F_(0x1F, oz);
+    GX_WRITE_XF_REG_F_(28, sz);
+    GX_WRITE_XF_REG_F_(31, oz);
 
     __GXData->bpSentNot = 1;
 }
