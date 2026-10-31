@@ -43,6 +43,10 @@ CHECK_SIZEOF(CharInfo, 0x64);
 /* The manager returned by fn_80074194 keeps a list of character infos. */
 class UnkManager_80074194;
 
+/* An empty shared pointer that callers pass where no character info is wanted (behaviour inferred
+ * from its uses). */
+extern boost::shared_ptr<CharInfo> lbl_805EE698;
+
 extern "C" {
 /* Returns the manager (behaviour inferred): constructs a function-local static manager on first
  * use, registers its destructor and caches its address in a static pointer. The E3 2005
