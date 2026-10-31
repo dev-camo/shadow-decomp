@@ -34,8 +34,8 @@ void __AXDepopFade(s32 *hostSum, s32 *dspVolume, s16 *dspDelta) {
             delta = -0x14;
         }
         *dspVolume = *hostSum;
-        *hostSum -= delta * 0xA0;
-        *dspDelta = delta * -1;
+        *hostSum -= delta * 160;
+        *dspDelta = -delta;
         return;
     }
 
@@ -45,6 +45,8 @@ void __AXDepopFade(s32 *hostSum, s32 *dspVolume, s16 *dspDelta) {
 }
 
 void __AXPrintStudio(void) {
+    // Each dspVolume argument addresses a Hi/Lo pair of u16 fields in the studio block as one
+    // 32-bit word.
     __AXDepopFade(&__AXSpbAL, (void *)&__AXStudio.dpopLHi, &__AXStudio.dpopLDelta);
     __AXDepopFade(&__AXSpbAR, (void *)&__AXStudio.dpopRHi, &__AXStudio.dpopRDelta);
     __AXDepopFade(&__AXSpbAS, (void *)&__AXStudio.dpopSHi, &__AXStudio.dpopSDelta);

@@ -8,11 +8,6 @@
 extern "C" {
 #endif
 
-// CARDStatEx
-s32 __CARDGetStatusEx(s32 chan, s32 fileNo, CARDDir *dirent);
-s32 __CARDSetStatusExAsync(s32 chan, s32 fileNo, CARDDir *dirent, CARDCallback callback);
-s32 __CARDSetStatusEx(s32 chan, s32 fileNo, CARDDir *dirent);
-
 // CARDUnlock
 s32 __CARDUnlock(s32 chan, u8 flashID[12]);
 
@@ -23,16 +18,8 @@ s32 __CARDSeek(CARDFileInfo *fileInfo, s32 length, s32 offset, CARDControl **pca
 s32 __CARDRead(s32 chan, u32 addr, s32 length, void *dst, CARDCallback callback);
 s32 __CARDWrite(s32 chan, u32 addr, s32 length, void *dst, CARDCallback callback);
 
-// CARDRaw
-s32 __CARDRawReadAsync(s32 chan, void *buf, s32 length, s32 offset, CARDCallback callback);
-s32 __CARDRawRead(s32 chan, void *buf, s32 length, s32 offset);
-s32 __CARDRawErase(s32 chan, s32 offset);
-s32 __CARDRawEraseAsync(s32 chan, s32 offset, CARDCallback callback);
-
 // CARDOpen
 BOOL __CARDCompareFileName(CARDDir *ent, const char *fileName);
-s32 __CARDAccess(CARDControl *card, CARDDir *ent);
-s32 __CARDIsPublic(CARDDir *ent);
 s32 __CARDGetFileNo(CARDControl *card, const char *fileName, s32 *pfileNo);
 BOOL __CARDIsOpened(CARDControl *card, s32 fileNo);
 s32 __CARDIsWritable(CARDControl *card, CARDDir *ent);
@@ -40,9 +27,6 @@ s32 __CARDIsReadable(CARDControl *card, CARDDir *ent);
 
 // CARDNet
 extern u16 __CARDVendorID;
-extern u8 __CARDPermMask;
-int __CARDEnableGlobal(int enable);
-int __CARDEnableCompany(int enable);
 
 // CARDMount
 void __CARDMountCallback(s32 chan, s32 result);
@@ -70,7 +54,6 @@ s32 __CARDUpdateFatBlock(s32 chan, u16 *fat, CARDCallback callback);
 // CARDBios
 extern CARDControl __CARDBlock[2];
 
-extern DVDDiskID *__CARDDiskID;
 extern DVDDiskID __CARDDiskNone;
 
 void __CARDDefaultApiCallback(s32 chan, s32 result);
@@ -79,7 +62,6 @@ void __CARDExtHandler(s32 chan, OSContext *context);
 void __CARDExiHandler(s32 chan, OSContext *context);
 void __CARDTxHandler(s32 chan, OSContext *context);
 void __CARDUnlockedHandler(s32 chan, OSContext *context);
-int __CARDReadNintendoID(s32 chan, u32 *id);
 s32 __CARDEnableInterrupt(s32 chan, BOOL enable);
 s32 __CARDReadStatus(s32 chan, u8 *status);
 int __CARDReadVendorID(s32 chan, u16 *id);

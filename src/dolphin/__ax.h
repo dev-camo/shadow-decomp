@@ -36,11 +36,11 @@ void __AXGetAuxAOutputDpl2Rs(u32 *p);
 void __AXGetAuxBForDPL2(u32 *p);
 void __AXGetAuxBOutputDPL2(u32 *p);
 
-// AXCL
-extern u32 __AXClMode;
-
 // AXComp
 extern u16 __AXCompressorTable[3360];
+
+// AXCL
+extern u32 __AXClMode;
 
 u32 __AXGetCommandListCycles(void);
 u32 __AXGetCommandListAddress(void);

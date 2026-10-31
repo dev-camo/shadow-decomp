@@ -41,10 +41,11 @@ void __AXAuxInit(void) {
     pA = (s32 *)&__AXBufferAuxA;
     pB = (s32 *)&__AXBufferAuxB;
 
+    // Only the first 480 of the 1440 words of each buffer are cleared.
     for (i = 0; i < 480; i++) {
-        *(pA) = 0;
+        *pA = 0;
         pA++;
-        *(pB) = 0;
+        *pB = 0;
         pB++;
     }
 }
@@ -120,7 +121,7 @@ void __AXProcessAux(void) {
             auxData.rs = &__AXBufferAuxB[__AXAuxCpuReadWritePosition][320];
             DCInvalidateRange(auxData.l, 0x780);
             DCInvalidateRange(auxData.rs, 0x280);
-            __AXCallbackAuxA(&auxData.l, __AXContextAuxA);
+            __AXCallbackAuxA(&auxData, __AXContextAuxA);
             DCFlushRangeNoSync(auxData.l, 0x780);
             DCFlushRangeNoSync(auxData.rs, 0x280);
         } else {
@@ -129,7 +130,7 @@ void __AXProcessAux(void) {
             auxData.r = &__AXBufferAuxA[__AXAuxCpuReadWritePosition][160];
             auxData.s = &__AXBufferAuxA[__AXAuxCpuReadWritePosition][320];
             DCInvalidateRange(auxData.l, 0x780);
-            __AXCallbackAuxA(&auxData.l, __AXContextAuxA);
+            __AXCallbackAuxA(&auxData, __AXContextAuxA);
             DCFlushRangeNoSync(auxData.l, 0x780);
         }
     }
@@ -140,7 +141,7 @@ void __AXProcessAux(void) {
         auxData.r = &__AXBufferAuxB[__AXAuxCpuReadWritePosition][160];
         auxData.s = &__AXBufferAuxB[__AXAuxCpuReadWritePosition][320];
         DCInvalidateRange(auxData.l, 0x780);
-        __AXCallbackAuxB(&auxData.l, __AXContextAuxB);
+        __AXCallbackAuxB(&auxData, __AXContextAuxB);
         DCFlushRangeNoSync(auxData.l, 0x780);
     }
 
