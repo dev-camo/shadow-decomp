@@ -196,9 +196,9 @@ void *fn_80443FFC(void *object, RwInt32 offset, RwInt32 size) {
     return object;
 }
 
-/* Allocates the zeroed weights of an atomic, one per target of its geometry, in its plugin data
- * dmorphAtomic */
-static inline RpAtomic *DMorphAtomicCreateValues(RpAtomic *atomic, RpDMorphAtomic *dmorphAtomic) {
+/* Allocates the zeroed weights of an atomic, one per target of its geometry, in its plugin data */
+static inline RpAtomic *DMorphAtomicCreateValues(RpAtomic *atomic) {
+    RpDMorphAtomic *dmorphAtomic = DMORPHATOMIC(atomic);
     RwInt32 size = fn_80443A54(atomic->geometry) * sizeof(RwReal);
 
     dmorphAtomic->values = RwMalloc(size, rwMEMHINT_DMORPH);
@@ -222,7 +222,7 @@ void *fn_80444088(void *dstObject, const void *srcObject, RwInt32 offset, RwInt3
             RpDMorphAtomic *srcData = DMORPHATOMIC(src);
             RpDMorphAtomic *dstData = DMORPHATOMIC(dst);
 
-            if (DMorphAtomicCreateValues(dst, dstData) != NULL) {
+            if (DMorphAtomicCreateValues(dst) != NULL) {
                 if (srcData->values != NULL) {
                     memcpy(dstData->values, srcData->values, numDMorphTargets * sizeof(RwReal));
                 } else {
@@ -342,7 +342,7 @@ RpAtomic *fn_804443A0(RpAtomic *atomic, RpDMorphAnimation *animation) {
             }
         }
         if (dmorphAtomic->values == NULL) {
-            if (DMorphAtomicCreateValues(atomic, DMORPHATOMIC(atomic)) == NULL) {
+            if (DMorphAtomicCreateValues(atomic) == NULL) {
                 return NULL;
             }
         }
