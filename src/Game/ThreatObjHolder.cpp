@@ -7,8 +7,10 @@
  * The callback is a boost::function object built with boost::bind(&ThreatObj::fn_8013F390, this,
  * _1); its manager, invoker and copy functions come from the boost headers.
  *
- * NonMatching: the ThreatObj constructor has an r6/r7 swap, and ThreatObj's destructor is emitted
- * in a different place. */
+ * NonMatching: the ThreatObj constructor has an r6/r7 swap, ThreatObj's destructor is a global
+ * symbol where the original's is weak (see the note at the destructor), and this object defines a
+ * local std::swap<any_pointer> and the std::exception type record and name strings, which the
+ * original unit does not have; see the note in configure.py. */
 #include <algorithm>
 #include <dolphin/types.h>
 #include "Game/CharInfo.h"
@@ -66,7 +68,7 @@ CHECK_SIZEOF(ThreatObjParams, 0x8);
 class ThreatObj {
   public:
     ThreatObj(ThreatObjHolder *holder, UnkGadgetOwner_800C9CD0 *owner);
-    ~ThreatObj() {}
+    ~ThreatObj();
 
     /* Advances the object by dt (name inferred). */
     void Update(float dt);
@@ -160,6 +162,20 @@ ThreatObj::ThreatObj(ThreatObjHolder *holder, UnkGadgetOwner_800C9CD0 *owner) : 
     CopyFromOwner(owner);
     UpdateModelMatrix();
 }
+
+/* Matching workaround: auto_inline around this destructor. The original keeps checked_delete<T>
+ * out of line and emits this destructor at its definition; with the stock GC/2.7 compiler and
+ * -inline noauto that needs auto_inline here. A tooling constraint, not a claim about the original
+ * source; revisit if another compiler build reproduces this without the pragma, or if an original
+ * checked_delete keeps out of line a destructor whose body calls only non-inline functions (the
+ * pragma would inline that destructor into it). A destructor found inlined into checked_delete in
+ * the original would instead mean that the original used auto_inline here.
+ * The original's destructor is a weak symbol, as an inline destructor would be, but this
+ * toolchain emits an inline destructor at its first use, after checked_delete, so it is written
+ * out of line here and is a global symbol. */
+#pragma auto_inline on
+ThreatObj::~ThreatObj() {}
+#pragma auto_inline reset
 
 void ThreatObj::Update(float dt) {
     switch (m_state) {

@@ -664,12 +664,17 @@ config.libs = [
                 # records differ in layout, and the object has additional weak template instances.
                 Object(NonMatching, "Game/Coaster.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/Cream.cpp", cflags=cflags_game_cpp),
-                # Every function but the ThreatObj constructor is instruction-identical, and so is the
-                # data. Two differences remain: the constructor's two table loads (model table and
-                # holder) use r6 and r7 the other way round (four words), and the destructor of
-                # ThreatObj is emitted after its only caller, checked_delete (original 0x8013EFE4),
-                # instead of at 0x8013FED8 in front of the constructor (0x5C bytes of displacement
-                # for the functions in between).
+                # Every function but the ThreatObj constructor is instruction-identical, and the
+                # functions are in the original's order. The constructor's two table loads (model
+                # table and holder) use r6 and r7 the other way round (four words). ThreatObj's
+                # destructor is a global symbol here (a plain out-of-class definition under
+                # auto_inline) where the original's is weak. The object also has a 32-byte local
+                # copy of std::swap<any_pointer> (called by the weak boost::function1 swap) that
+                # the original unit does not have. The data matches except for records the
+                # original unit does not have: the std::exception type record in .sdata and its
+                # two name strings in .rodata come before those of checked_deleter<ThreatObj>
+                # (moving them 8 and 0x1C bytes later), and the std::exception and sp_counted_base
+                # vtables are appended to .data.
                 Object(NonMatching, "Game/ThreatObjHolder.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitEntrance.cpp", cflags=cflags_game_cpp),
