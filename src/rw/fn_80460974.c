@@ -247,12 +247,12 @@ void fn_80460E74(RpWorld *world, RpAtomic *atomic) {
     inf = sphere->center;
     sup = sphere->center;
     inf.x -= sphere->radius;
-    sector = world->rootSector;
     inf.y -= sphere->radius;
     inf.z -= sphere->radius;
     sup.x += sphere->radius;
     sup.y += sphere->radius;
     sup.z += sphere->radius;
+    sector = world->rootSector;
 
     do {
         RwInt32 type = sector->type;
@@ -402,7 +402,6 @@ RpLight *fn_804612A8(RpLight *light) {
             LightUntie(light);
             position = &RwFrameGetLTM(frame)->pos;
             inf = *position;
-            sector = world->rootSector;
             sup = *position;
             sup.x += radius;
             sup.y += radius;
@@ -410,6 +409,7 @@ RpLight *fn_804612A8(RpLight *light) {
             inf.x -= radius;
             inf.y -= radius;
             inf.z -= radius;
+            sector = world->rootSector;
 
             do {
                 RwInt32 type = sector->type;

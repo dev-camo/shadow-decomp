@@ -60,7 +60,13 @@ CHECK_SIZEOF(TriStripMethod, 0x8);
 
 RpMeshHeader *fn_8045EF3C(RpBuildMesh *buildMesh, void *data);
 
-/* The unit's statics: one object, which the code addresses from a single base (inferred) */
+/* The unit's statics: the empty mesh header and the triangle strip method as one object (inferred).
+ *
+ * Matching workaround: the original symbol is one 0x18-byte object. Declaring the two members as
+ * separate objects (an RpMeshHeader and a TriStripMethod) moves the 8-byte method to .sdata, and
+ * fn_8045F1FC then loads it with small-data addressing instead of from the single base address the
+ * original uses (the function becomes 4 bytes shorter). Revisit when the original declarations are
+ * found. */
 typedef struct MeshGenerationStatics {
     /* 0x00 */ RpMeshHeader emptyMeshHeader; /* of a build mesh without triangles; not freed */
     /* 0x10 */ TriStripMethod triStripMethod;
@@ -69,14 +75,8 @@ CHECK_SIZEOF(MeshGenerationStatics, 0x18);
 
 MeshGenerationStatics lbl_8056D868 = {{0, 0, 0, 0, 0}, {fn_8045EF3C, NULL}};
 
-/* The material sort key bits. The original defines them as a constant aggregate, which puts them in
- * .sdata2 and makes the comparison load them (inferred). */
-typedef struct MaterialSortKeys {
-    /* 0x0 */ RwUInt32 transparent; /* transparent triangles sort after the opaque ones */
-} MaterialSortKeys;
-CHECK_SIZEOF(MaterialSortKeys, 0x4);
-
-const MaterialSortKeys lbl_805FB170 = {16};
+/* The material sort key bit of transparent triangles: they sort after the opaque ones (inferred) */
+const RwUInt32 lbl_805FB170 = 16;
 
 /* The sort key of a triangle's material: whether it is transparent */
 #define MATERIALSORTKEY(key, material)                                                             \
@@ -90,11 +90,11 @@ const MaterialSortKeys lbl_805FB170 = {16};
                                                                                                    \
                 if (format_ == rwRASTERFORMAT1555 || format_ == rwRASTERFORMAT4444 ||              \
                     format_ == rwRASTERFORMAT8888) {                                               \
-                    (key) = lbl_805FB170.transparent;                                              \
+                    (key) |= lbl_805FB170;                                                         \
                 }                                                                                  \
             }                                                                                      \
             if ((material)->color.alpha != 0xFF) {                                                 \
-                (key) |= lbl_805FB170.transparent;                                                 \
+                (key) |= lbl_805FB170;                                                             \
             }                                                                                      \
         }                                                                                          \
     } while (0)
@@ -134,7 +134,7 @@ int fn_8045CA38(const void *a, const void *b) {
  * triangle of the pass uses (inferred) */
 RpMesh *fn_8045CBD4(RpMesh *mesh, RpMeshHeader *meshHeader, void *data) {
     RwUInt32 numIndices = mesh->numIndices;
-    RwUInt32 maxVertex = 0;
+    RwUInt32 indexBits = 0; /* the OR of all indices: an upper bound of the highest one */
     RwUInt32 i;
     RwUInt32 usedSize;
     RwUInt8 *used;
@@ -148,9 +148,9 @@ RpMesh *fn_8045CBD4(RpMesh *mesh, RpMeshHeader *meshHeader, void *data) {
     RwUInt32 count;
 
     for (i = 0; i < numIndices; i++) {
-        maxVertex |= indices[i];
+        indexBits |= indices[i];
     }
-    usedSize = (maxVertex + 0x1F) >> 3;
+    usedSize = (indexBits + 0x1F) >> 3;
     used = RwMalloc(usedSize, rwMEMHINTDUR_FUNCTION | rwID_MESHMODULE);
     if (used != NULL) {
         copySize = mesh->numIndices * sizeof(RxVertexIndex);
@@ -348,7 +348,13 @@ static inline RwBool TriStripEdgeOpen(const TriStripEdge *edge, RwBool tested) {
     return open;
 }
 
-/* Whether a strip ends at an edge */
+/* Whether a strip ends at an edge.
+ *
+ * Matching workaround: TriStripEdgeEnds and TriStripEdgeLeadsOn return the value of
+ * TriStripEdgeClosed and TriStripEdgeOpen through a flag local, adding one inline level.
+ * Calling those two directly in fn_8045D3A8 changes the code: .text is 0x2820 bytes instead of
+ * 0x2860 (the original is 0x2868). The unit stays NonMatching. Revisit when the original's helper
+ * or macro structure for the edge tests is found. */
 static inline RwBool TriStripEdgeEnds(const TriStripEdge *edge, RwBool tested) {
     RwBool ends = TRUE;
 
@@ -367,10 +373,6 @@ static inline RwBool TriStripEdgeLeadsOn(const TriStripEdge *edge, RwBool tested
     }
     return leadsOn;
 }
-
-/* The trial's view of TriStripNumFree and the edge tests */
-#define TRISTRIPNUMFREE(edge, trial)                                                               \
-    ((trial) < rpTRISTRIPCOMMIT ? TriStripNumFree(edge, TRUE) : TriStripNumFree(edge, FALSE))
 
 /* Whether an edge joins two vertices, in either direction */
 #define TRISTRIPEDGEJOINS(edge, a, b)                                                              \
@@ -572,26 +574,20 @@ RwBool fn_8045D898(RpBuildMeshTriangle *triangles, RwUInt32 numTriangles, TriStr
             edge2 = start->edges[2];
 
             /* start along two edges that both lead on, or else the most promising one */
-            if (TRISTRIPNUMFREE(edge2, rpTRISTRIPCOMMIT) >= 2 &&
-                TRISTRIPNUMFREE(edge1, rpTRISTRIPCOMMIT) >= 2) {
+            if (TriStripNumFree(edge2, FALSE) >= 2 && TriStripNumFree(edge1, FALSE) >= 2) {
                 direction = 1;
-            } else if (TRISTRIPNUMFREE(edge0, rpTRISTRIPCOMMIT) >= 2 &&
-                       TRISTRIPNUMFREE(edge2, rpTRISTRIPCOMMIT) >= 2) {
+            } else if (TriStripNumFree(edge0, FALSE) >= 2 && TriStripNumFree(edge2, FALSE) >= 2) {
                 direction = 2;
-            } else if (TRISTRIPNUMFREE(edge1, rpTRISTRIPCOMMIT) >= 2 &&
-                       TRISTRIPNUMFREE(edge0, rpTRISTRIPCOMMIT) >= 2) {
+            } else if (TriStripNumFree(edge1, FALSE) >= 2 && TriStripNumFree(edge0, FALSE) >= 2) {
                 direction = 0;
-            } else if (TRISTRIPNUMFREE(edge0, rpTRISTRIPCOMMIT) >
-                       TRISTRIPNUMFREE(edge1, rpTRISTRIPCOMMIT)) {
-                if (TRISTRIPNUMFREE(edge0, rpTRISTRIPCOMMIT) >
-                    TRISTRIPNUMFREE(edge2, rpTRISTRIPCOMMIT)) {
+            } else if (TriStripNumFree(edge0, FALSE) > TriStripNumFree(edge1, FALSE)) {
+                if (TriStripNumFree(edge0, FALSE) > TriStripNumFree(edge2, FALSE)) {
                     direction = 2;
                 } else {
                     direction = 1;
                 }
             } else {
-                if (TRISTRIPNUMFREE(edge1, rpTRISTRIPCOMMIT) >
-                    TRISTRIPNUMFREE(edge2, rpTRISTRIPCOMMIT)) {
+                if (TriStripNumFree(edge1, FALSE) > TriStripNumFree(edge2, FALSE)) {
                     direction = 0;
                 } else {
                     direction = 1;
