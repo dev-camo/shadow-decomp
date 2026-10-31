@@ -109,10 +109,11 @@ Sint32 mwPlyGetOutVol(void *hn) {
     return sstvol;
 }
 
-/* Matching workaround: order-only stand-in for a function the linker stripped (its body is
- * unknown). The original pools mwPlyGetSfdHn's error text first; this never-called function uses
- * the same text and, defined last, is emitted first (reverse definition order). Revisit when the
- * stripped function is recovered. */
+/* Matching workaround: stand-in for a function the linker stripped from the game. The body is not
+ * the original's. The original pools mwPlyGetSfdHn's error text first; this never-called function
+ * uses the same text and, defined last, is emitted first (reverse definition order). Without it
+ * the literals land in the first-use order of the surviving functions (measured by compiling
+ * without it). Revisit when the stripped code is known. */
 static void mwsfdset_Stripped(void) {
     MWSFSVM_Error("E1122640: mwPlyGetSfdHn: handle is invalid.");
 }

@@ -55,11 +55,12 @@ SFXZ_WORK sfxz_work;
 void sfxzmv_MakeOrgZ32TblByCCIR(SFXZ_OBJ *sfxz, Uint32 zorg_min, Uint32 zorg_max, Uint32 *tbl);
 void sfxzmv_MakeOrgZ32TblByDirect(SFXZ_OBJ *sfxz, Uint32 zorg_min, Uint32 zorg_max, Uint32 *tbl);
 
-/* Matching workaround: order-only stand-in for the stripped frame-format converters
- * sfxcnv_CnvZbitToCft, sfxcnv_CnvFrmZcmn, SFX_CnvFrmZcmn and SFXZ_SetZclip; their bodies are
- * unknown. Their messages, the "COMPO" tag name and the 0.0 and -14.0 constants remain in .rodata
- * in this order. Storing the addresses and values keeps the references. Revisit when the bodies
- * of those functions are found. */
+/* Matching workaround: stand-in for the stripped frame-format converters sfxcnv_CnvZbitToCft,
+ * sfxcnv_CnvFrmZcmn, SFX_CnvFrmZcmn and SFXZ_SetZclip, which their messages name. The body is not
+ * the original's. Their messages, the "COMPO" tag name and the 0.0 and -14.0 constants stay in
+ * .rodata in this order; storing the addresses and values keeps the references. Without it these
+ * literals are missing from .rodata (measured by compiling without it). Revisit when the stripped
+ * code is known. */
 static void sfxzmv_RodataOrder(const Char8 **msg, Float32 *val) {
     msg[0] = "E201313: sfxcnv_CnvZbitToCft : zbit is invalid.";
     msg[1] = "COMPO";

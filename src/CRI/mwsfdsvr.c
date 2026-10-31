@@ -355,9 +355,10 @@ void mwlSfdSleepDecSvr(MWPLY mwply) {
     }
 }
 
-/* Matching workaround: order-only stand-in for a function the linker stripped from the game (its
- * body is unknown); its error text is the first literal of the unit. Revisit when the stripped
- * function is recovered. */
+/* Matching workaround: stand-in for a function the linker stripped from the game. The body is not
+ * the original's. Its error text names MWSFSVR_IsSvrBdrHndl, which has no code in this unit, and
+ * is the first literal of the unit. Without it the text is missing from .rodata (measured by
+ * compiling without it). Revisit when the stripped code is known. */
 static void mwsfdsvr_Stripped(void) {
     MWSFSVM_Error("E2011101: MWSFSVR_IsSvrBdrHndl: handle is invalid.");
 }
