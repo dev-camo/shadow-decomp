@@ -105,8 +105,6 @@ void fn_80018304(SonicteamUSA::System::PathCtrl *path);
 Fn8040Vector3 fn_80018634(SonicteamUSA::System::PathCtrl *path);
 /* The rotation angles of the path at its start (the numbers are not understood). */
 Fn8040Vector3 fn_80018434(SonicteamUSA::System::PathCtrl *path, int arg1, int arg2);
-/* True while the path control is usable. */
-bool fn_800ABDCC(SonicteamUSA::System::PathCtrl *path);
 
 /* The follower manager (behaviour inferred). */
 UnkFollowerManager_80099954 *fn_80099954(void);
