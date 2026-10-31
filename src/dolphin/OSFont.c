@@ -308,7 +308,8 @@ static void ReadROM(void *buf, int length, int offset) {
 static u32 ReadFont(void *img, u16 encode, void *fontData) {
     u32 size;
     // Matching workaround: frame padding that keeps the original 0x58-byte stack frame (0x50
-    // without it, 5 differing words); the public dolsdk2004 SDK decompilation uses the same form.
+    // without it, 5 differing words). The release build reserves this slot, most likely for a local
+    // that the original used only in debug-build code, which the release build compiles out.
     // Revisit when the original locals are known.
 #ifndef DEBUG
     u32 padding[1];
