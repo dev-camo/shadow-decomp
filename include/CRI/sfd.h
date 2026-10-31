@@ -904,6 +904,8 @@ void SFSET_SetCond(SFD sfd, Sint32 id, Sint32 val);
 void SFTIM_Pause(SFD sfd, Sint32 sw);
 void SFTIM_SetSpeed(SFD sfd, Sint32 speed);
 void SFAOAP_SetSpeed(SFD sfd, Sint32 speed);
+Sint32 SFD_SetElementOutSj(SFD sfd, Sint32 stmid, void *sj, void (*fn)(void *obj, Sint32 stmid),
+                           void *obj);
 Sint32 SFD_GetOutVol(SFD sfd);
 Sint32 SFD_SetOutVol(SFD sfd, Sint32 vol);
 Sint32 SFTRN_CallTrtTrif(SFD sfd, Sint32 strm, Sint32 fn, Sint32 a, Sint32 b);

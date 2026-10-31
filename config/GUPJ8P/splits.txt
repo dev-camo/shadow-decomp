@@ -1258,6 +1258,10 @@ CRI/mwstm.c:
 CRI/mwsfdsee.c:
 	.text       start:0x80403B54 end:0x80403B60
 
+CRI/mwsfdsst.c:
+	.text       start:0x80408688 end:0x80408CC0
+	.data       start:0x8056A4B0 end:0x8056A4B8
+
 CRI/cftcoladj.c:
 	.text       start:0x8040AAE8 end:0x8040B1D4
 	.rodata     start:0x8051A8F0 end:0x8051A8F4
