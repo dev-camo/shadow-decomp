@@ -41,7 +41,6 @@ fn_8015D570(SonicteamUSA::System::CharaColli::AttackCallbackParam *param);
 /* Returns 0 for arg1 0x27, otherwise fn_802063BC's result (return type inferred, ThreatObj
  * ignores it). */
 int fn_8020642C(const boost::shared_ptr<CharInfo> &charInfo, int arg1);
-int stMtnControlWorkFlag(UnkMotionControl_801602B4 *control, int arg1, int arg2, int arg3);
 }
 
 /* One model that a ThreatObj can use (name inferred). The first word is the second argument of the
@@ -239,7 +238,7 @@ void ThreatObj::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     CopyFromOwner(owner);
     UpdateModelMatrix();
     m_model->fn_80162EF4();
-    fn_802E0E84(&m_charInfo->m_position, &lbl_805F06D8, m_holder->m_params.radius);
+    fn_802E0E84(&m_charInfo->m_position, lbl_805F06D8, m_holder->m_params.radius);
 }
 
 void ThreatObj::CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
