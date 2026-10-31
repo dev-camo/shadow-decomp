@@ -627,6 +627,11 @@ config.libs = [
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/TestNakazawa.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/BDTrue.cpp", cflags=cflags_game_cpp),
+                # Every function, the data and all relocations match except ProcessHits, which is
+                # one word short: the original branches twice on one comparison of the word at 0x50
+                # of the character info (the second branch skips the cast check), and the single
+                # natural test compiles to one branch fewer.
+                Object(NonMatching, "Game/TornadoCollision.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCristalWallSwitch.cpp", cflags=cflags_game_cpp),
                 Object(NonMatching, "Game/ElecCube.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecPillar.cpp", cflags=cflags_game_cpp),
