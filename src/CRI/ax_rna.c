@@ -2,13 +2,13 @@
  * voices fed from ARAM ring buffers (RNARES + SJRBF); PCM data is DMA'd from the input stream
  * joints.
  *
- * Source from the RE4 GameCube decompilation of the same file (AXRNA Ver.1.04), with this
- * version's changes: the handle's play_cur field (name inferred) remembers the last play offset so
- * that AXRNA_SetPlaySw(1) resumes one block in when playback stopped inside the first block, and
- * stopping no longer resets the play position or the ring buffers. AXRNA_SetSrcType,
- * AXRNA_GetPlaySw and AXRNA_GetTransSw are linker-stripped here (the last two are inlined); they
- * are kept so that MWCC lays out .bss and the literals as the original does, together with the
- * order-only stand-in axrna_OrderStandIn for another stripped function.
+ * Source from the RE4 GameCube decompilation of the same file. Here the handle's play_cur field
+ * (name inferred) remembers the last play offset so that AXRNA_SetPlaySw(1) resumes one block in
+ * when playback stopped inside the first block, and stopping does not reset the play position or
+ * the ring buffers. AXRNA_SetSrcType, AXRNA_GetPlaySw and AXRNA_GetTransSw are linker-stripped
+ * here (the last two are inlined); they are kept so that MWCC lays out .bss and the literals as
+ * the original does, together with the order-only stand-in axrna_OrderStandIn for another
+ * stripped function.
  *
  * Not yet matching: AXRNA_SetPlaySw differs in 3 words, all in the additions that form the
  * voice's end and current addresses (an operand order and a register number). */
@@ -87,6 +87,8 @@ void axrna_end_trans(u32 req);
 void axrna_update_play(AXRNA rna);
 void axrna_voice_drop(void *p);
 
+/* Matching workaround: as in adx_sugc.c, the pointer is volatile and AXRNA_Init reads it without
+ * using the value. */
 static const Char8 *const volatile axrna_build = "\nAXRNA Ver.1.06 Build:Feb 28 2005 15:48:38\n";
 
 Sint32 axrna_def_src_type = AX_SRC_TYPE_LINEAR;
@@ -123,8 +125,10 @@ void AXRNA_SetSrcType(AXRNA rna, Sint32 type) {
 
 /* Matching workaround: order-only stand-in for a stripped function (never called, discarded by
  * the linker): referencing the statics and the "OFF" / "ON " literals here puts them in the
- * original .bss and literal order. The body is not the original's. Revisit when the stripped
- * body is found. */
+ * original .bss and literal order. The body is not the original's. Passing the first literal to
+ * RNAERR_CallErrFunc keeps the array alive; storing both literals through a parameter instead
+ * changes the literal order (AXRNA_SetTransSw and AXRNA_Create then differ). Revisit when the
+ * stripped body is found. */
 static void axrna_OrderStandIn(void) {
     const Char8 *sw_str[2] = {"OFF", "ON "};
 

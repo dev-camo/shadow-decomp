@@ -2,9 +2,8 @@
  * ADXT_ExecServer, the decoder-information stage and the decoder trap and stream end-of-sector
  * callbacks (looping and linked files).
  *
- * Source from the RE4 GameCube decompilation, with this version's Ver.9.44 addition: the handle's
- * extra field xc0 (see adx_t.h) is compared with the decoded data length in the server step and in
- * the end-of-sector callback.
+ * Source from the RE4 GameCube decompilation. Here the handle's extra field xc0 (see adx_t.h) is
+ * compared with the decoded data length in the server step and in the end-of-sector callback.
  *
  * Not yet matching: adxt_ExecHndl differs in 22 words and adxt_nlp_trap_entry in 2, all register
  * numbers. */
@@ -205,6 +204,7 @@ static void adxt_stat_decinfo(ADXT adxt) {
                 ADXSTM_SetEos(adxt->stm, lpendsct);
                 ADXSTM_EntryEosFunc(adxt->stm, adxt_eos_entry, adxt);
             }
+            /* original quirk: the result is discarded */
             ADXSJD_GetLpEndPos(sjd);
             adxt->trapnsmpl = ADXSJD_GetLpStartPos(sjd);
             ADXSJD_SetTrapNumSmpl(sjd, adxt->trapnsmpl);
@@ -296,7 +296,10 @@ void adxt_nlp_trap_entry(void *obj) {
         n2 = ADX_ScanInfoCode(ck2.data, ck2.len, &ofst2);
     }
     ofst1 += ofst;
-    /* ofst3: a separate copy of ofst2; using ofst2 directly compiles differently */
+    /* Matching workaround: ofst3, a separate copy of ofst2. Using ofst2 directly leaves
+     * adxt_nlp_trap_entry one `mr` short (186 instead of 187 instructions, 120 words differ from
+     * the original). The original keeps an extra copy of the second scan offset. Revisit when its
+     * real variable or widening is found. */
     ofst3 = ofst2;
     if (n1 != 0 && n2 != 0) {
         SJ_UngetChunk(sji, SJ_CK_DATA, &ck2);

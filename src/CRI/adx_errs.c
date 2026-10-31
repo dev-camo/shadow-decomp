@@ -46,6 +46,7 @@ static void adxerr_itoa(Sint32 val, Char8 *str, Sint32 len) {
 void ADXERR_ItoA2(Sint32 a, Sint32 b, Char8 *str, Sint32 len) {
     adxerr_itoa(a, str, len);
     strncat(str, " ", len - strlen(str) - 1);
+    /* original quirk: the size is a literal 4 minus the current length, not len */
     adxerr_itoa(b, str + strlen(str), 4 - strlen(str));
 }
 

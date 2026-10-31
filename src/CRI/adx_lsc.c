@@ -15,6 +15,7 @@ void ADXT_EntryFname(ADXT adxt, Char8 *fname) {
     LSC lsc;
 
     ADXCRS_Enter();
+    /* original quirk: adxt is dereferenced before the null test below */
     lsc = adxt->lsc;
     if (adxt == 0) {
         ADXERR_CallErrFunc1("E02080848 adxt_EntryFnameRange: parameter error");
@@ -31,6 +32,7 @@ void ADXT_StartSeamless(ADXT adxt) {
     LSC lsc;
 
     ADXCRS_Enter();
+    /* original quirk: adxt is dereferenced before the null test below */
     lsc = adxt->lsc;
     if (adxt == 0) {
         ADXERR_CallErrFunc1("E02080850 adxt_StartSeamless: parameter error");

@@ -10,12 +10,6 @@
 
 #include "CRI/adx_dcd.h"
 
-#define FP_NAN 1
-#define FP_INFINITE 2
-#define FP_ZERO 3
-#define FP_NORMAL 4
-#define FP_SUBNORMAL 5
-
 #define ADX_LD16(p) (((p)[0] << 8) | (p)[1])
 #define ADX_LD32(p) (((p)[0] << 24) | ((p)[1] << 16) | ((p)[2] << 8) | (p)[3])
 #define ADX_HDR 0x8000
@@ -146,7 +140,6 @@ Sint32 ADX_DecodeInfoAinf(Uint8 *data, Sint32 len, Sint32 *ainfsiz, void *ainf, 
     if (ver == 4) {
         ofs = 0x20;
     }
-    /* integer sum: `data + ofs` would order the add operands differently */
     p = (Uint8 *)((Uint32)ofs + (Uint32)data);
     ofs += 4;
     if (*(Sint16 *)(p + 2) != 0) {
@@ -157,10 +150,9 @@ Sint32 ADX_DecodeInfoAinf(Uint8 *data, Sint32 len, Sint32 *ainfsiz, void *ainf, 
     }
     *ainfsiz = *(Sint32 *)(data + ofs + 4);
     memcpy(ainf, &data[ofs + 8], 16);
-    p = (Uint8 *)((Uint32)ofs + (Uint32)data);
-    *a = *(Sint16 *)(p + 0x18);
-    b[0] = *(Sint16 *)(p + 0x1C);
-    b[1] = *(Sint16 *)(p + 0x1E);
+    *a = *(Sint16 *)&data[ofs + 0x18];
+    b[0] = *(Sint16 *)&data[ofs + 0x1C];
+    b[1] = *(Sint16 *)&data[ofs + 0x1E];
     return 0;
 }
 
@@ -174,7 +166,6 @@ Sint32 ADX_DecodeInfoExLoop(Uint8 *data, Sint32 len, Sint32 *lptype, Sint16 *nlo
     Sint32 err;
     Sint32 need;
     Sint32 ofs;
-    Uint8 *p;
 
     *nloop = 0;
     err = adx_GetVer(data, len, &ver, &minor);
@@ -193,16 +184,15 @@ Sint32 ADX_DecodeInfoExLoop(Uint8 *data, Sint32 len, Sint32 *lptype, Sint16 *nlo
     }
     ofs = (ver == 4) ? 0x20 : 0x14;
     *lptype = *(Sint16 *)(data + ofs);
-    p = (Uint8 *)((Uint32)ofs + (Uint32)data);
-    *nloop = *(Sint16 *)(p + 2);
+    *nloop = *(Sint16 *)&data[ofs + 2];
     if (*nloop != 1) {
         return -2;
     }
-    *lpflg = *(Sint16 *)(p + 6);
-    *lpstart = *(Sint32 *)(p + 8);
-    *lpstartofst = *(Sint32 *)(p + 0xC);
-    *lpend = *(Sint32 *)(p + 0x10);
-    *lpendofst = *(Sint32 *)(p + 0x14);
+    *lpflg = *(Sint16 *)&data[ofs + 6];
+    *lpstart = *(Sint32 *)&data[ofs + 8];
+    *lpstartofst = *(Sint32 *)&data[ofs + 0xC];
+    *lpend = *(Sint32 *)&data[ofs + 0x10];
+    *lpendofst = *(Sint32 *)&data[ofs + 0x14];
     return 0;
 }
 
@@ -317,8 +307,10 @@ Sint32 ADX_ScanInfoCode(Uint8 *data, Sint32 len, Sint16 *ofst) {
     return -1;
 }
 
-/* pool_data off: each float literal of ADX_GetCoefficient is loaded with its own lis/lfs pair
- * instead of through one pooled .rodata base (the unit has no other pooled data). */
+/* Matching workaround: pool_data off, so each float literal of ADX_GetCoefficient is loaded with
+ * its own lis/lfs pair instead of through one pooled .rodata base (with pooling the function is
+ * 142 instead of 151 instructions; the unit has no other pooled data). Revisit when the
+ * original's compiler flags are found. */
 #pragma pool_data off
 /* Second-order prediction coefficients (12-bit fixed point) of the ADX high-pass for `cutoff` Hz at
  * `sfreq`: c1 = 2c, c2 = -c^2 with c from the cosine of the normalised cut-off. */
