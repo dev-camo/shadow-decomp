@@ -125,7 +125,10 @@ static inline void adxf_CloseSjStm(ADXF adxf) {
     }
 }
 
-/* Matching workaround: as above (order-only stand-in for a stripped function). */
+/* Matching workaround: stand-in for the stripped ADXF_SetReqRdSct (see the file comment). The body
+ * is not the original's. No surviving function uses its message, which names a function that has no
+ * code in this unit. Without it the message is missing from .rodata (measured by compiling without
+ * it). Revisit when the stripped code is known. */
 static void adxf_RodataOrderReqRdSct(const Char8 **out) {
     out[0] = "E0041201:state is reading(ADXF_SetReqRdSct)";
 }
@@ -189,7 +192,13 @@ static inline Sint32 adxf_GetStat(ADXF adxf) {
     return adxf->stat;
 }
 
-/* Matching workaround: as above (order-only stand-in for five stripped functions). */
+/* Matching workaround: stand-in for stripped code that refers to the messages of adxf_GetStat,
+ * adxf_GetNumReadSct, adxf_GetNumReqSct, adxf_GetFsizeSct and ADXF_Tell. The body is not the
+ * original's. The adxf_GetStat message is also used by adxf_GetPtStat (through the inline above)
+ * and is first used here; no surviving function uses the other four, which name functions that
+ * have no code in this unit. Without it those four are missing from .rodata and the adxf_GetStat
+ * message is out of the first-use order (measured by compiling without it). Revisit when the
+ * stripped code is known. */
 static void adxf_RodataOrderGetters(const Char8 **out) {
     out[0] = "E9040832:'adxf' is NULL.(adxf_GetStat)";
     out[1] = "E9040831:'adxf' is NULL.(adxf_GetNumReadSct)";
@@ -228,8 +237,12 @@ static inline Sint32 adxf_Stop(ADXF adxf) {
     return adxf->skpos;
 }
 
-/* Matching workaround: as above (order-only stand-in for two stripped functions; the adxf_Stop
- * messages are first used here). */
+/* Matching workaround: stand-in for the stripped adxf_Seek, which expands adxf_Stop (the messages
+ * run Seek, Stop, Stop, Seek; see the file comment). The body is not the original's. The adxf_Stop
+ * messages are also used by surviving functions and are first used here; the adxf_Seek messages
+ * are used by no surviving function and name a function that has no code in this unit. Without it
+ * the adxf_Seek messages are missing from .rodata and the adxf_Stop messages are out of the
+ * first-use order (measured by compiling without it). Revisit when the stripped code is known. */
 static void adxf_RodataOrderSeek(const Char8 **out) {
     out[0] = "E9040825:'adxf' is NULL.(adxf_Seek)";
     out[1] = "E9040822:'adxf' is NULL.(adxf_Stop)";
@@ -275,7 +288,10 @@ void ADXF_ExecServer(void) {
     ADXCRS_Leave();
 }
 
-/* Matching workaround: as above (order-only stand-in for a stripped function). */
+/* Matching workaround: stand-in for the stripped adxf_StopNw. The body is not the original's. No
+ * surviving function uses these messages, which name functions that have no code in this unit.
+ * Without it these literals are missing from .rodata (measured by compiling without it). Revisit
+ * when the stripped code is known. */
 static void adxf_RodataOrderStopNw(const Char8 **out) {
     out[0] = "E2092301:'adxf' is NULL.(adxf_StopNw)";
     out[1] = "E2092302:'adxf->stm' is NULL.(adxf_StopNw)";
@@ -290,8 +306,11 @@ static inline Sint32 adxf_ReadNw(ADXF adxf, Sint32 nsct, void *buf) {
     return adxf_ReadNw32(adxf, nsct, buf);
 }
 
-/* Matching workaround: as above (order-only stand-in for a stripped function; the adxf_ReadNw
- * message is first used here). */
+/* Matching workaround: emits the adxf_ReadNw message ahead of its inlined uses, as the original
+ * does; the emitter (a stripped caller or an out-of-line copy of adxf_ReadNw) is unknown. The body
+ * is not the original's. The message is also used by surviving functions and is first used here.
+ * Without it the literals land in the first-use order of the surviving functions (measured by
+ * compiling without it). Revisit when the stripped code is known. */
 static void adxf_RodataOrderReadNw(const Char8 **out) {
     out[0] = "E0120401:'buf' isn't 32byte alignment.(adxf_ReadNw)";
 }
@@ -383,7 +402,10 @@ Sint32 adxf_ReadNw32(ADXF adxf, Sint32 nsct, void *buf) {
     return rqsct;
 }
 
-/* Matching workaround: as above (order-only stand-in for a stripped function). */
+/* Matching workaround: stand-in for the stripped adxf_ReadSj32. The body is not the original's. No
+ * surviving function uses these messages, which name functions that have no code in this unit.
+ * Without it these literals are missing from .rodata (measured by compiling without it). Revisit
+ * when the stripped code is known. */
 static void adxf_RodataOrderReadSj32(const Char8 **out) {
     out[0] = "E9040811:'adxf' is NULL.(adxf_ReadSj32)";
     out[1] = "E9040812:'nsct'is negative.(adxf_ReadSj32)";
@@ -530,7 +552,10 @@ ADXF adxf_OpenRange(const Char8 *fname, void *dir, Sint32 ofst, Sint32 fnsct) {
     return adxf;
 }
 
-/* Matching workaround: as above (order-only stand-in for a stripped function). */
+/* Matching workaround: stand-in for the stripped adxf_SetFileInfoEx. The body is not the
+ * original's. No surviving function uses its message, which names a function that has no code in
+ * this unit. Without it the message is missing from .rodata (measured by compiling without it).
+ * Revisit when the stripped code is known. */
 static void adxf_RodataOrderFileInfoEx(const Char8 **out) {
     out[0] = "E9081901:illigal parameter fname=null.(adxf_SetFileInfoEx)";
 }

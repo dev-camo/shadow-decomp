@@ -95,14 +95,14 @@ CVFS_IF gcg_ci_vtbl = {
     (Sint32 (*)(void *))gcCiGetNumTr,
 };
 
-/* Matching workaround: order-only stand-in for the stripped gcCiInit (its body is unknown). MWCC
- * places .bss objects in order of first reference, so this never-called function refers to the
- * debug block, error object and error callback in storage order before any other code does. Storing
- * the addresses keeps the references. Revisit when gcCiInit's body is known. */
+/* Matching workaround: stand-in for the stripped gcCiInit. The body is not the original's. It
+ * refers to the debug block and the error object in storage order before any other code does;
+ * storing the addresses keeps the references. Without it the .bss objects land in the
+ * first-reference order of the surviving functions and the code that pools their addresses changes
+ * (measured by compiling without it). Revisit when the stripped code is known. */
 static void gcci_BssOrder(void **out) {
     out[0] = &gcg_ci_debug;
     out[1] = &gcg_ci_err_obj;
-    out[2] = &gcg_ci_err_func;
 }
 
 /* Reports an error to the CVFS error callback with the offending handle. */

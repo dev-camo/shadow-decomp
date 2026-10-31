@@ -10,28 +10,60 @@
 #include "CRI/lsc.h"
 #include "CRI/sj.h"
 
+/* Workers behind ADXT_EntryFname and ADXT_StartSeamless. The .rodata order shows separate functions
+ * defined after ADXT_SetSeamlessLp: their messages sit between GetNumFiles' and SetSeamlessLp's. In
+ * this ADXT version the messages carry the lowercase worker names. With deferred inlining their
+ * out-of-line copies are emitted at that point, and the linker strips them.
+ */
+static void adxt_EntryFnameRange(ADXT adxt, Char8 *fname, void *dir, Sint32 ofst, Sint32 nsct);
+static void adxt_StartSeamless(ADXT adxt);
+
 /* Enters a whole file into the handle's seamless list. */
 void ADXT_EntryFname(ADXT adxt, Char8 *fname) {
+    ADXCRS_Enter();
+    adxt_EntryFnameRange(adxt, fname, 0, 0, ADXSTM_NSCT_INF);
+    ADXCRS_Leave();
+}
+
+/* Starts seamless playback. */
+void ADXT_StartSeamless(ADXT adxt) {
+    ADXCRS_Enter();
+    adxt_StartSeamless(adxt);
+    ADXCRS_Leave();
+}
+
+/* Loops the seamless list. */
+void ADXT_SetSeamlessLp(ADXT adxt, Sint32 flg) {
+    ADXCRS_Enter();
+    if (adxt == 0) {
+        ADXERR_CallErrFunc1("E02080851 adxt_SetSeamlessLp: parameter error");
+    } else {
+        LSC_SetLpFlg(adxt->lsc, flg);
+    }
+    ADXCRS_Leave();
+}
+
+/* Enters part of a file into the seamless list. The dir, ofst and nsct parameters are inferred from
+ * LSC_EntryFileRange, which receives them unchanged; the only caller passes the whole file.
+ */
+static void adxt_EntryFnameRange(ADXT adxt, Char8 *fname, void *dir, Sint32 ofst, Sint32 nsct) {
     LSC lsc;
 
-    ADXCRS_Enter();
     /* original quirk: adxt is dereferenced before the null test below */
     lsc = adxt->lsc;
     if (adxt == 0) {
         ADXERR_CallErrFunc1("E02080848 adxt_EntryFnameRange: parameter error");
-    } else if (LSC_EntryFileRange(lsc, fname, 0, 0, ADXSTM_NSCT_INF) < 0) {
+    } else if (LSC_EntryFileRange(lsc, fname, dir, ofst, nsct) < 0) {
         ADXERR_CallErrFunc2("E4063001:Can't entry file ", fname);
     }
-    ADXCRS_Leave();
 }
 
 /* Starts seamless playback: the decoder reads the file stream joint in link mode while the load
  * scheduler streams the entered files (flow limit = the reload threshold in bytes).
  */
-void ADXT_StartSeamless(ADXT adxt) {
+static void adxt_StartSeamless(ADXT adxt) {
     LSC lsc;
 
-    ADXCRS_Enter();
     /* original quirk: adxt is dereferenced before the null test below */
     lsc = adxt->lsc;
     if (adxt == 0) {
@@ -47,30 +79,6 @@ void ADXT_StartSeamless(ADXT adxt) {
         ADXT_SetLnkSw(adxt, 1);
         ADXCRS_Unlock();
     }
-    ADXCRS_Leave();
-}
-
-/* Loops the seamless list. */
-void ADXT_SetSeamlessLp(ADXT adxt, Sint32 flg) {
-    ADXCRS_Enter();
-    if (adxt == 0) {
-        ADXERR_CallErrFunc1("E02080851 adxt_SetSeamlessLp: parameter error");
-    } else {
-        LSC_SetLpFlg(adxt->lsc, flg);
-    }
-    ADXCRS_Leave();
-}
-
-/* Matching workaround: order-only stand-in for a function the linker stripped from the game;
- * its body is unknown. The messages of StartSeamless and EntryFname sit after GetNumFiles' in
- * .rodata; this never-called function refers to them there, followed by SetSeamlessLp's
- * message, in storage order. Storing the addresses keeps the references. Revisit when the
- * stripped body is found. */
-static void adxlsc_RodataOrder(const Char8 **out) {
-    out[0] = "E02080850 adxt_StartSeamless: parameter error";
-    out[1] = "E02080848 adxt_EntryFnameRange: parameter error";
-    out[2] = "E4063001:Can't entry file ";
-    out[3] = "E02080851 adxt_SetSeamlessLp: parameter error";
 }
 
 /* Number of files in the seamless list (-1: no handle). */

@@ -11,15 +11,16 @@ void (*ahxsetdecsmplfunc)(void *ahx, Sint32 nsmpl);
 void (*ahxtermsupplyfunc)(void *ahx);
 void (*ahxexecfunc)(ADXB adxb);
 
-/* Matching workaround: order-only stand-in for a function the linker stripped from the game;
- * its body is unknown. MWCC lays out .bss by first reference, so this never-called function
- * refers to the four hook pointers, in storage order, before the forwarding functions do.
- * Storing the addresses keeps the references. Revisit when the stripped body is found. */
+/* Matching workaround: stand-in for the stripped function that registers the AHX hooks (see the
+ * file comment). The body is not the original's. It refers to the first three hook pointers in
+ * storage order before the forwarding functions do (the fourth, ahxexecfunc, needs no reference of
+ * its own); storing the addresses keeps the references. Without it the .bss objects land in the
+ * first-reference order of the surviving functions (measured by compiling without it). Revisit
+ * when the stripped code is known. */
 static void adxbahx_BssOrder(void **out) {
     out[0] = &ahxsetsjifunc;
     out[1] = &ahxsetdecsmplfunc;
     out[2] = &ahxtermsupplyfunc;
-    out[3] = &ahxexecfunc;
 }
 
 /* End of input for an AHX decoder attached to the handle. */
