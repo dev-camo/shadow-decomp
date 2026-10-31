@@ -635,6 +635,21 @@ config.libs = [
                 # boost::function1 swap that the callback assignment instantiates), which the
                 # original unit does not have.
                 Object(NonMatching, "Game/CircusBall.cpp", cflags=cflags_game_cpp),
+                # 23 of 29 functions are identical in every word and relocation (target and section
+                # offset). The other six differ only in where data sits in the unit's sections. The
+                # original has an unreferenced 0x40-byte table of floats (0, 0, 0, 0 and three rows of
+                # 0, 0, 0, 1) in front of the TNumEdit names, which this build does not reproduce, so
+                # the strings sit 0x40 lower in .rodata: 3 immediate words differ in 0x801307D8 and 6
+                # in the constructor, and relocation offsets in the destructor and the allocator's
+                # allocate. The TNumEdit and CharaColliBase type records that the headers add put
+                # 0x30 bytes in front of .data and .sdata, which moves relocation offsets in the
+                # constructor, the destructor and the functor manager. The registry accessor's guard
+                # byte is the second byte of .sbss in the original and follows the pointer here (two
+                # relocation offsets). The original's .rodata ends with the string
+                # "string constructor: n > max_size\n", which this object does not have. This object
+                # has a 32-byte local copy of std::swap (called by the weak boost::function1 swap)
+                # and the sp_counted_base vtable and RTTI, which the original unit does not have.
+                Object(NonMatching, "Game/CircusPole.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/Cream.cpp", cflags=cflags_game_cpp),
                 # Every function but the ThreatObj constructor is instruction-identical, and so is the
                 # data. Two differences remain: the constructor's two table loads (model table and

@@ -86,6 +86,15 @@ Game/CircusBall.cpp:
 	.sbss       start:0x805EEE90 end:0x805EEEA0
 	.sdata2     start:0x805F41B8 end:0x805F4200
 
+Game/CircusPole.cpp:
+	.text       start:0x80130780 end:0x801312C0
+	.rodata     start:0x804BEA90 end:0x804BECC0
+	.data       start:0x805287A8 end:0x80528868
+	.bss        start:0x805800D8 end:0x805800F8
+	.sdata      start:0x805E5EF0 end:0x805E5F18
+	.sbss       start:0x805EEEA0 end:0x805EEEB8
+	.sdata2     start:0x805F4200 end:0x805F4228
+
 Game/Cream.cpp:
 	.text       start:0x80134208 end:0x801352A4
 	.ctors      start:0x804A9D5C end:0x804A9D60
