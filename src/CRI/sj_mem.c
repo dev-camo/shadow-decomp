@@ -88,9 +88,10 @@ Sint32 SJMEM_GetBufSize(SJ handle) {
     return ret;
 }
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. Its two error
- * codes remain in .rodata between those of the functions around it; this never-called function
- * refers to them in that order. Storing the addresses keeps the references.
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game; its
+ * body is unknown. Its two error codes remain in .rodata between those of the functions around
+ * it; this never-called function refers to them in that order. Storing the addresses keeps the
+ * references. Revisit when the stripped function's real body is found.
  */
 static void sjmem_RodataOrder(const Char8 **out) {
     out[0] = "E2004090249";
@@ -231,7 +232,14 @@ Sint32 SJMEM_GetNumData(SJMEM_OBJ *sj, Sint32 id) {
     return ret;
 }
 
-/* Rewinds: the whole buffer is unread data again. */
+/* Rewinds: the whole buffer is unread data again.
+ *
+ * Matching workaround: the two error reports are written out with a separate message buffer each,
+ * declared in this order, instead of SJMEM_ERR. With SJMEM_ERR, or with the buffers declared in
+ * the other order, SJMEM_Create and SJMEM_Reset differ in 6 words each (same lengths): these
+ * buffers give the original's stack slots where sjmem_Reset is inlined. Revisit when the original
+ * macro shape is found.
+ */
 static inline void sjmem_Reset(SJMEM_OBJ *sj) {
     Char8 msg_invalid[64];
     Char8 msg_null[64];

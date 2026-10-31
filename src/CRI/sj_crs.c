@@ -5,11 +5,13 @@
 
 #include "CRI/sj.h"
 
-/* volatile: the nesting level is reloaded after each update. */
+/* The nesting level and the init count are volatile: in the original each update is followed by
+ * a reload, which MWCC emits only for a volatile object. Declared plain (measured per function
+ * against the original): sjcrs_lvl makes SJCRS_Unlock 17 words instead of 19 (10 aligned words
+ * differ); sj_init_count makes SJCRS_Init 11 words instead of 12 (7 differ) and SJCRS_Finish 10
+ * instead of 12 (6 differ). */
 volatile Sint32 sjcrs_lvl;
 Sint32 sjcrs_msk;
-/* volatile like the other CRI init counts (svm_init_level): SJCRS_Init/Finish reload it after each
- * update. */
 static volatile Sint32 sj_init_count;
 
 void SJCRS_Unlock(void) {
