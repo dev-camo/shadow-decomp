@@ -520,9 +520,15 @@ static inline ADXSTM adxstmf_create(SJ sj, Sint32 ofst, Sint32 num, Sint32 rtim)
     Sint32 i;
 
     for (i = 0; i < num; i++) {
-        /* COMPILER-DIFF: &adxstmf_obj[ofst] as a byte offset keeps `ofst` as the loop variable;
-         * the indexed form becomes a pointer induction variable */
-        stm = (ADXSTM)((Uint8 *)adxstmf_obj + ofst * sizeof(ADXSTM_OBJ));
+        /* Matching workaround: the slot index is converted to unsigned. The original most likely
+         * scaled the slot offset with unsigned arithmetic (a byte offset times sizeof, which is
+         * unsigned): it steps the 96-byte offset after the `used` test and branch, while with a
+         * signed index the compiler
+         * hoists the increment above the load of `used` (4 words per expansion of this helper, 8
+         * in adxstm_Create). Indexed, pointer-stepped, `ofst + i`, `adxstmf_obj + ofst` and an
+         * unsigned parameter were measured and do not match. Revisit when the original slot
+         * search is found. */
+        stm = &adxstmf_obj[(Uint32)ofst];
         if (stm->used == 0) {
             break;
         }
