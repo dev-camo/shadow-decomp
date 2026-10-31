@@ -9,16 +9,6 @@
 /* errors */
 #define E_RP_GEOMETRYTOOMANYVERTICES 0x6 /* inferred */
 
-/* Reports an error: the arguments are the error code and its parameters */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* the most vertices a geometry can have (16-bit indices) */
 #define rpGEOMETRYMAXVERTICES 0x10000
 
@@ -115,7 +105,7 @@ RwInt32 fn_80458DB0(RpGeometry *geometry, RwInt32 numMorphTargets) {
 
         morphTargets = RwRealloc(geometry->morphTarget, size, rwMEMHINTDUR_EVENT | rwID_GEOMETRY);
         if (morphTargets == NULL) {
-            RWERROR((E_RW_NOMEM, size));
+            RPWORLDERROR((E_RW_NOMEM, size));
             return -1;
         }
         /* move the old vertex arrays up, from the end */
@@ -130,7 +120,7 @@ RwInt32 fn_80458DB0(RpGeometry *geometry, RwInt32 numMorphTargets) {
     } else {
         morphTargets = RwMalloc(size, rwMEMHINTDUR_EVENT | rwID_GEOMETRY);
         if (morphTargets == NULL) {
-            RWERROR((E_RW_NOMEM, size));
+            RPWORLDERROR((E_RW_NOMEM, size));
             return -1;
         }
     }
@@ -322,7 +312,7 @@ RpGeometry *fn_80459464(RwInt32 numVertices, RwInt32 numTriangles, RwUInt32 form
 
     if (numVertices < 0 || numVertices >= rpGEOMETRYMAXVERTICES || numTriangles < 0) {
         if (numVertices >= 0 && numVertices >= rpGEOMETRYMAXVERTICES) {
-            RWERROR((E_RP_GEOMETRYTOOMANYVERTICES));
+            RPWORLDERROR((E_RP_GEOMETRYTOOMANYVERTICES));
         }
         return NULL;
     }
@@ -475,7 +465,7 @@ RpGeometry *fn_804599C8(RwStream *stream) {
         return NULL;
     }
     if (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION) {
-        RWERROR((E_RW_BADVERSION));
+        RPWORLDERROR((E_RW_BADVERSION));
         return NULL;
     }
     if (fn_80480D4C(stream, &header, sizeof(header)) != sizeof(header)) {
@@ -585,7 +575,7 @@ RpGeometry *fn_804599C8(RwStream *stream) {
     }
     if (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION) {
         fn_8045985C(geometry);
-        RWERROR((E_RW_BADVERSION));
+        RPWORLDERROR((E_RW_BADVERSION));
         return NULL;
     }
     if (fn_8045B924(stream, &geometry->matList) == NULL) {

@@ -2,16 +2,6 @@
  * and reading one from a stream. The original file name is unknown. */
 #include "rw/rpworld.h"
 
-/* Reports an error: the arguments are the error code and its parameters */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* how many slots a full list grows by */
 #define rpMATERIALLISTGRANULARITY 20
 
@@ -60,7 +50,7 @@ static inline RpMaterialList *MaterialListSetSize(RpMaterialList *matList, RwInt
                 RwMalloc(bytes, rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_EVENT | rwID_MATLIST);
         }
         if (materials == NULL) {
-            RWERROR((E_RW_NOMEM, bytes));
+            RPWORLDERROR((E_RW_NOMEM, bytes));
             return NULL;
         }
         matList->materials = materials;
@@ -93,7 +83,7 @@ RwInt32 fn_8045B7AC(RpMaterialList *matList, RpMaterial *material) {
                          rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_EVENT | rwID_MATLIST);
         }
         if (materials == NULL) {
-            RWERROR((E_RW_NOMEM, bytes));
+            RPWORLDERROR((E_RW_NOMEM, bytes));
             return -1;
         }
         matList->materials = materials;
@@ -169,7 +159,7 @@ RpMaterialList *fn_8045B924(RwStream *stream, RpMaterialList *matList) {
                         return NULL;
                     }
                 } else {
-                    RWERROR((E_RW_BADVERSION));
+                    RPWORLDERROR((E_RW_BADVERSION));
                     RwFree(indices);
                     fn_8045B6F0(matList);
                     return NULL;
@@ -185,6 +175,6 @@ RpMaterialList *fn_8045B924(RwStream *stream, RpMaterialList *matList) {
         RwFree(indices);
         return matList;
     }
-    RWERROR((E_RW_BADVERSION));
+    RPWORLDERROR((E_RW_BADVERSION));
     return NULL;
 }

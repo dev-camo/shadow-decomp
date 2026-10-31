@@ -5,16 +5,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* Reports an error: the arguments are the error code and its parameters */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* the first stream version with the vertex indices before the material index in triangles */
 #define rwSTREAMTRIANGLEVERSION 0x36002
 
@@ -174,7 +164,7 @@ RpWorldSector *fn_80454CE4(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
         return NULL;
     }
     if (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION) {
-        RWERROR((E_RW_BADVERSION));
+        RPWORLDERROR((E_RW_BADVERSION));
         return NULL;
     }
     if (fn_80480D4C(stream, &header, sizeof(header)) != sizeof(header)) {
@@ -184,7 +174,7 @@ RpWorldSector *fn_80454CE4(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
 
     sector = (RpWorldSector *)WorldMemoryTake(memory, lbl_8056D880.sizeOfStruct);
     if (sector == NULL) {
-        RWERROR((E_RW_NOMEM, lbl_8056D880.sizeOfStruct));
+        RPWORLDERROR((E_RW_NOMEM, lbl_8056D880.sizeOfStruct));
         return NULL;
     }
 
@@ -211,7 +201,7 @@ RpWorldSector *fn_80454CE4(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
 
             sector->vertices = (RwV3d *)WorldMemoryTake(memory, vertexSize);
             if (sector->vertices == NULL) {
-                RWERROR((E_RW_NOMEM, vertexSize));
+                RPWORLDERROR((E_RW_NOMEM, vertexSize));
                 status = FALSE;
             }
             if (status && fn_8047D784(stream, (RwReal *)sector->vertices, vertexSize) == NULL) {
@@ -223,7 +213,7 @@ RpWorldSector *fn_80454CE4(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
 
                 sector->normals = (RpVertexNormal *)WorldMemoryTake(memory, normalSize);
                 if (sector->normals == NULL) {
-                    RWERROR((E_RW_NOMEM, normalSize));
+                    RPWORLDERROR((E_RW_NOMEM, normalSize));
                     status = FALSE;
                 }
                 if (status && normalSize != fn_80480D4C(stream, sector->normals, normalSize)) {
@@ -236,7 +226,7 @@ RpWorldSector *fn_80454CE4(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
 
                 sector->preLitLum = (RwRGBA *)WorldMemoryTake(memory, preLitSize);
                 if (sector->preLitLum == NULL) {
-                    RWERROR((E_RW_NOMEM, preLitSize));
+                    RPWORLDERROR((E_RW_NOMEM, preLitSize));
                     status = FALSE;
                 }
                 if (status && fn_80480D4C(stream, sector->preLitLum, preLitSize) == 0) {
@@ -250,7 +240,7 @@ RpWorldSector *fn_80454CE4(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
                 for (i = 0; i < world->numTexCoordSets; i++) {
                     sector->texCoords[i] = (RwTexCoords *)WorldMemoryTake(memory, texCoordSize);
                     if (status && sector->texCoords[i] == NULL) {
-                        RWERROR((E_RW_NOMEM, texCoordSize));
+                        RPWORLDERROR((E_RW_NOMEM, texCoordSize));
                         status = FALSE;
                         break;
                     }
@@ -268,7 +258,7 @@ RpWorldSector *fn_80454CE4(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
 
             sector->triangles = (RpTriangle *)WorldMemoryTake(memory, triangleSize);
             if (sector->triangles == NULL) {
-                RWERROR((E_RW_NOMEM, triangleSize));
+                RPWORLDERROR((E_RW_NOMEM, triangleSize));
                 status = FALSE;
             }
             if (status && fn_8047D684(stream, (RwInt16 *)sector->triangles, triangleSize) == NULL) {
@@ -326,7 +316,7 @@ RpPlaneSector *fn_804552AC(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
         return NULL;
     }
     if (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION) {
-        RWERROR((E_RW_BADVERSION));
+        RPWORLDERROR((E_RW_BADVERSION));
         return NULL;
     }
     memset(&header, 0, sizeof(header));
@@ -337,7 +327,7 @@ RpPlaneSector *fn_804552AC(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
 
     plane = (RpPlaneSector *)WorldMemoryTake(memory, sizeof(RpPlaneSector));
     if (plane == NULL) {
-        RWERROR((E_RW_NOMEM, sizeof(RpPlaneSector)));
+        RPWORLDERROR((E_RW_NOMEM, sizeof(RpPlaneSector)));
         return NULL;
     }
 
@@ -356,7 +346,7 @@ RpPlaneSector *fn_804552AC(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
             status = FALSE;
         }
         if (status && (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION)) {
-            RWERROR((E_RW_BADVERSION));
+            RPWORLDERROR((E_RW_BADVERSION));
             status = FALSE;
         }
         if (status) {
@@ -371,7 +361,7 @@ RpPlaneSector *fn_804552AC(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
             status = FALSE;
         }
         if (status && (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION)) {
-            RWERROR((E_RW_BADVERSION));
+            RPWORLDERROR((E_RW_BADVERSION));
             status = FALSE;
         }
         if (status) {
@@ -389,7 +379,7 @@ RpPlaneSector *fn_804552AC(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
                 status = FALSE;
             }
             if (status && (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION)) {
-                RWERROR((E_RW_BADVERSION));
+                RPWORLDERROR((E_RW_BADVERSION));
                 status = FALSE;
             }
             if (status) {
@@ -404,7 +394,7 @@ RpPlaneSector *fn_804552AC(RwStream *stream, RwUInt8 **memory, RpWorld *world, R
                 status = FALSE;
             }
             if (status && (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION)) {
-                RWERROR((E_RW_BADVERSION));
+                RPWORLDERROR((E_RW_BADVERSION));
                 status = FALSE;
             }
             if (status) {
@@ -451,7 +441,7 @@ RpWorld *fn_804556F4(RwStream *stream) {
         return NULL;
     }
     if (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION) {
-        RWERROR((E_RW_BADVERSION));
+        RPWORLDERROR((E_RW_BADVERSION));
         return NULL;
     }
     memset(&header, 0, sizeof(header));
@@ -460,7 +450,7 @@ RpWorld *fn_804556F4(RwStream *stream) {
     }
     /* old streams with collision sectors are not read */
     if (header.colSectorSize > 0) {
-        RWERROR((E_RW_BADVERSION));
+        RPWORLDERROR((E_RW_BADVERSION));
         return NULL;
     }
     fn_8047D254(&header, sizeof(header));
@@ -493,7 +483,7 @@ RpWorld *fn_804556F4(RwStream *stream) {
 
     world = RwMalloc(size, rwMEMHINTDUR_EVENT | rwID_WORLD);
     if (world == NULL) {
-        RWERROR((E_RW_NOMEM, size));
+        RPWORLDERROR((E_RW_NOMEM, size));
         return NULL;
     }
     memset(world, 0, size);
@@ -524,7 +514,7 @@ RpWorld *fn_804556F4(RwStream *stream) {
         return NULL;
     }
     if (chunkVersion < rwLIBRARYBASEVERSION || chunkVersion > RW_STREAM_VERSION) {
-        RWERROR((E_RW_BADVERSION));
+        RPWORLDERROR((E_RW_BADVERSION));
         fn_8045FFA0(world);
         return NULL;
     }
@@ -539,7 +529,7 @@ RpWorld *fn_804556F4(RwStream *stream) {
             return NULL;
         }
         if (chunkVersion < rwLIBRARYBASEVERSION || chunkVersion > RW_STREAM_VERSION) {
-            RWERROR((E_RW_BADVERSION));
+            RPWORLDERROR((E_RW_BADVERSION));
             fn_8045FFA0(world);
             return NULL;
         }
@@ -555,7 +545,7 @@ RpWorld *fn_804556F4(RwStream *stream) {
             return NULL;
         }
         if (chunkVersion < rwLIBRARYBASEVERSION || chunkVersion > RW_STREAM_VERSION) {
-            RWERROR((E_RW_BADVERSION));
+            RPWORLDERROR((E_RW_BADVERSION));
             fn_8045FFA0(world);
             return NULL;
         }

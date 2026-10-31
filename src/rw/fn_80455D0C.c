@@ -9,16 +9,6 @@
 /* errors */
 #define E_RW_ATOMICNOFRAME 0x5 /* cloning an atomic without a frame (inferred) */
 
-/* Reports an error: the arguments are the error code and its parameters */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* The stream header of a clump (0xC bytes) */
 typedef struct ClumpChunk {
     /* 0x0 */ RwInt32 numAtomics;
@@ -194,7 +184,7 @@ RpGeometryList *fn_80455F18(RwStream *stream, RpGeometryList *geomList) {
             geomList->geometries =
                 RwMalloc(numGeoms * sizeof(RpGeometry *), rwMEMHINTDUR_EVENT | rwID_GEOMETRY);
             if (geomList->geometries == NULL) {
-                RWERROR((E_RW_NOMEM, numGeoms * sizeof(RpGeometry *)));
+                RPWORLDERROR((E_RW_NOMEM, numGeoms * sizeof(RpGeometry *)));
                 return NULL;
             }
         } else {
@@ -220,7 +210,7 @@ RpGeometryList *fn_80455F18(RwStream *stream, RpGeometryList *geomList) {
             }
         }
     } else {
-        RWERROR((E_RW_BADVERSION));
+        RPWORLDERROR((E_RW_BADVERSION));
         return NULL;
     }
     return geomList;
@@ -272,14 +262,14 @@ RpAtomic *fn_80456234(RwStream *stream, RwFrameList *frameList, RpGeometryList *
     RpGeometry *geometry;
 
     if (!fn_8047CF50(stream, rwID_STRUCT, &length, &version)) {
-        RWERROR((E_RW_READ));
+        RPWORLDERROR((E_RW_READ));
         return NULL;
     }
     if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
         memset(&header, 0, sizeof(header));
         status = fn_80480D4C(stream, &header, length) == length;
         if (!status) {
-            RWERROR((E_RW_READ));
+            RPWORLDERROR((E_RW_READ));
             return NULL;
         }
         fn_8047D254(&header, sizeof(header));
@@ -298,19 +288,19 @@ RpAtomic *fn_80456234(RwStream *stream, RwFrameList *frameList, RpGeometryList *
         } else {
             if (!fn_8047CF50(stream, rwID_GEOMETRY, NULL, &version)) {
                 fn_80456FD8(atomic);
-                RWERROR((E_RW_READ));
+                RPWORLDERROR((E_RW_READ));
                 return NULL;
             }
             if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
                 geometry = fn_804599C8(stream);
                 if (geometry == NULL) {
                     fn_80456FD8(atomic);
-                    RWERROR((E_RW_READ));
+                    RPWORLDERROR((E_RW_READ));
                     return NULL;
                 }
             } else {
                 fn_80456FD8(atomic);
-                RWERROR((E_RW_BADVERSION));
+                RPWORLDERROR((E_RW_BADVERSION));
                 return NULL;
             }
             /* the atomic keeps its own reference to the geometry */
@@ -322,7 +312,7 @@ RpAtomic *fn_80456234(RwStream *stream, RwFrameList *frameList, RpGeometryList *
         lbl_805F14C0 = 0;
         status = fn_804816AC(&lbl_8056D7E0, stream, atomic) != NULL;
         if (!status) {
-            RWERROR((E_RW_READ));
+            RPWORLDERROR((E_RW_READ));
             return NULL;
         }
         if (lbl_805F14C4 != 0) {
@@ -330,7 +320,7 @@ RpAtomic *fn_80456234(RwStream *stream, RwFrameList *frameList, RpGeometryList *
         }
         return atomic;
     }
-    RWERROR((E_RW_BADVERSION));
+    RPWORLDERROR((E_RW_BADVERSION));
     return NULL;
 }
 
@@ -686,7 +676,7 @@ static inline RpAtomic *ClumpCloneAtomic(RpAtomic *atomic, void *data) {
         fn_80458CBC(newAtomic, frame->root);
     } else {
         fn_80456FD8(newAtomic);
-        RWERROR((E_RW_ATOMICNOFRAME));
+        RPWORLDERROR((E_RW_ATOMICNOFRAME));
         return NULL;
     }
     fn_80457608(cloneData->newClump, newAtomic);
@@ -823,7 +813,7 @@ RpClump *fn_80457698(RwStream *stream) {
     RwInt32 i;
 
     if (!fn_8047CF50(stream, rwID_STRUCT, &length, &version)) {
-        RWERROR((E_RW_READ));
+        RPWORLDERROR((E_RW_READ));
         return NULL;
     }
     if (version >= rwLIBRARYBASEVERSION && version <= RW_STREAM_VERSION) {
@@ -832,7 +822,7 @@ RpClump *fn_80457698(RwStream *stream) {
 
         status = fn_80480D4C(stream, &header, sizeof(header)) == sizeof(header);
         if (!status) {
-            RWERROR((E_RW_READ));
+            RPWORLDERROR((E_RW_READ));
             return NULL;
         }
         fn_8047D254(&header, sizeof(header));
@@ -844,13 +834,13 @@ RpClump *fn_80457698(RwStream *stream) {
 
         if (!fn_8047CF50(stream, rwID_FRAMELIST, NULL, &chunkVersion)) {
             fn_80457468(clump);
-            RWERROR((E_RW_READ));
+            RPWORLDERROR((E_RW_READ));
             return NULL;
         }
         status = fn_80483774(stream, &frameList) != NULL;
         if (!status) {
             fn_80457468(clump);
-            RWERROR((E_RW_READ));
+            RPWORLDERROR((E_RW_READ));
             return NULL;
         }
         clump->object.parent = frameList.frames[0];
@@ -858,14 +848,14 @@ RpClump *fn_80457698(RwStream *stream) {
         if (!fn_8047CF50(stream, rwID_GEOMETRYLIST, NULL, &chunkVersion)) {
             fn_80483728(&frameList);
             fn_80457468(clump);
-            RWERROR((E_RW_READ));
+            RPWORLDERROR((E_RW_READ));
             return NULL;
         }
         status = fn_80455F18(stream, &geomList) != NULL;
         if (!status) {
             fn_80483728(&frameList);
             fn_80457468(clump);
-            RWERROR((E_RW_READ));
+            RPWORLDERROR((E_RW_READ));
             return NULL;
         }
 
@@ -879,7 +869,7 @@ RpClump *fn_80457698(RwStream *stream) {
                 GeometryListDeinitialize(&geomList);
                 fn_80483728(&frameList);
                 fn_80457468(clump);
-                RWERROR((E_RW_READ));
+                RPWORLDERROR((E_RW_READ));
                 return NULL;
             }
             rwLinkListAddLLLink(&clump->atomicList, &atomic->inClumpLink);
@@ -903,7 +893,7 @@ RpClump *fn_80457698(RwStream *stream) {
                 GeometryListDeinitialize(&geomList);
                 fn_80483728(&frameList);
                 fn_80457468(clump);
-                RWERROR((E_RW_READ));
+                RPWORLDERROR((E_RW_READ));
                 return NULL;
             }
             fn_8048D7C0(light, frameList.frames[lightFrameIndex]);
@@ -929,7 +919,7 @@ RpClump *fn_80457698(RwStream *stream) {
                 GeometryListDeinitialize(&geomList);
                 fn_80483728(&frameList);
                 fn_80457468(clump);
-                RWERROR((E_RW_READ));
+                RPWORLDERROR((E_RW_READ));
                 return NULL;
             }
             fn_8048D7C0(camera, frameList.frames[cameraFrameIndex]);
@@ -943,12 +933,12 @@ RpClump *fn_80457698(RwStream *stream) {
         status = fn_804816AC(&lbl_8056D7F8, stream, clump) != NULL;
         if (!status) {
             fn_80457468(clump);
-            RWERROR((E_RW_READ));
+            RPWORLDERROR((E_RW_READ));
             return NULL;
         }
         return clump;
     }
-    RWERROR((E_RW_BADVERSION));
+    RPWORLDERROR((E_RW_BADVERSION));
     return NULL;
 }
 

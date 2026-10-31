@@ -5,16 +5,6 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* Reports an error: the arguments are the error code and its parameters */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* The stream header of a material (0x1C bytes) */
 typedef struct MaterialChunk {
     /* 0x00 */ RwInt32 flags;
@@ -214,7 +204,7 @@ RpMaterial *fn_8045B348(RwStream *stream) {
                 material->texture = fn_80483D28(stream);
             } else {
                 fn_8045B1F4(material);
-                RWERROR((E_RW_BADVERSION));
+                RPWORLDERROR((E_RW_BADVERSION));
                 return NULL;
             }
         }
@@ -230,6 +220,6 @@ RpMaterial *fn_8045B348(RwStream *stream) {
         }
         return material;
     }
-    RWERROR((E_RW_BADVERSION));
+    RPWORLDERROR((E_RW_BADVERSION));
     return NULL;
 }
