@@ -404,39 +404,52 @@ void *fn_80441018(void *object, RwInt32 offset, RwInt32 size) {
     return object;
 }
 
+/* Attaches the plugin to world sectors: the extension and its stream callbacks (name inferred) */
+static inline RwBool CollSectorAttach(void) {
+    RwBool ok;
+
+    lbl_805F1420 = fn_8045F2F8(sizeof(void *), rpID_COLLISPLUGIN, fn_80440DA8, fn_80440D58, NULL);
+    ok = lbl_805F1420 >= 0;
+    if (ok) {
+        ok = fn_8045F338(rpID_COLLISPLUGIN, fn_80440E80, fn_80440DEC, fn_80440DB4) >= 0;
+    }
+    return ok ? TRUE : FALSE;
+}
+
+/* Attaches the plugin to geometries: the extension and its stream callbacks (name inferred) */
+static inline RwBool CollGeometryAttach(void) {
+    RwBool ok;
+
+    lbl_805F141C = fn_8045994C(sizeof(void *), rpID_COLLISPLUGIN, fn_80440DA8, fn_80440D58, NULL);
+    ok = lbl_805F141C >= 0;
+    if (ok) {
+        ok = fn_8045998C(rpID_COLLISPLUGIN, fn_80440E80, fn_80440DEC, fn_80440DB4) >= 0;
+    }
+    return ok ? TRUE : FALSE;
+}
+
+/* Attaches the plugin to atomics and, when that succeeds, to world sectors (name inferred) */
+static inline RwBool CollAtomicSectorAttach(void) {
+    RwBool ok;
+
+    lbl_805F1418 = fn_80458B6C(sizeof(void *), rpID_COLLISPLUGIN, fn_80441018, NULL, NULL);
+    ok = lbl_805F1418 > 0;
+    if (ok) {
+        ok = CollSectorAttach();
+    }
+    return ok ? TRUE : FALSE;
+}
+
 /* Registers the plugin with the engine, atomics, world sectors and geometries */
-RwInt32 fn_80441028(void) {
-    RwInt32 result;
-    RwInt32 ok;
-    RwInt32 attached;
+RwBool fn_80441028(void) {
+    RwBool success;
 
     lbl_805F1414 = fn_80485D78(sizeof(void *), rpID_COLLISPLUGIN, fn_80440D28, fn_80440D48);
-    result = lbl_805F1414 > 0;
-    if (result) {
-        lbl_805F1418 = fn_80458B6C(sizeof(void *), rpID_COLLISPLUGIN, fn_80441018, NULL, NULL);
-        ok = lbl_805F1418 > 0;
-        if (ok) {
-            lbl_805F1420 =
-                fn_8045F2F8(sizeof(void *), rpID_COLLISPLUGIN, fn_80440DA8, fn_80440D58, NULL);
-            ok = lbl_805F1420 >= 0;
-            if (ok) {
-                ok = fn_8045F338(rpID_COLLISPLUGIN, fn_80440E80, fn_80440DEC, fn_80440DB4) >= 0;
-            }
-            ok = ok != 0;
-        }
-        attached = ok != 0;
-        if (attached) {
-            lbl_805F141C =
-                fn_8045994C(sizeof(void *), rpID_COLLISPLUGIN, fn_80440DA8, fn_80440D58, NULL);
-            ok = lbl_805F141C >= 0;
-            if (ok) {
-                ok = fn_8045998C(rpID_COLLISPLUGIN, fn_80440E80, fn_80440DEC, fn_80440DB4) >= 0;
-            }
-            attached = ok != 0;
-        }
-        result = attached;
+    success = lbl_805F1414 > 0;
+    if (success) {
+        success = CollAtomicSectorAttach() && CollGeometryAttach();
     }
-    return result;
+    return success;
 }
 
 /* A component of a vector chosen by an axis stored as a byte offset (0, 4 or 8), the form the sector
