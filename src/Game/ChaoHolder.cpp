@@ -4,7 +4,10 @@
  * shows the model, owns a probe and an attack object with a bound callback, and keeps its state in
  * a ChaoData that the owner remembers. File name inferred from the class. Method names marked
  * "(name inferred)" are not original. Definitions are in reverse address order (deferred inlining
- * emits functions last-defined first). */
+ * emits functions last-defined first).
+ *
+ * NonMatching: checked_delete<Chao> is a local symbol where the original's is weak, and the data
+ * has records that the original unit does not have (listed in the note in configure.py). */
 #include "Game/CharInfo.h"
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
@@ -219,7 +222,16 @@ Chao::Chao(ChaoHolder *holder, UnkGadgetOwner_800C9CD0 *owner)
     m_timer = fn_8040EC80(0.5f, 6.0f);
 }
 
+/* Matching workaround: auto_inline around this destructor. The original keeps checked_delete<T>
+ * out of line and emits this destructor at its definition; with the stock GC/2.7 compiler and
+ * -inline noauto that needs auto_inline here. A tooling constraint, not a claim about the original
+ * source; revisit if another compiler build reproduces this without the pragma, or if an original
+ * checked_delete keeps out of line a destructor whose body calls only non-inline functions (the
+ * pragma would inline that destructor into it). A destructor found inlined into checked_delete in
+ * the original would instead mean that the original used auto_inline here. */
+#pragma auto_inline on
 Chao::~Chao() {}
+#pragma auto_inline reset
 
 void Chao::Update(float dt) {
     if (fn_8015D2EC(m_probe->GetHits())) {

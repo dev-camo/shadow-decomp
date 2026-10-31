@@ -620,8 +620,15 @@ config.libs = [
                 # the original's; the accessor of the switch counter is emitted after the template
                 # instances that follow ApplyState here, directly after ApplyState in the original.
                 Object(NonMatching, "Game/CandleStick.cpp", cflags=cflags_game_cpp),
-                # 50 of 52 functions have identical instructions. The checked_deleter call operator
-                # differs by one word and checked_delete is absent, as in CityLaserHolder.cpp.
+                # All 52 functions have identical instructions; checked_delete<Chao> is a local
+                # symbol here where the original's is weak. The data differs from the original's
+                # in records the original unit does not have: a weak SetAdapterState vtable (with
+                # its weak destructor) sits at .data 0x128, in front of the base-class list of
+                # sp_counted_base_impl<Chao>'s type record, which moves that list and the
+                # sp_counted_base_impl<Chao> vtable 0xC bytes later; the std::exception type
+                # record (.sdata) and its two name strings (.rodata) come before those of
+                # checked_deleter<Chao> (moving them 8 and 0x1C bytes later); and the
+                # std::exception and sp_counted_base vtables are appended to .data.
                 Object(NonMatching, "Game/ChaoHolder.cpp", cflags=cflags_game_cpp),
                 # 33 of 36 functions are identical in every word and relocation. Two more have
                 # identical words and differ only in the symbol name of one callee: the copies of
