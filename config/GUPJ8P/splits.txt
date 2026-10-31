@@ -1242,6 +1242,9 @@ CRI/uty_tmr.c:
 CRI/uty_ppc.c:
 	.text       start:0x80402CC0 end:0x80402D28
 
+CRI/mwsfdrsc.c:
+	.text       start:0x80403694 end:0x8040369C
+
 CRI/mwsfdsvm.c:
 	.text       start:0x80403714 end:0x804039D8
 	.bss        start:0x805DDD18 end:0x805DDE28
