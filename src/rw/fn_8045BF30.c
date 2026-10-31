@@ -32,14 +32,14 @@ typedef struct BinMesh {
 } BinMesh;
 CHECK_SIZEOF(BinMesh, 0x8);
 
-/* The mesh unit's statics. The original initialises them as an aggregate, which places them in
- * .sdata even though they are zero (inferred). */
-typedef struct MeshStatics {
-    /* 0x0 */ RwFreeList *buildMeshFreeList;
-} MeshStatics;
-CHECK_SIZEOF(MeshStatics, 0x4);
-
-MeshStatics lbl_805EDDC0 = {NULL};
+/* The build mesh free list (inferred).
+ *
+ * Matching workaround: explicit_zero_data keeps this zero-initialised pointer in .sdata, where the
+ * original symbol is (0x805EDDC0); without it the pointer is emitted in .sbss. Revisit when the
+ * original declaration is found. */
+#pragma explicit_zero_data on
+RwFreeList *lbl_805EDDC0 = NULL;
+#pragma explicit_zero_data reset
 
 RwModuleInfo lbl_805F14F0;
 
@@ -50,9 +50,9 @@ RpMeshHeader *fn_8045BF30(RwUInt32 size) {
 
 /* Destroys the build mesh free list (inferred) */
 static inline void MeshDestroyFreeList(void) {
-    if (lbl_805EDDC0.buildMeshFreeList != NULL) {
-        fn_8047FCDC(lbl_805EDDC0.buildMeshFreeList);
-        lbl_805EDDC0.buildMeshFreeList = NULL;
+    if (lbl_805EDDC0 != NULL) {
+        fn_8047FCDC(lbl_805EDDC0);
+        lbl_805EDDC0 = NULL;
     }
 }
 
@@ -69,9 +69,9 @@ void *fn_8045BF64(void *instance, RwInt32 offset, RwInt32 size) {
 void *fn_8045BFBC(void *instance, RwInt32 offset, RwInt32 size) {
     lbl_805F14F0.globalsOffset = offset;
     if (lbl_805F14F0.numInstances == 0) {
-        lbl_805EDDC0.buildMeshFreeList =
+        lbl_805EDDC0 =
             fn_8047FBD8(sizeof(RpBuildMesh), 50, 4, rwMEMHINTDUR_GLOBAL | rwID_MESHMODULE);
-        if (lbl_805EDDC0.buildMeshFreeList == NULL) {
+        if (lbl_805EDDC0 == NULL) {
             MeshDestroyFreeList();
             return NULL;
         }
@@ -97,8 +97,7 @@ void *fn_8045BFBC(void *instance, RwInt32 offset, RwInt32 size) {
 
 /* Creates a build mesh with room for numTriangles triangles */
 RpBuildMesh *fn_8045C144(RwUInt32 numTriangles) {
-    RpBuildMesh *buildMesh =
-        RwFreeListAlloc(lbl_805EDDC0.buildMeshFreeList, rwMEMHINTDUR_EVENT | rwID_MESHMODULE);
+    RpBuildMesh *buildMesh = RwFreeListAlloc(lbl_805EDDC0, rwMEMHINTDUR_EVENT | rwID_MESHMODULE);
 
     if (buildMesh != NULL) {
         buildMesh->numTriangles = 0;
@@ -108,7 +107,7 @@ RpBuildMesh *fn_8045C144(RwUInt32 numTriangles) {
             buildMesh->meshTriangles =
                 RwMalloc(bytes, rwMEMHINTFLAG_RESIZABLE | rwMEMHINTDUR_EVENT | rwID_MESHMODULE);
             if (buildMesh->meshTriangles == NULL) {
-                RwFreeListFree(lbl_805EDDC0.buildMeshFreeList, buildMesh);
+                RwFreeListFree(lbl_805EDDC0, buildMesh);
                 RPWORLDERROR((E_RW_NOMEM, bytes));
                 return NULL;
             }
@@ -128,7 +127,7 @@ RwBool fn_8045C26C(RpBuildMesh *buildMesh) {
         RwFree(buildMesh->meshTriangles);
         buildMesh->meshTriangles = NULL;
     }
-    RwFreeListFree(lbl_805EDDC0.buildMeshFreeList, buildMesh);
+    RwFreeListFree(lbl_805EDDC0, buildMesh);
     return TRUE;
 }
 
