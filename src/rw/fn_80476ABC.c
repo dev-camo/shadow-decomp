@@ -87,30 +87,15 @@ Rt2dPath *fn_80476C4C(RwStream *stream) {
     return result;
 }
 
-/* Interpolates a brush edge's colour at a fraction of the path length */
-#define STROKECOLOR(vertex, base, delta, t)                                                        \
-    do {                                                                                           \
-        RwRGBAReal col_;                                                                           \
-                                                                                                   \
-        col_.red = (delta).red * (t);                                                              \
-        col_.green = (delta).green * (t);                                                          \
-        col_.blue = (delta).blue * (t);                                                            \
-        col_.alpha = (delta).alpha * (t);                                                          \
-        col_.red = (base).red + col_.red;                                                          \
-        col_.green = (base).green + col_.green;                                                    \
-        col_.blue = (base).blue + col_.blue;                                                       \
-        col_.alpha = (base).alpha + col_.alpha;                                                    \
-        (vertex)->color.red = col_.red;                                                            \
-        (vertex)->color.green = col_.green;                                                        \
-        (vertex)->color.blue = col_.blue;                                                          \
-        (vertex)->color.alpha = col_.alpha;                                                        \
-    } while (0)
-
-/* Sets a stroke vertex's colour and texture coordinates from a brush edge */
+/* Sets a stroke vertex's colour and texture coordinates from a brush edge.
+ *
+ * Matching workaround: the uniform colour is read into byte locals before it is stored. Storing
+ * each component straight from the brush makes fn_80476CF8 differ in 104 words instead of 88.
+ * Revisit when the original form of the colour copy is found. */
 #define STROKEVERTEX(vertex, edge, dedge, dist)                                                    \
     do {                                                                                           \
         if (brush->flag & FIELDRGBA) {                                                             \
-            STROKECOLOR(vertex, brush->edge.col, brush->dedge.col, (dist) * invLength);            \
+            RT2DEDGECOLOR(vertex, brush->edge.col, brush->dedge.col, (dist) * invLength);          \
         } else {                                                                                   \
             RwUInt8 red_ = brush->colorCache.red;                                                  \
             RwUInt8 green_ = brush->colorCache.green;                                              \
@@ -166,23 +151,22 @@ Rt2dPath *fn_80476CF8(Rt2dPath *path, Rt2dBrush *brush) {
             flat = fn_8047548C();
             fn_804758C8(flat, path);
         }
-        if (flat->numPoints == -1) {
+        if (flat->numPoints == rt2dPATHLOCKED) {
             node = fn_8047DFAC(flat->points);
         } else {
             node = flat->points;
         }
         numPoints = flat->numPoints;
-        if (numPoints == -1) {
+        if (numPoints == rt2dPATHLOCKED) {
             numPoints = fn_8047E03C(flat->points);
         }
 
         if (brush->texture != NULL) {
-            RwUInt32 filterAddressing = brush->texture->filterAddressing;
-            RwUInt32 filter = filterAddressing & 0xFF;
+            RwUInt32 filter = RwTextureGetFilterMode(brush->texture);
             RwUInt32 address = 0;
-            RwUInt32 addressV = (filterAddressing >> 12) & 0xF;
+            RwUInt32 addressV = RwTextureGetAddressingV(brush->texture);
 
-            if (((filterAddressing >> 8) & 0xF) == addressV) {
+            if (RwTextureGetAddressingU(brush->texture) == addressV) {
                 address = addressV;
             }
             RwRenderStateSet(rwRENDERSTATETEXTURERASTER, brush->texture->raster);
@@ -198,7 +182,8 @@ Rt2dPath *fn_80476CF8(Rt2dPath *path, Rt2dBrush *brush) {
         numVertices = 0;
         invLength = 1.0f / node[numPoints - 1].dist;
         for (i = 0; i < numPoints; i++, node++) {
-            if (numVertices >= 62) {
+            /* each point adds two vertices, one on each side of the stroke */
+            if (numVertices >= rt2dVERTEXBUFFERSIZE - 2) {
                 FLUSHSTROKE();
                 vertex = lbl_805E1950.vertexBuffer;
                 numVertices = 0;

@@ -89,30 +89,15 @@ Rt2dFont *fn_80470AC4(Rt2dFont *font, const RwChar *string, RwReal height, RwV2d
     return font;
 }
 
-/* Interpolates a brush's colour along its edge at a fraction of the string */
-#define BRUSHEDGECOLOR(vertex, base, delta, t)                                                     \
-    do {                                                                                           \
-        RwRGBAReal col_;                                                                           \
-                                                                                                   \
-        col_.red = (delta).red * (t);                                                              \
-        col_.green = (delta).green * (t);                                                          \
-        col_.blue = (delta).blue * (t);                                                            \
-        col_.alpha = (delta).alpha * (t);                                                          \
-        col_.red = (base).red + col_.red;                                                          \
-        col_.green = (base).green + col_.green;                                                    \
-        col_.blue = (base).blue + col_.blue;                                                       \
-        col_.alpha = (base).alpha + col_.alpha;                                                    \
-        (vertex)->color.red = col_.red;                                                            \
-        (vertex)->color.green = col_.green;                                                        \
-        (vertex)->color.blue = col_.blue;                                                          \
-        (vertex)->color.alpha = col_.alpha;                                                        \
-    } while (0)
-
-/* Sets a vertex's colour from the brush: interpolated along an edge, or uniform */
+/* Sets a vertex's colour from the brush: interpolated along an edge, or uniform.
+ *
+ * Matching workaround: the uniform colour is read into byte locals before it is stored. Storing
+ * each component straight from the brush makes fn_80470C54 differ in 220 words instead of 212.
+ * Revisit when the original form of the colour copy is found. */
 #define BRUSHVERTEXCOLOR(vertex, edge, dedge, t)                                                   \
     do {                                                                                           \
         if (brush->flag & FIELDRGBA) {                                                             \
-            BRUSHEDGECOLOR(vertex, brush->edge.col, brush->dedge.col, t);                          \
+            RT2DEDGECOLOR(vertex, brush->edge.col, brush->dedge.col, t);                           \
         } else {                                                                                   \
             RwUInt8 red_ = brush->colorCache.red;                                                  \
             RwUInt8 green_ = brush->colorCache.green;                                              \
@@ -190,7 +175,7 @@ Rt2dFont *fn_80470C54(Rt2dFont *font, const RwChar *string, RwReal height, RwV2d
                     FLUSHCHARS();
                     if (charRect->texture != texture) {
                         RwRenderStateSet(rwRENDERSTATETEXTUREFILTER,
-                                         (void *)(charRect->texture->filterAddressing & 0xFF));
+                                         (void *)RwTextureGetFilterMode(charRect->texture));
                         RwRenderStateSet(rwRENDERSTATETEXTURERASTER, charRect->texture->raster);
                         texture = charRect->texture;
                     }

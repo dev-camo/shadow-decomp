@@ -17,7 +17,8 @@ void fn_80470474(void) {
 }
 
 RwBool fn_804704D4(void) {
-    lbl_805E1950.vertexBuffer = RwMalloc(0x900, rwMEMHINTDUR_GLOBAL | rwID_2DPLUGIN);
+    lbl_805E1950.vertexBuffer =
+        RwMalloc(rt2dVERTEXBUFFERSIZE * sizeof(RwIm3DVertex), rwMEMHINTDUR_GLOBAL | rwID_2DPLUGIN);
     lbl_805E1950.brushFreeList = fn_8047FC04(sizeof(Rt2dBrush), lbl_805EDDF0, 16, lbl_805EDDF4,
                                              &lbl_805E18E0, rwMEMHINTDUR_GLOBAL | rwID_2DBRUSH);
     return TRUE;

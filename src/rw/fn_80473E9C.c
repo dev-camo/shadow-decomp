@@ -169,7 +169,7 @@ RwBool fn_80474498(void) {
     lbl_805E1950.deviceMatrixValid = FALSE;
     lbl_805E1950.field_0x330 = 7;
     RwMatrixSetIdentity(&lbl_805E1950.baseMatrix);
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < rt2dVERTEXBUFFERSIZE; i++) {
         lbl_805E1950.indices[i] = i;
     }
     for (i = 1; i < rt2dCTMSTACKSIZE; i++) {
