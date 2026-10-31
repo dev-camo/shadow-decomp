@@ -300,7 +300,8 @@ RpWorld *fn_804556F4(RwStream *stream); /* stream read */
 RwBool fn_8045FFA0(RpWorld *world);     /* destroy */
 /* finishes a world read from a stream; the world, or NULL on failure */
 RpWorld *fn_8045FDB0(RpWorld *world);
-void fn_8045FBA4(RpWorld *world);
+RpWorld *fn_8045FBA4(RpWorld *world);
+RpWorld *fn_80460138(RwBBox *boundingBox); /* creates an empty world */
 void fn_8045FCFC(RpWorld *world, RwUInt32 size); /* takes the world's allocation size */
 /* sets the world sector render callback, or the default one for NULL */
 RpWorld *fn_80460120(RpWorld *world, RpWorldSectorCallBackRender callBack);
