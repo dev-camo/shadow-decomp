@@ -2,6 +2,7 @@
 #define GAME_CSD_CSDLOADER_H
 
 #include <dolphin/types.h>
+#include "Game/CSD/CTexList.h"
 #include "Game/CSD/csdAccess.h"
 #include "layout_check.h"
 
@@ -34,6 +35,18 @@ struct Keyframe {
 };
 CHECK_SIZEOF(Chao::CSD::Keyframe, 0x18);
 
+/* The keys of one animation channel, in frame order. Names are inferred from EvaluateTrack. */
+struct KeyTrack {
+    /* 0x00 */ s32 loopMode;
+    /* 0x04 */ s32 keyCount;
+    /* 0x08 */ Keyframe *keys;
+};
+CHECK_SIZEOF(Chao::CSD::KeyTrack, 0xC);
+
+/* The loop mode of a track that repeats (name inferred from EvaluateTrack; other modes stop at
+ * the last key). */
+enum KeyTrackLoopMode { KEYTRACK_LOOP = 2 };
+
 /* A frame time of a pattern (sprite frame) animation packs two pattern indices and the blend
  * between them: the integer part is the index of the first pattern plus 10000 times the index of
  * the second, the fraction is the weight of the second. A first index above 10000 is an error
@@ -57,6 +70,40 @@ void ResolveProject(ProjectData **project, void *file);
  * vertex colours scaled by the entry's colour field (called by code outside csdLoader.cpp). */
 void SetEntryColors(MotionPaletteEntry *entry);
 void TintEntryColors(MotionPaletteEntry *entry);
+
+/* Draws a scene's elements through the render state, layer by layer, element by element. The
+ * texture list supplies the textures of the elements. The unused argument is passed along to
+ * DrawTextElement, which ignores it (its type is unknown). Names are inferred. */
+void DrawScene(const SceneData *scene, const RCPtr<CTexList> &texList, void *unused,
+               const MotionPalette *palette);
+void DrawLayer(const SceneData *scene, const LayerData *layer, const RCPtr<CTexList> &texList,
+               void *unused, const MotionPaletteLayer *paletteLayer);
+/* Draws an element of type 1 (a quad) or 2 (text) when the element's field_0x8 and the entry's
+ * field_0x140 are nonzero and the entry's field_0x20 is zero. */
+void DrawElement(const SceneData *scene, const ElementData *element, const RCPtr<CTexList> &texList,
+                 void *unused, MotionPaletteEntry *entry);
+void DrawQuadElement(const SceneData *scene, const ElementData *element,
+                     const RCPtr<CTexList> &texList, MotionPaletteEntry *entry);
+void DrawTextElement(const SceneData *scene, const ElementData *element,
+                     const RCPtr<CTexList> &texList, void *unused, MotionPaletteEntry *entry);
+
+/* Returns the index the scene's name table gives the name, or -1 (name inferred; the table's
+ * meaning is not known). */
+int FindSceneNameIndex(const SceneData *scene, const char *name);
+
+/* Rescales an entry's vertices for the screen: each is transformed by the entry's matrix into the
+ * drawing vertices, with the y coordinates adjusted by the element's aspect ratio relative to the
+ * screen's and the whole offset by the screen's scaled offset (name inferred). */
+void ApplyScreenAspect(MotionPaletteEntry *entry, const ElementData *element);
+
+/* Evaluates a channel's track at a frame and stores the raw value in *out: the last or first
+ * key's value outside the keys, otherwise what the channel number selects (channels 1 to 5
+ * interpolate by the key's interpolation, 6 blends two pattern indices, 7 to 11 interpolate
+ * colours; others hold the key's value). A looping track wraps the frame. *running is cleared
+ * when the frame is at or past the last key of a non-looping (or zero-length looping) track while
+ * the speed is positive, or before the first key while it is negative (names inferred). */
+void EvaluateTrack(u32 *out, const KeyTrack *track, int channel, f32 frame, f32 speed,
+                   int *running);
 
 /* ResolveProject, then NormalizeProject on the result. */
 void LoadProject(ProjectData **project, void *file);

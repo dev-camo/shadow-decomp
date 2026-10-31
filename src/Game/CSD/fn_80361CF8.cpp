@@ -6,10 +6,6 @@
 #include <cstdarg>
 #include <cstdio>
 
-/* Undecompiled callee in the loader unit; it frees the matrix stack and the texture list unit's
- * global tree (behaviour inferred). */
-extern "C" void fn_8035F394(void);
-
 namespace Chao {
 namespace CSD {
 
@@ -64,5 +60,5 @@ void PrintFatalError(const char *format, ...) {
 
 /* Called by the game when it shuts the library down (behaviour inferred). */
 extern "C" void fn_80361CF8(void) {
-    fn_8035F394();
+    Chao::CSD::TermLibrary();
 }
