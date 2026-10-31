@@ -78,6 +78,15 @@ Game/ChaoHolder.cpp:
 	.sbss       start:0x805EEE68 end:0x805EEE90
 	.sdata2     start:0x805F4160 end:0x805F41B8
 
+Game/Cream.cpp:
+	.text       start:0x80134208 end:0x801352A4
+	.ctors      start:0x804A9D5C end:0x804A9D60
+	.rodata     start:0x804BF180 end:0x804BF278
+	.data       start:0x80528A98 end:0x80528B20
+	.sdata      start:0x805E5F80 end:0x805E5FB8
+	.sbss       start:0x805EEEF0 end:0x805EEF10
+	.sdata2     start:0x805F4288 end:0x805F42B8
+
 Game/ThreatObjHolder.cpp:
 	.text       start:0x8013EDCC end:0x80140278
 	.ctors      start:0x804A9D64 end:0x804A9D68
