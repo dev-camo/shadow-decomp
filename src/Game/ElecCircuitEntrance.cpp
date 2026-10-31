@@ -18,6 +18,7 @@
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetTypeInfo.h"
+#include "Game/PathCtrl.h"
 #include "Game/SharedConstants.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
 #include "Game/UnkManager_800CB69C.h"
@@ -31,21 +32,6 @@
 
 class ElecCircuitEntrance;
 
-/* The collision manager that fn_8001B494 returns and a contact query object (placeholder names;
- * the original classes are unknown). The query object is 0x58 bytes: the frame of the callback
- * that holds one reserves that much. */
-class UnkCollision_8001B494;
-
-class UnkContactQuery_80019224 {
-  public:
-    UnkContactQuery_80019224();
-    ~UnkContactQuery_80019224();
-
-    /* Not mapped (the constructor initialises members at 0x8 to 0x54). */
-    u8 field_0x0[0x58];
-};
-CHECK_SIZEOF(UnkContactQuery_80019224, 0x58);
-
 /* What a handle wraps (placeholder name). */
 class UnkHandleTarget_800768D8;
 
@@ -53,10 +39,10 @@ class UnkHandleTarget_800768D8;
  * compiler-generated copy constructor and destructor are the functions at 0x800811AC and
  * 0x800ABC9C. */
 struct UnkHandle_800ABCE8 {
-    /* Builds the handle for the contact of query with the character info target; result is the
-     * value fn_8001CDA0 stored (behaviour inferred). */
-    UnkHandle_800ABCE8(const boost::weak_ptr<CharInfo> &target, UnkContactQuery_80019224 *query,
-                       int result);
+    /* Builds the handle for path and the character info target; result is the value
+     * fn_8001CDA0 stored (behaviour inferred). */
+    UnkHandle_800ABCE8(const boost::weak_ptr<CharInfo> &target,
+                       SonicteamUSA::System::PathCtrl *path, int result);
 
     /* 0x0 */ boost::shared_ptr<UnkHandleTarget_800768D8> m_ptr;
 };
@@ -81,10 +67,6 @@ CHECK_SIZEOF(Player::ElectricCircuitCommand, 0x20);
 } // namespace Player
 
 extern "C" {
-UnkCollision_8001B494 *fn_8001B494(void);
-bool fn_8001CDA0(UnkCollision_8001B494 *collision, UnkContactQuery_80019224 *query, float arg2,
-                 GadgetCharInfo *charInfo, const Fn8040Vector3 *direction, int *result, int arg6,
-                 int arg7);
 bool fn_800B78B0(const boost::shared_ptr<CharInfo> &charInfo);
 }
 
@@ -161,16 +143,16 @@ static void fn_801F888C(boost::shared_ptr<CharInfo> hit, UnkHitContext_801F7E28 
             return;
         }
 
-        UnkContactQuery_80019224 query;
+        SonicteamUSA::System::PathCtrl path;
         Fn8040Vector3 direction;
         int result;
 
         fn_800091EC(&direction, &lbl_805E07A0);
         fn_801F8040(&direction.x, &direction.z, context->m_owner->m_charInfo->m_rotation.y, -1.0f);
 
-        if (fn_8001CDA0(fn_8001B494(), &query, 0.0f, context->m_owner->m_charInfo.get(), &direction,
+        if (fn_8001CDA0(fn_8001B494(), &path, 0.0f, context->m_owner->m_charInfo.get(), &direction,
                         &result, 0, 0)) {
-            UnkHandle_800ABCE8 handle(boost::weak_ptr<CharInfo>(hit), &query, result);
+            UnkHandle_800ABCE8 handle(boost::weak_ptr<CharInfo>(hit), &path, result);
             Player::ElectricCircuitCommand *command =
                 new Player::ElectricCircuitCommand(handle, 4, false);
 
@@ -205,7 +187,7 @@ ElecCircuitEntrance::ElecCircuitEntrance(Task *parent, UnkGadgetOwner_800C9CD0 *
 ElecCircuitEntrance::~ElecCircuitEntrance() {}
 
 void ElecCircuitEntrance::UpdateBody(float dt) {
-    fn_8015BE9C(field_0x3C.get());
+    fn_8015BE9C(field_0x3C.get(), dt);
 }
 
 void ElecCircuitEntrance::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
