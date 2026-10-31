@@ -43,10 +43,10 @@ RwUInt32 fn_80466B58(void *data, RwV3d *positions, RwInt32 type, RwInt32 numVert
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwUInt8 *)destination)[0] = scale * (positions->x - originX);
-            ((RwUInt8 *)destination)[1] = scale * (positions->y - originY);
-            ((RwUInt8 *)destination)[2] = scale * (positions->z - originZ);
-            positions++;
+            const RwV3d *position = positions++;
+            ((RwUInt8 *)destination)[0] = scale * (position->x - originX);
+            ((RwUInt8 *)destination)[1] = scale * (position->y - originY);
+            ((RwUInt8 *)destination)[2] = scale * (position->z - originZ);
             destination = (RwUInt8 *)destination + stride;
         }
         size = numVertices * 3;
@@ -57,10 +57,10 @@ RwUInt32 fn_80466B58(void *data, RwV3d *positions, RwInt32 type, RwInt32 numVert
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwInt8 *)destination)[0] = scale * (positions->x - originX);
-            ((RwInt8 *)destination)[1] = scale * (positions->y - originY);
-            ((RwInt8 *)destination)[2] = scale * (positions->z - originZ);
-            positions++;
+            const RwV3d *position = positions++;
+            ((RwInt8 *)destination)[0] = scale * (position->x - originX);
+            ((RwInt8 *)destination)[1] = scale * (position->y - originY);
+            ((RwInt8 *)destination)[2] = scale * (position->z - originZ);
             destination = (RwUInt8 *)destination + stride;
         }
         size = numVertices * 3;
@@ -71,10 +71,10 @@ RwUInt32 fn_80466B58(void *data, RwV3d *positions, RwInt32 type, RwInt32 numVert
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwUInt16 *)destination)[0] = scale * (positions->x - originX);
-            ((RwUInt16 *)destination)[1] = scale * (positions->y - originY);
-            ((RwUInt16 *)destination)[2] = scale * (positions->z - originZ);
-            positions++;
+            const RwV3d *position = positions++;
+            ((RwUInt16 *)destination)[0] = scale * (position->x - originX);
+            ((RwUInt16 *)destination)[1] = scale * (position->y - originY);
+            ((RwUInt16 *)destination)[2] = scale * (position->z - originZ);
             destination = (RwUInt8 *)destination + stride;
         }
         size = numVertices * 6;
@@ -85,10 +85,10 @@ RwUInt32 fn_80466B58(void *data, RwV3d *positions, RwInt32 type, RwInt32 numVert
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwInt16 *)destination)[0] = scale * (positions->x - originX);
-            ((RwInt16 *)destination)[1] = scale * (positions->y - originY);
-            ((RwInt16 *)destination)[2] = scale * (positions->z - originZ);
-            positions++;
+            const RwV3d *position = positions++;
+            ((RwInt16 *)destination)[0] = scale * (position->x - originX);
+            ((RwInt16 *)destination)[1] = scale * (position->y - originY);
+            ((RwInt16 *)destination)[2] = scale * (position->z - originZ);
             destination = (RwUInt8 *)destination + stride;
         }
         size = numVertices * 6;
@@ -128,10 +128,10 @@ RwUInt32 fn_80467BC8(void *data, RwV3d *normals, RwInt32 type, RwInt32 numVertic
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwInt8 *)destination)[0] = normals->x * scale;
-            ((RwInt8 *)destination)[1] = normals->y * scale;
-            ((RwInt8 *)destination)[2] = normals->z * scale;
-            normals++;
+            const RwV3d *normal = normals++;
+            ((RwInt8 *)destination)[0] = normal->x * scale;
+            ((RwInt8 *)destination)[1] = normal->y * scale;
+            ((RwInt8 *)destination)[2] = normal->z * scale;
             destination = (RwUInt8 *)destination + stride;
         }
         size = numVertices * 3;
@@ -143,10 +143,10 @@ RwUInt32 fn_80467BC8(void *data, RwV3d *normals, RwInt32 type, RwInt32 numVertic
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwInt16 *)destination)[0] = normals->x * scale;
-            ((RwInt16 *)destination)[1] = normals->y * scale;
-            ((RwInt16 *)destination)[2] = normals->z * scale;
-            normals++;
+            const RwV3d *normal = normals++;
+            ((RwInt16 *)destination)[0] = normal->x * scale;
+            ((RwInt16 *)destination)[1] = normal->y * scale;
+            ((RwInt16 *)destination)[2] = normal->z * scale;
             destination = (RwUInt8 *)destination + stride;
         }
         size = numVertices * 6;
@@ -263,10 +263,10 @@ RwUInt32 fn_80468ADC(void *data, RwV3d *normals, RwInt32 type, RwInt32 numVertic
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwInt8 *)destination)[0] = normals->x * scale;
-            ((RwInt8 *)destination)[1] = normals->y * scale;
-            ((RwInt8 *)destination)[2] = normals->z * scale;
-            normals++;
+            const RwV3d *normal = normals++;
+            ((RwInt8 *)destination)[0] = normal->x * scale;
+            ((RwInt8 *)destination)[1] = normal->y * scale;
+            ((RwInt8 *)destination)[2] = normal->z * scale;
             destination = (RwUInt8 *)destination + stride;
         }
         size = numVertices * 3;
@@ -278,10 +278,10 @@ RwUInt32 fn_80468ADC(void *data, RwV3d *normals, RwInt32 type, RwInt32 numVertic
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwInt16 *)destination)[0] = normals->x * scale;
-            ((RwInt16 *)destination)[1] = normals->y * scale;
-            ((RwInt16 *)destination)[2] = normals->z * scale;
-            normals++;
+            const RwV3d *normal = normals++;
+            ((RwInt16 *)destination)[0] = normal->x * scale;
+            ((RwInt16 *)destination)[1] = normal->y * scale;
+            ((RwInt16 *)destination)[2] = normal->z * scale;
             destination = (RwUInt8 *)destination + stride;
         }
         size = numVertices * 6;
@@ -383,6 +383,7 @@ RwUInt32 fn_804699F0(void *data, RwRGBA *colors, RwInt32 type, RwInt32 numVertic
                      RwUInt32 stride) {
     RwUInt32 size = 0;
     void *destination;
+    RwUInt8 *bytes;
     RwInt32 i;
 
     switch (type) {
@@ -392,9 +393,9 @@ RwUInt32 fn_804699F0(void *data, RwRGBA *colors, RwInt32 type, RwInt32 numVertic
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            *(RwUInt16 *)destination = (((RwUInt32)colors->red >> 3) << 11) |
-                                       (((RwUInt32)colors->green & 0xFC) << 3) |
-                                       ((RwUInt32)colors->blue >> 3);
+            *(RwUInt16 *)destination = (((colors->red >> 3) & 0x1F) << 11) |
+                                       (((colors->green >> 2) & 0x3F) << 5) |
+                                       ((colors->blue >> 3) & 0x1F);
             colors++;
             destination = (RwUInt8 *)destination + stride;
         }
@@ -406,10 +407,10 @@ RwUInt32 fn_804699F0(void *data, RwRGBA *colors, RwInt32 type, RwInt32 numVertic
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwUInt8 *)destination)[0] = colors->red;
-            ((RwUInt8 *)destination)[1] = colors->green;
-            ((RwUInt8 *)destination)[2] = colors->blue;
-            colors++;
+            const RwRGBA *color = colors++;
+            ((RwUInt8 *)destination)[0] = color->red;
+            ((RwUInt8 *)destination)[1] = color->green;
+            ((RwUInt8 *)destination)[2] = color->blue;
             destination = (RwUInt8 *)destination + stride;
         }
         size = numVertices * 3;
@@ -420,10 +421,9 @@ RwUInt32 fn_804699F0(void *data, RwRGBA *colors, RwInt32 type, RwInt32 numVertic
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            *(RwUInt16 *)destination =
-                (((RwUInt32)colors->red & 0xF0) << 8) | (((RwUInt32)colors->green & 0xF0) << 4) |
-                ((RwUInt32)colors->blue & 0xF0) | ((RwUInt32)colors->alpha >> 4);
-            colors++;
+            const RwRGBA *color = colors++;
+            *(RwUInt16 *)destination = ((color->red & 0xF0) << 8) | ((color->green & 0xF0) << 4) |
+                                       (color->blue & 0xF0) | ((color->alpha >> 4) & 0x0F);
             destination = (RwUInt8 *)destination + stride;
         }
         size = numVertices * 2;
@@ -432,13 +432,13 @@ RwUInt32 fn_804699F0(void *data, RwRGBA *colors, RwInt32 type, RwInt32 numVertic
         if (stride == 0) {
             stride = 3;
         }
-        destination = data;
+        bytes = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwUInt8 *)destination)[0] = (colors->green >> 6) | (colors->red & 0xFC);
-            ((RwUInt8 *)destination)[1] = (colors->blue >> 4) | ((colors->green << 2) & 0xF0);
-            ((RwUInt8 *)destination)[2] = (colors->alpha >> 2) | ((colors->blue << 4) & 0xC0);
+            bytes[0] = (colors->red & 0xFC) | ((colors->green >> 6) & 0x03);
+            bytes[1] = ((colors->green << 2) & 0xF0) | ((colors->blue >> 4) & 0x0F);
+            bytes[2] = ((colors->blue << 4) & 0xC0) | ((colors->alpha >> 2) & 0x3F);
             colors++;
-            destination = (RwUInt8 *)destination + stride;
+            bytes += stride;
         }
         size = numVertices * 3;
         break;
@@ -464,6 +464,8 @@ RwUInt32 fn_8046A270(void *data, RwTexCoords *texCoords, RwInt32 type, RwInt32 n
                      RwUInt32 stride, RwReal scale) {
     RwUInt32 size = 0;
     void *destination;
+    RwUInt8 *bytes;
+    RwInt8 *signedBytes;
     RwInt32 i;
 
     switch (type) {
@@ -471,12 +473,12 @@ RwUInt32 fn_8046A270(void *data, RwTexCoords *texCoords, RwInt32 type, RwInt32 n
         if (stride == 0) {
             stride = 2 * sizeof(RwUInt8);
         }
-        destination = data;
+        bytes = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwUInt8 *)destination)[0] = texCoords->u * scale;
-            ((RwUInt8 *)destination)[1] = texCoords->v * scale;
-            texCoords++;
-            destination = (RwUInt8 *)destination + stride;
+            const RwTexCoords *texCoord = texCoords++;
+            bytes[0] = texCoord->u * scale;
+            bytes[1] = texCoord->v * scale;
+            bytes += stride;
         }
         size = numVertices * 2;
         break;
@@ -484,12 +486,12 @@ RwUInt32 fn_8046A270(void *data, RwTexCoords *texCoords, RwInt32 type, RwInt32 n
         if (stride == 0) {
             stride = 2 * sizeof(RwInt8);
         }
-        destination = data;
+        signedBytes = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwInt8 *)destination)[0] = texCoords->u * scale;
-            ((RwInt8 *)destination)[1] = texCoords->v * scale;
-            texCoords++;
-            destination = (RwUInt8 *)destination + stride;
+            const RwTexCoords *texCoord = texCoords++;
+            signedBytes[0] = texCoord->u * scale;
+            signedBytes[1] = texCoord->v * scale;
+            signedBytes += stride;
         }
         size = numVertices * 2;
         break;
@@ -499,9 +501,9 @@ RwUInt32 fn_8046A270(void *data, RwTexCoords *texCoords, RwInt32 type, RwInt32 n
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwUInt16 *)destination)[0] = texCoords->u * scale;
-            ((RwUInt16 *)destination)[1] = texCoords->v * scale;
-            texCoords++;
+            const RwTexCoords *texCoord = texCoords++;
+            ((RwUInt16 *)destination)[0] = texCoord->u * scale;
+            ((RwUInt16 *)destination)[1] = texCoord->v * scale;
             destination = (RwUInt8 *)destination + stride;
         }
         size = numVertices * 4;
@@ -512,9 +514,9 @@ RwUInt32 fn_8046A270(void *data, RwTexCoords *texCoords, RwInt32 type, RwInt32 n
         }
         destination = data;
         for (i = 0; i < numVertices; i++) {
-            ((RwInt16 *)destination)[0] = texCoords->u * scale;
-            ((RwInt16 *)destination)[1] = texCoords->v * scale;
-            texCoords++;
+            const RwTexCoords *texCoord = texCoords++;
+            ((RwInt16 *)destination)[0] = texCoord->u * scale;
+            ((RwInt16 *)destination)[1] = texCoord->v * scale;
             destination = (RwUInt8 *)destination + stride;
         }
         size = numVertices * 4;
