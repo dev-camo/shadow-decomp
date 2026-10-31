@@ -430,6 +430,9 @@ config.libs = [
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/nubinit.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/msg.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/msgbuf.c"),
+            # Matching workaround: the library is built with -sdata 0, but the original serpoll
+            # keeps its 4-byte gTRKInputPendingPtr pointer in .sbss; at -sdata 0 it lands in
+            # .bss. Revisit when the original per-unit small-data threshold is known.
             Object(
                 Matching,
                 "PowerPC_EABI_Support/MetroTRK/serpoll.c",
@@ -452,6 +455,9 @@ config.libs = [
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/target_options.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/mslsupp.c"),
             Object(Matching, "PowerPC_EABI_Support/MetroTRK/UDP_Stubs.c"),
+            # Matching workaround: as serpoll.c above (the original keeps the 4-byte
+            # gIsInitialized in .sbss; at -sdata 0 it is addressed through .bss with lis/addi
+            # and the code differs).
             Object(
                 Matching,
                 "PowerPC_EABI_Support/MetroTRK/ddh/main.c",
@@ -1339,7 +1345,9 @@ config.libs = [
             Object(Matching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/file_io.c"),
             Object(Matching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/FILE_POS.c"),
             Object(Matching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/locale.c"),
-            # no auto-inlining: the original keeps is_utf8_complete out of line
+            # Matching workaround: -inline noauto. At the library's default setting
+            # is_utf8_complete is also inlined into mbtowc (0x1C4 bytes instead of 0x120); the
+            # original keeps it out of line. Revisit when the original unit's flags are known.
             Object(
                 Matching,
                 "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/mbstring.c",
