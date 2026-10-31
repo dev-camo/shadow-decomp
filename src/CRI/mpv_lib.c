@@ -65,12 +65,14 @@ Sint32 mpvlib_iix;
 static MPVLIB_WORK mpvlib_libwork;
 static const Char8 *cri_verstr_ptr;
 
-/* Matching workaround: order-only stand-ins for functions the linker stripped from the game; their
- * bodies are unknown. MWCC lays out .bss by first reference, so these never-called functions refer
- * to the variables whose first use in the remaining functions comes too late for their storage
- * order. Each refers to one variable: one function for the first three makes MWCC pool the .bss
- * addresses earlier, which changes MPV_Init's register assignment (18 words); the last two follow
- * the same form. Revisit when the stripped functions' bodies are known. */
+/* Matching workaround: stand-ins for functions the linker stripped from the game. The bodies are
+ * not the original's. MWCC lays out .bss by first reference, so these never-called functions refer
+ * to the variables whose first use in the surviving functions comes too late for their storage
+ * order. Each refers to one variable: a single function referring to all three makes MWCC pool
+ * the .bss addresses earlier, which changes MPV_Init's register assignment (18 words). Without
+ * these three, mpvlib_use_lc, mpv_clip_0_255_tbl and mpv_clip_0_255_base move to the end of .bss
+ * and MPV_Init differs in 11 words (measured by compiling without them). Revisit when the stripped
+ * code is known. */
 static void *mpvlib_BssOrder1(void) {
     return &mpvlib_use_lc;
 }
@@ -95,8 +97,10 @@ Sint32 MPVLIB_CheckHn(MPV mpv) {
     return 0;
 }
 
-/* Matching workaround: as above, order-only stand-ins for the two words after mpvlib_mpvobj (no
- * surviving function uses them). */
+/* Matching workaround: stand-ins as above, for the two words after mpvlib_mpvobj (no surviving
+ * function uses them), one variable each like the first three. The bodies are not the original's.
+ * Without them MPV_Init and the .bss layout differ (measured by compiling without them). Revisit
+ * when the stripped code is known. */
 static void *mpvlib_BssOrder4(void) {
     return &mpvlib_oix;
 }
