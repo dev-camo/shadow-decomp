@@ -1,3 +1,4 @@
+// Dolphin SDK SI library: controller sampling rate.
 #include <dolphin.h>
 #include <dolphin/si.h>
 

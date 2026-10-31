@@ -1,3 +1,7 @@
+// Dolphin SDK OS library: reboot parameters.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: OSGetSavedRegion,
+// OSSetSaveRegion.
 #include <dolphin.h>
 #include <dolphin/os.h>
 
