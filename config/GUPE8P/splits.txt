@@ -416,6 +416,14 @@ dolphin/OSThread.c:
 dolphin/OSTime.c:
 	.text       start:0x803787E0 end:0x80378864
 
+dolphin/__start.c:
+	.init       start:0x80003100 end:0x80003400
+	.sbss       start:0x805F0F48 end:0x805F0F50
+
+dolphin/__ppc_eabi_init.c:
+	.init       start:0x80003400 end:0x80003458
+	.text       start:0x80378864 end:0x803788F8
+
 dolphin/mtx.c:
 	.text       start:0x803788F8 end:0x80378A18
 	.sdata      start:0x805EDB68 end:0x805EDB70
