@@ -26,7 +26,7 @@ typedef struct LightGlobals {
 } LightGlobals;
 CHECK_SIZEOF(LightGlobals, 0x4);
 
-#define LIGHTGLOBALS() ((LightGlobals *)((RwUInt8 *)lbl_805F15B4 + lbl_805F14D8.globalsOffset))
+#define LIGHTGLOBALS() RWPLUGINOFFSET(LightGlobals, lbl_805F15B4, lbl_805F14D8.globalsOffset)
 #define LIGHTGLOBAL(var) (LIGHTGLOBALS()->var)
 
 RwPluginRegistry lbl_8056D828 = {sizeof(RpLight), sizeof(RpLight), 0, 0, NULL, NULL};

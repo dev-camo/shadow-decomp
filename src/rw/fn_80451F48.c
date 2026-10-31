@@ -39,7 +39,7 @@ RwInt32 lbl_805F1460; /* world sector */
 RwInt32 lbl_805F145C;
 RwInt32 lbl_805F1458; /* geometry */
 
-#define USERDATALIST(object, offset) ((RpUserDataList *)((RwUInt8 *)(object) + (offset)))
+#define USERDATALIST(object, offset) RWPLUGINOFFSET(RpUserDataList, object, offset)
 
 /* engine plugin constructor */
 void *fn_80451F48(void *object, RwInt32 offset, RwInt32 size) {
