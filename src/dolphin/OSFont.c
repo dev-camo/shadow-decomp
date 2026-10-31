@@ -1,3 +1,7 @@
+// Dolphin SDK OS library: the console ROM fonts.
+// The following functions are not present as separate functions in this game's DOL; their bodies
+// are unverified unless they are inlined into a function that is present: OSGetFontWidth,
+// OSSetFontEncode, OSSetFontWidth.
 #include <dolphin.h>
 #include <dolphin/os.h>
 
@@ -11,7 +15,6 @@ static int FixedPitch;
 static ParseStringCallback ParseString;
 static u16 FontEncode = 0xFFFF;
 
-// prototypes
 static char *ParseStringS(u16 encode, const char *string, OSFontHeader **pfont, int *pfontCode);
 static char *ParseStringW(u16 encode, const char *string, OSFontHeader **pfont, int *pfontCode);
 
@@ -298,14 +301,17 @@ static void ReadROM(void *buf, int length, int offset) {
         }
 
         offset += len;
-        (u8 *)buf += len;
+        buf = (u8 *)buf + len;
     }
 }
 
 static u32 ReadFont(void *img, u16 encode, void *fontData) {
     u32 size;
+    // Matching workaround: frame padding that keeps the original 0x58-byte stack frame (0x50
+    // without it, 5 differing words); the public dolsdk2004 SDK decompilation uses the same form.
+    // Revisit when the original locals are known.
 #ifndef DEBUG
-    u32 padding[1]; // keeps the 0x58-byte stack frame (0x50 without it)
+    u32 padding[1];
 #endif
 
     if (encode == OS_FONT_ENCODE_SJIS) {
@@ -364,22 +370,22 @@ u32 OSLoadFont(OSFontHeader *fontData, void *tmp) {
 
     encode = OSGetFontEncode();
     switch (encode) {
-    case 0:
+    case OS_FONT_ENCODE_ANSI:
         FontDataAnsi = fontData;
-        size = ReadFont(tmp, 0, FontDataAnsi);
+        size = ReadFont(tmp, OS_FONT_ENCODE_ANSI, FontDataAnsi);
         break;
-    case 1:
+    case OS_FONT_ENCODE_SJIS:
         FontDataSjis = fontData;
-        size = ReadFont(tmp, 1, FontDataSjis);
+        size = ReadFont(tmp, OS_FONT_ENCODE_SJIS, FontDataSjis);
         break;
     case 3:
     case 4:
     case 5:
         FontDataAnsi = fontData;
-        size = ReadFont(tmp, 0, FontDataAnsi);
+        size = ReadFont(tmp, OS_FONT_ENCODE_ANSI, FontDataAnsi);
         if (size != 0) {
             FontDataSjis = (OSFontHeader *)((u8 *)FontDataAnsi + size);
-            size += ReadFont(tmp, 1, FontDataSjis);
+            size += ReadFont(tmp, OS_FONT_ENCODE_SJIS, FontDataSjis);
         }
         break;
     case 2:
@@ -463,14 +469,14 @@ static char *ParseStringW(u16 encode, const char *string, OSFontHeader **pfont, 
     }
 
     if (utf32 != 0) {
-        encode = 0;
+        encode = OS_FONT_ENCODE_ANSI;
         font = FontDataAnsi;
         code = OSUTF32toANSI(utf32);
 
         if (code == 0 || (FixedPitch != 0 && utf32 <= 0x7F)) {
             code = OSUTF32toSJIS(utf32);
             if (code != 0) {
-                encode = 1;
+                encode = OS_FONT_ENCODE_SJIS;
                 font = FontDataSjis;
             }
         }
@@ -575,10 +581,10 @@ int OSInitFont(OSFontHeader *fontData) {
 
     encode = OSGetFontEncode();
     switch (encode) {
-    case 0:
-        tmp = (void *)((u8 *)fontData + 0x1D120);
+    case OS_FONT_ENCODE_ANSI:
+        tmp = (void *)((u8 *)fontData + OS_FONT_SIZE_ANSI - OS_FONT_ROM_SIZE_ANSI);
         FontDataAnsi = fontData;
-        size = ReadFont(tmp, 0, FontDataAnsi);
+        size = ReadFont(tmp, OS_FONT_ENCODE_ANSI, FontDataAnsi);
         if (size == 0) {
             return 0;
         }
@@ -587,10 +593,10 @@ int OSInitFont(OSFontHeader *fontData) {
         FontDataAnsi->sheetImage = OSRoundUp32B(FontDataAnsi->sheetImage);
         ExpandFontSheet(FontDataAnsi, img, (u8 *)FontDataAnsi + FontDataAnsi->sheetImage);
         break;
-    case 1:
-        tmp = (void *)((u8 *)fontData + 0xD3F00);
+    case OS_FONT_ENCODE_SJIS:
+        tmp = (void *)((u8 *)fontData + OS_FONT_SIZE_SJIS - OS_FONT_ROM_SIZE_SJIS);
         FontDataSjis = fontData;
-        size = ReadFont(tmp, 1, FontDataSjis);
+        size = ReadFont(tmp, OS_FONT_ENCODE_SJIS, FontDataSjis);
         if (size == 0) {
             return 0;
         }
@@ -602,9 +608,10 @@ int OSInitFont(OSFontHeader *fontData) {
     case 3:
     case 4:
     case 5:
-        tmp = (void *)((u8 *)fontData + 0xF4020);
+        tmp = (void *)((u8 *)fontData + OS_FONT_SIZE_ANSI + OS_FONT_SIZE_SJIS -
+                       OS_FONT_ROM_SIZE_SJIS);
         FontDataAnsi = fontData;
-        size = ReadFont(tmp, 0, FontDataAnsi);
+        size = ReadFont(tmp, OS_FONT_ENCODE_ANSI, FontDataAnsi);
         if (size == 0) {
             return 0;
         }
@@ -613,8 +620,8 @@ int OSInitFont(OSFontHeader *fontData) {
         FontDataAnsi->sheetImage = OSRoundUp32B(FontDataAnsi->sheetImage);
         ExpandFontSheet(FontDataAnsi, img, (u8 *)FontDataAnsi + FontDataAnsi->sheetImage);
 
-        FontDataSjis = (OSFontHeader *)((u8 *)FontDataAnsi + 0x20120);
-        size = ReadFont(tmp, 1, FontDataSjis);
+        FontDataSjis = (OSFontHeader *)((u8 *)FontDataAnsi + OS_FONT_SIZE_ANSI);
+        size = ReadFont(tmp, OS_FONT_ENCODE_SJIS, FontDataSjis);
         if (size == 0) {
             return 0;
         }
