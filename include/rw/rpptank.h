@@ -25,6 +25,11 @@ extern "C" {
 #define rpPTANKDFLAGVTXCOLOR 0x40       /* an RwRGBA per corner */
 #define rpPTANKDFLAGVTX2TEXCOORDS 0x80  /* two RwTexCoords */
 #define rpPTANKDFLAGVTX4TEXCOORDS 0x100 /* an RwTexCoords per corner */
+/* All the stream flags, which the create callbacks clear before setting the format */
+#define rpPTANKDFLAGSTREAMS                                                                        \
+    (rpPTANKDFLAGPOSITION | rpPTANKDFLAGCOLOR | rpPTANKDFLAGSIZE | rpPTANKDFLAGMATRIX |            \
+     rpPTANKDFLAGNORMAL | rpPTANKDFLAG2DROTATE | rpPTANKDFLAGVTXCOLOR |                            \
+     rpPTANKDFLAGVTX2TEXCOORDS | rpPTANKDFLAGVTX4TEXCOORDS)
 /* data flags: the constants used in place of a stream */
 #define rpPTANKDFLAGCNSMATRIX 0x8000
 #define rpPTANKDFLAGCNS2DROTATE 0x20000
@@ -155,8 +160,9 @@ void *fn_80448CB0(void *object, RpGameCubeRenderMesh *renderMesh);
 RpAtomic *fn_80448D04(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh);
 
 /* the particle kernels (GameCube, hand-written assembly), in pairs without and with a center: a
- * matrix per particle, the constant size (also used with the constant matrix), a size per particle,
- * a rotation per particle with the constant size, and a rotation and a size per particle */
+ * matrix per particle, no per-particle matrix, size or rotation (the constant size or the constant
+ * matrix), a size per particle, a rotation per particle with the constant size, and a rotation and
+ * a size per particle */
 void fn_8044920C(RwUInt16 count, RwUInt32 platFlags, RpPTankData *ptankGlobal);
 void fn_804495D0(RwUInt16 count, RwUInt32 platFlags, RpPTankData *ptankGlobal);
 void fn_80449994(RwUInt16 count, RwUInt32 platFlags, RpPTankData *ptankGlobal);
@@ -168,9 +174,38 @@ void fn_8044ADA8(RwUInt16 count, RwUInt32 platFlags, RpPTankData *ptankGlobal);
 void fn_8044B210(RwUInt16 count, RwUInt32 platFlags, RpPTankData *ptankGlobal);
 void fn_8044B654(RwUInt16 count, RwUInt32 platFlags, RpPTankData *ptankGlobal);
 
-/* GameCube platform flags: the color sources */
-#define PTANKPLATFLAGCOLORSTREAMS 0x70000 /* colors come from a stream */
-#define PTANKPLATFLAGCNSCOLOR 0x80000     /* the constant color */
+/* GameCube platform flags: the kernel, the texture coordinate and color sources and normals */
+
+/* The kernel that draws the tank (inferred from the choice in fn_80448658): one flag per kernel,
+ * by the particle data it reads and whether particles are placed by their center */
+#define PTANKPLATFLAGKERNELMATRIX 0x1
+#define PTANKPLATFLAGKERNELMATRIXCENTER 0x2
+/* no per-particle matrix, size or rotation (the constant size or the constant matrix) */
+#define PTANKPLATFLAGKERNELBASIC 0x4
+#define PTANKPLATFLAGKERNELBASICCENTER 0x8
+#define PTANKPLATFLAGKERNELSIZE 0x10
+#define PTANKPLATFLAGKERNELSIZECENTER 0x20
+#define PTANKPLATFLAGKERNELROTATE 0x40
+#define PTANKPLATFLAGKERNELROTATECENTER 0x80
+#define PTANKPLATFLAGKERNELROTATESIZE 0x100
+#define PTANKPLATFLAGKERNELROTATESIZECENTER 0x200
+
+/* The color sources (inferred) */
+#define PTANKPLATFLAGCOLOR 0x10000       /* a color per particle */
+#define PTANKPLATFLAGVTXCOLOR 0x20000    /* a color per corner */
+#define PTANKPLATFLAGCNSVTXCOLOR 0x40000 /* the constant corner colors */
+/* any of the three color flags above, the constant corner colors among them */
+#define PTANKPLATFLAGCOLORSTREAMS                                                                  \
+    (PTANKPLATFLAGCOLOR | PTANKPLATFLAGVTXCOLOR | PTANKPLATFLAGCNSVTXCOLOR)
+#define PTANKPLATFLAGCNSCOLOR 0x80000 /* the constant color */
+
+/* The texture coordinate sources (inferred) */
+#define PTANKPLATFLAGVTX2TEXCOORDS 0x100000    /* two per particle */
+#define PTANKPLATFLAGVTX4TEXCOORDS 0x200000    /* four per particle */
+#define PTANKPLATFLAGCNSVTX2TEXCOORDS 0x400000 /* the constant two */
+#define PTANKPLATFLAGCNSVTX4TEXCOORDS 0x800000 /* the constant four */
+
+#define PTANKPLATFLAGNORMAL 0x1000000 /* a normal per particle */
 
 #ifdef __cplusplus
 }
