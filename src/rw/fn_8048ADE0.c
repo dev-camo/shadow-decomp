@@ -11,11 +11,10 @@
 /* Calls the sync function of each object attached to a frame */
 #define FRAMESYNCOBJECTS(frame)                                                                    \
     do {                                                                                           \
-        RwLLLink *link_;                                                                           \
-        RwLLLink *end_ = &(frame)->objectList.link;                                                \
+        if ((frame)->objectList.link.next != &(frame)->objectList.link) {                          \
+            RwLLLink *link_ = (frame)->objectList.link.next;                                       \
+            RwLLLink *end_ = &(frame)->objectList.link;                                            \
                                                                                                    \
-        if ((frame)->objectList.link.next != end_) {                                               \
-            link_ = (frame)->objectList.link.next;                                                 \
             while (link_ != end_) {                                                                \
                 RwObjectHasFrame *object_ = OBJECTFROMFRAMELINK(link_);                            \
                                                                                                    \
