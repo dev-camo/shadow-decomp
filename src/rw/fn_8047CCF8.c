@@ -173,13 +173,17 @@ RwInt32 fn_8047CF50(RwStream *stream, RwUInt32 type, RwUInt32 *lengthOut, RwUInt
     return FALSE;
 }
 
-/* Converts 32-bit words between the native byte order and the stream's little-endian order */
+/* Converts 32-bit words between the native byte order and the stream's little-endian order (the
+ * compiler turns the byte swap and the store into stwbrx). The local is declared outside the loop:
+ * declaring it per iteration changes the generated code */
 void *fn_8047D158(void *mem, RwUInt32 size) {
+    RwUInt32 value;
     RwUInt32 count;
     RwUInt32 *word = mem;
 
     for (count = size >> 2; count != 0; count--) {
-        __stwbrx(*word, word, 0);
+        value = *word;
+        *word = (value >> 24) | ((value >> 8) & 0xFF00) | ((value << 8) & 0xFF0000) | (value << 24);
         word++;
     }
     return mem;
@@ -200,11 +204,13 @@ void *fn_8047D1C8(void *mem, RwUInt32 size) {
 }
 
 void *fn_8047D254(void *mem, RwUInt32 size) {
+    RwUInt32 value;
     RwUInt32 count;
     RwUInt32 *word = mem;
 
     for (count = size >> 2; count != 0; count--) {
-        __stwbrx(*word, word, 0);
+        value = *word;
+        *word = (value >> 24) | ((value >> 8) & 0xFF00) | ((value << 8) & 0xFF0000) | (value << 24);
         word++;
     }
     return mem;
