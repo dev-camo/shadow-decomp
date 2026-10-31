@@ -44,8 +44,11 @@ unsigned int fn_804106C0(const char *name) {
     return 0;
 }
 
-/* The entry that follows an entry and its nodes (a macro for the same reason as
- * NEEDS_BYTE_SWAP). */
+/* Matching workaround: a macro for the same reason as NEEDS_BYTE_SWAP. Measured with an inline
+ * function: this object has 697 instructions instead of the original's 687. Revisit with
+ * NEEDS_BYTE_SWAP.
+ *
+ * The entry that follows an entry and its nodes. */
 #define NEXT_ENTRY(entry)                                                                          \
     ((PackEntry *)((char *)((entry) + 1) + (entry)->info.nodeCount * sizeof(PackNode)))
 

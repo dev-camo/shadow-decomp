@@ -11,9 +11,11 @@
  * so the object is at least 0xB4 bytes. */
 class UnkEffect_80168C48 {
   public:
-    /* Clears the bits of mask in the flag word (name inferred). Called as a statement, it leaves
-     * the smart pointer's operator-> out of line, as in the original; a plain field access expands
-     * it in place. */
+    /* Matching workaround: calling this inline as a statement leaves the smart pointer's
+     * operator-> out of line, as in the original; a plain field access expands it in place. The
+     * original accessor is unknown. Revisit when it is identified.
+     *
+     * Clears the bits of mask in the flag word (name inferred). */
     void ClearFlags(u32 mask) {
         m_flags &= ~mask;
     }

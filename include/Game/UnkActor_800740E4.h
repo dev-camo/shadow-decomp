@@ -23,10 +23,12 @@ class UnkActor_800740E4 {
     /* Called with 1 and 0 (arguments unknown). */
     virtual void UnkSlot7(int arg0, int arg1) = 0;
 
-    /* Whether the word at 0xC equals value (name inferred; the gadgets test it against 1, its
-     * meaning is unknown). Called as an if condition (possibly negated), it leaves the smart
-     * pointer's operator-> out of line, as in the original; a plain field access expands it in
-     * place. */
+    /* Matching workaround: calling this inline as an if condition (possibly negated) leaves the
+     * smart pointer's operator-> out of line, as in the original; a plain field access expands
+     * it in place. The original accessor is unknown. Revisit when it is identified.
+     *
+     * Whether the word at 0xC equals value (name inferred; the gadgets test it against 1, its
+     * meaning is unknown). */
     bool Field0xCEquals(int value) {
         return field_0xC == value;
     }
