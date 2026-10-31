@@ -87,7 +87,7 @@ RwChar *fn_8047971C(RwChar *buffer, RwInt32 bufferSize, const RwChar *prefix, co
 }
 
 RwBool fn_804797F0(RtFileSystem *fileSystem, const RwChar *name) {
-    RtFile *file = fn_80479DCC(fileSystem, name, 1, NULL, NULL);
+    RtFile *file = fn_80479DCC(fileSystem, name, RTFILE_MODE_READ, NULL, NULL);
 
     if (file != NULL) {
         fileSystem->fileClose(file);

@@ -97,7 +97,7 @@ RwBool fn_80479D08(const RwChar *name) {
     return FALSE;
 }
 
-RtFile *fn_80479DCC(RtFileSystem *fileSystem, const RwChar *name, RwUInt32 mode,
+RtFile *fn_80479DCC(RtFileSystem *fileSystem, const RwChar *name, RtFileAccessFlag mode,
                     RtFileCallBack callBack, void *callBackData) {
     RtFile *file = NULL;
 
@@ -146,7 +146,7 @@ RtFile *fn_80479DCC(RtFileSystem *fileSystem, const RwChar *name, RwUInt32 mode,
     return NULL;
 }
 
-RtFile *fn_80479F50(const RwChar *name, RwUInt32 mode, RtFileCallBack callBack,
+RtFile *fn_80479F50(const RwChar *name, RtFileAccessFlag mode, RtFileCallBack callBack,
                     void *callBackData) {
     RtFileSystem *fileSystem = fn_8047A044(name);
 
@@ -207,7 +207,7 @@ RtFileSystem *fn_8047A170(void) {
 
 /* Opens a file with a standard access mode string */
 void *fn_8047A178(const RwChar *name, const RwChar *access) {
-    RwUInt32 mode = 0;
+    RtFileAccessFlag mode = 0;
     RwBool update = FALSE;
     RwBool binary = FALSE;
     RtFileSystem *fileSystem;
