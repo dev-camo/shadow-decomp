@@ -697,6 +697,7 @@ config.libs = [
                 Object(NonMatching, "Game/ThreatObjHolder.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitEntrance.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/EscapePlaneRail.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
                 # All 46 functions have identical instructions and are in the original's order,
                 # and the original's data is reproduced at its offsets. The implementation class's

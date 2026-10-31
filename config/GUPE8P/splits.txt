@@ -197,6 +197,13 @@ Game/BackDrop.cpp:
 	.sbss       start:0x805F0118 end:0x805F0120
 	.sdata2     start:0x805F7DA0 end:0x805F7DB8
 
+Game/EscapePlaneRail.cpp:
+	.text       start:0x802ABA94 end:0x802ABE8C
+	.rodata     start:0x804FCE00 end:0x804FCE58
+	.data       start:0x805546A0 end:0x80554780
+	.sdata      start:0x805EB980 end:0x805EB9A0
+	.sdata2     start:0x805F8790 end:0x805F87B8
+
 Game/ElecCircuitExit.cpp:
 	.text       start:0x802C7FC0 end:0x802C8308
 	.ctors      start:0x804A9F80 end:0x804A9F84

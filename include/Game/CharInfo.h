@@ -62,6 +62,10 @@ boost::weak_ptr<CharInfo> fn_800A8B74(UnkManager_80074194 *manager, s32 id);
 /* Returns 0 for arg1 0x27, otherwise fn_802063BC's result (return type inferred, the gadgets
  * ignore it). */
 int fn_8020642C(const boost::shared_ptr<CharInfo> &charInfo, int arg1);
+/* Builds the character info's world matrix: the identity, then its position and its three
+ * rotations, in the order that the rotation order at 0x30 selects; does nothing when matrix is null
+ * (behaviour inferred from its body). */
+void fn_8015CEA0(const CharInfo *info, Fn8040Matrix34 *matrix);
 }
 
 /* The id that callers pass to fn_800A8B74 (the meaning is unknown; 43 functions read it). */
