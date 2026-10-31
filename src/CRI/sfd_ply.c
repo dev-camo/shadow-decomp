@@ -201,7 +201,7 @@ Sint32 sfply_ResetHn(SFD sfd) {
     extobj = SFD_TIM(sfd)->ext_obj;
     isskipfn = SFD_TIM(sfd)->isskipfn;
     speed = SFD_TIM(sfd)->speed;
-    ptsm = sfd->ptsm;
+    ptsm = SFD_TIM(sfd)->ptsm;
     see = sfd->see.wk;
     if (see != 0) {
         byterate = see->byterate;
@@ -260,7 +260,7 @@ Sint32 sfply_ResetHn(SFD sfd) {
         SFD_SetSpeed(sfd, speed);
     }
     if (ptsm.x00 != 0) {
-        sfd->ptsm = ptsm;
+        SFD_TIM(sfd)->ptsm = ptsm;
         if (SFPLY_ResetPtsm != 0) {
             SFPLY_ResetPtsm(&ptsm);
         }

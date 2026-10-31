@@ -228,10 +228,10 @@ static void sfsee_ExecEstimate(SFD sfd, SFSEE_HN *see) {
         }
     }
     if (wk->tot_est <= 0) {
-        if (sfd->con.tottime > 0) {
-            wk->tot_est = sfd->con.tottime;
+        if (SFD_TIM(sfd)->tot.val > 0) {
+            wk->tot_est = SFD_TIM(sfd)->tot.val;
             upd = 1;
-            wk->tunit_est = sfd->con.tunit;
+            wk->tunit_est = SFD_TIM(sfd)->tot.unit;
         }
     }
     if (upd != 0) {

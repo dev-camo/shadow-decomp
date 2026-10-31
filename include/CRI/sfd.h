@@ -61,27 +61,6 @@ CHECK_SIZEOF(SFAOAP, 0x1C);
 /* clock source (sfd_tim.c) */
 typedef Sint32 (*SFTIM_FN)(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 
-/* concatenated-play work (sfd_con.c), at SFD_OBJ + 0xD30 */
-typedef struct {
-    SFTIM_FN timefn[6];        /* 0x00 clock sources (the SFTIM_WORK view of this memory) */
-    Uint8 pad18[0xB8 - 0x18];  /* 0x018 */
-    Sint32 tottime;            /* 0xB8 total time of the concatenated files */
-    Sint32 tunit;              /* 0xBC */
-    Uint8 padc0[0x150 - 0xC0]; /* 0x0C0 */
-    Sint64 scr_base;           /* 0x150 first SCR of the file (sfd_mps.c, kept in the seek work) */
-    Sint64 scr_ofst;           /* 0x158 audio PTS minimum - seek work SCR (sfd_mps.c) */
-    Sint32 pad160;             /* 0x160 */
-    Sint32 ctime;              /* 0x164 accumulated concat time */
-    Sint32 ctime_idx;          /* 0x168 */
-    Sint32 ctime_que[32];      /* 0x16C */
-    Sint32 tot_last;           /* 0x1EC */
-    Sint32 pad1F0;             /* 0x1F0 */
-    Sint32 que_wr;             /* 0x1F4 */
-    Sint32 que_rd;             /* 0x1F8 */
-    Sint32 tot_que[32];        /* 0x1FC */
-} SFCON;
-CHECK_SIZEOF(SFCON, 0x280);
-
 /* timecode as the user passes it to SFD_Tc2Time (0x20 bytes) */
 typedef struct {
     Sint32 type;  /* 0x00 frame rate (index into SFTIM_prate) */
@@ -105,55 +84,70 @@ typedef struct {
 } SFTIM_TTU;
 CHECK_SIZEOF(SFTIM_TTU, 0x2C);
 
-/* timing work (sfd_tim.c), the same memory as SFCON at SFD_OBJ + 0xD30 (SFD_TIM(sfd)) */
+/* PTS manager entry kept across a player reset (SFTIM_WORK.ptsm, sfd_ply.c) */
 typedef struct {
-    SFTIM_FN timefn[6];   /* 0x000 clock sources (SFTIM_SetTimeFn / cond 0xF) */
-    Bool (*isskipfn)();   /* 0x018 SFD_SetUsrIsSkipFn */
-    SFTIM_TC tc;          /* 0x01C */
-    SFTIM_TTU ttu0;       /* 0x03C (INT_MAX) */
-    SFTIM_TTU ttu1;       /* 0x068 (-1) */
-    SFTIM_TTU tot;        /* 0x094 (-1) total time (SFCON.tottime/tunit) */
-    SFTIM_TTU ttu3;       /* 0x0C0 (0) */
-    SFTIM_TTU vstart;     /* 0x0EC (-1) video start time */
-    SFTIM_TTU vofst;      /* 0x118 (INT_MAX) video start offset (SFTIM_GetVideoStartSample) */
-    Sint32 astart_smpl;   /* 0x144 SFTIM_SetStartTime */
-    Sint32 astart_sfreq;  /* 0x148 */
-    Sint32 x14c;          /* 0x14C */
-    Sint64 x150;          /* 0x150 (-1) */
-    Sint64 as_pts;        /* 0x158 (-1) audio start PTS (90 kHz) */
-    Sint32 x160;          /* 0x160 */
-    Sint32 ctime;         /* 0x164 (SFCON) */
-    Sint32 ctime_idx;     /* 0x168 */
-    Sint32 ctime_que[32]; /* 0x16C */
-    Sint32 tot_last;      /* 0x1EC (1) */
-    Sint32 x1f0;          /* 0x1F0 */
-    Sint32 que_wr;        /* 0x1F4 */
-    Sint32 que_rd;        /* 0x1F8 */
-    Sint32 tot_que[32];   /* 0x1FC */
-    Sint32 vterm;         /* 0x27C (-5) video end time */
-    Sint32 vterm_unit;    /* 0x280 (1) */
-    Sint32 x284;          /* 0x284 (-5) */
-    Sint32 x288;          /* 0x288 (1) */
-    Sint32 cur;           /* 0x28C (-1) current time (SFTIM_GetTime) */
-    Sint32 cur_unit;      /* 0x290 (1) */
-    Sint32 itime;         /* 0x294 (-5) */
-    Sint32 itime_min;     /* 0x298 (INT_MAX) */
-    Sint32 itime_max;     /* 0x29C (0) */
-    Sint32 x2a0;          /* 0x2A0 (INT_MAX) */
-    Sint32 x2a4;          /* 0x2A4 */
-    Sint32 vsync;         /* 0x2A8 vsync clock count */
-    Sint32 speed;         /* 0x2AC (1000) */
-    Sint32 x2b0;          /* 0x2B0 */
-    Sint32 x2b4;          /* 0x2B4 */
-    Sint32 x2b8;          /* 0x2B8 (1) */
-    Sint32 x2bc;          /* 0x2BC (100) frame decision count */
-    Float32 x2c0;         /* 0x2C0 (-1.0) frame time (ft) of the last decision count */
-    Sint32 x2c4;          /* 0x2C4 last frame decision */
-    Float32 x2c8;         /* 0x2C8 (-1.0) frame time (ft) of the last decided frame */
+    void *x00;  /* 0x00 */
+    Sint32 x04; /* 0x04 */
+    Sint32 x08; /* 0x08 */
+} SFPLY_PTSM;
+CHECK_SIZEOF(SFPLY_PTSM, 0xC);
+
+/* entries in each concatenated-play ring queue of SFTIM_WORK (indexed modulo this, sfd_con.c) */
+#define SFCON_QUE_NUM 32
+
+/* timing work at SFD_OBJ + 0xD30 (SFD_TIM(sfd)): clock sources and times (sfd_tim.c), the
+ * concatenated-play queues (sfd_con.c), the time stabiliser work and the PTS manager entry.
+ * pts_base is the first picture PTS less its temporal-reference offset, clamped at 0 (video
+ * driver); it is saved in and restored from the seek work (sfd_mps.c). */
+typedef struct {
+    SFTIM_FN timefn[6];  /* 0x000 clock sources (SFTIM_SetTimeFn / cond 0xF) */
+    Bool (*isskipfn)();  /* 0x018 SFD_SetUsrIsSkipFn */
+    SFTIM_TC tc;         /* 0x01C */
+    SFTIM_TTU ttu0;      /* 0x03C (INT_MAX) */
+    SFTIM_TTU ttu1;      /* 0x068 (-1) */
+    SFTIM_TTU tot;       /* 0x094 (-1) total time of the concatenated files (sfd_see.c) */
+    SFTIM_TTU ttu3;      /* 0x0C0 (0) */
+    SFTIM_TTU vstart;    /* 0x0EC (-1) video start time */
+    SFTIM_TTU vofst;     /* 0x118 (INT_MAX) video start offset (SFTIM_GetVideoStartSample) */
+    Sint32 astart_smpl;  /* 0x144 SFTIM_SetStartTime */
+    Sint32 astart_sfreq; /* 0x148 */
+    Sint32 x14c;         /* 0x14C */
+    Sint64 pts_base;     /* 0x150 (-1) video PTS base (inferred, see above) */
+    Sint64 as_pts;       /* 0x158 (-1) audio start: audio PTS min - seek work min (sfd_mps.c) */
+    Sint32 x160;         /* 0x160 */
+    Sint32 ctime;        /* 0x164 accumulated concat time */
+    Sint32 ctime_idx;    /* 0x168 */
+    Sint32 ctime_que[SFCON_QUE_NUM]; /* 0x16C */
+    Sint32 tot_last;                 /* 0x1EC (1) */
+    Sint32 x1f0;                     /* 0x1F0 */
+    Sint32 que_wr;                   /* 0x1F4 */
+    Sint32 que_rd;                   /* 0x1F8 */
+    Sint32 tot_que[SFCON_QUE_NUM];   /* 0x1FC */
+    Sint32 vterm;                    /* 0x27C (-5) video end time */
+    Sint32 vterm_unit;               /* 0x280 (1) */
+    Sint32 x284;                     /* 0x284 (-5) */
+    Sint32 x288;                     /* 0x288 (1) */
+    Sint32 cur;                      /* 0x28C (-1) current time (SFTIM_GetTime) */
+    Sint32 cur_unit;                 /* 0x290 (1) */
+    Sint32 itime;                    /* 0x294 (-5) */
+    Sint32 itime_min;                /* 0x298 (INT_MAX) */
+    Sint32 itime_max;                /* 0x29C (0) */
+    Sint32 x2a0;                     /* 0x2A0 (INT_MAX) */
+    Sint32 x2a4;                     /* 0x2A4 */
+    Sint32 vsync;                    /* 0x2A8 vsync clock count */
+    Sint32 speed;                    /* 0x2AC (1000) */
+    Sint32 x2b0;                     /* 0x2B0 */
+    Sint32 x2b4;                     /* 0x2B4 */
+    Sint32 x2b8;                     /* 0x2B8 (1) */
+    Sint32 x2bc;                     /* 0x2BC (100) frame decision count */
+    Float32 x2c0;                    /* 0x2C0 (-1.0) frame time (ft) of the last decision count */
+    Sint32 x2c4;                     /* 0x2C4 last frame decision */
+    Float32 x2c8;                    /* 0x2C8 (-1.0) frame time (ft) of the last decided frame */
     /* volatile: written on another thread. SFD_VbIn runs as an SVM vsync server (the MW player
      * registers MWSFSVR_VsyncThrdProc with MWSFSVM_EntryIdVfunc), i.e. on the ADXM vsync thread;
      * there sftim_VbInHn updates vcnt and chg_base, and ext_last through clock source 5
-     * (sftim_GetTimeExtClock), while the server step reads them. */
+     * (sftim_GetTimeExtClock), while the server step reads them. Without the qualifiers the
+     * branch layout of SFTIM_IsGetFrmTimeTunit changes. */
     volatile Sint32 vcnt;     /* 0x2CC (-1) vsync count while requested */
     volatile Sint32 chg_base; /* 0x2D0 clock at the last time change */
     SFTIM_FN extfn;           /* 0x2D4 external clock (SFD_SetExtClockFn) */
@@ -163,14 +157,12 @@ typedef struct {
     Sint32 ext_wrap;          /* 0x2E4 (-1) */
     void *ext_obj;            /* 0x2E8 */
     Sint32 x2ec;              /* 0x2EC */
-    Uint8 tst[0x1C0];         /* 0x2F0 (SFD_OBJ + 0x1020) */
+    SFTST_WORK tst;           /* 0x2F0 time stabiliser work */
     struct {
-        Sint16 rpt; /* repeat_first_field count of the picture */
-        Sint16 acc; /* accumulated repeated fields */
-    } rfld[64];     /* 0x4B0 per temporal reference (sfd_mpv.c) */
-    Sint32 x5b0;    /* 0x5B0 */
-    Sint32 x5b4;    /* 0x5B4 */
-    Sint32 x5b8;    /* 0x5B8 */
+        Sint16 rpt;  /* repeat_first_field count of the picture */
+        Sint16 acc;  /* accumulated repeated fields */
+    } rfld[64];      /* 0x4B0 per temporal reference (sfd_mpv.c) */
+    SFPLY_PTSM ptsm; /* 0x5B0 */
 } SFTIM_WORK;
 CHECK_SIZEOF(SFTIM_WORK, 0x5C0);
 
@@ -633,7 +625,7 @@ typedef struct {
     Sint32 nvid;       /* 0x0C video streams of the system header */
     Sint32 naud;       /* 0x10 audio streams */
     Sint32 pad14;      /* 0x14 */
-    Sint64 scr_base;   /* 0x18 */
+    Sint64 pts_base;   /* 0x18 video PTS base saved from SFTIM_WORK.pts_base (inferred) */
     Sint64 pts_min;    /* 0x20 */
     Sint32 stmid_vid;  /* 0x28 first video stream id */
     Sint32 stmid_aud;  /* 0x2C first audio stream id */
@@ -747,14 +739,6 @@ typedef struct {
 } SFD_CREPRM;
 CHECK_SIZEOF(SFD_CREPRM, 0x44);
 
-/* video PTS manager entry kept across a player reset (sfd_ply.c), SFD_OBJ + 0x12E0 */
-typedef struct {
-    void *x00;  /* 0x00 */
-    Sint32 x04; /* 0x04 */
-    Sint32 x08; /* 0x08 */
-} SFPLY_PTSM;
-CHECK_SIZEOF(SFPLY_PTSM, 0xC);
-
 /* Optional PTS manager hooks (sfd_ply.c; nothing in the game sets them). The system stream driver
  * passes the PTS of each packet for buffer 2 (the audio driver's input) to the info hook; when it
  * returns -1 the packet is not written and stays unconsumed. */
@@ -845,15 +829,12 @@ typedef struct SFD_OBJ {
     SFLIB_ERRINF err;              /* 0x9F8 */
     Sint32 cond[SFD_COND_NUM];     /* 0xA0C (SFSET_GetCond) */
     Sint32 cond_def[SFD_COND_NUM]; /* 0xB9C */
-    Uint8 padD2C[4];               /* 0x0D2C */
-    SFCON con;                     /* 0xD30 (also the SFTIM handle: &sfd->con; sfd_con.c) */
-    Uint8 padFAC[0x1020 - 0xD30 - sizeof(SFCON)]; /* 0x0FB0 */
-    SFTST_WORK tst;                               /* 0x1020 time stabiliser work */
-    Uint8 pad11E0[0x12E0 - 0x11E0];               /* 0x11E0 */
-    SFPLY_PTSM ptsm;                              /* 0x12E0 */
-    Uint8 pad12EC[0x1310 - 0x12EC];               /* 0x12EC */
-    SFBUF_WORK buf[SFD_BUF_NUM];                  /* 0x1310 */
-    SFD_VFRM vfrm[SFD_VFRM_NUM];                  /* 0x16B0 */
+    SFTIM_WORK tim;                /* 0xD30 timing work (SFD_TIM) */
+    /* The word at 0x12EC lies in the tail padding of tim (SFTIM_WORK is 8-aligned and ends at
+     * 0x12F0); nothing in the executable accesses it. */
+    Uint8 pad12F0[0x1310 - 0x12F0]; /* 0x12F0 */
+    SFBUF_WORK buf[SFD_BUF_NUM];    /* 0x1310 */
+    SFD_VFRM vfrm[SFD_VFRM_NUM];    /* 0x16B0 */
     /* tr[2].hn = SFMPV_WORK *, tr[SFADXT_TR].hn = SFADXT_WORK *, tr[SFAOAP_TR].hn = SFAOAP *,
      * tr[8].hn = SFUO *, tr[8].bufin = user-output SFBUF id */
     SFD_TR tr[SFD_TR_NUM];          /* 0x1F30 */
@@ -871,6 +852,9 @@ typedef struct SFD_OBJ {
     SFPLY_FRMSTAT frmstat;          /* 0x3620 */
 } SFD_OBJ;
 CHECK_SIZEOF(SFD_OBJ, 0x3640);
+CHECK_OFFSETOF(SFD_OBJ, tim, 0xD30);
+CHECK_OFFSETOF(SFD_OBJ, tim.tst, 0x1020);
+CHECK_OFFSETOF(SFD_OBJ, tim.ptsm, 0x12E0);
 /* Buffer n seen as the SFD object shifted by n buffers: the code adds n * sizeof(SFBUF_WORK) to the
  * handle and keeps buf[0]'s offset (0x1310) in each load/store displacement, where &sfd->buf[n]
  * would add 0x1310 to the base register instead. */
@@ -882,8 +866,8 @@ CHECK_SIZEOF(SFBUF_HN, 0x1384);
 
 #define SFBUF_GET_HN(sfd, n) ((SFBUF_HN *)((SFBUF_WORK *)(sfd) + (n)))
 
-#define SFD_TIM(sfd) ((SFTIM) & (sfd)->con)
-#define SFTIM_LIBWK ((SFTIM_LIB *)SFLIB_libwork.tim)
+#define SFD_TIM(sfd) (&(sfd)->tim)
+#define SFTIM_LIBWK (&SFLIB_libwork.tim)
 
 /* library-wide work (sfd_lib.c), 0x228 bytes */
 typedef struct {
@@ -892,7 +876,7 @@ typedef struct {
     Sint32 prm1;               /* 0x194 */
     Sint32 x198;               /* 0x198 */
     SFLIB_ERRINF err;          /* 0x19C */
-    Uint8 tim[0xC];            /* 0x1B0 SFTIM work */
+    SFTIM_LIB tim;             /* 0x1B0 */
     Sint32 buf;                /* 0x1BC SFBUF work */
     SFTRN_TRIF_TBL trif;       /* 0x1C0 */
     Sint32 x1fc;               /* 0x1FC */

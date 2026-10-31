@@ -123,7 +123,7 @@ static Sint32 SFMPS_Seek(SFD sfd) {
     }
     wk->first_vid = shdr->stmid_vid;
     wk->first_aud = shdr->stmid_aud;
-    sfd->con.scr_base = shdr->scr_base;
+    SFD_TIM(sfd)->pts_base = shdr->pts_base;
     wk->pts_min = shdr->pts_min;
     return 0;
 }
@@ -246,13 +246,13 @@ static inline void sfmps_ProcPrepSee(SFD sfd) {
     if (shdr != 0) {
         w = SFMPS_WK(sfd);
         if (w->pts_min2 != INT64_MAX_VAL) {
-            sfd->con.scr_ofst = w->pts_min2 - shdr->pts_min;
+            SFD_TIM(sfd)->as_pts = w->pts_min2 - shdr->pts_min;
             if (shdr->analyzed == 0) {
                 shdr->ncount = sfd->x924 * 50;
                 shdr->tscale = sfd->x928;
                 shdr->nvid = w->nvid;
                 shdr->naud = w->naud;
-                shdr->scr_base = sfd->con.scr_base;
+                shdr->pts_base = SFD_TIM(sfd)->pts_base;
                 shdr->pts_min = w->pts_min;
                 shdr->stmid_vid = w->first_vid;
                 shdr->stmid_aud = w->first_aud;
@@ -371,7 +371,7 @@ Sint32 sfmps_CopyDstBuft(SFD sfd, Sint32 buf, Uint8 *data, Sint32 len, Sint64 pt
         if (SFPLY_SetPtsInfo != 0) {
             ent2.pts = pts;
             ent2.pos = len;
-            if (SFPLY_SetPtsInfo(&sfd->ptsm, &ent2) == -1) {
+            if (SFPLY_SetPtsInfo(&SFD_TIM(sfd)->ptsm, &ent2) == -1) {
                 return 0;
             }
         }
