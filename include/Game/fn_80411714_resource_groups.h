@@ -32,7 +32,7 @@ typedef struct ResourceData {
     /* 0x00 */ unsigned char version;
     /* 0x01 */ unsigned char byteOrderFlag;
     /* 0x04 */ unsigned int entryId;
-    /* 0x08 */ unsigned int unknown08;
+    /* 0x08 */ unsigned int size; /* in bytes, header included */
     /* 0x0C */ unsigned char unknown0C;
     /* 0x0D */ unsigned char flags;
     /* 0x0E */ unsigned char unknown0E[2];
@@ -73,13 +73,15 @@ typedef struct ResourceSource {
 } ResourceSource;
 CHECK_SIZEOF(ResourceSource, 0x18);
 
-/* The header of a file image, or of the group that fn_80412BFC allocates for a single item. */
+/* The header of a file image, of the group that fn_80412BFC allocates for a single item, or of
+ * the group with copies that fn_80413538 allocates (followed by its sources). */
 typedef struct ResourceGroup {
     /* 0x00 */ unsigned short firstId;
     /* 0x02 */ unsigned short count;
     /* 0x04 */ unsigned char ownsGroup;
     /* 0x05 */ unsigned char byteOrderFlag;
     /* 0x06 */ unsigned char hasInstances;
+    /* 0x07 */ unsigned char unknown07;
     /* 0x08 */ void (*release)(void *);
     /* 0x0C */ struct ResourceGroup *next;
     /* 0x10 */ ResourceItem *items;

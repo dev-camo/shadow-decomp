@@ -96,7 +96,7 @@ static inline int FixDataHeader(ResourceData *data) {
     if (data->version >= 3) {
         if (NEEDS_BYTE_SWAP(data->byteOrderFlag)) {
             fn_804210E4(&data->entryId, &data->entryId, 1);
-            fn_804210E4(&data->unknown08, &data->unknown08, 1);
+            fn_804210E4(&data->size, &data->size, 1);
             fn_8042118C(&data->unknown10, &data->unknown10, 1);
             fn_8042118C(&data->unknown12, &data->unknown12, 1);
 
@@ -131,6 +131,16 @@ static inline int RoundUpTo32(int size) {
         size += 32 - size % 32;
     }
     return size;
+}
+
+/* Rounds an address down to a multiple of 32 bytes, the alignment of the ARAM transfers. */
+static inline char *RoundDownTo32(char *address) {
+    unsigned int excess = (unsigned int)address % 32;
+
+    if (excess != 0) {
+        address -= excess;
+    }
+    return address;
 }
 
 /* Frees the copies of every group and forgets the current ids that lie in a group with copies. */
@@ -472,13 +482,12 @@ void fn_80412D7C(ResourceGroup *group) {
  * and stores it in the data. Returns the first id of the group that fn_80413538 returns, or 0
  * when the range overlaps a loaded group, the group is already listed, or no free range exists. */
 unsigned short fn_80413058(ResourceGroup *group) {
-    ResourceGroup *head = lbl_805F13B0;
     ResourceGroup *other;
     ResourceGroup *last;
     int index;
 
-    if (head != 0) {
-        for (other = head; other != 0; other = other->next) {
+    if (lbl_805F13B0 != 0) {
+        for (other = lbl_805F13B0; other != 0; other = other->next) {
             if (other == group) {
                 return 0;
             }
@@ -486,8 +495,8 @@ unsigned short fn_80413058(ResourceGroup *group) {
     }
 
     if (group->firstId != 0) {
-        if (head != 0) {
-            for (other = head; other != 0; other = other->next) {
+        if (lbl_805F13B0 != 0) {
+            for (other = lbl_805F13B0; other != 0; other = other->next) {
                 last = other;
                 if (other->firstId > group->firstId &&
                     other->firstId - group->count < group->firstId) {
@@ -502,12 +511,12 @@ unsigned short fn_80413058(ResourceGroup *group) {
         } else {
             lbl_805F13B0 = group;
         }
-    } else if (head != 0) {
+    } else if (lbl_805F13B0 != 0) {
         int candidate = 1;
         unsigned short end = 0;
 
         for (;;) {
-            for (other = head; other != 0; other = other->next) {
+            for (other = lbl_805F13B0; other != 0; other = other->next) {
                 if (other->firstId <= candidate && other->firstId + other->count > candidate) {
                     end = other->firstId + other->count - 1;
                     candidate = end;
@@ -628,6 +637,151 @@ void fn_80413318(unsigned short id) {
             return;
         }
     }
+}
+
+/* Converts a loaded group into a group with copies: the parts of its items are written to one ARAM
+ * block (the image from the 32-byte boundary before the first item's name, or, for a group that
+ * owns itself, its name and then its data, each from its own 32-byte boundary), a new group
+ * records where each part lies (a ResourceSource per item), and the new group takes the place of
+ * the old one in the list. A group that fn_80412BFC allocated (it owns itself) hands its data to
+ * the release function and is freed; any other group is handed to its release function. Returns
+ * the new group, or the old group when there is no memory, the ARAM allocation fails or a group
+ * that owns itself has other than one item. */
+ResourceGroup *fn_80413538(ResourceGroup *group) {
+    ResourceGroup *converted;
+    ResourceSource *sources;
+    ResourceGroup *other;
+    void (*release)(void *);
+    int index;
+
+    converted = fn_80411134(1, group->count * sizeof(ResourceSource) + sizeof(ResourceGroup));
+    if (converted == 0) {
+        return group;
+    }
+    sources = (ResourceSource *)(converted + 1);
+
+    if (group->ownsGroup) {
+        /* A group that owns itself: the name and data of its single item, written one after the
+         * other. */
+        char *nameBase;
+        char *dataBase;
+        int nameBytes;
+        int dataBytes;
+
+        /* The original returns here without freeing the new group. */
+        if (group->count != 1) {
+            return group;
+        }
+        nameBase = RoundDownTo32(group->items->name);
+        sources->nameSize = strlen(group->items->name) + 1;
+        sources->nameAddress = group->items->name - nameBase;
+        nameBytes = RoundUpTo32(group->items->name + sources->nameSize - nameBase);
+
+        dataBase = RoundDownTo32((char *)group->items->data);
+        sources->dataSize = group->items->data->size;
+        sources->dataAddress = nameBytes + ((char *)group->items->data - dataBase);
+        dataBytes = RoundUpTo32((char *)group->items->data + sources->dataSize - dataBase);
+
+        converted->aramAddress = fn_80421368(nameBytes + dataBytes);
+        if (converted->aramAddress == 0) {
+            fn_804110FC(converted);
+            return group;
+        }
+        fn_80421270(converted->aramAddress, nameBase, nameBytes);
+        fn_80421270(converted->aramAddress + nameBytes, dataBase, dataBytes);
+    } else {
+        /* The parts of all items lie in the image: write it from the first name to the end of the
+         * last part. */
+        char *base = RoundDownTo32(group->items[0].name);
+        char *end = 0;
+        int bytes;
+
+        for (index = 0; index < group->count; index++) {
+            if (group->items[index].name != 0) {
+                sources[index].nameSize = strlen(group->items[index].name) + 1;
+                sources[index].nameAddress = group->items[index].name - base;
+                if (end < group->items[index].name + sources[index].nameSize) {
+                    end = group->items[index].name + sources[index].nameSize;
+                }
+            }
+            if (group->items[index].data != 0) {
+                sources[index].dataSize = group->items[index].data->size;
+                sources[index].dataAddress = (char *)group->items[index].data - base;
+                if (end < (char *)group->items[index].data + sources[index].dataSize) {
+                    end = (char *)group->items[index].data + sources[index].dataSize;
+                }
+            }
+            if (group->items[index].records != 0) {
+                ResourceRecord *record = group->items[index].records;
+
+                sources[index].recordsSize = sizeof(ResourceRecord);
+                while ((short)record->size != -1) {
+                    sources[index].recordsSize += record->size;
+                    record = (ResourceRecord *)((char *)record + record->size);
+                }
+                sources[index].recordsAddress = (char *)group->items[index].records - base;
+                if (end < (char *)group->items[index].records + sources[index].recordsSize) {
+                    end = (char *)group->items[index].records + sources[index].recordsSize;
+                }
+            }
+        }
+
+        bytes = RoundUpTo32(end - base);
+        converted->aramAddress = fn_80421368(bytes);
+        if (converted->aramAddress == 0) {
+            fn_804110FC(converted);
+            return group;
+        }
+        fn_80421270(converted->aramAddress, base, bytes);
+    }
+
+    /* The new group copies offsets 0x00-0x13 of the old group (through items), then drops the
+     * items, marks itself as a group with copies that does not own itself, and is released with
+     * fn_804110FC. The original copies these fields first and then overrides some of them. */
+    converted->firstId = group->firstId;
+    converted->count = group->count;
+    converted->ownsGroup = group->ownsGroup;
+    converted->byteOrderFlag = group->byteOrderFlag;
+    converted->hasInstances = group->hasInstances;
+    converted->unknown07 = group->unknown07;
+    converted->release = group->release;
+    converted->next = group->next;
+    converted->items = group->items;
+    converted->items = 0;
+    converted->hasInstances = 1;
+    converted->ownsGroup = 0;
+    converted->release = fn_804110FC;
+
+    /* Turn the offsets in the sources into ARAM addresses (a records offset of 0 means no
+     * records). */
+    for (index = 0; index < converted->count; index++) {
+        sources[index].nameAddress = converted->aramAddress + sources[index].nameAddress;
+        sources[index].dataAddress = converted->aramAddress + sources[index].dataAddress;
+        if (sources[index].recordsAddress != 0) {
+            sources[index].recordsAddress = converted->aramAddress + sources[index].recordsAddress;
+        }
+    }
+
+    for (other = lbl_805F13B0; other != 0; other = other->next) {
+        if (other->next == group) {
+            other->next = converted;
+            break;
+        }
+    }
+    if (lbl_805F13B0 == group) {
+        lbl_805F13B0 = converted;
+    }
+
+    release = group->release;
+    if (group->ownsGroup) {
+        if (release != 0) {
+            release(group->items->data);
+        }
+        fn_804110FC(group);
+    } else if (release != 0) {
+        release(group);
+    }
+    return converted;
 }
 
 /* Fixes the byte order of the data and returns whether it is valid: it has a supported version and

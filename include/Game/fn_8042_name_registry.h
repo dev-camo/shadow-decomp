@@ -1,7 +1,7 @@
 #ifndef FN_8042_NAME_REGISTRY_H
 #define FN_8042_NAME_REGISTRY_H
 
-/* The name registry, byte-order and ARAM helpers at 0x80420C74-0x80421300 that the pack loader in
+/* The name registry, byte-order and ARAM helpers at 0x80420C74-0x80421368 that the pack loader in
  * fn_80410630.c and the resource groups in fn_80411714.c call. The original names and types are
  * unknown; the descriptions are inferred from the code. */
 
@@ -36,8 +36,12 @@ int fn_804211CC(void);
 
 /* Reads size bytes from ARAM into main memory (the 32-byte aligned copy that fn_80413318 makes). */
 void fn_804211E4(void *destination, unsigned int aramAddress, int size);
+/* Writes size bytes from main memory to ARAM (the block that fn_80413538 builds). */
+void fn_80421270(unsigned int aramAddress, const void *source, int size);
 /* Releases the ARAM block that starts at an address (called by fn_804129D4). */
 void fn_80421300(unsigned int aramAddress);
+/* Allocates an ARAM block of the given size and returns its address, or 0. */
+unsigned int fn_80421368(int size);
 
 #ifdef __cplusplus
 }
