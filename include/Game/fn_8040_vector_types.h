@@ -280,6 +280,10 @@ void fn_8040FEBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix,
 /* result = vector rotated by a rotation vector. */
 void fn_80410098(Fn8040Vector3 *result, const Fn8040Vector3 *vector, const Fn8040Vector3 *rotation,
                  int order);
+/* Advances a position and a velocity under a constant acceleration and a drag coefficient over
+ * a duration (behaviour inferred; the segment is in fn_804103E8.cpp). */
+void fn_804103E8(Fn8040Vector3 *position, Fn8040Vector3 *velocity,
+                 const Fn8040Vector3 *acceleration, float drag, float duration);
 /* The identity and zero matrices, built at startup (a __sinit_ function and a .ctors entry in
  * fn_8040B034.cpp). */
 extern Fn8040Matrix34 lbl_805E0720; /* identity */
