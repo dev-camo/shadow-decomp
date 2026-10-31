@@ -1032,6 +1032,10 @@ CRI/sfx_set.c:
 	.text       start:0x803D09CC end:0x803D0B74
 	.rodata     start:0x80518F10 end:0x80518F20
 
+CRI/sfx_cnv.c:
+	.text       start:0x803D0B74 end:0x803D2074
+	.rodata     start:0x80518F20 end:0x805190D0
+
 CRI/sfx_inf.c:
 	.text       start:0x803D2074 end:0x803D207C
 

@@ -118,11 +118,11 @@ void cnvDynamicYcc420plnToA256UserTable(const CFT_YCC420PLN *src, const CFT_ARGB
     }
 }
 
-/* Registered converter: alpha masked by the luma. The table is read through its pointer; none
- * selects the conversion without a table. The const frame records and Uint8 *const *tbl are
- * required: with Uint8 **tbl the table load moves after the frame copies, and with non-const
- * records each copy is loaded and stored in turn. */
-void CFT_Ycc420plnToA256V(const SFX_FRM *frm, const SFX_FRM *dstfrm, Uint8 *const *tbl) {
+/* Registered converter (SFX_CNVFN): alpha masked by the luma. A NULL table in the argument block
+ * selects the conversion without a table. The const frame records and argument block are
+ * required: with a non-const argument block the table load moves after the frame copies, and with
+ * non-const records each copy is loaded and stored in turn. */
+void CFT_Ycc420plnToA256V(const SFX_FRM *frm, const SFX_FRM *dstfrm, const SFX_CNVARG *arg) {
     CFT_YCC420PLN src;
     CFT_ARGBDST dst;
 
@@ -136,10 +136,10 @@ void CFT_Ycc420plnToA256V(const SFX_FRM *frm, const SFX_FRM *dstfrm, Uint8 *cons
     dst.width = dstfrm->pln[0].width;
     dst.height = dstfrm->pln[0].height;
     dst.pitch = dstfrm->pln[0].pitch;
-    if (*tbl == NULL) {
+    if (arg->tbl == NULL) {
         cnvStaticYcc420plnToA256V(&src, &dst);
     } else {
-        cnvDynamicYcc420plnToA256UserTable(&src, &dst, *tbl);
+        cnvDynamicYcc420plnToA256UserTable(&src, &dst, arg->tbl);
     }
 }
 

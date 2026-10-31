@@ -46,7 +46,7 @@ void CFT_Init(void);   /* name inferred: the library start called from SFX_Init 
 void CFT_Ycc420plnToArgb8888Init(void);
 
 /* cftfx.c */
-void CFT_Ycc420plnToA256V(const SFX_FRM *frm, const SFX_FRM *dstfrm, Uint8 *const *tbl);
+void CFT_Ycc420plnToA256V(const SFX_FRM *frm, const SFX_FRM *dstfrm, const SFX_CNVARG *arg);
 void CFT_MakeArgb8888ColAdjTbl(void *tbl);
 
 #ifdef __cplusplus
