@@ -838,6 +838,9 @@ CRI/adx_crs.c:
 	.text       start:0x803BD240 end:0x803BD2E8
 	.bss        start:0x805A8FB0 end:0x805A8FB8
 
+CRI/adx_dcd3.c:
+	.bss        start:0x805A8FB8 end:0x805A8FC0
+
 CRI/adx_dcd.c:
 	.text       start:0x803BD2E8 end:0x803BDB90
 	.rodata     start:0x80516050 end:0x80516098
@@ -909,6 +912,10 @@ CRI/adx_gc.c:
 
 CRI/adx_rnaa.c:
 	.text       start:0x803C5858 end:0x803C5AC8
+
+CRI/adx_dcd5.c:
+	.text       start:0x803C5AC8 end:0x803C61D0
+	.rodata     start:0x80516B18 end:0x80516B58
 
 CRI/adx_fini.c:
 	.text       start:0x803C61D0 end:0x803C6328
