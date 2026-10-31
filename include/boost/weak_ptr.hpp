@@ -31,6 +31,19 @@ class weak_count {
         }
     }
 
+    weak_count &operator=(const shared_count &r) {
+        sp_counted_base *tmp = r.pi_;
+
+        if (tmp != 0) {
+            tmp->weak_add_ref();
+        }
+        if (pi_ != 0) {
+            pi_->weak_release();
+        }
+        pi_ = tmp;
+        return *this;
+    }
+
     weak_count &operator=(const weak_count &r) {
         sp_counted_base *tmp = r.pi_;
 
@@ -56,6 +69,12 @@ template <class T> class weak_ptr {
     weak_ptr() : px(0), pn() {}
 
     template <class Y> weak_ptr(const shared_ptr<Y> &r) : px(r.px), pn(r.pn) {}
+
+    template <class Y> weak_ptr &operator=(const shared_ptr<Y> &r) {
+        px = r.px;
+        pn = r.pn;
+        return *this;
+    }
 
     /* A shared pointer to the object, or an empty one once the object has been released. Declared
      * only: its body has not been reconstructed yet. */
