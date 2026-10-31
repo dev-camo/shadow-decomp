@@ -623,6 +623,14 @@ config.libs = [
                 Object(Matching, "Game/ElecPillar.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecSmallPillar.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecWakka.cpp", cflags=cflags_game_cpp),
+                # The remaining differences: five allocations pass lower __LINE__ values (one word
+                # each; the original passes 723, 965, 667, 773 and 1046); CopyFirstComponent
+                # computes the length of the component once where the original subtracts the
+                # pointers twice (five words); ResetEntry reaches its five float literals through
+                # one pooled .rodata base where the original addresses each literal with its own
+                # lis (33 words, shorter by seven; the pooled base is the only remaining
+                # difference).
+                Object(NonMatching, "Game/CSD/csdAccess.cpp", cflags=cflags_csd),
                 # Every function matches except InitMatrixStack, whose allocations pass lines 64 and
                 # 65 instead of the original 53 and 54. .rodata also starts with the two static
                 # doubles of MSL <cmath>'s sqrtf, unreferenced weak data that the link discards.

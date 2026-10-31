@@ -4,14 +4,10 @@
  * first). */
 #include "Game/CSD/MotionPalette.h"
 #include "Game/CSD/Screen.h"
+#include "Game/CSD/csdAccess.h"
 #include "Game/CSD/csdBase.h"
 #include <cstdlib>
 #include <cstring>
-
-/* Undecompiled callees at 0x8035BA28 and 0x8035C294: a name-to-index search of a sorted name
- * table and the reset of an entry to its defaults (behaviour inferred). */
-extern "C" int fn_8035BA28(const void *names, int count, const char *name);
-extern "C" void fn_8035C294(Chao::CSD::MotionPaletteEntry *entry);
 
 namespace Chao {
 namespace CSD {
@@ -80,7 +76,7 @@ void InitPalette(MotionPalette *palette, const SceneData *scene, const FontList 
             palette->layerCount * sizeof(MotionPaletteLayer) +
             entryBase * sizeof(MotionPaletteEntry));
         for (int j = 0; j < palette->layers[i].entryCount; j++) {
-            fn_8035C294(&palette->layers[i].entries[j]);
+            ResetEntry(&palette->layers[i].entries[j]);
             palette->layers[i].entries[j].layer = &palette->layers[i];
         }
         palette->layers[i].field_0x8 = 0;
@@ -225,7 +221,7 @@ static void BuildTextEntry(MotionPaletteEntry *entry, const ElementData *element
     if (entry->fontName != NULL) {
         fontName = entry->fontName;
     }
-    Font *font = &fonts->fonts[fn_8035BA28(fonts->names, fonts->count, fontName)];
+    Font *font = &fonts->fonts[FindNameIndex(fonts->names, fonts->count, fontName)];
     int length = strlen(text);
     if (length <= 0) {
         return;

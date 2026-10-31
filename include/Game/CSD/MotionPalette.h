@@ -12,6 +12,14 @@
 namespace Chao {
 namespace CSD {
 
+/* An entry of a name table, which is sorted by name. The index selects the item the name stands
+ * for in the parallel array of the table's owner. */
+struct NameEntry {
+    /* 0x00 */ const char *name;
+    /* 0x04 */ s32 index;
+};
+CHECK_SIZEOF(Chao::CSD::NameEntry, 0x8);
+
 /* A quad corner: position, colour and texture coordinates. */
 struct Vertex {
     /* 0x00 */ f32 x;
@@ -84,7 +92,16 @@ struct TextureSize {
 };
 CHECK_SIZEOF(Chao::CSD::TextureSize, 0x8);
 
-/* File data of a scene (only the members used by the palette code). */
+/* An entry of a scene's node table, which is sorted by name (searched by FindNode). The
+ * members after the name are used by the csdm* files. */
+struct NodeEntry {
+    /* 0x00 */ const char *name;
+    /* 0x04 */ s32 field_0x4;
+    /* 0x08 */ s32 field_0x8;
+};
+CHECK_SIZEOF(Chao::CSD::NodeEntry, 0xC);
+
+/* File data of a scene (only the members used by the palette and access code). */
 struct SceneData {
     /* 0x00 */ u8 field_0x0[0x18];
     /* 0x18 */ TextureSize *textureSizes;
@@ -92,8 +109,10 @@ struct SceneData {
     /* 0x20 */ GlyphData *glyphs;
     /* 0x24 */ s32 layerCount;
     /* 0x28 */ LayerData *layers;
+    /* 0x2C */ s32 nodeCount;
+    /* 0x30 */ NodeEntry *nodes;
 };
-CHECK_SIZEOF(Chao::CSD::SceneData, 0x2C);
+CHECK_SIZEOF(Chao::CSD::SceneData, 0x34);
 
 /* A character code and its glyph index, sorted by code. */
 struct FontCharacter {
@@ -108,11 +127,11 @@ struct Font {
 };
 CHECK_SIZEOF(Chao::CSD::Font, 0x8);
 
-/* The fonts of a project and their name table (searched by name). */
+/* The fonts of a project and their name table (searched by FindNameIndex). */
 struct FontList {
     /* 0x00 */ s32 count;
     /* 0x04 */ Font *fonts;
-    /* 0x08 */ const void *names;
+    /* 0x08 */ const NameEntry *names;
 };
 CHECK_SIZEOF(Chao::CSD::FontList, 0xC);
 
@@ -123,7 +142,11 @@ struct MotionPaletteLayer;
  * allocate four vertices of each kind and one texture index per character. */
 struct MotionPaletteEntry {
     /* 0x00 */ Matrix matrix;
-    /* 0x20 */ u8 field_0x20[0x40 - 0x20];
+    /* 0x20 */ u8 field_0x20[0x24 - 0x20];
+    /* 0x24 */ s32 field_0x24;
+    /* 0x28 */ u8 field_0x28[0x38 - 0x28];
+    /* 0x38 */ f32 field_0x38;
+    /* 0x3C */ f32 field_0x3C;
     /* 0x40 */ f32 field_0x40;
     /* 0x44 */ s32 field_0x44;
     /* 0x48 */ u32 colors[4];
