@@ -1437,11 +1437,13 @@ CRI/cftcoladj.c:
 Game/fn_8040AB94.c:
 	.text       start:0x8040AB94 end:0x8040AB98
 
-Game/fn_8040AC3C.c:
-	.text       start:0x8040AC3C end:0x8040AC68
-
-Game/fn_8040AE0C.c:
-	.text       start:0x8040AE0C end:0x8040AE10
+Game/fn_8040ABC8.cpp:
+	extab       start:0x8000574C end:0x8000577C
+	extabindex  start:0x80007628 end:0x80007670
+	.text       start:0x8040ABC8 end:0x8040B034
+	.rodata     start:0x8051A2B0 end:0x8051A2E8
+	.data       start:0x80569E60 end:0x80569E98
+	.sdata      start:0x805EDD10 end:0x805EDD20
 
 Game/fn_8040C244.c:
 	.text       start:0x8040C244 end:0x8040C25C
