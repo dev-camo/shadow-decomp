@@ -560,7 +560,11 @@ RpGeometry *fn_8045984C(RpGeometry *geometry);                           /* add 
 #define rpGEOMETRYLOCKPOLYGONS 0x1
 #define rpGEOMETRYLOCKVERTICES 0x2
 #define rpGEOMETRYLOCKNORMALS 0x4
+#define rpGEOMETRYLOCKPRELIGHT 0x8
 #define rpGEOMETRYLOCKTEXCOORDS 0x10
+/* texture coordinate set 1, the same flag as rpGEOMETRYLOCKTEXCOORDS; set n's flag is this
+ * shifted left by n - 1 */
+#define rpGEOMETRYLOCKTEXCOORDS1 0x10
 #define rpGEOMETRYLOCKALL 0xFFF
 
 /* the texture coordinate sets of an RpGeometry format */

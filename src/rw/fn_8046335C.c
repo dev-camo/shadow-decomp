@@ -5,13 +5,6 @@
 #include <dolphin/gx.h>
 #include <dolphin/os.h>
 
-/* RpGeometry lock flags */
-#define rpGEOMETRYLOCKPRELIGHT 0x8
-#define rpGEOMETRYLOCKTEXCOORDS1 0x10
-
-/* RpInterpolator flags */
-#define rpINTERPOLATORDIRTY 0x1
-
 /* Creates an atomic all-in-one pipeline: one node that calls the given callbacks */
 RxPipeline *fn_8046335C(RwUInt32 pluginID, RwUInt32 pluginData,
                         RpGameCubeInstanceCallBack instanceCallBack,
@@ -209,10 +202,11 @@ RpAtomic *fn_80463840(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
         fn_804635D4(geometry, instance, renderMesh->nodeData);
         geometry->lockedSinceLastInst = 0;
     }
-    if (geometry->numMorphTargets != 1 && (atomic->interpolator.flags & rpINTERPOLATORDIRTY)) {
+    if (geometry->numMorphTargets != 1 &&
+        (atomic->interpolator.flags & rpINTERPOLATORDIRTYINSTANCE)) {
         RPGAMECUBEWAITDRAWSYNC(instance->syncToken);
         fn_80464814(geometry, instance, &atomic->interpolator);
-        atomic->interpolator.flags &= ~rpINTERPOLATORDIRTY;
+        atomic->interpolator.flags &= ~rpINTERPOLATORDIRTYINSTANCE;
     }
     return atomic;
 }
