@@ -12,8 +12,9 @@
  * The game's code carries no run-time type information for these classes, so every class and
  * member name here is inferred from what the code does. The out-of-line virtual functions are
  * defined in csdmScene.cpp, except CMotionPattern's Copy, which is in csdmMotionPattern.cpp with
- * the class's vtable. CMotionPattern's destructor is inline; the game's copy of it is the one in
- * csdmScene.cpp. Members without a supported meaning keep their offset. */
+ * the class's vtable, and CElementDataRef's destructor and Copy, which are in csdmNode.cpp.
+ * CMotionPattern's destructor is inline; the game's copy of it is the one in csdmScene.cpp.
+ * Members without a supported meaning keep their offset. */
 namespace Chao {
 namespace CSD {
 
@@ -95,17 +96,87 @@ class CMotionPatternRef {
 };
 CHECK_SIZEOF(Chao::CSD::CMotionPatternRef, 0xC);
 
-/* The node an element belongs to (class name inferred from csdmNode.cpp). Only the members that
- * CMotionPattern reads are known. */
-class CNode {
+/* The handle of an element's file data (inferred). */
+class CElementDataRef {
   public:
-    /* 0x00 */ u8 field_0x0[0x8];
-    /* 0x08 */ const ElementData *m_element;
-    /* 0x0C */ u8 field_0xC[0x28];
-    /* 0x34 */ CSceneDataRef *m_scene;
+    CElementDataRef();
+    virtual ~CElementDataRef();
+    virtual void Copy(const CElementDataRef &other);
+
+    /* Drops the reference and the data. */
+    void Clear();
+
+    /* Takes the data and the reference that counts its block. */
+    void Attach(ElementData *element, const RCPtr<unsigned char> &ref);
+
+    /* 0x04 */ RCPtr<unsigned char> m_ref;
+    /* 0x08 */ ElementData *m_element;
+};
+CHECK_SIZEOF(Chao::CSD::CElementDataRef, 0xC);
+
+class CMotionPattern;
+class CFontList;
+class CScene;
+struct NodeObjects;
+
+/* The node an element belongs to (class name inferred from csdmNode.cpp): it holds the element's
+ * file data and the CMotionPattern of the element's entry, and forwards the accessors to it. The
+ * conversions between the node's coordinates and the entry's are those of the screen (Screen.h).
+ * Only the members that are known have names. */
+class CNode : public CElementDataRef {
+  public:
+    /* The accessors forward to the entry's CMotionPattern (names inferred). The translation is
+     * in screen units. */
+    void SetHidden(s32 hidden);
+    void ClearHidden();
+    s32 GetHidden() const;
+    void SetTranslation(f32 x, f32 y);
+    void SetTranslation(const Vector2 &translation);
+    Vector2 GetTranslation() const;
+    void SetTranslateX(f32 value);
+    void SetTranslateY(f32 value);
+    f32 GetTranslateX() const;
+    f32 GetTranslateY() const;
+    f32 GetRotation() const;
+    void SetScaleX(f32 scaleX);
+    void SetScaleY(f32 scaleY);
+    f32 GetScaleX() const;
+    f32 GetScaleY() const;
+    void SetPattern(int pattern);
+    void SetTint(const u32 &tint);
+    void ClearTint();
+    u32 GetTint() const;
+    void SetColor(int corner, const u32 &color);
+    void ClearColor(int corner);
+    u32 GetColor(int corner) const;
+    s32 GetValue(int index) const;
+
+    /* Sets the element's field_0x8 (placeholder name: DrawElement draws only elements where it is
+     * nonzero). */
+    void fn_8036AEE0(u32 value);
+
+    /* Replaces the node's copy of a project's fonts, or removes it for null (name inferred). */
+    void SetFonts(const CFontListRef *fonts);
+
+    /* Rebuilds the scene's palette while the element's scale flags are cleared (they are restored
+     * afterwards), then clears the entry's "transform set" and "all channels set" flags and marks
+     * the entry dirty (placeholder name: the purpose is not known). */
+    void fn_8036A20C();
+
+    /* 0x0C */ u8 field_0xC[0x1C];
+    /* 0x28 */ CMotionPattern *m_pattern;
+    /* 0x2C */ CFontList *m_fonts;
+    /* 0x30 */ u8 field_0x30[0x4];
+    /* 0x34 */ CScene *m_scene;
+    /* 0x38 */ u8 field_0x38[0x18];
+    /* 0x50 */ NodeObjects *m_objects;
 };
 CHECK_OFFSETOF(Chao::CSD::CNode, m_element, 0x8);
+CHECK_OFFSETOF(Chao::CSD::CNode, m_pattern, 0x28);
+CHECK_OFFSETOF(Chao::CSD::CNode, m_fonts, 0x2C);
 CHECK_OFFSETOF(Chao::CSD::CNode, m_scene, 0x34);
+CHECK_OFFSETOF(Chao::CSD::CNode, m_objects, 0x50);
+CHECK_SIZEOF(Chao::CSD::CNode, 0x54);
 
 /* The defaults a node's element has for a channel, read when neither an override nor a computed
  * value exists (placeholder name: the function is in csdmNode.cpp). */
