@@ -63,30 +63,42 @@ typedef struct SFH_OBJ {
 } SFH_OBJ;
 CHECK_SIZEOF(SFH_OBJ, 0x10);
 
-/* one stream element record (0x40 bytes) */
+/* one stream element record (0x40 bytes); bytes 0x1A..0x1F are read as audio or video fields
+ * depending on the stream type: the 16-bit bit rate and the 32-bit sampling rate are
+ * little-endian, the picture size packs two 12-bit values high nibble first */
 typedef struct {
-    Uint8 pad0[0x18];   /* 0x00 */
-    Uint8 id;           /* 0x18 */
-    Uint8 codec;        /* 0x19 */
-    Uint8 aud_layer;    /* 0x1A video: bitrate (Sint16, little endian) */
-    Uint8 aud_chnum;    /* 0x1B */
-    Uint8 aud_smphz[4]; /* 0x1C video: picsz[3], picrate */
-    Uint8 ftr_flag;     /* 0x20 */
-    Uint8 ftr_coltype;  /* 0x21 */
-    Uint8 ftr_pictype;  /* 0x22 */
-    Uint8 ftr_fixflg;   /* 0x23 */
-    Uint8 ftr_expand;   /* 0x24 */
-    Uint8 ftr_gopn;     /* 0x25 */
-    Uint8 ftr_gopm;     /* 0x26 */
-    Uint8 ftr_fxtype;   /* 0x27 */
-    Uint8 pad28[0x18];  /* 0x28 */
+    Uint8 unk00[0x18]; /* 0x00 */
+    Uint8 id;          /* 0x18 */
+    Uint8 codec;       /* 0x19 */
+    union {
+        struct {
+            Uint8 layer; /* 0x1A */
+            Uint8 chnum; /* 0x1B */
+        } aud;
+        struct {
+            Uint16 bitrate; /* 0x1A */
+        } vid;
+    } fld1A;
+    union {
+        struct {
+            Uint32 smphz; /* 0x1C */
+        } aud;
+        struct {
+            Uint8 picsz[3]; /* 0x1C */
+            Uint8 picrate;  /* 0x1F */
+        } vid;
+    } fld1C;
+    Uint8 ftr_flag;    /* 0x20 */
+    Uint8 ftr_coltype; /* 0x21 */
+    Uint8 ftr_pictype; /* 0x22 */
+    Uint8 ftr_fixflg;  /* 0x23 */
+    Uint8 ftr_expand;  /* 0x24 */
+    Uint8 ftr_gopn;    /* 0x25 */
+    Uint8 ftr_gopm;    /* 0x26 */
+    Uint8 ftr_fxtype;  /* 0x27 */
+    Uint8 unk28[0x18]; /* 0x28 */
 } SFH_ELEM;
 CHECK_SIZEOF(SFH_ELEM, 0x40);
-
-#define SFH_ELEM_BITRATE(e) (*(Uint16 *)&(e)->aud_layer)
-#define SFH_ELEM_PICSZ(e) ((e)->aud_smphz)
-#define SFH_ELEM_PICRATE(e) ((e)->aud_smphz[3])
-#define SFH_ELEM_SMPHZ(e) (*(Uint32 *)(e)->aud_smphz)
 
 typedef struct {
     Sint32 num;  /* 0x00 */
@@ -431,7 +443,7 @@ Bool SFH_AnlyElemPicRate(SFH sfh, Uint8 id, Sint32 *val) {
     if (sfh_GetStmType(id) != SFH_STM_VID) {
         return FALSE;
     }
-    *val = getPicRate(SFH_ELEM_PICRATE(elem));
+    *val = getPicRate(elem->fld1C.vid.picrate);
     return TRUE;
 }
 
@@ -448,11 +460,11 @@ Bool SFH_AnlyElemPicSz(SFH sfh, Uint8 id, Sint32 *width, Sint32 *height) {
     if (sfh_GetStmType(id) != SFH_STM_VID) {
         return FALSE;
     }
-    *width = SFH_ELEM_PICSZ(elem)[0];
-    *width = (*width << 4) | ((SFH_ELEM_PICSZ(elem)[1] >> 4) & 0x0F);
+    *width = elem->fld1C.vid.picsz[0];
+    *width = (*width << 4) | ((elem->fld1C.vid.picsz[1] >> 4) & 0x0F);
     *width &= 0xFFF;
-    *height = SFH_ELEM_PICSZ(elem)[1];
-    *height = (*height << 8) | SFH_ELEM_PICSZ(elem)[2];
+    *height = elem->fld1C.vid.picsz[1];
+    *height = (*height << 8) | elem->fld1C.vid.picsz[2];
     *height &= 0xFFF;
     return TRUE;
 }
@@ -474,8 +486,8 @@ Bool SFH_AnlyElemBitRate(SFH sfh, Uint8 id, Sint32 *val) {
      * "unknown" test against 0xFFFF below can never succeed. The original compiles the same dead
      * test (extsh, then cmplwi against 0xFFFF). The high byte is taken with a (Uint8) cast: the
      * `& 0xFF` mask of SWAP16 changes the object. */
-    rate = (Sint16)(Uint16)(((SFH_ELEM_BITRATE(elem) & 0xFF) << 8) |
-                            (Uint8)(SFH_ELEM_BITRATE(elem) >> 8));
+    rate = (Sint16)(Uint16)(((elem->fld1A.vid.bitrate & 0xFF) << 8) |
+                            (Uint8)(elem->fld1A.vid.bitrate >> 8));
     if (rate == 0xFFFF) {
         rate = 0;
     }
@@ -513,7 +525,7 @@ Bool SFH_AnlyElemSmpHz(SFH sfh, Uint8 id, Sint32 *val) {
     if (sfh_GetStmType(id) != SFH_STM_AUD) {
         return FALSE;
     }
-    *val = SWAP32(SFH_ELEM_SMPHZ(elem));
+    *val = SWAP32(elem->fld1C.aud.smphz);
     return TRUE;
 }
 
@@ -529,7 +541,7 @@ Bool SFH_AnlyElemChNum(SFH sfh, Uint8 id, Sint32 *val) {
     if (sfh_GetStmType(id) != SFH_STM_AUD) {
         return FALSE;
     }
-    *val = elem->aud_chnum;
+    *val = elem->fld1A.aud.chnum;
     return TRUE;
 }
 
@@ -548,7 +560,7 @@ Bool SFH_AnlyElemLayer(SFH sfh, Uint8 id, Sint32 *val) {
     if (elem->codec != 1) {
         return FALSE;
     }
-    *val = elem->aud_layer;
+    *val = elem->fld1A.aud.layer;
     return TRUE;
 }
 
