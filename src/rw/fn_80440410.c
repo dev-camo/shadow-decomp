@@ -49,16 +49,6 @@ RwInt32 lbl_805F1418;
 RwInt32 lbl_805F1414;
 RwInt32 lbl_805F1410;
 
-/* Reports an error of this plugin; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rpID_COLLISPLUGIN;                                                       \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* Allocates a tree with room for numSplits splits and, with rpCOLLTREE_TRIANGLEMAP, a triangle map
  * after it */
 static inline RpCollTree *CollTreeCreate(RwUInt16 numTriangles, RwUInt16 numSplits, RwUInt32 flags,
@@ -75,7 +65,7 @@ static inline RpCollTree *CollTreeCreate(RwUInt16 numTriangles, RwUInt16 numSpli
     }
     mem = RwMalloc(size, rwMEMHINT_COLLTREE);
     if (mem == NULL) {
-        RWERROR((0x80000013, size));
+        RWERRORPLUGIN(rpID_COLLISPLUGIN, (E_RW_NOMEM, size));
         return NULL;
     }
     tree = (RpCollTree *)mem;
@@ -274,7 +264,7 @@ RpCollTree *fn_80440920(RwStream *stream, RwInt32 numTriangles, RwInt32 numSplit
                 if ((RwUInt32)leaf >> 16 > 0xEF) {
                     *failed = 1;
                     RwFree(tree);
-                    RWERROR((1));
+                    RWERRORPLUGIN(rpID_COLLISPLUGIN, (1));
                     return NULL;
                 }
                 branch->type = (RwUInt32)leaf >> 16;

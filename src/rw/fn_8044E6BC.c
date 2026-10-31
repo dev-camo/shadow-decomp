@@ -130,17 +130,14 @@ RwStream *fn_8044EAD0(RwStream *stream, RpGeometry *geometry) {
     RwUInt32 length;
     RwUInt32 counts;
     RwInt32 platform;
-    RwError error;
     RwInt32 numVertices;
     RpSkin *skin;
 
     if (!fn_8047CF50(stream, rwID_STRUCT, &length, &version)) {
         return NULL;
     }
-    if (version < 0x35000 || version > RW_STREAM_VERSION) {
-        error.pluginID = rpID_SKINPLUGIN;
-        error.errorCode = fn_8047DC28(E_RW_BADVERSION);
-        fn_8047DB84(&error);
+    if (version < rwLIBRARYBASEVERSION || version > RW_STREAM_VERSION) {
+        RWERRORPLUGIN(rpID_SKINPLUGIN, (E_RW_BADVERSION));
         return NULL;
     }
     if (fn_8047D868(stream, &platform, sizeof(RwInt32)) == NULL) {
@@ -868,7 +865,7 @@ RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef
     }
     size += fn_8046EEA0(builder, &vertexSource);
 
-    if (geometry->flags & 0x02000000) {
+    if (geometry->flags & rpGEOMETRYNATIVEINSTANCE) {
         repEntry = RwMalloc(size + sizeof(RwResEntry), rwMEMHINT_SKIN);
         repEntry->link.next = NULL;
         repEntry->link.prev = NULL;

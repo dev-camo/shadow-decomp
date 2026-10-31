@@ -237,12 +237,12 @@ void *fn_8044C174(void *instance, RwInt32 offset, RwInt32 size) {
     RwUInt32 flags;
 
     if (lbl_8056D708.numInstances == 0) {
-        flags = 0x1;
+        flags = SKINPIPELINEOPENGENERIC;
         if (fn_80485DB8(rpID_MATFXPLUGIN) != -1) {
-            flags |= 0x2;
+            flags |= SKINPIPELINEOPENMATFX;
         }
         if (fn_80485DB8(rpID_TOONPLUGIN) != -1) {
-            flags |= 0x4;
+            flags |= SKINPIPELINEOPENTOON;
         }
         fn_80451D60(flags);
 
@@ -315,18 +315,18 @@ void *fn_8044C3FC(void *dstObject, const void *srcObject, RwInt32 offset, RwInt3
 
 /* Puts a loaded skinned atomic in the skin pipeline that suits its other plugins */
 RwBool fn_8044C414(void *object, RwInt32 offset, RwInt32 size) {
-    RwInt32 type = 1;
+    RwInt32 type = SKINPIPELINEGENERIC;
     RpAtomic *atomic = object;
 
     if (fn_80485DB8(rpID_MATFXPLUGIN) != -1 &&
         *RWPLUGINOFFSET(RwUInt8, atomic, fn_80458C90(rpID_MATFXPLUGIN)) != 0) {
-        type = 2;
+        type = SKINPIPELINEMATFX;
     }
     if (atomic->geometry != NULL && fn_8044CCAC(atomic->geometry) != NULL) {
-        if (fn_80485DB8(rpID_MATFXPLUGIN) == -1 && type == 2) {
-            type = 1;
-        } else if (fn_80485DB8(rpID_TOONPLUGIN) == -1 && type == 3) {
-            type = 1;
+        if (fn_80485DB8(rpID_MATFXPLUGIN) == -1 && type == SKINPIPELINEMATFX) {
+            type = SKINPIPELINEGENERIC;
+        } else if (fn_80485DB8(rpID_TOONPLUGIN) == -1 && type == SKINPIPELINETOON) {
+            type = SKINPIPELINEGENERIC;
         }
         fn_80451E6C(atomic, type);
     }
@@ -339,10 +339,10 @@ RwBool fn_8044C4D4(void *object, RwInt32 offset, RwInt32 size, RwUInt32 extraDat
     RpAtomic *atomic = object;
 
     if (atomic->geometry != NULL && fn_8044CCAC(atomic->geometry) != NULL) {
-        if (fn_80485DB8(rpID_MATFXPLUGIN) == -1 && type == 2) {
-            type = 1;
-        } else if (fn_80485DB8(rpID_TOONPLUGIN) == -1 && type == 3) {
-            type = 1;
+        if (fn_80485DB8(rpID_MATFXPLUGIN) == -1 && type == SKINPIPELINEMATFX) {
+            type = SKINPIPELINEGENERIC;
+        } else if (fn_80485DB8(rpID_TOONPLUGIN) == -1 && type == SKINPIPELINETOON) {
+            type = SKINPIPELINEGENERIC;
         }
         fn_80451E6C(atomic, type);
     }

@@ -5,16 +5,6 @@
 
 #define rwMEMHINT_DMORPHANIMATION (rwMEMHINTDUR_EVENT | rwID_DMORPHANIMATION)
 
-/* Reports an error of this plugin; args is the parenthesized error code and its arguments */
-#define RWERROR(args)                                                                              \
-    do {                                                                                           \
-        RwError error_;                                                                            \
-                                                                                                   \
-        error_.pluginID = rpID_DMORPHPLUGIN;                                                       \
-        error_.errorCode = fn_8047DC28 args;                                                       \
-        fn_8047DB84(&error_);                                                                      \
-    } while (0)
-
 /* Allocates an animation with numDMorphTargets empty frame lists after it */
 static inline RpDMorphAnimation *DMorphAnimationCreate(RwInt32 numDMorphTargets) {
     RpDMorphAnimation *animation;
@@ -24,7 +14,7 @@ static inline RpDMorphAnimation *DMorphAnimationCreate(RwInt32 numDMorphTargets)
 
     animation = RwMalloc(size, rwMEMHINT_DMORPHANIMATION);
     if (animation == NULL) {
-        RWERROR((0x80000013, size));
+        RWERRORPLUGIN(rpID_DMORPHPLUGIN, (E_RW_NOMEM, size));
         return NULL;
     }
     animation->numDMorphTargets = numDMorphTargets;
@@ -46,7 +36,7 @@ static inline RpDMorphAnimation *DMorphAnimationCreateFrames(RpDMorphAnimation *
 
     frameList->frames = RwMalloc(size, rwMEMHINT_DMORPH);
     if (frameList->frames == NULL) {
-        RWERROR((0x80000013, size));
+        RWERRORPLUGIN(rpID_DMORPHPLUGIN, (E_RW_NOMEM, size));
         return NULL;
     }
     memset(frameList->frames, 0, size);
@@ -93,7 +83,7 @@ RpDMorphAnimation *fn_80442C24(RwStream *stream) {
         return NULL;
     }
     if (formatVersion > 0x100) {
-        RWERROR((0x80000004));
+        RWERRORPLUGIN(rpID_DMORPHPLUGIN, (E_RW_BADVERSION));
         return NULL;
     }
     animation = DMorphAnimationCreate(numDMorphTargets);

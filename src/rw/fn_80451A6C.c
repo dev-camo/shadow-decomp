@@ -5,11 +5,6 @@
 #include "rw/rpskin.h"
 #include <dolphin/gx.h>
 
-/* skin pipeline types (inferred) */
-#define SKINPIPELINEAUTO 0 /* chosen by whether the atomic has material effects */
-#define SKINPIPELINEGENERIC 1
-#define SKINPIPELINEMATFX 2
-
 /* Instances a skinned geometry for the material effects pipeline */
 RpAtomic *fn_80451A6C(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
     RwInt32 mode;
@@ -97,16 +92,16 @@ RpAtomic *fn_80451BCC(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
     return atomic;
 }
 
-/* Opens the skin pipelines for the plugins present (flags: 0x1 skinning, 0x2 material effects) */
+/* Opens the skin pipelines for the plugins present (flags: SKINPIPELINEOPEN*) */
 RwBool fn_80451D60(RwUInt32 flags) {
     SkinGlobals *globals = &lbl_8056D708;
 
-    if (flags & 0x1) {
+    if (flags & SKINPIPELINEOPENGENERIC) {
         globals->pipelines[SKINPIPELINEGENERIC] =
             fn_8046335C(rpID_SKINPLUGIN, SKINPIPELINEGENERIC, fn_8044D924, fn_8044DA3C, fn_80463428,
                         fn_8044DE74);
     }
-    if (flags & 0x2) {
+    if (flags & SKINPIPELINEOPENMATFX) {
         globals->pipelines[SKINPIPELINEMATFX] = fn_8046335C(
             rpID_SKINPLUGIN, SKINPIPELINEMATFX, fn_80451A6C, fn_80451B20, fn_80463428, fn_80451BCC);
     }

@@ -21,6 +21,17 @@ extern "C" {
 #define rwMEMHINT_SKIN (rwMEMHINTDUR_EVENT | rpID_SKINPLUGIN)
 #define rwMEMHINT_SKINTEMP (rwMEMHINTDUR_FUNCTION | rpID_SKINPLUGIN)
 
+/* skin pipeline types (inferred) */
+#define SKINPIPELINEAUTO 0 /* chosen by whether the atomic has material effects */
+#define SKINPIPELINEGENERIC 1
+#define SKINPIPELINEMATFX 2
+#define SKINPIPELINETOON 3
+
+/* the pipelines fn_80451D60 opens (inferred); the toon bit is passed but opens nothing */
+#define SKINPIPELINEOPENGENERIC 0x1
+#define SKINPIPELINEOPENMATFX 0x2
+#define SKINPIPELINEOPENTOON 0x4
+
 /* The weights of up to four bones on a vertex */
 typedef struct RwMatrixWeights {
     /* 0x0 */ RwReal w0;
@@ -157,9 +168,12 @@ RwInt32 fn_8044E7D0(RpGeometry *geometry);                     /* native stream 
 RwStream *fn_8044E89C(RwStream *stream, RpGeometry *geometry); /* native stream write */
 RwStream *fn_8044EAD0(RwStream *stream, RpGeometry *geometry); /* native stream read */
 RwInt32 fn_8044EE3C(const void *object, RwInt32 offset, RwInt32 size); /* atomic stream size */
-RwBool fn_80451D60(RwUInt32 flags);                                    /* opens the pipelines */
-RwBool fn_80451E0C(void);                                              /* closes the pipelines */
-RpAtomic *fn_80451E6C(RpAtomic *atomic, RwInt32 type);                 /* sets the skin pipeline */
+/* the instancing of the skin's geometry (inferred) */
+RwResEntry *fn_8044F9E4(RpGeometry *geometry, void *owner, RwResEntry **ownerRef);
+RwResEntry *fn_80450938(RpGeometry *geometry, void *owner, RwResEntry **ownerRef);
+RwBool fn_80451D60(RwUInt32 flags);                    /* opens the pipelines */
+RwBool fn_80451E0C(void);                              /* closes the pipelines */
+RpAtomic *fn_80451E6C(RpAtomic *atomic, RwInt32 type); /* sets the skin pipeline */
 
 /* the skinning kernels (GameCube, hand-written assembly): the bone matrices, then the vertices with
  * up to two, three or four weights, positions alone or with normals */
