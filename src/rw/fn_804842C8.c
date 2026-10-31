@@ -138,6 +138,11 @@ void fn_804842C8(RwCamera *camera) {
     RwV3d edgeB;
     RwInt32 i;
 
+    /* The view offset, applied to the corners in the loop below */
+    offset.x = ltm->up.x * camera->viewOffset.y + ltm->right.x * -camera->viewOffset.x;
+    offset.y = ltm->up.y * camera->viewOffset.y + ltm->right.y * -camera->viewOffset.x;
+    offset.z = ltm->up.z * camera->viewOffset.y + ltm->right.z * -camera->viewOffset.x;
+
     /* The corners of the view window, a unit along the view direction */
     scaledRight.x = ltm->right.x * camera->viewWindow.x;
     scaledRight.y = ltm->right.y * camera->viewWindow.x;
@@ -145,6 +150,7 @@ void fn_804842C8(RwCamera *camera) {
     scaledUp.x = ltm->up.x * camera->viewWindow.y;
     scaledUp.y = ltm->up.y * camera->viewWindow.y;
     scaledUp.z = ltm->up.z * camera->viewWindow.y;
+
     temp.x = ltm->at.x + scaledRight.x;
     temp.y = ltm->at.y + scaledRight.y;
     temp.z = ltm->at.z + scaledRight.z;
@@ -172,9 +178,6 @@ void fn_804842C8(RwCamera *camera) {
     corners[3] = temp;
 
     /* Each corner at the near and far planes, from the view offset */
-    offset.x = ltm->up.x * camera->viewOffset.y + ltm->right.x * -camera->viewOffset.x;
-    offset.y = ltm->up.y * camera->viewOffset.y + ltm->right.y * -camera->viewOffset.x;
-    offset.z = ltm->up.z * camera->viewOffset.y + ltm->right.z * -camera->viewOffset.x;
     for (i = 0; i < 4; i++) {
         temp.x = corners[i].x - offset.x;
         temp.y = corners[i].y - offset.y;
