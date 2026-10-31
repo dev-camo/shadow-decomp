@@ -53,7 +53,9 @@ DSError TRKSuppAccessFile(u32 file_handle, u8 *data, size_t *count, DSIOResult *
             if (need_reply) {
                 BOOL b = read && file_handle == 0;
 
-                // Original idiom, kept: a plain 5 changes the register allocation of this function.
+                // The game's code keeps an unused compare of read just before this call (USA
+                // 0x8039C6D4), which a conditional on read in this argument reproduces; both arms
+                // are 5 and their original names are unknown. A plain 5 drops the compare.
                 error = TRKRequestSend(buffer, &replyBufferId, read ? 5 : 5, 3, !b);
                 if (error == DS_NoError) {
                     replyBuffer = (MessageBuffer *)TRKGetBuffer(replyBufferId);
