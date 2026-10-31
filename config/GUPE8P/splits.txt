@@ -103,6 +103,12 @@ Game/BDTrue.cpp:
 	.sdata      start:0x805ECDB8 end:0x805ECDD8
 	.sdata2     start:0x805F9750 end:0x805F9770
 
+Game/CSD/csdAccess.cpp:
+	.text       start:0x8035BA28 end:0x8035C5CC
+	.ctors      start:0x804AA040 end:0x804AA044
+	.rodata     start:0x80512E38 end:0x80512E60
+	.bss        start:0x805858B0 end:0x80585900
+
 Game/CSD/csdMatrix.cpp:
 	.text       start:0x8035F81C end:0x80360528
 	.rodata     start:0x80512EE8 end:0x80512F08
