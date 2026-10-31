@@ -14,12 +14,11 @@ extern "C" {
 
 typedef struct MPS_OBJ *MPS;
 
-/* The MPS records are 4-byte aligned in the original: SFMPS_Init hands MPS_Init a work buffer at an
- * address that is 4 modulo 8 (sfmps_libwork), and the 64-bit fields are reached with word accesses.
- * The packing keeps every size and offset. */
-#pragma pack(push, 4)
+/* The records below live in the work buffer passed to MPS_Init. SFD passes sfmps_libwork, which
+ * the original link places at a 4-mod-8 address (every region), so 8-byte alignment of their
+ * 64-bit fields is not guaranteed at run time. */
 
-/* pack header (16 bytes: holds the 64-bit SCR) */
+/* pack header (16 bytes, holds the 64-bit SCR) */
 typedef struct {
     Sint64 scr;      /* 0x00 */
     Sint32 rsv;      /* 0x08 */
@@ -33,7 +32,7 @@ typedef struct {
 } MPS_SYSHD;
 CHECK_SIZEOF(MPS_SYSHD, 0x20);
 
-/* packet header (40 bytes: holds the 64-bit PTS/DTS) */
+/* packet header (40 bytes, holds the 64-bit PTS/DTS) */
 typedef struct {
     Sint64 pts;    /* 0x00 */
     Sint64 dts;    /* 0x08 */
@@ -95,8 +94,6 @@ typedef struct {
     MPS_OBJ hn[1];                         /* 0x10 */
 } MPSLIB_WORK;
 CHECK_SIZEOF(MPSLIB_WORK, 0x110);
-
-#pragma pack(pop)
 
 extern MPSLIB_WORK *MPSLIB_libwork;
 
