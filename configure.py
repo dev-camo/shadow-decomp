@@ -677,7 +677,7 @@ config.libs = [
                 # of the character info (the second branch skips the cast check), and the single
                 # natural test compiles to one branch fewer.
                 Object(NonMatching, "Game/TornadoCollision.cpp", cflags=cflags_game_cpp),
-                # 53 of the 78 functions have identical instructions; 41 of them also have identical
+                # 53 of the 78 functions have identical instructions; 42 of them also have identical
                 # relocation symbol names, the others refer to symbols that keep placeholder names.
                 # SetState differs in 5 words (the order of the stack argument of the probe call and
                 # the moves around it) and Update in 5 (the stack slot of the result of
