@@ -620,11 +620,8 @@ config.libs = [
                 # the original's; the accessor of the switch counter is emitted after the template
                 # instances that follow ApplyState here, directly after ApplyState in the original.
                 Object(NonMatching, "Game/CandleStick.cpp", cflags=cflags_game_cpp),
-                # 49 of 52 functions have identical instructions. Chao::Update is one word shorter:
-                # the original reads the word at 0xC of the object that fn_800740E4 returns through
-                # shared_ptr's out-of-line operator->, which this build expands in place. The
-                # checked_deleter call operator differs by one word and checked_delete is absent, as
-                # in CityLaserHolder.cpp.
+                # 50 of 52 functions have identical instructions. The checked_deleter call operator
+                # differs by one word and checked_delete is absent, as in CityLaserHolder.cpp.
                 Object(NonMatching, "Game/ChaoHolder.cpp", cflags=cflags_game_cpp),
                 # Every function but the ThreatObj constructor is instruction-identical, and so is the
                 # data. Two differences remain: the constructor's two table loads (model table and

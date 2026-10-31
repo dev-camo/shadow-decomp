@@ -12,10 +12,13 @@
 #include "Game/GadgetTypeInfo.h"
 #include "Game/SetAdapterState.h"
 #include "Game/SharedConstants.h"
+#include "Game/UnkActor_800740E4.h"
 #include "Game/UnkAttack_8005A840.h"
 #include "Game/UnkBitFlags_80014E04.h"
 #include "Game/UnkGadgetOwner_800C9CD0.h"
 #include "Game/UnkManager_800CB69C.h"
+#include "Game/UnkObject_801E72DC.h"
+#include "Game/UnkObject_802B4254.h"
 #include "Game/UnkProbeTarget_800587A0.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/UnkStartupFloat_800E2570.h"
@@ -30,57 +33,6 @@
 
 class Chao;
 class ChaoHolder;
-class UnkObject_801E72DC;
-class UnkObject_802B4254;
-
-extern "C" {
-/* Creates the object that the Chao keeps at 0x2C, with the argument 0x2000 (placeholder names and
- * behaviour unknown). */
-boost::shared_ptr<UnkObject_801E72DC> fn_801E72DC(int arg0);
-/* Copies position into the object's position at 0x8 (behaviour inferred from its body). */
-void fn_800CCE38(UnkObject_801E72DC *object, const Fn8040Vector3 *position);
-/* Creates the object that the Chao keeps at 0x34 (placeholder names; arguments 2, 0 unknown). */
-boost::shared_ptr<UnkObject_802B4254> fn_802B4254(int arg0, int arg1);
-/* Methods of that object: the float is stored at 0x20 of its target, the position goes on to
- * fn_802B44EC, and the byte at 0x14 of its target is replaced by the argument and its old value
- * returned (behaviour inferred from the bodies). */
-void fn_802B4498(UnkObject_802B4254 *object, float value);
-void fn_802B44C8(UnkObject_802B4254 *object, const Fn8040Vector3 *position);
-u8 fn_802B4510(UnkObject_802B4254 *object, int value);
-}
-
-class UnkManager_8006D6A8;
-class UnkManager_80109D64;
-
-/* A polymorphic object that Chao::Update looks up through fn_800740E4 when a CHEEZ is first
- * touched (placeholder name and layout: only the virtual method at index 7 and the word at 0xC
- * are used). */
-class UnkActor_800740E4 {
-  public:
-    virtual void UnkSlot0() = 0;
-    virtual void UnkSlot1() = 0;
-    virtual void UnkSlot2() = 0;
-    virtual void UnkSlot3() = 0;
-    virtual void UnkSlot4() = 0;
-    virtual void UnkSlot5() = 0;
-    virtual void UnkSlot6() = 0;
-    /* Called with 1 and 0 (arguments unknown). */
-    virtual void UnkSlot7(int arg0, int arg1) = 0;
-
-    /* 0x04 */ u8 field_0x4[0xC - 0x4];
-    /* 0x0C */ int field_0xC; /* the Chao compares it with 1 (meaning unknown) */
-};
-
-extern "C" {
-/* Singleton managers (constructed on first use, as fn_8001C4F8 does) and calls on them whose
- * names and meaning are unknown (behaviour inferred from the code around the calls). */
-UnkManager_8006D6A8 *fn_8006D6A8(void);
-boost::weak_ptr<UnkActor_800740E4> fn_800740E4(UnkManager_8006D6A8 *manager, int id);
-UnkManager_80109D64 *fn_80109D64(void);
-/* Returns its argument. */
-int fn_801FAAC4(int arg0);
-void fn_801FAF00(UnkManager_80109D64 *manager, int id, int arg2, int arg3, int arg4);
-}
 
 /* Five floats that the original builds at startup (names inferred from their uses): the height
  * of the character info (probe centre) above the Chao's position, the radius of the probe around
@@ -288,7 +240,7 @@ void Chao::Update(float dt) {
                             if (actor.get() != 0) {
                                 actor->UnkSlot7(1, 0);
 
-                                if (actor->field_0xC != 1) {
+                                if (!actor->Field0xCEquals(1)) {
                                     fn_801FAF00(fn_80109D64(), 0x3D2, fn_801FAAC4(2), 0, 0);
                                 }
                             }
