@@ -51,6 +51,14 @@ Game/CityLaserHolder.cpp:
 	.sbss       start:0x805EE858 end:0x805EE870
 	.sdata2     start:0x805F3360 end:0x805F3398
 
+Game/FallBuildingHolder.cpp:
+	.text       start:0x800E2590 end:0x800E3EE8
+	.rodata     start:0x804B83F8 end:0x804B86D8
+	.data       start:0x80524128 end:0x805242D8
+	.sdata      start:0x805E5168 end:0x805E51D0
+	.sbss       start:0x805EE870 end:0x805EE888
+	.sdata2     start:0x805F3398 end:0x805F33B0
+
 Game/ThreatObjHolder.cpp:
 	.text       start:0x8013EDCC end:0x80140278
 	.ctors      start:0x804A9D64 end:0x804A9D68
