@@ -1328,6 +1328,11 @@ CRI/sfd_see.c:
 CRI/sfd_set.c:
 	.text       start:0x803FC04C end:0x803FC458
 
+CRI/sfd_tim.c:
+	.text       start:0x803FC458 end:0x803FDCE8
+	.rodata     start:0x80518908 end:0x80518988
+	.bss        start:0x805DD698 end:0x805DD6B0
+
 CRI/sfd_trn.c:
 	.text       start:0x803FDCE8 end:0x803FE3D4
 
