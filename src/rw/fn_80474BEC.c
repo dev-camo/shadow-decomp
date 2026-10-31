@@ -188,8 +188,10 @@ void fn_804754F4(Rt2dPath *path, const RwV2d *bezier, RwInt32 depth) {
     RwBool flat;
     RwBool depthUsedUp;
 
-    /* A value rather than a direct branch: branching on --depth < 0 compiles to addic./bge, not
-     * the original's sign-bit test */
+    /* Matching workaround: the depth test is computed as a value before it is branched on.
+     * `if (--depth < 0)` compiles to an addic. and a branch on the condition register instead of
+     * the original's sign-bit test, and fn_804754F4 then differs in 232 words instead of 121.
+     * Revisit when the original form of the test is found. */
     depthUsedUp = --depth < 0;
     if (depthUsedUp) {
         PATHADDLINE(path, bezier[3].x, bezier[3].y);

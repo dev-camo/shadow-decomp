@@ -402,6 +402,8 @@ Rt2dFont *fn_8047149C(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
                 if (lbl_805E1950.charCodes != NULL) {
                     memset(lbl_805E1950.charCodes, -1, lbl_805E1950.numCharCodes * sizeof(RwInt32));
                 }
+                /* the height is from the last top and bottom scanned, possibly from a line that
+                 * did not fully match; (sic) they are unset when the file has none */
                 font->height = bottom - top;
                 font->baseline = baseline / font->height;
                 font->intergap = 0.0f;
@@ -747,6 +749,9 @@ Rt2dFont *fn_804724AC(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
                 codeOffset++;
                 rectBytes += sizeof(rt2dCharRect);
                 rectOffset++;
+                /* the width is the last x1 scanned: from a moveto, lineto or curveto line,
+                 * possibly one that did not fully match; (sic) it carries over from the previous
+                 * glyph and is unset for a first glyph without such lines */
                 charRect->width = x1;
                 if (numChars >= maxChars) {
                     fn_8047DEA0(font->charRects, 32, rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);
@@ -938,6 +943,7 @@ Rt2dFont *fn_80472C14(RwStream *stream) {
     if (font->extMapSize > 0) {
         font->extMap =
             RwMalloc(font->extMapSize * sizeof(RwInt16), rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);
+        /* (sic) cleared before the allocation is checked */
         memset(font->extMap, 0, font->extMapSize * sizeof(RwInt16));
         if (font->extMap == NULL) {
             fn_804736CC(font);

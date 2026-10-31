@@ -235,6 +235,10 @@ RpGameCubeStreamRemap *fn_80466194(RpGameCubeStreamSource *streams, RwInt32 numS
                 equal = TRUE;
                 j = 0;
                 dependent = streams[i].dependencies[0];
+                /* (sic) The size is read before the list end is tested, so it reads
+                 * streams[-1] at the end of the list (unused then). Computing it inside the loop makes
+                 * fn_80466194 0x94 bytes shorter than the original (0x714 against 0x7A8), so the
+                 * original order is kept. */
                 dependentSize = StreamElementSize(streams[dependent].kind);
                 while (dependent >= 0) {
                     RpGameCubeStreamSource *dependentStream = &streams[dependent];

@@ -82,6 +82,9 @@ void *fn_80463428(void *object, RpGameCubeRenderMesh *renderMesh) {
                     delta.z = sphere->center.z - ltm->pos.z;
                     reach = sphere->radius + light->radius;
                     if (delta.x * delta.x + delta.y * delta.y + delta.z * delta.z < reach * reach) {
+                        /* Matching workaround: the light is read from the tie again instead of
+                         * passing `light`; with `light` fn_80463428 differs by one word. Revisit
+                         * when the original form of the lighting loop is found. */
                         fn_804643E8(((RpLightTie *)lightLink)->light, renderMesh);
                     }
                 }

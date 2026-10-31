@@ -117,7 +117,9 @@ RwBool fn_8047CDB4(RwStream *stream, RwUInt32 *type, RwUInt32 *length, RwUInt32 
     RwChunkHeaderInfo info;
     RwBool readOk;
 
-    /* the original computes the read check as a value before testing it */
+    /* Matching workaround: the read check is computed as a value before it is tested. Testing
+     * `fn_80480D4C(...) != sizeof(header)` directly makes fn_8047CDB4 8 bytes smaller than the
+     * original (0x134 against 0x13C). Revisit when the original form of the check is found. */
     readOk = fn_80480D4C(stream, &header, sizeof(header)) == sizeof(header);
     if (!readOk) {
         RWERROR((E_RW_READ));
@@ -185,7 +187,7 @@ RwInt32 fn_8047CF50(RwStream *stream, RwUInt32 type, RwUInt32 *lengthOut, RwUInt
     return FALSE;
 }
 
-/* Converts 32-bit words between the native byte order and the stream's little-endian order (the
+/* Converts 32-bit words from the native byte order to the stream's little-endian order (the
  * compiler turns the byte swap and the store into stwbrx) */
 void *fn_8047D158(void *mem, RwUInt32 size) {
     RwUInt32 *word = mem;
@@ -197,7 +199,7 @@ void *fn_8047D158(void *mem, RwUInt32 size) {
     return mem;
 }
 
-/* Converts 16-bit words between the native byte order and the stream's little-endian order */
+/* Converts 16-bit words from the native byte order to the stream's little-endian order */
 void *fn_8047D1C8(void *mem, RwUInt32 size) {
     RwUInt16 *word = mem;
 
@@ -208,6 +210,8 @@ void *fn_8047D1C8(void *mem, RwUInt32 size) {
     return mem;
 }
 
+/* Converts 32-bit words from the stream's little-endian order to the native byte order; the
+ * same swap as fn_8047D158 */
 void *fn_8047D254(void *mem, RwUInt32 size) {
     RwUInt32 *word = mem;
 
@@ -218,6 +222,8 @@ void *fn_8047D254(void *mem, RwUInt32 size) {
     return mem;
 }
 
+/* Converts 16-bit words from the stream's little-endian order to the native byte order; the
+ * same swap as fn_8047D1C8 */
 void *fn_8047D2C4(void *mem, RwUInt32 size) {
     RwUInt16 *word = mem;
 
