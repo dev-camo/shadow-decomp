@@ -1750,8 +1750,20 @@ Game/fn_80413B30.c:
 	.bss        start:0x805E12C0 end:0x805E12E0
 	.sdata2     start:0x805FADD8 end:0x805FAE00
 
+Game/fn_804157E8.c:
+	extab       start:0x80005D74 end:0x80005D7C
+	extabindex  start:0x80007DE4 end:0x80007DF0
+	.text       start:0x804157E8 end:0x8041583C
+	.sdata2     start:0x805FAE00 end:0x805FAE04
+
 Game/fn_8041583C.c:
 	.text       start:0x8041583C end:0x80415854
+
+Game/fn_80415854.c:
+	extab       start:0x80005D7C end:0x80005DC4
+	extabindex  start:0x80007DF0 end:0x80007E5C
+	.text       start:0x80415854 end:0x80416198
+	.sdata2     start:0x805FAE04 end:0x805FAE0C
 
 Game/fn_8041FD6C.c:
 	.text       start:0x8041FD6C end:0x8041FD70
