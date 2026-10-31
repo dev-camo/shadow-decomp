@@ -516,14 +516,14 @@ void *fn_804615B4(void *object, RwInt32 offset, RwInt32 size) {
 /* Collects the world sectors in a camera's view frustum, nearer or farther first by the world's
  * render order */
 RpWorld *fn_80461658(RpWorld *world, RwCamera *camera) {
-    CameraExt *ext = CAMERAEXT(camera);
+    RwInt32 numSectors = 0;
     RpSector *sector;
     RwInt32 depth = 0;
-    RwInt32 numSectors = 0;
+    CameraExt *ext = CAMERAEXT(camera);
     RwInt32 index = 0;
     RwV3d position = RwFrameGetLTM(camera->object.parent)->pos;
-    const RwFrustumPlane *frustumPlanes = camera->frustumPlanes;
     RwBool backToFront = world->renderOrder == rpWORLDRENDERBACK2FRONT;
+    const RwFrustumPlane *frustumPlanes = camera->frustumPlanes;
     RwV3d inf = camera->frustumBoundBox.inf;
     RwV3d sup = camera->frustumBoundBox.sup;
     RpSector *sectorStack[rpWORLDMAXBSPDEPTH];
@@ -541,7 +541,6 @@ RpWorld *fn_80461658(RpWorld *world, RwCamera *camera) {
 
             for (i = 0; i < 6; i++) {
                 RwSplitBits distance;
-
                 RwV3d corner;
 
                 corner.x = corners[plane->closestX].x;
