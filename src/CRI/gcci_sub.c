@@ -6,7 +6,9 @@
 #include "CRI/cri_xpt.h"
 #include "CRI/cvfs.h"
 
-/* gcg_ci_rdmode stays in .data although it is zero-initialised. */
+/* Matching workaround: explicit_zero_data. The original keeps the zero-initialised gcg_ci_rdmode in
+ * .data; without the pragma MWCC places it in .bss. Revisit when the original's compiler flags or
+ * initialiser are known. */
 #pragma explicit_zero_data on
 
 Sint32 gcg_ci_rdmode = 0;
