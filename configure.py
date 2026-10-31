@@ -1650,7 +1650,8 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            # Deferred inlining: the table generators are emitted in reverse order.
+            # Matching workaround: -inline auto,deferred. The table generators are emitted in reverse
+            # source order. Revisit if the original unit's compiler flags are found.
             Object(
                 Matching,
                 "CRI/mpv_vlc.c",
@@ -2309,6 +2310,10 @@ config.libs = [
                     "-inline auto,deferred",
                 ],
             ),
+            # NonMatching: 2 of 4 functions match. cnvStaticYcc420plnToA256V differs in 20 of 103 words and
+            # cnvDynamicYcc420plnToA256UserTable in 137 of 139.
+            # Matching workaround: -inline auto,deferred. MWCC emits the functions (and lays out .bss) in
+            # reverse source order. Revisit if the original unit's compiler flags are found.
             Object(
                 NonMatching,
                 "CRI/cftfx.c",
