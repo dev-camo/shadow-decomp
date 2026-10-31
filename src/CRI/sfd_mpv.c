@@ -1,0 +1,506 @@
+/* CRI Sofdec: MPEG video decoder driver (sfd_mpv.c, SFD_tr_vd_mpv, transfer driver slot 2). It
+ * feeds the video elementary stream from ring buffer 1 into an MPV handle, collects the decoded
+ * frames in the frame pool managed by sfd_mpvf.c and hands them to the video output driver.
+ *
+ * Function and variable names are the official symbols of the same unit in the Resident Evil 4
+ * build, where the functions appear in the same order; sfmpv_InitInf, sfmpv_ExecServerSub,
+ * SFMPV_GetRead and SFMPV_AddRead differ in size there but sit at the same positions.
+ * fn_803F5134 (the sfmpv_ChkBufSiz position there, but a different size) and fn_803F894C keep
+ * placeholder names. The names of the static inline helpers, which exist only as inline
+ * expansions, are inferred from what they do.
+ *
+ * The unit is compiled with deferred inlining, so the functions are defined in the reverse of
+ * their order in .text and the variables in the reverse of their order in .bss.
+ *
+ * Not yet written: SFMPV_GetRead, SFMPV_AddRead and sfmpv_SetFrmInf, which need a flag type for
+ * SFD_VFRM.frm, the decoding functions from sfmpv_GoDdelim to sfmpv_ExecServerSub, the layout
+ * check sfmpv_ChkFatal and fn_803F894C. */
+#include <string.h>
+
+#include "CRI/mpv.h"
+#include "CRI/sfd.h"
+#include "CRI/uty.h"
+
+#define SFMPV_WK(sfd) ((SFMPV_WORK *)(sfd)->tr[SFMPV_TR].hn)
+
+/* MPV conditions SFMPV_SaveCond saves at most */
+#define SFMPV_COND_NUM 16
+
+/* error codes */
+#define SFMPV_ERR_INIT 0xFF000F01
+#define SFMPV_ERR_CREATE 0xFF000F0A
+#define SFMPV_ERR_SETERRFN 0xFF000F0B
+#define SFMPV_ERR_DESTROY 0xFF000F0C
+#define SFMPV_ERR_NOTSUPPORTED 0xFF000F0D
+#define SFMPV_ERR_SETCOND 0xFF000F12
+#define SFMPV_ERR_INIT_FF05 0xFF000F13 /* MPV_Init returned 0xFF03FF05 */
+#define SFMPV_ERR_PARA 0xFF000F15
+#define SFMPV_ERR_PICATR 0xFF000F1B
+#define SFMPV_ERR_PICUSR 0xFF000F1D
+#define SFD_ERR_SETPICUSR 0xFF000185
+#define SFD_ERR_SETMPVCOND 0xFF000181
+
+Uint8 sfmpv_work[0x12024]; /* MPV library work */
+/* Decoder resources the application supplies before the handle exists (sfmpv_para to
+ * sfmpv_picusr_buf1siz: the parameters, the frame buffers, the picture user data area);
+ * SFMPV_Destroy saves them from the work and SFMPV_Create restores them, so a handle re-created
+ * by the player reset keeps its memory. */
+SFMPV_PARA sfmpv_para;
+void *sfmpv_rfb_adr_tbl[2];
+void *sfmpv_ta_adr_tbl[SFMPV_FRM_NUM];
+void *sfmpv_picusr_pbuf;
+Sint32 sfmpv_picusr_bufnum;
+Sint32 sfmpv_picusr_buf1siz;
+
+Sint32 sfmpv_discard_wsiz; /* use unknown: the written functions only clear it */
+
+/* Not written yet. */
+Sint32 sfmpv_ChkFatal(void);
+Sint32 sfmpv_ExecServerSub(SFD sfd);
+
+Sint32 SFMPV_Init(void);
+Sint32 SFMPV_Finish(void);
+Sint32 SFMPV_ExecServer(SFD sfd);
+static Sint32 SFMPV_Create(SFD sfd);
+Sint32 SFMPV_Destroy(SFD sfd);
+Sint32 SFMPV_Standby(SFD sfd);
+Sint32 SFMPV_Start(SFD sfd);
+Sint32 SFMPV_Stop(SFD sfd);
+Sint32 SFMPV_Pause(SFD sfd);
+static Sint32 SFMPV_GetWrite(SFD sfd);
+Sint32 SFMPV_AddWrite(SFD sfd);
+/* Slots 0xB and 0xC: SFBUF_VfrmGetRead and SFBUF_VfrmAddRead pass the frame and their argument. */
+Sint32 SFMPV_GetRead(SFD sfd, void **frm, Sint32 arg);
+Sint32 SFMPV_AddRead(SFD sfd, void *frm, Sint32 arg);
+Sint32 SFMPV_Seek(SFD sfd);
+void sfmpv_ErrFn(void *obj, Sint32 code);
+Sint32 sfmpv_InitInf(SFD sfd, SFMPV_WORK *wk);
+
+const SFD_TR_IF SFD_tr_vd_mpv = {
+    SFMPV_Init,     SFMPV_Finish,  SFMPV_ExecServer, SFMPV_Create, SFMPV_Destroy,
+    SFMPV_Standby,  SFMPV_Start,   SFMPV_Stop,       SFMPV_Pause,  SFMPV_GetWrite,
+    SFMPV_AddWrite, SFMPV_GetRead, SFMPV_AddRead,    SFMPV_Seek,
+};
+
+/* Rounded frame rate for each MPEG frame_rate_code (1 23.976 ... 8 60 Hz; inferred from the
+ * values, the users of the table are not written yet). */
+const Sint32 sfmpv_fps_round[9] = {0, 24, 24, 25, 30, 30, 50, 60, 60};
+/* Drop-frame time code constants for 29.97 and 59.94 Hz: frames per hour, per ten minutes, in the
+ * first minute of ten and in the other minutes, then four further constants. */
+const Sint32 sfmpv_conv_29_97[8] = {107892, 17982, 1800, 1798, 28, 30, 10, 2};
+const Sint32 sfmpv_conv_59_94[8] = {215784, 35964, 3600, 3596, 56, 60, 10, 4};
+
+/* Saves the decoder parameters and the buffers for the reference frames (rfb) and the decoded
+ * frames (ta) the application supplies, each aligned up to 32 bytes; SFMPV_Create picks them up. */
+void SFD_SetMpvParaTbl(SFMPV_PARA *para, Uint32 *rfb, Uint32 *ta) {
+    Sint32 i;
+
+    sfmpv_para = *para;
+    sfmpv_para.x10 = 0;
+    sfmpv_para.x20 = 0;
+    sfmpv_rfb_adr_tbl[0] = (void *)((rfb[0] + 31) & ~31);
+    sfmpv_rfb_adr_tbl[1] = (void *)((rfb[1] + 31) & ~31);
+    for (i = 0; i < SFMPV_FRM_NUM; i++) {
+        if (i < para->nfrm) {
+            sfmpv_ta_adr_tbl[i] = (void *)((ta[i] + 31) & ~31);
+        } else {
+            sfmpv_ta_adr_tbl[i] = 0;
+        }
+    }
+}
+
+/* Lays out a frame buffer at buf as the decoder wants it: the luma plane of the picture size
+ * rounded up to whole macroblocks, then the two chroma planes at half width and height. The rows
+ * are padded to 32 bytes. pln[2] is the luma plane, pln[0] and pln[1] the chroma planes. */
+void SFD_CalcYccPlane(void *buf, Sint32 width, Sint32 height, MPV_RFB *rfb) {
+    Sint32 w16 = (width + 15) / 16 * 16;
+    Sint32 ypitch = (w16 + 31) / 32 * 32;
+    Sint32 cpitch = (w16 / 2 + 31) / 32 * 32;
+    Sint32 h16 = (height + 15) / 16 * 16;
+
+    rfb->ypitch = ypitch;
+    rfb->cpitch = cpitch;
+    rfb->pln[2] = buf;
+    rfb->pln[0] = rfb->pln[2] + h16 * ypitch;
+    rfb->pln[1] = rfb->pln[0] + h16 / 2 * cpitch;
+}
+
+/* Sets a condition of the decoder; with sfd 0, MPV_SetCond sets it as the library default and in
+ * every ready MPV handle. */
+Sint32 SFD_SetMpvCond(SFD sfd, Sint32 id, Sint32 val) {
+    MPV hn;
+
+    if (sfd == 0) {
+        hn = 0;
+    } else {
+        if (SFLIB_CheckHn(sfd) != 0) {
+            return SFLIB_SetErr(0, SFD_ERR_SETMPVCOND);
+        }
+        hn = SFMPV_WK(sfd)->mpv;
+    }
+    if (id == 5) {
+        val = 0;
+    }
+    if (MPV_SetCond(hn, id, val) != 0) {
+        return SFLIB_SetErr(sfd, SFMPV_ERR_SETCOND);
+    }
+    return 0;
+}
+
+/* Saves the MPV conditions (at most 16, as many as fit in size bytes); returns how many. */
+Sint32 SFMPV_SaveCond(SFD sfd, void *buf, Uint32 size) {
+    MPV hn = SFMPV_WK(sfd)->mpv;
+    Sint32 *cond = buf;
+    Sint32 i;
+    Sint32 n;
+
+    if (hn == 0) {
+        return 0;
+    }
+    n = size / 4 > SFMPV_COND_NUM ? SFMPV_COND_NUM : size / 4;
+    for (i = 0; i < n; i++) {
+        MPV_GetCond(hn, i, &cond[i]);
+    }
+    return n;
+}
+
+/* Restores the MPV conditions saved by SFMPV_SaveCond. */
+void SFMPV_RestoreCond(SFD sfd, void *buf, Sint32 n) {
+    MPV hn = SFMPV_WK(sfd)->mpv;
+    Sint32 *cond = buf;
+    Sint32 i;
+
+    if (hn == 0) {
+        return;
+    }
+    for (i = 0; i < n; i++) {
+        MPV_SetCond(hn, i, cond[i]);
+    }
+}
+
+/* Clears the picture user data bookkeeping. */
+static inline void sfmpv_ClearPicUsr(SFMPV_PICUSRINF *pu) {
+    int i; /* int: a Sint32 counter adds a guard before the loop that the original lacks */
+
+    pu->buf = 0;
+    pu->num = 0;
+    pu->siz = 0;
+    pu->dat = 0;
+    pu->len = 0;
+    for (i = 0; i < SFMPV_FRM_NUM; i++) {
+        pu->slot[i].buf = 0;
+        pu->slot[i].len = 0;
+    }
+}
+
+/* Hands the decoder the picture user data area: num slots of siz bytes at buf. Slot 0 collects
+ * the data of the picture being decoded, each decoded frame gets one of the others. */
+static inline Sint32 sfmpv_SetPicUsrBuf(SFD sfd, Uint8 *buf, Sint32 num, Sint32 siz) {
+    SFMPV_PICUSRINF *pu = &SFMPV_WK(sfd)->picusr;
+    Sint32 n;
+    Sint32 i;
+    Uint8 *p;
+
+    p = buf;
+    if (p == 0 || num == 0 || siz == 0) {
+        sfmpv_ClearPicUsr(pu);
+        return 0;
+    }
+    if (num < sfd->prm.x2c + 3) {
+        return SFLIB_SetErr(sfd, SFMPV_ERR_PICUSR);
+    }
+    pu->buf = p;
+    pu->num = num;
+    pu->siz = siz;
+    pu->dat = p;
+    pu->len = 0;
+    p += siz;
+    n = num - 1;
+    for (i = 0; i < (n < SFMPV_FRM_NUM ? n : SFMPV_FRM_NUM); i++) {
+        pu->slot[i].buf = p;
+        pu->slot[i].len = 0;
+        p += siz;
+    }
+    return 0;
+}
+
+/* Gives the application's picture user data area (num slots of siz bytes) to the decoder. */
+Sint32 SFD_SetPicUsrBuf(SFD sfd, Uint8 *buf, Sint32 num, Sint32 siz) {
+    if (SFLIB_CheckHn(sfd) != 0) {
+        return SFLIB_SetErr(0, SFD_ERR_SETPICUSR);
+    }
+    return sfmpv_SetPicUsrBuf(sfd, buf, num, siz);
+}
+
+/* Brings up the MPV library on its work area and clears the saved resources. A failed layout
+ * check hangs the system. */
+Sint32 SFMPV_Init(void) {
+    Sint32 err;
+    Sint32 code;
+
+    if (sfmpv_ChkFatal() != 0) {
+        for (;;) {
+        }
+    }
+    err = MPV_Init(8, sfmpv_work);
+    if (err != 0) {
+        if (err == 0xFF03FF05) {
+            code = SFMPV_ERR_INIT_FF05;
+        } else {
+            code = SFMPV_ERR_INIT;
+        }
+        return SFLIB_SetErr(0, code);
+    }
+    memset(&sfmpv_para, 0, sizeof(sfmpv_para));
+    memset(sfmpv_rfb_adr_tbl, 0, sizeof(sfmpv_rfb_adr_tbl));
+    memset(sfmpv_ta_adr_tbl, 0, sizeof(sfmpv_ta_adr_tbl));
+    sfmpv_discard_wsiz = 0;
+    return 0;
+}
+
+Sint32 SFMPV_Finish(void) {
+    MPV_Finish();
+    return 0;
+}
+
+/* Runs the decoder step of the driver server. */
+Sint32 SFMPV_ExecServer(SFD sfd) {
+    return sfmpv_ExecServerSub(sfd);
+}
+
+/* Creates the decoder handle for the video stream when video is switched on. After a player
+ * reset the picture user data area saved by SFMPV_Destroy is handed back. */
+static Sint32 SFMPV_Create(SFD sfd) {
+    SFMPV_WORK *wk;
+    MPV hn;
+    Sint32 err;
+
+    if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 0) {
+        return 0;
+    }
+    wk = &sfd->mpv;
+    sfd->tr[SFMPV_TR].hn = wk;
+    err = sfmpv_InitInf(sfd, wk);
+    if (err != 0) {
+        return err;
+    }
+    hn = MPV_Create();
+    if (hn == 0) {
+        return SFLIB_SetErr(0, SFMPV_ERR_CREATE);
+    }
+    if (MPV_SetErrFunc(hn, sfmpv_ErrFn, sfd) != 0) {
+        MPV_Destroy(hn);
+        return SFLIB_SetErr(0, SFMPV_ERR_SETERRFN);
+    }
+    MPV_SetCond(hn, 1, SFSET_GetCond(sfd, 0));
+    MPV_SetCond(hn, 2, SFSET_GetCond(sfd, 1));
+    MPV_SetCond(hn, 6, sfd->prm.x38);
+    wk->mpv = hn;
+    if (SFPLY_GetResetFlg() != 0) {
+        sfmpv_SetPicUsrBuf(sfd, sfmpv_picusr_pbuf, sfmpv_picusr_bufnum, sfmpv_picusr_buf1siz);
+    }
+    return 0;
+}
+
+/* Checks the parameters and buffers saved by SFD_SetMpvParaTbl: 0 when they describe a usable
+ * frame pool, -1 otherwise. */
+static inline Sint32 sfmpv_CheckPara(SFMPV_PARA *para) {
+    Sint32 i;
+
+    if (para->nfrm <= 0 || para->nfrm > SFMPV_FRM_NUM) {
+        return -1;
+    }
+    if (para->x10 == 0 || para->x20 == 0) {
+        for (i = 0; i < 2; i++) {
+            if (sfmpv_rfb_adr_tbl[i] == 0) {
+                return -1;
+            }
+        }
+        for (i = 0; i < para->nfrm; i++) {
+            if (sfmpv_ta_adr_tbl[i] == 0) {
+                return -1;
+            }
+        }
+    }
+    return 0;
+}
+
+/* Sets the work up from the saved resources: the decoder starts in the picture state 5 with all
+ * frames free. */
+Sint32 sfmpv_InitInf(SFD sfd, SFMPV_WORK *wk) {
+    Sint32 i;
+
+    if (sfmpv_CheckPara(&sfmpv_para) != 0) {
+        return SFLIB_SetErr(0, SFMPV_ERR_PARA);
+    }
+    wk->para = sfmpv_para;
+    memcpy(wk->rfb_adr, sfmpv_rfb_adr_tbl, sizeof(wk->rfb_adr));
+    memcpy(wk->ta_adr, sfmpv_ta_adr_tbl, sizeof(wk->ta_adr));
+    wk->mpv = 0;
+    wk->curfrm = 0;
+    wk->picstat = 5;
+    wk->dlmmask = MPV_DLM_END | MPV_DLM_SEQ;
+    wk->refidx[0] = 0;
+    wk->refidx[1] = 1;
+    wk->termflg = 0;
+    wk->gopstat = 0;
+    wk->ref[0] = 0;
+    wk->ref[1] = 0;
+    wk->pendfrm = 0;
+    wk->skipret = 0;
+    wk->dlmwait = 0;
+    wk->tmpref_adj = 0;
+    for (i = 0; i < SFMPV_FRM_NUM; i++) {
+        SFMPV_FRM *frm = &wk->frm[i];
+
+        frm->stat = SFMPV_FRM_FREE;
+        frm->lock = 0;
+        SFTIM_InitTtu(&frm->ttu, 0);
+        frm->buf = wk->ta_adr[i];
+        frm->ftime = 0;
+        frm->tunit = 1;
+        frm->ndct = 0;
+        frm->nbyte = 0;
+        frm->gopno = 0;
+        frm->x4c = 0;
+        frm->x50 = 0;
+        frm->x58 = -1;
+        UTY_MemsetDword(&frm->picatr, -1, sizeof(frm->picatr) / 4);
+    }
+    wk->nskip = 0;
+    wk->nconcat = 0;
+    UTY_MemsetDword(&wk->picatr, -1, sizeof(wk->picatr) / 4);
+    wk->last_ngop = -1;
+    wk->newgop = 0;
+    wk->vbvsiz = 0x7FFFFFFF;
+    wk->pts_tmpref = 0;
+    wk->pts_ofst = 0;
+    wk->pts_max = 0;
+    wk->ptsent.pts = -1;
+    wk->ptsent.pos = 0;
+    wk->ptsent.len = -1;
+    sfmpv_ClearPicUsr(&wk->picusr);
+    for (i = 0; i < SFMPV_FRM_NUM; i++) {
+        wk->frm[i].picusr = &wk->picusr.slot[i];
+    }
+    return 0;
+}
+
+/* Error callback of the MPV handle: reports every MPV error code except 0, -2 and -3. */
+void sfmpv_ErrFn(void *obj, Sint32 code) {
+    switch (code) {
+    case 0:
+    case -2:
+    case -3:
+        break;
+    default:
+        SFLIB_SetErr((SFD)obj, code);
+        break;
+    }
+}
+
+/* Gives the decoder handle back, after saving the resources the application supplied. */
+Sint32 SFMPV_Destroy(SFD sfd) {
+    SFMPV_WORK *wk = SFMPV_WK(sfd);
+    MPV hn = wk->mpv;
+
+    if (hn == 0) {
+        return 0;
+    }
+    sfmpv_para = wk->para;
+    memcpy(sfmpv_rfb_adr_tbl, wk->rfb_adr, sizeof(wk->rfb_adr));
+    memcpy(sfmpv_ta_adr_tbl, wk->ta_adr, sizeof(wk->ta_adr));
+    sfmpv_picusr_pbuf = wk->picusr.buf;
+    sfmpv_picusr_bufnum = wk->picusr.num;
+    sfmpv_picusr_buf1siz = wk->picusr.siz;
+    if (MPV_Destroy(hn) != 0) {
+        return SFLIB_SetErr(sfd, SFMPV_ERR_DESTROY);
+    }
+    wk->mpv = 0;
+    return 0;
+}
+
+Sint32 SFMPV_Standby(SFD sfd) {
+    return 0;
+}
+
+Sint32 SFMPV_Start(SFD sfd) {
+    return 0;
+}
+
+Sint32 SFMPV_Stop(SFD sfd) {
+    return 0;
+}
+
+Sint32 SFMPV_Pause(SFD sfd) {
+    return 0;
+}
+
+static Sint32 SFMPV_GetWrite(SFD sfd) {
+    return SFLIB_SetErr(sfd, SFMPV_ERR_NOTSUPPORTED);
+}
+
+Sint32 SFMPV_AddWrite(SFD sfd) {
+    return SFLIB_SetErr(sfd, SFMPV_ERR_NOTSUPPORTED);
+}
+
+/* The video header analysis of the seek work, or 0 when no seek work is attached or after a
+ * concatenation (nconcat > 0). */
+static inline SFSEE_VHDR *sfmpv_GetVhdr(SFD sfd) {
+    SFSEE_WORK *see = sfd->see.wk;
+
+    if (see == 0) {
+        return 0;
+    }
+    if (SFMPV_WK(sfd)->nconcat > 0) {
+        return 0;
+    }
+    return &see->vid;
+}
+
+/* Decodes the header data kept by the seek analysis; sets *analysed when it did. */
+static inline Sint32 sfmpv_AnalyseSeekHdr(SFD sfd, Bool *analysed) {
+    SFMPV_WORK *wk = SFMPV_WK(sfd);
+    SFSEE_VHDR *hdr;
+    MPV hn;
+    SJCK ck;
+    Sint32 used;
+
+    *analysed = FALSE;
+    hdr = sfmpv_GetVhdr(sfd);
+    if (hdr == 0) {
+        return 0;
+    }
+    if (hdr->analyzed == 0) {
+        return 0;
+    }
+    hn = wk->mpv;
+    SFD_TIM(sfd)->ttu0 = hdr->ttu;
+    ck.data = hdr->hdr;
+    ck.len = hdr->hdrlen;
+    if (MPV_DecodePicAtr(hn, &ck, &used) != 0) {
+        return SFLIB_SetErr(sfd, SFMPV_ERR_PICATR);
+    }
+    *analysed = TRUE;
+    return 0;
+}
+
+/* Prepares the decoder for a seek: decodes the header kept by the seek analysis and resets the
+ * picture state and the delimiter mask. */
+Sint32 SFMPV_Seek(SFD sfd) {
+    SFMPV_WORK *wk = SFMPV_WK(sfd);
+    Bool analysed;
+    Sint32 err;
+
+    err = sfmpv_AnalyseSeekHdr(sfd, &analysed);
+    if (err != 0) {
+        return err;
+    }
+    wk->picstat = 2;
+    if (!analysed || SFSET_GetCond(sfd, SFD_COND_SEEK_GOP_DLM) == 0) {
+        wk->dlmmask = MPV_DLM_END | MPV_DLM_SEQ;
+    } else {
+        wk->dlmmask = MPV_DLM_END | MPV_DLM_SEQ | MPV_DLM_GOP;
+    }
+    return 0;
+}

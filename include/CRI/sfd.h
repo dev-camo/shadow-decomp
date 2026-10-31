@@ -343,6 +343,9 @@ CHECK_SIZEOF(SFD_TR, 0x44);
 #define SFD_COND_PREPSIZE 0x16
 #define SFD_COND_VID_STMID 0x1D
 #define SFD_COND_AUD_STMID 0x1E
+/* inferred name: with it set, SFMPV_Seek also lets the decoder accept GOP start codes
+ * (MPV_DLM_GOP) after the header data of the seek analysis is decoded */
+#define SFD_COND_SEEK_GOP_DLM 0x30
 #define SFD_COND_CONCAT 0x31 /* concatenated play (SFD_SetConcatPlay) */
 #define SFD_COND_STMID_STRICT 0x37
 #define SFD_COND_VID_SELECT 0x3B
@@ -403,15 +406,26 @@ typedef struct {
     Sint32 cheight;    /* 0x04 */
     Sint32 width;      /* 0x08 */
     Sint32 height;     /* 0x0C */
-    Sint32 x10;        /* 0x10 */
+    Uint32 x10;        /* 0x10 compared unsigned with 0 by sfmpv_InitInf */
     Sint32 max_width;  /* 0x14 */
     Sint32 max_height; /* 0x18 */
     Sint32 nfrm;       /* 0x1C decoded frame buffers */
-    Sint32 x20;        /* 0x20 */
+    Uint32 x20;        /* 0x20 compared unsigned with 0 by sfmpv_InitInf */
 } SFMPV_PARA;
 CHECK_SIZEOF(SFMPV_PARA, 0x24);
 
 #define SFMPV_FRM_NUM 16
+
+/* picture user data area handed over by SFD_SetPicUsrBuf (SFMPV_WORK + 0x1000) */
+typedef struct {
+    void *buf;                        /* 0x00 */
+    Sint32 num;                       /* 0x04 */
+    Sint32 siz;                       /* 0x08 */
+    Uint8 *dat;                       /* 0x0C user data of the picture being decoded */
+    Sint32 len;                       /* 0x10 */
+    SFMPV_PICUSR slot[SFMPV_FRM_NUM]; /* 0x14 */
+} SFMPV_PICUSRINF;
+CHECK_SIZEOF(SFMPV_PICUSRINF, 0x94);
 
 /* video driver work (tr[SFMPV_TR].hn, SFD_OBJ + 0x23A8, 0x10A0 bytes) */
 typedef struct {
@@ -421,7 +435,7 @@ typedef struct {
     void *ta_adr[SFMPV_FRM_NUM];  /* 0x030 decoded frame buffers */
     SFMPV_FRM *curfrm;            /* 0x070 frame handed out by SFMPV_GetRead */
     Sint32 picstat;               /* 0x074 decode state (2, 3, 5) */
-    Sint32 dlmmask;               /* 0x078 start codes accepted by the decoder (0xC0, 0xC8, 0xCC) */
+    Sint32 dlmmask;               /* 0x078 MPV_DLM_* start code classes accepted by the decoder */
     Sint32 termflg;               /* 0x07C decoder terminated */
     Sint32 gopstat;               /* 0x080 */
     Sint32 nskip;                 /* 0x084 frames skipped in a row */
@@ -445,14 +459,9 @@ typedef struct {
     Sint32 nfrm;                  /* 0x178 */
     Sint32 x17c;                  /* 0x17C */
     SFMPV_FRM frm[SFMPV_FRM_NUM]; /* 0x180 */
-    void *picusr_buf;             /* 0x1000 */
-    Sint32 picusr_num;            /* 0x1004 */
-    Sint32 picusr_siz;            /* 0x1008 */
-    Uint8 *picusr_dat;            /* 0x100C user data of the picture being decoded */
-    Sint32 picusr_len;            /* 0x1010 */
-    SFMPV_PICUSR picusr[SFMPV_FRM_NUM]; /* 0x1014 */
-    Sint32 x1094;                       /* 0x1094 */
-    Sint64 pts;                         /* 0x1098 PTS of the picture being decoded */
+    SFMPV_PICUSRINF picusr;       /* 0x1000 */
+    Sint32 x1094;                 /* 0x1094 */
+    Sint64 pts;                   /* 0x1098 PTS of the picture being decoded */
 } SFMPV_WORK;
 CHECK_SIZEOF(SFMPV_WORK, 0x10A0);
 CHECK_OFFSETOF(SFMPV_WORK, picatr, 0x8C);
@@ -625,21 +634,29 @@ typedef struct {
 } SFSEE_AHDR;
 CHECK_SIZEOF(SFSEE_AHDR, 0x18);
 
+/* video stream header analysis kept in the seek work (SFSEE_WORK.vid) */
+typedef struct {
+    Sint32 analyzed;  /* 0x00 video header analysed (driver 2) */
+    Sint32 ncount;    /* 0x04 */
+    Sint32 tscale;    /* 0x08 */
+    SFTIM_TTU ttu;    /* 0x0C seek analysis time, copied into SFTIM_WORK.ttu0 by SFMPV_Seek */
+    Uint8 hdr[0x200]; /* 0x38 header data the seek analysis keeps (decoded by SFMPV_Seek) */
+    Sint32 hdrlen;    /* 0x238 */
+} SFSEE_VHDR;
+CHECK_SIZEOF(SFSEE_VHDR, 0x23C);
+
 /* seek support work supplied by the user through SFD_EntrySeek (sfd_see.c); the header analysis
  * results of the video / audio streams are kept here, followed by the user-set totals */
 typedef struct {
     Sint32 analyzed; /* 0x000 header analysis done (sfsee_ExecHeadAnaly) */
     /* rate from the header analysis (sfsee_ExecHeadAnaly): a byte rate with a system stream, else
-     * copied from vid_ncount/aud.ncount (meaning unverified); sfsee_CalcByteRate falls back to it */
+     * copied from vid.ncount/aud.ncount (meaning unverified); sfsee_CalcByteRate falls back to it */
     Sint32 ncount;               /* 0x004 */
     Sint32 tscale;               /* 0x008 */
     SFHDS_FHD fhd;               /* 0x00C system header analysis */
     SFSEE_SHDR shdr;             /* 0x8A0 system stream analysis (sfd_mps.c), 0x198 bytes */
     Uint8 pada38[0xAD0 - 0xA38]; /* 0xA38 */
-    Sint32 vid_analyzed;         /* 0xAD0 video header analysed (driver 2) */
-    Sint32 vid_ncount;           /* 0xAD4 */
-    Sint32 vid_tscale;           /* 0xAD8 */
-    Uint8 padadc[0xD0C - 0xADC]; /* 0xADC */
+    SFSEE_VHDR vid;              /* 0xAD0 video header analysis (driver 2) */
     SFSEE_AHDR aud;              /* 0xD0C audio header analysis (driver 3) */
     Uint8 padd24[0xDA8 - 0xD24]; /* 0xD24 */
     Sint32 rate;                 /* 0xDA8 estimated byte rate */
@@ -970,9 +987,13 @@ Sint32 SFMPS_GetConcatCnt(SFD sfd);
 Sint32 SFD_SetElementOutSj(SFD sfd, Sint32 stmid, SJ sj, void (*fn)(void *obj, Sint32 stmid),
                            void *obj);
 
-/* sfd_mpv.c (not decompiled) */
-Sint32 SFMPV_SaveCond(SFD sfd, void *buf, Sint32 size);
+/* sfd_mpv.c */
+Sint32 SFMPV_SaveCond(SFD sfd, void *buf, Uint32 size);
 void SFMPV_RestoreCond(SFD sfd, void *buf, Sint32 n);
+Sint32 SFD_SetPicUsrBuf(SFD sfd, Uint8 *buf, Sint32 num, Sint32 siz);
+Sint32 SFD_SetMpvCond(SFD sfd, Sint32 id, Sint32 val);
+void SFD_CalcYccPlane(void *buf, Sint32 width, Sint32 height, MPV_RFB *rfb);
+void SFD_SetMpvParaTbl(SFMPV_PARA *para, Uint32 *rfb, Uint32 *ta);
 
 /* sfd_aoap.c */
 void SFAOAP_SetSpeed(SFD sfd, Sint32 speed);
@@ -1026,6 +1047,7 @@ Sint32 SFTIM_GetVideoStartSample(SFTIM tim, Sint32 sfreq, Sint32 *ofstflg);
 Sint32 SFTIM_GetAudioStartSample(SFTIM tim, Sint32 sfreq);
 Bool SFTIM_IsStagnant(SFD sfd);
 void SFTIM_VbIn(void);
+void SFTIM_InitTtu(SFTIM_TTU *ttu, Sint32 val);
 void SFTIM_InitHn(SFD sfd, SFTIM tim);
 void fn_803FDCD0(SFTIM_LIB *lib); /* empty; the library finish SFD_Finish calls it */
 void SFTIM_Init(SFTIM_LIB *lib, Sint32 vrate);

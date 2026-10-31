@@ -428,6 +428,7 @@ Sint32 MPV_GetCond(MPV mpv, Sint32 id, Sint32 *val);
 /* mpv_err.c */
 void MPVERR_InitErrInf(MPVERR_INF *inf);
 void MPVERR_Init(void);
+Sint32 MPV_SetErrFunc(MPV mpv, void (*func)(void *obj, Sint32 code), void *obj);
 
 /* mpv_bdec.c */
 void MPVBDEC_Init(MPV_IXA *ixa);
