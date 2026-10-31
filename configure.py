@@ -623,6 +623,18 @@ config.libs = [
                 # 50 of 52 functions have identical instructions. The checked_deleter call operator
                 # differs by one word and checked_delete is absent, as in CityLaserHolder.cpp.
                 Object(NonMatching, "Game/ChaoHolder.cpp", cflags=cflags_game_cpp),
+                # 33 of 36 functions are identical in every word and relocation. Two more have
+                # identical words and differ only in the symbol name of one callee: the copies of
+                # boost's list1 operator[] and function1 destructor at 0x800D05D0 and 0x800D0CEC share
+                # their mangled names with copies at other addresses that symbols.txt already names.
+                # The hit callback (0x80130364) differs in 19 words: the float-to-int conversion of
+                # the level and the int-to-float conversion of the index get separate 8-byte stack
+                # slots (the original reuses one; frame 0xB0 instead of 0xA0), and the level and the
+                # difference of the two table entries are held in f3 and f2 instead of f2 and f3.
+                # The object also has a 32-byte local copy of std::swap (called by the weak
+                # boost::function1 swap that the callback assignment instantiates), which the
+                # original unit does not have.
+                Object(NonMatching, "Game/CircusBall.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/Cream.cpp", cflags=cflags_game_cpp),
                 # Every function but the ThreatObj constructor is instruction-identical, and so is the
                 # data. Two differences remain: the constructor's two table loads (model table and

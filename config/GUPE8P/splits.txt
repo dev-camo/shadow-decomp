@@ -78,6 +78,14 @@ Game/ChaoHolder.cpp:
 	.sbss       start:0x805EEE68 end:0x805EEE90
 	.sdata2     start:0x805F4160 end:0x805F41B8
 
+Game/CircusBall.cpp:
+	.text       start:0x8012F674 end:0x80130780
+	.rodata     start:0x804BE910 end:0x804BEA90
+	.data       start:0x80528670 end:0x805287A8
+	.sdata      start:0x805E5EC0 end:0x805E5EF0
+	.sbss       start:0x805EEE90 end:0x805EEEA0
+	.sdata2     start:0x805F41B8 end:0x805F4200
+
 Game/Cream.cpp:
 	.text       start:0x80134208 end:0x801352A4
 	.ctors      start:0x804A9D5C end:0x804A9D60
