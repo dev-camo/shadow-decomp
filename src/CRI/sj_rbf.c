@@ -97,9 +97,10 @@ Sint32 SJRBF_GetFlowCnt(SJ handle, Sint32 id, Sint32 dir) {
     return ret;
 }
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. Its two error
- * codes remain in .rodata between those of the functions around it; this never-called function
- * refers to them in that order. Storing the addresses keeps the references.
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game; its
+ * body is unknown. Its two error codes remain in .rodata between those of the functions around
+ * it; this never-called function refers to them in that order. Storing the addresses keeps the
+ * references. Revisit when the stripped function's real body is found.
  */
 static void sjrbf_RodataOrder(const Char8 **out) {
     out[0] = "E2004090227";
@@ -232,32 +233,30 @@ void sjrbf_UngetChunk(SJRBF_OBJ *sj, Sint32 id, SJCK *ck) {
     if (ck->len <= 0 || ck->data == 0) {
         return;
     }
-    {
-        if (id == SJ_CK_FREE) {
-            ofs = (sj->wrofs + sj->bsize - ck->len) % sj->bsize;
-            pos = (ck->data - sj->buf) % sj->bsize;
-            if (ofs == pos) {
-                sj->wrofs = ofs;
-                sj->nfree += ck->len;
-            } else {
-                SJRBF_CALL_ERR(sj);
-            }
-            sj->flow[SJ_CK_FREE][0] -= ck->len;
-        } else if (id == SJ_CK_DATA) {
-            ofs = (sj->rdofs + sj->bsize - ck->len) % sj->bsize;
-            pos = (ck->data - sj->buf) % sj->bsize;
-            if (ofs == pos) {
-                sj->rdofs = ofs;
-                sj->ndata += ck->len;
-            } else {
-                SJRBF_CALL_ERR(sj);
-            }
-            sj->flow[SJ_CK_DATA][0] -= ck->len;
+    if (id == SJ_CK_FREE) {
+        ofs = (sj->wrofs + sj->bsize - ck->len) % sj->bsize;
+        pos = (ck->data - sj->buf) % sj->bsize;
+        if (ofs == pos) {
+            sj->wrofs = ofs;
+            sj->nfree += ck->len;
         } else {
-            ck->len = 0;
-            ck->data = 0;
             SJRBF_CALL_ERR(sj);
         }
+        sj->flow[SJ_CK_FREE][0] -= ck->len;
+    } else if (id == SJ_CK_DATA) {
+        ofs = (sj->rdofs + sj->bsize - ck->len) % sj->bsize;
+        pos = (ck->data - sj->buf) % sj->bsize;
+        if (ofs == pos) {
+            sj->rdofs = ofs;
+            sj->ndata += ck->len;
+        } else {
+            SJRBF_CALL_ERR(sj);
+        }
+        sj->flow[SJ_CK_DATA][0] -= ck->len;
+    } else {
+        ck->len = 0;
+        ck->data = 0;
+        SJRBF_CALL_ERR(sj);
     }
 }
 
@@ -274,7 +273,6 @@ void SJRBF_UngetChunk(SJRBF_OBJ *sj, Sint32 id, SJCK *ck) {
 void sjrbf_PutChunk(SJRBF_OBJ *sj, Sint32 id, SJCK *ck) {
     Sint32 ofs;
     Sint32 n;
-    Uint8 *p;
 
     if (sj == 0) {
         SJRBF_ERR("E2004090213", " : NULL pointer is specified.");
@@ -287,38 +285,34 @@ void sjrbf_PutChunk(SJRBF_OBJ *sj, Sint32 id, SJCK *ck) {
     if (ck->len <= 0 || ck->data == 0) {
         return;
     }
-    {
-        if (id == SJ_CK_DATA) {
-            /* data written into the first xsize bytes is mirrored behind the buffer end */
-            ofs = ck->data - sj->buf;
-            if (ofs < sj->xsize) {
-                n = sj->xsize - ofs;
-                if (ck->len < n) {
-                    n = ck->len;
-                }
-                p = (Uint8 *)((Uint32)ofs + (Uint32)sj->buf);
-                p = (Uint8 *)((Uint32)sj->bsize + (Uint32)p);
-                memcpy(p, ck->data, n);
+    if (id == SJ_CK_DATA) {
+        /* data written into the first xsize bytes is mirrored behind the buffer end */
+        ofs = ck->data - sj->buf;
+        if (ofs < sj->xsize) {
+            n = sj->xsize - ofs;
+            if (ck->len < n) {
+                n = ck->len;
             }
-            /* data written into the extra area is mirrored to the buffer start */
-            ofs = (ck->data - sj->buf) + ck->len;
-            if (ofs > sj->bsize) {
-                n = ofs - sj->bsize;
-                if (ck->len < n) {
-                    n = ck->len;
-                }
-                memcpy(sj->buf, sj->buf + (ofs - n), n);
-            }
-            sj->ndata += ck->len;
-            sj->flow[SJ_CK_DATA][1] += ck->len;
-        } else if (id == SJ_CK_FREE) {
-            sj->nfree += ck->len;
-            sj->flow[SJ_CK_FREE][1] += ck->len;
-        } else {
-            ck->len = 0;
-            ck->data = 0;
-            SJRBF_CALL_ERR(sj);
+            memcpy(&sj->buf[sj->bsize + ofs], ck->data, n);
         }
+        /* data written into the extra area is mirrored to the buffer start */
+        ofs = (ck->data - sj->buf) + ck->len;
+        if (ofs > sj->bsize) {
+            n = ofs - sj->bsize;
+            if (ck->len < n) {
+                n = ck->len;
+            }
+            memcpy(sj->buf, sj->buf + (ofs - n), n);
+        }
+        sj->ndata += ck->len;
+        sj->flow[SJ_CK_DATA][1] += ck->len;
+    } else if (id == SJ_CK_FREE) {
+        sj->nfree += ck->len;
+        sj->flow[SJ_CK_FREE][1] += ck->len;
+    } else {
+        ck->len = 0;
+        ck->data = 0;
+        SJRBF_CALL_ERR(sj);
     }
 }
 
@@ -382,8 +376,7 @@ void sjrbf_GetChunk(SJRBF_OBJ *sj, Sint32 id, Sint32 nbyte, SJCK *ck) {
     }
 }
 
-/* Locked wrapper of sjrbf_GetChunk; the main primitive every producer/consumer in the pipeline
- * uses. */
+/* Locked wrapper of sjrbf_GetChunk. */
 void SJRBF_GetChunk(SJRBF_OBJ *sj, Sint32 id, Sint32 nbyte, SJCK *ck) {
     SJCRS_Lock();
     sjrbf_GetChunk(sj, id, nbyte, ck);
@@ -413,7 +406,14 @@ Sint32 SJRBF_GetNumData(SJRBF_OBJ *sj, Sint32 id) {
     return ret;
 }
 
-/* Empties the ring: all bytes free, both cursors at 0, counters cleared. */
+/* Empties the ring: all bytes free, both cursors at 0, counters cleared.
+ *
+ * Matching workaround: as in sjmem_Reset, the two error reports are written out with a separate
+ * message buffer each, declared in this order, instead of SJRBF_ERR. With SJRBF_ERR, or with the
+ * buffers declared in the other order, SJRBF_Create and SJRBF_Reset differ in 6 words each (same
+ * lengths): these buffers give the original's stack slots where sjrbf_Reset is inlined. Revisit
+ * when the original macro shape is found.
+ */
 static inline void sjrbf_Reset(SJRBF_OBJ *sj) {
     Char8 msg_invalid[64];
     Char8 msg_null[64];
@@ -504,8 +504,7 @@ static inline Sint32 sjrbf_SearchFreeObj(void) {
 }
 
 /* Creates a ring-buffer joint over the caller's `buf` (`bsize` bytes + `xsize` mirror bytes after
- * it), empty. Every ADX/Sofdec buffer (file ring, decoder output, ARAM ring, MPEG input) is one of
- * these. */
+ * it), empty. */
 SJ SJRBF_Create(void *buf, Sint32 bsize, Sint32 xsize) {
     SJRBF_OBJ *sj;
     Sint32 i;
