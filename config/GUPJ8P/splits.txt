@@ -300,6 +300,9 @@ dolphin/dsp.c:
 	.sdata      start:0x805EE220 end:0x805EE228
 	.sbss       start:0x805F1838 end:0x805F1840
 
+dolphin/dsp_debug.c:
+	.text       start:0x8038BD2C end:0x8038BD7C
+
 dolphin/dsp_task.c:
 	.text       start:0x8038BD7C end:0x8038C600
 	.data       start:0x80567750 end:0x80567890
@@ -779,6 +782,9 @@ PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_sqrt.
 
 dolphin/AmcExi2Stubs.c:
 	.text       start:0x803B25EC end:0x803B261C
+
+dolphin/odenotstub.c:
+	.text       start:0x803B261C end:0x803B2624
 
 dolphin/DebuggerDriver.c:
 	.text       start:0x803B2624 end:0x803B30A4

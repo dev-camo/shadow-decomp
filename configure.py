@@ -1238,6 +1238,7 @@ config.libs = [
         "dsp",
         [
             Object(Matching, "dolphin/dsp.c"),
+            Object(Matching, "dolphin/dsp_debug.c"),
             Object(Matching, "dolphin/dsp_task.c"),
         ],
     ),
@@ -1293,6 +1294,12 @@ config.libs = [
         "amcstubs",
         [
             Object(Matching, "dolphin/AmcExi2Stubs.c"),
+        ],
+    ),
+    DolphinLib(
+        "odenotstub",
+        [
+            Object(Matching, "dolphin/odenotstub.c"),
         ],
     ),
     DolphinLib(
