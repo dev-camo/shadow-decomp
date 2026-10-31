@@ -1,13 +1,7 @@
 /* RenderWare textures and texture dictionaries in streams. The original file name is unknown. */
 #include "rw/rwcore.h"
+#include <string.h>
 #include "layout_check.h"
-
-/* rwRASTERFORMATAUTOMIPMAP in a raster's cFormat */
-#define rwRASTERFORMATAUTOMIPMAP_CFORMAT 0x10
-
-/* A texture's flags in a stream: its filtering and addressing, and above them whether its
- * mipmaps were not generated (inferred) */
-#define rwTEXTURESTREAMUSERMIPMAPS 0x10000
 
 /* The characters a texture name is read into */
 #define rwTEXTURENAMEBUFFERLENGTH (rwTEXTUREBASENAMELENGTH * 4)
@@ -58,12 +52,15 @@ const RwTexture *fn_80483BA0(const RwTexture *texture, RwStream *stream) {
     if (!fn_8047CEF0(stream, rwID_STRUCT, sizeof(flags), RW_STREAM_VERSION, RW_STREAM_BUILD)) {
         return NULL;
     }
-    if (texture->raster != NULL && !(texture->raster->cFormat & rwRASTERFORMATAUTOMIPMAP_CFORMAT)) {
+    if (texture->raster != NULL && !(texture->raster->cFormat & (rwRASTERFORMATAUTOMIPMAP >> 8))) {
         userMipmaps = 1;
     } else {
         userMipmaps = 0;
     }
-    flags = (texture->filterAddressing & 0xFFFF) | (userMipmaps << 16);
+    /* A texture's flags in a stream: its filtering and addressing, and from bit 16 up whether its
+     * mipmaps were not generated (inferred) */
+    flags = (texture->filterAddressing & (rwTEXTUREFILTERMODEMASK | rwTEXTUREADDRESSINGMASK)) |
+            (userMipmaps << 16);
     fn_8047D158(&flags, sizeof(flags));
     if (!fn_80480ED0(stream, &flags, sizeof(flags))) {
         return NULL;
@@ -105,19 +102,21 @@ RwTexture *fn_80483D28(RwStream *stream) {
         }
         fn_8047D254(&flags, sizeof(flags));
 
-        filterMode = flags & 0xFF;
-        addressingU = (flags >> 8) & 0xF;
+        filterMode = flags & rwTEXTUREFILTERMODEMASK;
+        addressingU = (flags >> 8) & (rwTEXTUREADDRESSINGUMASK >> 8);
 
         /* Without a V addressing mode, V uses U's */
-        if (((flags >> 12) & 0xF) == 0) {
-            flags |= (addressingU << 12) & 0xF000;
+        if (((flags >> 12) & (rwTEXTUREADDRESSINGVMASK >> 12)) == 0) {
+            flags |= (addressingU << 12) & rwTEXTUREADDRESSINGVMASK;
         }
+        /* Bits 16 to 23 of the stream flags: bit 0 of them is set when the texture's mipmaps were
+         * not generated (inferred; see the writer fn_80483BA0) */
         mipmapFlags = (flags >> 16) & 0xFF;
 
         mipmapping = fn_8048C9C0();
         autoMipmapping = fn_8048C9EC();
-        if ((RwUInt32)(filterMode - rwFILTERMIPNEAREST) <= 2 ||
-            filterMode == rwFILTERLINEARMIPLINEAR) {
+        if (filterMode == rwFILTERMIPNEAREST || filterMode == rwFILTERMIPLINEAR ||
+            filterMode == rwFILTERLINEARMIPNEAREST || filterMode == rwFILTERLINEARMIPLINEAR) {
             fn_8048C9A8(TRUE);
             if (mipmapFlags & 1) {
                 fn_8048C9D4(FALSE);
@@ -152,7 +151,7 @@ RwTexture *fn_80483D28(RwStream *stream) {
 
         /* A texture already loaded keeps its flags and plugins' data */
         if (texture->refCount == 1) {
-            texture->filterAddressing = flags & 0xFFFF;
+            texture->filterAddressing = flags & (rwTEXTUREFILTERMODEMASK | rwTEXTUREADDRESSINGMASK);
             if (!fn_804816AC(&lbl_8056E030, stream, texture)) {
                 return NULL;
             }

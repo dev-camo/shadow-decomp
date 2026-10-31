@@ -1,5 +1,6 @@
 /* RenderWare cameras in streams. The original file name is unknown. */
 #include "rw/rwcore.h"
+#include <string.h>
 #include "layout_check.h"
 
 /* Reports an error of the core; args is the parenthesized error code and its arguments */

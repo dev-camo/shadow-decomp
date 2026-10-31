@@ -1,6 +1,7 @@
 /* RenderWare free lists, which allocate fixed size entries in blocks, and the engine's memory
  * functions. The original file name is unknown. */
 #include "rw/rwcore.h"
+#include <string.h>
 #include <stdlib.h>
 
 #define rwMEMHINTDUR_MASK 0xFF0000

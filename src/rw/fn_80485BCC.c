@@ -286,15 +286,15 @@ RwBool fn_804864F8(const RwMemoryFunctions *memFuncs, RwUInt32 initFlags, RwUInt
                                            fn_80489FC0, NULL);
                     offsets |= fn_80481DC8(&lbl_8056DFB0, 0x34, rwID_TEXTUREMODULE, fn_8048D4DC,
                                            fn_8048D300, NULL);
-                    offsets |= fn_80481DC8(&lbl_8056DFB0, 0x60, rwID_PIPEMODULE, fn_8049B0CC,
-                                           fn_8049B110, NULL);
+                    offsets |= fn_80481DC8(&lbl_8056DFB0, sizeof(rwPipeGlobals), rwID_PIPEMODULE,
+                                           fn_8049B0CC, fn_8049B110, NULL);
                     offsets |= fn_80481DC8(&lbl_8056DFB0, 4, rwID_CHUNKGROUPMODULE, fn_80482BC4,
                                            fn_80482C50, NULL);
                     offsets |= fn_8049B140();
                     offsets |= fn_80481DC8(&lbl_8056DFB0, 0x74, rwID_IMMEDIATEMODULE, fn_8049AFF8,
                                            fn_8049AF94, NULL);
-                    offsets |= fn_80481DC8(&lbl_8056DFB0, 0x28, rwID_RESOURCESMODULE, fn_8048053C,
-                                           fn_80480690, NULL);
+                    offsets |= fn_80481DC8(&lbl_8056DFB0, sizeof(RwResourcesGlobals),
+                                           rwID_RESOURCESMODULE, fn_8048053C, fn_80480690, NULL);
 
                     result = !(offsets < 0);
                     if (result) {

@@ -717,7 +717,8 @@ RwBool fn_804935C4(void *out, void *inOut, RwInt32 numIn) {
         return FALSE;
     }
 
-    if (format &= rwRASTERFORMATPALMASK) {
+    format &= rwRASTERFORMATPALMASK;
+    if (format != 0) {
         if (raster->privateFlags & rwRASTERPALETTELOCKEDWRITE) {
             paletteLocked = TRUE;
         }
