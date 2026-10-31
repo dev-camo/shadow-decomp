@@ -162,12 +162,6 @@ void __GetImageTileCount(GXTexFmt fmt, u16 wd, u16 ht, u32 *rowTiles, u32 *colTi
     *cmpTiles = (fmt == GX_TF_RGBA8 || fmt == GX_TF_Z24X8) ? 2 : 1;
 }
 
-#define SOME_SET_REG_MACRO(reg, size, shift, val)                                                  \
-    do {                                                                                           \
-        (reg) =                                                                                    \
-            (u32)__rlwimi((u32)(reg), (val), (shift), (32 - (shift) - (size)), (31 - (shift)));    \
-    } while (0);
-
 void GXInitTexObj(GXTexObj *obj, void *image_ptr, u16 width, u16 height, GXTexFmt format,
                   GXTexWrapMode wrap_s, GXTexWrapMode wrap_t, GXBool mipmap) {
     u32 imageBase;
@@ -205,9 +199,9 @@ void GXInitTexObj(GXTexObj *obj, void *image_ptr, u16 width, u16 height, GXTexFm
         t->flags |= 1;
 
         if (format == 8 || format == 9 || format == 10) {
-            SOME_SET_REG_MACRO(t->mode0, 3, 5, 5);
+            SET_REG_FIELD_UNCHECKED(t->mode0, 3, 5, 5);
         } else {
-            SOME_SET_REG_MACRO(t->mode0, 3, 5, 6);
+            SET_REG_FIELD_UNCHECKED(t->mode0, 3, 5, 6);
         }
 
         if (width > height) {
@@ -219,7 +213,7 @@ void GXInitTexObj(GXTexObj *obj, void *image_ptr, u16 width, u16 height, GXTexFm
         lmax = 16.0f * maxLOD;
         SET_REG_FIELD(632, t->mode1, 8, 8, lmax);
     } else {
-        SOME_SET_REG_MACRO(t->mode0, 3, 5, 4);
+        SET_REG_FIELD_UNCHECKED(t->mode0, 3, 5, 4);
     }
 
     t->fmt = format;

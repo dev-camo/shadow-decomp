@@ -195,19 +195,13 @@ static int __GXShutdown(BOOL final) {
     return 1;
 }
 
-#define SOME_SET_REG_MACRO(reg, size, shift, val)                                                  \
-    do {                                                                                           \
-        (reg) =                                                                                    \
-            (u32)__rlwimi((u32)(reg), (val), (shift), (32 - (shift) - (size)), (31 - (shift)));    \
-    } while (0);
-
 void __GXInitRevisionBits(void) {
     u32 i;
 
     for (i = 0; i < 8; i++) {
         s32 regAddr;
-        SOME_SET_REG_MACRO(__GXData->vatA[i], 1, 30, 1);
-        SOME_SET_REG_MACRO(__GXData->vatB[i], 1, 31, 1);
+        SET_REG_FIELD_UNCHECKED(__GXData->vatA[i], 1, 30, 1);
+        SET_REG_FIELD_UNCHECKED(__GXData->vatB[i], 1, 31, 1);
 
         GX_WRITE_U8(0x8);
         GX_WRITE_U8(i | 0x80);
@@ -219,15 +213,15 @@ void __GXInitRevisionBits(void) {
         u32 reg1 = 0;
         u32 reg2 = 0;
 
-        SOME_SET_REG_MACRO(reg1, 1, 0, 1);
-        SOME_SET_REG_MACRO(reg1, 1, 1, 1);
-        SOME_SET_REG_MACRO(reg1, 1, 2, 1);
-        SOME_SET_REG_MACRO(reg1, 1, 3, 1);
-        SOME_SET_REG_MACRO(reg1, 1, 4, 1);
-        SOME_SET_REG_MACRO(reg1, 1, 5, 1);
+        SET_REG_FIELD_UNCHECKED(reg1, 1, 0, 1);
+        SET_REG_FIELD_UNCHECKED(reg1, 1, 1, 1);
+        SET_REG_FIELD_UNCHECKED(reg1, 1, 2, 1);
+        SET_REG_FIELD_UNCHECKED(reg1, 1, 3, 1);
+        SET_REG_FIELD_UNCHECKED(reg1, 1, 4, 1);
+        SET_REG_FIELD_UNCHECKED(reg1, 1, 5, 1);
         GX_WRITE_XF_REG(0, reg1);
 
-        SOME_SET_REG_MACRO(reg2, 1, 0, 1);
+        SET_REG_FIELD_UNCHECKED(reg2, 1, 0, 1);
         GX_WRITE_XF_REG(0x12, reg2);
 #if DEBUG
         __gxVerif->xfRegsDirty[0] = 0;
@@ -236,11 +230,11 @@ void __GXInitRevisionBits(void) {
 
     {
         u32 reg = 0;
-        SOME_SET_REG_MACRO(reg, 1, 0, 1);
-        SOME_SET_REG_MACRO(reg, 1, 1, 1);
-        SOME_SET_REG_MACRO(reg, 1, 2, 1);
-        SOME_SET_REG_MACRO(reg, 1, 3, 1);
-        SOME_SET_REG_MACRO(reg, 8, 24, 0x58);
+        SET_REG_FIELD_UNCHECKED(reg, 1, 0, 1);
+        SET_REG_FIELD_UNCHECKED(reg, 1, 1, 1);
+        SET_REG_FIELD_UNCHECKED(reg, 1, 2, 1);
+        SET_REG_FIELD_UNCHECKED(reg, 1, 3, 1);
+        SET_REG_FIELD_UNCHECKED(reg, 8, 24, 0x58);
         GX_WRITE_RAS_REG(reg);
     }
 }

@@ -189,6 +189,13 @@ extern "C" {
         (reg) = ((u32)__rlwimi((u32)(reg), (val), (shift), 32 - (shift) - (size), 31 - (shift)));  \
     } while (0)
 
+// Same field insert as SET_REG_FIELD, without the debug range assertion.
+#define SET_REG_FIELD_UNCHECKED(reg, size, shift, val)                                             \
+    do {                                                                                           \
+        (reg) =                                                                                    \
+            (u32)__rlwimi((u32)(reg), (val), (shift), (32 - (shift) - (size)), (31 - (shift)));    \
+    } while (0)
+
 #define CHECK_GXBEGIN(line, name)                                                                  \
     ASSERTMSGLINE(line, !__GXinBegin, "'" name "' is not allowed between GXBegin/GXEnd")
 

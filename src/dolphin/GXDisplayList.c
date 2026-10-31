@@ -6,7 +6,7 @@
 #include "__gx.h"
 
 static __GXFifoObj DisplayListFifo;
-static volatile __GXFifoObj *OldCPUFifo;
+static __GXFifoObj *OldCPUFifo;
 static GXData __savedGXdata;
 
 void GXBeginDisplayList(void *list, u32 size) {
@@ -88,7 +88,7 @@ void GXCallDisplayList(void *list, u32 nbytes) {
         __GXSetDirtyState();
     }
 
-#if DEBUG
+#ifdef DEBUG
     __GXShadowDispList(list, nbytes);
 #endif
 

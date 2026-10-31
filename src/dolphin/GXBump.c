@@ -8,7 +8,7 @@
     do {                                                                                           \
         GX_WRITE_U8(a);                                                                            \
         GX_WRITE_U32(b);                                                                           \
-        __gxVerif->rasRegs[(b >> 24) & 0xFF] = b;                                                  \
+        __gxVerif->rasRegs[((b) >> 24) & 0xFF] = (b);                                              \
     } while (0)
 #else
 #define GX_WRITE_SOME_REG5(a, b)                                                                   \
@@ -123,9 +123,9 @@ void GXSetIndTexCoordScale(GXIndTexStageID ind_state, GXIndTexScale scale_s,
         GX_WRITE_SOME_REG5(GX_LOAD_BP_REG, __GXData->IndTexScale1);
         break;
     case GX_INDTEXSTAGE3:
-        SET_REG_FIELD(0x10F, __GXData->IndTexScale1, 4, 8, scale_s);
-        SET_REG_FIELD(0x110, __GXData->IndTexScale1, 4, 12, scale_t);
-        SET_REG_FIELD(0x110, __GXData->IndTexScale1, 8, 24, 0x26);
+        SET_REG_FIELD(271, __GXData->IndTexScale1, 4, 8, scale_s);
+        SET_REG_FIELD(272, __GXData->IndTexScale1, 4, 12, scale_t);
+        SET_REG_FIELD(272, __GXData->IndTexScale1, 8, 24, 0x26);
         GX_WRITE_SOME_REG5(GX_LOAD_BP_REG, __GXData->IndTexScale1);
         break;
     default:
