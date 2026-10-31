@@ -303,8 +303,8 @@ void fn_80493C84(GXRenderModeObj *renderMode, RwInt32 pixelFormat) {
         RwInt32 format = pixelFormat;
         GXRenderModeObj *mode = &lbl_805E3190;
 
-        *mode = *renderMode;
         lbl_805F164C = mode;
+        *mode = *renderMode;
         lbl_805F15EC = TVFORMATCUSTOM;
         /* Antialiasing needs the 16-bit pixel format */
         if (lbl_805F164C->aa) {
