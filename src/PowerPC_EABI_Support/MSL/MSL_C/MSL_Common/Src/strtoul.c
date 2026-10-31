@@ -14,10 +14,10 @@ enum scan_states {
     failure = 0x40
 };
 
-#define final_state(scan_state) (scan_state & (finished | failure))
-#define success(scan_state) (scan_state & (leading_zero | digit_loop | finished))
+#define final_state(scan_state) ((scan_state) & (finished | failure))
+#define success(scan_state) ((scan_state) & (leading_zero | digit_loop | finished))
 #define fetch() (count++, (*ReadProc)(ReadProcArg, 0, __GetAChar))
-#define unfetch(c) (*ReadProc)(ReadProcArg, c, __UngetAChar)
+#define unfetch(c) ((*ReadProc)(ReadProcArg, (c), __UngetAChar))
 
 unsigned long __strtoul(int base, int max_width, int (*ReadProc)(void *, int, int),
                         void *ReadProcArg, int *chars_scanned, int *negative, int *overflow) {
@@ -270,7 +270,7 @@ unsigned long long __strtoull(int base, int max_width, int (*ReadProc)(void *, i
     }
 
     if (!success(scan_state)) {
-        /* one chained assignment: the high word of value is the sign extension of the int 0 */
+        /* the high word of value is the sign extension of the int 0 */
         value = *chars_scanned = count = 0;
     } else {
         count--;
@@ -289,7 +289,7 @@ unsigned long strtoul(const char *str, char **end, int base) {
     isc.NextChar = (char *)str;
     isc.NullCharDetected = 0;
 
-    value = __strtoul(base, 0x7FFFFFFF, &__StringRead, (void *)&isc, &count, &negative, &overflow);
+    value = __strtoul(base, INT_MAX, &__StringRead, (void *)&isc, &count, &negative, &overflow);
 
     if (end) {
         *end = (char *)str + count;
@@ -314,7 +314,7 @@ long strtol(const char *str, char **end, int base) {
     isc.NextChar = (char *)str;
     isc.NullCharDetected = 0;
 
-    uvalue = __strtoul(base, 0x7FFFFFFF, &__StringRead, (void *)&isc, &count, &negative, &overflow);
+    uvalue = __strtoul(base, INT_MAX, &__StringRead, (void *)&isc, &count, &negative, &overflow);
 
     if (end) {
         *end = (char *)str + count;

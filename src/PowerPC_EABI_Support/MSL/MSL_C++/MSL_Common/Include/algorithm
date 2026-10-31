@@ -10,114 +10,83 @@ namespace std {
 
 template <class ForwardIterator, class T, typename Predicate>
 inline ForwardIterator lower_bound(ForwardIterator first, ForwardIterator last, const T& val, Predicate p) {
-	typedef typename iterator_traits<ForwardIterator>::difference_type difference_type;
-	difference_type len = std::distance(first, last);
+    typedef typename iterator_traits<ForwardIterator>::difference_type difference_type;
+    difference_type len = std::distance(first, last);
 
-	while (len > 0) {
-		ForwardIterator i = first;
-		difference_type step = len / 2;
-		std::advance(i, step);
+    while (len > 0) {
+        ForwardIterator i = first;
+        difference_type step = len / 2;
+        std::advance(i, step);
 
-		if (p(*i, val)) {
-			first = ++i;
-			len -= step + 1;
-		} else {
-			len = step;
-		}
-	}
+        if (p(*i, val)) {
+            first = ++i;
+            len -= step + 1;
+        } else {
+            len = step;
+        }
+    }
 
-	return first;
+    return first;
 }
 
 template <class ForwardIterator, class T>
 ForwardIterator lower_bound(ForwardIterator first, ForwardIterator last, const T& val) {
-	#if DEBUG
-	return lower_bound(first, last, val, std::detail::less<T, T>());
-	#else
+    typedef typename iterator_traits<ForwardIterator>::difference_type difference_type;
+    difference_type len = std::distance(first, last);
 
-	typedef typename iterator_traits<ForwardIterator>::difference_type difference_type;
-	difference_type len = std::distance(first, last);
+    while (len > 0) {
+        ForwardIterator i = first;
+        difference_type step = len / 2;
+        std::advance(i, step);
 
-	while (len > 0) {
-		ForwardIterator i = first;
-		difference_type step = len / 2;
-		std::advance(i, step);
+        if (*i < val) {
+            first = ++i;
+            len -= step + 1;
+        } else {
+            len = step;
+        }
+    }
 
-		if (*i < val) {
-			first = ++i;
-			len -= step + 1;
-		} else {
-			len = step;
-		}
-	}
-
-	return first;
-	#endif
+    return first;
 }
 
 template <class ForwardIterator, class T, class Predicate>
 ForwardIterator upper_bound(ForwardIterator first, ForwardIterator last, const T& val, Predicate p) {
-	typedef typename iterator_traits<ForwardIterator>::difference_type difference_type;
-	difference_type len = std::distance(first, last);
+    typedef typename iterator_traits<ForwardIterator>::difference_type difference_type;
+    difference_type len = std::distance(first, last);
 
-	while (len > 0) {
-		ForwardIterator i = first;
-		difference_type step = len / 2;
-		std::advance(i, step);
+    while (len > 0) {
+        ForwardIterator i = first;
+        difference_type step = len / 2;
+        std::advance(i, step);
 
-		if (!p(val, *i)) {
-			first = ++i;
-			len -= step + 1;
-		} else {
-			len = step;
-		}
-	}
+        if (!p(val, *i)) {
+            first = ++i;
+            len -= step + 1;
+        } else {
+            len = step;
+        }
+    }
 
-	return first;
+    return first;
 }
 
 template<class InputIt, class UnaryPredicate>
 InputIt find_if(InputIt first, InputIt last, UnaryPredicate p) {
-	while (first != last && !p(*first)) {
-		++first;
-	}
-	return first;
+    while (first != last && !p(*first)) {
+        ++first;
+    }
+    return first;
 }
 
 // Unlike the standard find, val is taken by non-const reference.
 template<class ForwardIterator, class T>
 inline ForwardIterator find(ForwardIterator first, ForwardIterator last, T& val) {
     while (first != last && !(*first == val)) {
-		++first;
-	}
-    return first;
-}
-
-/*
-template<class OutputIt, class Size, int A2>
-struct __fill_n {
-    OutputIt fill_n(OutputIt first, Size count, const unsigned long& value);
-};
-
-template<>
-unsigned long* __fill_n<unsigned long, long, 0>::fill_n(unsigned long* first, long count, const unsigned long& value) {
-    for (; count > 0; count--) {
-        *first++ = value;
+        ++first;
     }
     return first;
 }
-
-template<class OutputIt, class Size, class T>
-OutputIt fill_n(OutputIt first, Size count, const T& value) {
-    return __fill_n::fill_n(first, count, value);
-}
-
-
-template<class ForwardIt, class T>
-void __fill(ForwardIt first, ForwardIt last, const T& value, std::random_access_iterator_tag param_3) {
-    fill_n(first, last - first, value);
-}
-*/
 
 template<class ForwardIt, class T>
 inline void fill(ForwardIt first, ForwardIt last, const T& value) {
@@ -125,36 +94,6 @@ inline void fill(ForwardIt first, ForwardIt last, const T& value) {
         *first = value;
     }
 }
-
-#if PLATFORM_SHIELD
-template <class T, bool IsPOD = true>
-struct __msl_copy {
-    static T* copy(T* first, T* last, T* result) {
-        for (; first < last; ++first, ++result)
-            *result = *first;
-        return result;
-    }
-};
-
-template <class T>
-struct __msl_copy<T, true> {
-    static T* copy(T* first, T* last, T* result) {
-        size_t n = static_cast<size_t>(last - first);
-        memmove(result, first, n * sizeof(T));
-        return result + n;
-    }
-};
-
-template <class T>
-inline T* copy(T* first, T* last, T* result) {
-    return __msl_copy<T>::copy(first, last, result);
-}
-
-template <class T>
-inline T* copy(const T* first, const T* last, T* result) {
-    return __msl_copy<T>::copy(const_cast<T*>(first), const_cast<T*>(last), result);
-}
-#endif
 
 template<class InputIt, class OutputIt>
 inline OutputIt copy(InputIt first, InputIt last,
@@ -167,80 +106,75 @@ inline OutputIt copy(InputIt first, InputIt last,
 
 template <class BidirectionalIterator1, class BidirectionalIterator2>
 inline BidirectionalIterator2 copy_backward(BidirectionalIterator1 first, BidirectionalIterator1 last, BidirectionalIterator2 result) {
-	while (last != first)
-		*--result = *--last;
-	return result;
+    while (last != first)
+        *--result = *--last;
+    return result;
 }
 
 template <class T, bool A>
 struct __copy_backward
 {
-	static T* copy_backward(T* first, T* last, T* result)
-	{
-		while (last > first)
-			*--result = *--last;
-		return result;
-	}
+    static T* copy_backward(T* first, T* last, T* result)
+    {
+        while (last > first)
+            *--result = *--last;
+        return result;
+    }
 };
 
 template <class T>
 struct __copy_backward<T, true>
 {
-	static T* copy_backward(T* first, T* last, T* result)
-	{
-#if DEBUG
-		size_t n = static_cast<size_t>(last - first);
-		result -= n;
-		memmove(result, first, n*sizeof(T));
-		return result;
-#else
+    static T* copy_backward(T* first, T* last, T* result)
+    {
         while (last > first)
-			*--result = *--last;
-		return result;
-#endif
-	}
+            *--result = *--last;
+        return result;
+    }
 };
 
 template <class T>
 inline T* copy_backward(T* first, T* last, T* result) {
-	return __copy_backward<T, true>::copy_backward(first, last, result);
+    return __copy_backward<T, true>::copy_backward(first, last, result);
 }
 
 template <typename T>
 inline const T& min(const T& a, const T& b) {
-	return b < a ? b : a;
+    return b < a ? b : a;
 }
 
-// Not declared inline, unlike min: the game calls an out-of-line instance (ThreatObjHolder.cpp's
-// startup code calls a 6-instruction weak function at 0x80140260; that it is max<unsigned> is
-// inferred from its body). Declared inline, max is expanded into the startup code instead.
+// Matching workaround: max is not declared inline, unlike min. The game calls an out-of-line
+// instance (ThreatObjHolder.cpp's startup code calls a 6-instruction weak function at 0x80140260;
+// that it is max<unsigned> is inferred from its body); declared inline, max is expanded into
+// the startup code instead. Revisit when the original <algorithm> or the unit's inline settings
+// are found.
 template <typename T>
 const T& max(const T& a, const T& b) {
-	return a < b ? b : a;
+    return a < b ? b : a;
 }
 
 template <class InputIt, class OutputIt, class Predicate>
 OutputIt remove_copy_if(InputIt first, InputIt last, OutputIt result, Predicate pred) {
-	for (; first != last; ++first) {
-		if (!pred(*first)) {
-			*result = *first;
-			++result;
-		}
-	}
-	return result;
+    for (; first != last; ++first) {
+        if (!pred(*first)) {
+            *result = *first;
+            ++result;
+        }
+    }
+    return result;
 }
 
 // The game's remove_if passes the predicate to find_if by reference and to remove_copy_if by
 // value.
 template <class ForwardIt, class Predicate>
 ForwardIt remove_if(ForwardIt first, ForwardIt last, Predicate pred) {
-	first = find_if<ForwardIt, Predicate &>(first, last, pred);
-	if (first == last) {
-		return first;
-	}
-	ForwardIt next = first;
-	++next;
-	return remove_copy_if(next, last, first, pred);
+    first = find_if<ForwardIt, Predicate &>(first, last, pred);
+    if (first == last) {
+        return first;
+    }
+    ForwardIt next = first;
+    ++next;
+    return remove_copy_if(next, last, first, pred);
 }
 
 }  // namespace std

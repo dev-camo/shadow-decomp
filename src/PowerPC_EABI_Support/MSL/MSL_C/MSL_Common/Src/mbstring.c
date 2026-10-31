@@ -37,8 +37,61 @@ static int is_utf8_complete(const char *s, size_t n) {
     }
 }
 
+/* Decodes one UTF-8 sequence into *pwc and returns its length. Inferred name: the body is
+   inlined into mbtowc. */
+static inline int utf8_to_unicode(wchar_t *pwc, const char *s, size_t n) {
+    wchar_t result_chr = 0;
+    int sequence_length;
+    int expected_length;
+    const char *source;
+
+    if (!s) {
+        return 0;
+    }
+
+    if (n <= 0) {
+        return -1;
+    }
+
+    sequence_length = is_utf8_complete(s, n);
+    if (sequence_length < 0) {
+        return -1;
+    }
+
+    source = s;
+    switch (sequence_length) {
+    case 3:
+        result_chr |= (*source++ & 0x0f);
+        result_chr <<= 6;
+    case 2:
+        result_chr |= (*source++ & 0x3f);
+        result_chr <<= 6;
+    case 1:
+        result_chr |= (*source++ & 0x7f);
+    }
+
+    /* The sequence must be the shortest encoding of the decoded character. */
+    if (!result_chr) {
+        expected_length = 0;
+    } else if (result_chr < 0x80) {
+        expected_length = 1;
+    } else if (result_chr < 0x800) {
+        expected_length = 2;
+    } else {
+        expected_length = 3;
+    }
+
+    if (expected_length != sequence_length) {
+        return -1;
+    }
+    if (pwc) {
+        *pwc = result_chr;
+    }
+    return sequence_length;
+}
+
 int mbtowc(wchar_t *pwc, const char *s, size_t n) {
-    return mbstowcs(pwc, s, n);
+    return utf8_to_unicode(pwc, s, n);
 }
 
 inline static int unicode_to_UTF8(char *s, wchar_t wchar) {
@@ -76,66 +129,6 @@ inline static int unicode_to_UTF8(char *s, wchar_t wchar) {
 
 inline int wctomb(char *s, wchar_t wchar) {
     return (unicode_to_UTF8(s, wchar));
-}
-
-inline int mbstowcs(wchar_t *pwc, const char *s, size_t n) {
-    unsigned long result_chr;
-    int number_of_bytes = 0;
-    int isUTF8;
-    char *source;
-
-    if (!s) {
-        number_of_bytes = 0;
-        return (number_of_bytes);
-    }
-
-    if (n <= 0) {
-        number_of_bytes = -1;
-        return (number_of_bytes);
-    }
-
-    isUTF8 = is_utf8_complete(s, n);
-    if (isUTF8 < 0) {
-        number_of_bytes = -1;
-        return number_of_bytes;
-    }
-
-    source = (char *)s;
-    switch (isUTF8) {
-    case 3:
-        result_chr = (*source & 0x1f);
-        source++;
-        number_of_bytes = (result_chr << 6) & 0x3C0;
-    case 2:
-        result_chr = number_of_bytes | (*source & 0x3f);
-        source++;
-        number_of_bytes = (result_chr << 6) & 0xFFC0;
-    case 1:
-        result_chr = number_of_bytes | (*source & 0x7f);
-        source++;
-        number_of_bytes = result_chr & 0xFFFF;
-    }
-
-    result_chr = number_of_bytes & 0xFFFF;
-
-    if (!(result_chr)) {
-        result_chr = 0;
-    } else if (result_chr < 0x00000080) {
-        result_chr = 1;
-    } else if (result_chr < 0x00000800) {
-        result_chr = 2;
-    } else {
-        result_chr = 3;
-    }
-
-    if ((int)result_chr != isUTF8) {
-        number_of_bytes = -1;
-        return (number_of_bytes);
-    }
-    if (pwc) {
-        *pwc = number_of_bytes;
-    }
-    return isUTF8;
 }
 
 size_t wcstombs(char *s, const wchar_t *pwcs, size_t n) {

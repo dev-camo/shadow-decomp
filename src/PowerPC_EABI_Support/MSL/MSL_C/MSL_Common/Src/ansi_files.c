@@ -11,106 +11,142 @@ static unsigned char stdout_buff[0x100];
 
 static unsigned char stderr_buff[0x100];
 
-extern files __files = {
+files __files = {
     {
-        0,
-        0,
-        1,
-        1,
-        2,
-        0,
-        0,
-        0,
-        0,
+        0,              /* handle */
+        0,              /* open_mode */
+        __read,         /* io_mode */
+        _IOLBF,         /* buffer_mode */
+        __console_file, /* file_kind */
+        /* file_orientation through char_buffer_overflow: */
         0,
         0,
         0,
         0,
         0,
-        {0, 0},
-        {0, 0},
-        0,
-        stdin_buff,
-        0x00000100,
-        stdin_buff,
         0,
         0,
         0,
         0,
-        NULL,
-        __read_console,
-        __write_console,
-        __close_console,
-        NULL,
-        &__files._stdout,
+        {0, 0},             /* ungetc_buffer */
+        {0, 0},             /* ungetc_wide_buffer */
+        0,                  /* position */
+        stdin_buff,         /* buffer */
+        sizeof(stdin_buff), /* buffer_size */
+        stdin_buff,         /* buffer_ptr */
+        /* buffer_length, buffer_alignment, save_buffer_length, buffer_position: */
+        0,
+        0,
+        0,
+        0,
+        NULL,             /* position_fn */
+        __read_console,   /* read_fn */
+        __write_console,  /* write_fn */
+        __close_console,  /* close_fn */
+        NULL,             /* idle_fn */
+        &__files._stdout, /* next_file */
     },
     {
-        1,
-        0,
-        2,
-        1,
-        2,
-        0,
-        0,
-        0,
+        1,              /* handle */
+        0,              /* open_mode */
+        __write,        /* io_mode */
+        _IOLBF,         /* buffer_mode */
+        __console_file, /* file_kind */
+        /* file_orientation through char_buffer_overflow: */
         0,
         0,
         0,
         0,
         0,
         0,
-        {0, 0},
-        {0, 0},
-        0,
-        stdout_buff,
-        0x00000100,
-        stdout_buff,
         0,
         0,
         0,
+        {0, 0},              /* ungetc_buffer */
+        {0, 0},              /* ungetc_wide_buffer */
+        0,                   /* position */
+        stdout_buff,         /* buffer */
+        sizeof(stdout_buff), /* buffer_size */
+        stdout_buff,         /* buffer_ptr */
+        /* buffer_length, buffer_alignment, save_buffer_length, buffer_position: */
         0,
-        NULL,
-        __read_console,
-        __write_console,
-        __close_console,
-        NULL,
-        &__files._stderr,
+        0,
+        0,
+        0,
+        NULL,             /* position_fn */
+        __read_console,   /* read_fn */
+        __write_console,  /* write_fn */
+        __close_console,  /* close_fn */
+        NULL,             /* idle_fn */
+        &__files._stderr, /* next_file */
     },
     {
-        2,
-        0,
-        2,
-        0,
-        2,
-        0,
-        0,
-        0,
+        2,              /* handle */
+        0,              /* open_mode */
+        __write,        /* io_mode */
+        _IONBF,         /* buffer_mode */
+        __console_file, /* file_kind */
+        /* file_orientation through char_buffer_overflow: */
         0,
         0,
         0,
         0,
         0,
         0,
-        {0, 0},
-        {0, 0},
-        0,
-        stderr_buff,
-        0x00000100,
-        stderr_buff,
         0,
         0,
         0,
+        {0, 0},              /* ungetc_buffer */
+        {0, 0},              /* ungetc_wide_buffer */
+        0,                   /* position */
+        stderr_buff,         /* buffer */
+        sizeof(stderr_buff), /* buffer_size */
+        stderr_buff,         /* buffer_ptr */
+        /* buffer_length, buffer_alignment, save_buffer_length, buffer_position: */
         0,
-        NULL,
-        __read_console,
-        __write_console,
-        __close_console,
-        NULL,
-        &__files.empty,
+        0,
+        0,
+        0,
+        NULL,            /* position_fn */
+        __read_console,  /* read_fn */
+        __write_console, /* write_fn */
+        __close_console, /* close_fn */
+        NULL,            /* idle_fn */
+        &__files.empty,  /* next_file */
     },
     {
-        0,      0, 0,    0,          0,    0, 0, 0, 0, 0,    0,    0,    0,    0,    {0, 0},
-        {0, 0}, 0, NULL, 0x00000000, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL,
+        0, /* handle */
+        0, /* open_mode */
+        0, /* io_mode */
+        0, /* buffer_mode */
+        0, /* file_kind */
+        /* file_orientation through char_buffer_overflow: */
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        {0, 0}, /* ungetc_buffer */
+        {0, 0}, /* ungetc_wide_buffer */
+        0,      /* position */
+        NULL,   /* buffer */
+        0,      /* buffer_size */
+        NULL,   /* buffer_ptr */
+        /* buffer_length, buffer_alignment, save_buffer_length, buffer_position: */
+        0,
+        0,
+        0,
+        0,
+        NULL, /* position_fn */
+        NULL, /* read_fn */
+        NULL, /* write_fn */
+        NULL, /* close_fn */
+        NULL, /* idle_fn */
+        NULL, /* next_file */
     },
 };
 

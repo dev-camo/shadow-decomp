@@ -5,7 +5,9 @@
 #include "mbstring.h"
 #include "wchar_io.h"
 #include <cctype>
+#include <climits>
 #include <cmath>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include "layout_check.h"
@@ -18,10 +20,11 @@
 #define TARGET_FLOAT_MANT_BITS (TARGET_FLOAT_MANT_DIG - TARGET_FLOAT_IMPLICIT_J_BIT)
 #define TARGET_FLOAT_EXP_BITS (TARGET_FLOAT_BITS - TARGET_FLOAT_MANT_BITS - 1)
 
-typedef long long intmax_t;
+/* Upper bound on a conversion's field width, precision and digit count. */
+#define MAX_CONVERSION_LENGTH 509
 
-#define PTRDIFF __typeof__((char *)0 - (char *)0)
-typedef PTRDIFF ptrdiff_t;
+/* conversion_char value that marks a malformed or unsupported conversion specification. */
+#define BAD_CONVERSION 0xFF
 
 enum justification_options { left_justification, right_justification, zero_fill };
 
@@ -117,8 +120,8 @@ static const char *parse_format(const char *format_string, va_list *arg, print_f
         }
     }
 
-    if (f.field_width > 509) {
-        f.conversion_char = 0xFF;
+    if (f.field_width > MAX_CONVERSION_LENGTH) {
+        f.conversion_char = BAD_CONVERSION;
         *format = f;
         return ((const char *)s + 1);
     }
@@ -185,7 +188,7 @@ static const char *parse_format(const char *format_string, va_list *arg, print_f
     case 'x':
     case 'X':
         if (f.argument_options == long_double_argument) {
-            f.conversion_char = 0xFF;
+            f.conversion_char = BAD_CONVERSION;
             break;
         }
 
@@ -199,7 +202,7 @@ static const char *parse_format(const char *format_string, va_list *arg, print_f
     case 'f':
     case 'F':
         if (f.argument_options == short_argument || f.argument_options == long_long_argument) {
-            f.conversion_char = 0xFF;
+            f.conversion_char = BAD_CONVERSION;
             break;
         }
 
@@ -216,7 +219,7 @@ static const char *parse_format(const char *format_string, va_list *arg, print_f
 
         if (f.argument_options == short_argument || f.argument_options == long_long_argument ||
             f.argument_options == char_argument) {
-            f.conversion_char = 0xFF;
+            f.conversion_char = BAD_CONVERSION;
         }
 
         break;
@@ -231,7 +234,7 @@ static const char *parse_format(const char *format_string, va_list *arg, print_f
     case 'E':
         if (f.argument_options == short_argument || f.argument_options == long_long_argument ||
             f.argument_options == char_argument) {
-            f.conversion_char = 0xFF;
+            f.conversion_char = BAD_CONVERSION;
             break;
         }
 
@@ -252,7 +255,7 @@ static const char *parse_format(const char *format_string, va_list *arg, print_f
             f.argument_options = wchar_argument;
         } else {
             if (f.precision_specified || f.argument_options != normal_argument) {
-                f.conversion_char = 0xFF;
+                f.conversion_char = BAD_CONVERSION;
             }
         }
 
@@ -263,7 +266,7 @@ static const char *parse_format(const char *format_string, va_list *arg, print_f
             f.argument_options = wchar_argument;
         } else {
             if (f.argument_options != normal_argument) {
-                f.conversion_char = 0xFF;
+                f.conversion_char = BAD_CONVERSION;
             }
         }
 
@@ -271,13 +274,13 @@ static const char *parse_format(const char *format_string, va_list *arg, print_f
 
     case 'n':
         if (f.argument_options == long_double_argument) {
-            f.conversion_char = 0xFF;
+            f.conversion_char = BAD_CONVERSION;
         }
 
         break;
 
     default:
-        f.conversion_char = 0xFF;
+        f.conversion_char = BAD_CONVERSION;
         break;
     }
 
@@ -364,7 +367,7 @@ static char *long2str(long num, char *buff, print_format format) {
             format.precision -= 2;
     }
 
-    if (buff - p + format.precision > 509)
+    if (buff - p + format.precision > MAX_CONVERSION_LENGTH)
         return (0);
 
     while (digits < format.precision) {
@@ -464,7 +467,7 @@ static char *longlong2str(long long num, char *pBuf, print_format fmt) {
         }
     }
 
-    if (pBuf - p + fmt.precision > 509) {
+    if (pBuf - p + fmt.precision > MAX_CONVERSION_LENGTH) {
         return 0;
     }
 
@@ -507,7 +510,7 @@ static char *double2hex(long double num, char *buff, print_format format) {
     ld = num;
     sptr = (short *)&ld;
 
-    if (format.precision > 509) {
+    if (format.precision > MAX_CONVERSION_LENGTH) {
         return 0;
     }
 
@@ -681,7 +684,7 @@ static char *float2str(long double num, char *buff, print_format format) {
 
     radix_marker = '.';
 
-    if (format.precision > 509) {
+    if (format.precision > MAX_CONVERSION_LENGTH) {
         return 0;
     }
 
@@ -802,7 +805,7 @@ static char *float2str(long double num, char *buff, print_format format) {
         *--p = sign;
         *--p = format.conversion_char;
 
-        if (buff - p + format.precision > 509) {
+        if (buff - p + format.precision > MAX_CONVERSION_LENGTH) {
             return 0;
         }
 
@@ -848,7 +851,7 @@ static char *float2str(long double num, char *buff, print_format format) {
         if ((int_digits = dec.exp + 1) < 0)
             int_digits = 0;
 
-        if (int_digits + frac_digits > 509)
+        if (int_digits + frac_digits > MAX_CONVERSION_LENGTH)
             return 0;
 
         q = (char *)dec.sig.text + dec.sig.length;
@@ -950,16 +953,16 @@ static int __pformatter(void *(*WriteProc)(void *, const char *, size_t), void *
             }
 
             if ((format.argument_options == long_long_argument)) {
-                if (!(buff_ptr = longlong2str(long_long_num, buff + 512, format))) {
+                if (!(buff_ptr = longlong2str(long_long_num, buff + sizeof(buff), format))) {
                     goto conversion_error;
                 }
             } else {
-                if (!(buff_ptr = long2str(long_num, buff + 512, format))) {
+                if (!(buff_ptr = long2str(long_num, buff + sizeof(buff), format))) {
                     goto conversion_error;
                 }
             }
 
-            num_chars = buff + 512 - 1 - buff_ptr;
+            num_chars = buff + sizeof(buff) - 1 - buff_ptr;
             break;
 
         case 'o':
@@ -983,16 +986,16 @@ static int __pformatter(void *(*WriteProc)(void *, const char *, size_t), void *
             }
 
             if ((format.argument_options == long_long_argument)) {
-                if (!(buff_ptr = longlong2str(long_long_num, buff + 512, format))) {
+                if (!(buff_ptr = longlong2str(long_long_num, buff + sizeof(buff), format))) {
                     goto conversion_error;
                 }
             } else {
-                if (!(buff_ptr = long2str(long_num, buff + 512, format))) {
+                if (!(buff_ptr = long2str(long_num, buff + sizeof(buff), format))) {
                     goto conversion_error;
                 }
             }
 
-            num_chars = buff + 512 - 1 - buff_ptr;
+            num_chars = buff + sizeof(buff) - 1 - buff_ptr;
             break;
 
         case 'f':
@@ -1007,11 +1010,11 @@ static int __pformatter(void *(*WriteProc)(void *, const char *, size_t), void *
                 long_double_num = va_arg(arg, double);
             }
 
-            if (!(buff_ptr = float2str(long_double_num, buff + 512, format))) {
+            if (!(buff_ptr = float2str(long_double_num, buff + sizeof(buff), format))) {
                 goto conversion_error;
             }
 
-            num_chars = buff + 512 - 1 - buff_ptr;
+            num_chars = buff + sizeof(buff) - 1 - buff_ptr;
             break;
 
         case 'a':
@@ -1022,11 +1025,11 @@ static int __pformatter(void *(*WriteProc)(void *, const char *, size_t), void *
                 long_double_num = va_arg(arg, double);
             }
 
-            if (!(buff_ptr = double2hex(long_double_num, buff + 512, format))) {
+            if (!(buff_ptr = double2hex(long_double_num, buff + sizeof(buff), format))) {
                 goto conversion_error;
             }
 
-            num_chars = buff + 512 - 1 - buff_ptr;
+            num_chars = buff + sizeof(buff) - 1 - buff_ptr;
             break;
 
         case 's':
@@ -1100,7 +1103,7 @@ static int __pformatter(void *(*WriteProc)(void *, const char *, size_t), void *
             num_chars = 1;
             break;
 
-        case 0xFF:
+        case BAD_CONVERSION:
         default:
         conversion_error:
             num_chars = strlen(curr_format);
@@ -1241,7 +1244,7 @@ int vsnprintf(char *s, size_t n, const char *format, va_list arg) {
 }
 
 int vsprintf(char *s, const char *format, va_list arg) {
-    return vsnprintf(s, 0xFFFFFFFF, format, arg);
+    return vsnprintf(s, ULONG_MAX, format, arg);
 }
 
 int snprintf(char *s, size_t n, const char *format, ...) {
@@ -1253,5 +1256,5 @@ int snprintf(char *s, size_t n, const char *format, ...) {
 int sprintf(char *s, const char *format, ...) {
     va_list args;
     va_start(args, format);
-    return vsnprintf(s, 0xFFFFFFFF, format, args);
+    return vsnprintf(s, ULONG_MAX, format, args);
 }
