@@ -261,10 +261,10 @@ void fn_8048E300(rwPalQuantOctNode *node, RwInt32 *corner, RwInt32 level, rwPalQ
 void fn_8048E47C(rwPalQuantOctNode *node, RwInt32 *corner, RwInt32 level, rwPalQuantBox *box,
                  rwPalQuantLeafNode *result) {
     if (node != NULL) {
-        RwInt32 d0 = (1 << level) + corner[0] - box->lower[0];
-        RwInt32 d1 = (1 << level) + corner[1] - box->lower[1];
-        RwInt32 d2 = (1 << level) + corner[2] - box->lower[2];
-        RwInt32 d3 = (1 << level) + corner[3] - box->lower[3];
+        RwInt32 d0 = corner[0] + (1 << level) - box->lower[0];
+        RwInt32 d1 = corner[1] + (1 << level) - box->lower[1];
+        RwInt32 d2 = corner[2] + (1 << level) - box->lower[2];
+        RwInt32 d3 = corner[3] + (1 << level) - box->lower[3];
 
         /* Nothing to add unless the cell overlaps the box */
         if (d0 <= 0 || d1 <= 0 || d2 <= 0 || d3 <= 0) {
