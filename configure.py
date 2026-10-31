@@ -1171,7 +1171,10 @@ config.libs = [
             Object(Matching, "dolphin/OS.c", cflags=cflags_sdk_rev2),
             Object(Matching, "dolphin/OSAlloc.c"),
             Object(Matching, "dolphin/OSExec.c", cflags=cflags_sdk_rev2),
-            Object(Matching, "dolphin/OSFatal.c"),
+            # Matching workaround: -char signed. OSFatal sign-extends the characters of its message
+            # (extsb); the SDK default -char unsigned makes the same source load them with lbz. Revisit
+            # when the library's real compiler flags are known.
+            Object(Matching, "dolphin/OSFatal.c", extra_cflags=["-char signed"]),
             Object(Matching, "dolphin/OSFont.c"),
             Object(Matching, "dolphin/OSLink.c"),
             Object(Matching, "dolphin/OSMutex.c"),
@@ -1247,12 +1250,16 @@ config.libs = [
         [
             Object(Matching, "dolphin/dvderror.c"),
             Object(Matching, "dolphin/dvdlow.c"),
-            # These three were built with signed char (the code sign-extends char values)
+            # Matching workaround: -char signed on dvdfs.c, dvdidutils.c and fstload.c. They sign-extend
+            # char values (extsb); the SDK default -char unsigned gives the unsigned load instead.
+            # Revisit when the library's real compiler flags are known.
             Object(Matching, "dolphin/dvdfs.c", extra_cflags=["-char signed"]),
             Object(Matching, "dolphin/dvd.c"),
             Object(Matching, "dolphin/dvdqueue.c"),
+            # Matching workaround: -char signed, as above.
             Object(Matching, "dolphin/dvdidutils.c", extra_cflags=["-char signed"]),
             Object(Matching, "dolphin/dvdFatal.c"),
+            # Matching workaround: -char signed, as above.
             Object(Matching, "dolphin/fstload.c", extra_cflags=["-char signed"]),
         ],
     ),

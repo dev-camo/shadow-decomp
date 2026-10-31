@@ -1,3 +1,4 @@
+// Dolphin SDK OS library: fatal error screen.
 #include <dolphin.h>
 #include <dolphin/os.h>
 #include <dolphin/gx.h>
@@ -16,8 +17,7 @@ CHECK_SIZEOF(OSFatalParam, 0xC);
 static OSFatalParam FatalParam;
 static OSContext FatalContext;
 
-// prototypes
-static void Halt();
+static void Halt(void);
 
 static void ScreenClear(void *xfb, u16 xfbW, u16 xfbH, GXColor yuv) {
     int i;
@@ -48,21 +48,21 @@ static void ScreenReport(void *xfb, u16 xfbW, u16 xfbH, GXColor yuv, s32 x, s32 
     u32 pixel;
     s32 col;
 
-loop_1:
+next_line:
     if (xfbH - 24 >= y) {
         ptr = (u8 *)xfb + ((x + (y * xfbW)) * 2);
         col = x;
 
-        while ((s8)*string != 0) {
-            if ((s8)*string == '\n') {
+        while (*string != 0) {
+            if (*string == '\n') {
                 string++;
                 y += leading;
-                goto loop_1;
+                goto next_line;
             }
 
             if (xfbW - 48 < col) {
                 y += leading;
-                goto loop_1;
+                goto next_line;
             }
 
             for (i = 0; i < 24; i++) {
@@ -115,7 +115,7 @@ static void ConfigureVideo(u16 xfbW, u16 xfbH) {
     switch (VIGetTvFormat()) {
     case 2:
     case 0:
-        if (__VIRegs[54] & 1) {
+        if (__VIRegs[VI_CLOCK_SEL] & 1) {
             mode.viTVmode = 2;
             mode.viYOrigin = 0;
             mode.xFBmode = 0;
@@ -175,7 +175,7 @@ void OSFatal(GXColor fg, GXColor bg, const char *msg) {
     AISetStreamVolLeft(0);
     AISetStreamVolRight(0);
     VIInit();
-    __OSUnmaskInterrupts(0x80);
+    __OSUnmaskInterrupts(OS_INTERRUPTMASK_PI_VI);
     VISetBlack(TRUE);
     VIFlush();
     VISetPreRetraceCallback(NULL);
@@ -205,7 +205,7 @@ void OSFatal(GXColor fg, GXColor bg, const char *msg) {
     do {
     } while ((__EXIRegs[3] & 1) == 1);
 
-    __OSSetExceptionHandler(8, &OSDefaultExceptionHandler);
+    __OSSetExceptionHandler(__OS_EXCEPTION_DECREMENTER, &OSDefaultExceptionHandler);
     GXAbortFrame();
     OSSetArenaLo((void *)0x81400000);
     OSSetArenaHi(bootInfo->FSTLocation);
@@ -216,7 +216,7 @@ void OSFatal(GXColor fg, GXColor bg, const char *msg) {
     OSSwitchFiber((u32)&Halt, (u32)OSGetArenaHi());
 }
 
-static void Halt() {
+static void Halt(void) {
     u32 count;
     OSFontHeader *fontData;
     void *xfb;
