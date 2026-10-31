@@ -16,6 +16,18 @@ void fn_800C9E60(UnkGadgetOwner_800C9CD0 *owner, u8 *value);
 /* Copies the owner's parameter block into params when its size equals size, and otherwise flags
  * the owner (behaviour inferred). */
 void fn_800C9DBC(UnkGadgetOwner_800C9CD0 *owner, void *params, int size);
+/* Registers task with the owner when the task is constructed, and releases it when the task is
+ * destroyed (behaviour inferred). */
+void fn_800C9CD0(UnkGadgetOwner_800C9CD0 *owner, Task *task);
+void fn_800C9BE8(UnkGadgetOwner_800C9CD0 *owner);
+/* Owner state queries and the call that follows two of them (behaviour inferred; the original
+ * names are unknown). Gadget::IsFinished marks the task finished when fn_800C9A64 or fn_800C996C
+ * is true. fn_800C9D0C returns false unconditionally in this build. */
+bool fn_800C9D0C(UnkGadgetOwner_800C9CD0 *owner);
+bool fn_800C9D14(UnkGadgetOwner_800C9CD0 *owner);
+void fn_800C9CF8(UnkGadgetOwner_800C9CD0 *owner);
+bool fn_800C9A64(UnkGadgetOwner_800C9CD0 *owner);
+bool fn_800C996C(UnkGadgetOwner_800C9CD0 *owner);
 }
 
 /* Gadget (class name from RTTI): a stage object task registered with an owner object. */
