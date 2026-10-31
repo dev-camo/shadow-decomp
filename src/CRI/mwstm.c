@@ -50,7 +50,14 @@ Bool MWSTM_IsFsStatErr(ADXSTM stm) {
     return ADXSTM_GetStat(stm) == 4;
 }
 
-/* Nothing to initialise on this platform (0). */
+/* Nothing to finish on this platform; the MW player's library finish calls it. The name is inferred
+ * (counterpart of MWSTM_InitStatic). */
+Sint32 MWSTM_FinishStatic(void) {
+    return 0;
+}
+
+/* Nothing to initialise on this platform (0); the MW player's library init reports a failure
+ * when it returns non-zero. */
 Sint32 MWSTM_InitStatic(void) {
     return 0;
 }
