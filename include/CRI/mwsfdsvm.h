@@ -8,6 +8,7 @@
 extern "C" {
 #endif
 
+void MWSFSVM_GotoIdleBorder(void);
 void MWSFSVM_Error(const Char8 *fmt, ...);
 Sint32 MWSFSVM_TestAndSet(Sint32 *flag);
 void fn_804031D4(void);

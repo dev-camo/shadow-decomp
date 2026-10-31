@@ -1404,10 +1404,10 @@ Game/fn_8040307C.c:
 	.text       start:0x8040307C end:0x804030A8
 
 Game/fn_804030A8.c:
-	.text       start:0x804030A8 end:0x804030F8
+	.text       start:0x804030A8 end:0x804030D4
 
 CRI/mwsfdsvm.c:
-	.text       start:0x804030F8 end:0x80403398
+	.text       start:0x804030D4 end:0x80403398
 	.bss        start:0x805DD6F8 end:0x805DD808
 
 CRI/mwstm.c:

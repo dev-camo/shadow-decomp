@@ -19,6 +19,11 @@ Sint32 mwg_idle_fid;
 Sint32 mwg_vsync_fid;
 Sint32 mwg_vbin_fid;
 
+/* Waits for the idle-type server border (SVM mwidle type). */
+void MWSFSVM_GotoIdleBorder(void) {
+    SVM_GotoSvrBorder(SVM_SVTYPE_MWIDLE);
+}
+
 /* printf-style error of the MW player: formats into a 256-byte static and reports it through
  * SVM_CallErr1. */
 void MWSFSVM_Error(const Char8 *fmt, ...) {
