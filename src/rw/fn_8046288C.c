@@ -7,13 +7,6 @@
 #include <math.h>
 #include "layout_check.h"
 
-/* engine and object plugin IDs (inferred) */
-#define rwID_VTXFMTPLUGIN 0x50D
-#define rwID_GAMECUBEWORLDPLUGIN 0x511
-
-/* the plugin ID the platform pipelines report (inferred) */
-#define rwPLATFORMPIPELINEPLUGIN 2
-
 /* The vertex format module (inferred) */
 typedef struct VtxFmtModule {
     /* 0x0 */ RwInt32 globalsOffset;
@@ -93,8 +86,9 @@ void *fn_80462914(void *object, RpGameCubeRenderMesh *renderMesh) {
     } else {
         fn_804950AC(ltm, FALSE);
     }
-    setMaterialColor = fn_804655D4(renderMesh->geometryFlags, renderMesh->lightMask,
-                                   renderMesh->hasAmbient, instance->flags & 1);
+    setMaterialColor =
+        fn_804655D4(renderMesh->geometryFlags, renderMesh->lightMask, renderMesh->hasAmbient,
+                    instance->flags & rpGAMECUBEINSTANCEPRELITALPHA);
     numMeshes = renderMesh->meshHeader->numMeshes;
     mesh = (RpMesh *)(renderMesh->meshHeader + 1);
 
@@ -248,15 +242,15 @@ void *fn_80462EC0(void *instance, RwInt32 offset, RwInt32 size) {
 
 /* Attaches the vertex format plugin: TRUE on success */
 RwBool fn_80462ED4(void) {
-    if (fn_80485D78(0, rwID_GAMECUBEWORLDPLUGIN, fn_80462E70, fn_80462EC0) < 0) {
+    if (fn_80485D78(0, rwID_VERTEXFMTPLUGIN, fn_80462E70, fn_80462EC0) < 0) {
         return FALSE;
     }
-    lbl_805F1520 = fn_8045994C(sizeof(RpGameCubeVertexFormat *), rwID_GAMECUBEWORLDPLUGIN,
-                               fn_80462E28, fn_80462E34, NULL);
+    lbl_805F1520 = fn_8045994C(sizeof(RpGameCubeVertexFormat *), rwID_VERTEXFMTPLUGIN, fn_80462E28,
+                               fn_80462E34, NULL);
     if (lbl_805F1520 < 0) {
         return FALSE;
     }
-    return (lbl_805F1524 = fn_80460790(sizeof(RpGameCubeVertexFormat *), rwID_GAMECUBEWORLDPLUGIN,
+    return (lbl_805F1524 = fn_80460790(sizeof(RpGameCubeVertexFormat *), rwID_VERTEXFMTPLUGIN,
                                        fn_80462E28, fn_80462E34, NULL)) >= 0;
 }
 
@@ -313,7 +307,7 @@ void fn_80462FAC(RpGameCubeVertexFormat *format) {
 
 RpGameCubeVertexFormat *fn_8046301C(void) {
     RpGameCubeVertexFormat *format =
-        RwMalloc(sizeof(RpGameCubeVertexFormat), rwMEMHINTDUR_EVENT | rwID_VTXFMTPLUGIN);
+        RwMalloc(sizeof(RpGameCubeVertexFormat), rwMEMHINTDUR_EVENT | rwID_WORLDPIPEMODULE);
 
     VTXFMTINIT(format);
     return format;
@@ -362,7 +356,7 @@ RwBool fn_804631CC(void) {
 void fn_804631D4(void) {}
 
 RwBool fn_804631D8(void) {
-    void *pipeline = fn_80463D28(rwPLATFORMPIPELINEPLUGIN, 0, fn_80463F10, NULL, fn_80463DF4,
+    void *pipeline = fn_80463D28(rwID_WORLDPLUGIN, 0, fn_80463F10, NULL, fn_80463DF4,
                                  (RpGameCubeSectorCallBack)fn_80462914);
 
     if (pipeline != NULL) {
@@ -382,9 +376,8 @@ void fn_80463244(void) {
 }
 
 RwBool fn_80463298(void) {
-    void *pipeline =
-        fn_8046335C(rwPLATFORMPIPELINEPLUGIN, 0, (RpGameCubeInstanceCallBack)fn_804639AC,
-                    fn_80463840, fn_80463428, (RpGameCubeRenderCallBack)fn_80462914);
+    void *pipeline = fn_8046335C(rwID_WORLDPLUGIN, 0, (RpGameCubeInstanceCallBack)fn_804639AC,
+                                 fn_80463840, fn_80463428, (RpGameCubeRenderCallBack)fn_80462914);
 
     if (pipeline != NULL) {
         RXPIPELINEGLOBAL(platformAtomicPipeline) = pipeline;

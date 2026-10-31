@@ -6,14 +6,8 @@
 #include <dolphin/os.h>
 #include <string.h>
 
-/* the vertex format plugin ID, which owns the instanced data allocations (inferred) */
-#define rwID_VTXFMTPLUGIN 0x50D
-
-#define rwMEMHINT_INSTANCE (rwMEMHINTDUR_EVENT | rwID_VTXFMTPLUGIN)
-#define rwMEMHINT_INSTANCETEMP (rwMEMHINTDUR_FUNCTION | rwID_VTXFMTPLUGIN)
-
-/* the instanced data flag of prelit colours with alpha (inferred) */
-#define rpGAMECUBEINSTANCEPRELITALPHA 0x1
+#define rwMEMHINT_INSTANCE (rwMEMHINTDUR_EVENT | rwID_WORLDPIPEMODULE)
+#define rwMEMHINT_INSTANCETEMP (rwMEMHINTDUR_FUNCTION | rwID_WORLDPIPEMODULE)
 
 /* The GX index type for a stream with count distinct values */
 #define INDEXTYPE(count) ((count) >= 255 ? GX_INDEX16 : GX_INDEX8)

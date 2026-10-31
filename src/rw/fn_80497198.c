@@ -5,10 +5,6 @@
 #include <dolphin/gx.h>
 #include <string.h>
 
-/* raster lock modes */
-#define rwRASTERLOCKWRITE 0x1
-#define rwRASTERLOCKRAW 0x8
-
 /* The render state cache */
 RwGameCubeRenderState lbl_805E3210;
 

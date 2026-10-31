@@ -23,25 +23,6 @@
 #define ERRORINVALIDRASTERDEPTH 0x8000000C
 #define ERRORINVALIDRASTERFORMAT 0x8000000D
 
-/* raster types */
-#define rwRASTERTYPENORMAL 0x0
-#define rwRASTERTYPEZBUFFER 0x1
-#define rwRASTERTYPECAMERA 0x2
-#define rwRASTERTYPECAMERATEXTURE 0x5
-
-/* A raster type RenderWare does not define; the driver's switches name it explicitly */
-#define RASTERTYPEUNDEFINED 0x3
-
-/* raster lock modes and the private flag of a raster locked for writing */
-#define rwRASTERLOCKWRITE 0x1
-#define rwRASTERLOCKREAD 0x2
-#define rwRASTERLOCKRAW 0x8
-#define rwRASTERPIXELLOCKEDWRITE 0x04
-
-/* camera clear modes */
-#define rwCAMERACLEARIMAGE 0x1
-#define rwCAMERACLEARZ 0x2
-
 /* The raster rendering and clearing draw into */
 RwRaster *lbl_805F1668;
 

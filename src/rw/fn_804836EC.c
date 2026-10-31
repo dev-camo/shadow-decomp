@@ -2,9 +2,6 @@
 #include "rw/rwcore.h"
 #include "layout_check.h"
 
-/* chunk IDs */
-#define rwID_FRAMELIST 0xE
-
 /* Reports an error of the core; args is the parenthesized error code and its arguments */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \

@@ -7,40 +7,6 @@
 /* RwEngineInitFlag: free list entries are allocated and freed with the memory functions */
 #define rwENGINEINITNOFREELISTS 0x1
 
-/* RenderWare's core module IDs, which the engine registers its modules' plugins under */
-#define rwID_VECTORMODULE 0x401
-#define rwID_MATRIXMODULE 0x402
-#define rwID_FRAMEMODULE 0x403
-#define rwID_STREAMMODULE 0x404
-#define rwID_CAMERAMODULE 0x405
-#define rwID_IMAGEMODULE 0x406
-#define rwID_RASTERMODULE 0x407
-#define rwID_TEXTUREMODULE 0x408
-#define rwID_IMMEDIATEMODULE 0x40A
-#define rwID_RESOURCESMODULE 0x40B
-#define rwID_COLORMODULE 0x40D
-#define rwID_ERRORMODULE 0x40F
-#define rwID_STRINGMODULE 0x412
-
-/* device system requests (RwCoreDeviceSystemFn) */
-#define rwDEVICESYSTEMOPEN 0x00
-#define rwDEVICESYSTEMCLOSE 0x01
-#define rwDEVICESYSTEMSTART 0x02
-#define rwDEVICESYSTEMSTOP 0x03
-#define rwDEVICESYSTEMREGISTER 0x04
-#define rwDEVICESYSTEMGETMODEINFO 0x06
-#define rwDEVICESYSTEMGETMODE 0x0A
-#define rwDEVICESYSTEMSTANDARDS 0x0B
-#define rwDEVICESYSTEMGETNUMSUBSYSTEMS 0x0D
-#define rwDEVICESYSTEMGETSUBSYSTEMINFO 0x0E
-#define rwDEVICESYSTEMGETCURRENTSUBSYSTEM 0x0F
-#define rwDEVICESYSTEMSETSUBSYSTEM 0x10
-#define rwDEVICESYSTEMFINALIZESTART 0x11
-#define rwDEVICESYSTEMINITIATESTOP 0x12
-
-/* the number of standard functions (rwSTANDARDNUMOFSTANDARD) */
-#define rwSTANDARDNUMOFSTANDARD 0x1D
-
 /* errors (inferred) */
 #define E_RW_BADENGINESTATE 0x80000001 /* the engine is not in the status the call needs */
 #define E_RW_DEVICEERROR 0x18          /* reported with the device request that failed */
@@ -326,7 +292,7 @@ RwBool fn_804864F8(const RwMemoryFunctions *memFuncs, RwUInt32 initFlags, RwUInt
                                            fn_8048D300, NULL);
                     offsets |= fn_80481DC8(&lbl_8056DFB0, 0x60, rwID_PIPEMODULE, fn_8049B0CC,
                                            fn_8049B110, NULL);
-                    offsets |= fn_80481DC8(&lbl_8056DFB0, 4, rwID_STRINGMODULE, fn_80482BC4,
+                    offsets |= fn_80481DC8(&lbl_8056DFB0, 4, rwID_CHUNKGROUPMODULE, fn_80482BC4,
                                            fn_80482C50, NULL);
                     offsets |= fn_8049B140();
                     offsets |= fn_80481DC8(&lbl_8056DFB0, 0x74, rwID_IMMEDIATEMODULE, fn_8049AFF8,

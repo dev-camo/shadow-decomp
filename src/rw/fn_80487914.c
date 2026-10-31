@@ -6,22 +6,8 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* chunk and module IDs */
-#define rwID_IMAGE 0x18
-#define rwID_IMAGEMODULE 0x406
-
-/* image flags */
-#define rwIMAGEALLOCATED 0x1      /* the image owns its pixels */
-#define rwIMAGEGAMMACORRECTED 0x2 /* the pixels are gamma corrected */
-
 /* raster private flags */
 #define rwRASTERGAMMACORRECTED 0x1
-
-/* standard functions */
-#define rwSTANDARDPIXELTORGB 3
-#define rwSTANDARDIMAGEGETRASTER 6
-#define rwSTANDARDRASTERSETIMAGE 7
-#define rwSTANDARDIMAGEFINDRASTERFORMAT 9
 
 /* errors (inferred) */
 #define E_RW_INVIMAGEDEPTH 0x80000008  /* the image depth is not supported */

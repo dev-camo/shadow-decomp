@@ -12,9 +12,6 @@
 /* RpInterpolator flags */
 #define rpINTERPOLATORDIRTY 0x1
 
-/* the instanced data flag of prelit colours with alpha (inferred) */
-#define rpGAMECUBEINSTANCEPRELITALPHA 0x1
-
 /* Creates an atomic all-in-one pipeline: one node that calls the given callbacks */
 RxPipeline *fn_8046335C(RwUInt32 pluginID, RwUInt32 pluginData,
                         RpGameCubeInstanceCallBack instanceCallBack,

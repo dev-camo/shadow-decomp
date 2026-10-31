@@ -5,14 +5,8 @@
 
 /* object type and chunk ID */
 #define rwCAMERA 4
-#define rwID_CAMERA 0x5
 
 #define rwPERSPECTIVE 1
-
-/* standard functions */
-#define rwSTANDARDCAMERABEGINUPDATE 1
-#define rwSTANDARDCAMERAENDUPDATE 10
-#define rwSTANDARDCAMERACLEAR 21
 
 /* errors (inferred) */
 #define E_RW_INVCAMERAPROJ 0x80000003 /* reported with a message */

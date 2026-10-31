@@ -16,6 +16,11 @@ extern "C" {
 
 #define rpID_SKINPLUGIN 0x116
 
+/* the memory hints of the skin plugin's allocations; the second is for memory freed before the
+ * allocating function returns */
+#define rwMEMHINT_SKIN (rwMEMHINTDUR_EVENT | rpID_SKINPLUGIN)
+#define rwMEMHINT_SKINTEMP (rwMEMHINTDUR_FUNCTION | rpID_SKINPLUGIN)
+
 /* The weights of up to four bones on a vertex */
 typedef struct RwMatrixWeights {
     RwReal w0;

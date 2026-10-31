@@ -4,9 +4,6 @@
  * The original file name is unknown. */
 #include "rw/rwcore.h"
 
-/* The memory hint ID of the quantizer's tree nodes (inferred) */
-#define rwID_PALQUANTNODE 0x411
-
 /* The weights of red and blue in color distances. The blue weight is written with eight digits:
  * the compiler rounds the seven-digit 0.1942078f to a float two units lower than the original. */
 #define PALQUANTREDWEIGHT 0.5093697f
@@ -138,7 +135,7 @@ rwPalQuantOctNode *fn_8048DBEC(RwPalQuant *palQuant, rwPalQuantOctNode *node, Rw
     }
     if (node->children[index & 0xF] == NULL) {
         rwPalQuantOctNode *child = (rwPalQuantOctNode *)RwFreeListAlloc(
-            palQuant->nodeFreeList, rwMEMHINTDUR_EVENT | rwID_PALQUANTNODE);
+            palQuant->nodeFreeList, rwMEMHINTDUR_EVENT | rwID_DRIVERMODULE);
 
         node->children[index & 0xF] = child;
         fn_8048DBA4(child->children);
@@ -715,9 +712,9 @@ RwBool fn_8048FED8(RwPalQuant *palQuant) {
     }
 
     palQuant->nodeFreeList =
-        fn_8047FBD8(sizeof(rwPalQuantOctNode), 1024, 4, rwMEMHINTDUR_EVENT | rwID_PALQUANTNODE);
+        fn_8047FBD8(sizeof(rwPalQuantOctNode), 1024, 4, rwMEMHINTDUR_EVENT | rwID_DRIVERMODULE);
     palQuant->root = (rwPalQuantOctNode *)RwFreeListAlloc(palQuant->nodeFreeList,
-                                                          rwMEMHINTDUR_EVENT | rwID_PALQUANTNODE);
+                                                          rwMEMHINTDUR_EVENT | rwID_DRIVERMODULE);
     fn_8048DBA4(palQuant->root->children);
     return TRUE;
 }

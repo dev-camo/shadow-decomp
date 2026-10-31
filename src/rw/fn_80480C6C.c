@@ -3,9 +3,6 @@
 #include "rw/rwcore.h"
 #include "layout_check.h"
 
-/* The stream module's ID (inferred) */
-#define rwID_STREAMMODULE 0x404
-
 /* The size a memory stream's block starts at and grows by at least */
 #define rwSTREAMSTREAMBLOCKSIZE 512
 

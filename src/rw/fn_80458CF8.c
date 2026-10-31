@@ -6,22 +6,15 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* chunk and memory hint IDs */
-#define rwID_GEOMETRY 0xF
-#define rwID_RASTER 0x503
-
 /* errors */
 #define E_RP_GEOMETRYTOOMANYVERTICES 0x6 /* inferred */
-
-/* the plugin ID the world module reports errors with (inferred) */
-#define rwWORLDERRORPLUGIN 2
 
 /* Reports an error: the arguments are the error code and its parameters */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \
         RwError error_;                                                                            \
                                                                                                    \
-        error_.pluginID = rwWORLDERRORPLUGIN;                                                      \
+        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
         error_.errorCode = fn_8047DC28 args;                                                       \
         fn_8047DB84(&error_);                                                                      \
     } while (0)
@@ -243,8 +236,8 @@ RpGeometry *fn_804591C4(RpGeometry *geometry) {
             if (geometry->matList.numMaterials > 0) {
                 size = geometry->matList.numMaterials * sizeof(void *);
                 textures = RwMalloc(size, rwMEMHINTDUR_FUNCTION | rwID_TEXTURE);
-                rasters = RwMalloc(size, rwMEMHINTDUR_FUNCTION | rwID_RASTER);
-                pipelines = RwMalloc(size, rwMEMHINTDUR_FUNCTION | rwID_RASTER);
+                rasters = RwMalloc(size, rwMEMHINTDUR_FUNCTION | rwID_GEOMETRYMODULE);
+                pipelines = RwMalloc(size, rwMEMHINTDUR_FUNCTION | rwID_GEOMETRYMODULE);
 
                 for (i = 0; i < geometry->numTriangles; i++) {
                     raster = NULL;

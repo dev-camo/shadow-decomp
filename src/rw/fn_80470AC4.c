@@ -4,13 +4,6 @@
 #include "rw/rt2d.h"
 #include <string.h>
 
-/* The object IDs of the memory hints (inferred) */
-#define RT2DMEMID 0x190
-#define RT2DFONTMEMID 0x199
-
-/* The chunk ID of a path */
-#define rwID_2DPATH 0x1A1
-
 RwFreeList lbl_805E1908; /* the font free list */
 RwFreeList lbl_805E192C; /* the font dictionary node free list */
 
@@ -271,7 +264,7 @@ Rt2dFont *fn_80471300(Rt2dFont *font) {
     }
     if (found > 0) {
         RwInt16 *extMap =
-            RwMalloc((maxCode - minCode + 1) * sizeof(RwInt16), rwMEMHINTDUR_EVENT | RT2DMEMID);
+            RwMalloc((maxCode - minCode + 1) * sizeof(RwInt16), rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);
 
         if (extMap == NULL) {
             return NULL;
@@ -299,7 +292,7 @@ Rt2dFont *fn_80471300(Rt2dFont *font) {
         if (numChars >= lbl_805E1950.numCharCodes) {                                               \
             RwInt32 newSize = lbl_805E1950.numCharCodes + 32;                                      \
             RwInt32 *newCodes =                                                                    \
-                RwMalloc(newSize * sizeof(RwInt32), rwMEMHINTDUR_EVENT | RT2DMEMID);               \
+                RwMalloc(newSize * sizeof(RwInt32), rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);           \
             RwInt32 j;                                                                             \
                                                                                                    \
             memcpy(newCodes, codes, lbl_805E1950.numCharCodes * sizeof(RwInt32));                  \
@@ -319,7 +312,7 @@ Rt2dFont *fn_80471300(Rt2dFont *font) {
 #define GROWCHARRECTS(font)                                                                        \
     do {                                                                                           \
         if (numChars >= maxChars) {                                                                \
-            fn_8047DEA0((font)->charRects, 32, rwMEMHINTDUR_EVENT | RT2DMEMID);                    \
+            fn_8047DEA0((font)->charRects, 32, rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);                \
             charRects = fn_8047DFAC((font)->charRects);                                            \
             maxChars += 32;                                                                        \
             memset(&charRects[numChars], 0, 32 * sizeof(rt2dCharRect));                            \
@@ -349,7 +342,7 @@ Rt2dFont *fn_8047149C(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
     }
     codes = lbl_805E1950.charCodes;
     map = font->map;
-    fn_8047DEA0(font->charRects, maxChars, rwMEMHINTDUR_EVENT | RT2DMEMID);
+    fn_8047DEA0(font->charRects, maxChars, rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);
     charRects = fn_8047DFAC(font->charRects);
     memset(charRects, 0, maxChars * sizeof(rt2dCharRect));
 
@@ -519,7 +512,7 @@ Rt2dFont *fn_80471A54(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
     codes = lbl_805E1950.charCodes;
     map = font->map;
     p = NULL;
-    fn_8047DEA0(font->charRects, maxChars, rwMEMHINTDUR_EVENT | RT2DMEMID);
+    fn_8047DEA0(font->charRects, maxChars, rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);
     charRects = fn_8047DFAC(font->charRects);
     memset(charRects, 0, maxChars * sizeof(rt2dCharRect));
     codeOffset = 0;
@@ -728,7 +721,7 @@ Rt2dFont *fn_804724AC(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
     }
     codes = lbl_805E1950.charCodes;
     map = font->map;
-    fn_8047DEA0(font->charRects, maxChars, rwMEMHINTDUR_EVENT | RT2DMEMID);
+    fn_8047DEA0(font->charRects, maxChars, rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);
     charRects = fn_8047DFAC(font->charRects);
     memset(charRects, 0, maxChars * sizeof(rt2dCharRect));
 
@@ -775,7 +768,7 @@ Rt2dFont *fn_804724AC(Rt2dFont *font, RwChar *textureName, void *fp, RwChar *lin
                 rectOffset++;
                 charRect->width = x1;
                 if (numChars >= maxChars) {
-                    fn_8047DEA0(font->charRects, 32, rwMEMHINTDUR_EVENT | RT2DMEMID);
+                    fn_8047DEA0(font->charRects, 32, rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);
                     charRects = fn_8047DFAC(font->charRects);
                     maxChars += 32;
                     memset((RwUInt8 *)charRects + rectBytes, 0, 32 * sizeof(rt2dCharRect));
@@ -856,7 +849,7 @@ Rt2dFont *fn_80472A60(Rt2dFont *font, RwStream *stream) {
 
 /* Creates an empty font of texture characters */
 static inline Rt2dFont *FontCreate(void) {
-    Rt2dFont *font = RwFreeListAlloc(lbl_805E1950.fontFreeList, rwMEMHINTDUR_EVENT | RT2DFONTMEMID);
+    Rt2dFont *font = RwFreeListAlloc(lbl_805E1950.fontFreeList, rwMEMHINTDUR_EVENT | rwID_2DFONT);
     RwInt32 i;
 
     if (font == NULL) {
@@ -875,7 +868,7 @@ static inline Rt2dFont *FontCreate(void) {
     font->numChars = 0;
     font->extMapOffset = 0;
     font->extMap = NULL;
-    font->charRects = fn_8047DC90(sizeof(rt2dCharRect), rwMEMHINTDUR_EVENT | RT2DMEMID);
+    font->charRects = fn_8047DC90(sizeof(rt2dCharRect), rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);
     font->showCB = fn_80470C54;
     font->field_0x13C = NULL;
     font->field_0x140 = NULL;
@@ -962,7 +955,8 @@ Rt2dFont *fn_80472C14(RwStream *stream) {
         return NULL;
     }
     if (font->extMapSize > 0) {
-        font->extMap = RwMalloc(font->extMapSize * sizeof(RwInt16), rwMEMHINTDUR_EVENT | RT2DMEMID);
+        font->extMap =
+            RwMalloc(font->extMapSize * sizeof(RwInt16), rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);
         memset(font->extMap, 0, font->extMapSize * sizeof(RwInt16));
         if (font->extMap == NULL) {
             fn_804736CC(font);
@@ -975,7 +969,7 @@ Rt2dFont *fn_80472C14(RwStream *stream) {
     if (fn_8047D684(stream, font->map, sizeof(font->map)) == NULL) {
         return NULL;
     }
-    fn_8047DEA0(font->charRects, font->numChars, rwMEMHINTDUR_EVENT | RT2DMEMID);
+    fn_8047DEA0(font->charRects, font->numChars, rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);
     memset(fn_8047DFAC(font->charRects), 0, font->numChars * sizeof(rt2dCharRect));
 
     if (font->isOutline) {
@@ -1043,18 +1037,18 @@ RwBool fn_80473260(void) {
     RwInt32 i;
 
     lbl_805E1950.fontFreeList = fn_8047FC04(sizeof(Rt2dFont), lbl_805EDE28, 4, lbl_805EDE2C,
-                                            &lbl_805E1908, rwMEMHINTDUR_GLOBAL | RT2DFONTMEMID);
+                                            &lbl_805E1908, rwMEMHINTDUR_GLOBAL | rwID_2DFONT);
     if (lbl_805E1950.fontFreeList == NULL) {
         return FALSE;
     }
     lbl_805E1950.fontDictNodeFreeList =
         fn_8047FC04(sizeof(rt2dFontDictNode), lbl_805EDE30, 4, lbl_805EDE34, &lbl_805E192C,
-                    rwMEMHINTDUR_GLOBAL | RT2DMEMID);
+                    rwMEMHINTDUR_GLOBAL | rwID_2DPLUGIN);
     if (lbl_805E1950.fontDictNodeFreeList == NULL) {
         return FALSE;
     }
     lbl_805E1950.fontPath =
-        RwMalloc(0x51, rwMEMHINTDUR_GLOBAL | rwMEMHINTFLAG_RESIZABLE | RT2DMEMID);
+        RwMalloc(0x51, rwMEMHINTDUR_GLOBAL | rwMEMHINTFLAG_RESIZABLE | rwID_2DPLUGIN);
     if (lbl_805E1950.fontPath == NULL) {
         return FALSE;
     }
@@ -1090,8 +1084,9 @@ const RwChar *fn_80473460(const RwChar *path) {
         RwUInt32 size = rwstrlen(path) + 1;
 
         if (size > lbl_805E1950.fontPathSize) {
-            RwChar *fontPath = RwRealloc(lbl_805E1950.fontPath, size,
-                                         rwMEMHINTDUR_GLOBAL | rwMEMHINTFLAG_RESIZABLE | RT2DMEMID);
+            RwChar *fontPath =
+                RwRealloc(lbl_805E1950.fontPath, size,
+                          rwMEMHINTDUR_GLOBAL | rwMEMHINTFLAG_RESIZABLE | rwID_2DPLUGIN);
 
             if (fontPath == NULL) {
                 return NULL;
@@ -1188,7 +1183,7 @@ Rt2dFont *fn_804737E4(const RwChar *name) {
         return NULL;
     }
     fileName = RwMalloc(rwstrlen(name) + rwstrlen(lbl_805E1950.fontPath) + 5,
-                        rwMEMHINTDUR_FUNCTION | RT2DMEMID);
+                        rwMEMHINTDUR_FUNCTION | rwID_2DPLUGIN);
     if (fileName != NULL) {
         Rt2dFont *result;
         RwInt32 length = 0;

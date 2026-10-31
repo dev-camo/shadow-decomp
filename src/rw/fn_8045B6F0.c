@@ -2,19 +2,12 @@
  * and reading one from a stream. The original file name is unknown. */
 #include "rw/rpworld.h"
 
-/* chunk IDs */
-#define rwID_MATERIAL 0x7
-#define rwID_MATERIALMODULE 0x501 /* the material module, which owns the stream read index buffer */
-
-/* the plugin ID the world module reports errors with (inferred) */
-#define rwWORLDERRORPLUGIN 2
-
 /* Reports an error: the arguments are the error code and its parameters */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \
         RwError error_;                                                                            \
                                                                                                    \
-        error_.pluginID = rwWORLDERRORPLUGIN;                                                      \
+        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
         error_.errorCode = fn_8047DC28 args;                                                       \
         fn_8047DB84(&error_);                                                                      \
     } while (0)

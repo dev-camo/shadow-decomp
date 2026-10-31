@@ -27,36 +27,14 @@
 #define ERRORCANNOTUNLOCK 0x80000011
 
 /* The memory hint of raster memory (inferred) */
-#define rwMEMHINT_RASTER 0x30411
+#define rwMEMHINT_RASTER (rwMEMHINTDUR_EVENT | rwID_DRIVERMODULE)
 
-/* raster types */
-#define rwRASTERTYPENORMAL 0x0
-#define rwRASTERTYPEZBUFFER 0x1
-#define rwRASTERTYPECAMERA 0x2
-#define rwRASTERTYPECAMERATEXTURE 0x5
-#define rwRASTERTYPEMASK 0x7
-
-/* A raster type RenderWare does not define; the driver's switches reject it explicitly */
-#define RASTERTYPEUNDEFINED 0x3
 #define rwRASTERFLAGSMASK 0xF8
 
 /* raster formats */
 #define rwRASTERFORMAT16 0x0700
 #define rwRASTERFORMAT24 0x0800
 #define rwRASTERFORMAT32 0x0900
-
-/* raster private flags */
-#define rwRASTERPIXELLOCKEDREAD 0x02
-#define rwRASTERPIXELLOCKEDWRITE 0x04
-#define rwRASTERPALETTELOCKEDREAD 0x08
-#define rwRASTERPALETTELOCKEDWRITE 0x10
-#define rwRASTERPIXELLOCKEDRAW 0x20
-#define rwRASTERPIXELLOCKED (rwRASTERPIXELLOCKEDREAD | rwRASTERPIXELLOCKEDWRITE)
-
-/* raster lock modes */
-#define rwRASTERLOCKWRITE 0x1
-#define rwRASTERLOCKREAD 0x2
-#define rwRASTERLOCKRAW 0x8
 
 /* The next draw sync token (declared volatile in rpworld.h) */
 volatile RwUInt16 lbl_805EDF40 = 1;

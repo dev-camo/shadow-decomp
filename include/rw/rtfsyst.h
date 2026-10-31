@@ -16,6 +16,9 @@ extern "C" {
 typedef struct RtFile RtFile;
 typedef struct RtFileSystem RtFileSystem;
 
+/* The toolkit's plugin ID, for its memory hints (inferred) */
+#define rwID_FILESYSTEM 0x1BE
+
 /* The toolkit's results (inferred) */
 #define RTFS_ERROR_NOERROR 1
 #define RTFS_ERROR_TOOMANYFS 2       /* the manager has no room for another file system */

@@ -47,16 +47,47 @@ typedef char RwChar;
 
 /* chunk IDs */
 #define rwID_STRUCT 0x1
+#define rwID_STRING 0x2
+#define rwID_EXTENSION 0x3
+#define rwID_CAMERA 0x5
+#define rwID_TEXTURE 0x6
+#define rwID_MATERIAL 0x7
 #define rwID_MATLIST 0x8
 #define rwID_ATOMICSECT 0x9
 #define rwID_PLANESECT 0xA
 #define rwID_WORLD 0xB
-#define rwID_EXTENSION 0x3
-#define rwID_TEXTURE 0x6
+#define rwID_MATRIX 0xD
+#define rwID_FRAMELIST 0xE
+#define rwID_GEOMETRY 0xF
+#define rwID_CLUMP 0x10
+#define rwID_LIGHT 0x12
+#define rwID_UNICODESTRING 0x13
+#define rwID_ATOMIC 0x14
+#define rwID_TEXTURENATIVE 0x15
 #define rwID_TEXDICTIONARY 0x16
-#define rwID_COREPLUGIN 0x1   /* the core's plugin ID, also used for its errors */
-#define rwCHUNKHEADERSIZE 12  /* the bytes of a chunk header in a stream */
-#define rwID_PIPEMODULE 0x409 /* the pipeline module's ID */
+#define rwID_IMAGE 0x18
+#define rwID_GEOMETRYLIST 0x1A
+#define rwID_RIGHTTORENDER 0x1F
+#define rwID_COREPLUGIN 0x1  /* the core's plugin ID, also used for its errors */
+#define rwCHUNKHEADERSIZE 12 /* the bytes of a chunk header in a stream */
+
+/* the core's module IDs, which the engine registers its modules' plugins under (inferred) */
+#define rwID_VECTORMODULE 0x401
+#define rwID_MATRIXMODULE 0x402
+#define rwID_FRAMEMODULE 0x403
+#define rwID_STREAMMODULE 0x404
+#define rwID_CAMERAMODULE 0x405
+#define rwID_IMAGEMODULE 0x406
+#define rwID_RASTERMODULE 0x407
+#define rwID_TEXTUREMODULE 0x408
+#define rwID_PIPEMODULE 0x409
+#define rwID_IMMEDIATEMODULE 0x40A
+#define rwID_RESOURCESMODULE 0x40B
+#define rwID_DEVICEMODULE 0x40C /* the raster and texture plugin data are registered with it */
+#define rwID_COLORMODULE 0x40D
+#define rwID_ERRORMODULE 0x40F
+#define rwID_DRIVERMODULE 0x411 /* raster memory, the frame buffers and palette quantizer nodes */
+#define rwID_CHUNKGROUPMODULE 0x412 /* only creates and destroys a free list of 33-byte entries */
 
 /* memory hints: how long an allocation lives, whether it is resized, and the chunk ID of what it
  * is for in the low bits */
@@ -204,6 +235,32 @@ typedef struct RwCamera RwCamera;
 /* the raster flag of rasters created without their own pixels */
 #define rwRASTERDONTALLOCATE 0x80
 
+/* raster types: the low bits of a raster's flags */
+#define rwRASTERTYPENORMAL 0x0
+#define rwRASTERTYPEZBUFFER 0x1
+#define rwRASTERTYPECAMERA 0x2
+#define rwRASTERTYPETEXTURE 0x4
+#define rwRASTERTYPECAMERATEXTURE 0x5
+#define rwRASTERTYPEMASK 0x7
+
+/* A raster type RenderWare does not define; the driver's switches name it explicitly */
+#define RASTERTYPEUNDEFINED 0x3
+
+/* raster private flags: which parts of a raster are locked */
+#define rwRASTERPIXELLOCKEDREAD 0x02
+#define rwRASTERPIXELLOCKEDWRITE 0x04
+#define rwRASTERPALETTELOCKEDREAD 0x08
+#define rwRASTERPALETTELOCKEDWRITE 0x10
+#define rwRASTERPIXELLOCKEDRAW 0x20
+#define rwRASTERPIXELLOCKED (rwRASTERPIXELLOCKEDREAD | rwRASTERPIXELLOCKEDWRITE)
+#define rwRASTERPALETTELOCKED (rwRASTERPALETTELOCKEDREAD | rwRASTERPALETTELOCKEDWRITE)
+
+/* raster lock modes */
+#define rwRASTERLOCKWRITE 0x1
+#define rwRASTERLOCKREAD 0x2
+#define rwRASTERLOCKNOFETCH 0x4
+#define rwRASTERLOCKRAW 0x8
+
 #define RwRasterGetFormat(raster) (((raster)->cFormat & (rwRASTERFORMATMASK >> 8)) << 8)
 
 typedef struct RwIm2DVertex RwIm2DVertex;
@@ -280,6 +337,59 @@ CHECK_SIZEOF(RwLinkList, 0x8);
 /* A device's standard function (RwStandard): out, inOut and numIn depend on the function */
 typedef RwBool (*RwStandardFunc)(void *out, void *inOut, RwInt32 numIn);
 
+/* device system requests (RwCoreDeviceSystemFn) */
+#define rwDEVICESYSTEMOPEN 0x00
+#define rwDEVICESYSTEMCLOSE 0x01
+#define rwDEVICESYSTEMSTART 0x02
+#define rwDEVICESYSTEMSTOP 0x03
+#define rwDEVICESYSTEMREGISTER 0x04
+#define rwDEVICESYSTEMGETNUMMODES 0x05
+#define rwDEVICESYSTEMGETMODEINFO 0x06
+#define rwDEVICESYSTEMUSEMODE 0x07
+#define rwDEVICESYSTEMFOCUS 0x08
+#define rwDEVICESYSTEMINITPIPELINE 0x09
+#define rwDEVICESYSTEMGETMODE 0x0A
+#define rwDEVICESYSTEMSTANDARDS 0x0B
+#define rwDEVICESYSTEMGETNUMSUBSYSTEMS 0x0D
+#define rwDEVICESYSTEMGETSUBSYSTEMINFO 0x0E
+#define rwDEVICESYSTEMGETCURRENTSUBSYSTEM 0x0F
+#define rwDEVICESYSTEMSETSUBSYSTEM 0x10
+#define rwDEVICESYSTEMFINALIZESTART 0x11
+#define rwDEVICESYSTEMINITIATESTOP 0x12
+#define rwDEVICESYSTEMGETMAXTEXTURESIZE 0x13
+#define rwDEVICESYSTEMGETID 0x16
+
+/* the device's standard functions: indices into RwGlobals::stdFunc */
+#define rwSTANDARDCAMERABEGINUPDATE 1
+#define rwSTANDARDRGBTOPIXEL 2
+#define rwSTANDARDPIXELTORGB 3
+#define rwSTANDARDRASTERCREATE 4
+#define rwSTANDARDRASTERDESTROY 5
+#define rwSTANDARDIMAGEGETRASTER 6
+#define rwSTANDARDRASTERSETIMAGE 7
+#define rwSTANDARDTEXTURESETRASTER 8
+#define rwSTANDARDIMAGEFINDRASTERFORMAT 9
+#define rwSTANDARDCAMERAENDUPDATE 10
+#define rwSTANDARDSETRASTERCONTEXT 11
+#define rwSTANDARDRASTERSUBRASTER 12
+#define rwSTANDARDRASTERCLEARRECT 13
+#define rwSTANDARDRASTERCLEAR 14
+#define rwSTANDARDRASTERLOCK 15
+#define rwSTANDARDRASTERUNLOCK 16
+#define rwSTANDARDRASTERRENDER 17
+#define rwSTANDARDRASTERRENDERSCALED 18
+#define rwSTANDARDRASTERRENDERFAST 19
+#define rwSTANDARDRASTERSHOWRASTER 20
+#define rwSTANDARDCAMERACLEAR 21
+#define rwSTANDARDHINTRENDERF2B 22 /* hints the world sector render order */
+#define rwSTANDARDRASTERLOCKPALETTE 23
+#define rwSTANDARDRASTERUNLOCKPALETTE 24
+#define rwSTANDARDNATIVETEXTUREGETSIZE 25
+#define rwSTANDARDNATIVETEXTUREREAD 26
+#define rwSTANDARDNATIVETEXTUREWRITE 27
+#define rwSTANDARDRASTERGETMIPLEVELS 28
+#define rwSTANDARDNUMOFSTANDARD 29 /* the number of standard functions */
+
 /* The engine globals; only the current camera and world, the frame counters, the open device's
  * near screen depth, render state and 2D indexed primitive functions, the standard functions,
  * the dirty frames, the string, memory and free list functions and the engine status are
@@ -291,7 +401,7 @@ typedef struct RwGlobals {
     /* 0x00A */ RwUInt16 lightFrame; /* lights are created one frame behind it */
     /* 0x00C */ RwUInt8 field_0xC[0x4];
     /* 0x010 */ RwDevice dOpenDevice;
-    /* 0x048 */ RwStandardFunc stdFunc[0x1D];
+    /* 0x048 */ RwStandardFunc stdFunc[rwSTANDARDNUMOFSTANDARD];
     /* 0x0BC */ RwLinkList dirtyFrameList; /* the roots of hierarchies that need synchronizing */
     /* 0x0C4 */ RwStringFunctions stringFuncs;
     /* 0x108 */ RwMemoryFunctions memoryFuncs;
@@ -553,6 +663,10 @@ typedef struct RwObjectHasFrame {
 CHECK_SIZEOF(RwObjectHasFrame, 0x14);
 typedef RwCamera *(*RwCameraBeginUpdateFunc)(RwCamera *camera);
 typedef RwCamera *(*RwCameraEndUpdateFunc)(RwCamera *camera);
+
+/* camera clear modes */
+#define rwCAMERACLEARIMAGE 0x1
+#define rwCAMERACLEARZ 0x2
 
 /* A camera; only the members in use are mapped */
 struct RwCamera {
@@ -1361,8 +1475,8 @@ void *fn_8048D4DC(void *instance, RwInt32 offset, RwInt32 size); /* opens the te
 void *fn_8048D300(void *instance, RwInt32 offset, RwInt32 size); /* closes the texture module */
 void *fn_8049B0CC(void *instance, RwInt32 offset, RwInt32 size); /* opens the pipeline module */
 void *fn_8049B110(void *instance, RwInt32 offset, RwInt32 size); /* closes the pipeline module */
-void *fn_80482BC4(void *instance, RwInt32 offset, RwInt32 size); /* opens the string module */
-void *fn_80482C50(void *instance, RwInt32 offset, RwInt32 size); /* closes the string module */
+void *fn_80482BC4(void *instance, RwInt32 offset, RwInt32 size); /* opens the chunk group module */
+void *fn_80482C50(void *instance, RwInt32 offset, RwInt32 size); /* closes the chunk group module */
 void *fn_8049AFF8(void *instance, RwInt32 offset, RwInt32 size); /* opens the immediate module */
 void *fn_8049AF94(void *instance, RwInt32 offset, RwInt32 size); /* closes the immediate module */
 void *fn_8048053C(void *instance, RwInt32 offset, RwInt32 size); /* opens the resources module */
@@ -1473,6 +1587,10 @@ RwTexDictionary *fn_80483FBC(RwStream *stream); /* texture dictionary stream rea
 RwBool fn_80485C3C(RwDevice *device, RwInt32 request, void *out, void *inOut,
                    RwInt32 numIn); /* a device system request (inferred) */
 
+/* RwImage flags */
+#define rwIMAGEALLOCATED 0x1      /* the image owns its pixels */
+#define rwIMAGEGAMMACORRECTED 0x2 /* the pixels are gamma corrected */
+
 /* An image (inferred) */
 typedef struct RwImage {
     /* 0x00 */ RwInt32 flags;
@@ -1559,7 +1677,6 @@ void fn_804903F8(RwPalQuant *palQuant);                 /* terminate */
 RwBool fn_8048D2C0(RwRaster *raster, RwImage *image); /* generates the mip levels */
 
 /* rasters (inferred) */
-#define rwRASTERTYPETEXTURE 0x4
 RwRaster *fn_80489E74(RwInt32 width, RwInt32 height, RwInt32 depth, RwInt32 flags); /* create */
 RwBool fn_80489BDC(RwRaster *raster);                                               /* destroy */
 RwRaster *fn_80489B2C(RwRaster *raster, RwInt16 *xOffset, RwInt16 *yOffset);        /* its offset */

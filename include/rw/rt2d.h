@@ -11,6 +11,14 @@
 extern "C" {
 #endif
 
+/* The toolkit's IDs. The path's is also its stream chunk ID; the others are only used in memory
+ * hints (inferred) */
+#define rwID_2DPLUGIN 0x190 /* the toolkit's general allocations */
+#define rwID_2DFONT 0x199
+#define rwID_2DPATH 0x1A1
+#define rwID_2DBRUSH 0x1A2
+#define rwID_2DOBJECT 0x1A3
+
 /* The colour and texture coordinates at one edge of a brush */
 typedef struct rt2dShadeParameters {
     /* 0x00 */ RwRGBAReal col;

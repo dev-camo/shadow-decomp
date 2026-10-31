@@ -7,31 +7,15 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* engine plugin IDs of the world modules (inferred) */
-#define rwID_MATERIALMODULE 0x501
-#define rwID_MESHMODULE 0x502
-#define rwID_GEOMETRYMODULE 0x503
-#define rwID_CLUMPMODULE 0x504
-#define rwID_LIGHTMODULE 0x505
-#define rwID_WORLDMODULE 0x507
-#define rwID_SECTORMODULE 0x50A
-#define rwID_NATIVEDATAPLUGIN 0x50B
-
-/* the plugin ID the world module reports errors with (inferred) */
-#define rwWORLDERRORPLUGIN 2
-
 /* Reports an error: the arguments are the error code and its parameters */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \
         RwError error_;                                                                            \
                                                                                                    \
-        error_.pluginID = rwWORLDERRORPLUGIN;                                                      \
+        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
         error_.errorCode = fn_8047DC28 args;                                                       \
         fn_8047DB84(&error_);                                                                      \
     } while (0)
-
-/* the deepest sector tree that the tree walks handle */
-#define rpWORLDMAXBSPDEPTH 64
 
 /* A coordinate of a vector, by its byte offset (a plane sector's type) */
 #define GETCOORD(vector, offset) (*(RwReal *)((RwUInt8 *)&(vector) + (offset)))
@@ -431,7 +415,7 @@ RwBool fn_8046080C(void) {
     result |= fn_80485D78(sizeof(void *), rwID_LIGHTMODULE, fn_8045AE98, fn_8045AE20);
     result |= fn_80485D78(0, rwID_SECTORMODULE, fn_8045F2A0, fn_8045F2B4);
     result |= fn_80485D78(sizeof(WorldGlobals), rwID_WORLDMODULE, fn_8045FA50, fn_8045F9E8);
-    result |= fn_80485D78(0, rwID_NATIVEDATAPLUGIN, fn_80455CF8, fn_80455CE4);
+    result |= fn_80485D78(0, rwID_BINWORLDMODULE, fn_80455CF8, fn_80455CE4);
     if (result < 0) {
         return FALSE;
     }

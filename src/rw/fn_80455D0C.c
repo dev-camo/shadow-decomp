@@ -6,27 +6,15 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* chunk IDs */
-#define rwID_CAMERA 0x5
-#define rwID_FRAMELIST 0xE
-#define rwID_GEOMETRY 0xF
-#define rwID_CLUMP 0x10
-#define rwID_LIGHT 0x12
-#define rwID_ATOMIC 0x14
-#define rwID_GEOMETRYLIST 0x1A
-
 /* errors */
 #define E_RW_ATOMICNOFRAME 0x5 /* cloning an atomic without a frame (inferred) */
-
-/* the plugin ID the world module reports errors with (inferred) */
-#define rwWORLDERRORPLUGIN 2
 
 /* Reports an error: the arguments are the error code and its parameters */
 #define RWERROR(args)                                                                              \
     do {                                                                                           \
         RwError error_;                                                                            \
                                                                                                    \
-        error_.pluginID = rwWORLDERRORPLUGIN;                                                      \
+        error_.pluginID = rwID_WORLDPLUGIN;                                                        \
         error_.errorCode = fn_8047DC28 args;                                                       \
         fn_8047DB84(&error_);                                                                      \
     } while (0)

@@ -12,6 +12,27 @@
 extern "C" {
 #endif
 
+/* The world's module IDs, which its modules are registered under, and its plugin IDs (inferred) */
+#define rwID_MATERIALMODULE 0x501 /* owns the stream read index buffer */
+#define rwID_MESHMODULE 0x502
+#define rwID_GEOMETRYMODULE 0x503
+#define rwID_CLUMPMODULE 0x504
+#define rwID_LIGHTMODULE 0x505
+#define rwID_WORLDMODULE 0x507
+#define rwID_WORLDOBJMODULE 0x509
+#define rwID_SECTORMODULE 0x50A
+#define rwID_BINWORLDMODULE 0x50B  /* the world stream unit's module: counts its engine instances */
+#define rwID_WORLDPIPEMODULE 0x50D /* the memory hint ID of instanced data and vertex formats */
+#define rwID_BINMESHPLUGIN 0x50E
+#define rwID_NATIVEDATAPLUGIN 0x510
+#define rwID_VERTEXFMTPLUGIN 0x511 /* the vertex format geometry and world plugin */
+
+/* the world plugin's ID, also used for its errors and its default pipelines (inferred) */
+#define rwID_WORLDPLUGIN 2
+
+/* the deepest sector tree that the tree walks handle */
+#define rpWORLDMAXBSPDEPTH 64
+
 #define rpGEOMETRY 8 /* RwObject type of a geometry */
 
 typedef struct RpGeometry RpGeometry;
@@ -301,7 +322,7 @@ RwBool fn_8045FFA0(RpWorld *world);     /* destroy */
 /* finishes a world read from a stream; the world, or NULL on failure */
 RpWorld *fn_8045FDB0(RpWorld *world);
 RpWorld *fn_8045FBA4(RpWorld *world);
-RpWorld *fn_80460138(RwBBox *boundingBox); /* creates an empty world */
+RpWorld *fn_80460138(RwBBox *boundingBox);       /* creates an empty world */
 void fn_8045FCFC(RpWorld *world, RwUInt32 size); /* takes the world's allocation size */
 /* sets the world sector render callback, or the default one for NULL */
 RpWorld *fn_80460120(RpWorld *world, RpWorldSectorCallBackRender callBack);
@@ -835,6 +856,9 @@ struct RpGameCubeInstanceData {
 };
 CHECK_SIZEOF(struct RpGameCubeInstanceData, 0x14);
 
+/* RpGameCubeInstanceData flags: the instanced prelit colours have alpha (inferred) */
+#define rpGAMECUBEINSTANCEPRELITALPHA 0x1
+
 /* The display list records of the meshes, which follow the instance's vertex descriptors. Written
  * as the second descriptor's address plus the remaining descriptors, which is how the original
  * computes it. */
@@ -1039,9 +1063,6 @@ typedef struct RwGameCubeRasterExt {
     /* 0x33 */ RwUInt8 lockedLevel;
 } RwGameCubeRasterExt;
 CHECK_SIZEOF(RwGameCubeRasterExt, 0x34);
-
-/* The plugin ID the raster and texture plugin data are registered with */
-#define rwID_DEVICEMODULE 0x40C
 
 /* The raster plugin data flag of pixel formats with alpha */
 #define rwGAMECUBERASTERHASALPHA 0x1

@@ -5,8 +5,6 @@
 #include "rw/rpskin.h"
 #include <string.h>
 
-#define rwMEMHINT_SKIN (rwMEMHINTDUR_EVENT | rpID_SKINPLUGIN)
-
 #define rpID_TOONPLUGIN 0x12E /* (inferred) */
 
 SkinGlobals lbl_8056D708 = {0};
