@@ -79,7 +79,7 @@ Sint32 ADXB_DecodeHeaderSpsd(ADXB adxb, void *buf, Sint32 bsize) {
     adxb->pcmbuf_chofst = adxb->x44;
     adxb->x8c = 0;
     adxb->x88 = 0;
-    adxb->x98 = 2;
+    adxb->x98 = ADXB_TYPE_SPSD;
     return hdrlen;
 }
 

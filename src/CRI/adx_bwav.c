@@ -197,7 +197,7 @@ Sint32 ADXB_DecodeHeaderWav(ADXB adxb, void *buf, Sint32 bsize) {
     adxb->pcmbuf_chofst = adxb->x44;
     adxb->x8c = 0;
     adxb->x88 = 0;
-    adxb->x98 = 1;
+    adxb->x98 = ADXB_TYPE_WAV;
     return hdrlen;
 }
 
@@ -234,8 +234,7 @@ Sint32 ADX_DecodeInfoWav(Uint8 *buf, Sint32 bsize, Sint16 *hdrlen, Sint8 *x0c, S
     if (i == bsize) {
         return -1;
     }
-    /* integer sum with the constant first: the +4 stays the load displacement */
-    dsize = SWAP32(*(Uint32 *)(4 + i + (Sint32)buf));
+    dsize = SWAP32(*(Uint32 *)&buf[i + 4]);
     *hdrlen = i + 8;
     *x0c = -1;
     *sfreq = SWAP32(*(Uint32 *)(p + 0xC));

@@ -165,7 +165,7 @@ Sint32 ADXB_DecodeHeaderAiff(ADXB adxb, void *buf, Sint32 bsize) {
     adxb->pcmbuf_chofst = adxb->x44;
     adxb->x8c = 0;
     adxb->x88 = 0;
-    adxb->x98 = 3;
+    adxb->x98 = ADXB_TYPE_AIFF;
     if (adxb->bps == 8) {
         adxb->x9c = 1;
     } else {
@@ -182,8 +182,6 @@ Sint32 ADXB_CheckAiff(Uint8 *buf) {
     return 0;
 }
 
-/* The `& 0xFF` / `& 0xFFFF` masks on the *nch and *bps reads and the (Uint16) casts on SWAP16's
- * arguments are required: without them MWCC generates different code. */
 Uint8 *AIFF_GetInfo(Uint8 *buf, Sint32 *sfreq, Sint32 *nch, Sint32 *bps, Sint32 *nsmpl) {
     Uint8 *p;
     Uint8 *end;
@@ -226,14 +224,16 @@ Uint8 *AIFF_GetInfo(Uint8 *buf, Sint32 *sfreq, Sint32 *nch, Sint32 *bps, Sint32 
                 return 0;
             }
             comm_flg = 1;
-            *nch = (p[0] & 0xFF) | ((p[1] & 0xFFFF) << 8);
+            *nch = LE16(p);
             *nch = SWAP16(*nch);
             *nsmpl = LE32(p + 2);
             *nsmpl = SWAP32(*nsmpl);
-            *bps = (p[6] & 0xFF) | ((p[7] & 0xFFFF) << 8);
+            *bps = LE16(p + 6);
             *bps = SWAP16(*bps);
-            exp = SWAP16((Uint16)(p[8] | (p[9] << 8)));
-            mant = SWAP16((Uint16)(p[10] | (p[11] << 8)));
+            exp = LE16(p + 8);
+            exp = SWAP16(exp);
+            mant = LE16(p + 10);
+            mant = SWAP16(mant);
             p += 0x12;
             *sfreq = (Sint32)mant >> (0x400E - exp);
             if (ssnd_flg != 0) {
