@@ -121,9 +121,10 @@ void AXRNA_SetSrcType(AXRNA rna, Sint32 type) {
     rna->adjsfreq_state = 1;
 }
 
-/* Order-only stand-in for a stripped function (never called, discarded by the linker): referencing
- * the statics and the "OFF" / "ON " literals here puts them in the original .bss and literal order.
- * The body is not the original's. */
+/* Matching workaround: order-only stand-in for a stripped function (never called, discarded by
+ * the linker): referencing the statics and the "OFF" / "ON " literals here puts them in the
+ * original .bss and literal order. The body is not the original's. Revisit when the stripped
+ * body is found. */
 static void axrna_OrderStandIn(void) {
     const Char8 *sw_str[2] = {"OFF", "ON "};
 

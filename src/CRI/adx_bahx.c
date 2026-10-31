@@ -11,10 +11,10 @@ void (*ahxsetdecsmplfunc)(void *ahx, Sint32 nsmpl);
 void (*ahxtermsupplyfunc)(void *ahx);
 void (*ahxexecfunc)(ADXB adxb);
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. MWCC lays out
- * .bss by first reference, so this never-called function refers to the four hook pointers, in
- * storage order, before the forwarding functions do. Storing the addresses keeps the references.
- */
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game;
+ * its body is unknown. MWCC lays out .bss by first reference, so this never-called function
+ * refers to the four hook pointers, in storage order, before the forwarding functions do.
+ * Storing the addresses keeps the references. Revisit when the stripped body is found. */
 static void adxbahx_BssOrder(void **out) {
     out[0] = &ahxsetsjifunc;
     out[1] = &ahxsetdecsmplfunc;

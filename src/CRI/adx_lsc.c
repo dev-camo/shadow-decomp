@@ -59,11 +59,11 @@ void ADXT_SetSeamlessLp(ADXT adxt, Sint32 flg) {
     ADXCRS_Leave();
 }
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. The messages of
- * StartSeamless and EntryFname sit after GetNumFiles' in .rodata; this never-called function
- * refers to them there, followed by SetSeamlessLp's message, in storage order. Storing the
- * addresses keeps the references.
- */
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game;
+ * its body is unknown. The messages of StartSeamless and EntryFname sit after GetNumFiles' in
+ * .rodata; this never-called function refers to them there, followed by SetSeamlessLp's
+ * message, in storage order. Storing the addresses keeps the references. Revisit when the
+ * stripped body is found. */
 static void adxlsc_RodataOrder(const Char8 **out) {
     out[0] = "E02080850 adxt_StartSeamless: parameter error";
     out[1] = "E02080848 adxt_EntryFnameRange: parameter error";

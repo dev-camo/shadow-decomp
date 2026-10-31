@@ -118,7 +118,7 @@ static inline void adxf_CloseSjStm(ADXF adxf) {
     }
 }
 
-/* Stand-in for a stripped function (see above). */
+/* Matching workaround: as above (order-only stand-in for a stripped function). */
 static void adxf_RodataOrderReqRdSct(const Char8 **out) {
     out[0] = "E0041201:state is reading(ADXF_SetReqRdSct)";
 }
@@ -182,7 +182,7 @@ static inline Sint32 adxf_GetStat(ADXF adxf) {
     return adxf->stat;
 }
 
-/* Stand-in for five stripped functions (see above). */
+/* Matching workaround: as above (order-only stand-in for five stripped functions). */
 static void adxf_RodataOrderGetters(const Char8 **out) {
     out[0] = "E9040832:'adxf' is NULL.(adxf_GetStat)";
     out[1] = "E9040831:'adxf' is NULL.(adxf_GetNumReadSct)";
@@ -221,7 +221,8 @@ static inline Sint32 adxf_Stop(ADXF adxf) {
     return adxf->skpos;
 }
 
-/* Stand-in for two stripped functions; the adxf_Stop messages are first used here (see above). */
+/* Matching workaround: as above (order-only stand-in for two stripped functions; the adxf_Stop
+ * messages are first used here). */
 static void adxf_RodataOrderSeek(const Char8 **out) {
     out[0] = "E9040825:'adxf' is NULL.(adxf_Seek)";
     out[1] = "E9040822:'adxf' is NULL.(adxf_Stop)";
@@ -267,7 +268,7 @@ void ADXF_ExecServer(void) {
     ADXCRS_Leave();
 }
 
-/* Stand-in for a stripped function (see above). */
+/* Matching workaround: as above (order-only stand-in for a stripped function). */
 static void adxf_RodataOrderStopNw(const Char8 **out) {
     out[0] = "E2092301:'adxf' is NULL.(adxf_StopNw)";
     out[1] = "E2092302:'adxf->stm' is NULL.(adxf_StopNw)";
@@ -282,7 +283,8 @@ static inline Sint32 adxf_ReadNw(ADXF adxf, Sint32 nsct, void *buf) {
     return adxf_ReadNw32(adxf, nsct, buf);
 }
 
-/* Stand-in for a stripped function; the adxf_ReadNw message is first used here (see above). */
+/* Matching workaround: as above (order-only stand-in for a stripped function; the adxf_ReadNw
+ * message is first used here). */
 static void adxf_RodataOrderReadNw(const Char8 **out) {
     out[0] = "E0120401:'buf' isn't 32byte alignment.(adxf_ReadNw)";
 }
@@ -374,7 +376,7 @@ Sint32 adxf_ReadNw32(ADXF adxf, Sint32 nsct, void *buf) {
     return rqsct;
 }
 
-/* Stand-in for a stripped function (see above). */
+/* Matching workaround: as above (order-only stand-in for a stripped function). */
 static void adxf_RodataOrderReadSj32(const Char8 **out) {
     out[0] = "E9040811:'adxf' is NULL.(adxf_ReadSj32)";
     out[1] = "E9040812:'nsct'is negative.(adxf_ReadSj32)";
@@ -521,7 +523,7 @@ ADXF adxf_OpenRange(const Char8 *fname, void *dir, Sint32 ofst, Sint32 fnsct) {
     return adxf;
 }
 
-/* Stand-in for a stripped function (see above). */
+/* Matching workaround: as above (order-only stand-in for a stripped function). */
 static void adxf_RodataOrderFileInfoEx(const Char8 **out) {
     out[0] = "E9081901:illigal parameter fname=null.(adxf_SetFileInfoEx)";
 }

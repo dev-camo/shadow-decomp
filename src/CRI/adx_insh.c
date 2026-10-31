@@ -11,10 +11,10 @@
 static Uint8 adxt_dmybuf[0x40];
 static Uint8 adxt_hdbuf[0x400];
 
-/* Stand-in for a function the linker stripped from the game; its body is unknown. MWCC lays out
- * .bss by first reference, so this never-called function refers to adxt_dmybuf before
- * ADXT_InsertHdrSfa refers to adxt_hdbuf. Storing the address keeps the reference.
- */
+/* Matching workaround: order-only stand-in for a function the linker stripped from the game;
+ * its body is unknown. MWCC lays out .bss by first reference, so this never-called function
+ * refers to adxt_dmybuf before ADXT_InsertHdrSfa refers to adxt_hdbuf. Storing the address
+ * keeps the reference. Revisit when the stripped body is found. */
 static void adxinsh_BssOrder(void **out) {
     out[0] = adxt_dmybuf;
 }
