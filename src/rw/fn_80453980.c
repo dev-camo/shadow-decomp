@@ -7,14 +7,7 @@
 #include <string.h>
 #include "layout_check.h"
 
-/* The plugin's engine globals (inferred) */
-typedef struct UVAnimEngineGlobals {
-    /* 0x0 */ RwInt32 field_0x0;
-    /* 0x4 */ RwInt32 numInstances; /* the open engine instances */
-} UVAnimEngineGlobals;
-CHECK_SIZEOF(UVAnimEngineGlobals, 0x8);
-
-UVAnimEngineGlobals lbl_805EDD88 = {0, 0};
+RwModuleInfo lbl_805EDD88 = {0, 0};
 RwInt32 lbl_805EDD90 = 128; /* custom data free list entries per block */
 RwInt32 lbl_805EDD94 = 1;   /* custom data free list blocks to preallocate */
 

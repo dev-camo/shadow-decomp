@@ -58,13 +58,6 @@ typedef struct WorldObjGlobals {
 } WorldObjGlobals;
 CHECK_SIZEOF(WorldObjGlobals, 0xC);
 
-/* The world object module (inferred) */
-typedef struct WorldObjModule {
-    /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
-    /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
-} WorldObjModule;
-CHECK_SIZEOF(WorldObjModule, 0x8);
-
 #define WORLDOBJGLOBAL(var)                                                                        \
     (RWPLUGINOFFSET(WorldObjGlobals, lbl_805F15B4, lbl_805F1518.globalsOffset)->var)
 
@@ -102,7 +95,7 @@ RwInt32 lbl_805EDDD0 = 32;  /* light tie free list entries per block */
 RwInt32 lbl_805EDDD4 = 1;   /* light tie free list blocks to preallocate */
 
 /* declared in reverse address order (the compiler places them in .sbss last first) */
-WorldObjModule lbl_805F1518;
+RwModuleInfo lbl_805F1518;
 RwInt32 lbl_805F1514; /* light plugin offset */
 RwInt32 lbl_805F1510; /* clump plugin offset */
 RwInt32 lbl_805F150C; /* atomic plugin offset */

@@ -33,13 +33,6 @@ typedef struct ClumpGlobals {
 } ClumpGlobals;
 CHECK_SIZEOF(ClumpGlobals, 0x8);
 
-/* The clump module (inferred) */
-typedef struct ClumpModule {
-    /* 0x0 */ RwInt32 globalsOffset; /* engine plugin offset of the globals */
-    /* 0x4 */ RwInt32 numInstances;  /* the open engine instances */
-} ClumpModule;
-CHECK_SIZEOF(ClumpModule, 0x8);
-
 #define CLUMPGLOBALS() ((ClumpGlobals *)((RwUInt8 *)lbl_805F15B4 + lbl_805F14C8.globalsOffset))
 #define CLUMPGLOBAL(var) (CLUMPGLOBALS()->var)
 
@@ -55,7 +48,7 @@ RwInt32 lbl_805EDDA8 = 128; /* clump free list entries per block */
 RwInt32 lbl_805EDDAC = 1;   /* clump free list blocks to preallocate */
 
 /* declared in reverse address order (the compiler places them in .sbss last first) */
-ClumpModule lbl_805F14C8;
+RwModuleInfo lbl_805F14C8;
 RwUInt32 lbl_805F14C4; /* atomic pipeline plugin, from the last atomic stream's rights */
 RwUInt32 lbl_805F14C0; /* atomic pipeline plugin data */
 RwInt32 lbl_805F14BC;  /* light plugin offset of the clump data */

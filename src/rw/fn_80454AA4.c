@@ -55,16 +55,10 @@ typedef struct WorldSectorChunk {
 } WorldSectorChunk;
 CHECK_SIZEOF(WorldSectorChunk, 0x2C);
 
-/* the rights read from the last world and world sector streams: the plugin that owns the pipeline
- * and its data, declared in reverse address order (the compiler places them in .sbss last
- * first) */
-typedef struct WorldModuleGlobals {
-    /* 0x0 */ RwInt32 field_0x0;
-    /* 0x4 */ RwInt32 numInstances; /* the open engine instances */
-} WorldModuleGlobals;
-CHECK_SIZEOF(WorldModuleGlobals, 0x8);
-
-WorldModuleGlobals lbl_805F14B0;
+/* the world stream module's registration, then the rights read from the last world and world
+ * sector streams: the plugin that owns the pipeline and its data, declared in reverse address order
+ * (the compiler places them in .sbss last first) */
+RwModuleInfo lbl_805F14B0;
 RwUInt32 lbl_805F14AC; /* world pipeline plugin */
 RwUInt32 lbl_805F14A8; /* world pipeline plugin data */
 RwUInt32 lbl_805F14A4; /* world sector pipeline plugin */
