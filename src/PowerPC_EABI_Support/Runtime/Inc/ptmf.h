@@ -3,7 +3,7 @@
 #include "layout_check.h"
 
 typedef struct __ptmf {
-    long this_delta; // self-explanatory
+    long this_delta; // adjustment added to the object pointer
     long v_offset;   // vtable offset
     union {
         void *f_addr;   // function address
