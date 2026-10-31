@@ -7,21 +7,14 @@
 #include <math.h>
 #include "layout_check.h"
 
-/* The vertex format module (inferred) */
-typedef struct VtxFmtModule {
-    /* 0x0 */ RwInt32 globalsOffset;
-    /* 0x4 */ RwInt32 numInstances; /* the open engine instances */
-} VtxFmtModule;
-CHECK_SIZEOF(VtxFmtModule, 0x8);
-
 RpGameCubeVertexFormat lbl_805E1688; /* the default vertex format */
 
 RwInt32 lbl_805EDDD8 = 1; /* the instancing optimisation mode (inferred) */
 
 /* declared in reverse address order (the compiler places them in .sbss last first) */
-VtxFmtModule lbl_805F1528;
-RwInt32 lbl_805F1524; /* world plugin offset of the vertex format */
-RwInt32 lbl_805F1520; /* geometry plugin offset of the vertex format */
+RwModuleInfo lbl_805F1528; /* the vertex format module (inferred) */
+RwInt32 lbl_805F1524;      /* world plugin offset of the vertex format */
+RwInt32 lbl_805F1520;      /* geometry plugin offset of the vertex format */
 
 void fn_8046288C(RwResEntry *repEntry) {
     RpGameCubeInstanceData *instance = (RpGameCubeInstanceData *)(repEntry + 1);
@@ -356,8 +349,8 @@ RwBool fn_804631CC(void) {
 void fn_804631D4(void) {}
 
 RwBool fn_804631D8(void) {
-    void *pipeline = fn_80463D28(rwID_WORLDPLUGIN, 0, fn_80463F10, NULL, fn_80463DF4,
-                                 (RpGameCubeSectorCallBack)fn_80462914);
+    RxPipeline *pipeline = fn_80463D28(rwID_WORLDPLUGIN, 0, fn_80463F10, NULL, fn_80463DF4,
+                                       (RpGameCubeSectorCallBack)fn_80462914);
 
     if (pipeline != NULL) {
         RXPIPELINEGLOBAL(platformWorldSectorPipeline) = pipeline;
@@ -376,8 +369,9 @@ void fn_80463244(void) {
 }
 
 RwBool fn_80463298(void) {
-    void *pipeline = fn_8046335C(rwID_WORLDPLUGIN, 0, (RpGameCubeInstanceCallBack)fn_804639AC,
-                                 fn_80463840, fn_80463428, (RpGameCubeRenderCallBack)fn_80462914);
+    RxPipeline *pipeline =
+        fn_8046335C(rwID_WORLDPLUGIN, 0, (RpGameCubeInstanceCallBack)fn_804639AC, fn_80463840,
+                    fn_80463428, (RpGameCubeRenderCallBack)fn_80462914);
 
     if (pipeline != NULL) {
         RXPIPELINEGLOBAL(platformAtomicPipeline) = pipeline;

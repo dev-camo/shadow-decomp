@@ -8,9 +8,6 @@
 /* The mesh at an index of a geometry's mesh header: the meshes follow the header */
 #define GEOMETRYMESH(geometry, index) (((RpMesh *)((geometry)->mesh + 1)) + (index))
 
-/* the destroy callback of generic GameCube instanced data (inferred) */
-void fn_8046288C(RwResEntry *repEntry);
-
 /* Prepares a geometry's skin for instancing: native geometries have their vertices and normals
  * marked for reinstancing, others get the byte weights the kernels read */
 RpGeometry *fn_8044E6BC(RpGeometry *geometry) {

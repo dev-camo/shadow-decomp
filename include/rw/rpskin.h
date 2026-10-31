@@ -90,8 +90,8 @@ typedef struct SkinGlobals {
     /* 0x14 */ RwUInt32 field_0x14;
     /* 0x18 */ RwFreeList *freeList; /* RpSkin entries */
     /* 0x1C */ RwUInt32 field_0x1C;
-    /* 0x20 */ RwInt32 numInstances; /* engine plugin constructions */
-    /* 0x24 */ void *pipelines[3];   /* by skin pipeline type (inferred) */
+    /* 0x20 */ RwInt32 numInstances;     /* engine plugin constructions */
+    /* 0x24 */ RxPipeline *pipelines[3]; /* by skin pipeline type (inferred) */
     /* 0x30 */ RwUInt8 field_0x30[0x10];
 } SkinGlobals;
 CHECK_SIZEOF(SkinGlobals, 0x40);

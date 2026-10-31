@@ -51,7 +51,7 @@ CHECK_SIZEOF(MeshStatics, 0x4);
 
 MeshStatics lbl_805EDDC0 = {NULL};
 
-RpMeshModule lbl_805F14F0;
+RwModuleInfo lbl_805F14F0;
 
 /* Allocates a mesh header of size bytes, with its meshes */
 RpMeshHeader *fn_8045BF30(RwUInt32 size) {

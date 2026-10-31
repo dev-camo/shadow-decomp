@@ -32,8 +32,8 @@ CHECK_SIZEOF(RpHAnimKeyFrame, 0x24);
 /* An interpolated frame: the header of the animation interpolator, then the same rotation and
  * translation as a keyframe */
 typedef struct RpHAnimInterpFrame {
-    /* 0x00 */ void *keyFrame1;
-    /* 0x04 */ void *keyFrame2;
+    /* 0x00 */ RpHAnimKeyFrame *keyFrame1;
+    /* 0x04 */ RpHAnimKeyFrame *keyFrame2;
     /* 0x08 */ RtQuat q;
     /* 0x18 */ RwV3d t;
 } RpHAnimInterpFrame;
