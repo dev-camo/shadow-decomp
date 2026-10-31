@@ -134,19 +134,18 @@ RwBool fn_8047FCDC(RwFreeList *freeList) {
 
 void *fn_8047FDB0(RwFreeList *freeList, RwUInt32 hint) {
     RwUInt32 heapSize = freeList->heapSize;
-    RwLLLink *block = freeList->blockList.link.next;
-    RwLLLink *end = &freeList->blockList.link;
+    RwUInt32 index;
     RwUInt32 entry = 0;
     RwUInt8 *bitmap;
-    RwUInt32 entriesLeft;
-    RwUInt32 index;
+    RwUInt8 mask;
+    RwUInt8 bits;
     RwUInt32 i;
     RwUInt32 bit;
-    RwUInt8 bits;
-    RwUInt8 mask;
+    RwLLLink *block = freeList->blockList.link.next;
+    RwLLLink *end = &freeList->blockList.link;
+    RwUInt32 entriesLeft;
 
     /* The first entry not in use */
-
     while (block != end && entry == 0) {
         bitmap = rwFREELISTBLOCKBITMAP(block);
         entriesLeft = freeList->entriesPerBlock;
@@ -195,7 +194,6 @@ void *fn_8047FDB0(RwFreeList *freeList, RwUInt32 hint) {
 RwFreeList *fn_8047FF50(RwFreeList *freeList, void *mem) {
     RwUInt32 heapSize = freeList->heapSize;
     RwLLLink *block = freeList->blockList.link.next;
-
     RwLLLink *end = &freeList->blockList.link;
 
     while (block != end) {
@@ -229,8 +227,8 @@ RwFreeList *fn_8047FF50(RwFreeList *freeList, void *mem) {
 
 /* Calls callBack on each entry in use */
 RwFreeList *fn_804800DC(RwFreeList *freeList, void (*callBack)(void *mem, void *data), void *data) {
-    RwLLLink *block = freeList->blockList.link.next;
     RwUInt32 heapSize = freeList->heapSize;
+    RwLLLink *block = freeList->blockList.link.next;
     RwLLLink *end = &freeList->blockList.link;
 
     while (block != end) {
