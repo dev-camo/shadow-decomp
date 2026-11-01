@@ -131,20 +131,28 @@ void SFD_SetMpvParaTbl(SFMPV_PARA *para, Uint32 *rfb, Uint32 *ta) {
     }
 }
 
+/* Places the three planes of a frame buffer: luma first, then the two chroma planes. h16 is the
+ * picture height rounded up to whole macroblocks. pln[2] is the luma plane, pln[0] and pln[1] the
+ * chroma planes. */
+static inline void sfmpv_LayoutPlanes(MPV_RFB *rfb, void *buf, Sint32 ypitch, Sint32 cpitch,
+                                      Sint32 h16) {
+    rfb->ypitch = ypitch;
+    rfb->cpitch = cpitch;
+    rfb->pln[2] = buf;
+    rfb->pln[0] = rfb->pln[2] + h16 * ypitch;
+    rfb->pln[1] = rfb->pln[0] + h16 / 2 * cpitch;
+}
+
 /* Lays out a frame buffer at buf as the decoder wants it: the luma plane of the picture size
  * rounded up to whole macroblocks, then the two chroma planes at half width and height. The rows
- * are padded to 32 bytes. pln[2] is the luma plane, pln[0] and pln[1] the chroma planes. */
+ * are padded to 32 bytes. */
 void SFD_CalcYccPlane(void *buf, Sint32 width, Sint32 height, MPV_RFB *rfb) {
     Sint32 w16 = (width + 15) / 16 * 16;
     Sint32 ypitch = (w16 + 31) / 32 * 32;
     Sint32 cpitch = (w16 / 2 + 31) / 32 * 32;
     Sint32 h16 = (height + 15) / 16 * 16;
 
-    rfb->ypitch = ypitch;
-    rfb->cpitch = cpitch;
-    rfb->pln[2] = buf;
-    rfb->pln[0] = rfb->pln[2] + h16 * ypitch;
-    rfb->pln[1] = rfb->pln[0] + h16 / 2 * cpitch;
+    sfmpv_LayoutPlanes(rfb, buf, ypitch, cpitch, h16);
 }
 
 /* Sets a condition of the decoder; with sfd 0, MPV_SetCond sets it as the library default and in
@@ -288,6 +296,152 @@ Sint32 SFMPV_Finish(void) {
 /* Runs the decoder step of the driver server. */
 Sint32 SFMPV_ExecServer(SFD sfd) {
     return sfmpv_ExecServerSub(sfd);
+}
+
+/* Takes the frame a picture is decoded into (the pending frame if there is one, otherwise a free
+ * one; none free sets the flag in the player information and returns -1) and fills in the frame
+ * parameter block for MPV_DecodeFrmSj: the picture attributes, the output frame and the two
+ * reference frames the macroblocks predict from. I and P pictures (picture types 1 and 2) become
+ * the newer reference and the previous one the older. */
+Sint32 sfmpv_SetFrmPara(SFD sfd, MPV_PICATR *picatr, MPV_FRM *para, SFMPV_FRM **frm) {
+    SFMPV_WORK *wk = SFMPV_WK(sfd);
+    Sint32 w16;
+    Sint32 ypitch;
+    Sint32 cpitch;
+    Sint32 h16;
+
+    if (wk->pendfrm != 0) {
+        *frm = wk->pendfrm;
+    } else {
+        *frm = SFMPVF_AllocFrm(sfd);
+        if (*frm == 0) {
+            sfd->plyinf.x2c = 1;
+            return -1;
+        }
+    }
+    (*frm)->picatr = *picatr;
+    (*frm)->pts = wk->pts;
+    if (sfd->prm.x38 == 3) {
+        if ((picatr->pic_type == 1 || picatr->pic_type == 2) && wk->pendfrm == 0) {
+            SFMPVF_EndRefFrm(wk->ref[0]);
+            wk->ref[0] = wk->ref[1];
+            wk->ref[1] = *frm;
+        }
+        w16 = (picatr->width + 15) / 16 * 16;
+        ypitch = (w16 + 31) / 32 * 32;
+        cpitch = (w16 / 2 + 31) / 32 * 32;
+        h16 = (picatr->height + 15) / 16 * 16;
+        sfmpv_LayoutPlanes(&para->rfb[0], wk->ref[0]->buf, ypitch, cpitch, h16);
+        sfmpv_LayoutPlanes(&para->rfb[1], wk->ref[1]->buf, ypitch, cpitch, h16);
+    } else {
+        if (picatr->pic_type == 1 || picatr->pic_type == 2) {
+            wk->refidx[0] ^= 1;
+            wk->refidx[1] ^= 1;
+            wk->ref[1] = *frm;
+        }
+        para->rfb[0] = wk->rfbuf[wk->refidx[0]];
+        para->rfb[1] = wk->rfbuf[wk->refidx[1]];
+    }
+    para->buf = (*frm)->buf;
+    para->picatr = &(*frm)->picatr;
+    para->x28 = 0;
+    para->x2c = 0;
+    sfd->plyinf.x2c = 0;
+    return 0;
+}
+
+/* Finds the first start code of the classes in mask in data and reads its class (the class is not
+ * used). Returns its address, 0 when there is none. */
+static inline Sint8 *sfmpv_FindDelim(Sint8 *data, Sint32 len, Sint32 mask) {
+    Sint8 *delim = MPV_SearchDelim(data, len, mask);
+
+    if (delim != 0) {
+        MPV_CheckDelim(delim);
+        return delim;
+    }
+    return 0;
+}
+
+/* Discards the video input up to the next start code of the classes in mask (the start code
+ * itself is kept) and counts the bytes: all of them in v_byte, and in v_skip as well when the
+ * discarded bytes (the first three, or all of them when fewer) were not all zero. The
+ * ring buffer data is two chunks, so a start code can straddle them; when none is found the last
+ * three bytes stay, as they may begin one. Returns the number of bytes consumed. */
+Sint32 sfmpv_GoDdelim(SFD sfd, SJ sj, Sint32 mask) {
+    SFBUF_RINF inf;
+    Sint8 edge[6];
+    Sint8 *delim;
+    Sint8 *q;
+    Sint32 head;
+    Sint32 tail;
+    Sint32 nbyte;
+    Sint32 i;
+    Sint32 len1;
+    Sint8 *src;
+    Sint8 *data2;
+    Bool nonzero;
+
+    if (SFBUF_RingGetRead(sfd, sfd->tr[SFMPV_TR].bufin, &inf) != 0) {
+        return 0;
+    }
+    if (inf.ck1.len == 0) {
+        return 0;
+    }
+    delim = MPV_SearchDelim((Sint8 *)inf.ck1.data, inf.ck1.len, mask);
+    if (delim != 0) {
+        /* the class of the start code found is not used, but the original calls this here */
+        MPV_CheckDelim(delim);
+    } else if (inf.ck2.len == 0) {
+        /* Matching workaround: delim is already 0 here, but the original clears it again (the li
+         * at offset 0xE00 of the original object); without this assignment the function measures
+         * 142 instead of 74 differing words. Revisit when the search's original structure is
+         * found. */
+        delim = 0;
+    } else {
+        /* look for a start code across the join of the two chunks */
+        head = inf.ck1.len < 3 ? inf.ck1.len : 3;
+        tail = inf.ck2.len < 3 ? inf.ck2.len : 3;
+        memcpy(edge, inf.ck1.data + inf.ck1.len - head, head);
+        memcpy(edge + head, inf.ck2.data, tail);
+        q = edge;
+        for (i = 0; i < head + tail - 3; i++, q++) {
+            if (MPV_CheckDelim(q) & mask) {
+                delim = (Sint8 *)inf.ck1.data + inf.ck1.len - head + i;
+                goto found;
+            }
+        }
+        delim = sfmpv_FindDelim((Sint8 *)inf.ck2.data, inf.ck2.len, mask);
+    }
+found:
+    if (delim == 0) {
+        nbyte = inf.ck1.len + inf.ck2.len - 3;
+        nbyte = nbyte > 0 ? nbyte : 0;
+    } else if ((Sint8 *)inf.ck1.data <= delim && delim < (Sint8 *)inf.ck1.data + inf.ck1.len) {
+        nbyte = delim - (Sint8 *)inf.ck1.data;
+    } else if ((Sint8 *)inf.ck2.data <= delim && delim < (Sint8 *)inf.ck2.data + inf.ck2.len) {
+        nbyte = inf.ck1.len + (delim - (Sint8 *)inf.ck2.data);
+    } else {
+        nbyte = 0;
+    }
+    SFBUF_RingAddRead(sfd, sfd->tr[SFMPV_TR].bufin, nbyte);
+
+    src = (Sint8 *)inf.ck1.data;
+    len1 = inf.ck1.len;
+    data2 = (Sint8 *)inf.ck2.data;
+    nonzero = FALSE;
+    for (i = 0; i < (nbyte < 3 ? nbyte : 3); i++, src++) {
+        Sint8 *byte = i < len1 ? src : data2 + (i - len1);
+
+        if (*byte != 0) {
+            nonzero = TRUE;
+            break;
+        }
+    }
+    if (nonzero) {
+        sfd->plyinf.v_skip += nbyte;
+    }
+    sfd->plyinf.v_byte += nbyte;
+    return nbyte;
 }
 
 /* Creates the decoder handle for the video stream when video is switched on. After a player
