@@ -337,22 +337,26 @@ CHECK_SIZEOF(SFBUF_WORK, 0x74);
 
 #define SFD_BUF_NUM 8
 
-/* transfer/stream driver interface (SFD_tr_in_mem, SFD_tr_vo_manu, ...) */
+/* Transfer/stream driver slots, in their original table order. */
+typedef Sint32 (*SFD_TR_FUNC)();
+enum {
+    SFD_TR_INIT,
+    SFD_TR_FINISH,
+    SFD_TR_EXEC_SERVER,
+    SFD_TR_CREATE,
+    SFD_TR_DESTROY,
+    SFD_TR_STANDBY,
+    SFD_TR_START,
+    SFD_TR_STOP,
+    SFD_TR_PAUSE,
+    SFD_TR_GET_WRITE,
+    SFD_TR_ADD_WRITE,
+    SFD_TR_GET_READ,
+    SFD_TR_ADD_READ,
+    SFD_TR_SEEK,
+};
 typedef struct {
-    Sint32 (*Init)();       /* 0x00 */
-    Sint32 (*Finish)();     /* 0x04 */
-    Sint32 (*ExecServer)(); /* 0x08 */
-    Sint32 (*Create)();     /* 0x0C */
-    Sint32 (*Destroy)();    /* 0x10 */
-    Sint32 (*Standby)();    /* 0x14 */
-    Sint32 (*Start)();      /* 0x18 */
-    Sint32 (*Stop)();       /* 0x1C */
-    Sint32 (*Pause)();      /* 0x20 */
-    Sint32 (*GetWrite)();   /* 0x24 */
-    Sint32 (*AddWrite)();   /* 0x28 */
-    Sint32 (*GetRead)();    /* 0x2C */
-    Sint32 (*AddRead)();    /* 0x30 */
-    Sint32 (*Seek)();       /* 0x34 */
+    SFD_TR_FUNC functions[14]; /* 0x00 */
 } SFD_TR_IF;
 CHECK_SIZEOF(SFD_TR_IF, 0x38);
 
@@ -365,14 +369,12 @@ extern const SFD_TR_IF SFD_tr_ad_adxt;
 extern const SFD_TR_IF SFD_tr_ao_auto_p;
 extern const SFD_TR_IF SFD_tr_uo;
 
-typedef Sint32 (*SFD_TR_FUNC)();
-
 /* per-transfer-driver slot (0x44 bytes), SFD_OBJ + 0x1F30 + n * 0x44 */
 typedef struct {
     Sint32 prepflg;           /* 0x00 */
     Sint32 termflg;           /* 0x04 */
     void *hn;                 /* 0x08 driver handle (tr[SFUO_TR]: SFUO *) */
-    SFD_TR_FUNC *trif;        /* 0x0C driver function table */
+    SFD_TR_IF *trif;          /* 0x0C driver function table */
     Sint32 bufin;             /* 0x10 SFBUF id read by this driver */
     Sint32 bufout;            /* 0x14 SFBUF id written by this driver */
     Sint32 bufout2;           /* 0x18 */
@@ -582,13 +584,13 @@ CHECK_SIZEOF(SFBUF_RINF, 0x1C);
  * optional video/audio stage before the output, 6 video output (SFVOM_TR), 7 audio output
  * (SFAOAP_TR), 8 user output (SFUO_TR); see sftrn_BuildSystem) */
 typedef struct {
-    SFD_TR_FUNC **trif_tbl; /* 0x00 */
+    SFD_TR_IF **trif_tbl; /* 0x00 */
 } SFTRN_PRM;
 CHECK_SIZEOF(SFTRN_PRM, 0x4);
 
 /* the 15 driver interfaces known to the library (SFTRN_Init) */
 typedef struct {
-    SFD_TR_IF *tbl[15]; /* 0x00 */
+    const SFD_TR_IF *tbl[15]; /* 0x00 */
 } SFTRN_TRIF_TBL;
 CHECK_SIZEOF(SFTRN_TRIF_TBL, 0x3C);
 
@@ -780,17 +782,17 @@ CHECK_SIZEOF(SFSEE_HN, 0x10);
 /* creation parameters (SFD_Create, 0x44 bytes); the handle starts with a copy of them (sfd_ply.c).
  * The first 0x2C bytes are what sfd_buf.c reads as SFBUF_PRM. */
 typedef struct {
-    SFD_TR_FUNC **trif_tbl; /* 0x00 transfer driver tables, as SFTRN_PRM.trif_tbl */
-    Uint32 adr;             /* 0x04 buffer work base (aligned to 32 in place by sfply_InitHn) */
-    Sint32 size[7];         /* 0x08 sizes of buffers 0..6 */
-    Sint32 x24;             /* 0x24 */
-    Sint32 unit;            /* 0x28 ring buffer 0 alignment */
-    Sint32 x2c;             /* 0x2C */
-    Sint32 x30;             /* 0x30 */
-    Sint32 x34;             /* 0x34 */
-    Sint32 x38;             /* 0x38 */
-    void *hnwork;           /* 0x3C handle work (SFD_OBJ, aligned to 32) */
-    Sint32 hnwksiz;         /* 0x40 its size (>= 0x3660, SFD_HNWORK_MIN) */
+    SFD_TR_IF **trif_tbl; /* 0x00 transfer driver tables, as SFTRN_PRM.trif_tbl */
+    Uint32 adr;           /* 0x04 buffer work base (aligned to 32 in place by sfply_InitHn) */
+    Sint32 size[7];       /* 0x08 sizes of buffers 0..6 */
+    Sint32 x24;           /* 0x24 */
+    Sint32 unit;          /* 0x28 ring buffer 0 alignment */
+    Sint32 x2c;           /* 0x2C */
+    Sint32 x30;           /* 0x30 */
+    Sint32 x34;           /* 0x34 */
+    Sint32 x38;           /* 0x38 */
+    void *hnwork;         /* 0x3C handle work (SFD_OBJ, aligned to 32) */
+    Sint32 hnwksiz;       /* 0x40 its size (>= 0x3660, SFD_HNWORK_MIN) */
 } SFD_CREPRM;
 CHECK_SIZEOF(SFD_CREPRM, 0x44);
 
