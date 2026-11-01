@@ -10,7 +10,8 @@ namespace System {
 
 struct UnkEffectPoolEntry;
 
-/* Placeholder type name; layout and lifecycle are inferred from fn_8042A344/fn_8042A2D8. */
+/* Placeholder type name; layout and lifecycle are inferred from fn_8042A344/fn_8042A2D8.
+ * Member names are inferred from the pool operations. */
 struct UnkEffectPool {
     UnkEffectPool(unsigned int payloadSize, int count);
     ~UnkEffectPool();
@@ -20,14 +21,14 @@ struct UnkEffectPool {
     }
     static void operator delete(void *block);
 
-    /* 0x00 */ UnkEffectPoolEntry *field_0x0;
-    /* 0x04 */ UnkEffectPoolEntry *field_0x4;
-    /* 0x08 */ UnkEffectPoolEntry *field_0x8;
-    /* 0x0C */ UnkEffectPoolEntry *field_0xC;
-    /* 0x10 */ int field_0x10;
-    /* 0x14 */ int field_0x14;
-    /* 0x18 */ void *field_0x18;
-    /* 0x1C */ unsigned int field_0x1C;
+    /* 0x00 */ UnkEffectPoolEntry *m_freeHead;
+    /* 0x04 */ UnkEffectPoolEntry *m_freeTail;
+    /* 0x08 */ UnkEffectPoolEntry *m_usedHead;
+    /* 0x0C */ UnkEffectPoolEntry *m_usedTail;
+    /* 0x10 */ int m_freeCount;
+    /* 0x14 */ int m_usedCount;
+    /* 0x18 */ void *m_blockStorage;
+    /* 0x1C */ unsigned int m_blockStride;
 };
 CHECK_SIZEOF(UnkEffectPool, 0x20);
 
