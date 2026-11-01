@@ -28,6 +28,7 @@
 
 /* error codes */
 #define SFMPV_ERR_INIT 0xFF000F01
+#define SFMPV_ERR_DECODE 0xFF000F06 /* MPV_DecodeFrmSj failed */
 #define SFMPV_ERR_CREATE 0xFF000F0A
 #define SFMPV_ERR_SETERRFN 0xFF000F0B
 #define SFMPV_ERR_DESTROY 0xFF000F0C
@@ -78,6 +79,9 @@ Sint32 SFMPV_AddWrite(SFD sfd);
 Sint32 SFMPV_GetRead(SFD sfd, SFD_VFRM_INF **inf, Sint32 *id);
 Sint32 SFMPV_AddRead(SFD sfd, SFD_VFRM_INF *inf, Sint32 id);
 void sfmpv_SetFrmInf(SFD sfd, SFMPV_FRM *frm, SFD_VFRM_INF **out);
+Sint32 sfmpv_SetFrmPara(SFD sfd, MPV_PICATR *picatr, MPV_FRM *para, SFMPV_FRM **frm);
+Sint32 sfmpv_GoDdelim(SFD sfd, SJ sj, Sint32 mask);
+Sint32 sfmpv_DecodeFrm(SFD sfd, SJ sj);
 Sint32 SFMPV_Seek(SFD sfd);
 void sfmpv_ErrFn(void *obj, Sint32 code);
 Sint32 sfmpv_InitInf(SFD sfd, SFMPV_WORK *wk);
@@ -296,6 +300,157 @@ Sint32 SFMPV_Finish(void) {
 /* Runs the decoder step of the driver server. */
 Sint32 SFMPV_ExecServer(SFD sfd) {
     return sfmpv_ExecServerSub(sfd);
+}
+
+/* Whether picstat is 2 or 3; with either, sfmpv_DecodeFrm keeps the time code's frm2. The
+ * original's lowering of this switch also compares picstat with 4; the case set that produces it is
+ * not known. */
+static inline Bool sfmpv_IsPicStat23(SFD sfd) {
+    switch (SFMPV_WK(sfd)->picstat) {
+    case 2:
+        return TRUE;
+    case 3:
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+/* Decodes one picture from the stream joint into a frame: sets up the frame, runs the decoder, adds
+ * the decode time and the error counts to the statistics and, if data was consumed, completes the
+ * frame (display time, counts, state). With picture attribute x38 other than 3, the first picture
+ * decoded into a frame leaves it pending and the next one completes it. Returns an error code, 0
+ * when there is none. */
+Sint32 sfmpv_DecodeFrm(SFD sfd, SJ sj) {
+    SFMPV_WORK *wk = SFMPV_WK(sfd);
+    MPV mpv = wk->mpv;
+    MPV_PICATR *picatr = &wk->picatr;
+    SFMPV_FRM *frm;
+    MPV_FRM para;
+    SFTIM_WORK *tim = SFD_TIM(sfd);
+    Sint32 ref_ndct;
+    Sint32 ref_nbyte;
+    SFMPV_PICUSR *picusr;
+    SFTIM_TTU *ttu0;
+    SFTIM_TTU *vofst;
+    SFTIM_TC tc;
+    Sint32 tscale;
+    Sint32 ncount;
+    Sint64 start;
+    Sint64 elapsed;
+    Sint32 flow;
+    Sint32 result;
+    Sint32 err;
+
+    if (sfmpv_SetFrmPara(sfd, picatr, &para, &frm) != 0) {
+        return 0;
+    }
+
+    /* the counts of the reference frames a P or B picture is predicted from (the original's lowering
+     * of this switch also compares pic_type with 4; the case set that produces it is not known) */
+    if (sfd->prm.x38 == 3) {
+        switch (wk->picatr.pic_type) {
+        case 2:
+            ref_ndct = wk->ref[0]->ndct;
+            ref_nbyte = wk->ref[0]->nbyte;
+            break;
+        case 3:
+            ref_ndct = wk->ref[0]->ndct + wk->ref[1]->ndct;
+            ref_nbyte = wk->ref[0]->nbyte + wk->ref[1]->nbyte;
+            break;
+        default:
+            ref_ndct = 0;
+            ref_nbyte = 0;
+            break;
+        }
+    } else {
+        ref_ndct = 0;
+        ref_nbyte = 0;
+    }
+    picusr = frm->picusr;
+    memcpy(picusr->buf, wk->picusr.dat, wk->picusr.len);
+    picusr->len = wk->picusr.len;
+
+    /* the first frame decoded fixes the video start offset from the GOP time code */
+    ttu0 = &tim->ttu0;
+    vofst = &tim->vofst;
+    if (vofst->valid == 0) {
+        tc = tim->ttu3.tc;
+        if (!sfmpv_IsPicStat23(sfd) && sfd->cond[4] != 0) {
+            tc.frm2 = 0;
+        }
+        SFTIM_Tc2Time(&tc, &ncount, &tscale);
+        vofst->tc = tc;
+        vofst->val = ncount - ttu0->val;
+        vofst->unit = tscale;
+        vofst->valid = 1;
+    }
+
+    start = fn_803FEA5C();
+    flow = SJRBF_GetFlowCnt(sj, 0, 1);
+    result = MPV_DecodeFrmSj(mpv, sj, &para);
+    flow = SJRBF_GetFlowCnt(sj, 0, 1) - flow;
+    elapsed = fn_803FEA5C() - start;
+    SFTMR_AddTsum(&sfd->tsum[picatr->pic_type], elapsed);
+    sfd->err.x0c += para.x28;
+    sfd->err.x10 += para.x2c;
+
+    switch (result) {
+    case 0:
+        err = 0;
+        break;
+    case -2:
+        err = flow > 0 ? 0 : SFLIB_SetErr(sfd, -2);
+        break;
+    case -3:
+        err = flow > 0 ? 0 : SFLIB_SetErr(sfd, -3);
+        break;
+    default:
+        err = SFLIB_SetErr(sfd, SFMPV_ERR_DECODE);
+        break;
+    }
+    SFBUF_AddRtotSj(sfd, sfd->tr[SFMPV_TR].bufin, flow);
+    sfd->plyinf.v_byte += flow;
+    if (err != 0) {
+        SFMPVF_FreeFrm(frm);
+        return err;
+    }
+
+    if (flow > 0) {
+        SFMPVF_SetGopStat(sfd, 0);
+        frm->ttu = tim->ttu3;
+        frm->tunit = frm->ttu.unit;
+        frm->ftime = tim->ctime + (frm->ttu.val - vofst->val);
+        frm->x4c = frm->ttu.val;
+        frm->x50 = frm->ttu.val + tim->ctime;
+        if (tim->x284 < frm->ftime) {
+            tim->x284 = frm->ftime;
+            tim->x288 = frm->tunit;
+        }
+        frm->gopno = wk->nconcat;
+        frm->ndct = ref_ndct + wk->tmpref_adj + para.x28;
+        frm->nbyte = para.x2c + ref_nbyte;
+        if (picatr->x38 == 3 || wk->pendfrm != 0) {
+            wk->pendfrm = 0;
+        } else {
+            wk->pendfrm = frm;
+        }
+        wk->skipret = 0;
+        wk->dlmwait = 0;
+        if (wk->pendfrm == 0) {
+            if (sfd->prm.x38 == 3 && (picatr->pic_type == 1 || picatr->pic_type == 2)) {
+                SFMPVF_RefStbyFrm(frm);
+            } else {
+                SFMPVF_StbyFrm(frm);
+            }
+            MPV_GetDctCnt(mpv, &sfd->plyinf.x08, &sfd->plyinf.x0c);
+            wk->nskip = 0;
+        }
+        SFPLY_AddDecPic(sfd, 1, (void *)picatr->pic_type);
+    } else if (wk->pendfrm == 0) {
+        SFMPVF_FreeFrm(frm);
+    }
+    return 0;
 }
 
 /* Takes the frame a picture is decoded into (the pending frame if there is one, otherwise a free

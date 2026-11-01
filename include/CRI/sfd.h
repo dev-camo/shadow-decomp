@@ -496,7 +496,7 @@ typedef struct {
     Sint32 refidx[2];             /* 0x138 reference frame buffer indices (forward, backward) */
     MPV_RFB rfbuf[2];             /* 0x140 reference frame planes handed to the decoder */
     SFMPV_FRM *ref[2];            /* 0x160 reference frames (forward, backward) */
-    SFMPV_FRM *pendfrm;           /* 0x168 B picture decoded into a standby frame */
+    SFMPV_FRM *pendfrm;           /* 0x168 frame left pending by sfmpv_DecodeFrm */
     Sint32 skipret;               /* 0x16C */
     Sint32 dlmwait;               /* 0x170 */
     Sint32 tmpref_adj;            /* 0x174 */
@@ -970,6 +970,8 @@ Bool SFD_IsSvrWait(void);
 Bool SFD_IsHnSvrWait(SFD sfd);
 void SFD_VbIn(void);
 void SFPLY_Init(void);
+void SFPLY_AddSkipPic(SFD sfd, Sint32 n, void *arg);
+void SFPLY_AddDecPic(SFD sfd, Sint32 n, void *arg);
 
 /* sfd_pl2.c */
 Sint32 SFD_SetSpeed(SFD sfd, Sint32 speed);
@@ -1109,6 +1111,7 @@ Sint32 SFTIM_GetAudioStartSample(SFTIM tim, Sint32 sfreq);
 Bool SFTIM_IsStagnant(SFD sfd);
 void SFTIM_VbIn(void);
 void SFTIM_InitTtu(SFTIM_TTU *ttu, Sint32 val);
+void SFTIM_Tc2Time(SFTIM_TC *tc, Sint32 *ncount, Sint32 *tscale);
 void SFTIM_InitHn(SFD sfd, SFTIM tim);
 void fn_803FDCD0(SFTIM_LIB *lib); /* empty; the library finish SFD_Finish calls it */
 void SFTIM_Init(SFTIM_LIB *lib, Sint32 vrate);
