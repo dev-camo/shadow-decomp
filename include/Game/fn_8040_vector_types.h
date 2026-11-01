@@ -152,6 +152,8 @@ float fn_8040CF90(const Fn8040Vector3 *left, const Fn8040Vector3 *right);
 void fn_8040CFB8(Fn8040Vector3 *result, const Fn8040Vector3 *left, const Fn8040Vector3 *right);
 /* destination = a - b (behaviour inferred). */
 void fn_8040CD74(Fn8040Vector3 *destination, const Fn8040Vector3 *a, const Fn8040Vector3 *b);
+/* Subtracts the three components of value in place (behaviour inferred). */
+void fn_8040CE04(Fn8040Vector3 *vector, const Fn8040Vector3 *value);
 /* vector *= scale (behaviour inferred). */
 void fn_8040CE38(Fn8040Vector3 *vector, float scale);
 /* Sets all three components to the 3D clear value lbl_805FAD80 (behaviour inferred). */

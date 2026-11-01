@@ -2,6 +2,7 @@
 #define GAME_EFFECTCOMMANDEXEC_H
 
 #include "Game/fn_8042A444.h"
+#include "Game/fn_8040_vector_types.h"
 #include "layout_check.h"
 
 namespace Effect {
@@ -33,6 +34,34 @@ struct UnkGlareSWData : UnkCommandData {
     /* 0x04 */ unsigned char enabled;
 };
 CHECK_SIZEOF(UnkGlareSWData, 0x5);
+
+/* Common encoded value-command fields; bytes 6-7 have no identified use yet. */
+struct UnkValueData : UnkCommandData {
+    /* 0x04 */ unsigned char relative;
+    /* 0x05 */ unsigned char sharedRandom;
+    /* 0x06 */ unsigned char field_0x6[2];
+    /* 0x08 */ unsigned short duration;
+    /* 0x0A */ unsigned short durationRange;
+};
+CHECK_SIZEOF(UnkValueData, 0xC);
+
+struct UnkSingleData : UnkValueData {
+    /* 0x0C */ float value;
+    /* 0x10 */ float range;
+};
+CHECK_SIZEOF(UnkSingleData, 0x14);
+
+struct UnkVector2Data : UnkValueData {
+    /* 0x0C */ Fn8040Vector2 value;
+    /* 0x14 */ Fn8040Vector2 range;
+};
+CHECK_SIZEOF(UnkVector2Data, 0x1C);
+
+struct UnkVector3Data : UnkValueData {
+    /* 0x0C */ Fn8040Vector3 value;
+    /* 0x18 */ Fn8040Vector3 range;
+};
+CHECK_SIZEOF(UnkVector3Data, 0x24);
 
 /* Class names are recorded in the original RTTI. Member names are inferred from use. */
 class EffectCommandExec {
@@ -111,6 +140,48 @@ class EffCmdGlareSWExec : public EffectCommandExec {
     /* 0x14 */ unsigned int *m_flags;
 };
 CHECK_SIZEOF(EffCmdGlareSWExec, 0x18);
+
+class EffCmdSingleExec : public EffectCommandExec {
+  public:
+    EffCmdSingleExec(const UnkCommandData *command, unsigned int *flags, float *target);
+    virtual ~EffCmdSingleExec();
+    virtual bool Update(float deltaTime);
+
+    /* 0x14 */ unsigned int *m_flags;
+    /* 0x18 */ float *m_target;
+    /* 0x1C */ float m_elapsed;
+    /* 0x20 */ float m_duration;
+    /* 0x24 */ float m_rate;
+};
+CHECK_SIZEOF(EffCmdSingleExec, 0x28);
+
+class EffCmdVector2Exec : public EffectCommandExec {
+  public:
+    EffCmdVector2Exec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target);
+    virtual ~EffCmdVector2Exec();
+    virtual bool Update(float deltaTime);
+
+    /* 0x14 */ unsigned int *m_flags;
+    /* 0x18 */ Fn8040Vector3 *m_target;
+    /* 0x1C */ float m_elapsed;
+    /* 0x20 */ float m_duration;
+    /* 0x24 */ Fn8040Vector3 m_rate;
+};
+CHECK_SIZEOF(EffCmdVector2Exec, 0x30);
+
+class EffCmdVector3Exec : public EffectCommandExec {
+  public:
+    EffCmdVector3Exec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target);
+    virtual ~EffCmdVector3Exec();
+    virtual bool Update(float deltaTime);
+
+    /* 0x14 */ unsigned int *m_flags;
+    /* 0x18 */ Fn8040Vector3 *m_target;
+    /* 0x1C */ float m_elapsed;
+    /* 0x20 */ float m_duration;
+    /* 0x24 */ Fn8040Vector3 m_rate;
+};
+CHECK_SIZEOF(EffCmdVector3Exec, 0x30);
 
 } // namespace System
 } // namespace Effect

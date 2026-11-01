@@ -276,7 +276,16 @@ cflags_game_cpp = [
 ]
 
 # Effect commands have C++ exception tables, RTTI in .data and float literals in .rodata.
-cflags_effect = [*cflags_game_cpp, "-Cpp_exceptions on", "-sdata 0", "-sdata2 0"]
+# Matching workaround: vector command constructors address each literal independently;
+# data pooling instead introduces a shared constant-base register. Revisit when the original
+# effect unit's compiler settings are recovered.
+cflags_effect = [
+    *cflags_game_cpp,
+    "-Cpp_exceptions on",
+    "-sdata 0",
+    "-sdata2 0",
+    "-pool off",
+]
 
 # Sega's GameCube AX sound library (gcax*.c): optimized for size with stmw/lmw, read-only strings,
 # and deferred inlining of only the functions marked inline.
@@ -1357,6 +1366,10 @@ config.libs = [
                 # Six method instruction sequences match. Their local RTTI is shared with
                 # remaining command classes and stays in the original data fallback.
                 Object(NonMatching, "Game/fn_80422B18.cpp", cflags=cflags_effect),
+                # Exact instruction sequences; local float literals remain shared with other commands.
+                Object(NonMatching, "Game/EffCmdVector3Exec.cpp", cflags=cflags_effect),
+                Object(NonMatching, "Game/EffCmdVector2Exec.cpp", cflags=cflags_effect),
+                Object(NonMatching, "Game/EffCmdSingleExec.cpp", cflags=cflags_effect),
                 # Exact methods; other commands still share the local floating-point literals.
                 Object(NonMatching, "Game/EffCmdWaitExec.cpp", cflags=cflags_effect),
                 # Four destructors match; their vtables/RTTI belong with the other command
