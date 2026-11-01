@@ -7,11 +7,11 @@
 namespace Effect {
 namespace RW3 {
 
-/* Class and base names are recorded in RTTI; member names are inferred. */
+/* Class and base names are recorded in RTTI; member names and parameter qualifiers are inferred. */
 class EffectGlobalParamRW3 : public System::EffectGlobalParam {
   public:
-    EffectGlobalParamRW3(const System::UnkEffectElementData8 *definition,
-                         System::EffectLaunchInfo *info, System::EffectManager *manager);
+    EffectGlobalParamRW3(System::UnkEffectElementData8 *definition, System::EffectLaunchInfo *info,
+                         System::EffectManager *manager);
     virtual ~EffectGlobalParamRW3();
     virtual void Update(float deltaTime);
 

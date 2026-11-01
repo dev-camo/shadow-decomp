@@ -1431,7 +1431,7 @@ config.libs = [
             Object(Matching, "Game/fn_804220CC.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EffCmdGlareSWExec.cpp", cflags=cflags_effect),
             Object(Matching, "Game/fn_8042A2D8.cpp", cflags=cflags_effect),
-            Object(NonMatching, "Game/EffectGlobalParam.cpp", cflags=cflags_effect),
+            Object(Matching, "Game/EffectGlobalParam.cpp", cflags=cflags_effect),
             Object(Matching, "Game/EffectLensFlare.cpp", cflags=cflags_effect),
             # Eight of ten functions identical; Update differs in registers, constructor in
             # allocation exception handling and loop code (592 versus 556 bytes).

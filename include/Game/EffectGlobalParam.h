@@ -10,10 +10,11 @@ namespace System {
 struct UnkEffectElementData8;
 struct UnkEffectGlobalParamData;
 
-/* Class and base names are recorded in RTTI; method and member names are inferred. */
+/* Class and base names are recorded in RTTI.
+ * Method/member names and parameter qualifiers are inferred. */
 class EffectGlobalParam : public EffectElement {
   public:
-    EffectGlobalParam(const UnkEffectElementData8 *definition, EffectLaunchInfo *info,
+    EffectGlobalParam(UnkEffectElementData8 *definition, EffectLaunchInfo *info,
                       EffectManager *manager);
     virtual ~EffectGlobalParam();
     virtual void Update(float deltaTime);
