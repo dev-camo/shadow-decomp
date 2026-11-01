@@ -42,6 +42,10 @@ CHECK_SIZEOF(Chao::CSD::CSceneMotion, 0xC);
 class CFontList : public CFontListRef, public CBase {
   public:
     explicit CFontList(const CFontListRef &other);
+    /* The fonts of a project's file data; ref counts the block that holds them. */
+    CFontList(const FontList *fonts, const RCPtr<unsigned char> &ref) {
+        Attach(fonts, ref);
+    }
     virtual ~CFontList();
 };
 CHECK_SIZEOF(Chao::CSD::CFontList, 0xC);
@@ -56,10 +60,57 @@ struct SceneObjects {
 };
 CHECK_SIZEOF(Chao::CSD::SceneObjects, 0x24);
 
+class CScene;
+class CProject;
+
+/* What a scene reports to its listeners (class name and event names inferred from the vtables
+ * 0x8055FFB0 and 0x8055FF88: six event slots, each backed by one of the scene's six lists of
+ * listeners, and a destructor that releases the listener from the scenes it listens to). The
+ * events of the first two slots are the scene's motion reaching its first and its last frame
+ * (from CMotionEndPolicy); the other four are empty in every class that is known, and their
+ * parameters are unknown (their empty bodies do not show them). The listener keeps the scenes it
+ * listens to in a container at 0x4, which is not modelled yet. */
+class CSceneListener : public CBase {
+  public:
+    CSceneListener();
+    virtual ~CSceneListener();
+    virtual void OnReachStart(CScene *scene) {}
+    virtual void OnReachEnd(CScene *scene) {}
+    virtual void fn_8036F96C() {}
+    virtual void fn_8036F970() {}
+    virtual void fn_8036F974() {}
+    virtual void fn_8036F978() {}
+
+    /* 0x04 */ u8 field_0x4[0xC];
+};
+CHECK_SIZEOF(Chao::CSD::CSceneListener, 0x10);
+
+/* What a scene does when its motion reaches the first or the last frame (names inferred from the
+ * handlers; every scene starts with MOTION_END_HOLD for both). */
+enum MotionEndAction {
+    MOTION_END_PAUSE = 0,   /* pause the scene */
+    MOTION_END_HOLD = 1,    /* set the frame to the one reached */
+    MOTION_END_REVERSE = 2, /* reverse the direction of the playback */
+    MOTION_END_REMOVE = 3   /* remove the scene from its project */
+};
+
+/* The scene's reaction to the ends of its motion (class name inferred). */
+class CMotionEndPolicy : public CSceneListener {
+  public:
+    CMotionEndPolicy();
+    virtual void OnReachStart(CScene *scene);
+    virtual void OnReachEnd(CScene *scene);
+
+    /* 0x10 */ MotionEndAction m_startAction;
+    /* 0x14 */ MotionEndAction m_endAction;
+};
+CHECK_SIZEOF(Chao::CSD::CMotionEndPolicy, 0x18);
+
 /* A scene: its file data (the CSceneDataRef base), a palette of runtime entries built from it and
- * the playback of one of its motions. Only the members that csdmScene.cpp uses have names; the
- * base class that makes the scene a listener source (a second vtable pointer at 0xC), its listener
- * lists, the root pattern and the playback policy are not modelled yet. */
+ * the playback of one of its motions. The named members include those that csdmScene.cpp and
+ * csdmProject.cpp use and the end-of-motion policy that the scene's constructor builds; the base
+ * class that makes the scene a listener source (a second vtable pointer at 0xC), its listener
+ * lists and the root pattern are not modelled yet. */
 class CScene : public CSceneDataRef {
   public:
     /* The first and last frame of a motion (by name or by its index in the scene's data); a name
@@ -124,16 +175,21 @@ class CScene : public CSceneDataRef {
     /* 0x84 */ u8 field_0x84[0x4];
     /* 0x88 */ CMotionPattern *m_rootPattern;
     /* 0x8C */ s32 m_paused;
-    /* 0x90 */ u8 field_0x90[0x18];
+    /* 0x90 */ CMotionEndPolicy m_endPolicy;
     /* 0xA8 */ s32 m_motionIndex;
     /* 0xAC */ f32 field_0xAC;
-    /* 0xB0 */ u8 field_0xB0[0x1C];
+    /* 0xB0 */ u8 field_0xB0[0x18];
+    /* The project the scene was created by, set while it belongs to one (name inferred: the
+     * project's destructor clears it in each of its scenes). */
+    /* 0xC8 */ CProject *m_project;
     /* 0xCC */ SceneObjects *m_objects;
 };
 CHECK_OFFSETOF(Chao::CSD::CScene, m_motion, 0x64);
 CHECK_OFFSETOF(Chao::CSD::CScene, m_endFrame, 0x80);
 CHECK_OFFSETOF(Chao::CSD::CScene, m_paused, 0x8C);
+CHECK_OFFSETOF(Chao::CSD::CScene, m_endPolicy, 0x90);
 CHECK_OFFSETOF(Chao::CSD::CScene, m_motionIndex, 0xA8);
+CHECK_OFFSETOF(Chao::CSD::CScene, m_project, 0xC8);
 CHECK_SIZEOF(Chao::CSD::CScene, 0xD0);
 
 } // namespace CSD

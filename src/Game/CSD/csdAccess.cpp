@@ -136,7 +136,7 @@ void ResetEntry(MotionPaletteEntry *entry) {
     entry->charSpacing = -1000000.0f;
 }
 
-SceneData *GetSceneByName(const char *name, const ProjectData *project, const char **foundName) {
+SceneData *GetSceneByName(const char *name, const Project *project, const char **foundName) {
     if (foundName != NULL) {
         *foundName = NULL;
     }
@@ -184,7 +184,7 @@ const NodeEntry *FindNode(const char *name, const SceneData *scene) {
     return NULL;
 }
 
-SceneData *GetSceneByPath(const char *path, const ProjectData *project, const char **foundName) {
+SceneData *GetSceneByPath(const char *path, const Project *project, const char **foundName) {
     if (foundName != NULL) {
         *foundName = NULL;
     }
@@ -264,11 +264,11 @@ static SceneData *FindSceneByPath(char *path, const SceneFolder *folder, const c
     return NULL;
 }
 
-SceneFolder *GetFolderByName(const char *name, const ProjectData *project) {
+SceneFolder *GetFolderByName(const char *name, const Project *project) {
     return FindFolderByName(name, project->root);
 }
 
-SceneFolder *GetFolderByPath(const char *path, const ProjectData *project) {
+SceneFolder *GetFolderByPath(const char *path, const Project *project) {
     /* The path is copied because the lookup removes its components. The copy is not released when
      * the first component is not the project's name. */
     char *copy = static_cast<char *>(Alloc(strlen(path) + 1, __FILE__, __LINE__));
