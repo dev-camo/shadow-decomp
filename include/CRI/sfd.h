@@ -124,8 +124,8 @@ typedef struct {
     Sint32 ctime;        /* 0x164 accumulated concat time */
     Sint32 ctime_idx;    /* 0x168 */
     Sint32 ctime_que[SFCON_QUE_NUM]; /* 0x16C */
-    Sint32 tot_last;                 /* 0x1EC (1) */
-    Sint32 x1f0;                     /* 0x1F0 */
+    Sint32 tot_sfreq;                /* 0x1EC (1) sampling frequency (ADXT_GetSfreq) */
+    Sint32 x1f0;                     /* 0x1F0 samples of the finished files (sfmpv_Concat) */
     Sint32 que_wr;                   /* 0x1F4 */
     Sint32 que_rd;                   /* 0x1F8 */
     Sint32 tot_que[SFCON_QUE_NUM];   /* 0x1FC */
@@ -285,7 +285,7 @@ CHECK_SIZEOF(SFBUF_SUP, 0x18);
 typedef struct {
     SFBUF_SUP sup;    /* 0x00 */
     Uint8 *dlm_pos;   /* 0x18 delimiter position */
-    Sint32 dlm_len;   /* 0x1C */
+    Uint8 *dlm_end;   /* 0x1C end of the data searched for it */
     Sint32 wtot;      /* 0x20 total written (-1: unknown) */
     Sint32 rtot;      /* 0x24 total read */
     SFPTS_QUE ptsque; /* 0x28 */
@@ -843,6 +843,20 @@ typedef struct {
 } SFMPS_WORK;                               /* 0x168 */
 CHECK_SIZEOF(SFMPS_WORK, 0x168);
 
+/* video stream information the video driver takes from the first sequence header
+ * (sfmpv_DecodePicAtr; SFD_OBJ + 0x90C). Where the record ends is not known: sfply_InitHn clears
+ * 16 words from its start (through 0x94B, past these 6 words), and sfmpv_DecodePicAtr also writes
+ * x92c beside them, so the original may be one larger stream information record. */
+typedef struct {
+    Sint32 width;     /* 0x00 picture size in pixels */
+    Sint32 height;    /* 0x04 */
+    Sint32 mb_width;  /* 0x08 size in macroblocks */
+    Sint32 mb_height; /* 0x0C */
+    Sint32 bitrate;   /* 0x10 as MPV_GetBitRate returns it (0: no sequence header yet) */
+    Sint32 picrate;   /* 0x14 frame rate type (index into SFTIM_prate, 0: unknown) */
+} SFD_VIDINF;
+CHECK_SIZEOF(SFD_VIDINF, 0x18);
+
 typedef struct SFD_OBJ {
     SFD_CREPRM prm;                /* 0x00 */
     Sint32 chg_flg;                /* 0x44 set after a control change */
@@ -855,12 +869,7 @@ typedef struct SFD_OBJ {
     Uint8 pad60[0x74 - 0x60];      /* 0x60 */
     Sint32 x74;                    /* 0x74 */
     SFHDS_FHD fhd;                 /* 0x78 file header analysis */
-    Sint32 x90c;                   /* 0x90C stream information (16 words cleared by sfply_InitHn) */
-    Sint32 x910;                   /* 0x910 */
-    Sint32 x914;                   /* 0x914 */
-    Sint32 x918;                   /* 0x918 */
-    Sint32 x91c;                   /* 0x91C */
-    Sint32 picrate;                /* 0x920 frame rate type (index into SFTIM_prate, 0: unknown) */
+    SFD_VIDINF vid;                /* 0x90C (sfply_InitHn clears 16 words from here) */
     Sint32 x924;                   /* 0x924 last positive pack-header mux_rate (sfmps_ProcPrep) */
     Sint32 x928;                   /* 0x928 (1) */
     Sint32 x92c;                   /* 0x92C */
@@ -1014,6 +1023,9 @@ Sint32 SFBUF_RingAddWrite(SFD sfd, Sint32 n, Sint32 nbyte,
                           Sint32 rsv); /* rsv: SFBUF_RINF.rsv[1] of the caller, unused */
 Sint32 SFBUF_RingGetRead(SFD sfd, Sint32 n, SFBUF_RINF *inf);
 Sint32 SFBUF_RingGetWrite(SFD sfd, Sint32 n, SFBUF_RINF *inf);
+void SFBUF_AddRtotSj(SFD sfd, Sint32 n, Sint32 nbyte);
+void SFBUF_RingSetDlm(SFD sfd, Sint32 n, Uint8 *pos, Uint8 *end);
+void SFBUF_RingGetDlm(SFD sfd, Sint32 n, Uint8 **pos, Uint8 **end);
 void SFBUF_GetUoch(SFD sfd, Sint32 n, Sint32 chno, SFUO_CH *ch);
 void SFBUF_SetUoch(SFD sfd, Sint32 n, Sint32 chno, SFUO_CH *ch);
 Sint32 SFBUF_SetSupplySj(SFD sfd, SFBUF_SUP *sup);
@@ -1077,11 +1089,15 @@ void SFD_SetAdxtPara(SFADXT_PARA *para);
 /* sfd_pts.c */
 Sint32 SFPTS_IsPtsQueFull(SFD sfd, Sint32 strm);
 Sint32 SFPTS_WritePtsQue(SFD sfd, Sint32 strm, SFPTS_ENT *in, Sint32 *full);
+Sint32 SFPTS_ReadPtsQue(SFD sfd, Sint32 strm, Uint32 pos, SFPTS_ENT *out);
 Sint32 SFD_SetVideoPts(SFD sfd, void *buf, Sint32 size);
 void SFPTS_InitPtsQue(SFPTS_QUE *que);
 
 /* sfd_con.c */
-Sint32 SFCON_WriteTotSmplQue(SFD sfd, Sint32 val, Sint32 last);
+Sint32 SFCON_WriteTotSmplQue(SFD sfd, Sint32 val, Sint32 sfreq);
+Sint32 SFCON_ReadTotSmplQue(SFD sfd, Sint32 *val, Sint32 *sfreq);
+void SFCON_UpdateConcatTime(SFD sfd, Sint32 t);
+Sint32 SFCON_IsVideoEndcodeSkip(SFD sfd);
 Sint32 SFCON_IsSystemEndcodeSkip(SFD sfd);
 Sint32 SFCON_IsEndcodeSkip(SFD sfd);
 Sint32 SFD_SetConcatPlay(SFD sfd);
@@ -1098,6 +1114,9 @@ void SFSEE_InitHn(SFSEE_HN *see);
 
 /* sfd_tim.c */
 void SFTIM_SetSpeed(SFD sfd, Sint32 speed);
+Sint32 SFTIM_GetSpeed(SFD sfd);
+Sint32 SFTIM_GetNextItime(SFTIM tim, Sint32 t);
+void SFTIM_UpdateItime(SFTIM tim, Sint32 t);
 Bool SFTIM_IsVideoTerm(SFD sfd);
 Bool SFTIM_IsGetFrmTimeTunit(SFD sfd, Sint32 ftime, Sint32 tunit);
 Bool SFTIM_IsGetFrmTime(SFD sfd, SFD_VFRM_INF *inf);

@@ -200,26 +200,26 @@ Sint32 SFBUF_GetRingBufSiz(SFD sfd, Sint32 n) {
     return sfd->buf[n].u.ring.sup.size;
 }
 
-/* Records where the demuxer found the next start-code delimiter in ring n (position/length), so the
- * video driver can stop at picture boundaries. */
-void SFBUF_RingSetDlm(SFD sfd, Sint32 n, Uint8 *pos, Sint32 len) {
+/* Records a start-code delimiter found in ring n and the end of the data searched for it, so the
+ * video driver need not search that data again. */
+void SFBUF_RingSetDlm(SFD sfd, Sint32 n, Uint8 *pos, Uint8 *end) {
     SFBUF_HN *hn = SFBUF_GET_HN(sfd, n);
     Sint32 cs;
 
     SFLIB_LockCs(&cs);
     hn->w.u.ring.dlm_pos = pos;
-    hn->w.u.ring.dlm_len = len;
+    hn->w.u.ring.dlm_end = end;
     SFLIB_UnlockCs(&cs);
 }
 
 /* Reads the recorded delimiter of ring n. */
-void SFBUF_RingGetDlm(SFD sfd, Sint32 n, Uint8 **pos, Sint32 *len) {
+void SFBUF_RingGetDlm(SFD sfd, Sint32 n, Uint8 **pos, Uint8 **end) {
     SFBUF_HN *hn = SFBUF_GET_HN(sfd, n);
     Sint32 cs;
 
     SFLIB_LockCs(&cs);
     *pos = hn->w.u.ring.dlm_pos;
-    *len = hn->w.u.ring.dlm_len;
+    *end = hn->w.u.ring.dlm_end;
     SFLIB_UnlockCs(&cs);
 }
 
@@ -267,7 +267,7 @@ static inline Sint32 sfbuf_RingAddReadSub(SFD sfd, Sint32 n, Sint32 nbyte) {
             if ((ring->dlm_pos < ck1.data || ring->dlm_pos >= ck1.data + ck1.len) &&
                 (ring->dlm_pos < ckw.data || ring->dlm_pos >= ckw.data + ckw.len)) {
                 ring->dlm_pos = 0;
-                ring->dlm_len = 0;
+                ring->dlm_end = 0;
             }
         }
         sfbuf_AddTot(&ring->rtot, nbyte);
@@ -416,7 +416,7 @@ static void sfbuf_SetSup(SFBUF_WORK *wk, SFBUF_RING *ring, SFBUF_SUP *sup, Sint3
     wk->used = used;
     ring->sup = *sup;
     ring->dlm_pos = 0;
-    ring->dlm_len = 0;
+    ring->dlm_end = 0;
     ring->wtot = 0;
     ring->rtot = 0;
     SFPTS_InitPtsQue(&ring->ptsque);

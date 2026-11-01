@@ -151,7 +151,7 @@ static inline Bool sftim_IsGetFrmTime(SFD sfd, Sint32 ftime, Sint32 tunit) {
             } else {
                 cnt = tim->x2bc;
                 fast = 0;
-                if (vrate == 59940 && sfd->picrate <= 2 && tim->speed == 1000) {
+                if (vrate == 59940 && sfd->vid.picrate <= 2 && tim->speed == 1000) {
                     fast = 1;
                 }
                 if (cnt <= (fast != 0)) {
@@ -199,10 +199,10 @@ Sint32 SFD_GetFps(SFD sfd, Sint32 *fps) {
     if (SFLIB_CheckHn(sfd) != 0) {
         return SFLIB_SetErr(0, 0xFF00011B);
     }
-    if (sfd->picrate == 0) {
+    if (sfd->vid.picrate == 0) {
         return 0;
     }
-    *fps = SFTIM_prate[sfd->picrate];
+    *fps = SFTIM_prate[sfd->vid.picrate];
     return 0;
 }
 
@@ -210,7 +210,7 @@ Sint32 SFD_GetFps(SFD sfd, Sint32 *fps) {
 void SFTIM_GetTimeOneFrmVideo(SFD sfd, Sint32 *ncount, Sint32 *tscale) {
     Sint32 picrate;
 
-    picrate = sfd->picrate;
+    picrate = sfd->vid.picrate;
     if (picrate == 0) {
         *ncount = 0;
         *tscale = 29970;
@@ -775,7 +775,7 @@ void SFTIM_InitHn(SFD sfd, SFTIM tim) {
     for (i = 0; i < SFCON_QUE_NUM; i++) {
         tim->ctime_que[i] = 0;
     }
-    tim->tot_last = 1;
+    tim->tot_sfreq = 1;
     tim->x1f0 = 0;
     tim->que_wr = 0;
     tim->que_rd = 0;
