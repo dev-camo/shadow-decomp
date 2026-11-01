@@ -1379,3 +1379,7 @@ CRI/cft_lib.c:
 	.text       start:0x8040BBE4 end:0x8040BC18
 	.rodata     start:0x8051B370 end:0x8051B3C8
 	.bss        start:0x805E17D8 end:0x805E17E0
+
+Game/fn_804220CC.cpp:
+	.text       start:0x8042311C end:0x8042327C
+	.data       start:0x8056B1A0 end:0x8056B228
