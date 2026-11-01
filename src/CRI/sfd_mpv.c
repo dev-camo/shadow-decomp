@@ -42,12 +42,12 @@ typedef void (*SFMPV_HDRCB)(void *obj, Uint8 *data, Sint32 size);
 #define SFMPV_ERR_PARA 0xFF000F15
 #define SFMPV_ERR_PICATR 0xFF000F1B
 #define SFMPV_ERR_PICUSR 0xFF000F1D
-#define SFMPV_ERR_FRM_ID 0xFF000F1F     /* no frame has this id (released twice) */
-#define SFMPV_ERR_PICATR_DEC 0xFF000F04 /* MPV_DecodePicAtrSj failed */
-#define SFMPV_ERR_PICATR_GET 0xFF000F05 /* MPV_GetPicAtr failed */
-#define SFMPV_ERR_SKIP 0xFF000F07       /* MPV_SkipFrmSj failed */
-#define SFMPV_ERR_BITRATE 0xFF000F16    /* MPV_GetBitRate failed */
-#define SFMPV_ERR_FRMSIZE 0xFF000F17    /* the frame buffers do not hold the picture size */
+#define SFMPV_ERR_FRM_ID 0xFF000F1F      /* no frame has this id (released twice) */
+#define SFMPV_ERR_PICATR_DEC 0xFF000F04  /* MPV_DecodePicAtrSj failed */
+#define SFMPV_ERR_PICATR_GET 0xFF000F05  /* MPV_GetPicAtr failed */
+#define SFMPV_ERR_SKIP 0xFF000F07        /* MPV_SkipFrmSj failed */
+#define SFMPV_ERR_BITRATE 0xFF000F16     /* MPV_GetBitRate failed */
+#define SFMPV_ERR_FRMSIZE 0xFF000F17     /* the frame buffers do not hold the picture size */
 #define SFMPV_ERR_PICATR_SIZE 0xFF000F19 /* MPV_PICATR is not 0x80 bytes */
 #define SFMPV_ERR_VHDR_SIZE 0xFF000F1A   /* the video header analysis is too large */
 #define SFMPV_ERR_RING_FULL 0xFF000F1C   /* the input ring is too full for another unit */
@@ -2133,7 +2133,8 @@ static inline Sint32 sfmpv_CheckPara(SFMPV_PARA *para) {
 /* Sets the work up from the saved resources: the decoder starts in the picture state 5 with all
  * frames free. */
 Sint32 sfmpv_InitInf(SFD sfd, SFMPV_WORK *wk) {
-    Sint32 i;
+    SFMPV_FRM *frm;
+    int i;
 
     if (sfmpv_CheckPara(&sfmpv_para) != 0) {
         return SFLIB_SetErr(0, SFMPV_ERR_PARA);
@@ -2155,9 +2156,8 @@ Sint32 sfmpv_InitInf(SFD sfd, SFMPV_WORK *wk) {
     wk->skipret = 0;
     wk->dlmwait = 0;
     wk->tmpref_adj = 0;
-    for (i = 0; i < SFMPV_FRM_NUM; i++) {
-        SFMPV_FRM *frm = &wk->frm[i];
-
+    frm = wk->frm;
+    for (i = 0; i < SFMPV_FRM_NUM; i++, frm++) {
         frm->stat = SFMPV_FRM_FREE;
         frm->lock = 0;
         SFTIM_InitTtu(&frm->ttu, 0);
@@ -2333,10 +2333,10 @@ void sfmpv_SetFrmInf(SFD sfd, SFMPV_FRM *frm, SFD_VFRM_INF **out) {
  * ids the frame is found by id, otherwise it must be the one handed out last. */
 Sint32 SFMPV_AddRead(SFD sfd, SFD_VFRM_INF *inf, Sint32 id) {
     Sint32 cs;
+    Sint32 ret;
     SFMPV_WORK *wk;
     SFMPV_FRM *frm;
     SFD_VFRM *vfrm;
-    Sint32 ret;
 
     SFLIB_LockCs(&cs);
     wk = SFMPV_WK(sfd);
