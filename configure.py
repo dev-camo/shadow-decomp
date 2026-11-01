@@ -245,9 +245,10 @@ cflags_game = [
     "-i include/libc",
 ]
 
-# The MSL C, math and C++ library headers. The C++ units built with cflags_game_cpp or cflags_csd
-# and Game/fn_8041116C.cpp search them in place of include/libc; C game code and the other fn_8040
-# C++ helpers (cflags_game) keep the C declarations in include/libc.
+# The MSL C, math and C++ library headers. The C++ units built with cflags_game_cpp or cflags_csd,
+# Game/fn_8041116C.cpp and Game/fn_80420724.cpp (for <cmath>) search them in place of include/libc;
+# C game code and the other fn_8040 C++ helpers (cflags_game) keep the C declarations in
+# include/libc.
 msl_includes = [
     "-i src/PowerPC_EABI_Support",
     "-i src/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Include",
@@ -1284,6 +1285,27 @@ config.libs = [
                 Object(
                     NonMatching,
                     "Game/fn_8042043C.cpp",
+                    extra_cflags=[
+                        "-Cpp_exceptions on",
+                        "-O4,s",
+                        "-use_lmw_stmw on",
+                        "-str reuse,readonly",
+                        "-inline auto,level=1",
+                    ],
+                ),
+                # Quaternion helpers that follow the control of motions in the same library. All
+                # three functions are identical to the original, but the pool of float literals
+                # (.sdata2 0x805FAE30-0x805FAE48) is in another order: the original's is 0, 2, 1,
+                # 0.9999, 0.5, 4 and ours is 1, 0, 0.9999, 0.5, 4, 2 (the order of first use), so
+                # the literals are addressed at other offsets. The original pools 0 and 2 before
+                # fn_80420724's literals, although 2 is first used in fn_804208EC: a throwaway
+                # function storing 0.0f and then 2.0f placed first reproduces the original order,
+                # so the pool was most likely started by code the executable does not contain.
+                # Matching needs that code's real form. Built with the MSL headers for <cmath>.
+                Object(
+                    NonMatching,
+                    "Game/fn_80420724.cpp",
+                    cflags=[*cflags_base, *msl_includes],
                     extra_cflags=[
                         "-Cpp_exceptions on",
                         "-O4,s",
