@@ -86,6 +86,14 @@ Game/fn_801A6588.cpp:
 Game/fn_801D455C.cpp:
 	.text       start:0x801D48FC end:0x801D4964
 
+Game/ElecSmallCube.cpp:
+	.text       start:0x8021B0C0 end:0x8021C074
+	.rodata     start:0x804F1518 end:0x804F1628
+	.data       start:0x80546988 end:0x805469F8
+	.sdata      start:0x805EA8F0 end:0x805EA918
+	.sbss       start:0x805F0DE8 end:0x805F0DF8
+	.sdata2     start:0x805F7CF0 end:0x805F7D28
+
 Game/CSD/csdMatrix.cpp:
 	.text       start:0x80360664 end:0x80361370
 	.rodata     start:0x80514000 end:0x80514020
