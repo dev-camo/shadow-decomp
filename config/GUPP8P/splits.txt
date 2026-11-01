@@ -1406,3 +1406,10 @@ Game/EffectLensFlare.cpp:
 	.text       start:0x8042B7C0 end:0x8042B93C
 	.rodata     start:0x8051BFB0 end:0x8051BFF8
 	.data       start:0x8056B998 end:0x8056B9C8
+
+Game/EffectShimmer.cpp:
+	extab       start:0x80006D28 end:0x80006E5C
+	extabindex  start:0x8000875C end:0x800087D4
+	.text       start:0x8042B93C end:0x8042C3FC
+	.rodata     start:0x8051BFF8 end:0x8051C1A8
+	.data       start:0x8056B9C8 end:0x8056BBA0
