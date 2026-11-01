@@ -1978,6 +1978,26 @@ Game/EffCmdWaitExec.cpp:
 	.text       start:0x80422D78 end:0x80422ED0
 	.rodata     start:0x8051A720 end:0x8051A730
 
+Game/EffCmdMatAlphaExec.cpp:
+	extab       start:0x800062EC end:0x80006310
+	extabindex  start:0x80008354 end:0x8000836C
+	.text       start:0x80422ED0 end:0x804232D4
+
+Game/EffCmdMatColorExec.cpp:
+	extab       start:0x80006310 end:0x80006334
+	extabindex  start:0x8000836C end:0x80008384
+	.text       start:0x804232D4 end:0x80423908
+
+Game/EffCmd2DSclExec.cpp:
+	extab       start:0x80006334 end:0x80006358
+	extabindex  start:0x80008384 end:0x8000839C
+	.text       start:0x80423908 end:0x80423C20
+
+Game/EffCmd3DSclExec.cpp:
+	extab       start:0x80006358 end:0x8000637C
+	extabindex  start:0x8000839C end:0x800083B4
+	.text       start:0x80423C20 end:0x80423F98
+
 Game/EffCmdGlareSWExec.cpp:
 	.text       start:0x80423F98 end:0x80424038
 
@@ -2000,9 +2020,9 @@ Game/fn_80424D18.c:
 	.text       start:0x80424D18 end:0x80424D20
 
 Game/fn_80424D20.cpp:
-	extab       start:0x80006404 end:0x80006424
-	extabindex  start:0x80008408 end:0x80008438
-	.text       start:0x80424D20 end:0x80424E90
+	extab       start:0x80006404 end:0x80006444
+	extabindex  start:0x80008408 end:0x80008468
+	.text       start:0x80424D20 end:0x80425000
 
 Game/fn_80425858.c:
 	.text       start:0x80425858 end:0x80425860

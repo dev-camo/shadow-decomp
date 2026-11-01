@@ -1366,14 +1366,19 @@ config.libs = [
                 # Six method instruction sequences match. Their local RTTI is shared with
                 # remaining command classes and stays in the original data fallback.
                 Object(NonMatching, "Game/fn_80422B18.cpp", cflags=cflags_effect),
+                # Exact instruction sequences; floating-point literals remain shared with other commands.
+                Object(NonMatching, "Game/EffCmdMatAlphaExec.cpp", cflags=cflags_effect),
+                Object(NonMatching, "Game/EffCmdMatColorExec.cpp", cflags=cflags_effect),
+                Object(NonMatching, "Game/EffCmd2DSclExec.cpp", cflags=cflags_effect),
+                Object(NonMatching, "Game/EffCmd3DSclExec.cpp", cflags=cflags_effect),
                 # Exact instruction sequences; local float literals remain shared with other commands.
                 Object(NonMatching, "Game/EffCmdVector3Exec.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/EffCmdVector2Exec.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/EffCmdSingleExec.cpp", cflags=cflags_effect),
                 # Exact methods; other commands still share the local floating-point literals.
                 Object(NonMatching, "Game/EffCmdWaitExec.cpp", cflags=cflags_effect),
-                # Four destructors match; their vtables/RTTI belong with the other command
-                # classes and cannot yet be merged across the intervening matching unit.
+                # Eight destructor instruction sequences match. Their vtables/RTTI belong with
+                # other command classes, across the intervening matching unit.
                 Object(NonMatching, "Game/fn_80424D20.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/fn_8040CF2C.c"),
                 Object(Matching, "Game/fn_804202B8.c"),
