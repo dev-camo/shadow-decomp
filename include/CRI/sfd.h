@@ -412,6 +412,11 @@ CHECK_SIZEOF(SFD_TR, 0x44);
 #define SFD_COND_PSMAPOBJ 0x58
 #define SFD_COND_PESFN 0x5B
 #define SFD_COND_PESOBJ 0x5C
+/* inferred names: address and size of a sequence header the application supplies before the stream;
+ * with the decoder still waiting for the first sequence header, sfmpv_ExecServerSub decodes it as
+ * the picture attributes (MPV_DecodePicAtr) */
+#define SFD_COND_HDRDAT_ADR 0x5D
+#define SFD_COND_HDRDAT_SIZE 0x5E
 
 #define SFD_VFRM_NUM 16
 
@@ -994,6 +999,7 @@ Sint32 SFTRN_Init(SFTRN_TRIF_TBL *dst, SFTRN_TRIF_TBL *src);
 Sint64 SFBUF_UpdateFlowCnt(Sint64 cnt, Uint32 pos);
 void SFBUF_GetFlowCnt(SJ sj, Sint32 *wcnt, Sint32 *rcnt);
 Sint32 SFBUF_RingGetDataSiz(SFD sfd, Sint32 n);
+Sint32 SFBUF_GetRingBufSiz(SFD sfd, Sint32 n);
 Sint32 SFBUF_GetTermFlg(SFD sfd, Sint32 n);
 void SFBUF_SetTermFlg(SFD sfd, Sint32 n, Sint32 flg);
 Sint32 SFBUF_GetPrepFlg(SFD sfd, Sint32 n);
