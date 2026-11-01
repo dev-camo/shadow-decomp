@@ -1413,3 +1413,10 @@ Game/EffectShimmer.cpp:
 	.text       start:0x8042B93C end:0x8042C3FC
 	.rodata     start:0x8051BFF8 end:0x8051C1A8
 	.data       start:0x8056B9C8 end:0x8056BBA0
+
+Game/EffectGlobalParamRW3.cpp:
+	extab       start:0x800074A0 end:0x800074CC
+	extabindex  start:0x80008CB4 end:0x80008CD8
+	.text       start:0x80439A8C end:0x8043AB68
+	.rodata     start:0x8051CAB0 end:0x8051CB78
+	.data       start:0x8056C080 end:0x8056C0E8

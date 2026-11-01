@@ -2087,6 +2087,13 @@ Game/EffectShimmer.cpp:
 	.rodata     start:0x8051AEE0 end:0x8051B090
 	.data       start:0x8056A908 end:0x8056AAE0
 
+Game/EffectGlobalParamRW3.cpp:
+	extab       start:0x800074A0 end:0x800074CC
+	extabindex  start:0x80008CB4 end:0x80008CD8
+	.text       start:0x80438A3C end:0x80439B18
+	.rodata     start:0x8051B998 end:0x8051BA60
+	.data       start:0x8056AFC0 end:0x8056B028
+
 Game/gcaxSndMemory.c:
 	.text       start:0x8043AA7C end:0x8043B25C
 	.rodata     start:0x8051BB28 end:0x8051BC08

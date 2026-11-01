@@ -287,6 +287,15 @@ cflags_effect = [
     "-pool off",
 ]
 
+# RW3 GlobalParam addresses RTTI and its vtable through a shared data base.
+# Keep default pooling with the effect exception and section settings.
+cflags_effect_rw3 = [
+    *cflags_game_cpp,
+    "-Cpp_exceptions on",
+    "-sdata 0",
+    "-sdata2 0",
+]
+
 # Sega's GameCube AX sound library (gcax*.c): optimized for size with stmw/lmw, read-only strings,
 # and deferred inlining of only the functions marked inline.
 cflags_game_gcax = [
@@ -1427,6 +1436,7 @@ config.libs = [
             # Eight of ten functions identical; Update differs in registers, constructor in
             # allocation exception handling and loop code (592 versus 556 bytes).
             Object(NonMatching, "Game/EffectShimmer.cpp", cflags=cflags_effect),
+            Object(Matching, "Game/EffectGlobalParamRW3.cpp", cflags=cflags_effect_rw3),
         ],
     },
     DolphinLib(
