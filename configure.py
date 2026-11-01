@@ -1037,7 +1037,7 @@ config.libs = [
                 Object(Matching, "Game/fn_80425858.c"),
                 Object(Matching, "Game/fn_8040D8D4.c"),
                 Object(Matching, "Game/fn_8040D850.c"),
-                Object(Matching, "Game/fn_80424D18.c"),
+                Object(Matching, "Game/fn_80424D18.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/fn_8040D9D8.c"),
                 Object(Matching, "Game/fn_8040D498.c"),
                 # 3x4 matrix helpers. Nine of 28 functions still differ. The three axis rotations
@@ -1363,6 +1363,10 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
+                # Shared RTTI and floating-point literals remain in the original fallback.
+                Object(NonMatching, "Game/fn_80422070.cpp", cflags=cflags_effect),
+                Object(NonMatching, "Game/EffCmdRequestStopExec.cpp", cflags=cflags_effect),
+                Object(NonMatching, "Game/EffCmdLaunchExec.cpp", cflags=cflags_effect),
                 # Six method instruction sequences match. Their local RTTI is shared with
                 # remaining command classes and stays in the original data fallback.
                 Object(NonMatching, "Game/fn_80422B18.cpp", cflags=cflags_effect),
@@ -1371,13 +1375,15 @@ config.libs = [
                 Object(NonMatching, "Game/EffCmdMatColorExec.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/EffCmd2DSclExec.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/EffCmd3DSclExec.cpp", cflags=cflags_effect),
+                # Exact pattern methods; local float literals remain shared with other commands.
+                Object(NonMatching, "Game/EffCmdPtnAnimExec.cpp", cflags=cflags_effect),
                 # Exact instruction sequences; local float literals remain shared with other commands.
                 Object(NonMatching, "Game/EffCmdVector3Exec.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/EffCmdVector2Exec.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/EffCmdSingleExec.cpp", cflags=cflags_effect),
                 # Exact methods; other commands still share the local floating-point literals.
                 Object(NonMatching, "Game/EffCmdWaitExec.cpp", cflags=cflags_effect),
-                # Eight destructor instruction sequences match. Their vtables/RTTI belong with
+                # Twelve destructor instruction sequences match. Their vtables/RTTI belong with
                 # other command classes, across the intervening matching unit.
                 Object(NonMatching, "Game/fn_80424D20.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/fn_8040CF2C.c"),

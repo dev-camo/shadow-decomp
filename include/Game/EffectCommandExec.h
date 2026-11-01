@@ -3,10 +3,16 @@
 
 #include "Game/fn_8042A444.h"
 #include "Game/fn_8040_vector_types.h"
+#include "boost/weak_ptr.hpp"
 #include "layout_check.h"
 
 namespace Effect {
 namespace System {
+
+class EffectElement;
+class EffectObject;
+class EffectManager;
+class EffectLaunchInfo;
 
 /* Command output flags (names inferred from the command classes and their writes). */
 enum { COMMAND_STOP_REQUESTED = 1, COMMAND_GLARE_CHANGED = 2, COMMAND_GLARE_ENABLED = 4 };
@@ -82,6 +88,34 @@ struct UnkMatColorData : UnkValueData {
     /* 0x0F */ unsigned char range[3];
 };
 CHECK_SIZEOF(UnkMatColorData, 0x12);
+
+struct UnkPtnAnimData : UnkCommandData {
+    /* 0x04 */ unsigned char mode;
+    /* 0x05 */ unsigned char loop;
+    /* 0x06 */ unsigned char start;
+    /* 0x07 */ unsigned char startRange;
+    /* 0x08 */ unsigned char end;
+    /* 0x09 */ unsigned char field_0x9[3];
+    /* 0x0C */ unsigned short interval;
+    /* 0x0E */ unsigned short intervalRange;
+};
+CHECK_SIZEOF(UnkPtnAnimData, 0x10);
+
+struct UnkLaunchData : UnkValueData {
+    /* 0x0C */ int id;
+    /* 0x10 */ Fn8040Vector3 translation;
+    /* 0x1C */ Fn8040Vector3 translationRange;
+    /* 0x28 */ Fn8040Vector3 rotation;
+    /* 0x34 */ Fn8040Vector3 rotationRange;
+    /* 0x40 */ Fn8040Vector3 scale;
+    /* 0x4C */ Fn8040Vector3 scaleRange;
+};
+CHECK_SIZEOF(UnkLaunchData, 0x58);
+
+struct UnkTimedLaunchData : UnkLaunchData {
+    /* 0x58 */ unsigned char stopAtDuration;
+};
+CHECK_SIZEOF(UnkTimedLaunchData, 0x5C);
 
 /* Class names are recorded in the original RTTI. Member names are inferred from use. */
 class EffectCommandExec {
@@ -258,6 +292,55 @@ class EffCmd3DSclExec : public EffectCommandExec {
     /* 0x24 */ Fn8040Vector3 m_rate;
 };
 CHECK_SIZEOF(EffCmd3DSclExec, 0x30);
+
+class EffCmdPtnAnimExec : public EffectCommandExec {
+  public:
+    EffCmdPtnAnimExec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector2 *lower,
+                      Fn8040Vector2 *upper);
+    virtual ~EffCmdPtnAnimExec();
+    virtual bool Update(float deltaTime);
+
+    /* 0x14 */ unsigned int *m_flags;
+    /* 0x18 */ Fn8040Vector2 *m_lower;
+    /* 0x1C */ Fn8040Vector2 *m_upper;
+    /* 0x20 */ unsigned char m_current;
+    /* 0x21 */ unsigned char m_start;
+    /* 0x22 */ unsigned char m_end;
+    /* 0x23 */ unsigned char m_divisions;
+    /* 0x24 */ float m_elapsed;
+    /* 0x28 */ float m_interval;
+};
+CHECK_SIZEOF(EffCmdPtnAnimExec, 0x2C);
+
+class EffCmdRequestStopExec : public EffectCommandExec {
+  public:
+    EffCmdRequestStopExec(const UnkCommandData *command, unsigned int *flags,
+                          EffectElement *target);
+    virtual ~EffCmdRequestStopExec();
+    virtual bool Update(float deltaTime);
+
+    /* 0x14 */ unsigned int *m_flags;
+};
+CHECK_SIZEOF(EffCmdRequestStopExec, 0x18);
+
+class EffCmdLaunchExec : public EffectCommandExec {
+  public:
+    EffCmdLaunchExec(const UnkCommandData *command, unsigned int *flags, EffectManager *manager,
+                     EffectLaunchInfo *info, EffectObject *parent);
+    virtual ~EffCmdLaunchExec();
+    virtual bool Update(float deltaTime);
+
+    /* 0x14 */ unsigned int *m_flags;
+    /* 0x18 */ float m_elapsed;
+    /* 0x1C */ float m_duration;
+    /* 0x20 */ boost::weak_ptr<EffectElement> m_child;
+    /* 0x28 */ EffectObject *m_parent;
+    /* 0x2C */ Fn8040Vector3 m_translation;
+    /* 0x38 */ Fn8040Vector3 m_rotation;
+    /* 0x44 */ Fn8040Vector3 m_scale;
+    /* 0x50 */ Fn8040Matrix34 m_transform;
+};
+CHECK_SIZEOF(EffCmdLaunchExec, 0x80);
 
 } // namespace System
 } // namespace Effect

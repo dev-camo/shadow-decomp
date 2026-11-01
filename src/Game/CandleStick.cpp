@@ -14,7 +14,7 @@
 #include "Game/SetAdapterState.h"
 #include "Game/UnkAttack_8005A840.h"
 #include "Game/UnkBitFlags_80014E04.h"
-#include "Game/UnkEffect_80168C48.h"
+#include "Game/EffectElement.h"
 #include "Game/UnkEffectParams_8015F0B8.h"
 #include "Game/UnkGadgetOwner_800C9CD0.h"
 #include "Game/UnkResource_80012700.h"
@@ -97,7 +97,7 @@ class CandleStick : public Gadget {
 
     /* 0x30 */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
     /* 0x38 */ boost::shared_ptr<GadgetModelInfo> m_model;
-    /* 0x40 */ boost::weak_ptr<UnkEffect_80168C48> m_effect;
+    /* 0x40 */ boost::weak_ptr<Effect::System::EffectElement> m_effect;
     /* 0x48 */ u8 m_comId; /* copied from the owner (name inferred) */
     /* Set by OnAttack and consumed by UpdateBody: bit 0 the candle stick has broken, bit 1 it was
      * lit (behaviour inferred). */
@@ -132,7 +132,7 @@ CandleStick::CandleStick(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(
  * such function. Revisit if the original's shared inline form is found. */
 CandleStick::~CandleStick() {
     if (!m_effect.expired()) {
-        boost::shared_ptr<UnkEffect_80168C48> effect(m_effect.lock());
+        boost::shared_ptr<Effect::System::EffectElement> effect(m_effect.lock());
 
         if (effect.get() != 0) {
             effect->ClearFlags(1);
@@ -208,7 +208,7 @@ void CandleStick::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         m_sound.fn_801D455C();
 
         if (!m_effect.expired()) {
-            boost::shared_ptr<UnkEffect_80168C48> effect(m_effect.lock());
+            boost::shared_ptr<Effect::System::EffectElement> effect(m_effect.lock());
 
             if (effect.get() != 0) {
                 effect->ClearFlags(1);
@@ -285,7 +285,7 @@ void CandleStick::UpdateModelMatrix() {
     m_model->fn_801633DC(&matrix);
 
     if (!m_effect.expired()) {
-        boost::shared_ptr<UnkEffect_80168C48> effect(m_effect.lock());
+        boost::shared_ptr<Effect::System::EffectElement> effect(m_effect.lock());
 
         if (effect.get() != 0) {
             Fn8040Vector3 effectPosition;

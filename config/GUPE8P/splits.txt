@@ -1962,9 +1962,22 @@ Game/fn_804211CC.c:
 	.text       start:0x804211CC end:0x8042166C
 	.sbss       start:0x805F13E8 end:0x805F1400
 
+Game/fn_80422070.cpp:
+	extab       start:0x800061D8 end:0x800061E0
+	extabindex  start:0x8000830C end:0x80008318
+	.text       start:0x80422070 end:0x804220CC
+
 Game/fn_804220CC.cpp:
 	.text       start:0x804220CC end:0x8042222C
 	.data       start:0x8056A0E0 end:0x8056A168
+
+Game/EffCmdRequestStopExec.cpp:
+	.text       start:0x8042222C end:0x804222A8
+
+Game/EffCmdLaunchExec.cpp:
+	extab       start:0x800061E0 end:0x800062C8
+	extabindex  start:0x80008318 end:0x8000833C
+	.text       start:0x804222A8 end:0x80422B18
 
 Game/fn_80422B18.cpp:
 	extab       start:0x800062C8 end:0x800062E4
@@ -2001,6 +2014,11 @@ Game/EffCmd3DSclExec.cpp:
 Game/EffCmdGlareSWExec.cpp:
 	.text       start:0x80423F98 end:0x80424038
 
+Game/EffCmdPtnAnimExec.cpp:
+	extab       start:0x8000637C end:0x800063A0
+	extabindex  start:0x800083B4 end:0x800083CC
+	.text       start:0x80424038 end:0x804244F4
+
 Game/EffCmdVector3Exec.cpp:
 	extab       start:0x800063A0 end:0x800063C4
 	extabindex  start:0x800083CC end:0x800083E4
@@ -2016,13 +2034,13 @@ Game/EffCmdSingleExec.cpp:
 	extabindex  start:0x800083FC end:0x80008408
 	.text       start:0x80424AD0 end:0x80424D18
 
-Game/fn_80424D18.c:
+Game/fn_80424D18.cpp:
 	.text       start:0x80424D18 end:0x80424D20
 
 Game/fn_80424D20.cpp:
-	extab       start:0x80006404 end:0x80006444
-	extabindex  start:0x80008408 end:0x80008468
-	.text       start:0x80424D20 end:0x80425000
+	extab       start:0x80006404 end:0x80006464
+	extabindex  start:0x80008408 end:0x80008498
+	.text       start:0x80424D20 end:0x80425170
 
 Game/fn_80425858.c:
 	.text       start:0x80425858 end:0x80425860

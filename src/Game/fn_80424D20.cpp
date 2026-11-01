@@ -4,6 +4,10 @@
 namespace Effect {
 namespace System {
 
+EffCmdSingleExec::~EffCmdSingleExec() {}
+EffCmdVector2Exec::~EffCmdVector2Exec() {}
+EffCmdPtnAnimExec::~EffCmdPtnAnimExec() {}
+EffCmdGlareSWExec::~EffCmdGlareSWExec() {}
 EffCmd3DSclExec::~EffCmd3DSclExec() {}
 EffCmd2DSclExec::~EffCmd2DSclExec() {}
 EffCmdMatColorExec::~EffCmdMatColorExec() {}
