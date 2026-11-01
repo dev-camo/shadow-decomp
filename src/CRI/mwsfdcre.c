@@ -25,9 +25,7 @@
 #include "CRI/mwsfdsvm.h"
 #include "CRI/mwstm.h"
 
-/* driver tables of the three file types, in driver order (the unused slots are 0). The creation
- * parameters declare them as pointers to function tables while the entries are the drivers'
- * interface records. */
+/* Driver tables of the three file types, in driver order (unused slots are null). */
 static const SFD_TR_IF *const mwsfd_mps_trsetup[SFD_TR_NUM] = {
     &SFD_tr_in_mem, &SFD_tr_sd_mps,  &SFD_tr_vd_mpv,    &SFD_tr_ad_adxt, NULL,
     NULL,           &SFD_tr_vo_manu, &SFD_tr_ao_auto_p, &SFD_tr_uo,
@@ -47,9 +45,10 @@ static const SFD_TR_IF *const mwsfd_vonlysfd_trsetup[SFD_TR_NUM] = {
 #define MWSFD_AINFSJ_BSIZE 0x20000
 
 /* Creation parameters of the SFD handle of each file type; mwsfcre_CreateSfd fills in the
- * buffers. */
+ * buffers. The const tables are passed through the shared runtime interface; these sites remove
+ * their const qualification without changing their readonly storage. */
 static SFD_CREPRM mwsfd_sfdmps_crepara = {
-    (SFD_TR_FUNC **)mwsfd_mps_trsetup,       /* trif_tbl */
+    (SFD_TR_IF **)mwsfd_mps_trsetup,         /* trif_tbl */
     0,                                       /* adr, set at creation */
     {0x10000, 0x50800, 0x12000, 0, 0, 0, 0}, /* size */
     0,                                       /* x24 */
@@ -62,7 +61,7 @@ static SFD_CREPRM mwsfd_sfdmps_crepara = {
     0,                                       /* hnwksiz */
 };
 static SFD_CREPRM mwsfd_sfdmpv_crepara = {
-    (SFD_TR_FUNC **)mwsfd_mpv_trsetup,       /* trif_tbl */
+    (SFD_TR_IF **)mwsfd_mpv_trsetup,         /* trif_tbl */
     0,                                       /* adr, set at creation */
     {0x10000, 0x50800, 0x12000, 0, 0, 0, 0}, /* size */
     0,                                       /* x24 */
@@ -75,7 +74,7 @@ static SFD_CREPRM mwsfd_sfdmpv_crepara = {
     0,                                       /* hnwksiz */
 };
 static SFD_CREPRM mwsfd_vonlysfd_crepara = {
-    (SFD_TR_FUNC **)mwsfd_vonlysfd_trsetup,  /* trif_tbl */
+    (SFD_TR_IF **)mwsfd_vonlysfd_trsetup,    /* trif_tbl */
     0,                                       /* adr, set at creation */
     {0x10000, 0x50800, 0x12000, 0, 0, 0, 0}, /* size */
     0,                                       /* x24 */

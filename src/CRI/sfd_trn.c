@@ -36,13 +36,13 @@ void SFTRN_SetPrepFlg(SFD sfd, Sint32 strm, Sint32 flg) {
 /* Calls function `fn` of driver `strm` (SFD_TR_IF index: 6 Start, 7 Stop, 9 GetWrite, 10 AddWrite,
  * 11 GetRead, 12 AddRead) with two arguments; 0 when the slot is empty. */
 Sint32 SFTRN_CallTrtTrif(SFD sfd, Sint32 strm, Sint32 fn, Sint32 a, Sint32 b) {
-    SFD_TR_FUNC *trif;
+    SFD_TR_IF *trif;
 
     trif = sfd->tr[strm].trif;
     if (trif == 0) {
         return 0;
     }
-    return trif[fn](sfd, a, b, 0);
+    return trif->functions[fn](sfd, a, b, 0);
 }
 
 /* Calls function `fn` (2 ExecServer, 3 Create, 4 Destroy) on every installed driver in slot order,
@@ -56,7 +56,7 @@ Sint32 SFTRN_CallTrSetup(SFD sfd, Sint32 fn) {
     tr = sfd->tr;
     for (i = 0; i < SFD_TR_NUM; i++, tr++) {
         if (tr->trif != 0) {
-            ret = tr->trif[fn](sfd, 0, 0, 0);
+            ret = tr->trif->functions[fn](sfd, 0, 0, 0);
             if (ret != 0) {
                 break;
             }
@@ -69,7 +69,7 @@ Sint32 SFTRN_CallTrSetup(SFD sfd, Sint32 fn) {
  * video decoder (tr 2) -> buf 3 -> [video filter tr 4 -> buf 5 ->] video out (tr 6); tr 1 -> buf 2
  * -> audio decoder (tr 3) -> buf 4 -> [audio filter tr 5 -> buf 6 ->] audio out (tr 7); tr 1 -> buf
  * 7 -> user output (tr 8). Disables video/audio (cond 5/6) when the decoder is absent. */
-void sftrn_BuildSystem(SFD sfd, SFD_TR_FUNC **tbl) {
+void sftrn_BuildSystem(SFD sfd, SFD_TR_IF **tbl) {
     sfd->buf[0].out_tr = 1;
     sfd->tr[1].bufin = 0;
     if (tbl[2] != 0) {
@@ -126,7 +126,7 @@ void sftrn_BuildSystem(SFD sfd, SFD_TR_FUNC **tbl) {
 
 /* Chooses the wiring from the driver table: with a system driver the full demux graph, else an
  * elementary video-only, audio-only or user-output-only chain. -1 when no usable driver exists. */
-static Sint32 sftrn_BuildAll(SFD sfd, SFD_TR_FUNC **tbl) {
+static Sint32 sftrn_BuildAll(SFD sfd, SFD_TR_IF **tbl) {
     if (tbl[1] != 0) {
         sfd->tr[0].bufout = 0;
         sfd->buf[0].in_tr = 0;
@@ -190,9 +190,9 @@ static Sint32 sftrn_BuildAll(SFD sfd, SFD_TR_FUNC **tbl) {
  * and wires the buffers (error 0xFF000302 when nothing can be built). `x` is the second SFD_Create
  * argument, which sfply_InitHn passes on but this function never reads. */
 Sint32 SFTRN_InitHn(SFD sfd, SFD_TR *tr, SFTRN_PRM *prm, Sint32 x) {
-    SFD_TR_FUNC **trif;
-    SFD_TR_FUNC **tbl;
-    SFD_TR_FUNC *f;
+    SFD_TR_IF **trif;
+    SFD_TR_IF **tbl;
+    SFD_TR_IF *f;
     Sint32 i;
 
     tbl = prm->trif_tbl;
@@ -216,8 +216,8 @@ Sint32 SFTRN_InitHn(SFD sfd, SFD_TR *tr, SFTRN_PRM *prm, Sint32 x) {
 }
 
 /* Runs Init on every driver interface of the table until a 0 entry. */
-static Sint32 sftrn_CallInit(SFD_TR_IF **p, Sint32 ret) {
-    SFD_TR_IF *trif;
+static Sint32 sftrn_CallInit(const SFD_TR_IF **p, Sint32 ret) {
+    const SFD_TR_IF *trif;
     Sint32 i;
 
     for (i = 0; i < SFTRN_TRIF_NUM; i++, p++) {
@@ -225,7 +225,7 @@ static Sint32 sftrn_CallInit(SFD_TR_IF **p, Sint32 ret) {
         if (trif == 0) {
             break;
         }
-        ret = trif->Init(0, 0, 0, 0);
+        ret = trif->functions[SFD_TR_INIT](0, 0, 0, 0);
         if (ret != 0) {
             break;
         }
@@ -234,8 +234,8 @@ static Sint32 sftrn_CallInit(SFD_TR_IF **p, Sint32 ret) {
 }
 
 /* Calls Finish of every driver in a table until one fails (name inferred from sftrn_CallInit). */
-static Sint32 sftrn_CallFinish(SFD_TR_IF **p, Sint32 ret) {
-    SFD_TR_IF *trif;
+static Sint32 sftrn_CallFinish(const SFD_TR_IF **p, Sint32 ret) {
+    const SFD_TR_IF *trif;
     Sint32 i;
 
     for (i = 0; i < SFTRN_TRIF_NUM; i++, p++) {
@@ -243,7 +243,7 @@ static Sint32 sftrn_CallFinish(SFD_TR_IF **p, Sint32 ret) {
         if (trif == 0) {
             break;
         }
-        ret = trif->Finish(0, 0, 0, 0);
+        ret = trif->functions[SFD_TR_FINISH](0, 0, 0, 0);
         if (ret != 0) {
             break;
         }
