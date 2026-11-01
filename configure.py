@@ -1037,6 +1037,7 @@ config.libs = [
                 Object(Matching, "Game/fn_80425858.c"),
                 Object(NonMatching, "Game/EffectManager.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/fn_80425860.cpp", cflags=cflags_effect),
+                Object(NonMatching, "Game/fn_8042631C.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/fn_8040D8D4.c"),
                 Object(Matching, "Game/fn_8040D850.c"),
                 Object(Matching, "Game/fn_80424D18.cpp", cflags=cflags_effect),

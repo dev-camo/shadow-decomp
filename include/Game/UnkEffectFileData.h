@@ -55,7 +55,7 @@ struct UnkEffectElementData3 : UnkEffectElementData {
     /* 0x2C */ unsigned int field_0x2C;
     /* 0x30 */ short field_0x30;
     /* 0x32 */ short field_0x32;
-    /* 0x34 */ unsigned char field_0x34[4];
+    /* 0x34 */ float field_0x34;
     /* 0x38 */ void *field_0x38;
 };
 CHECK_SIZEOF(UnkEffectElementData3, 0x3C);
