@@ -4,6 +4,7 @@
 namespace Effect {
 namespace System {
 
+EffCmdWaitExec::~EffCmdWaitExec() {}
 EffCmdLoopStartExec::~EffCmdLoopStartExec() {}
 EffCmdLoopEndExec::~EffCmdLoopEndExec() {}
 EffCmdCallbackExec::~EffCmdCallbackExec() {}
