@@ -18,9 +18,14 @@ CHECK_SIZEOF(UnkResourceRecord_80208848, 0x1C);
  * object fn_80012700 returns (placeholder names; the original classes are unknown). */
 class UnkResourceManager_800122D4;
 class UnkResource_80012700;
+class Resource;
 
 extern "C" {
 UnkResourceManager_800122D4 *fn_800122D4(void);
+/* Unloads and removes the resource registered under key (behaviour inferred). */
+void fn_800127F8(UnkResourceManager_800122D4 *manager, int key);
+/* Registers resource when key is absent; returns whether it was inserted (inferred). */
+bool fn_8001299C(UnkResourceManager_800122D4 *manager, int key, Resource *resource);
 /* Looks up the entry for key arg1 in manager (fn_800124E4, compared with fn_8001247C's result);
  * when there is one, returns what the virtual function at vtable offset 0x1C of the object at the
  * entry's 0x10 returns for name, otherwise null (meanings unknown). ThreatObj passes 1 as arg1 and
