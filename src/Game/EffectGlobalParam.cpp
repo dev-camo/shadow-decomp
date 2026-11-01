@@ -5,8 +5,8 @@
 namespace Effect {
 namespace System {
 
-EffectGlobalParam::EffectGlobalParam(const UnkEffectElementData8 *definition,
-                                     EffectLaunchInfo *info, EffectManager *manager)
+EffectGlobalParam::EffectGlobalParam(UnkEffectElementData8 *definition, EffectLaunchInfo *info,
+                                     EffectManager *manager)
     : EffectElement(definition, info, manager), m_definitionFlags(0) {
     m_size -= sizeof(EffectElement);
     m_size += sizeof(EffectGlobalParam);

@@ -6,7 +6,7 @@
 namespace Effect {
 namespace RW3 {
 
-EffectGlobalParamRW3::EffectGlobalParamRW3(const System::UnkEffectElementData8 *definition,
+EffectGlobalParamRW3::EffectGlobalParamRW3(System::UnkEffectElementData8 *definition,
                                            System::EffectLaunchInfo *info,
                                            System::EffectManager *manager)
     : System::EffectGlobalParam(definition, info, manager) {
