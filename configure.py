@@ -1379,7 +1379,10 @@ config.libs = [
             ]
             if config.version == "GUPE8P"
             else []
-        ),
+        ) + [
+            # First Game unit enabled for Japan and PAL; the list above remains USA-only.
+            Object(Matching, "Game/fn_804220CC.cpp", cflags=cflags_game_cpp),
+        ],
     },
     DolphinLib(
         "os",
