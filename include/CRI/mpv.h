@@ -424,6 +424,7 @@ Sint32 MPV_Destroy(MPV mpv);
 void MPV_MbCbFn(void);
 Sint32 MPV_SetCond(MPV mpv, Sint32 id, Sint32 val);
 Sint32 MPV_GetCond(MPV mpv, Sint32 id, Sint32 *val);
+Sint32 MPV_GetBitRate(MPV mpv, Sint32 *bitrate);
 
 /* mpv_err.c */
 void MPVERR_InitErrInf(MPVERR_INF *inf);

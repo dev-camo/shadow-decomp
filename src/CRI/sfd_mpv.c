@@ -41,6 +41,8 @@
 #define SFMPV_ERR_PICATR 0xFF000F1B
 #define SFMPV_ERR_PICUSR 0xFF000F1D
 #define SFMPV_ERR_FRM_ID 0xFF000F1F /* no frame has this id (released twice) */
+/* bit_rate field of the sequence header for a variable bit rate stream */
+#define SFMPV_BITRATE_VARIABLE 0x3FFFF
 #define SFD_ERR_SETPICUSR 0xFF000185
 #define SFD_ERR_SETMPVCOND 0xFF000181
 
@@ -58,9 +60,11 @@ Sint32 sfmpv_picusr_buf1siz;
 
 Sint32 sfmpv_discard_wsiz; /* use unknown: the written functions only clear it */
 
-/* Not written yet. */
+/* Not written yet. The parameter lists of sfmpv_GetActiveSize and sfmpv_DecodeOneUnit are inferred
+ * from their one call in sfmpv_ExecServerSub. */
 Sint32 sfmpv_ChkFatal(void);
-Sint32 sfmpv_ExecServerSub(SFD sfd);
+Sint32 sfmpv_GetActiveSize(SFD sfd, Sint32 *a, Sint32 *b, Sint32 *c);
+Sint32 sfmpv_DecodeOneUnit(SFD sfd, Sint32 a, Sint32 b, Sint32 c, Sint32 *more);
 
 Sint32 SFMPV_Init(void);
 Sint32 SFMPV_Finish(void);
@@ -82,6 +86,7 @@ void sfmpv_SetFrmInf(SFD sfd, SFMPV_FRM *frm, SFD_VFRM_INF **out);
 Sint32 sfmpv_SetFrmPara(SFD sfd, MPV_PICATR *picatr, MPV_FRM *para, SFMPV_FRM **frm);
 Sint32 sfmpv_GoDdelim(SFD sfd, SJ sj, Sint32 mask);
 Sint32 sfmpv_DecodeFrm(SFD sfd, SJ sj);
+Sint32 sfmpv_ExecServerSub(SFD sfd);
 Sint32 SFMPV_Seek(SFD sfd);
 void sfmpv_ErrFn(void *obj, Sint32 code);
 Sint32 sfmpv_InitInf(SFD sfd, SFMPV_WORK *wk);
@@ -300,6 +305,160 @@ Sint32 SFMPV_Finish(void) {
 /* Runs the decoder step of the driver server. */
 Sint32 SFMPV_ExecServer(SFD sfd) {
     return sfmpv_ExecServerSub(sfd);
+}
+
+/* Whether the input side is ready: the input ring is finished, the file header is valid with
+ * ftr_fixflg 0, the bit rate is variable, the decoder's VBV buffer worth of data has been supplied
+ * or a ring is full. */
+static inline Bool sfmpv_IsInputEnough(SFD sfd) {
+    SFMPV_WORK *wk = SFMPV_WK(sfd);
+    MPV mpv = wk->mpv;
+    Sint32 bitrate;
+    Sint32 ring;
+
+    if (SFBUF_GetTermFlg(sfd, sfd->tr[SFMPV_TR].bufin) == 1) {
+        return TRUE;
+    }
+    if (sfd->fhd.valid != 0 && sfd->fhd.vid.ftr_fixflg == 0) {
+        return TRUE;
+    }
+    MPV_GetBitRate(mpv, &bitrate);
+    if (bitrate == SFMPV_BITRATE_VARIABLE) {
+        return TRUE;
+    }
+    if (SFBUF_GetWTot(sfd, 1) >= wk->vbvsiz) {
+        return TRUE;
+    }
+    ring = SFTRN_IsSetup(sfd, 1) == 0;
+    if (SFBUF_GetWTot(sfd, ring) >= SFBUF_GetRingBufSiz(sfd, ring)) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+/* Whether the video input is filled enough to start playing: the frame pool holds as many frames
+ * as the smaller of cond 0x17 and prm.x2c (prm.x2c alone when cond 0x17 is -1; frames handed out
+ * count as well with frame ids) and the input side is ready, or the decoder is finished. */
+static inline Bool sfmpv_IsPrepared(SFD sfd) {
+    Sint32 limit;
+    Sint32 x2c;
+    Sint32 nfrm;
+
+    if (SFMPVF_IsTermDec(sfd) != 0) {
+        return TRUE;
+    }
+    limit = sfd->cond[0x17];
+    x2c = sfd->prm.x2c;
+    if (limit == -1) {
+        limit = x2c;
+    }
+    if (x2c < limit) {
+        limit = x2c;
+    }
+    nfrm = SFMPVF_GetNumFrm(sfd);
+    if (sfd->x58 == 2) {
+        nfrm += sfd->plyinf.getcnt;
+    }
+    if (nfrm >= limit && sfmpv_IsInputEnough(sfd)) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+/* Whether the video output has nothing more to hand out: the decoder is finished and no frame is
+ * left, or (with frame access through SFD_GetFrm, x58 == 1, and one frame left) more frames were
+ * handed out than released. */
+static inline Bool sfmpv_IsOutputDone(SFD sfd, Sint32 nfrm) {
+    if (SFMPVF_IsTermDec(sfd) != 0) {
+        if (nfrm == 0) {
+            return TRUE;
+        }
+        if (sfd->x58 == 1 && nfrm == 1 && sfd->plyinf.getcnt > sfd->plyinf.relcnt) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+/* One step of the video driver server: with cond 0x1C set and a colour type in the file header,
+ * sets MPV condition 5 to 0; decodes the picture attributes the application supplied before the
+ * stream, runs the decoder over the input ring until it needs more, keeps the flow statistics,
+ * marks the output prepared once enough is decoded and terminates the output when the decoder has
+ * finished. Returns an error code, 0 when there is none. */
+Sint32 sfmpv_ExecServerSub(SFD sfd) {
+    SFMPV_WORK *wk;
+    MPV mpv;
+    Sint32 bufin;
+    Sint32 bufout;
+    Sint32 nfrm;
+    Sint32 err;
+    SJCK ck;
+    Sint32 used;
+    Sint32 c;
+    Sint32 b;
+    Sint32 more;
+    Sint32 a;
+    Sint32 rcnt;
+    Sint32 wcnt;
+    SJ sj;
+
+    if (SFSET_GetCond(sfd, SFD_COND_VIDEO_ON) == 0) {
+        return 0;
+    }
+    if (SFBUF_GetTermFlg(sfd, sfd->tr[SFMPV_TR].bufout) == 1) {
+        return 0;
+    }
+    if (SFSET_GetCond(sfd, 0x1C) != 0 && SFHDS_GetColType(sfd) != -1) {
+        SFD_SetMpvCond(sfd, 5, 0);
+    }
+    if (sfd->stat == 2) {
+        wk = SFMPV_WK(sfd);
+        mpv = wk->mpv;
+        ck.data = (Uint8 *)SFSET_GetCond(sfd, SFD_COND_HDRDAT_ADR);
+        ck.len = SFSET_GetCond(sfd, SFD_COND_HDRDAT_SIZE);
+        if (ck.data != 0 && ck.len != 0 && wk->dlmmask == (MPV_DLM_END | MPV_DLM_SEQ)) {
+            if (MPV_DecodePicAtr(mpv, &ck, &used) == 0) {
+                wk->picstat = 2;
+                wk->dlmmask = MPV_DLM_END | MPV_DLM_SEQ | MPV_DLM_GOP;
+            }
+        }
+    }
+    for (;;) {
+        err = sfmpv_GetActiveSize(sfd, &a, &b, &c);
+        if (err != 0) {
+            break;
+        }
+        err = sfmpv_DecodeOneUnit(sfd, a, b, c, &more);
+        if (err != 0) {
+            break;
+        }
+        if (more == 0) {
+            break;
+        }
+    }
+    SFBUF_RingGetSj(sfd, sfd->tr[SFMPV_TR].bufin, &sj);
+    if (sj != 0) {
+        SFBUF_GetFlowCnt(sj, &wcnt, &rcnt);
+        sfd->plyinf.v_flow = SFBUF_UpdateFlowCnt(sfd->plyinf.v_flow, wcnt);
+    }
+    bufout = sfd->tr[SFMPV_TR].bufout;
+    bufin = sfd->tr[SFMPV_TR].bufin;
+    if (SFBUF_GetPrepFlg(sfd, bufout) != 1 && SFBUF_GetPrepFlg(sfd, bufin) == 1) {
+        if (sfmpv_IsPrepared(sfd)) {
+            SFBUF_SetPrepFlg(sfd, bufout, 1);
+            if (SFD_TIM(sfd)->vofst.val != 0x7FFFFFFF) {
+                SFD_TIM(sfd)->vofst.valid = 1;
+            }
+        }
+    }
+    nfrm = SFMPVF_GetNumFrm(sfd);
+    if (nfrm == -1 || sfmpv_IsOutputDone(sfd, nfrm)) {
+        SFBUF_SetTermFlg(sfd, sfd->tr[SFMPV_TR].bufout, 1);
+        if (sfd->plyinf.ndecpic == 0) {
+            SFSET_SetCond(sfd, SFD_COND_VIDEO_ON, 0);
+        }
+    }
+    return err;
 }
 
 /* Whether picstat is 2 or 3; with either, sfmpv_DecodeFrm keeps the time code's frm2. The
