@@ -74,7 +74,7 @@ void mwPlyPause(void *hn, Sint32 sw) {
     if (mwply->pause_flg == 0 && sw == 0) {
         return;
     }
-    if (MWSFD_GetPauseBdr() == 1 && mwply->prm.mode == 1) {
+    if (MWSFD_GetPauseBdr() == 1 && mwply->prm.mode == MWSFD_FTYPE_SFD) {
         if (SFD_GetCond(sfd, SFD_COND_AUDIO_ON, &val) == 0) {
             if (val == 1) {
                 mwlSfdSleepDecSvr(mwply);

@@ -65,18 +65,23 @@ CHECK_SIZEOF(MWSST_MNG, 0x8);
 #define MWSFD_STAT_PLAYEND 3
 #define MWSFD_STAT_ERROR 4
 
+/* file types of a player (MWSFD_CRPRM.mode) */
+#define MWSFD_FTYPE_SFD 1
+#define MWSFD_FTYPE_MPV 2
+#define MWSFD_FTYPE_VONLYSFD 3
+
 /* Creation parameters of a player (the argument of mwPlyCreateSofdec, copied into the handle).
- * The names follow RE4's creation parameter record. The sourced code reads only mode, max_skip and
- * compo; the other fields' names are taken from that record and not yet checked against this
- * game's creation code. */
+ * The names follow RE4's creation parameter record, except nfrm_pool_wk, which the game's SFD error
+ * text names ("Set positive integer to 'nfrm_pool_wk' of creation parameter."); the creation code
+ * reads every field but x28 and x2c. */
 typedef struct {
     /* 0x00 */ Sint32 mode;      /* file type */
     /* 0x04 */ Sint32 max_bps;   /* maximum bit rate */
     /* 0x08 */ Sint32 max_width; /* maximum picture size */
     /* 0x0C */ Sint32 max_height;
-    /* 0x10 */ Sint32 max_skip; /* frames mwPlyGetCurFrm may skip to catch up */
-    /* 0x14 */ Sint32 nsec;     /* seconds of input buffering */
-    /* 0x18 */ void *work;      /* work area for the component buffers */
+    /* 0x10 */ Sint32 nfrm_pool_wk; /* frame pool: decoded frame buffers, at most 14 */
+    /* 0x14 */ Sint32 nsec;         /* seconds of input buffering */
+    /* 0x18 */ void *work;          /* work area for the component buffers */
     /* 0x1C */ Sint32 wksize;
     /* 0x20 */ Sint32 compo;  /* requested component layout */
     /* 0x24 */ Sint32 buffmt; /* output buffer format */
@@ -150,8 +155,7 @@ typedef struct {
 CHECK_SIZEOF(MWS_FRM, 0x90);
 
 /* MW player object (0x2A8 bytes; the libwork holds eight). Only the fields the sourced code uses
- * are named, and a few (the user work size and position) from the original code of functions not
- * yet sourced. */
+ * are named. */
 struct MWPLY_OBJ {
     /* 0x000 */ Sint32 used; /* 1 for a created handle */
     /* 0x004 */ Sint32 stat; /* MWSFD_STAT_* */
@@ -159,19 +163,19 @@ struct MWPLY_OBJ {
     /* 0x038 */ Sint32 x38;
     /* 0x03C */ SFD sfd;
     /* 0x040 */ ADXSTM stm;
-    /* 0x044 */ Sint32 x44;
+    /* 0x044 */ void *x44; /* ADXT handle of the SFD handle (SFD_GetTrHn), NULL when it has none */
     /* 0x048 */ LSC lsc;
     /* 0x04C */ Sint32 compo_fix; /* component layout fixed at creation */
     /* 0x050 */ Sint32 compo;     /* component layout of the converter */
     /* 0x054 */ Sint32 noskip;    /* never skip frames to catch up */
-    /* 0x058 */ Uint8 x58[4];
-    /* 0x05C */ Sint32 sleep_bdr;     /* sleeping at the SVM idle border */
+    /* 0x058 */ Sint32 x58;       /* size of the file stream joint's ring buffer, set at creation */
+    /* 0x05C */ Sint32 sleep_bdr; /* sleeping at the SVM idle border */
     /* 0x060 */ Sint32 mwply_svr_flg; /* the handle's server step is running */
     /* 0x064 */ Sint32 sfd_svr_flg;   /* SFD_ExecOne is running for the handle */
     /* 0x068 */ Sint32 dec_svr_flg;   /* the player state machine is running */
-    /* 0x06C */ Uint8 x6c[4];
-    /* 0x070 */ Sint8 linkstm;     /* concatenated play is on */
-    /* 0x071 */ Sint8 linkstm_req; /* end of the linked streams requested */
+    /* 0x06C */ Sint32 x6c;           /* set to 1 at creation */
+    /* 0x070 */ Sint8 linkstm;        /* concatenated play is on */
+    /* 0x071 */ Sint8 linkstm_req;    /* end of the linked streams requested */
     /* 0x072 */ Sint8 pause_flg;
     /* 0x073 */ Uint8 x73;
     /* 0x074 */ Sint32 x74;
@@ -188,7 +192,8 @@ struct MWPLY_OBJ {
     /* 0x0A0 */ Sint32 chromapos_v;
     /* 0x0A4 */ Sint32 xa4;
     /* 0x0A8 */ SFX_OBJ *sfx; /* the frame converter handle */
-    /* 0x0AC */ Uint8 xac[8];
+    /* 0x0AC */ void *sfx_wk; /* work of the frame converter handle */
+    /* 0x0B0 */ Sint32 sfx_wksiz;
     /* 0x0B4 */ Sint32 sfh_cnt; /* Sofdec headers seen */
     /* 0x0B8 */ Sint32 sfh_cur; /* header number of the current frame */
     /* 0x0BC */ Sint32 sfh_wr;  /* next sfhinf slot */
@@ -214,7 +219,7 @@ struct MWPLY_OBJ {
     /* 0x1B8 */ Sint32 nsct;
     /* 0x1BC */ SJ sji;
     /* 0x1C0 */ SJ file_sj;       /* stream joint of the file stream controller */
-    /* 0x1C4 */ Sint32 x1c4;      /* offset of the file supply (SFBUF_SUP.ofst) */
+    /* 0x1C4 */ Uint32 x1c4;      /* address of the file joint's ring buffer (SFBUF_SUP.ofst) */
     /* 0x1C8 */ Sint32 flow_nsct; /* flow limit in bytes, although named for sectors */
     /* 0x1CC */ Sint32 x1cc;      /* extra size of the file supply (SFBUF_SUP.xsize) */
     /* 0x1D0 */ Sint32 sup_kind;  /* supply of the stream joint given by the caller (SFBUF_SUP) */
@@ -261,7 +266,6 @@ typedef struct {
     /* 0x10 */ Sint32 main_decode; /* decode in the main server, not the idle one; inferred */
     /* 0x14 */ Uint8 x14[0x24 - 0x14];
     /* 0x24 */ Sint32 svr_bdr; /* a handle is sleeping at the idle border */
-    /* Component work allocator; named from the original code of fn_80404038, not yet sourced. */
     /* 0x28 */ void *(*malloc_fn)(void *obj, Uint32 size); /* component work allocator */
     /* 0x2C */ void (*free_fn)(void *obj, void *ptr);
     /* 0x30 */ void *mem_obj; /* the object both are called with */
@@ -342,14 +346,20 @@ Bool MWSFTAG_IsUseAinfSj(MWSFD_CRPRM *prm);
 void MWSFSFX_SetOutBufSize(MWPLY mwply, Sint32 width, Sint32 height);
 void MWSFSFX_SetCompoMode(MWPLY mwply, Sint32 compo);
 void MWSFSFX_Destroy(SFX_OBJ *sfx);
-SFX_OBJ *MWSFSFX_Create(void *work, Sint32 wsize);
+SFX_OBJ *MWSFSFX_Create(void *work, Sint32 wsize, Sint32 width, Sint32 height);
+Sint32 MWSFSFX_CalcHnWorkSiz(Sint32 width, Sint32 height); /* Game/fn_80403E44.c */
 
 /* fn_80403E4C.c (the tail of the original mwsfdsfx.c) */
 void MWSFSFX_Finish(void); /* inferred name: the counterpart of MWSFSFX_Init */
 void MWSFSFX_Init(void);
 
 /* mwsfdcre.c */
-void mwSfdDestroy(MWPLY mwply);
+void mwSfdDestroy(void *hn);
+Sint32 mwsfcre_MallocCompoWork(MWPLY mwply);
+MWPLY mwPlyCreateSofdec(MWSFD_CRPRM *cprm);
+Sint32 mwsfcre_MallocRfb(MWPLY mwply, MWSFD_CRPRM *cprm, void **rfbbuf);
+Sint32 mwPlyCalcWorkCprmSfd(MWSFD_CRPRM *cprm);
+Sint32 mwPlyCalcWorkSfd(MWSFD_CRPRM *cprm);
 Sint32 MWSFCRE_ResetSfdHn(MWPLY mwply);
 void MWSFCRE_SetSupplySj(MWPLY mwply);
 

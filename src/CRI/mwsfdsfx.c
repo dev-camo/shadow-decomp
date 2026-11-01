@@ -8,8 +8,9 @@
  * accessors are absent.
  *
  * The original file continues after 0x80403E44 (USA) in two units of their own,
- * Game/fn_80403E44.c (fn_80403E44) and CRI/fn_80403E4C.c (MWSFSFX_Finish, mwsfsfx_SfxErrCbFn and
- * MWSFSFX_Init), which match; they stay separate until this unit matches too.
+ * Game/fn_80403E44.c (MWSFSFX_CalcHnWorkSiz) and CRI/fn_80403E4C.c (MWSFSFX_Finish,
+ * mwsfsfx_SfxErrCbFn and MWSFSFX_Init), which match; they stay separate until this unit matches
+ * too.
  *
  * The original object also held player functions the linker removed. Their error texts remain in
  * .rodata between the surviving functions' texts, which fixes the order of the definitions below;
@@ -78,10 +79,10 @@ static void mwsfsfx_StrippedAttachAddInfBuf(SJCK *ck) {
     MWSFSVM_Error("W2121001 : mwPlyAttachAddInfBuf(): bufsize is short.");
 }
 
-/* MPEG-only files (mode 2) have no additional-info stream. Helper and name inferred, after the same
+/* MPEG-only files have no additional-info stream. Helper and name inferred, after the same
  * helper in the RE4 decompilation. */
 static inline Bool mwsftag_IsNoAinf(MWPLY mwply) {
-    return mwply->prm.mode == 2;
+    return mwply->prm.mode == MWSFD_FTYPE_MPV;
 }
 
 /* Reads the tag block ("CRITAGS" to "CRITAGE") out of the additional-info stream. */
@@ -447,7 +448,7 @@ void MWSFSFX_Destroy(SFX_OBJ *sfx) {
     SFX_Destroy(sfx);
 }
 
-/* Creates a converter handle in the given work area. */
-SFX_OBJ *MWSFSFX_Create(void *work, Sint32 wsize) {
+/* Creates a converter handle in the given work area. The picture size arguments are unused. */
+SFX_OBJ *MWSFSFX_Create(void *work, Sint32 wsize, Sint32 width, Sint32 height) {
     return SFX_Create(work, wsize);
 }

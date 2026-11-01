@@ -3,9 +3,9 @@
  *
  * This is the tail of the original mwsfdsfx.c, so the unit keeps a placeholder name. The same file
  * also holds 0x80403E04-0x80403E4C (USA) directly before it: MWSFSFX_Destroy and MWSFSFX_Create
- * (CRI/mwsfdsfx.c), which call SFX_Destroy and SFX_Create, and fn_80403E44 (Game/fn_80403E44.c),
- * which returns the converter's minimum work size. The names of mwsfsfx_SfxErrCbFn and
- * MWSFSFX_Init follow RE4's GameCube symbols of that file.
+ * (CRI/mwsfdsfx.c), which call SFX_Destroy and SFX_Create, and MWSFSFX_CalcHnWorkSiz
+ * (Game/fn_80403E44.c), which returns the converter's minimum work size. The names of
+ * mwsfsfx_SfxErrCbFn and MWSFSFX_Init follow RE4's GameCube symbols of that file.
  */
 #include <stddef.h>
 

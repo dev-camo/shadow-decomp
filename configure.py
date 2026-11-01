@@ -2517,6 +2517,17 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # NonMatching, USA raw differing words per function (branch displacements included;
+            # data, rodata and bss match): mwSfdDestroy, MWSFCRE_ResetSfdHn, mwsfcre_MallocRfb,
+            # MWSFCRE_SetSupplySj and mwPlyCalcWorkCprmSfd exact; mwsfcre_MallocCompoWork 69 of
+            # 177 and mwPlyCreateSofdec 116 of 1037, register colouring only (the handle and the
+            # creation parameters take different callee-saved registers); mwPlyCalcWorkSfd 13 of
+            # 119, register colouring and the order of the last two additions; mwsfcre_CreateSfd
+            # is 14 words short (906 of 920) and at objdiff row alignment 47 rows differ (32
+            # register, 15 other): the original keeps the allocator's negative size test in the
+            # 0x4000 and 0x700 allocations (10 words), and each of its two ADXT file type tests
+            # has a switch arm for the value 4 with no code of its own (4 words, and one branch
+            # of another kind).
             Object(
                 NonMatching,
                 "CRI/mwsfdcre.c",
