@@ -2080,6 +2080,13 @@ Game/EffectLensFlare.cpp:
 	.rodata     start:0x8051AE98 end:0x8051AEE0
 	.data       start:0x8056A8D8 end:0x8056A908
 
+Game/EffectShimmer.cpp:
+	extab       start:0x80006D28 end:0x80006E5C
+	extabindex  start:0x8000875C end:0x800087D4
+	.text       start:0x8042A8EC end:0x8042B3AC
+	.rodata     start:0x8051AEE0 end:0x8051B090
+	.data       start:0x8056A908 end:0x8056AAE0
+
 Game/gcaxSndMemory.c:
 	.text       start:0x8043AA7C end:0x8043B25C
 	.rodata     start:0x8051BB28 end:0x8051BC08
