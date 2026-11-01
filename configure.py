@@ -1328,6 +1328,23 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
+                # Not matching: fn_8042118C (4 of 16 words differ): the two byte loads of each pair
+                # get each other's registers (a register swap). fn_804210E4
+                # (32 of 42 words differ; 35 words against 42) tests the address of each of its two
+                # 16-bit halves twice before reversing the bytes, and the original hoists only the
+                # second address out of the loop; no single-level inline form tried (a null test
+                # inside the inline function, around the call, or both) produces the double test.
+                Object(
+                    NonMatching,
+                    "Game/fn_804210E4.c",
+                    extra_cflags=[
+                        "-Cpp_exceptions on",
+                        "-O4,s",
+                        "-use_lmw_stmw on",
+                        "-str reuse,readonly",
+                        "-inline auto,level=1",
+                    ],
+                ),
                 Object(Matching, "Game/fn_8040CF2C.c"),
                 Object(Matching, "Game/fn_804202B8.c"),
                 Object(Matching, "Game/fn_8040CD20.c"),
