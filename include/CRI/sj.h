@@ -62,7 +62,7 @@ extern "C" {
 
 /* sj_utl.c */
 void SJ_SplitChunk(SJCK *ck, Sint32 nbyte, SJCK *ck1, SJCK *ck2);
-Sint8 *SJ_SearchTag(SJCK *cki, Char8 *kw, Char8 *endkw, SJCK *cko);
+Sint8 *SJ_SearchTag(SJCK *cki, const Char8 *kw, const Char8 *endkw, SJCK *cko);
 
 /* sj_crs.c */
 void SJCRS_Lock(void);

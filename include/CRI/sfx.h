@@ -44,17 +44,28 @@ CHECK_SIZEOF(SFX_SRCPLN, 0x10);
  * rest of the record. Partial view: the size of the full record is not established; the size
  * check covers these fields only. */
 typedef struct {
-    Sint32 frmfmt;         /* 0x00 */
-    SFX_SRCPLN pln[3];     /* 0x04 */
-    Sint32 field_0x34[4];  /* 0x34 */
-    Sint32 width;          /* 0x44 */
-    Sint32 height;         /* 0x48 */
-    Sint32 frmno;          /* 0x4C argument of the table builders */
-    Sint32 field_0x50[14]; /* 0x50 */
-    Uint8 *usrdat;         /* 0x88 picture user data, NULL when there is none */
-    Sint32 usrsiz;         /* 0x8C its size */
-    Sint32 field_0x90;     /* 0x90 */
-    Sint32 field_0x94;     /* 0x94 component layout given with the frame (SFX_COMPO_*) */
+    Sint32 frmfmt;        /* 0x00 */
+    SFX_SRCPLN pln[3];    /* 0x04 */
+    Sint32 field_0x34[4]; /* 0x34 */
+    Sint32 width;         /* 0x44 */
+    Sint32 height;        /* 0x48 */
+    Sint32 frmno;         /* 0x4C argument of the table builders */
+    Uint8 *tag_ptr;       /* 0x50 the converter's tag information (SFX_GetTagInf) */
+    Sint32 tag_len;       /* 0x54 its length */
+    Sint32 field_0x58;    /* 0x58 */
+    Sint32 field_0x5C;    /* 0x5C */
+    Sint32 pic_struct;    /* 0x60 picture structure: 1, 2 or 3 */
+    Sint32 chroma_format; /* 0x64 1, 2 or 3 */
+    Sint32 field_0x68;    /* 0x68 copied from MWPLY_OBJ.x90 */
+    Sint32 field_0x6C;    /* 0x6C copied from MWPLY_OBJ.x94 */
+    Sint32 field_0x70;    /* 0x70 copied from MWPLY_OBJ.x98 */
+    Sint32 chromapos_h;   /* 0x74 horizontal chroma position: 0 or 1 */
+    Sint32 chromapos_v;   /* 0x78 vertical chroma position: 0 or 1 */
+    Sint32 field_0x7C[3]; /* 0x7C */
+    Uint8 *usrdat;        /* 0x88 SUD record from the picture user data, NULL for none */
+    Sint32 usrsiz;        /* 0x8C its size */
+    Sint32 field_0x90;    /* 0x90 1 when the frame asks for colour-space conversion */
+    Sint32 field_0x94;    /* 0x94 component layout given with the frame (SFX_COMPO_*) */
 } SFX_SRCFRM;
 CHECK_SIZEOF(SFX_SRCFRM, 0x98);
 

@@ -2475,6 +2475,27 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # Matching workaround: -inline noauto on mwsfdsfx.c. The original keeps the conversion
+            # helper (fn_80403520) and the tag reader (mwsftag_GetAinfFromSj) out of line, while
+            # the small helpers written as static inline functions are expanded; automatic
+            # inlining expands the first two into their callers (fn_804035A8 0x80 bytes instead
+            # of 0x30, MWSFTAG_UpdateTagInf 0x20C instead of 0xB8). Revisit when the library's
+            # real compiler flags are known.
+            # NonMatching: MWSFSFX_CnvFrmInfToSfx, 12 of 231 words: two chroma plane loads in the
+            # other order with r4/r5 exchanged (7 words), and five string offsets, because the
+            # original pools the function's four error texts in the reverse of their order of use
+            # (the reason is not known).
+            Object(
+                NonMatching,
+                "CRI/mwsfdsfx.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                    "-inline noauto",
+                ],
+            ),
             Object(
                 Matching,
                 "CRI/mwsfdrna.c",

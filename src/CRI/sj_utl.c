@@ -36,7 +36,7 @@ static inline Uint32 read_length(const Sint8 *record) {
 /* Finds the record tagged `kw` in the chunk (a record is a 7-character tag at +0, its data length
  * as 7 hex digits at +8 and the data at +0x10); *cko gets the record's data. Stops at a record
  * tagged `endkw`. Returns the record, or 0. */
-Sint8 *SJ_SearchTag(SJCK *cki, Char8 *kw, Char8 *endkw, SJCK *cko) {
+Sint8 *SJ_SearchTag(SJCK *cki, const Char8 *kw, const Char8 *endkw, SJCK *cko) {
     Uint8 *cursor;
     Uint8 *end;
 

@@ -12,7 +12,7 @@
  * converter, the three alpha table makers and the colour adjustment table maker), then converts
  * the frame frm into buf with CFT_Ycc420plnToArgb8888, which fn_804035A8 registers as the
  * conversion function. */
-void fn_80408680(MWPLY mwply, void *frm, Uint8 *buf) {
+void fn_80408680(MWPLY mwply, MWS_FRM *frm, Uint8 *buf) {
     SFX_OBJ *sfx = mwply->sfx;
 
     SFX_SetUnitWidth(sfx, 4);

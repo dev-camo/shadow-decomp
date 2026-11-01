@@ -5,7 +5,6 @@
  * GameCube decompilation with this version's offsets, which differ: only fields confirmed by the
  * matched code are named. */
 #include "CRI/adx_stm.h"
-#include "CRI/cft.h"
 #include "CRI/cri_xpt.h"
 #include "CRI/lsc.h"
 #include "CRI/sfd.h"
@@ -107,6 +106,17 @@ typedef struct {
 } MWSFD_PICUSR;
 CHECK_SIZEOF(MWSFD_PICUSR, 0xC);
 
+/* Plane addresses and strides of a planar YCC 4:2:0 frame buffer (mwPlyCalcYccPlane). */
+typedef struct {
+    /* 0x00 */ Uint8 *y;
+    /* 0x04 */ Uint8 *cb;
+    /* 0x08 */ Uint8 *cr;
+    /* 0x0C */ Sint32 ywidth;
+    /* 0x10 */ Sint32 cbwidth;
+    /* 0x14 */ Sint32 crwidth;
+} MWSFD_YCCPLN;
+CHECK_SIZEOF(MWSFD_YCCPLN, 0x18);
+
 /* The decoded frame mwPlyGetCurFrm hands to the application (0x90 bytes), converted from the
  * decoder's SFD_VFRM_INF by mwl_convFrmInfFromSFD; the notes name the source member. */
 typedef struct {
@@ -147,8 +157,9 @@ struct MWPLY_OBJ {
     /* 0x040 */ ADXSTM stm;
     /* 0x044 */ Sint32 x44;
     /* 0x048 */ LSC lsc;
-    /* 0x04C */ Uint8 x4c[8];
-    /* 0x054 */ Sint32 noskip; /* never skip frames to catch up */
+    /* 0x04C */ Sint32 compo_fix; /* component layout fixed at creation */
+    /* 0x050 */ Sint32 compo;     /* component layout of the converter */
+    /* 0x054 */ Sint32 noskip;    /* never skip frames to catch up */
     /* 0x058 */ Uint8 x58[4];
     /* 0x05C */ Sint32 sleep_bdr;     /* sleeping at the SVM idle border */
     /* 0x060 */ Sint32 mwply_svr_flg; /* the handle's server step is running */
@@ -181,9 +192,16 @@ struct MWPLY_OBJ {
     /* 0x160 */ MWSFD_PICUSR picusr; /* picusr_ptr points here for no user data */
     /* 0x16C */ Uint8 x16c[0x178 - 0x16C];
     /* 0x178 */ MWSFD_PICUSR *picusr_ptr;
-    /* 0x17C */ Uint8 x17c[0x190 - 0x17C];
-    /* 0x190 */ Sint32 tag_no; /* header number of the last tag update, -1 for none */
-    /* 0x194 */ Uint8 x194[0x1A4 - 0x194];
+    /* 0x17C */ SJ ainf_sj; /* additional-info stream joint */
+    /* 0x180 */ Uint8 *ainf_buf;
+    /* 0x184 */ Sint32 ainf_bsize;
+    /* 0x188 */ Uint8 *addinf_buf; /* user buffer that receives a copy of the tag block */
+    /* 0x18C */ Sint32 x18c;
+    /* 0x190 */ Sint32 tag_no;  /* header number of the last tag update, -1 for none */
+    /* 0x194 */ Sint32 tag_flg; /* the tag block has been read */
+    /* 0x198 */ Uint8 *tag_ptr;
+    /* 0x19C */ Sint32 tag_size;
+    /* 0x1A0 */ Sint32 x1a0;
     /* 0x1A4 */ const Char8 *fname;
     /* 0x1A8 */ Sint32 x1a8;
     /* 0x1AC */ Sint32 stm_start_req; /* start the file stream on the next server step */
@@ -268,15 +286,7 @@ MWSFD_LIBWORK *MWSFLIB_GetLibWorkPtr(void);
 
 /* other units of the player used by mwsfdlib.c */
 void mwSfdDestroy(MWPLY mwply);
-/* Converts the frame frm into buf with cnvfn, which it registers with SFX_SetCnvFn (mwsfd internal,
- * not sourced). It reads the frame size from frm (offsets 0xC and 0x10) and passes buf to
- * sfxcnv_MakeDstFrm. The frame record's type is not yet known; the RE4 player's ARGB8888 entry
- * takes a frame record (MWS_FRM *) and an output buffer in these positions. */
-void fn_804035A8(MWPLY mwply, void *frm, Uint8 *buf, SFX_CNVFN cnvfn);
-void fn_80408680(MWPLY mwply, void *frm, Uint8 *buf); /* fn_80408680.c */
-void MWSFTAG_UpdateTagInf(MWPLY mwply);
-void MWSFSFX_Init(void);
-void MWSFSFX_Finish(void); /* inferred name: the counterpart of MWSFSFX_Init */
+void fn_80408680(MWPLY mwply, MWS_FRM *frm, Uint8 *buf); /* fn_80408680.c */
 void MWSFSVR_SetMwsfdSvrFlg(Sint32 flg);
 void MWSFPLY_SetFlowLimit(MWPLY mwply);
 void MWSFSVR_SetHnSfdSvrFlg(MWPLY mwply, Sint32 flg);
@@ -291,8 +301,31 @@ void MWSFFRM_SetShfCbFn(MWPLY mwply);
 void MWSFFRM_InitSfhInfTable(MWPLY mwply);
 Sint32 mwPlyIsNextFrmReady(MWPLY mwply);
 void mwPlyRelCurFrm(MWPLY mwply);
-void mwPlyCalcYccPlane(void *buf, Sint32 width, Sint32 height, CFT_YCC420PLN *out);
+void mwPlyCalcYccPlane(void *buf, Sint32 width, Sint32 height, MWSFD_YCCPLN *out);
 void mwPlyGetCurFrm(void *obj, void *frmobj);
+
+/* mwsfdsfx.c */
+/* Converts the player frame frm into buf with cnvfn, which it registers with SFX_SetCnvFn.
+ * fn_80403520 converts the part (x, y, width, height) of it. */
+void fn_80403520(MWPLY mwply, MWS_FRM *frm, Uint8 *buf, SFX_CNVFN cnvfn, Sint32 x, Sint32 y,
+                 Sint32 width, Sint32 height);
+void fn_804035A8(MWPLY mwply, MWS_FRM *frm, Uint8 *buf, SFX_CNVFN cnvfn);
+void MWSFSFX_CnvFrmInfToSfx(MWPLY mwply, MWS_FRM *frm, SFX_SRCFRM *src);
+void MWSFTAG_UpdateTagInf(MWPLY mwply);
+void MWSFTAG_ResetAinfSj(MWPLY mwply);
+void MWSFTAG_InitTagInf(MWPLY mwply);
+Sint32 MWSFTAG_SetAinfSj(MWPLY mwply);
+void MWSFTAG_DestroyAinfSj(MWPLY mwply);
+SJ MWSFTAG_CreateAinfSj(MWPLY mwply);
+Bool MWSFTAG_IsUseAinfSj(MWSFD_CRPRM *prm);
+void MWSFSFX_SetOutBufSize(MWPLY mwply, Sint32 width, Sint32 height);
+void MWSFSFX_SetCompoMode(MWPLY mwply, Sint32 compo);
+void MWSFSFX_Destroy(SFX_OBJ *sfx);
+SFX_OBJ *MWSFSFX_Create(void *work, Sint32 wsize);
+
+/* fn_80403E4C.c (the tail of the original mwsfdsfx.c) */
+void MWSFSFX_Finish(void); /* inferred name: the counterpart of MWSFSFX_Init */
+void MWSFSFX_Init(void);
 
 /* mwsfdset.c */
 SFD mwPlyGetSfdHn(MWPLY mwply);

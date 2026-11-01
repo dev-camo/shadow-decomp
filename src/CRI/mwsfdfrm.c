@@ -13,7 +13,6 @@
  */
 #include <string.h>
 
-#include "CRI/cft.h"
 #include "CRI/mwsfd.h"
 #include "CRI/mwsfdsvm.h"
 #include "CRI/sfh.h"
@@ -201,7 +200,7 @@ static void mwsffrm_StrippedConvPtypeToSFD(void) {
 }
 
 /* Plane addresses and strides of a planar YCC 4:2:0 frame buffer of the given size. */
-void mwPlyCalcYccPlane(void *buf, Sint32 width, Sint32 height, CFT_YCC420PLN *out) {
+void mwPlyCalcYccPlane(void *buf, Sint32 width, Sint32 height, MWSFD_YCCPLN *out) {
     MPV_RFB rfb;
 
     SFD_CalcYccPlane(buf, width, height, &rfb);
