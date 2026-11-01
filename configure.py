@@ -1443,6 +1443,7 @@ config.libs = [
             # constructor is 968 versus 920 bytes, including allocation exception handling.
             Object(NonMatching, "Game/EffectLocus.cpp", cflags=cflags_effect),
             Object(NonMatching, "Game/fn_80430A54.cpp", cflags=cflags_effect_rw3),
+            Object(Matching, "Game/fn_804340CC.cpp", cflags=cflags_effect_rw3),
             Object(NonMatching, "Game/fn_804342CC.cpp", cflags=cflags_effect_rw3),
             # Matching workaround: these two units address literals independently in the
             # original. Keep unpooled addressing until their original build options are known.
