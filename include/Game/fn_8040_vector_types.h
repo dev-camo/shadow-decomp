@@ -223,6 +223,16 @@ void fn_8040BEF8(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Applies the three angles of rotation in the axis order selected by order, 0 to 2 (behaviour
  * inferred). */
 void fn_8001E070(Fn8040Matrix34 *matrix, const Fn8040Vector3 *rotation, int order);
+/* Matrix helpers below 0x80050000 called by game units (descriptions inferred from the callers). */
+/* result = left * right, applying right first (a by-value wrapper that keeps the result pointer and
+ * calls fn_8040B8FC). */
+void fn_8001E044(Fn8040Matrix34 *result, const Fn8040Matrix34 *left, const Fn8040Matrix34 *right);
+/* Stores the angles of the matrix's rotation in angles (fn_800494F8), and the same angles in the
+ * order the rotation vector of a character info uses (fn_800493C4). */
+void fn_800494F8(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix);
+void fn_800493C4(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix);
+/* Builds the matrix that rotates by angle about axis. */
+void fn_800498A0(Fn8040Matrix34 *matrix, const Fn8040Vector3 *axis, float angle);
 /* Quaternion, vector, interpolation and rotation-vector helpers used by the matrix and vector
  * math units, wherever they are defined. Their original names are unknown and the descriptions
  * are inferred from the code. A rotation vector holds the angles about the x, y and z axes; order
@@ -330,6 +340,9 @@ extern Fn8040Matrix34 lbl_805E0750; /* zero */
 extern "C" bool fn_8000A950(float value);
 /* True when |value| < 0.0001 (behaviour inferred). */
 extern "C" bool fn_8000B044(float value);
+/* Whether a - b (from fn_8000AD64) is close to zero: its squared length is below the float at
+ * 0x805F1730 (1e-4). */
+extern "C" bool fn_8000AD08(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 
 /* Whether the point lies between the planes through the segment's ends (behaviour inferred). */
 extern "C" bool fn_8040FB88(const UnkSegment_80020A20 *segment, const Fn8040Vector3 *point);
