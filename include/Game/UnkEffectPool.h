@@ -15,7 +15,7 @@ struct UnkEffectPool {
     UnkEffectPool(unsigned int payloadSize, int count);
     ~UnkEffectPool();
 
-    static void *operator new(unsigned long size) {
+    static void *operator new(unsigned long size) throw() {
         return fn_8042A5D0()->Allocate(size);
     }
     static void operator delete(void *block) {

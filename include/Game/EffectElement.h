@@ -63,7 +63,7 @@ class EffectElement {
     }
 
     /* 0x04 */ unsigned char field_0x4;
-    /* 0x05 */ unsigned char field_0x5;
+    /* 0x05 */ signed char field_0x5;
     /* 0x08 */ unsigned int m_size;
     /* 0x0C */ float m_elapsed;
     /* 0x10 */ float m_timeScale;
