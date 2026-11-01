@@ -184,13 +184,13 @@ Bool SFTIM_IsGetFrmTimeTunit(SFD sfd, Sint32 ftime, Sint32 tunit) {
     return sftim_IsGetFrmTime(sfd, ftime, tunit);
 }
 
-/* Whether decoded frame `frm` should be handed to the application now (the manual video output's
- * GetRead); FALSE for a 0 frame. */
-Bool SFTIM_IsGetFrmTime(SFD sfd, SFD_VFRM *frm) {
-    if (frm == 0) {
+/* Whether the decoded frame described by `inf` should be handed to the application now (the manual
+ * video output's GetRead); FALSE for a 0 frame. */
+Bool SFTIM_IsGetFrmTime(SFD sfd, SFD_VFRM_INF *inf) {
+    if (inf == 0) {
         return FALSE;
     }
-    return SFTIM_IsGetFrmTimeTunit(sfd, frm->inf.raw[3], frm->inf.raw[4]);
+    return SFTIM_IsGetFrmTimeTunit(sfd, inf->ftime, inf->tunit);
 }
 
 /* The stream's frame rate x1000 (SFTIM_prate[picrate]), -1 when unknown yet. */
