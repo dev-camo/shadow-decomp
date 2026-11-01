@@ -202,18 +202,20 @@ struct MWPLY_OBJ {
     /* 0x198 */ Uint8 *tag_ptr;
     /* 0x19C */ Sint32 tag_size;
     /* 0x1A0 */ Sint32 x1a0;
-    /* 0x1A4 */ const Char8 *fname;
-    /* 0x1A8 */ Sint32 x1a8;
+    /* 0x1A4 */ Char8 *fname;
+    /* 0x1A8 */ Sint32 fname_siz;     /* capacity of the file name buffer */
     /* 0x1AC */ Sint32 stm_start_req; /* start the file stream on the next server step */
     /* 0x1B0 */ void *dir;
     /* 0x1B4 */ Sint32 ofst;
     /* 0x1B8 */ Sint32 nsct;
     /* 0x1BC */ SJ sji;
-    /* 0x1C0 */ Uint8 x1c0[0x1C8 - 0x1C0];
+    /* 0x1C0 */ SJ file_sj; /* stream joint of the file stream controller */
+    /* 0x1C4 */ Sint32 x1c4;
     /* 0x1C8 */ Sint32 flow_nsct; /* flow limit in bytes, although named for sectors */
     /* 0x1CC */ Uint8 x1cc[0x280 - 0x1CC];
     /* 0x280 */ MWSST_OBJ sst;
-    /* 0x298 */ Uint8 x298[0x2A4 - 0x298];
+    /* 0x298 */ Uint8 x298[8];
+    /* 0x2A0 */ Sint32 x2a0;   /* cleared when the decoder is stopped */
     /* 0x2A4 */ Sint32 frmapi; /* get/release frame API in use: 1 mwPlyGetCurFrm/mwPlyRelCurFrm */
 };
 CHECK_SIZEOF(MWPLY_OBJ, 0x2A8);
@@ -288,7 +290,6 @@ MWSFD_LIBWORK *MWSFLIB_GetLibWorkPtr(void);
 void mwSfdDestroy(MWPLY mwply);
 void fn_80408680(MWPLY mwply, MWS_FRM *frm, Uint8 *buf); /* fn_80408680.c */
 void MWSFSVR_SetMwsfdSvrFlg(Sint32 flg);
-void MWSFPLY_SetFlowLimit(MWPLY mwply);
 void MWSFSVR_SetHnSfdSvrFlg(MWPLY mwply, Sint32 flg);
 void MWSFSVR_SetHnMwplySvrFlg(MWPLY mwply, Sint32 flg);
 void mwsfd_SetSleepBdr(MWPLY mwply, Sint32 sw); /* inferred name */
@@ -338,9 +339,18 @@ Sint32 mwPlyGetOutVol(void *hn);
 
 /* other units of the player used by mwsfdsvr.c */
 void MWSFCRE_SetSupplySj(MWPLY mwply);
-void mwPlySfdStart(MWPLY mwply);
-void mwPlyPause(MWPLY mwply, Sint32 sw);
+Sint32 MWSFCRE_ResetSfdHn(MWPLY mwply);
+
+/* mwsfdply.c */
 void mwPlyChkSupply(MWPLY mwply);
+void MWSFPLY_SetFlowLimit(MWPLY mwply);
+void mwPlyPause(void *hn, Sint32 sw);
+void mwSfdStopDec(MWPLY mwply);
+void mwSfdStartFnameSub(MWPLY mwply, const Char8 *fname, Sint32 ofst, Sint32 nsct);
+void mwSfdStartFname(void *hn, const Char8 *fname);
+void mwPlyStartFname(MWPLY mwply, const Char8 *fname);
+Sint32 mwPlySfdGetPaStat(MWPLY mwply);
+Sint32 mwPlySfdStart(MWPLY mwply);
 
 /* mwsfdsvr.c */
 void mwlSfdSleepDecSvr(MWPLY mwply);
@@ -351,6 +361,8 @@ Sint32 mwSfdExecSvrHndl(MWPLY mwply);
 
 /* mwsfdsee.c */
 void MWSFSEE_ChkSupply(MWPLY mwply);
+void MWSFSEE_StartFnameSub1(MWPLY mwply, Sint32 ofst, Sint32 nsct);
+void MWSFSEE_StartFnameSub2(MWPLY mwply, Sint32 ofst, Sint32 nsct);
 
 /* mwsfdsl.c */
 void MWSFLSC_SetFlowLimit(MWPLY mwply, Sint32 nsct);

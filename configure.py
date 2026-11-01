@@ -1009,10 +1009,6 @@ config.libs = [
                 # CRI middleware functions (MWSFD); the original source file names are not yet
                 # established.
                 Object(Matching, "Game/fn_80403E44.c"),
-                Object(Matching, "Game/fn_80406EBC.c"),
-                # Matching workaround: -sdata2 0. The target addresses the conversion constants
-                # through .rodata. Revisit when the original unit's flags are known.
-                Object(Matching, "Game/fn_80406F08.c", extra_cflags=["-sdata2 0"]),
                 Object(Matching, "Game/fn_8040E048.c"),
                 # The units below that use -Cpp_exceptions on are those whose original object
                 # carries extab/extabindex entries (C++ exception tables), plus Game/fn_8041583C.c,
@@ -2494,6 +2490,16 @@ config.libs = [
                     "-str readonly",
                     "-use_lmw_stmw on",
                     "-inline noauto",
+                ],
+            ),
+            Object(
+                Matching,
+                "CRI/mwsfdply.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
                 ],
             ),
             Object(

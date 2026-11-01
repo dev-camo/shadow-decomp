@@ -8,9 +8,10 @@
 /* Empty in this library; the player's decode server calls it with the handle. */
 void MWSFSEE_ChkSupply(MWPLY mwply) {}
 
-/* Empty in this library. The empty bodies do not show the argument count or types: the three
- * unsigned parameters are inferred. */
-void MWSFSEE_StartFnameSub2(unsigned int arg0, unsigned int arg1, unsigned int arg2) {}
+/* Empty in this library. The empty bodies do not show the argument count or types: the
+ * parameters are taken from the call in mwSfdStartFnameSub (the handle, the sector offset and
+ * count of the file range). */
+void MWSFSEE_StartFnameSub2(MWPLY mwply, Sint32 ofst, Sint32 nsct) {}
 
 /* Empty in this library. */
-void MWSFSEE_StartFnameSub1(unsigned int arg0, unsigned int arg1, unsigned int arg2) {}
+void MWSFSEE_StartFnameSub1(MWPLY mwply, Sint32 ofst, Sint32 nsct) {}
