@@ -1,14 +1,15 @@
 /* CRI Sofdec concatenated playback (sfd_con.c, SFCON): when several files are streamed back to back
  * (cond 0x31, SFD_SetConcatPlay) the end codes are skipped and the clock is offset by the
  * accumulated duration of the finished files; a 32-entry queue passes each file's total sample
- * count from the demuxer to the audio driver. Unused by this game (single-file movies).
+ * count from the audio driver (sfd_adxt.c) to the video driver (sfmpv_Concat). Unused by this
+ * game (single-file movies).
  *
  * Source from the RE4 GameCube decompilation; this game's SFD_OBJ holds the work at 0xD30. */
 #include "CRI/sfd.h"
 
-/* Pops the next total-sample entry of the concatenation queue (the audio driver reads the sample
- * count of each concatenated file); *val = -1 and 0 when empty. */
-Sint32 SFCON_ReadTotSmplQue(SFD sfd, Sint32 *val, Sint32 *last) {
+/* Pops the next total-sample entry of the concatenation queue (the video driver, sfmpv_Concat,
+ * reads the sample count of each concatenated file); *val = -1 and 0 when empty. */
+Sint32 SFCON_ReadTotSmplQue(SFD sfd, Sint32 *val, Sint32 *sfreq) {
     SFTIM tim = SFD_TIM(sfd);
     Sint32 cs;
     Sint32 ret;
@@ -18,7 +19,7 @@ Sint32 SFCON_ReadTotSmplQue(SFD sfd, Sint32 *val, Sint32 *last) {
         *val = -1;
         ret = 0;
     } else {
-        *last = tim->tot_last;
+        *sfreq = tim->tot_sfreq;
         ret = 1;
         *val = tim->tot_que[tim->que_rd % SFCON_QUE_NUM];
         tim->que_rd++;
@@ -27,9 +28,9 @@ Sint32 SFCON_ReadTotSmplQue(SFD sfd, Sint32 *val, Sint32 *last) {
     return ret;
 }
 
-/* Pushes a file's total sample count onto the 32-entry queue (from the demuxer at each concatenated
- * file); 0 when full. */
-Sint32 SFCON_WriteTotSmplQue(SFD sfd, Sint32 val, Sint32 last) {
+/* Pushes a file's total sample count onto the 32-entry queue (from the audio driver, sfd_adxt.c,
+ * at each concatenated file); 0 when full. */
+Sint32 SFCON_WriteTotSmplQue(SFD sfd, Sint32 val, Sint32 sfreq) {
     SFTIM tim = SFD_TIM(sfd);
     Sint32 cs;
     Sint32 ret;
@@ -38,7 +39,7 @@ Sint32 SFCON_WriteTotSmplQue(SFD sfd, Sint32 val, Sint32 last) {
     if (tim->que_wr - tim->que_rd >= SFCON_QUE_NUM) {
         ret = 0;
     } else {
-        tim->tot_last = last;
+        tim->tot_sfreq = sfreq;
         ret = 1;
         tim->tot_que[tim->que_wr % SFCON_QUE_NUM] = val;
         tim->que_wr++;

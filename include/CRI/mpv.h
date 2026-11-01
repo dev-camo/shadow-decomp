@@ -317,6 +317,7 @@ CHECK_SIZEOF(MPV_IXA, 0x1C60);
 /* mpv_deli.c */
 Sint8 *MPV_SearchDelim(Sint8 *p, Sint32 n, Sint32 mask);
 Sint32 MPV_CheckDelim(void *ptr);
+Sint8 *MPV_BsearchDelim(Sint8 *p, Sint32 n, Sint32 mask);
 
 /* mpv_vlc.c: VLC decode tables used by the slice decoder (mpv_dec.c) */
 extern Sint16 *mpvvlc_mbai_i_0;
@@ -425,6 +426,9 @@ void MPV_MbCbFn(void);
 Sint32 MPV_SetCond(MPV mpv, Sint32 id, Sint32 val);
 Sint32 MPV_GetCond(MPV mpv, Sint32 id, Sint32 *val);
 Sint32 MPV_GetBitRate(MPV mpv, Sint32 *bitrate);
+Sint32 MPV_GetLinkFlg(MPV mpv, Sint32 *flg1, Sint32 *flg2);
+Sint32 MPV_GetVbvBufSiz(MPV mpv, Sint32 *bufsiz, Sint32 *delay, Sint32 *delay_byte);
+Sint32 MPV_GetPicAtr(MPV mpv, MPV_PICATR *picatr);
 
 /* mpv_err.c */
 void MPVERR_InitErrInf(MPVERR_INF *inf);
