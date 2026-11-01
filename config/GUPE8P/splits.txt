@@ -1653,6 +1653,10 @@ CRI/mwstm.c:
 CRI/mwsfdsee.c:
 	.text       start:0x80403514 end:0x80403520
 
+CRI/mwsfdsfx.c:
+	.text       start:0x80403520 end:0x80403E44
+	.rodata     start:0x80518EC0 end:0x80519400
+
 Game/fn_80403E44.c:
 	.text       start:0x80403E44 end:0x80403E4C
 

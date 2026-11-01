@@ -993,6 +993,9 @@ void SFPLY_Init(void);
 void SFPLY_AddSkipPic(SFD sfd, Sint32 n, void *arg);
 void SFPLY_AddDecPic(SFD sfd, Sint32 n, void *arg);
 
+/* sfd_uo.c */
+Sint32 SFD_SetUsrSj(SFD sfd, Sint32 chno, SJ sj, void *prm);
+
 /* sfd_pl2.c */
 Sint32 SFD_SetSpeed(SFD sfd, Sint32 speed);
 Sint32 SFPL2_Standby(SFD sfd);
