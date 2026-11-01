@@ -26,7 +26,7 @@ static const Char8 mwsfd_ver_str[] = "\nMWSFD/GC Ver.3.50 Build:Feb 28 2005 19:3
                                      "Append: MW2407 GC20Apr2004Patch2\n";
 
 /* driver table of the SFD core, in driver order (the unused slots are 0) */
-static const SFD_TR_IF *const mwsfd_trentry[15] = {
+static const SFTRN_TRIF_TBL mwsfd_trentry = {{
     &SFD_tr_in_mem,
     &SFD_tr_sd_mps,
     &SFD_tr_vd_mpv,
@@ -42,12 +42,11 @@ static const SFD_TR_IF *const mwsfd_trentry[15] = {
     0,
     0,
     0,
-};
+}};
 
-/* The driver table is read through SFTRN_TRIF_TBL, the type of SFD_INIT_PRM.trif_tbl; the cast
- * drops the const of the table. 0xEA24 is 59.94 Hz x 1000, replaced by mwPlySfdInit with the
- * caller's rate. */
-static const SFD_INIT_PRM mwsfd_initsfdpara = {(SFTRN_TRIF_TBL *)mwsfd_trentry, 0xEA24};
+/* The readonly table is passed through the shared runtime record interface at this site.
+ * 0xEA24 is 59.94 Hz x 1000, replaced by mwPlySfdInit with the caller's rate. */
+static const SFD_INIT_PRM mwsfd_initsfdpara = {(SFTRN_TRIF_TBL *)&mwsfd_trentry, 0xEA24};
 
 const Sint32 mwsfd_siz_mwplyhn = sizeof(MWPLY_OBJ);
 

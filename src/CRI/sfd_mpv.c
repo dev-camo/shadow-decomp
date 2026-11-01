@@ -1018,7 +1018,7 @@ Sint32 sfmpv_Concat(SFD sfd, SJ sj) {
             diff = ncount - tim->ttu0.val;
         }
     } else {
-        if (sfd->prm.trif_tbl[SFADXT_TR] != (SFD_TR_FUNC *)&SFD_tr_ad_adxt) {
+        if (sfd->prm.trif_tbl[SFADXT_TR] != &SFD_tr_ad_adxt) {
             total = 0;
             sfreq = 44100;
             read = TRUE;
