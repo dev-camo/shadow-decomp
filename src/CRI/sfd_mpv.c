@@ -12,8 +12,10 @@
  * The unit is compiled with deferred inlining, so the functions are defined in the reverse of
  * their order in .text and the variables in the reverse of their order in .bss.
  *
- * Not yet written: the decoding functions from sfmpv_GoDdelim to sfmpv_ExecServerSub and the layout
- * check sfmpv_ChkFatal. */
+ * Not yet written: sfmpv_IsSkip, fn_803F5134, the time code conversions sfmpv_Pts2Tc,
+ * sfmpv_DoReformTc and sfmpv_CalcRepeatField, sfmpv_DecodePicAtr, sfmpv_Concat,
+ * sfmpv_DecodeOneUnit, sfmpv_NeedSafeDlmRefresh, sfmpv_GetActiveSize and the layout check
+ * sfmpv_ChkFatal, whose three compared quantities are not tied to known sizes. */
 #include <stddef.h>
 #include <string.h>
 
