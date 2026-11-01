@@ -175,7 +175,7 @@ Sint32 sfply_ResetHn(SFD sfd) {
     SFTIM_FN extfn;
     Sint32 extwrap;
     void *extobj;
-    Bool (*isskipfn)();
+    SFTIM_ISSKIPFN isskipfn;
     Sint32 speed;
     SFSEE_WORK *see;
     Sint32 byterate;
@@ -378,26 +378,26 @@ Sint32 SFD_Destroy(SFD sfd) {
 }
 
 /* Counts `n` skipped pictures in the player information and calls the optional hook (cond 0x25). */
-void SFPLY_AddSkipPic(SFD sfd, Sint32 n, void *arg) {
-    void (*fn)(SFD sfd, void *arg, SFD_PLYINF *inf);
+void SFPLY_AddSkipPic(SFD sfd, Sint32 n, Sint32 pic_type) {
+    SFPLY_PICFN fn;
     SFD_PLYINF *inf = &sfd->plyinf;
 
     inf->nskippic += n;
-    fn = (void (*)(SFD, void *, SFD_PLYINF *))SFSET_GetCond(sfd, 0x25);
+    fn = (SFPLY_PICFN)SFSET_GetCond(sfd, 0x25);
     if (fn != 0) {
-        fn(sfd, arg, inf);
+        fn(sfd, pic_type, inf);
     }
 }
 
 /* Counts `n` decoded pictures and calls the optional hook (cond 0x24). */
-void SFPLY_AddDecPic(SFD sfd, Sint32 n, void *arg) {
-    void (*fn)(SFD sfd, void *arg, SFD_PLYINF *inf);
+void SFPLY_AddDecPic(SFD sfd, Sint32 n, Sint32 pic_type) {
+    SFPLY_PICFN fn;
     SFD_PLYINF *inf = &sfd->plyinf;
 
     inf->ndecpic += n;
-    fn = (void (*)(SFD, void *, SFD_PLYINF *))SFSET_GetCond(sfd, 0x24);
+    fn = (SFPLY_PICFN)SFSET_GetCond(sfd, 0x24);
     if (fn != 0) {
-        fn(sfd, arg, inf);
+        fn(sfd, pic_type, inf);
     }
 }
 

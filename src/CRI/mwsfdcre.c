@@ -693,11 +693,11 @@ static inline void mwsfcre_SetMpvPara(MWSFD_CRPRM *cprm, Sint32 nfrm) {
     mwsfd_mpvpara.cheight = h / 2;
     mwsfd_mpvpara.width = w;
     mwsfd_mpvpara.height = h;
-    mwsfd_mpvpara.x10 = 0;
+    mwsfd_mpvpara.rfb_base = 0;
     mwsfd_mpvpara.max_width = w;
     mwsfd_mpvpara.max_height = h;
     mwsfd_mpvpara.nfrm = nfrm;
-    mwsfd_mpvpara.x20 = 0;
+    mwsfd_mpvpara.ta_base = 0;
 }
 
 /* Creates the SFD decoder handle of a player: decides the component buffer sizes, takes them from
@@ -796,8 +796,7 @@ static SFD mwsfcre_CreateSfd(MWPLY mwply, MWSFD_CRPRM *cprm) {
     crepara.x38 = fmt;
     crepara.hnwork = hnwork_p;
     crepara.hnwksiz = MWSFD_HNWORK_SIZE;
-    /* SFD_SetMpvParaTbl declares the buffer address tables as arrays of words. */
-    SFD_SetMpvParaTbl(&mwsfd_mpvpara, (Uint32 *)rfbbuf, (Uint32 *)frmtbl);
+    SFD_SetMpvParaTbl(&mwsfd_mpvpara, rfbbuf, frmtbl);
     switch (mode) {
     case MWSFD_FTYPE_SFD:
         SFD_SetAdxtPara(&mwsfd_adxtpara);

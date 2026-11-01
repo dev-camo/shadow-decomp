@@ -310,8 +310,8 @@ static void mwl_convFrmInfFromSFD(MWPLY mwply, SFD_VFRM_INF *vfrm, MWS_FRM *frm)
     Sint32 x34;
     Sint32 tunit;
     Sint32 x30;
-    Sint32 ndct;
-    Sint32 nbyte;
+    Sint32 x24;
+    Sint32 x28;
     Sint32 gopno;
 
     sfd = mwply->sfd;
@@ -326,8 +326,8 @@ static void mwl_convFrmInfFromSFD(MWPLY mwply, SFD_VFRM_INF *vfrm, MWS_FRM *frm)
     tunit = vfrm->tunit;
     x30 = vfrm->x30;
     gopno = vfrm->gopno;
-    ndct = vfrm->ndct;
-    nbyte = vfrm->nbyte;
+    x24 = vfrm->x24;
+    x28 = vfrm->x28;
     if (SFD_GetFps(sfd, &fps) != 0) {
         MWSFSVM_Error("E201301: MWSFD: GetFps failed.");
     }
@@ -349,8 +349,8 @@ static void mwl_convFrmInfFromSFD(MWPLY mwply, SFD_VFRM_INF *vfrm, MWS_FRM *frm)
     frm->gopno = gopno;
     frm->time2 = time2;
     frm->x30 = x30;
-    frm->ndct = ndct;
-    frm->nbyte = nbyte;
+    frm->x3c = x24;
+    frm->x40 = x28;
 
     pptr = mwply->picusr_ptr;
     usrptr = vfrm->picusr->buf;

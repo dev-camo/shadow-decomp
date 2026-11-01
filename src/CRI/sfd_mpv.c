@@ -149,17 +149,17 @@ Sint32 fn_803F894C(SFD sfd) {
 
 /* Saves the decoder parameters and the buffers for the reference frames (rfb) and the decoded
  * frames (ta) the application supplies, each aligned up to 32 bytes; SFMPV_Create picks them up. */
-void SFD_SetMpvParaTbl(SFMPV_PARA *para, Uint32 *rfb, Uint32 *ta) {
+void SFD_SetMpvParaTbl(SFMPV_PARA *para, void **rfb, void **ta) {
     Sint32 i;
 
     sfmpv_para = *para;
-    sfmpv_para.x10 = 0;
-    sfmpv_para.x20 = 0;
-    sfmpv_rfb_adr_tbl[0] = (void *)((rfb[0] + 31) & ~31);
-    sfmpv_rfb_adr_tbl[1] = (void *)((rfb[1] + 31) & ~31);
+    sfmpv_para.rfb_base = 0;
+    sfmpv_para.ta_base = 0;
+    sfmpv_rfb_adr_tbl[0] = (void *)(((Uint32)rfb[0] + 31) & ~31);
+    sfmpv_rfb_adr_tbl[1] = (void *)(((Uint32)rfb[1] + 31) & ~31);
     for (i = 0; i < SFMPV_FRM_NUM; i++) {
         if (i < para->nfrm) {
-            sfmpv_ta_adr_tbl[i] = (void *)((ta[i] + 31) & ~31);
+            sfmpv_ta_adr_tbl[i] = (void *)(((Uint32)ta[i] + 31) & ~31);
         } else {
             sfmpv_ta_adr_tbl[i] = 0;
         }
@@ -396,7 +396,7 @@ static inline Bool sfmpv_IsInputEnough(SFD sfd) {
     if (SFBUF_GetWTot(sfd, 1) >= wk->vbvsiz) {
         return TRUE;
     }
-    ring = SFTRN_IsSetup(sfd, 1) == 0;
+    ring = SFTRN_IsSetup(sfd, SFMPS_TR) == 0;
     if (SFBUF_GetWTot(sfd, ring) >= SFBUF_GetRingBufSiz(sfd, ring)) {
         return TRUE;
     }
@@ -478,7 +478,7 @@ Sint32 sfmpv_ExecServerSub(SFD sfd) {
     if (SFSET_GetCond(sfd, 0x1C) != 0 && SFHDS_GetColType(sfd) != -1) {
         SFD_SetMpvCond(sfd, 5, 0);
     }
-    if (sfd->stat == 2) {
+    if (sfd->stat == SFD_STAT_PREP) {
         wk = SFMPV_WK(sfd);
         mpv = wk->mpv;
         ck.data = (Uint8 *)SFSET_GetCond(sfd, SFD_COND_HDRDAT_ADR);
@@ -946,7 +946,7 @@ Sint32 sfmpv_DecodeOneUnit(SFD sfd, Sint32 size, Sint32 mask, Sint32 partial, Si
                 if (wk->picatr.x58 == 0) {
                     wk->skipret = 1;
                 }
-                SFPLY_AddSkipPic(sfd, 1, (void *)wk->picatr.pic_type);
+                SFPLY_AddSkipPic(sfd, 1, wk->picatr.pic_type);
             }
             ret = err;
             if (ret == 0) {
@@ -1551,8 +1551,8 @@ static inline void sfmpv_InitFrm(SFMPV_FRM *frm, void *buf) {
     frm->buf = buf;
     frm->ftime = 0;
     frm->tunit = 1;
-    frm->ndct = 0;
-    frm->nbyte = 0;
+    frm->x40 = 0;
+    frm->x44 = 0;
     frm->gopno = 0;
     frm->x4c = 0;
     frm->x50 = 0;
@@ -1561,10 +1561,10 @@ static inline void sfmpv_InitFrm(SFMPV_FRM *frm, void *buf) {
 }
 
 /* Lays out the frame buffers for the stream's picture size (vid) in the memory the application
- * supplied: when the parameters give a base address (para.x20) for the decoded frames, as many
+ * supplied: when the parameters give a base address (para.ta_base) for the decoded frames, as many
  * frames of this size as fit in the room of para.nfrm frames of the maximum size are laid out at
- * it and the reference frames at para.x10; the frame objects take the buffers. Fails with error
- * 0xFF000F17 when the two reference frames of the size (laid out frmsize apart) do not fit in the
+ * it and the reference frames at para.rfb_base; the frame objects take the buffers. Fails with
+ * error 0xFF000F17 when the two reference frames of the size (laid out frmsize apart) do not fit in the
  * room of two of the maximum size or fewer than para.nfrm frames fit. Returns an error code, 0
  * when there is none. */
 Sint32 fn_803F5134(SFD sfd, SFD_VIDINF *vid) {
@@ -1594,7 +1594,7 @@ Sint32 fn_803F5134(SFD sfd, SFD_VIDINF *vid) {
     }
 
     n = wk->para.nfrm;
-    if (wk->para.x20 != 0) {
+    if (wk->para.ta_base != 0) {
         limit = wk->para.nfrm * maxfrmsize;
         /* As in the original, n ends at SFMPV_FRM_NUM + 1 when every frame fits, and the loop
          * below then writes one entry past the end of ta_adr. */
@@ -1607,10 +1607,10 @@ Sint32 fn_803F5134(SFD sfd, SFD_VIDINF *vid) {
         if (n < wk->para.nfrm) {
             return SFLIB_SetErr(sfd, SFMPV_ERR_FRMSIZE);
         }
-        wk->rfb_adr[0] = (void *)wk->para.x10;
-        wk->rfb_adr[1] = (void *)(wk->para.x10 + frmsize);
+        wk->rfb_adr[0] = wk->para.rfb_base;
+        wk->rfb_adr[1] = wk->para.rfb_base + frmsize;
         for (i = 0; i < n; i++) {
-            wk->ta_adr[i] = (void *)(wk->para.x20 + i * frmsize);
+            wk->ta_adr[i] = wk->para.ta_base + i * frmsize;
         }
     }
 
@@ -1840,7 +1840,7 @@ static inline Bool sfmpv_IsPicStat23(SFD sfd) {
 }
 
 /* Decodes one picture from the stream joint into a frame: sets up the frame, runs the decoder, adds
- * the decode time and the error counts to the statistics and, if data was consumed, completes the
+ * decode time and MPV-reported counters to the statistics. If data was consumed, it completes the
  * frame (display time, counts, state). With picture attribute x38 other than 3, the first picture
  * decoded into a frame leaves it pending and the next one completes it. Returns an error code, 0
  * when there is none. */
@@ -1851,8 +1851,8 @@ Sint32 sfmpv_DecodeFrm(SFD sfd, SJ sj) {
     SFMPV_FRM *frm;
     MPV_FRM para;
     SFTIM_WORK *tim = SFD_TIM(sfd);
-    Sint32 ref_ndct;
-    Sint32 ref_nbyte;
+    Sint32 ref_x40;
+    Sint32 ref_x44;
     SFMPV_PICUSR *picusr;
     SFTIM_TTU *ttu0;
     SFTIM_TTU *vofst;
@@ -1874,21 +1874,21 @@ Sint32 sfmpv_DecodeFrm(SFD sfd, SJ sj) {
     if (sfd->prm.x38 == 3) {
         switch (wk->picatr.pic_type) {
         case 2:
-            ref_ndct = wk->ref[0]->ndct;
-            ref_nbyte = wk->ref[0]->nbyte;
+            ref_x40 = wk->ref[0]->x40;
+            ref_x44 = wk->ref[0]->x44;
             break;
         case 3:
-            ref_ndct = wk->ref[0]->ndct + wk->ref[1]->ndct;
-            ref_nbyte = wk->ref[0]->nbyte + wk->ref[1]->nbyte;
+            ref_x40 = wk->ref[0]->x40 + wk->ref[1]->x40;
+            ref_x44 = wk->ref[0]->x44 + wk->ref[1]->x44;
             break;
         default:
-            ref_ndct = 0;
-            ref_nbyte = 0;
+            ref_x40 = 0;
+            ref_x44 = 0;
             break;
         }
     } else {
-        ref_ndct = 0;
-        ref_nbyte = 0;
+        ref_x40 = 0;
+        ref_x44 = 0;
     }
     picusr = frm->picusr;
     memcpy(picusr->buf, wk->picusr.dat, wk->picusr.len);
@@ -1944,8 +1944,8 @@ Sint32 sfmpv_DecodeFrm(SFD sfd, SJ sj) {
         frm->ttu = tim->ttu3;
         sfmpv_SetFrmTime(tim, frm);
         frm->gopno = wk->nconcat;
-        frm->ndct = ref_ndct + wk->tmpref_adj + para.x28;
-        frm->nbyte = para.x2c + ref_nbyte;
+        frm->x40 = ref_x40 + wk->tmpref_adj + para.x28;
+        frm->x44 = para.x2c + ref_x44;
         if (picatr->x38 == 3 || wk->pendfrm != 0) {
             wk->pendfrm = 0;
         } else {
@@ -1962,7 +1962,7 @@ Sint32 sfmpv_DecodeFrm(SFD sfd, SJ sj) {
             MPV_GetDctCnt(mpv, &sfd->plyinf.x08, &sfd->plyinf.x0c);
             wk->nskip = 0;
         }
-        SFPLY_AddDecPic(sfd, 1, (void *)picatr->pic_type);
+        SFPLY_AddDecPic(sfd, 1, picatr->pic_type);
     } else if (wk->pendfrm == 0) {
         SFMPVF_FreeFrm(frm);
     }
@@ -2115,7 +2115,7 @@ static inline Sint32 sfmpv_CheckPara(SFMPV_PARA *para) {
     if (para->nfrm <= 0 || para->nfrm > SFMPV_FRM_NUM) {
         return -1;
     }
-    if (para->x10 == 0 || para->x20 == 0) {
+    if (para->rfb_base == 0 || para->ta_base == 0) {
         for (i = 0; i < 2; i++) {
             if (sfmpv_rfb_adr_tbl[i] == 0) {
                 return -1;
@@ -2164,8 +2164,8 @@ Sint32 sfmpv_InitInf(SFD sfd, SFMPV_WORK *wk) {
         frm->buf = wk->ta_adr[i];
         frm->ftime = 0;
         frm->tunit = 1;
-        frm->ndct = 0;
-        frm->nbyte = 0;
+        frm->x40 = 0;
+        frm->x44 = 0;
         frm->gopno = 0;
         frm->x4c = 0;
         frm->x50 = 0;
@@ -2292,8 +2292,8 @@ void sfmpv_SetFrmInf(SFD sfd, SFMPV_FRM *frm, SFD_VFRM_INF **out) {
     (*out)->tunit = frm->tunit;
     (*out)->x1c = sfd->prm.x38;
     (*out)->buf = frm->buf;
-    (*out)->ndct = frm->ndct;
-    (*out)->nbyte = frm->nbyte;
+    (*out)->x24 = frm->x40;
+    (*out)->x28 = frm->x44;
     (*out)->gopno = frm->gopno;
     (*out)->x30 = frm->x4c;
     (*out)->x34 = frm->x50;

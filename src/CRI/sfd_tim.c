@@ -389,7 +389,7 @@ Sint32 SFD_CmpTime(Sint32 a, Sint32 aunit, Sint32 b, Sint32 bunit) {
 }
 
 /* Installs the user's frame-skip judgement callback. */
-Sint32 SFD_SetUsrIsSkipFn(SFD sfd, Bool (*fn)()) {
+Sint32 SFD_SetUsrIsSkipFn(SFD sfd, SFTIM_ISSKIPFN fn) {
     if (SFLIB_CheckHn(sfd) != 0) {
         return SFLIB_SetErr(0, 0xFF000124);
     }
