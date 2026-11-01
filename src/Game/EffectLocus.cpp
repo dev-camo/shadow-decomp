@@ -420,11 +420,11 @@ void EffectLocus::Update(float deltaTime) {
     }
     m_addedCount = 0;
     m_removedCount = 0;
+    const UnkEffectElementData7 *definition =
+        static_cast<const UnkEffectElementData7 *>(m_definition);
     if ((m_flags & ELEMENT_FLAG_2) != 0) {
         m_elapsed += deltaTime;
     }
-    const UnkEffectElementData7 *definition =
-        static_cast<const UnkEffectElementData7 *>(m_definition);
     if ((m_definitionFlags & 1) == 0 && m_elapsed > definition->field_0x4C + 0.0001f) {
         m_flags &= ~ELEMENT_ACTIVE;
         return;
@@ -432,6 +432,7 @@ void EffectLocus::Update(float deltaTime) {
     fn_8042A5C0(fn_8042A5D0(), m_commandPool);
     fn_8042BD8C();
     if ((m_commandFlags & COMMAND_STOP_REQUESTED) == 0) {
+        EffectCommandExec *next;
         EffectCommandExec *command = m_commandHead;
         while (command != 0) {
             if (!command->Update(deltaTime)) {
@@ -447,7 +448,7 @@ void EffectLocus::Update(float deltaTime) {
                 if (command == m_commandTail) {
                     m_commandTail = command->m_prev;
                 }
-                EffectCommandExec *next = command->m_next;
+                next = command->m_next;
                 delete command;
                 command = next;
             } else {

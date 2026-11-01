@@ -287,6 +287,7 @@ void EffectShimmer::Update(float deltaTime) {
     fn_8042A5C0(fn_8042A5D0(), m_commandPool);
     fn_8042AAB0();
     if ((m_commandFlags & COMMAND_STOP_REQUESTED) == 0) {
+        EffectCommandExec *next;
         EffectCommandExec *command = m_commandHead;
         while (command != 0) {
             if (!command->Update(deltaTime)) {
@@ -302,7 +303,7 @@ void EffectShimmer::Update(float deltaTime) {
                 if (command == m_commandTail) {
                     m_commandTail = command->m_prev;
                 }
-                EffectCommandExec *next = command->m_next;
+                next = command->m_next;
                 delete command;
                 command = next;
             } else {
