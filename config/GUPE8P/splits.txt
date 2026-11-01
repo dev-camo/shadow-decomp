@@ -1925,6 +1925,12 @@ Game/fn_8042043C.cpp:
 	.text       start:0x8042043C end:0x80420724
 	.ctors      start:0x804AA064 end:0x804AA068
 
+Game/fn_80420724.cpp:
+	extab       start:0x80005FF4 end:0x8000600C
+	extabindex  start:0x800081A4 end:0x800081C8
+	.text       start:0x80420724 end:0x80420C30
+	.sdata2     start:0x805FAE30 end:0x805FAE48
+
 Game/fn_804212F4.c:
 	.text       start:0x804212F4 end:0x80421300
 

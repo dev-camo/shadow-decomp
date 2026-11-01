@@ -286,11 +286,12 @@ int fn_8041CFB0(MotionNode *node, int playerIndex, unsigned int nodeId, float ar
 int fn_8041D1A0(MotionNode *node, unsigned int nodeId, int arg2, int arg3);
 MotionTransform *fn_8041D31C(MotionNode *node, unsigned int nodeId);
 
-/* The functions that fn_8042062C calls, declared from its calls (behaviour inferred): the
+/* The functions that fn_8042062C calls, defined in Game/fn_80420724.cpp (behaviour inferred): the
  * rotation of a matrix as a quaternion, the interpolation of two quaternions (t = 0 gives b and
- * t = 1 gives a), and the rotation matrix of a quaternion. */
+ * t = 1 gives a; it always returns 1, which the caller ignores), and the rotation matrix of a
+ * quaternion. */
 void fn_804208EC(Fn8040Vector4 *quaternion, const Fn8040Matrix34 *matrix);
-void fn_80420724(Fn8040Vector4 *result, const Fn8040Vector4 *a, const Fn8040Vector4 *b, float t);
+int fn_80420724(Fn8040Vector4 *result, const Fn8040Vector4 *a, const Fn8040Vector4 *b, float t);
 void fn_80420B60(Fn8040Matrix34 *matrix, const Fn8040Vector4 *quaternion);
 
 /* stMtnRequestBlendFrame, stMtnRequestFrameSpeed, stMtnRequestCurrentFrame and fn_80415D40 are
