@@ -982,6 +982,7 @@ Sint32 SFD_GetHnStat(SFD sfd);
 /* default conditions; one entry longer than the SFD_COND_NUM copied into each handle */
 extern const Sint32 SFPLY_cond_dfl[101];
 Sint32 SFD_GetPaStat(SFD sfd);
+Sint32 SFD_SetSupplySj(SFD sfd, SFBUF_SUP *sup);
 Sint32 SFD_RelFrm(SFD sfd, void *frm);
 Sint32 SFD_GetFrm(SFD sfd, void **frm);
 Sint32 SFD_TermSupply(SFD sfd);

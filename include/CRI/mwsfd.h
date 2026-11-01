@@ -98,6 +98,9 @@ CHECK_SIZEOF(MWSFFRM_SFHINF, 0x14);
 
 #define MWSFFRM_SFHINF_NUM 8
 
+/* blocks of component work a player takes */
+#define MWSFD_CWK_NUM 32
+
 /* Picture user data buffer description (MWPLY_OBJ.picusr and what picusr_ptr points at). */
 typedef struct {
     /* 0x00 */ void *buf;
@@ -146,8 +149,9 @@ typedef struct {
 } MWS_FRM;
 CHECK_SIZEOF(MWS_FRM, 0x90);
 
-/* MW player object (0x2A8 bytes; the libwork holds eight). Only the fields the matched units use
- * are named. */
+/* MW player object (0x2A8 bytes; the libwork holds eight). Only the fields the sourced code uses
+ * are named, and a few (the user work size and position) from the original code of functions not
+ * yet sourced. */
 struct MWPLY_OBJ {
     /* 0x000 */ Sint32 used; /* 1 for a created handle */
     /* 0x004 */ Sint32 stat; /* MWSFD_STAT_* */
@@ -209,10 +213,23 @@ struct MWPLY_OBJ {
     /* 0x1B4 */ Sint32 ofst;
     /* 0x1B8 */ Sint32 nsct;
     /* 0x1BC */ SJ sji;
-    /* 0x1C0 */ SJ file_sj; /* stream joint of the file stream controller */
-    /* 0x1C4 */ Sint32 x1c4;
+    /* 0x1C0 */ SJ file_sj;       /* stream joint of the file stream controller */
+    /* 0x1C4 */ Sint32 x1c4;      /* offset of the file supply (SFBUF_SUP.ofst) */
     /* 0x1C8 */ Sint32 flow_nsct; /* flow limit in bytes, although named for sectors */
-    /* 0x1CC */ Uint8 x1cc[0x280 - 0x1CC];
+    /* 0x1CC */ Sint32 x1cc;      /* extra size of the file supply (SFBUF_SUP.xsize) */
+    /* 0x1D0 */ Sint32 sup_kind;  /* supply of the stream joint given by the caller (SFBUF_SUP) */
+    /* 0x1D4 */ Sint32 sup_ofst;
+    /* 0x1D8 */ Sint32 sup_size;
+    /* 0x1DC */ Sint32 sup_xsize;
+    /* 0x1E0 */ SJ mem_sj; /* memory stream joint */
+    /* 0x1E4 */ void *mem_buf;
+    /* 0x1E8 */ Sint32 mem_size;
+    /* 0x1EC */ void *cwk_buf; /* user work for the component buffers, NULL for the callbacks */
+    /* 0x1F0 */ Uint32 cwk_size;
+    /* 0x1F4 */ Uint8 *cwk_ptr; /* next free byte of the user work */
+    /* 0x1F8 */ Uint32 cwk_used;
+    /* 0x1FC */ Sint32 cwk_cnt; /* blocks allocated */
+    /* 0x200 */ void *cwk_tbl[MWSFD_CWK_NUM];
     /* 0x280 */ MWSST_OBJ sst;
     /* 0x298 */ Uint8 x298[8];
     /* 0x2A0 */ Sint32 x2a0;   /* cleared when the decoder is stopped */
@@ -244,7 +261,11 @@ typedef struct {
     /* 0x10 */ Sint32 main_decode; /* decode in the main server, not the idle one; inferred */
     /* 0x14 */ Uint8 x14[0x24 - 0x14];
     /* 0x24 */ Sint32 svr_bdr; /* a handle is sleeping at the idle border */
-    /* 0x28 */ Uint8 x28[0x38 - 0x28];
+    /* Component work allocator; named from the original code of fn_80404038, not yet sourced. */
+    /* 0x28 */ void *(*malloc_fn)(void *obj, Uint32 size); /* component work allocator */
+    /* 0x2C */ void (*free_fn)(void *obj, void *ptr);
+    /* 0x30 */ void *mem_obj; /* the object both are called with */
+    /* 0x34 */ Sint32 x34;
     /* 0x38 */ Sint32 use_picusr;             /* picture user data is captured */
     /* 0x3C */ Sint32 pause_bdr;              /* pausing waits for the decode server border */
     /* 0x40 */ Sint32 (*pre_func)(void *obj); /* run before the decode server step */
@@ -287,7 +308,6 @@ void mwsflib_LscErrFunc(void *obj, Char8 *msg);
 MWSFD_LIBWORK *MWSFLIB_GetLibWorkPtr(void);
 
 /* other units of the player used by mwsfdlib.c */
-void mwSfdDestroy(MWPLY mwply);
 void fn_80408680(MWPLY mwply, MWS_FRM *frm, Uint8 *buf); /* fn_80408680.c */
 void MWSFSVR_SetMwsfdSvrFlg(Sint32 flg);
 void MWSFSVR_SetHnSfdSvrFlg(MWPLY mwply, Sint32 flg);
@@ -328,6 +348,11 @@ SFX_OBJ *MWSFSFX_Create(void *work, Sint32 wsize);
 void MWSFSFX_Finish(void); /* inferred name: the counterpart of MWSFSFX_Init */
 void MWSFSFX_Init(void);
 
+/* mwsfdcre.c */
+void mwSfdDestroy(MWPLY mwply);
+Sint32 MWSFCRE_ResetSfdHn(MWPLY mwply);
+void MWSFCRE_SetSupplySj(MWPLY mwply);
+
 /* mwsfdset.c */
 SFD mwPlyGetSfdHn(MWPLY mwply);
 void MWSFD_SetCond(MWPLY mwply, Sint32 id, Sint32 val);
@@ -336,10 +361,6 @@ Bool MWSFD_IsEnableHndl(MWPLY mwply);
 Sint32 mwPlyGetStat(MWPLY mwply);
 void mwPlySetOutVol(void *hn, Sint32 vol);
 Sint32 mwPlyGetOutVol(void *hn);
-
-/* other units of the player used by mwsfdsvr.c */
-void MWSFCRE_SetSupplySj(MWPLY mwply);
-Sint32 MWSFCRE_ResetSfdHn(MWPLY mwply);
 
 /* mwsfdply.c */
 void mwPlyChkSupply(MWPLY mwply);
