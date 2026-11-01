@@ -68,6 +68,7 @@ class UnkAttack_8005A840;
 /* A sphere of a centre and a radius (placeholder name; layout from the constructor at 0x80021C04,
  * which copies the centre to 0x0 and stores the radius at 0xC). */
 struct UnkSphere_80021C04 {
+    UnkSphere_80021C04();
     UnkSphere_80021C04(const Fn8040Vector3 *center, float radius);
 
     /* 0x00 */ Fn8040Vector3 m_center;
@@ -133,10 +134,10 @@ void fn_800C78B0(UnkWorld_80021B08 *world, boost::shared_ptr<UnkProbeTarget_8005
 boost::weak_ptr<CharInfo> fn_800C4568(UnkWorld_80021B08 *world,
                                       boost::weak_ptr<UnkProbeTarget_800587A0> target);
 /* Tests the attack along the segment and returns a newly allocated list of what it met, or 0
- * (behaviour inferred); arg2 and the four further arguments are passed on and are not
- * understood. */
+ * (behaviour inferred); arg2 and arg3 are forwarded with unresolved meanings. */
 UnkProbeList_80021FE4 *fn_800C5D74(UnkWorld_80021B08 *world, const UnkSegment_80020A20 *segment,
-                                   int arg2, int arg3, int arg4, int arg5, int arg6,
+                                   int arg2, int arg3, UnkProbeList_80021FE4 *hits,
+                                   UnkProbePredicate predicate, void *context,
                                    boost::weak_ptr<UnkAttack_8005A840> attack);
 }
 
