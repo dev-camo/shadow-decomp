@@ -2,22 +2,79 @@
 #define MSL_STDEXCEPT_H_
 
 #include <exception>
+#include <new>
+#include <cstring>
+#include <memory>
 #include "layout_check.h"
 
 namespace std {
 
-class runtime_error : public exception {
+// Only the array policy's identity is reconstructed; it is used as a tag here.
+template <class T> struct _Array {};
+CHECK_SIZEOF(_Array<char>, 0x1);
+
+template <class T, class Policy = _Array<T> > class _RefCountedPtr {
   public:
-    explicit runtime_error(const char *message);
-    runtime_error(const runtime_error &other);
-    runtime_error &operator=(const runtime_error &other);
-    virtual ~runtime_error();
-    virtual const char *what() const;
+    explicit _RefCountedPtr(T *value);
+    ~_RefCountedPtr();
+
+    T *get() const {
+        return pointer_;
+    }
 
   private:
-    /* The original owns a reference-counted message; field names are inferred. */
-    /* 0x04 */ char *message_;
-    /* 0x08 */ unsigned int *references_;
+    _RefCountedPtr(const _RefCountedPtr &);
+    _RefCountedPtr &operator=(const _RefCountedPtr &);
+
+    /* 0x00 */ T *pointer_;
+    /* 0x04 */ unsigned int *references_;
+};
+CHECK_SIZEOF(_RefCountedPtr<char>, 0x8);
+
+template <class T, class Policy>
+_RefCountedPtr<T, Policy>::_RefCountedPtr(T *value) : pointer_(value), references_(0) {
+    if (pointer_ != 0) {
+        references_ = new unsigned int(1);
+        if (references_ == 0) {
+            delete[] pointer_;
+            __msl_error("_RefCountedPtr out of memory");
+        }
+    }
+}
+
+template <class T, class Policy> _RefCountedPtr<T, Policy>::~_RefCountedPtr() {
+    if (references_ != 0 && --*references_ == 0) {
+        delete[] pointer_;
+        delete references_;
+    }
+}
+
+// The C-string constructor initializes the counted buffer before copying the string.
+class _MSLstring {
+  public:
+    explicit _MSLstring(const char *message) : buffer_(new char[strlen(message) + 1]) {
+        strcpy(buffer_.get(), message);
+    }
+
+    const char *c_str() const {
+        return buffer_.get();
+    }
+
+  private:
+    /* 0x00 */ _RefCountedPtr<char> buffer_;
+};
+CHECK_SIZEOF(_MSLstring, 0x8);
+
+class runtime_error : public exception {
+  public:
+    explicit runtime_error(const char *message) : message_(message) {}
+    virtual ~runtime_error() {}
+    virtual const char *what() const {
+        return message_.c_str();
+    }
+
+  private:
+    /* 0x04 */ _MSLstring message_;
 };
 CHECK_SIZEOF(std::runtime_error, 0xC);
 

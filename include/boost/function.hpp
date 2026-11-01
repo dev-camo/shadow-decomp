@@ -33,9 +33,9 @@
 // reproduced, and the pieces that depend on type traits the reconstructed units never need are
 // left out: plain function pointers, member pointers, boost::ref and stateless function objects
 // (the reconstructed units store only boost::bind expressions), target(), the comparison against
-// other functors. The bad_function_call constructor and destructor use the original out-of-line
-// definitions. The typedefs and constants no reconstructed unit refers to are also left
-// out: args, arity, sig and arg1_type. The configuration macros are resolved for MWCC
+// other functors. The bad_function_call class retains Boost's inline constructor and implicit
+// destructor. The typedefs and constants no reconstructed unit refers to are also left out:
+// args, arity, sig and arg1_type. The configuration macros are resolved for MWCC
 // (BOOST_NO_SFINAE), and BOOST_ASSERT is resolved for an NDEBUG build, so the
 // checks in the int constructor and assignment are left out. The bodies stay in the classes as in
 // Boost: the game's inlining depends on them (see cflags_game_cpp in configure.py).
@@ -53,8 +53,7 @@ namespace boost {
 
 class bad_function_call : public std::runtime_error {
   public:
-    bad_function_call();
-    virtual ~bad_function_call();
+    bad_function_call() : std::runtime_error("call to empty boost::function") {}
 };
 CHECK_SIZEOF(boost::bad_function_call, 0xC);
 
