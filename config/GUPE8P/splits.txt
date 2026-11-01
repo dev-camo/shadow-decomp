@@ -1936,6 +1936,11 @@ Game/fn_80420C30.c:
 	extabindex  start:0x800081C8 end:0x80008228
 	.text       start:0x80420C30 end:0x804210E4
 
+Game/fn_804210E4.c:
+	extab       start:0x8000604C end:0x80006054
+	extabindex  start:0x80008228 end:0x80008234
+	.text       start:0x804210E4 end:0x804211CC
+
 Game/fn_804212F4.c:
 	.text       start:0x804212F4 end:0x80421300
 
