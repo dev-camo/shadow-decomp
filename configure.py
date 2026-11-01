@@ -1013,7 +1013,6 @@ config.libs = [
                 # Matching workaround: -sdata2 0. The target addresses the conversion constants
                 # through .rodata. Revisit when the original unit's flags are known.
                 Object(Matching, "Game/fn_80406F08.c", extra_cflags=["-sdata2 0"]),
-                Object(Matching, "Game/fn_804212F4.c"),
                 Object(Matching, "Game/fn_8040E048.c"),
                 # The units below that use -Cpp_exceptions on are those whose original object
                 # carries extab/extabindex entries (C++ exception tables), plus Game/fn_8041583C.c,
@@ -1127,10 +1126,10 @@ config.libs = [
                 # Game/fn_8041116C.cpp, Game/fn_80411714.c, Game/fn_80413B30.c, Game/fn_804157E8.c,
                 # Game/fn_8041583C.c, Game/fn_80415854.c and the later NonMatching pieces of the
                 # control of motions (Game/fn_80416198.cpp, fn_8041FD70.cpp, fn_8041FF0C.cpp,
-                # fn_80420308.cpp and fn_8042043C.cpp) carry it. Game/fn_804110EC.c,
-                # Game/fn_804202B8.c, Game/fn_804212F4.c and the empty functions Game/fn_8041FD6C.c,
-                # Game/fn_8041FF08.c and Game/fn_80420438.c omit it: their objects are identical
-                # with or without it.
+                # fn_80420308.cpp and fn_8042043C.cpp) and the later units from Game/fn_80420724.cpp
+                # to Game/fn_804211CC.c carry it. Game/fn_804110EC.c, Game/fn_804202B8.c and the
+                # empty functions Game/fn_8041FD6C.c, Game/fn_8041FF08.c and Game/fn_80420438.c
+                # omit it: their objects are identical with or without it.
                 # Loader of packs of named nodes. Inlining is automatic but one level deep: the
                 # recursive node functions expand once, as in the original (with unlimited depth
                 # fn_80410C7C grows from 0xC4 to 0x304 bytes).
@@ -1337,6 +1336,17 @@ config.libs = [
                 Object(
                     NonMatching,
                     "Game/fn_804210E4.c",
+                    extra_cflags=[
+                        "-Cpp_exceptions on",
+                        "-O4,s",
+                        "-use_lmw_stmw on",
+                        "-str reuse,readonly",
+                        "-inline auto,level=1",
+                    ],
+                ),
+                Object(
+                    Matching,
+                    "Game/fn_804211CC.c",
                     extra_cflags=[
                         "-Cpp_exceptions on",
                         "-O4,s",

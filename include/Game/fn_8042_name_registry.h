@@ -32,9 +32,11 @@ void fn_80420CE8(NameRegistry *registry, const char *name, unsigned int id);
  * (source may equal destination). */
 void fn_8042118C(void *destination, const void *source, int count);
 void fn_804210E4(void *destination, const void *source, int count);
-/* Returns the byte-order setting (set by fn_804211D4) that the pack loader compares with a file's
- * own byte-order flag. */
+/* Returns the byte-order setting that the pack loader compares with a file's own byte-order
+ * flag. */
 int fn_804211CC(void);
+/* Sets the byte-order setting and returns the previous setting. */
+int fn_804211D4(int byteOrder);
 
 /* Start-up (fn_80420C50: the motion playback state and the ARAM area) and shut-down (fn_80420C30:
  * the ARAM area) wrappers, called by fn_800151EC and fn_80015160 (roles inferred). */
@@ -51,8 +53,9 @@ void fn_804211E4(void *destination, unsigned int aramAddress, int size);
 void fn_80421270(unsigned int aramAddress, const void *source, int size);
 /* Releases the ARAM block that starts at an address (called by fn_804129D4). */
 void fn_80421300(unsigned int aramAddress);
-/* Allocates an ARAM block of the given size and returns its address, or 0. */
-unsigned int fn_80421368(int size);
+/* Allocates an ARAM block of the given size (rounded up to 32 bytes) and returns its address, or
+ * 0. */
+unsigned int fn_80421368(unsigned int size);
 
 #ifdef __cplusplus
 }
