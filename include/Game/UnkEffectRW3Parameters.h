@@ -81,6 +81,16 @@ struct UnkEffectRW3Param3 {
 };
 CHECK_SIZEOF(UnkEffectRW3Param3, 0x38);
 
+struct UnkEffectRW3Param4 {
+    UnkEffectRW3Param4(unsigned char field0 = 0, unsigned char field1 = 0,
+                       unsigned char field2 = 0);
+    /* 0x00 */ unsigned char field_0x0;
+    /* 0x01 */ unsigned char field_0x1;
+    /* 0x02 */ unsigned char field_0x2;
+    /* 0x04 */ RwV3d m_position;
+};
+CHECK_SIZEOF(UnkEffectRW3Param4, 0x10);
+
 } // namespace RW3
 } // namespace Effect
 

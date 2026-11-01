@@ -6,6 +6,7 @@
 
 struct RpClump;
 struct RwRaster;
+struct RwTexDictionary;
 struct RwRGBA;
 
 namespace Effect {
@@ -15,6 +16,8 @@ struct UnkEffectRW3Param0;
 struct UnkEffectRW3Param1;
 struct UnkEffectRW3Param2;
 struct UnkEffectRW3Param3;
+struct UnkEffectRW3Param4;
+struct UnkEffectManagerRW3Data50Item;
 struct UnkEffectManagerRW3Data2C;
 struct UnkEffectManagerRW3Data3C;
 struct UnkEffectManagerRW3Data40;
@@ -47,6 +50,15 @@ class EffectManagerRW3 : public System::EffectManager {
     void fn_80437018(float deltaTime);
     void fn_80437044();
     void fn_80437088(const UnkEffectRW3Param3 *parameters);
+
+    void fn_80432148(RwTexDictionary *dictionary, const UnkEffectManagerRW3Data50Item *items,
+                     int count);
+    UnkEffectRW3Param4 fn_80432174();
+    void fn_804321F4(const UnkEffectRW3Param4 &parameters);
+    void fn_80432220(unsigned char flag);
+    void fn_8043224C();
+    void fn_80432278();
+    void fn_804322E0(const UnkEffectRW3Param4 *parameters);
 
     /* 0x2C */ UnkEffectManagerRW3Data2C *field_0x2C;
     /* 0x30 */ int field_0x30;
