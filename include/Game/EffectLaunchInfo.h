@@ -11,7 +11,8 @@ struct UnkEffectFileData;
 /* Class name from RTTI; the file data is borrowed. */
 class EffectLaunchInfo {
   public:
-    virtual ~EffectLaunchInfo();
+    EffectLaunchInfo(UnkEffectFileData *file) : field_0x4(file) {}
+    virtual ~EffectLaunchInfo() {}
 
     /* 0x04 */ UnkEffectFileData *field_0x4;
 };
