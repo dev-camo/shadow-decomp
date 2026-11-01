@@ -8,10 +8,10 @@
  * the behaviour is inferred from the GravityChangeCollision gadget). A four-byte state object at
  * lbl_805F0340 holds the index of the current direction in a table of vectors at lbl_8058436C. */
 extern "C" {
-/* Creates the state object with index 0 unless it exists (GravityChangeCollision's gadget type
- * calls it from its hookA). */
+/* Creates the state object with index 0 unless it exists (the gravity gadgets' hookA calls it:
+ * GravityChangeCollision, GravitySignBoard). */
 void fn_80293B1C(void);
-/* Deletes the state object (the same gadget type calls it from its hookB). */
+/* Deletes the state object (called from the same gadgets' hookB). */
 void fn_80293AE4(void);
 /* The current index, or 0 when the state object does not exist. */
 int fn_80293AC8(void);
@@ -21,6 +21,10 @@ int fn_80293AC8(void);
 void fn_80293928(int index);
 /* The vector at index in the table of directions. */
 const Fn8040Vector3 *fn_80293B60(int index);
+/* The vector (0, 1, 0), stored by the same startup code (at 0x80293B74) that fills the table of
+ * directions, 12 bytes before that table; GravitySignBoard takes it as the direction its model
+ * faces when it is not turned (purpose inferred). */
+extern Fn8040Vector3 lbl_80584360;
 }
 
 #endif

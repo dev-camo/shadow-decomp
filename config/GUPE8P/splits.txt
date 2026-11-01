@@ -197,6 +197,13 @@ Game/GravityChangeCollision.cpp:
 	.sdata      start:0x805EA158 end:0x805EA178
 	.sdata2     start:0x805F74A0 end:0x805F74C8
 
+Game/GravitySignBoard.cpp:
+	.text       start:0x80258D48 end:0x802593B0
+	.rodata     start:0x804F4E40 end:0x804F4E70
+	.data       start:0x80549F40 end:0x80549FA8
+	.sdata      start:0x805EA500 end:0x805EA520
+	.sdata2     start:0x805F7788 end:0x805F77A8
+
 Game/BackDrop.cpp:
 	.text       start:0x8026B3B0 end:0x8026B718
 	.ctors      start:0x804A9F0C end:0x804A9F10

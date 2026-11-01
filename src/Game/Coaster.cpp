@@ -83,15 +83,7 @@ CHECK_SIZEOF(UnkFollowerParams_8000B2C0, 0x30);
 class UnkFollowerManager_80099954;
 
 extern "C" {
-/* Matrix and vector helpers (descriptions inferred from the code that calls them). */
-/* Stores the angles of the matrix's rotation in angles. */
-void fn_800494F8(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix);
-/* The same angles in the order the rotation vector of a character info uses. */
-void fn_800493C4(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix);
-/* Builds the matrix that rotates by angle about axis. */
-void fn_800498A0(Fn8040Matrix34 *matrix, const Fn8040Vector3 *axis, float angle);
-/* result = left * right. */
-void fn_8001E044(Fn8040Matrix34 *result, const Fn8040Matrix34 *left, const Fn8040Matrix34 *right);
+/* Float helpers (descriptions inferred from the code that calls them). */
 /* Moves current towards target by at most maxStep (behaviour inferred). */
 float fn_8012773C(float target, float current, float maxStep);
 /* Returns the address of whichever of value, low and high lies in between (a clamp; behaviour
