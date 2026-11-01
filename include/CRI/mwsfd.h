@@ -143,8 +143,8 @@ typedef struct {
     /* 0x30 */ Sint32 gopno;     /* gopno: selects the Sofdec header entry (MWPLY_OBJ.sfh_cur) */
     /* 0x34 */ Sint32 time2;     /* x30 in frame periods */
     /* 0x38 */ Sint32 x30;       /* x30 */
-    /* 0x3C */ Sint32 ndct;      /* ndct */
-    /* 0x40 */ Sint32 nbyte;     /* nbyte */
+    /* 0x3C */ Sint32 x3c;       /* SFD_VFRM_INF.x24 */
+    /* 0x40 */ Sint32 x40;       /* SFD_VFRM_INF.x28 */
     /* 0x44 */ Uint8 *usrdat;    /* picture user data after the 4-byte start, NULL for none */
     /* 0x48 */ Sint32 usrlen;
     /* 0x4C */ Sint32 ftype;    /* 2 when the picture is handled as fields, else 0 */

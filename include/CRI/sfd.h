@@ -17,6 +17,8 @@ extern "C" {
 
 typedef struct SFD_OBJ *SFD;
 
+typedef Bool (*SFTIM_ISSKIPFN)(SFD sfd, Sint32 pic_type, Sint32 ftime, Sint32 tunit);
+
 /* handles that can exist at once (SFLIB_WORK.hn) */
 #define SFD_HN_MAX 8
 
@@ -113,23 +115,23 @@ CHECK_SIZEOF(SFTIM_RFLD, 0x4);
  * pts_base is the first picture PTS less its temporal-reference offset, clamped at 0 (video
  * driver); it is saved in and restored from the seek work (sfd_mps.c). */
 typedef struct {
-    SFTIM_FN timefn[6];  /* 0x000 clock sources (SFTIM_SetTimeFn / cond 0xF) */
-    Bool (*isskipfn)();  /* 0x018 SFD_SetUsrIsSkipFn */
-    SFTIM_TC tc;         /* 0x01C */
-    SFTIM_TTU ttu0;      /* 0x03C (INT_MAX) */
-    SFTIM_TTU ttu1;      /* 0x068 (-1) */
-    SFTIM_TTU tot;       /* 0x094 (-1) total time of the concatenated files (sfd_see.c) */
-    SFTIM_TTU ttu3;      /* 0x0C0 (0) */
-    SFTIM_TTU vstart;    /* 0x0EC (-1) video start time */
-    SFTIM_TTU vofst;     /* 0x118 (INT_MAX) video start offset (SFTIM_GetVideoStartSample) */
-    Sint32 astart_smpl;  /* 0x144 SFTIM_SetStartTime */
-    Sint32 astart_sfreq; /* 0x148 */
-    Sint32 x14c;         /* 0x14C */
-    Sint64 pts_base;     /* 0x150 (-1) video PTS base (inferred, see above) */
-    Sint64 as_pts;       /* 0x158 (-1) audio start: audio PTS min - seek work min (sfd_mps.c) */
-    Sint32 x160;         /* 0x160 */
-    Sint32 ctime;        /* 0x164 accumulated concat time */
-    Sint32 ctime_idx;    /* 0x168 */
+    SFTIM_FN timefn[6];      /* 0x000 clock sources (SFTIM_SetTimeFn / cond 0xF) */
+    SFTIM_ISSKIPFN isskipfn; /* 0x018 SFD_SetUsrIsSkipFn */
+    SFTIM_TC tc;             /* 0x01C */
+    SFTIM_TTU ttu0;          /* 0x03C (INT_MAX) */
+    SFTIM_TTU ttu1;          /* 0x068 (-1) */
+    SFTIM_TTU tot;           /* 0x094 (-1) total time of the concatenated files (sfd_see.c) */
+    SFTIM_TTU ttu3;          /* 0x0C0 (0) */
+    SFTIM_TTU vstart;        /* 0x0EC (-1) video start time */
+    SFTIM_TTU vofst;         /* 0x118 (INT_MAX) video start offset (SFTIM_GetVideoStartSample) */
+    Sint32 astart_smpl;      /* 0x144 SFTIM_SetStartTime */
+    Sint32 astart_sfreq;     /* 0x148 */
+    Sint32 x14c;             /* 0x14C */
+    Sint64 pts_base;         /* 0x150 (-1) video PTS base (inferred, see above) */
+    Sint64 as_pts;           /* 0x158 (-1) audio start: audio PTS min - seek work min (sfd_mps.c) */
+    Sint32 x160;             /* 0x160 */
+    Sint32 ctime;            /* 0x164 accumulated concat time */
+    Sint32 ctime_idx;        /* 0x168 */
     Sint32 ctime_que[SFCON_QUE_NUM]; /* 0x16C */
     Sint32 tot_sfreq;                /* 0x1EC (1) sampling frequency (ADXT_GetSfreq) */
     Sint32 x1f0;                     /* 0x1F0 samples of the finished files (sfmpv_Concat) */
@@ -228,8 +230,8 @@ typedef struct {
     Sint32 tunit;             /* 0x18 SFMPV_FRM.tunit */
     Sint32 x1c;               /* 0x1C SFD_CREPRM.x38 of the player */
     void *buf;                /* 0x20 SFMPV_FRM.buf */
-    Sint32 ndct;              /* 0x24 SFMPV_FRM.ndct */
-    Sint32 nbyte;             /* 0x28 SFMPV_FRM.nbyte */
+    Sint32 x24;               /* 0x24 SFMPV_FRM.x40 */
+    Sint32 x28;               /* 0x28 SFMPV_FRM.x44 */
     Sint32 gopno;             /* 0x2C SFMPV_FRM.gopno */
     Sint32 x30;               /* 0x30 SFMPV_FRM.x4c */
     Sint32 x34;               /* 0x34 SFMPV_FRM.x50 */
@@ -439,8 +441,8 @@ typedef struct {
     SFTIM_TTU ttu;        /* 0x0C display time (ttu.tc: GOP time code + temporal reference) */
     Sint32 ftime;         /* 0x38 */
     Sint32 tunit;         /* 0x3C */
-    Sint32 ndct;          /* 0x40 DCT blocks of the frame */
-    Sint32 nbyte;         /* 0x44 */
+    Sint32 x40;           /* 0x40 reference-frame x40 sum + tmpref_adj + MPV_FRM.x28 */
+    Sint32 x44;           /* 0x44 reference-frame x44 sum + MPV_FRM.x2c */
     Sint32 gopno;         /* 0x48 concatenation count when decoded */
     Sint32 x4c;           /* 0x4C ttu.val */
     Sint32 x50;           /* 0x50 ttu.val + concatenation time */
@@ -459,11 +461,11 @@ typedef struct {
     Sint32 cheight;    /* 0x04 */
     Sint32 width;      /* 0x08 */
     Sint32 height;     /* 0x0C */
-    Uint32 x10;        /* 0x10 compared unsigned with 0 by sfmpv_InitInf */
+    Uint8 *rfb_base;   /* 0x10 reference-frame base; null when using the address table */
     Sint32 max_width;  /* 0x14 */
     Sint32 max_height; /* 0x18 */
     Sint32 nfrm;       /* 0x1C decoded frame buffers */
-    Uint32 x20;        /* 0x20 compared unsigned with 0 by sfmpv_InitInf */
+    Uint8 *ta_base;    /* 0x20 decoded-frame base; null when using the address table */
 } SFMPV_PARA;
 CHECK_SIZEOF(SFMPV_PARA, 0x24);
 
@@ -555,6 +557,8 @@ typedef struct {
 } SFD_PLYINF;
 CHECK_SIZEOF(SFD_PLYINF, 0xA8);
 
+typedef void (*SFPLY_PICFN)(SFD sfd, Sint32 pic_type, SFD_PLYINF *inf);
+
 /* creation parameters of SFBUF_InitHn: the first 0x2C bytes of SFD_CREPRM */
 typedef struct {
     Sint32 x00;     /* 0x00 */
@@ -593,8 +597,8 @@ typedef struct {
     void (*fn)(void *obj, Sint32 code); /* 0x00 */
     void *obj;                          /* 0x04 */
     Sint32 code;                        /* 0x08 first error code */
-    Sint32 x0c;                         /* 0x0C */
-    Sint32 x10;                         /* 0x10 */
+    Sint32 x0c;                         /* 0x0C accumulated MPV_DecodeFrmSj x28 counter */
+    Sint32 x10;                         /* 0x10 accumulated MPV_DecodeFrmSj x2c counter */
 } SFLIB_ERRINF;
 CHECK_SIZEOF(SFLIB_ERRINF, 0x14);
 
@@ -997,8 +1001,8 @@ Bool SFD_IsSvrWait(void);
 Bool SFD_IsHnSvrWait(SFD sfd);
 void SFD_VbIn(void);
 void SFPLY_Init(void);
-void SFPLY_AddSkipPic(SFD sfd, Sint32 n, void *arg);
-void SFPLY_AddDecPic(SFD sfd, Sint32 n, void *arg);
+void SFPLY_AddSkipPic(SFD sfd, Sint32 n, Sint32 pic_type);
+void SFPLY_AddDecPic(SFD sfd, Sint32 n, Sint32 pic_type);
 
 /* sfd_uo.c */
 Sint32 SFD_SetUsrSj(SFD sfd, Sint32 chno, SJ sj, void *prm);
@@ -1075,7 +1079,7 @@ void SFMPV_RestoreCond(SFD sfd, void *buf, Sint32 n);
 Sint32 SFD_SetPicUsrBuf(SFD sfd, Uint8 *buf, Sint32 num, Sint32 siz);
 Sint32 SFD_SetMpvCond(SFD sfd, Sint32 id, Sint32 val);
 void SFD_CalcYccPlane(void *buf, Sint32 width, Sint32 height, MPV_RFB *rfb);
-void SFD_SetMpvParaTbl(SFMPV_PARA *para, Uint32 *rfb, Uint32 *ta);
+void SFD_SetMpvParaTbl(SFMPV_PARA *para, void **rfb, void **ta);
 
 /* sfd_mpvf.c */
 SFMPV_FRM *sfmpvf_ReferNextFrmReady(SFD sfd);
@@ -1146,7 +1150,7 @@ void SFTIM_SetTimeFn(SFD sfd, SFTIM_FN fn, Sint32 type);
 Sint32 SFD_SetExtClockFn(SFD sfd, SFTIM_FN fn, Sint32 wrap, void *obj);
 Sint32 SFD_SetUsrTimeFn(SFD sfd, SFTIM_FN fn);
 Sint32 SFD_CmpTime(Sint32 a, Sint32 aunit, Sint32 b, Sint32 bunit);
-Sint32 SFD_SetUsrIsSkipFn(SFD sfd, Bool (*fn)());
+Sint32 SFD_SetUsrIsSkipFn(SFD sfd, SFTIM_ISSKIPFN fn);
 Bool SFTIM_ChkRegularTime(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 Sint32 SFTIM_GetTime(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 Sint32 SFTIM_GetTimeSub(SFD sfd, Sint32 *ncount, Sint32 *tscale);

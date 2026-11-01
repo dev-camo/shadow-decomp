@@ -11,11 +11,12 @@ typedef struct ProcessInfo {
 } ProcessInfo;
 CHECK_SIZEOF(ProcessInfo, 0xC);
 
-/* Result prefix written by the lookup; callers may append unwind state. */
+/* Record and member names below are inferred from their accesses. The result prefix is written
+ * by the lookup; callers may append unwind state. */
 typedef struct FragmentInfo {
     /* 0x00 */ void *exception_record;
-    /* 0x04 */ char *exception_start;
-    /* 0x08 */ void *exception_data;
+    /* 0x04 */ char *function_start;
+    /* 0x08 */ void *range_data;
     /* 0x0C */ unsigned int address_base;
     /* 0x10 */ void *relative_base;
     /* 0x14 */ char *toc;
@@ -86,7 +87,7 @@ void FIND_EXCEPTION_FRAGMENT(char *pc, FragmentInfo *info) {
 
     registration = fragmentinfo;
     info->exception_record = 0;
-    info->exception_data = 0;
+    info->range_data = 0;
 
     found_module = 0;
     if (registration->active != 0) {
@@ -137,7 +138,7 @@ void FIND_EXCEPTION_FRAGMENT(char *pc, FragmentInfo *info) {
         } else if (pc_offset > index->start + (index->size_and_flags & 0x7FFFFFFF)) {
             low = middle + 1;
         } else {
-            info->exception_start = (char *)(search_info->address_base + index->start);
+            info->function_start = (char *)(search_info->address_base + index->start);
             if ((index->size_and_flags >> 31) != 0) {
                 exception_table = (unsigned char *)&index->exception_table;
             } else {
@@ -154,7 +155,7 @@ void FIND_EXCEPTION_FRAGMENT(char *pc, FragmentInfo *info) {
                     long_entry_end = long_entry->start + long_entry->length * 4;
                     if (long_entry->start <= exception_offset &&
                         long_entry_end >= exception_offset) {
-                        info->exception_data = exception_table + long_entry->exception_offset;
+                        info->range_data = exception_table + long_entry->exception_offset;
                         return;
                     }
                     long_entry++;
@@ -165,7 +166,7 @@ void FIND_EXCEPTION_FRAGMENT(char *pc, FragmentInfo *info) {
                 while (short_entry->start != 0) {
                     if (short_entry->start <= exception_offset &&
                         short_entry->end >= exception_offset) {
-                        info->exception_data = exception_table + short_entry->exception_offset;
+                        info->range_data = exception_table + short_entry->exception_offset;
                         return;
                     }
                     short_entry++;
