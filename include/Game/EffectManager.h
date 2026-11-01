@@ -8,15 +8,24 @@
 namespace Effect {
 namespace System {
 
+struct UnkEffectFileData;
+
 /* Class name from RTTI; method names, qualifiers and member names are inferred from use. */
 class EffectManager {
   public:
+    EffectManager();
     virtual ~EffectManager();
     virtual boost::weak_ptr<EffectElement> Create(EffectLaunchInfo *info, int id);
     virtual boost::weak_ptr<EffectElement> Create(const boost::shared_ptr<EffectLaunchInfo> &info,
                                                   int id);
     virtual EffectElement *CreateElement(const UnkEffectElementData *definition,
                                          EffectLaunchInfo *info);
+
+    void Render(int group);
+    void Update(float deltaTime);
+    void Remove(boost::shared_ptr<EffectElement> element);
+    void Clear();
+    bool fn_80425860(UnkEffectFileData *file);
 
     /* 0x04 */ boost::shared_ptr<EffectElement> m_updateHead;
     /* 0x0C */ boost::shared_ptr<EffectElement> m_updateTail;

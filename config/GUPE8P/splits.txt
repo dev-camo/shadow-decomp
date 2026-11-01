@@ -2042,8 +2042,18 @@ Game/fn_80424D20.cpp:
 	extabindex  start:0x80008408 end:0x80008498
 	.text       start:0x80424D20 end:0x80425170
 
+Game/EffectManager.cpp:
+	extab       start:0x80006464 end:0x80006584
+	extabindex  start:0x80008498 end:0x800084E0
+	.text       start:0x80425170 end:0x80425858
+
 Game/fn_80425858.c:
 	.text       start:0x80425858 end:0x80425860
+
+Game/fn_80425860.cpp:
+	extab       start:0x80006584 end:0x800066D0
+	extabindex  start:0x800084E0 end:0x80008594
+	.text       start:0x80425860 end:0x8042631C
 
 Game/gcaxSndMemory.c:
 	.text       start:0x8043AA7C end:0x8043B25C
