@@ -29,7 +29,8 @@ class AttackCallbackParam {
     /* 0x34 */ Fn8040Vector3 field_0x34;
     /* 0x40 */ u8 field_0x40[0x50 - 0x40];
     /* 0x50 */ float field_0x50; /* ThreatObj subtracts it from its health */
-    /* Bit 0 makes the stick count a hit; ThreatObj stores 1, 3 or 8, the Chao 1 or 8. */
+    /* Bit 0 makes the stick count a hit; ThreatObj stores 1, 3 or 8, the Chao 1 or 8,
+     * FallBuilding 1 or 5. */
     /* 0x54 */ u32 field_0x54;
 };
 CHECK_OFFSETOF(SonicteamUSA::System::CharaColli::AttackCallbackParam, field_0x50, 0x50);
