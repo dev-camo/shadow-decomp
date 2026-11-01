@@ -14,7 +14,7 @@ class EffectSystem {
   public:
     virtual void Init(void *buffer, unsigned int size) = 0;
     virtual void *Finish() = 0;
-    virtual void *Allocate(unsigned int size) = 0;
+    virtual void *Allocate(unsigned int size) throw() = 0;
     virtual void Free(void *block) = 0;
     virtual void Fill(void *destination, signed char value, unsigned int size) = 0;
     virtual void Copy(void *destination, const void *source, unsigned int size) = 0;
