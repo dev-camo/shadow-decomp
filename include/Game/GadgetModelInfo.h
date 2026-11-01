@@ -11,6 +11,7 @@
 class CharInfo;
 class UnkAttack_8005A840;
 struct _stMtnPlayWork;
+struct RpClump;
 
 /* An entry of the array at 0x0 of the object at 0x30 of a GadgetModelInfo, found by the word at
  * 0x3C (placeholder name; only the name at 0x4 is mapped). */
@@ -22,10 +23,10 @@ struct UnkModelEntry_8015F7BC {
 };
 CHECK_SIZEOF(UnkModelEntry_8015F7BC, 0x40);
 
-/* The three words that fn_8015FA78 passes to its callback for each part (names and meaning
- * unknown). */
+/* The three words that fn_8015FA78 passes to its callback for each part (clump name inferred;
+ * the other words' meanings are unknown). */
 struct UnkModelPart_8015FA78 {
-    /* 0x0 */ u32 field_0x0;
+    /* 0x0 */ RpClump *clump;
     /* 0x4 */ u32 field_0x4;
     /* 0x8 */ u32 field_0x8;
 };
@@ -77,7 +78,8 @@ class GadgetModelInfo {
     void fn_8015FF60();
     /* Calls callback(part, userData) for each entry of the list at 0x4C until it returns zero
      * (behaviour inferred). */
-    void fn_8015FA78(int (*callback)(UnkModelPart_8015FA78 part, const void *userData),
+    void fn_8015FA78(UnkModelPart_8015FA78 *(*callback)(UnkModelPart_8015FA78 *part,
+                                                        const void *userData),
                      const void *userData);
     /* Methods that ThreatObj calls (purposes unknown). */
     void fn_8016271C();

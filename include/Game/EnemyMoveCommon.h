@@ -11,26 +11,26 @@ class EnemyMoveCommon : public EnemyMoveFunc, public virtual EnemyReferer {
   public:
     EnemyMoveCommon();
 
-    virtual void fn_801A5CBC();
-    virtual void fn_801A5778(float deltaTime);
-    virtual bool fn_8017B578() {
+    virtual void fn_8019B438();
+    virtual void fn_8019B43C(float deltaTime);
+    virtual bool fn_80187CBC() {
         return field_0x5F;
     }
-    virtual bool fn_8017B580() {
+    virtual bool fn_8019B440() {
         return field_0x60;
     }
-    virtual bool fn_801A5760();
-    virtual bool fn_801A5734();
-    virtual float fn_8017B588() {
+    virtual bool fn_8019588C();
+    virtual bool fn_8019B448();
+    virtual float fn_8019B458() {
         return field_0x3C;
     }
-    virtual unsigned int fn_8017B590() {
+    virtual unsigned int fn_8017CAC0() {
         return field_0x4C;
     }
-    virtual const Fn8040Vector3 *fn_8017B598() {
+    virtual const Fn8040Vector3 *fn_8017CAC8() {
         return &field_0x40;
     }
-    virtual void fn_801A560C();
+    virtual void fn_8019B460();
 
     Fn8040Vector3 fn_801A54E8(float deltaTime);
 

@@ -359,7 +359,7 @@ void Coaster::UpdateBody(float dt) {
     }
 
     case 1: {
-        bool arrived = fn_8001C91C(fn_8001B494(), m_path.get(), m_reversed, m_charInfo.get(),
+        bool arrived = fn_8001C91C(fn_8001B494(), m_path.get(), m_reversed, &m_charInfo->m_position,
                                    m_params.moveSpeed * dt, &m_rotation, 1);
 
         BuildMatrices();
@@ -395,8 +395,9 @@ void Coaster::UpdateBody(float dt) {
                 m_target->fn_80166F88();
             }
 
-            UnkResourceRecord_80208848 *record =
-                fn_80208848(fn_80012700(fn_800122D4(), 1, "COASTER.BIN"), 1);
+            UnkResourceRecord_80208848 *record = fn_80208848(
+                static_cast<UnkResource_80012700 *>(fn_80012700(fn_800122D4(), 1, "COASTER.BIN")),
+                1);
 
             if (record != 0) {
                 fn_801D54F4(fn_80053164(), record->field_0x8, &m_charInfo->m_position, 0, 1);
@@ -420,7 +421,8 @@ void Coaster::UpdateBody(float dt) {
                 if (s_stage->effectFile != 0) {
                     UnkEffectParams_8015F0B8 effect(m_charInfo, 0);
 
-                    effect.field_0x44 = fn_80012700(fn_800122D4(), 1, s_stage->effectFile);
+                    effect.field_0x44 =
+                        static_cast<RpClump *>(fn_80012700(fn_800122D4(), 1, s_stage->effectFile));
                     effect.field_0x40 = m_charInfo->m_position.y;
                     effect.field_0x34 = 1.0f;
                     effect.field_0x4A = 0;
@@ -441,7 +443,7 @@ void Coaster::UpdateBody(float dt) {
     }
 
     case 2: {
-        bool arrived = fn_8001C91C(fn_8001B494(), m_path.get(), m_reversed, m_charInfo.get(),
+        bool arrived = fn_8001C91C(fn_8001B494(), m_path.get(), m_reversed, &m_charInfo->m_position,
                                    m_params.moveSpeed * dt, &m_rotation, s_stage->field_0x11);
 
         BuildMatrices();
@@ -450,8 +452,9 @@ void Coaster::UpdateBody(float dt) {
                 m_target->fn_80166F88();
             }
 
-            UnkResourceRecord_80208848 *record =
-                fn_80208848(fn_80012700(fn_800122D4(), 1, "COASTER.BIN"), 1);
+            UnkResourceRecord_80208848 *record = fn_80208848(
+                static_cast<UnkResource_80012700 *>(fn_80012700(fn_800122D4(), 1, "COASTER.BIN")),
+                1);
 
             if (record != 0) {
                 fn_801D54F4(fn_80053164(), record->field_0x8, &m_charInfo->m_position, 0, 1);
@@ -474,7 +477,8 @@ void Coaster::UpdateBody(float dt) {
                 if (s_stage->effectFile != 0) {
                     UnkEffectParams_8015F0B8 effect(m_charInfo, 0);
 
-                    effect.field_0x44 = fn_80012700(fn_800122D4(), 1, s_stage->effectFile);
+                    effect.field_0x44 =
+                        static_cast<RpClump *>(fn_80012700(fn_800122D4(), 1, s_stage->effectFile));
                     effect.field_0x40 = m_charInfo->m_position.y;
                     effect.field_0x34 = 1.0f;
                     effect.field_0x4A = 0;
@@ -777,7 +781,8 @@ void Coaster::OnCameraEvent(CameraUpdateEventArgs &args) {
                 fn_801CEA54(fn_80099954(), m_follower, 2, params, 0, 1);
             }
 
-            UnkResource_80012700 *resource = fn_80012700(fn_800122D4(), 1, "COASTER.BIN");
+            UnkResource_80012700 *resource =
+                static_cast<UnkResource_80012700 *>(fn_80012700(fn_800122D4(), 1, "COASTER.BIN"));
             UnkResourceRecord_80208848 *record = fn_80208848(resource, 0);
 
             if (record != 0) {

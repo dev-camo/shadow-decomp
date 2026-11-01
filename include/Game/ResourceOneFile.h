@@ -2,6 +2,7 @@
 #define GAME_RESOURCEONEFILE_H
 
 #include "Game/UnkString_8004F888.h"
+#include "Game/UnkBitFlags_80014E04.h"
 #include "layout_check.h"
 
 struct UnkResourceOneFileRecord;
@@ -24,7 +25,7 @@ class ResourceOneFile : public Resource {
     /* 0x08 */ UnkString_8004F888 field_0x8;
     /* 0x14 */ UnkResourceOneFileRecord *field_0x14;
     /* 0x18 */ int field_0x18;
-    /* 0x1C */ unsigned int field_0x1C;
+    /* 0x1C */ UnkBitFlags_80014E04 field_0x1C;
     /* 0x20 */ UnkFile_8004CFB0 *field_0x20;
     /* 0x24 */ int *field_0x24;
 };

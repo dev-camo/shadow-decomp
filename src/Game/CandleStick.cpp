@@ -166,7 +166,8 @@ void CandleStick::UpdateBody(float dt) {
         {
             UnkEffectParams_8015F0B8 breakEffect(m_charInfo, 0);
 
-            breakEffect.field_0x44 = fn_80012700(fn_800122D4(), 1, s_breakFile);
+            breakEffect.field_0x44 =
+                static_cast<RpClump *>(fn_80012700(fn_800122D4(), 1, s_breakFile));
             breakEffect.field_0x40 = m_charInfo->m_position.y;
             breakEffect.field_0x34 = 1.0f;
             breakEffect.field_0x4A = 0;

@@ -40,6 +40,6 @@ CHECK_SIZEOF(UnkWeakHolder_800CC6C8, 0x8);
 extern "C" boost::shared_ptr<UnkTarget_80166AF4> fn_80166AF4(void);
 /* The part callback that gadgets pass to GadgetModelInfo::fn_8015FA78 together with an
  * UnkWeakHolder_800CC6C8 as the user data (behaviour inferred). */
-extern "C" int fn_80169D00(UnkModelPart_8015FA78 part, const void *userData);
+extern "C" UnkModelPart_8015FA78 *fn_80169D00(UnkModelPart_8015FA78 *part, const void *userData);
 
 #endif

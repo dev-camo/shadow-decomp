@@ -152,8 +152,8 @@ ThreatObj::ThreatObj(ThreatObjHolder *holder, UnkGadgetOwner_800C9CD0 *owner) : 
     m_model->fn_80162A68(m_holder->m_params.modelType, 0);
     m_model->fn_80162790();
 
-    UnkResourceRecord_80208848 *record =
-        fn_80208848(fn_80012700(fn_800122D4(), 1, "THREATOBJ.BIN"), 2);
+    UnkResourceRecord_80208848 *record = fn_80208848(
+        static_cast<UnkResource_80012700 *>(fn_80012700(fn_800122D4(), 1, "THREATOBJ.BIN")), 2);
 
     if (record != 0) {
         m_recordValue = record->field_0x8;
@@ -202,8 +202,9 @@ void ThreatObj::Update(float dt) {
 
             m_state = 1;
 
-            UnkResourceRecord_80208848 *record =
-                fn_80208848(fn_80012700(fn_800122D4(), 1, "THREATOBJ.BIN"), 0);
+            UnkResourceRecord_80208848 *record = fn_80208848(
+                static_cast<UnkResource_80012700 *>(fn_80012700(fn_800122D4(), 1, "THREATOBJ.BIN")),
+                0);
 
             if (record != 0) {
                 fn_801D54F4(fn_80053164(), record->field_0x8, &m_charInfo->m_position, 0, 1);
@@ -289,7 +290,8 @@ void ThreatObj::fn_8013F390(SonicteamUSA::System::CharaColli::AttackCallbackPara
         if (m_health < 0.0f || fn_8000B044(m_health)) {
             UnkEffectParams_8015F0B8 effect(m_charInfo, 0);
 
-            effect.field_0x44 = fn_80012700(fn_800122D4(), 1, m_modelEntry->breakFile);
+            effect.field_0x44 =
+                static_cast<RpClump *>(fn_80012700(fn_800122D4(), 1, m_modelEntry->breakFile));
             effect.field_0x40 = m_charInfo->m_position.y;
             effect.field_0x34 = 1.0f;
             effect.field_0x4A = 1;
@@ -306,8 +308,9 @@ void ThreatObj::fn_8013F390(SonicteamUSA::System::CharaColli::AttackCallbackPara
 
             param.field_0x54 = 3;
 
-            UnkResourceRecord_80208848 *record =
-                fn_80208848(fn_80012700(fn_800122D4(), 1, "THREATOBJ.BIN"), 1);
+            UnkResourceRecord_80208848 *record = fn_80208848(
+                static_cast<UnkResource_80012700 *>(fn_80012700(fn_800122D4(), 1, "THREATOBJ.BIN")),
+                1);
 
             if (record != 0) {
                 fn_801D54F4(fn_80053164(), record->field_0x8, &m_charInfo->m_position, 0, 1);

@@ -1,3 +1,5 @@
+/* Animation control, matrix map and event callback; original class and filename unknown.
+ * NonMatching: several owner methods and a template instance retain instruction differences. */
 #include "Game/fn_801A4430.h"
 
 Unk801A4430Callback::Unk801A4430Callback() {}

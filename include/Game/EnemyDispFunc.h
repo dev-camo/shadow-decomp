@@ -21,7 +21,7 @@ class EnemyDispFunc {
     virtual void fn_8019B3A0();                                             // 0x08
     virtual void fn_8019B3A4(float);                                        // 0x0C
     virtual void fn_8019B3A8(float);                                        // 0x10
-    virtual int fn_8019B3AC();                                              // 0x14
+    virtual const Fn8040Matrix34 *fn_8019B3AC();                            // 0x14
     virtual Unk802CD448Data *fn_8019B3B4();                                 // 0x18
     virtual Unk801A4430 *fn_8017CC74();                                     // 0x1C
     virtual boost::shared_ptr<Unk802CD448> fn_80181038();                   // 0x20

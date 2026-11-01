@@ -4,10 +4,10 @@
 #include <dolphin/types.h>
 #include "layout_check.h"
 
-class CharInfo;
 class GadgetCharInfo;
 class UnkBss_80570B50;
-class UnkResource_80012700;
+/* Path-file payload consumed by fn_8001DB08; original type name and layout are unknown. */
+struct UnkPathData_8001DB08;
 struct Fn8040Vector3;
 
 namespace SonicteamUSA {
@@ -40,15 +40,16 @@ UnkCollision_8001B494 *fn_8001B494(void);
 /* Sets up path for the path number pathNo and returns whether that path exists. */
 bool fn_8001C7B4(UnkCollision_8001B494 *collision, SonicteamUSA::System::PathCtrl *path,
                  s32 pathNo);
-/* Moves the character info along the path by distance and returns whether the end was reached. */
+/* Moves position along the path by distance and returns whether the end was reached. */
 bool fn_8001C91C(UnkCollision_8001B494 *collision, SonicteamUSA::System::PathCtrl *path,
-                 s32 reversed, CharInfo *info, float distance, Fn8040Vector3 *rotation, int flag);
-/* Sets up path for charInfo and resource (behaviour inferred). Argument 4 is passed on to
- * fn_8001E070 as its third argument, like CharInfo::field_0x30 (the rotation order, inferred),
+                 s32 reversed, Fn8040Vector3 *position, float distance, Fn8040Vector3 *rotation,
+                 int flag);
+/* Sets up path from resource at position and rotation (behaviour inferred). Argument 4 is passed
+ * to fn_8001E070 as its third argument, like CharInfo::field_0x30 (rotation order, inferred),
  * which is what the GrindGadget passes; argument 6 is read as two groups of three floats (at
  * 0x0-0x8 and 0xC-0x14) and also passed on (the GrindGadget passes lbl_80570B50). */
-void fn_8001DB08(UnkCollision_8001B494 *collision, UnkResource_80012700 *resource,
-                 GadgetCharInfo *charInfo, Fn8040Vector3 rotation, int arg4,
+void fn_8001DB08(UnkCollision_8001B494 *collision, UnkPathData_8001DB08 *resource,
+                 const Fn8040Vector3 *position, Fn8040Vector3 rotation, int arg4,
                  SonicteamUSA::System::PathCtrl *path, const UnkBss_80570B50 *arg6);
 /* Releases path (behaviour inferred from its body: it passes objects derived from the path to
  * release functions). The collision argument is unused. */
