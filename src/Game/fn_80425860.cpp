@@ -1,4 +1,4 @@
-/* Effect loader and manager lifecycle; original filename unknown. */
+/* Effect loader and manager/element methods; original filename unknown. */
 #include "Game/EffectManager.h"
 #include "Game/UnkEffectFileData.h"
 #include <cstdint>
@@ -21,6 +21,28 @@ template <class T> inline void RelocateEffectPointer(T *&pointer, unsigned char 
 EffectManager::EffectManager() : field_0x24(0), field_0x25(0), field_0x28(0) {}
 
 EffectManager::~EffectManager() {}
+
+EffectElement::EffectElement(const UnkEffectElementData *definition, EffectLaunchInfo *info,
+                             EffectManager *manager)
+    : field_0x4(0), field_0x5(0), m_size(sizeof(EffectElement)), m_elapsed(0.0f), m_timeScale(1.0f),
+      m_timeScaleSource(0), m_flags(ELEMENT_ACTIVE), m_manager(manager), field_0x30(0),
+      m_definition(definition), m_matrixSource(0), m_translationSource(0), m_rotationSource(0) {
+    fn_8040C148(&m_transform, &lbl_805E0720);
+    fn_8040C148(&m_baseTransform, &lbl_805E0720);
+    m_previousTranslation.Set(0.0f, 0.0f, 0.0f);
+    m_translationVelocity.Set(0.0f, 0.0f, 0.0f);
+    m_translation.Set(0.0f, 0.0f, 0.0f);
+    m_rotation.Set(0.0f, 0.0f, 0.0f);
+    m_scale.Set(1.0f, 1.0f, 1.0f);
+    m_velocity.Set(0.0f, 0.0f, 0.0f);
+}
+
+EffectElement::~EffectElement() {
+    m_updateNext.reset();
+    m_updatePrev.reset();
+    m_renderNext.reset();
+    m_renderPrev.reset();
+}
 
 bool EffectManager::fn_80425860(UnkEffectFileData *file) {
     if (file == 0) {
@@ -109,3 +131,63 @@ bool EffectManager::fn_80425860(UnkEffectFileData *file) {
 
 } // namespace System
 } // namespace Effect
+
+extern "C" void fn_80425E68(Effect::System::EffectElement *effect, const Fn8040Matrix34 *matrix) {
+    fn_8040C148(&effect->m_baseTransform, matrix);
+}
+
+extern "C" void fn_80425E4C(Effect::System::EffectElement *effect, const Fn8040Vector3 *position) {
+    effect->m_baseTransform.values[0][3] = position->x;
+    effect->m_baseTransform.values[1][3] = position->y;
+    effect->m_baseTransform.values[2][3] = position->z;
+}
+
+extern "C" void fn_80425D94(Effect::System::EffectElement *effect, const Fn8040Vector3 *rotation) {
+    Fn8040Matrix34 matrix;
+    fn_8040C148(&matrix, &lbl_805E0720);
+    Fn8040Vector3 translation(effect->m_baseTransform.values[0][3],
+                              effect->m_baseTransform.values[1][3],
+                              effect->m_baseTransform.values[2][3]);
+    fn_8040B80C(&matrix, rotation->z);
+    fn_8040B848(&matrix, rotation->y);
+    fn_8040B884(&matrix, rotation->x);
+    matrix.values[0][3] = translation.x;
+    matrix.values[1][3] = translation.y;
+    matrix.values[2][3] = translation.z;
+    fn_8040C148(&effect->m_baseTransform, &matrix);
+}
+
+extern "C" void fn_80425C34(Effect::System::EffectElement *effect, float deltaTime) {
+    if (effect->m_matrixSource != 0) {
+        fn_80425E68(effect, effect->m_matrixSource);
+    } else {
+        if (effect->m_translationSource != 0) {
+            const Fn8040Vector3 *translation = effect->m_translationSource;
+            effect->m_baseTransform.values[0][3] = translation->x;
+            effect->m_baseTransform.values[1][3] = translation->y;
+            effect->m_baseTransform.values[2][3] = translation->z;
+        }
+        if (effect->m_rotationSource != 0) {
+            fn_80425D94(effect, effect->m_rotationSource);
+        }
+    }
+    fn_8040C148(&effect->m_transform, &effect->m_baseTransform);
+    AddVector(&effect->m_translation, fn_80093230(&effect->m_velocity, deltaTime));
+    fn_8040B59C(&effect->m_transform, &effect->m_translation);
+    fn_8040B80C(&effect->m_transform, effect->m_rotation.z);
+    fn_8040B848(&effect->m_transform, effect->m_rotation.y);
+    fn_8040B884(&effect->m_transform, effect->m_rotation.x);
+    fn_8040B790(&effect->m_transform, &effect->m_scale);
+    Fn8040Vector3 position(effect->m_transform.values[0][3], effect->m_transform.values[1][3],
+                           effect->m_transform.values[2][3]);
+    if ((effect->m_flags & Effect::System::ELEMENT_FLAG_2) != 0) {
+        Fn8040Vector3 difference;
+        fn_8040CD74(&difference, &position, &effect->m_previousTranslation);
+        Fn8040Vector3 differenceCopy;
+        fn_800091D0(&differenceCopy, &difference);
+        Fn8040Vector3 velocity;
+        fn_8040CDA8(&velocity, &differenceCopy, 1.0f / deltaTime);
+        fn_800091D0(&effect->m_translationVelocity, &velocity);
+    }
+    fn_800091D0(&effect->m_previousTranslation, &position);
+}

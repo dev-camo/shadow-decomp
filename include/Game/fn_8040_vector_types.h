@@ -278,6 +278,8 @@ void fn_8040CEE8(Fn8040Vector3 *result, const Fn8040Vector3 *vector);
 void fn_80016284(Fn8040Vector3 *result, const Fn8040Vector3 *vector);
 /* result = vector * factor (fn_800091A4 is a by-value wrapper that calls this). */
 void fn_8040CDA8(Fn8040Vector3 *result, const Fn8040Vector3 *vector, float factor);
+/* By-value scale wrapper; original function name is unknown. */
+Fn8040Vector3 fn_80093230(const Fn8040Vector3 *vector, float factor);
 /* atan2(y, x) as a float. */
 float fn_80016260(float y, float x);
 /* Absolute value. */

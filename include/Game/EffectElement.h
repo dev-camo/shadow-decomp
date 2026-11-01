@@ -2,6 +2,8 @@
 #define GAME_EFFECTELEMENT_H
 
 #include "Game/fn_8040_vector_types.h"
+#include "Game/EffectSystem.h"
+#include "Game/fn_8042A444.h"
 #include "boost/shared_ptr.hpp"
 #include <dolphin/types.h>
 #include "layout_check.h"
@@ -25,9 +27,15 @@ enum {
 /* Class name from RTTI. Method and member names are inferred where not placeholders. */
 class EffectElement {
   public:
+    EffectElement(const UnkEffectElementData *definition, EffectLaunchInfo *info,
+                  EffectManager *manager);
     virtual ~EffectElement();
     virtual void Update(float deltaTime) = 0;
     virtual void Render() = 0;
+
+    static void operator delete(void *block) {
+        fn_8042A5D0()->Free(block);
+    }
 
     /* Matching workaround: inline accessors keep shared_ptr::operator-> out of line, as
      * in the original. Direct field access expands it in place and removes those calls.
@@ -86,6 +94,7 @@ CHECK_SIZEOF(EffectElement, 0xFC);
 } // namespace Effect
 
 extern "C" {
+void fn_80425C34(Effect::System::EffectElement *effect, float deltaTime);
 /* Creates an effect at position (the other arguments are not understood). */
 boost::weak_ptr<Effect::System::EffectElement> fn_80168C48(const Fn8040Vector3 *position,
                                                            const Fn8040Vector3 *arg1, int arg2);
