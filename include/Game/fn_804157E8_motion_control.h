@@ -2,6 +2,7 @@
 #define FN_804157E8_MOTION_CONTROL_H
 
 #include "Game/fn_8040_vector_types.h"
+#include "Game/fn_804157E8_motion_range.h"
 #include "layout_check.h"
 
 /* The motion control of the unit at 0x804157E8 (every name here is inferred from the code). A
@@ -49,17 +50,6 @@ typedef struct MotionNodeDefinition {
     /* 0x0C */ MotionNodeData *data;
 } MotionNodeDefinition;
 CHECK_OFFSETOF(MotionNodeDefinition, data, 0xC);
-
-/* The frames and the speed with which a player plays its motion (names inferred from the way the
- * functions compare them with the current frame). fn_80415854 and fn_80415A18 scale the speed by
- * lbl_805EDD60. */
-typedef struct MotionRange {
-    /* 0x00 */ float startFrame;
-    /* 0x04 */ float endFrame;
-    /* 0x08 */ float speed;
-    /* 0x0C */ float targetFrame;
-} MotionRange;
-CHECK_SIZEOF(MotionRange, 0x10);
 
 /* A vector followed by a word that this code does not use (only the 0x10 stride is known). */
 typedef struct MotionAnchor {
