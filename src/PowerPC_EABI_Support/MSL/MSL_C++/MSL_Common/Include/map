@@ -7,9 +7,9 @@
 #include <utility>
 #include "layout_check.h"
 
-/* The parts of <map> that the Chao::CSD texture list registry uses (insert, find, erase and end of
- * its map with an unsigned long key), built on the library's red-black tree; "tree::insert length
- * error" is the library's message. The game's other maps (string keys among them) are not covered.
+/* The parts of <map> used by the texture-list registry and the enemy bookkeeping maps, built on
+ * the library's red-black tree; "tree::insert length error" is the library's message. String-key
+ * maps and operations not used by these consumers are not covered.
  *
  * find, insert, erase, the tree constructor, __insert_node and __destroy (inline) are defined
  * outside the class. The internal names (__tree, its members and the node and iterator types) are
@@ -96,6 +96,8 @@ template <class Key, class Value, class Compare, class Allocator> class __tree {
     }
 
     iterator find(const Key &k);
+    Value &__find_or_insert(const Key &k);
+    void clear();
 
     pair<iterator, bool> insert(const Value &v);
     void erase(iterator position);
@@ -182,6 +184,41 @@ __tree<Key, Value, Compare, Allocator>::insert(const Value &v) {
 }
 
 template <class Key, class Value, class Compare, class Allocator>
+Value &__tree<Key, Value, Compare, Allocator>::__find_or_insert(const Key &k) {
+    __tree_node_base *y = 0;
+    __tree_node_base *parent = end_node();
+    __tree_node_base *x = root();
+    bool left = true;
+    bool leftmost = true;
+    while (x != 0) {
+        parent = x;
+        if (comp()(k, static_cast<node *>(x)->value_)) {
+            x = x->left_;
+            left = true;
+        } else {
+            y = x;
+            x = x->right_;
+            left = false;
+            leftmost = false;
+        }
+    }
+    if (y == 0 || comp()(static_cast<node *>(y)->value_, k)) {
+        y = __insert_node(parent, left, leftmost, Value(k, typename Value::second_type()));
+    }
+    return static_cast<node *>(y)->value_;
+}
+
+template <class Key, class Value, class Compare, class Allocator>
+void __tree<Key, Value, Compare, Allocator>::clear() {
+    if (root() != 0) {
+        __destroy(root());
+        __size() = 0;
+        root() = 0;
+        __begin() = end_node();
+    }
+}
+
+template <class Key, class Value, class Compare, class Allocator>
 typename __tree<Key, Value, Compare, Allocator>::node *
 __tree<Key, Value, Compare, Allocator>::__insert_node(__tree_node_base *parent, bool left,
                                                       bool leftmost, const Value &v) {
@@ -242,6 +279,7 @@ template <class Key, class T, class Compare = less<Key>,
 class map {
   public:
     typedef Key key_type;
+    typedef T mapped_type;
     typedef pair<const Key, T> value_type;
 
     /* Orders values by key; the tree also compares a key with a value in find. */
@@ -271,6 +309,12 @@ class map {
 
     map() : tree_(value_compare(), Allocator()) {}
 
+    void clear() {
+        tree_.clear();
+    }
+    mapped_type &operator[](const key_type &k) {
+        return tree_.__find_or_insert(k).second;
+    }
     iterator end() {
         return tree_.end();
     }

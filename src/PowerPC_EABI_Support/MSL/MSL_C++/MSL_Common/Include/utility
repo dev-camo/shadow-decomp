@@ -2,15 +2,16 @@
 #define MSL_UTILITY_H_
 
 namespace std {
-template <class T>
-inline void swap(T &a, T &b) {
+template <class T> inline void swap(T &a, T &b) {
     T tmp = a;
     a = b;
     b = tmp;
 }
 
-template <class T1, class T2>
-struct pair {
+template <class T1, class T2> struct pair {
+    typedef T1 first_type;
+    typedef T2 second_type;
+
     T1 first;
     T2 second;
 
@@ -19,14 +20,12 @@ struct pair {
         second = T2();
     }
     pair(const T1 &x, const T2 &y) : first(x), second(y) {}
-    template <class U1, class U2>
-    pair(const pair<U1, U2> &p) : first(p.first), second(p.second) {}
+    template <class U1, class U2> pair(const pair<U1, U2> &p) : first(p.first), second(p.second) {}
 };
 
-template <class T1, class T2>
-inline pair<T1, T2> make_pair(const T1 &x, const T2 &y) {
+template <class T1, class T2> inline pair<T1, T2> make_pair(const T1 &x, const T2 &y) {
     return pair<T1, T2>(x, y);
 }
-}  // namespace std
+} // namespace std
 
 #endif
