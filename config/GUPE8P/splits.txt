@@ -1666,6 +1666,12 @@ Game/fn_80403E44.c:
 CRI/fn_80403E4C.c:
 	.text       start:0x80403E4C end:0x80403EC4
 
+CRI/mwsfdcre.c:
+	.text       start:0x80403EC4 end:0x80406894
+	.rodata     start:0x80519400 end:0x80519950
+	.data       start:0x80569D20 end:0x80569E30
+	.bss        start:0x805DD808 end:0x805DD878
+
 CRI/mwsfdlib.c:
 	.text       start:0x80406894 end:0x80406EBC
 	.rodata     start:0x80519950 end:0x80519D00

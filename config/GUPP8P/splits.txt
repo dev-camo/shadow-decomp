@@ -1329,6 +1329,12 @@ CRI/mwsfdsfx.c:
 CRI/fn_80403E4C.c:
 	.text       start:0x80404E9C end:0x80404F14
 
+CRI/mwsfdcre.c:
+	.text       start:0x80404F14 end:0x804078E4
+	.rodata     start:0x8051A518 end:0x8051AA68
+	.data       start:0x8056ADE0 end:0x8056AEF0
+	.bss        start:0x805DE8C8 end:0x805DE938
+
 CRI/mwsfdlib.c:
 	.text       start:0x804078E4 end:0x80407F0C
 	.rodata     start:0x8051AA68 end:0x8051AE18
