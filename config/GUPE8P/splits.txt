@@ -1966,8 +1966,20 @@ Game/fn_804220CC.cpp:
 	.text       start:0x804220CC end:0x8042222C
 	.data       start:0x8056A0E0 end:0x8056A168
 
+Game/EffCmdLoopExec.cpp:
+	extab       start:0x800062C8 end:0x800062E4
+	extabindex  start:0x8000833C end:0x80008348
+	.text       start:0x80422B18 end:0x80422D78
+	.rodata     start:0x8051A6B0 end:0x8051A6F8
+	.data       start:0x8056A0A0 end:0x8056A0BC
+
 Game/fn_80424D18.c:
 	.text       start:0x80424D18 end:0x80424D20
+
+Game/EffCmdLoopExecDtor.cpp:
+	extab       start:0x80006404 end:0x8000641C
+	extabindex  start:0x80008408 end:0x8000842C
+	.text       start:0x80424D20 end:0x80424E34
 
 Game/fn_80425858.c:
 	.text       start:0x80425858 end:0x80425860

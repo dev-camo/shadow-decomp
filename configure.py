@@ -275,6 +275,9 @@ cflags_game_cpp = [
     "-inline noauto,level=1,deferred",
 ]
 
+# The effect command library has C++ exception tables and keeps its RTTI in .data.
+cflags_effect = [*cflags_game_cpp, "-Cpp_exceptions on", "-sdata 0"]
+
 # Sega's GameCube AX sound library (gcax*.c): optimized for size with stmw/lmw, read-only strings,
 # and deferred inlining of only the functions marked inline.
 cflags_game_gcax = [
@@ -1351,6 +1354,12 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
+                # All six methods and their local data match. The remaining command classes
+                # still reference this unit's local RTTI, preventing source linkage alone.
+                Object(NonMatching, "Game/EffCmdLoopExec.cpp", cflags=cflags_effect),
+                # Three destructors match; their vtables/RTTI belong with the other command
+                # classes and cannot yet be merged across the intervening matching unit.
+                Object(NonMatching, "Game/EffCmdLoopExecDtor.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/fn_8040CF2C.c"),
                 Object(Matching, "Game/fn_804202B8.c"),
                 Object(Matching, "Game/fn_8040CD20.c"),
