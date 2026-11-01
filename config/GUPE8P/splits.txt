@@ -2060,6 +2060,12 @@ Game/EffectArranger.cpp:
 	extabindex  start:0x80008594 end:0x800085C4
 	.text       start:0x8042631C end:0x80426DDC
 
+Game/fn_8042A2D8.cpp:
+	extab       start:0x80006CF8 end:0x80006D08
+	extabindex  start:0x80008714 end:0x8000872C
+	.text       start:0x8042A2D8 end:0x8042A5EC
+	.bss        start:0x805E1508 end:0x805E1510
+
 Game/gcaxSndMemory.c:
 	.text       start:0x8043AA7C end:0x8043B25C
 	.rodata     start:0x8051BB28 end:0x8051BC08
