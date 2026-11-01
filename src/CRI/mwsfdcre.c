@@ -13,11 +13,11 @@
  * Status: NonMatching. Exact: mwSfdDestroy, MWSFCRE_ResetSfdHn, mwsfcre_MallocRfb,
  * MWSFCRE_SetSupplySj and mwPlyCalcWorkCprmSfd. mwsfcre_MallocCompoWork and mwPlyCreateSofdec
  * differ in register colouring only; mwPlyCalcWorkSfd in register colouring and in the order of
- * the last two additions. mwsfcre_CreateSfd is 14 words short: the original keeps the component
+ * the last two additions. mwsfcre_CreateSfd is 12 words short: the original keeps the component
  * allocator's negative size test in the allocations of the SFD handle work and of the 0x700-byte
- * block (it folds that test for the other constant sizes, so these two probably went through a
- * wrapper whose form is unknown), and each of its two ADXT file type tests has a switch arm for the
- * value 4 with no code of its own; the rest is register colouring. The data, rodata and bss match.
+ * block, while it folds that test for the other constant sizes. The source form that preserves
+ * those tests is unknown. Its two ADXT file type tests also retain an additional branch for the
+ * type-4 arm; the rest is register colouring. The data, rodata and bss match.
  */
 #include <string.h>
 
@@ -465,6 +465,8 @@ static Bool mwsfcre_IsUseAdxt(Sint32 mode) {
     case MWSFD_FTYPE_MPV:
     case MWSFD_FTYPE_VONLYSFD:
         return FALSE;
+    /* The original distinguishes encoded type 4, which also uses ADXT. */
+    case 4:
     default:
         return TRUE;
     }
