@@ -5,7 +5,6 @@
 #include "Game/UnkEffectFileData.h"
 #include "Game/SharedConstants.h"
 #include <cmath>
-#include <cstring>
 
 namespace Effect {
 namespace RW3 {
@@ -164,24 +163,6 @@ void UnkEffectManagerRW3Data48::fn_80436AFC(const UnkEffectRW3Param3 &parameters
             field_0xCC = 0;
         }
     }
-}
-
-UnkEffectRW3Param3::UnkEffectRW3Param3(const UnkEffectRW3Param3 &other) {
-    field_0x0 = other.field_0x0;
-    field_0x1 = other.field_0x1;
-    std::memcpy(field_0x2, other.field_0x2, sizeof field_0x2);
-    field_0x8.field_0x0 = other.field_0x8.field_0x0;
-    field_0x8.field_0x4 = other.field_0x8.field_0x4;
-    field_0x8.field_0x8 = other.field_0x8.field_0x8;
-    field_0x8.field_0xC = other.field_0x8.field_0xC;
-    field_0x8.field_0x10 = other.field_0x8.field_0x10;
-    field_0x8.field_0x14 = other.field_0x8.field_0x14;
-    field_0x20.field_0x0 = other.field_0x20.field_0x0;
-    field_0x20.field_0x4 = other.field_0x20.field_0x4;
-    field_0x20.field_0x8 = other.field_0x20.field_0x8;
-    field_0x20.field_0xC = other.field_0x20.field_0xC;
-    field_0x20.field_0x10 = other.field_0x20.field_0x10;
-    field_0x20.field_0x14 = other.field_0x20.field_0x14;
 }
 
 UnkEffectRW3Param3 UnkEffectManagerRW3Data48::fn_80436A28() {

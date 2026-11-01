@@ -1444,8 +1444,13 @@ config.libs = [
             # Six of eight functions identical; Update has six register-word differences; the
             # constructor is 968 versus 920 bytes, including allocation exception handling.
             Object(NonMatching, "Game/EffectLocus.cpp", cflags=cflags_effect),
+            # The vertex builder retains independent-literal addressing, stack and
+            # instruction-layout differences (2492 versus 2568 bytes).
             Object(NonMatching, "Game/fn_80430A54.cpp", cflags=cflags_effect_rw3),
             Object(Matching, "Game/fn_804340CC.cpp", cflags=cflags_effect_rw3),
+            # Render and the Data48 vertex builder retain branch/instruction-layout and
+            # register differences; the Shimmer constructor differs by one instruction and
+            # fn_80436128 by registers.
             Object(NonMatching, "Game/fn_804342CC.cpp", cflags=cflags_effect_rw3),
             # Matching workaround: these two units address literals independently in the
             # original. Keep unpooled addressing until their original build options are known.
