@@ -14,6 +14,54 @@ class EffectArranger;
 class EffectManager;
 class EffectLaunchInfo;
 
+/* Encoded command types; names are inferred from the executor classes and consumers.
+ * Type 0 has no identified consumer and retains a numeric placeholder. */
+enum CommandType {
+    COMMAND_TYPE_00 = 0x00,
+    COMMAND_PTN_ANIM = 0x01,
+    COMMAND_GLARE_SWITCH = 0x02,
+    COMMAND_3D_POSITION = 0x03,
+    COMMAND_3D_ROTATION = 0x04,
+    COMMAND_2D_ROTATION = 0x05,
+    COMMAND_3D_SCALE = 0x06,
+    COMMAND_2D_SCALE = 0x07,
+    COMMAND_3D_VELOCITY = 0x08,
+    COMMAND_GRAVITY = 0x09,
+    COMMAND_FRICTION = 0x0A,
+    COMMAND_MAT_COLOR = 0x0B,
+    COMMAND_MAT_ALPHA = 0x0C,
+    COMMAND_WAIT = 0x0D,
+    COMMAND_LOOP_START = 0x0E,
+    COMMAND_LOOP_END = 0x0F,
+    COMMAND_CALLBACK = 0x10,
+    COMMAND_LAUNCH = 0x11,
+    COMMAND_TIMED_LAUNCH = 0x12,
+    COMMAND_REQUEST_STOP = 0x13,
+    COMMAND_GEN_QUANTITY = 0x14,
+    COMMAND_LOCUS_POINT = 0x15,
+    COMMAND_TOP_COLOR = 0x16,
+    COMMAND_TOP_ALPHA = 0x17,
+    COMMAND_LAST_COLOR = 0x18,
+    COMMAND_LAST_ALPHA = 0x19,
+    COMMAND_LENGTH = 0x1A,
+    COMMAND_WIDTH = 0x1B,
+    COMMAND_2D_AMPLITUDE = 0x1C,
+    COMMAND_2D_CYCLE = 0x1D,
+    COMMAND_2D_WAVE_LENGTH = 0x1E,
+    COMMAND_AMPLITUDE = 0x1F,
+    COMMAND_CYCLE = 0x20,
+    COMMAND_WAVE_LENGTH = 0x21,
+};
+
+/* Encoded strides for partial or not-yet-shared record layouts. */
+enum {
+    COMMAND_GLARE_SWITCH_STRIDE = 0x8,
+    COMMAND_MAT_COLOR_STRIDE = 0x14,
+    COMMAND_MAT_ALPHA_STRIDE = 0x10,
+    COMMAND_CALLBACK_STRIDE = 0x8,
+    COMMAND_LOCUS_POINT_STRIDE = 0x20
+};
+
 /* Command output flags (names inferred from the command classes and their writes). */
 enum { COMMAND_STOP_REQUESTED = 1, COMMAND_GLARE_CHANGED = 2, COMMAND_GLARE_ENABLED = 4 };
 

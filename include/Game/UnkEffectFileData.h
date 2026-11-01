@@ -26,6 +26,8 @@ struct UnkEffectFileData {
 CHECK_SIZEOF(UnkEffectFileData, 0x30);
 
 struct UnkCommandData;
+struct UnkEffectGlobalParamData;
+struct UnkEffectShimmerData;
 
 /* Accessed variant prefixes, not complete serialized record sizes. Unknown arrays represent
  * uninterpreted encoded storage; automatic alignment gaps are left to the compiler. */
@@ -56,7 +58,7 @@ struct UnkEffectElementData3 : UnkEffectElementData {
     /* 0x30 */ short field_0x30;
     /* 0x32 */ short field_0x32;
     /* 0x34 */ float field_0x34;
-    /* 0x38 */ void *field_0x38;
+    /* 0x38 */ const UnkCommandData *field_0x38;
 };
 CHECK_SIZEOF(UnkEffectElementData3, 0x3C);
 
@@ -129,7 +131,7 @@ CHECK_SIZEOF(UnkEffectElementData7, 0x58);
 struct UnkEffectElementData8 : UnkEffectElementData {
     /* 0x2C */ unsigned int field_0x2C;
     /* 0x30 */ float field_0x30;
-    /* 0x34 */ void *field_0x34;
+    /* 0x34 */ const UnkEffectGlobalParamData *field_0x34;
 };
 CHECK_SIZEOF(UnkEffectElementData8, 0x38);
 
@@ -152,8 +154,8 @@ struct UnkEffectElementData10 : UnkEffectElementData {
     /* 0x30 */ unsigned char field_0x30;
     /* 0x32 */ short field_0x32;
     /* 0x34 */ float field_0x34;
-    /* 0x38 */ void *field_0x38;
-    /* 0x3C */ void *field_0x3C;
+    /* 0x38 */ UnkEffectShimmerData *field_0x38;
+    /* 0x3C */ const UnkCommandData *field_0x3C;
 };
 CHECK_SIZEOF(UnkEffectElementData10, 0x40);
 

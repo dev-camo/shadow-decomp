@@ -98,9 +98,9 @@ EffectLocus::EffectLocus(UnkEffectElementData7 *definition, EffectLaunchInfo *in
     const UnkCommandData *point = definition->field_0x54;
     while (point != 0) {
         unsigned int stride;
-        if (point->type == 0x15) {
+        if (point->type == COMMAND_LOCUS_POINT) {
             ++m_pointCount;
-            stride = 0x20;
+            stride = COMMAND_LOCUS_POINT_STRIDE;
         } else {
             stride = 0;
         }
@@ -163,63 +163,63 @@ void EffectLocus::fn_8042BD8C() {
         EffectCommandExec *command = 0;
         unsigned int stride;
         switch (m_command->type) {
-        case 2:
+        case COMMAND_GLARE_SWITCH:
             command = new EffCmdGlareSWExec(m_command, &m_commandFlags);
-            stride = 8;
+            stride = COMMAND_GLARE_SWITCH_STRIDE;
             break;
-        case 3:
+        case COMMAND_3D_POSITION:
             command = new EffCmd3DPosExec(m_command, &m_commandFlags, &m_translation);
-            stride = 0x24;
+            stride = sizeof(UnkVector3Data);
             break;
-        case 4:
+        case COMMAND_3D_ROTATION:
             command = new EffCmd3DRotExec(m_command, &m_commandFlags, &m_rotation);
-            stride = 0x24;
+            stride = sizeof(UnkVector3Data);
             break;
-        case 6:
+        case COMMAND_3D_SCALE:
             command = new EffCmd3DSclExec(m_command, &m_commandFlags, &m_scale);
-            stride = 0x24;
+            stride = sizeof(UnkVector3Data);
             break;
-        case 8:
+        case COMMAND_3D_VELOCITY:
             command = new EffCmd3DVelExec(m_command, &m_commandFlags, &m_velocity);
-            stride = 0x24;
+            stride = sizeof(UnkVector3Data);
             break;
-        case 0xB:
+        case COMMAND_MAT_COLOR:
             command = new EffCmdMatColorExec(m_command, &m_commandFlags, m_color);
-            stride = 0x14;
+            stride = COMMAND_MAT_COLOR_STRIDE;
             break;
-        case 0xC:
+        case COMMAND_MAT_ALPHA:
             command = new EffCmdMatAlphaExec(m_command, &m_commandFlags, &m_alpha);
-            stride = 0x10;
+            stride = COMMAND_MAT_ALPHA_STRIDE;
             break;
-        case 0x16:
+        case COMMAND_TOP_COLOR:
             command = new EffCmdTopColorExec(m_command, &m_commandFlags, m_topColor);
-            stride = 0x14;
+            stride = COMMAND_MAT_COLOR_STRIDE;
             break;
-        case 0x17:
+        case COMMAND_TOP_ALPHA:
             command = new EffCmdTopAlphaExec(m_command, &m_commandFlags, &m_topAlpha);
-            stride = 0x10;
+            stride = COMMAND_MAT_ALPHA_STRIDE;
             break;
-        case 0x18:
+        case COMMAND_LAST_COLOR:
             command = new EffCmdLastColorExec(m_command, &m_commandFlags, m_lastColor);
-            stride = 0x14;
+            stride = COMMAND_MAT_COLOR_STRIDE;
             break;
-        case 0x19:
+        case COMMAND_LAST_ALPHA:
             command = new EffCmdLastAlphaExec(m_command, &m_commandFlags, &m_lastAlpha);
-            stride = 0x10;
+            stride = COMMAND_MAT_ALPHA_STRIDE;
             break;
-        case 0xD:
+        case COMMAND_WAIT:
             command = new EffCmdWaitExec(m_command, &m_commandFlags, m_commandTail);
-            stride = 8;
+            stride = sizeof(UnkWaitData);
             break;
-        case 0xE:
+        case COMMAND_LOOP_START:
             command = new EffCmdLoopStartExec(m_command, &m_commandFlags);
-            stride = 8;
+            stride = sizeof(UnkLoopStartData);
             ++field_0x4;
             if (field_0x5 != 0 || (m_flags & ELEMENT_STOP_REQUESTED) != 0) {
                 ++field_0x5;
             }
             break;
-        case 0xF: {
+        case COMMAND_LOOP_END: {
             const UnkCommandData *restart = 0;
             if (field_0x5 != 0 || (m_flags & ELEMENT_STOP_REQUESTED) != 0) {
                 command = new EffCmdLoopEndExec(m_command, &m_commandFlags, m_commandTail, 0);
@@ -232,20 +232,20 @@ void EffectLocus::fn_8042BD8C() {
             }
             if (restart != 0) {
                 m_command = restart;
-                stride = 8;
+                stride = sizeof(UnkLoopStartData);
             } else {
-                stride = 4;
+                stride = sizeof(UnkCommandData);
                 --field_0x4;
             }
             break;
         }
-        case 0x10:
+        case COMMAND_CALLBACK:
             command = new EffCmdCallbackExec(m_command, &m_commandFlags);
-            stride = 8;
+            stride = COMMAND_CALLBACK_STRIDE;
             break;
-        case 0x13:
+        case COMMAND_REQUEST_STOP:
             command = new EffCmdRequestStopExec(m_command, &m_commandFlags, this);
-            stride = 4;
+            stride = sizeof(UnkCommandData);
             break;
         default:
             return;

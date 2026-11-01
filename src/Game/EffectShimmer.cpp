@@ -98,7 +98,7 @@ EffectShimmer::EffectShimmer(UnkEffectElementData10 *definition, EffectLaunchInf
     if ((m_flags & ELEMENT_ACTIVE) == 0) {
         return;
     }
-    m_parameters = static_cast<UnkEffectShimmerData *>(definition->field_0x38);
+    m_parameters = definition->field_0x38;
     m_definitionFlags = definition->field_0x2C;
     m_duration = definition->field_0x34;
     m_commandPool = new UnkEffectPool(0x30, definition->field_0x32);
@@ -112,8 +112,8 @@ EffectShimmer::EffectShimmer(UnkEffectElementData10 *definition, EffectLaunchInf
     m_size +=
         m_commandPool->m_blockStride * (m_commandPool->m_usedCount + m_commandPool->m_freeCount) +
         sizeof(UnkEffectPool);
-    m_command = static_cast<const UnkCommandData *>(definition->field_0x3C);
-    UnkEffectShimmerData *parameters = static_cast<UnkEffectShimmerData *>(definition->field_0x38);
+    m_command = definition->field_0x3C;
+    UnkEffectShimmerData *parameters = definition->field_0x38;
     switch (parameters->type) {
     case 0: {
         UnkEffectShimmerData0 *data = static_cast<UnkEffectShimmerData0 *>(parameters);
@@ -172,47 +172,47 @@ void EffectShimmer::fn_8042AAB0() {
         EffectCommandExec *command = 0;
         unsigned int stride;
         switch (m_command->type) {
-        case 0xC:
+        case COMMAND_MAT_ALPHA:
             command = new EffCmdMatAlphaExec(m_command, &m_commandFlags, &m_alpha);
-            stride = 0x10;
+            stride = COMMAND_MAT_ALPHA_STRIDE;
             break;
-        case 0x1C:
+        case COMMAND_2D_AMPLITUDE:
             command = new EffCmd2DAmplitudeExec(m_command, &m_commandFlags, &m_amplitude);
-            stride = 0x1C;
+            stride = sizeof(UnkVector2Data);
             break;
-        case 0x1D:
+        case COMMAND_2D_CYCLE:
             command = new EffCmd2DCycleExec(m_command, &m_commandFlags, &m_cycle);
-            stride = 0x1C;
+            stride = sizeof(UnkVector2Data);
             break;
-        case 0x1E:
+        case COMMAND_2D_WAVE_LENGTH:
             command = new EffCmd2DWaveLengthExec(m_command, &m_commandFlags, &m_waveLength);
-            stride = 0x1C;
+            stride = sizeof(UnkVector2Data);
             break;
-        case 0x1F:
+        case COMMAND_AMPLITUDE:
             command = new EffCmdAmplitudeExec(m_command, &m_commandFlags, &m_amplitude.x);
-            stride = 0x14;
+            stride = sizeof(UnkSingleData);
             break;
-        case 0x20:
+        case COMMAND_CYCLE:
             command = new EffCmdCycleExec(m_command, &m_commandFlags, &m_cycle.x);
-            stride = 0x14;
+            stride = sizeof(UnkSingleData);
             break;
-        case 0x21:
+        case COMMAND_WAVE_LENGTH:
             command = new EffCmdWaveLengthExec(m_command, &m_commandFlags, &m_waveLength.x);
-            stride = 0x14;
+            stride = sizeof(UnkSingleData);
             break;
-        case 0xD:
+        case COMMAND_WAIT:
             command = new EffCmdWaitExec(m_command, &m_commandFlags, m_commandTail);
-            stride = 8;
+            stride = sizeof(UnkWaitData);
             break;
-        case 0xE:
+        case COMMAND_LOOP_START:
             command = new EffCmdLoopStartExec(m_command, &m_commandFlags);
-            stride = 8;
+            stride = sizeof(UnkLoopStartData);
             ++field_0x4;
             if (field_0x5 != 0 || (m_flags & ELEMENT_STOP_REQUESTED) != 0) {
                 ++field_0x5;
             }
             break;
-        case 0xF: {
+        case COMMAND_LOOP_END: {
             const UnkCommandData *restart = 0;
             if (field_0x5 != 0 || (m_flags & ELEMENT_STOP_REQUESTED) != 0) {
                 command = new EffCmdLoopEndExec(m_command, &m_commandFlags, m_commandTail, 0);
@@ -225,16 +225,16 @@ void EffectShimmer::fn_8042AAB0() {
             }
             if (restart != 0) {
                 m_command = restart;
-                stride = 8;
+                stride = sizeof(UnkLoopStartData);
             } else {
-                stride = 4;
+                stride = sizeof(UnkCommandData);
                 --field_0x4;
             }
             break;
         }
-        case 0x10:
+        case COMMAND_CALLBACK:
             command = new EffCmdCallbackExec(m_command, &m_commandFlags);
-            stride = 8;
+            stride = COMMAND_CALLBACK_STRIDE;
             break;
         default:
             return;

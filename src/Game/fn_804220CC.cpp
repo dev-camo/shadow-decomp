@@ -1,117 +1,121 @@
 /* Command-stream traversal adjacent to Effect::System RTTI data. The original file and
  * record type names are unknown; lengths are encoded record sizes in bytes. */
 #include "Game/fn_804220CC.h"
+#include "Game/EffectCommandExec.h"
 
-unsigned int fn_804220CC(const unsigned char *command) {
+using namespace Effect::System;
+
+unsigned int fn_804220CC(const UnkCommandData *command) {
     unsigned int count = 0;
 
     while (command != 0) {
         unsigned int size = 0;
 
-        switch (command[0]) {
-        case 0:
-        case 2:
+        switch (command->type) {
+        case COMMAND_TYPE_00:
+        case COMMAND_GLARE_SWITCH:
             break;
-        case 1:
-            size = 0x10;
+        case COMMAND_PTN_ANIM:
+            size = sizeof(UnkPtnAnimData);
             break;
-        case 3:
-            size = 0x24;
+        case COMMAND_3D_POSITION:
+            size = sizeof(UnkVector3Data);
             break;
-        case 4:
-            size = 0x24;
+        case COMMAND_3D_ROTATION:
+            size = sizeof(UnkVector3Data);
             break;
-        case 5:
-            size = 0x14;
+        case COMMAND_2D_ROTATION:
+            size = sizeof(UnkSingleData);
             break;
-        case 6:
-            size = 0x24;
+        case COMMAND_3D_SCALE:
+            size = sizeof(UnkVector3Data);
             break;
-        case 7:
-            size = 0x1C;
+        case COMMAND_2D_SCALE:
+            size = sizeof(UnkVector2Data);
             break;
-        case 8:
-            size = 0x24;
+        case COMMAND_3D_VELOCITY:
+            size = sizeof(UnkVector3Data);
             break;
-        case 9:
-            size = 0x14;
+        case COMMAND_GRAVITY:
+            size = sizeof(UnkSingleData);
             break;
-        case 10:
-            size = 0x14;
+        case COMMAND_FRICTION:
+            size = sizeof(UnkSingleData);
             break;
-        case 11:
-            size = 0x14;
+        case COMMAND_MAT_COLOR:
+            size = COMMAND_MAT_COLOR_STRIDE;
             break;
-        case 12:
-            size = 0x10;
+        case COMMAND_MAT_ALPHA:
+            size = COMMAND_MAT_ALPHA_STRIDE;
             break;
-        case 13:
-            size = 0x8;
+        case COMMAND_WAIT:
+            size = sizeof(UnkWaitData);
             break;
-        case 14:
-            size = 0x8;
+        case COMMAND_LOOP_START:
+            size = sizeof(UnkLoopStartData);
             break;
-        case 15:
-            size = 0x4;
+        case COMMAND_LOOP_END:
+            size = sizeof(UnkCommandData);
             break;
-        case 16:
-            size = 0x8;
+        case COMMAND_CALLBACK:
+            size = COMMAND_CALLBACK_STRIDE;
             break;
-        case 17:
-            size = 0x58;
+        case COMMAND_LAUNCH:
+            size = sizeof(UnkLaunchData);
             break;
-        case 18:
-            size = 0x5C;
+        case COMMAND_TIMED_LAUNCH:
+            size = sizeof(UnkTimedLaunchData);
             break;
-        case 19:
-            size = 0x4;
+        case COMMAND_REQUEST_STOP:
+            size = sizeof(UnkCommandData);
             break;
-        case 20:
-            size = 0x14;
+        case COMMAND_GEN_QUANTITY:
+            size = sizeof(UnkSingleData);
             break;
-        case 21:
-            size = 0x20;
+        case COMMAND_LOCUS_POINT:
+            size = COMMAND_LOCUS_POINT_STRIDE;
             break;
-        case 22:
-            size = 0x14;
+        case COMMAND_TOP_COLOR:
+            size = COMMAND_MAT_COLOR_STRIDE;
             break;
-        case 23:
-            size = 0x10;
+        case COMMAND_TOP_ALPHA:
+            size = COMMAND_MAT_ALPHA_STRIDE;
             break;
-        case 24:
-            size = 0x14;
+        case COMMAND_LAST_COLOR:
+            size = COMMAND_MAT_COLOR_STRIDE;
             break;
-        case 25:
-            size = 0x10;
+        case COMMAND_LAST_ALPHA:
+            size = COMMAND_MAT_ALPHA_STRIDE;
             break;
-        case 26:
-            size = 0x14;
+        case COMMAND_LENGTH:
+            size = sizeof(UnkSingleData);
             break;
-        case 27:
-            size = 0x14;
+        case COMMAND_WIDTH:
+            size = sizeof(UnkSingleData);
             break;
-        case 28:
-            size = 0x1C;
+        case COMMAND_2D_AMPLITUDE:
+            size = sizeof(UnkVector2Data);
             break;
-        case 29:
-            size = 0x1C;
+        case COMMAND_2D_CYCLE:
+            size = sizeof(UnkVector2Data);
             break;
-        case 30:
-            size = 0x1C;
+        case COMMAND_2D_WAVE_LENGTH:
+            size = sizeof(UnkVector2Data);
             break;
-        case 31:
-            size = 0x14;
+        case COMMAND_AMPLITUDE:
+            size = sizeof(UnkSingleData);
             break;
-        case 32:
-            size = 0x14;
+        case COMMAND_CYCLE:
+            size = sizeof(UnkSingleData);
             break;
-        case 33:
-            size = 0x14;
+        case COMMAND_WAVE_LENGTH:
+            size = sizeof(UnkSingleData);
             break;
         }
 
-        if (command[1] != 0 && size != 0) {
-            command += size;
+        if (command->hasNext != 0 && size != 0) {
+            command = reinterpret_cast<const UnkCommandData *>(
+                reinterpret_cast<const unsigned char *>(command) + size);
         } else {
             command = 0;
         }

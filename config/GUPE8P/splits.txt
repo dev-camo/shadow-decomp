@@ -2076,7 +2076,7 @@ Game/EffectManager.cpp:
 	extabindex  start:0x80008498 end:0x800084E0
 	.text       start:0x80425170 end:0x80425858
 
-Game/fn_80425858.c:
+Game/fn_80425858.cpp:
 	.text       start:0x80425858 end:0x80425860
 
 Game/fn_80425860.cpp:

@@ -11,7 +11,8 @@ namespace System {
 /* Inferred predicate: whether a command list still contains a launch. */
 static inline bool HasLaunchCommand(EffectCommandExec *command) {
     for (; command != 0; command = command->m_next) {
-        if (command->m_command->type == 0x11 || command->m_command->type == 0x12) {
+        if (command->m_command->type == COMMAND_LAUNCH ||
+            command->m_command->type == COMMAND_TIMED_LAUNCH) {
             return true;
         }
     }
@@ -26,7 +27,8 @@ void EffectArranger::Update(float deltaTime) {
         fn_8042A5C0(fn_8042A5D0(), m_launchPool);
         EffectCommandExec *command = m_commandHead;
         while (command != 0) {
-            if (command->m_command->type != 0x11 && command->m_command->type != 0x12) {
+            if (command->m_command->type != COMMAND_LAUNCH &&
+                command->m_command->type != COMMAND_TIMED_LAUNCH) {
                 command = command->m_next;
                 continue;
             }
@@ -66,7 +68,8 @@ void EffectArranger::Update(float deltaTime) {
         fn_8042A5C0(fn_8042A5D0(), m_commandPool);
         EffectCommandExec *command = m_commandHead;
         while (command != 0) {
-            if (command->m_command->type == 0x11 || command->m_command->type == 0x12) {
+            if (command->m_command->type == COMMAND_LAUNCH ||
+                command->m_command->type == COMMAND_TIMED_LAUNCH) {
                 command = command->m_next;
                 continue;
             }
@@ -99,7 +102,8 @@ void EffectArranger::Update(float deltaTime) {
     fn_8042A5C0(fn_8042A5D0(), m_launchPool);
     EffectCommandExec *command = m_commandHead;
     while (command != 0) {
-        if (command->m_command->type != 0x11 && command->m_command->type != 0x12) {
+        if (command->m_command->type != COMMAND_LAUNCH &&
+            command->m_command->type != COMMAND_TIMED_LAUNCH) {
             command = command->m_next;
             continue;
         }
@@ -140,35 +144,35 @@ void EffectArranger::fn_80426700() {
         EffectCommandExec *command = 0;
         unsigned int stride;
         switch (m_command->type) {
-        case 3:
+        case COMMAND_3D_POSITION:
             command = new EffCmd3DPosExec(m_command, &m_commandFlags, &m_translation);
-            stride = 0x24;
+            stride = sizeof(UnkVector3Data);
             break;
-        case 4:
+        case COMMAND_3D_ROTATION:
             command = new EffCmd3DRotExec(m_command, &m_commandFlags, &m_rotation);
-            stride = 0x24;
+            stride = sizeof(UnkVector3Data);
             break;
-        case 6:
+        case COMMAND_3D_SCALE:
             command = new EffCmd3DSclExec(m_command, &m_commandFlags, &m_scale);
-            stride = 0x24;
+            stride = sizeof(UnkVector3Data);
             break;
-        case 8:
+        case COMMAND_3D_VELOCITY:
             command = new EffCmd3DVelExec(m_command, &m_commandFlags, &m_velocity);
-            stride = 0x24;
+            stride = sizeof(UnkVector3Data);
             break;
-        case 0xD:
+        case COMMAND_WAIT:
             command = new EffCmdWaitExec(m_command, &m_commandFlags, m_commandTail);
-            stride = 8;
+            stride = sizeof(UnkWaitData);
             break;
-        case 0xE:
+        case COMMAND_LOOP_START:
             command = new EffCmdLoopStartExec(m_command, &m_commandFlags);
-            stride = 8;
+            stride = sizeof(UnkLoopStartData);
             ++field_0x4;
             if (field_0x5 != 0 || (m_flags & ELEMENT_STOP_REQUESTED) != 0) {
                 ++field_0x5;
             }
             break;
-        case 0xF: {
+        case COMMAND_LOOP_END: {
             const UnkCommandData *restart = 0;
             if (field_0x5 != 0 || (m_flags & ELEMENT_STOP_REQUESTED) != 0) {
                 command = new EffCmdLoopEndExec(m_command, &m_commandFlags, m_commandTail, 0);
@@ -181,38 +185,38 @@ void EffectArranger::fn_80426700() {
             }
             if (restart != 0) {
                 m_command = restart;
-                stride = 8;
+                stride = sizeof(UnkLoopStartData);
             } else {
-                stride = 4;
+                stride = sizeof(UnkCommandData);
                 --field_0x4;
             }
             break;
         }
-        case 0x10:
+        case COMMAND_CALLBACK:
             command = new EffCmdCallbackExec(m_command, &m_commandFlags);
-            stride = 8;
+            stride = COMMAND_CALLBACK_STRIDE;
             break;
-        case 0x11:
+        case COMMAND_LAUNCH:
             if ((m_flags & ELEMENT_STOP_REQUESTED) == 0 || (m_definitionFlags & 0x40000) != 0) {
                 fn_8042A5C0(fn_8042A5D0(), m_launchPool);
                 command =
                     new EffCmdLaunchExec(m_command, &m_commandFlags, m_manager, m_launchInfo, this);
                 fn_8042A5C0(fn_8042A5D0(), m_commandPool);
             }
-            stride = 0x58;
+            stride = sizeof(UnkLaunchData);
             break;
-        case 0x12:
+        case COMMAND_TIMED_LAUNCH:
             if ((m_flags & ELEMENT_STOP_REQUESTED) == 0 || (m_definitionFlags & 0x40000) != 0) {
                 fn_8042A5C0(fn_8042A5D0(), m_launchPool);
                 command =
                     new EffCmdLaunchExec(m_command, &m_commandFlags, m_manager, m_launchInfo, this);
                 fn_8042A5C0(fn_8042A5D0(), m_commandPool);
             }
-            stride = 0x5C;
+            stride = sizeof(UnkTimedLaunchData);
             break;
-        case 0x13:
+        case COMMAND_REQUEST_STOP:
             command = new EffCmdRequestStopExec(m_command, &m_commandFlags, this);
-            stride = 4;
+            stride = sizeof(UnkCommandData);
             break;
         default:
             return;
@@ -272,14 +276,16 @@ EffectArranger::EffectArranger(const UnkEffectElementData3 *definition, EffectLa
     m_size +=
         m_commandPool->m_blockStride * (m_commandPool->m_usedCount + m_commandPool->m_freeCount) +
         sizeof(UnkEffectPool);
-    m_command = static_cast<const UnkCommandData *>(definition->field_0x38);
+    m_command = definition->field_0x38;
 }
 
 EffectArranger::~EffectArranger() {
     EffectCommandExec *command = m_commandHead;
     while (command != 0) {
         EffectCommandExec *next = command->m_next;
-        if (command->m_command->type == 0x11) {
+        /* The original returns only type 0x11 to the launch pool; timed launches (0x12)
+         * are released through the command pool. */
+        if (command->m_command->type == COMMAND_LAUNCH) {
             fn_8042A5C0(fn_8042A5D0(), m_launchPool);
         } else {
             fn_8042A5C0(fn_8042A5D0(), m_commandPool);
