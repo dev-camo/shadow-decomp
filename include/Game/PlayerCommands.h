@@ -87,6 +87,20 @@ class TouchHangCommand : public PlayerCommand {
 };
 CHECK_SIZEOF(Player::TouchHangCommand, 0x28);
 
+namespace Npc {
+
+/* Class and base names come from RTTI; argument meanings are inferred by callers. */
+class EnemyDeadByPlayerCommand : public PlayerCommand {
+  public:
+    EnemyDeadByPlayerCommand(int arg0, int arg1);
+    virtual ~EnemyDeadByPlayerCommand();
+    /* 0x14 */ int field_0x14;
+    /* 0x18 */ int field_0x18;
+};
+CHECK_SIZEOF(EnemyDeadByPlayerCommand, 0x1C);
+
+} // namespace Npc
+
 } // namespace Player
 
 #endif

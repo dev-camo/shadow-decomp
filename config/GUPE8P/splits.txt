@@ -129,6 +129,12 @@ Game/ThreatObjHolder.cpp:
 	.sbss       start:0x805EEFD8 end:0x805EEFF8
 	.sdata2     start:0x805F4470 end:0x805F44A0
 
+Game/fn_801A1FA0.cpp:
+	.text       start:0x801A1FA0 end:0x801A35AC
+	.rodata     start:0x804CC148 end:0x804CC1F8
+	.data       start:0x8053A990 end:0x8053A9F0
+	.sdata      start:0x805E81B0 end:0x805E81D0
+
 Game/ElecCircuit.cpp:
 	.text       start:0x801F78B8 end:0x801F7D24
 	.rodata     start:0x804EB930 end:0x804EB958
