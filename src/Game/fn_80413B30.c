@@ -77,7 +77,7 @@ static inline void CopyKey(MotionKey *to, const MotionKey *from) {
         const unsigned short *position_;                                                           \
         unsigned short header_;                                                                    \
                                                                                                    \
-        if (lbl_805E12C0.direction < 0.0f) {                                                       \
+        if (lbl_805E12C0.speed < 0.0f) {                                                           \
             (cursor)->index = (cursor)->keyCount - 1;                                              \
             (cursor)->position =                                                                   \
                 (const unsigned short *)((char *)block_ + block_->size - block_->trailingBytes -   \
@@ -124,7 +124,7 @@ void fn_80414120(MotionKeyCursor *cursor) {
     short index = cursor->index;
     unsigned short header;
 
-    if (lbl_805E12C0.frame > cursor->current.time - MOTION_FRAME_EPSILON) {
+    if (lbl_805E12C0.currentFrame > cursor->current.time - MOTION_FRAME_EPSILON) {
         return;
     }
     while (index > -1) {
@@ -134,7 +134,7 @@ void fn_80414120(MotionKeyCursor *cursor) {
         READ_KEY(cursor->current, data, header);
         index--;
         position = (const unsigned short *)((char *)position - StepBackBytes(header));
-        if (lbl_805E12C0.frame > cursor->current.time - MOTION_FRAME_EPSILON) {
+        if (lbl_805E12C0.currentFrame > cursor->current.time - MOTION_FRAME_EPSILON) {
             break;
         }
     }
@@ -148,14 +148,14 @@ void fn_804142B0(MotionKeyCursor *cursor) {
     short keyCount = cursor->keyCount;
     unsigned short header;
 
-    if (lbl_805E12C0.frame < MOTION_FRAME_EPSILON + cursor->next.time) {
+    if (lbl_805E12C0.currentFrame < MOTION_FRAME_EPSILON + cursor->next.time) {
         return;
     }
     while (index < keyCount) {
         CopyKey(&cursor->current, &cursor->next);
         READ_KEY(cursor->next, position, header);
         index++;
-        if (lbl_805E12C0.frame < MOTION_FRAME_EPSILON + cursor->next.time) {
+        if (lbl_805E12C0.currentFrame < MOTION_FRAME_EPSILON + cursor->next.time) {
             break;
         }
     }
@@ -181,20 +181,20 @@ void fn_80414438(float *value, float *slope, MotionKeyCursor *cursor) {
         *slope = cursor->cachedSlope;
         return;
     }
-    if (lbl_805E12C0.frame > next->time - MOTION_FRAME_EPSILON) {
+    if (lbl_805E12C0.currentFrame > next->time - MOTION_FRAME_EPSILON) {
         *value = next->value;
-        if (lbl_805E12C0.frame > MOTION_FRAME_EPSILON + next->time) {
+        if (lbl_805E12C0.currentFrame > MOTION_FRAME_EPSILON + next->time) {
             *slope = next->tangentOut;
         } else {
             *slope = 0.5f * (next->tangentIn + next->tangentOut);
         }
         return;
     }
-    if (lbl_805E12C0.frame > MOTION_FRAME_EPSILON + current->time) {
-        lbl_805E12C0.interpolateBoth(value, slope, current, next, lbl_805E12C0.frame);
+    if (lbl_805E12C0.currentFrame > MOTION_FRAME_EPSILON + current->time) {
+        lbl_805E12C0.interpolateBoth(value, slope, current, next, lbl_805E12C0.currentFrame);
         return;
     }
-    if (lbl_805E12C0.frame > current->time - MOTION_FRAME_EPSILON) {
+    if (lbl_805E12C0.currentFrame > current->time - MOTION_FRAME_EPSILON) {
         *value = current->value;
         *slope = 0.5f * (current->tangentIn + current->tangentOut);
         return;
@@ -206,10 +206,11 @@ void fn_80414438(float *value, float *slope, MotionKeyCursor *cursor) {
         READ_KEY(*current, data, header);
         index--;
         position = (const unsigned short *)((char *)position - StepBackBytes(header));
-        if (lbl_805E12C0.frame > current->time - MOTION_FRAME_EPSILON) {
+        if (lbl_805E12C0.currentFrame > current->time - MOTION_FRAME_EPSILON) {
             cursor->flags &= ~MOTION_CURSOR_BOTH_HELD;
-            if (lbl_805E12C0.frame > MOTION_FRAME_EPSILON + current->time) {
-                lbl_805E12C0.interpolateBoth(value, slope, current, next, lbl_805E12C0.frame);
+            if (lbl_805E12C0.currentFrame > MOTION_FRAME_EPSILON + current->time) {
+                lbl_805E12C0.interpolateBoth(value, slope, current, next,
+                                             lbl_805E12C0.currentFrame);
             } else {
                 *value = current->value;
                 *slope = 0.5f * (current->tangentIn + current->tangentOut);
@@ -224,7 +225,7 @@ void fn_80414438(float *value, float *slope, MotionKeyCursor *cursor) {
         *value = cursor->cachedValue = current->value;
         *slope = cursor->cachedSlope = current->tangentIn;
     } else {
-        *value = current->tangentIn * (lbl_805E12C0.frame - current->time) + current->value;
+        *value = current->tangentIn * (lbl_805E12C0.currentFrame - current->time) + current->value;
         *slope = current->tangentIn;
     }
 }
@@ -239,16 +240,16 @@ float fn_8041474C(MotionKeyCursor *cursor) {
     if (cursor->flags & MOTION_CURSOR_SLOPE_HELD) {
         return cursor->cachedSlope;
     }
-    if (lbl_805E12C0.frame > next->time - MOTION_FRAME_EPSILON) {
-        if (lbl_805E12C0.frame > MOTION_FRAME_EPSILON + next->time) {
+    if (lbl_805E12C0.currentFrame > next->time - MOTION_FRAME_EPSILON) {
+        if (lbl_805E12C0.currentFrame > MOTION_FRAME_EPSILON + next->time) {
             return next->tangentOut;
         }
         return 0.5f * (next->tangentIn + next->tangentOut);
     }
-    if (lbl_805E12C0.frame > MOTION_FRAME_EPSILON + current->time) {
-        return lbl_805E12C0.interpolateSlope(current, next, lbl_805E12C0.frame);
+    if (lbl_805E12C0.currentFrame > MOTION_FRAME_EPSILON + current->time) {
+        return lbl_805E12C0.interpolateSlope(current, next, lbl_805E12C0.currentFrame);
     }
-    if (lbl_805E12C0.frame > current->time - MOTION_FRAME_EPSILON) {
+    if (lbl_805E12C0.currentFrame > current->time - MOTION_FRAME_EPSILON) {
         return 0.5f * (current->tangentIn + current->tangentOut);
     }
     while (index > -1) {
@@ -258,10 +259,10 @@ float fn_8041474C(MotionKeyCursor *cursor) {
         READ_KEY(*current, data, header);
         index--;
         position = (const unsigned short *)((char *)position - StepBackBytes(header));
-        if (lbl_805E12C0.frame > current->time - MOTION_FRAME_EPSILON) {
+        if (lbl_805E12C0.currentFrame > current->time - MOTION_FRAME_EPSILON) {
             cursor->flags &= ~MOTION_CURSOR_SLOPE_HELD;
-            if (lbl_805E12C0.frame > MOTION_FRAME_EPSILON + current->time) {
-                return lbl_805E12C0.interpolateSlope(current, next, lbl_805E12C0.frame);
+            if (lbl_805E12C0.currentFrame > MOTION_FRAME_EPSILON + current->time) {
+                return lbl_805E12C0.interpolateSlope(current, next, lbl_805E12C0.currentFrame);
             }
             return 0.5f * (current->tangentIn + current->tangentOut);
         }
@@ -282,16 +283,16 @@ float fn_804149E0(MotionKeyCursor *cursor) {
     if (cursor->flags & MOTION_CURSOR_VALUE_HELD) {
         return cursor->cachedValue;
     }
-    if (lbl_805E12C0.frame > next->time - MOTION_FRAME_EPSILON) {
+    if (lbl_805E12C0.currentFrame > next->time - MOTION_FRAME_EPSILON) {
         return next->value;
     }
-    if (lbl_805E12C0.frame > MOTION_FRAME_EPSILON + current->time) {
+    if (lbl_805E12C0.currentFrame > MOTION_FRAME_EPSILON + current->time) {
         if (cursor->flags & MOTION_CURSOR_FLAT_SEGMENT) {
             return cursor->cachedValue;
         }
-        return lbl_805E12C0.interpolateValue(current, next, lbl_805E12C0.frame);
+        return lbl_805E12C0.interpolateValue(current, next, lbl_805E12C0.currentFrame);
     }
-    if (lbl_805E12C0.frame > current->time - MOTION_FRAME_EPSILON) {
+    if (lbl_805E12C0.currentFrame > current->time - MOTION_FRAME_EPSILON) {
         return current->value;
     }
     while (index > -1) {
@@ -301,16 +302,16 @@ float fn_804149E0(MotionKeyCursor *cursor) {
         READ_KEY(*current, data, header);
         index--;
         position = (const unsigned short *)((char *)position - StepBackBytes(header));
-        if (lbl_805E12C0.frame > current->time - MOTION_FRAME_EPSILON) {
+        if (lbl_805E12C0.currentFrame > current->time - MOTION_FRAME_EPSILON) {
             cursor->flags &= ~MOTION_CURSOR_VALUE_HELD;
-            if (lbl_805E12C0.frame > MOTION_FRAME_EPSILON + current->time) {
+            if (lbl_805E12C0.currentFrame > MOTION_FRAME_EPSILON + current->time) {
                 if (current->tangentOut == 0.0f && next->tangentIn == 0.0f &&
                     current->value == next->value) {
                     cursor->flags |= MOTION_CURSOR_FLAT_SEGMENT;
                     return cursor->cachedValue = current->value;
                 }
                 cursor->flags &= ~MOTION_CURSOR_FLAT_SEGMENT;
-                return lbl_805E12C0.interpolateValue(current, next, lbl_805E12C0.frame);
+                return lbl_805E12C0.interpolateValue(current, next, lbl_805E12C0.currentFrame);
             }
             return current->value;
         }
@@ -321,7 +322,7 @@ float fn_804149E0(MotionKeyCursor *cursor) {
         cursor->flags |= MOTION_CURSOR_VALUE_HELD;
         return cursor->cachedValue = current->value;
     }
-    return current->tangentIn * (lbl_805E12C0.frame - current->time) + current->value;
+    return current->tangentIn * (lbl_805E12C0.currentFrame - current->time) + current->value;
 }
 
 void fn_80414CBC(float *value, float *slope, MotionKeyCursor *cursor) {
@@ -337,20 +338,20 @@ void fn_80414CBC(float *value, float *slope, MotionKeyCursor *cursor) {
         *slope = cursor->cachedSlope;
         return;
     }
-    if (lbl_805E12C0.frame < MOTION_FRAME_EPSILON + current->time) {
+    if (lbl_805E12C0.currentFrame < MOTION_FRAME_EPSILON + current->time) {
         *value = current->value;
-        if (lbl_805E12C0.frame < current->time - MOTION_FRAME_EPSILON) {
+        if (lbl_805E12C0.currentFrame < current->time - MOTION_FRAME_EPSILON) {
             *slope = current->tangentIn;
         } else {
             *slope = 0.5f * (current->tangentIn + current->tangentOut);
         }
         return;
     }
-    if (lbl_805E12C0.frame < next->time - MOTION_FRAME_EPSILON) {
-        lbl_805E12C0.interpolateBoth(value, slope, current, next, lbl_805E12C0.frame);
+    if (lbl_805E12C0.currentFrame < next->time - MOTION_FRAME_EPSILON) {
+        lbl_805E12C0.interpolateBoth(value, slope, current, next, lbl_805E12C0.currentFrame);
         return;
     }
-    if (lbl_805E12C0.frame < MOTION_FRAME_EPSILON + next->time) {
+    if (lbl_805E12C0.currentFrame < MOTION_FRAME_EPSILON + next->time) {
         *value = next->value;
         *slope = 0.5f * (next->tangentIn + next->tangentOut);
         return;
@@ -359,12 +360,13 @@ void fn_80414CBC(float *value, float *slope, MotionKeyCursor *cursor) {
         CopyKey(current, next);
         READ_KEY(*next, position, header);
         index++;
-        if (lbl_805E12C0.frame < MOTION_FRAME_EPSILON + next->time) {
+        if (lbl_805E12C0.currentFrame < MOTION_FRAME_EPSILON + next->time) {
             cursor->index = index;
             cursor->position = position;
             cursor->flags &= ~MOTION_CURSOR_BOTH_HELD;
-            if (lbl_805E12C0.frame < next->time - MOTION_FRAME_EPSILON) {
-                lbl_805E12C0.interpolateBoth(value, slope, current, next, lbl_805E12C0.frame);
+            if (lbl_805E12C0.currentFrame < next->time - MOTION_FRAME_EPSILON) {
+                lbl_805E12C0.interpolateBoth(value, slope, current, next,
+                                             lbl_805E12C0.currentFrame);
             } else {
                 *value = next->value;
                 *slope = 0.5f * (next->tangentIn + next->tangentOut);
@@ -379,7 +381,7 @@ void fn_80414CBC(float *value, float *slope, MotionKeyCursor *cursor) {
         *value = cursor->cachedValue = next->value;
         *slope = cursor->cachedSlope = next->tangentOut;
     } else {
-        *value = next->tangentOut * (lbl_805E12C0.frame - next->time) + next->value;
+        *value = next->tangentOut * (lbl_805E12C0.currentFrame - next->time) + next->value;
         *slope = next->tangentOut;
     }
 }
@@ -395,28 +397,28 @@ float fn_80414FD0(MotionKeyCursor *cursor) {
     if (cursor->flags & MOTION_CURSOR_SLOPE_HELD) {
         return cursor->cachedSlope;
     }
-    if (lbl_805E12C0.frame < MOTION_FRAME_EPSILON + current->time) {
-        if (lbl_805E12C0.frame < current->time - MOTION_FRAME_EPSILON) {
+    if (lbl_805E12C0.currentFrame < MOTION_FRAME_EPSILON + current->time) {
+        if (lbl_805E12C0.currentFrame < current->time - MOTION_FRAME_EPSILON) {
             return current->tangentIn;
         }
         return 0.5f * (current->tangentIn + current->tangentOut);
     }
-    if (lbl_805E12C0.frame < next->time - MOTION_FRAME_EPSILON) {
-        return lbl_805E12C0.interpolateSlope(current, next, lbl_805E12C0.frame);
+    if (lbl_805E12C0.currentFrame < next->time - MOTION_FRAME_EPSILON) {
+        return lbl_805E12C0.interpolateSlope(current, next, lbl_805E12C0.currentFrame);
     }
-    if (lbl_805E12C0.frame < MOTION_FRAME_EPSILON + next->time) {
+    if (lbl_805E12C0.currentFrame < MOTION_FRAME_EPSILON + next->time) {
         return 0.5f * (next->tangentIn + next->tangentOut);
     }
     while (index < keyCount) {
         CopyKey(current, next);
         READ_KEY(*next, position, header);
         index++;
-        if (lbl_805E12C0.frame < MOTION_FRAME_EPSILON + next->time) {
+        if (lbl_805E12C0.currentFrame < MOTION_FRAME_EPSILON + next->time) {
             cursor->index = index;
             cursor->position = position;
             cursor->flags &= ~MOTION_CURSOR_SLOPE_HELD;
-            if (lbl_805E12C0.frame < next->time - MOTION_FRAME_EPSILON) {
-                return lbl_805E12C0.interpolateSlope(current, next, lbl_805E12C0.frame);
+            if (lbl_805E12C0.currentFrame < next->time - MOTION_FRAME_EPSILON) {
+                return lbl_805E12C0.interpolateSlope(current, next, lbl_805E12C0.currentFrame);
             }
             return 0.5f * (next->tangentIn + next->tangentOut);
         }
@@ -438,34 +440,34 @@ float fn_8041525C(MotionKeyCursor *cursor) {
     if (cursor->flags & MOTION_CURSOR_VALUE_HELD) {
         return cursor->cachedValue;
     }
-    if (lbl_805E12C0.frame < MOTION_FRAME_EPSILON + current->time) {
+    if (lbl_805E12C0.currentFrame < MOTION_FRAME_EPSILON + current->time) {
         return current->value;
     }
-    if (lbl_805E12C0.frame < next->time - MOTION_FRAME_EPSILON) {
+    if (lbl_805E12C0.currentFrame < next->time - MOTION_FRAME_EPSILON) {
         if (cursor->flags & MOTION_CURSOR_FLAT_SEGMENT) {
             return cursor->cachedValue;
         }
-        return lbl_805E12C0.interpolateValue(current, next, lbl_805E12C0.frame);
+        return lbl_805E12C0.interpolateValue(current, next, lbl_805E12C0.currentFrame);
     }
-    if (lbl_805E12C0.frame < MOTION_FRAME_EPSILON + next->time) {
+    if (lbl_805E12C0.currentFrame < MOTION_FRAME_EPSILON + next->time) {
         return next->value;
     }
     while (index < keyCount) {
         CopyKey(current, next);
         READ_KEY(*next, position, header);
         index++;
-        if (lbl_805E12C0.frame < MOTION_FRAME_EPSILON + next->time) {
+        if (lbl_805E12C0.currentFrame < MOTION_FRAME_EPSILON + next->time) {
             cursor->index = index;
             cursor->position = position;
             cursor->flags &= ~MOTION_CURSOR_VALUE_HELD;
-            if (lbl_805E12C0.frame < next->time - MOTION_FRAME_EPSILON) {
+            if (lbl_805E12C0.currentFrame < next->time - MOTION_FRAME_EPSILON) {
                 if (current->tangentOut == 0.0f && next->tangentIn == 0.0f &&
                     current->value == next->value) {
                     cursor->flags |= MOTION_CURSOR_FLAT_SEGMENT;
                     return cursor->cachedValue = next->value;
                 }
                 cursor->flags &= ~MOTION_CURSOR_FLAT_SEGMENT;
-                return lbl_805E12C0.interpolateValue(current, next, lbl_805E12C0.frame);
+                return lbl_805E12C0.interpolateValue(current, next, lbl_805E12C0.currentFrame);
             }
             return next->value;
         }
@@ -476,7 +478,7 @@ float fn_8041525C(MotionKeyCursor *cursor) {
         cursor->flags |= MOTION_CURSOR_VALUE_HELD;
         return cursor->cachedValue = next->value;
     }
-    return next->tangentOut * (lbl_805E12C0.frame - next->time) + next->value;
+    return next->tangentOut * (lbl_805E12C0.currentFrame - next->time) + next->value;
 }
 
 /* The interpolated value and slope between two keys: fn_804156D8 and fn_8041564C in one pass. */
@@ -548,11 +550,11 @@ float fn_804156D8(MotionKey *from, MotionKey *to, float frame) {
            from->tangentOut * fromSlopeWeight + to->tangentIn * toSlopeWeight;
 }
 
-void fn_8041575C(const float *state) {
-    lbl_805E12C0.unknown00 = state[0];
-    lbl_805E12C0.unknown04 = state[1];
-    lbl_805E12C0.direction = state[2];
-    lbl_805E12C0.frame = state[3];
+void fn_8041575C(const MotionRange *range) {
+    lbl_805E12C0.startFrame = range->startFrame;
+    lbl_805E12C0.endFrame = range->endFrame;
+    lbl_805E12C0.speed = range->speed;
+    lbl_805E12C0.currentFrame = range->currentFrame;
 }
 
 void fn_80415784(void) {

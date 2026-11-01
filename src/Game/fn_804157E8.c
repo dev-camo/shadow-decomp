@@ -1,7 +1,20 @@
-/* Control of motions, part 1 (the original file name is unknown; every name here is inferred from
- * the code). Game/fn_804157E8.c, Game/fn_8041583C.c and Game/fn_80415854.c are consecutive
- * pieces of one original file that are kept as separate units until the rest of it is sourced. */
+/* Control of motions: the start of the file (see Game/fn_804157E8_motion_control.h for the file
+ * and its pieces). The variables of the file are defined here. */
 #include "Game/fn_804157E8_motion_control.h"
+
+/* The factor that is applied to the speed of a range (see fn_804157E8). */
+float lbl_805EDD60 = 1.0f;
+
+/* The curve evaluators that fn_804188A0 selects for the direction of the playback: two that
+ * return one float for a cursor and one that returns two. */
+MotionCurveEvaluator lbl_805F13D0;
+MotionCurveEvaluator lbl_805F13D4;
+MotionCurveBothEvaluator lbl_805F13D8;
+
+/* The player that fn_80415A18 (lbl_805F13DC) and fn_80415854 (lbl_805F13E0) acted on last. A null
+ * control makes them act on this player again. */
+MotionPlayer *lbl_805F13DC;
+MotionPlayer *lbl_805F13E0;
 
 /* Sets the factor that is applied to the speed of a range (a negative factor becomes 0) and
  * returns the previous one. */
@@ -16,9 +29,9 @@ float fn_804157E8(float scale) {
 }
 
 /* Calls fn_8041D1A0 for the root node of a control. */
-int fn_80415808(MotionControl *control, unsigned int key, int arg2, int arg3) {
+int fn_80415808(_stMtnPlayWork *control, unsigned int nodeId, int arg2, int arg3) {
     if (control != 0) {
-        return fn_8041D1A0(control->rootNode, key, arg2, arg3);
+        return fn_8041D1A0(control->rootNode, nodeId, arg2, arg3);
     }
     return 0;
 }

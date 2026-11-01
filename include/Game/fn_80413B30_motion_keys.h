@@ -2,6 +2,7 @@
 #define GAME_FN_80413B30_MOTION_KEYS_H
 
 #include "Game/fn_80411714_resource_groups.h"
+#include "Game/fn_804157E8_motion_range.h"
 #include "layout_check.h"
 
 /* Reading of the keys of an animation curve (the unit at 0x80413B30; every name here is inferred
@@ -49,12 +50,13 @@ typedef struct MotionKeyCursor {
 } MotionKeyCursor;
 CHECK_SIZEOF(MotionKeyCursor, 0x40);
 
-/* The playback state that the curve functions read (the 0x20 bytes at 0x805E12C0). */
+/* The playback state that the curve functions read (the 0x20 bytes at 0x805E12C0). fn_8041575C
+ * copies the four fields of a range into the first four. */
 typedef struct MotionPlayback {
-    /* 0x00 */ float unknown00;
-    /* 0x04 */ float unknown04;
-    /* 0x08 */ float direction; /* negative when the playback runs backwards */
-    /* 0x0C */ float frame;
+    /* 0x00 */ float startFrame;
+    /* 0x04 */ float endFrame;
+    /* 0x08 */ float speed; /* negative when the playback runs backwards */
+    /* 0x0C */ float currentFrame;
     /* 0x10 */ unsigned int unknown10;
     /* 0x14 */ float (*interpolateValue)(MotionKey *from, MotionKey *to, float frame);
     /* 0x18 */ float (*interpolateSlope)(MotionKey *from, MotionKey *to, float frame);
@@ -81,7 +83,8 @@ float fn_8041525C(MotionKeyCursor *cursor);
 void fn_80415530(float *value, float *slope, MotionKey *from, MotionKey *to, float frame);
 float fn_8041564C(MotionKey *from, MotionKey *to, float frame);
 float fn_804156D8(MotionKey *from, MotionKey *to, float frame);
-void fn_8041575C(const float *state);
+/* Copies a range into lbl_805E12C0. */
+void fn_8041575C(const MotionRange *range);
 void fn_80415784(void);
 
 #ifdef __cplusplus
