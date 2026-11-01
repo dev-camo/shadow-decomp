@@ -884,20 +884,22 @@ config.libs = [
                 # CTexList and RCObject vtables; the link discards them.
                 Object(NonMatching, "Game/CSD/fn_80364058.cpp", cflags=cflags_csd),
                 # The scene object and the handles it is built from: constructors, destructors, Clear and
-                # Copy of the handles of a scene's data, fonts, motions, palette and entries; the
-                # scene's frame range, speed, pause, motion and palette members and the setters of its
-                # root pattern. 52 of the unit's 195 functions are sourced, and each has the original's
-                # instructions and relocation targets (GetAspect's float literal is a differently named
-                # label of the same value). The other 143 are not sourced: the scene's constructor,
-                # Copy, destructor, Update and Draw, the container code (lists and trees of listeners
-                # and nodes), the RCPtr instances (for MatrixValue and for the node pointers), the
-                # listener dispatch and the root pattern's allocation. The unit's .rodata and .data are
-                # incomplete for the same reason (the strings and the vtables of the unsourced classes
-                # are missing), and it emits weak copies of RCPtr<unsigned char>::Reset, the
+                # Copy of the handles of a scene's data, fonts, motions, palette and entries; the scene's
+                # frame range, speed, pause, motion and palette members and the setters of its root
+                # pattern, and the constructor of the scene's end-of-motion policy (the class whose
+                # handlers are in csdmProject.cpp). 53 of the unit's 195 functions are sourced, and each
+                # has the original's instructions and relocation targets (GetAspect's float literal is a
+                # differently named label of the same value). The other 142 are not sourced: the scene's
+                # Copy, destructor, Update and Draw, the end-of-motion policy's destructor, the
+                # CSceneListener constructor, the container code (lists and trees of listeners and
+                # nodes), the RCPtr instances (for MatrixValue and for the node pointers), the listener
+                # dispatch and the root pattern's allocation. The unit's .rodata and .data
+                # are incomplete for the same reason (the strings and the vtables of the unsourced
+                # classes are missing), and it emits weak copies of RCPtr<unsigned char>::Reset, the
                 # RCObject<unsigned char> constructor and vtable and CMemoryAlloc::AllocObject and
                 # FreeObject, which the link discards. It also emits a local instance of the
-                # delete-policy Assign (0x1C0 bytes) that only the weak Reset calls: this unit's form
-                # of the original's fn_803655F8 (0x1E0 bytes), which it does not match yet.
+                # delete-policy Assign (0x1C0 bytes) that only the weak Reset calls: this unit's form of
+                # the original's fn_803655F8 (0x1E0 bytes), which it does not match yet.
                 Object(NonMatching, "Game/CSD/csdmScene.cpp", cflags=cflags_csd),
                 # The palette object of a scene (CMotionPalette, which owns the palette block
                 # through a reference-counted handle) and the CMotionPattern constructor that wraps
@@ -954,6 +956,33 @@ config.libs = [
                 # delete-policy Assign (0x1C0 bytes) that only the weak Reset calls (the original
                 # unit has no such function).
                 Object(NonMatching, "Game/CSD/csdmNode.cpp", cflags=cflags_csd),
+                # The project object (CProject: the file data of a project with the texture list and
+                # the fonts its scenes use) and the handlers of the scene's end-of-motion policy.
+                # 18 of the unit's 178 functions are sourced. 14 have the original's instructions:
+                # the policy's OnReachStart and OnReachEnd, the four empty events of CSceneListener,
+                # CProject::Load, GetTexList and SetTexList, the CFontList constructor and
+                # CFontListRef::Attach used for the project's fonts, and the free-policy
+                # CResourceBase::Attach, RCPtr<unsigned char>::Reset and RCObject constructor.
+                # Copy and CProject::Attach differ in one word each, the __LINE__ of their
+                # allocations (the original passes 83 and, in csdmProject.h, 197; this source is far
+                # shorter than the original files). LoadFile (161 words, the original's 162) differs
+                # in 122 (7) words: the __LINE__ of its two Alloc calls (the original passes 134 and
+                # 161), the first strrchr, whose result the original compares before copying it
+                # (cmplwi, mr) where ours emits one mr., and three branch displacements before it.
+                # The free-policy Assign (112 words, the original's 115) differs in 95 (22) words,
+                # including branch displacements, and shows the difference described for
+                # csdLoader.cpp. The functions are defined in reverse address order, except
+                # CFontListRef::Attach: the original has it between the CFontList constructor and
+                # CResourceBase::Attach, after Load, where ours comes before Load. The other 160
+                # functions are not sourced: the containers (the maps of scenes by name and by draw
+                # order and the lists of scenes waiting to be added or removed, with their
+                # iterators), the project's destructor, SetFonts, Update and Draw, the creation of
+                # scenes (the CScene constructor included) and the listener base class. The unit's
+                # .rodata and .data are incomplete for the same reason. It emits weak copies of the
+                # free-policy RCObject vtable, of CMemoryAlloc::AllocObject and FreeObject and of
+                # CMotionEndPolicy's destructor (the original's is in csdmScene.cpp), which the link
+                # discards.
+                Object(NonMatching, "Game/CSD/csdmProject.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/fn_80008D48.c"),
                 Object(Matching, "Game/fn_80008DA4.c"),
                 Object(Matching, "Game/fn_80008E1C.c"),

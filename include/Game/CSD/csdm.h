@@ -67,6 +67,9 @@ class CFontListRef {
     /* Drops the reference and the fonts. */
     void Clear();
 
+    /* Takes the fonts and the reference that counts their block (name inferred). */
+    void Attach(const FontList *fonts, const RCPtr<unsigned char> &ref);
+
     /* 0x04 */ RCPtr<unsigned char> m_ref;
     /* 0x08 */ const FontList *m_fonts;
 };

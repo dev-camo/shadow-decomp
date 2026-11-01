@@ -88,7 +88,7 @@ static inline u32 SwapU32(u32 value) {
     return (value >> 24) | ((value >> 8) & 0xFF00) | ((value << 8) & 0xFF0000) | (value << 24);
 }
 
-void NormalizeProject(ProjectData *project) {
+void NormalizeProject(Project *project) {
     NormalizeFolder(project->root);
 }
 
@@ -125,12 +125,12 @@ static void NormalizeLayer(LayerData *layer) {
     }
 }
 
-void LoadProject(ProjectData **project, void *file) {
+void LoadProject(Project **project, void *file) {
     ResolveProject(project, file);
     NormalizeProject(*project);
 }
 
-void ResolveProject(ProjectData **project, void *file) {
+void ResolveProject(Project **project, void *file) {
     const u32 *header;
     int chunkCount;
     const u32 *relocations;
@@ -177,7 +177,7 @@ void ResolveProject(ProjectData **project, void *file) {
         if (chunk[0] == 0x6E43504A /* "nCPJ" */) {
             /* Likewise: dropping this test removes one of the original's two branches. */
             if (project != NULL) {
-                *project = (ProjectData *)(bodyStart + chunk[2]);
+                *project = (Project *)(bodyStart + chunk[2]);
             }
         } else if (chunk[0] == lbl_80585A14) {
             return;

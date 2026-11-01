@@ -144,6 +144,13 @@ template <class T> class RCPtr : public CBase {
         /* 0x10 */ int m_eDealloctor;
     };
 
+    /* Shares the other pointer's holder, taking a counted reference (the game's copy constructor
+     * of RCPtr<CTexList>, 0x80042270 in the USA release, clears the holder and then takes the
+     * reference). It is declared here, after the holder, so that the __LINE__ the holder's
+     * allocation passes does not move and the other CSD objects stay byte-identical; no unit
+     * matches that word either way (the original passes 410). */
+    RCPtr(const RCPtr &other);
+
     /* The held object. Dereferencing a pointer that holds none reports an error and never
      * returns (the text is the library's; name inferred). */
     T &operator*() const {

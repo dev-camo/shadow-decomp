@@ -86,7 +86,7 @@ void ExtractFileParts(void **part1, u32 *size1, void **part2, u32 *size2, const 
 
 /* Resolves the pointers of a project file's contents and stores the project data in *project, which
  * is left null when the file is not a project file (names are inferred). */
-void ResolveProject(ProjectData **project, void *file);
+void ResolveProject(Project **project, void *file);
 
 /* Sets the vertex colours of an entry's quads to its corner colours, and the draw colours to the
  * vertex colours scaled by the entry's colour field (called by code outside csdLoader.cpp). */
@@ -139,10 +139,10 @@ void UpdatePalette(MotionPalette *palette, const SceneData *scene, const SceneMo
                    f32 frame, const FontList *fonts, MotionPaletteEntry *parent);
 
 /* ResolveProject, then NormalizeProject on the result. */
-void LoadProject(ProjectData **project, void *file);
+void LoadProject(Project **project, void *file);
 
 /* Completes the flags of the elements of a project's scenes. */
-void NormalizeProject(ProjectData *project);
+void NormalizeProject(Project *project);
 
 } // namespace CSD
 } // namespace Chao

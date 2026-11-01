@@ -213,6 +213,9 @@ CSceneDataRef::~CSceneDataRef() {
     m_scene = NULL;
 }
 
+CMotionEndPolicy::CMotionEndPolicy()
+    : m_startAction(MOTION_END_HOLD), m_endAction(MOTION_END_HOLD) {}
+
 void CSceneDataRef::Clear() {
     m_ref.Reset(NULL);
     m_scene = NULL;

@@ -22,14 +22,18 @@ struct SceneFolder {
 };
 CHECK_SIZEOF(Chao::CSD::SceneFolder, 0x18);
 
-/* The file data of a project (only the members used by csdAccess.cpp). The first path component
- * of a project-level lookup is the project's name. The original name is unknown; the library's
- * RTTI has a Chao::CSD::Project, which this probably is. */
-struct ProjectData {
+/* The file data of a project (only the members used so far). The first path component
+ * of a project-level lookup is the project's name. The name is from the game's RTTI: CProject
+ * derives from CResourceBase<Chao::CSD::Project>, whose data is this. */
+struct Project {
     /* 0x00 */ SceneFolder *root;
     /* 0x04 */ const char *name;
+    /* The key of the texture-list type the project's textures need (four characters, as
+     * CTexList::GetType returns; name inferred from CProject::LoadFile). */
+    /* 0x08 */ u32 texListType;
+    /* 0x0C */ const FontList *fonts;
 };
-CHECK_SIZEOF(Chao::CSD::ProjectData, 0x8);
+CHECK_SIZEOF(Chao::CSD::Project, 0x10);
 
 /* Orders name table entries by name, for searching them with bsearch. */
 int CompareNames(const void *a, const void *b);
@@ -40,15 +44,15 @@ int FindNameIndex(const NameEntry *names, int count, const char *name);
 /* The lookups by path take a path with at least one '/': the project's name, the names of the
  * folders below it and the name of the folder or scene to find. The lookups by name search the
  * folders recursively (names are inferred). */
-SceneFolder *GetFolderByPath(const char *path, const ProjectData *project);
-SceneFolder *GetFolderByName(const char *name, const ProjectData *project);
+SceneFolder *GetFolderByPath(const char *path, const Project *project);
+SceneFolder *GetFolderByName(const char *name, const Project *project);
 
 /* The name table's own string of the scene is stored in *foundName unless that is NULL (*foundName
  * is NULL when the scene is not found). GetSceneByPath takes the name table entry at the scene's
  * index, which is the scene's own entry only when the scenes are stored in name order (as the
  * original does). */
-SceneData *GetSceneByPath(const char *path, const ProjectData *project, const char **foundName);
-SceneData *GetSceneByName(const char *name, const ProjectData *project, const char **foundName);
+SceneData *GetSceneByPath(const char *path, const Project *project, const char **foundName);
+SceneData *GetSceneByName(const char *name, const Project *project, const char **foundName);
 
 /* Looks a node up in a scene's node table. */
 const NodeEntry *FindNode(const char *name, const SceneData *scene);

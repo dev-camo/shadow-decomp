@@ -46,8 +46,20 @@ class CBase {
     /* An empty constructor: with it the constructors of derived classes are emitted out of line,
      * as in the original. */
     CBase() {}
+
+    /* An allocation that records the source file and line of its caller (see CSD_NEW). */
+    static void *operator new(size_t size, const char *file, int line) {
+        return GetMemoryAlloc()->AllocObject(size, file, line);
+    }
+    static void operator delete(void *ptr, const char *file, int line) {
+        GetMemoryAlloc()->FreeObject(ptr);
+    }
 };
 CHECK_SIZEOF(Chao::CSD::CBase, 0x1);
+
+/* Allocates a heap object of the library recording the file and line of the allocation, as the
+ * csdm* files' objects do (their AllocObject calls pass the file that holds the expression). */
+#define CSD_NEW new (__FILE__, __LINE__)
 
 /* Matching workaround: InitLibrary and TermLibrary are declared after CBase so that the
  * allocation in CBase::operator new is on line 40, the __LINE__ the original's CBase allocations
