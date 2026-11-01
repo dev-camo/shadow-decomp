@@ -11,6 +11,7 @@ typedef struct ProcessInfo {
 } ProcessInfo;
 CHECK_SIZEOF(ProcessInfo, 0xC);
 
+/* Result prefix written by the lookup; callers may append unwind state. */
 typedef struct FragmentInfo {
     /* 0x00 */ void *exception_record;
     /* 0x04 */ char *exception_start;
@@ -18,19 +19,18 @@ typedef struct FragmentInfo {
     /* 0x0C */ unsigned int address_base;
     /* 0x10 */ void *relative_base;
     /* 0x14 */ char *toc;
-    /* 0x18 */ unsigned int reserved_18;
-    /* 0x1C */ unsigned int reserved_1C;
 } FragmentInfo;
-CHECK_SIZEOF(FragmentInfo, 0x20);
+CHECK_SIZEOF(FragmentInfo, 0x18);
 
 typedef struct FragmentSearchInfo {
     /* 0x00 */ ExceptionIndex *index_begin;
     /* 0x04 */ ExceptionIndex *index_end;
-    /* USA uses paired words at sp+0x10/14 and sp+0x18/1c; consumers use 32-bit values.
-     * These accesses do not prove the original semantic type was unsigned long long. */
-    /* 0x08 */ unsigned long long address_base;
-    /* 0x10 */ unsigned long long relative_base;
+    /* 0x08 */ unsigned int address_base;
+    /* 0x0C */ unsigned int field_0xC;
+    /* 0x10 */ unsigned char *relative_base;
+    /* 0x14 */ unsigned int field_0x14;
     /* 0x18 */ char *toc;
+    /* 0x1C */ int active;
 } FragmentSearchInfo;
 CHECK_SIZEOF(FragmentSearchInfo, 0x20);
 
@@ -101,8 +101,11 @@ void FIND_EXCEPTION_FRAGMENT(char *pc, FragmentInfo *info) {
                 search_info->index_begin = module->index_begin;
                 search_info->index_end = module->index_end;
                 search_info->address_base = 0;
+                search_info->field_0xC = 0;
                 search_info->relative_base = 0;
+                search_info->field_0x14 = 0;
                 search_info->toc = registration->TOC;
+                search_info->active = registration->active;
                 found_module = 1;
                 break;
             }
@@ -117,13 +120,12 @@ void FIND_EXCEPTION_FRAGMENT(char *pc, FragmentInfo *info) {
     low = 0;
     high = search_info->index_end - search_info->index_begin;
     info->address_base = search_info->address_base;
-    info->relative_base = (void *)(unsigned int)search_info->relative_base;
+    info->relative_base = search_info->relative_base;
     info->toc = search_info->toc;
     pc_offset = (unsigned int)pc - search_info->address_base;
-    /* Matching workaround: for (;;) with a break instead of while (low <= high). The break form gives
-     * MWCC the original single top-of-loop exit test; the while loop makes this unit's .text 0x274
-     * bytes instead of 0x26C and raises the differing instruction lines from 101 to 116. Revisit when
-     * the original loop form is known. */
+    /* Matching workaround: the explicit break retains the original top-of-loop exit test.
+     * A while (low <= high) loop emits 130 instructions for this lookup, versus 128 here and
+     * 129 in the original. Revisit when the original loop form is known. */
     for (;;) {
         if (low > high) {
             break;
@@ -136,11 +138,10 @@ void FIND_EXCEPTION_FRAGMENT(char *pc, FragmentInfo *info) {
             low = middle + 1;
         } else {
             info->exception_start = (char *)(search_info->address_base + index->start);
-            if ((index->size_and_flags & 0x80000000) != 0) {
+            if ((index->size_and_flags >> 31) != 0) {
                 exception_table = (unsigned char *)&index->exception_table;
             } else {
-                exception_table =
-                    (unsigned char *)search_info->relative_base + index->exception_table;
+                exception_table = search_info->relative_base + index->exception_table;
             }
             info->exception_record = exception_table;
             exception_offset = pc_offset - index->start;
