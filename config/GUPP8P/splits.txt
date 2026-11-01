@@ -1392,3 +1392,10 @@ Game/fn_8042A2D8.cpp:
 	extabindex  start:0x80008714 end:0x8000872C
 	.text       start:0x8042B328 end:0x8042B63C
 	.bss        start:0x805E25C8 end:0x805E25D0
+
+Game/EffectGlobalParam.cpp:
+	extab       start:0x80006D08 end:0x80006D18
+	extabindex  start:0x8000872C end:0x80008744
+	.text       start:0x8042B63C end:0x8042B7C0
+	.rodata     start:0x8051BF60 end:0x8051BFB0
+	.data       start:0x8056B968 end:0x8056B998
