@@ -1427,3 +1427,10 @@ Game/EffectGlobalParamRW3.cpp:
 	.text       start:0x80439A8C end:0x8043AB68
 	.rodata     start:0x8051CAB0 end:0x8051CB78
 	.data       start:0x8056C080 end:0x8056C0E8
+
+Game/EffectLocusRW3.cpp:
+	extab       start:0x800074CC end:0x80007508
+	extabindex  start:0x80008CD8 end:0x80008D14
+	.text       start:0x8043AB68 end:0x8043BACC
+	.rodata     start:0x8051CB78 end:0x8051CC40
+	.data       start:0x8056C0E8 end:0x8056C150
