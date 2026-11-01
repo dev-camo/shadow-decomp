@@ -36,27 +36,27 @@ extern "C" Effect::System::UnkEffectPool *fn_8042A5C0(Effect::System::EffectSyst
 extern "C" void *fn_8042A50C(Effect::System::EffectSystem *memory) throw() {
     using Effect::System::UnkEffectPoolEntry;
 
-    if (memory->m_pool == 0 || memory->m_pool->field_0x0 == 0) {
+    if (memory->m_pool == 0 || memory->m_pool->m_freeHead == 0) {
         return 0;
     }
-    UnkEffectPoolEntry *entry = memory->m_pool->field_0x0;
-    memory->m_pool->field_0x0 = entry->next;
-    if (memory->m_pool->field_0x0 == 0) {
-        memory->m_pool->field_0x4 = 0;
+    UnkEffectPoolEntry *entry = memory->m_pool->m_freeHead;
+    memory->m_pool->m_freeHead = entry->next;
+    if (memory->m_pool->m_freeHead == 0) {
+        memory->m_pool->m_freeTail = 0;
     } else {
-        memory->m_pool->field_0x0->previous = 0;
+        memory->m_pool->m_freeHead->previous = 0;
     }
-    --memory->m_pool->field_0x10;
-    if (memory->m_pool->field_0xC != 0) {
-        memory->m_pool->field_0xC->next = entry;
-        entry->previous = memory->m_pool->field_0xC;
+    --memory->m_pool->m_freeCount;
+    if (memory->m_pool->m_usedTail != 0) {
+        memory->m_pool->m_usedTail->next = entry;
+        entry->previous = memory->m_pool->m_usedTail;
     } else {
-        memory->m_pool->field_0x8 = entry;
+        memory->m_pool->m_usedHead = entry;
         entry->previous = 0;
     }
-    memory->m_pool->field_0xC = entry;
+    memory->m_pool->m_usedTail = entry;
     entry->next = 0;
-    ++memory->m_pool->field_0x14;
+    ++memory->m_pool->m_usedCount;
     return entry + 1;
 }
 
@@ -73,69 +73,69 @@ extern "C" void fn_8042A444(Effect::System::EffectSystem *memory, void *block) {
     if (entry->next != 0) {
         entry->next->previous = entry->previous;
     }
-    if (entry == memory->m_pool->field_0x8) {
-        memory->m_pool->field_0x8 = entry->next;
+    if (entry == memory->m_pool->m_usedHead) {
+        memory->m_pool->m_usedHead = entry->next;
     }
-    if (entry == memory->m_pool->field_0xC) {
-        memory->m_pool->field_0xC = entry->previous;
+    if (entry == memory->m_pool->m_usedTail) {
+        memory->m_pool->m_usedTail = entry->previous;
     }
-    --memory->m_pool->field_0x14;
-    if (memory->m_pool->field_0x4 != 0) {
-        memory->m_pool->field_0x4->next = entry;
-        entry->previous = memory->m_pool->field_0x4;
+    --memory->m_pool->m_usedCount;
+    if (memory->m_pool->m_freeTail != 0) {
+        memory->m_pool->m_freeTail->next = entry;
+        entry->previous = memory->m_pool->m_freeTail;
     } else {
-        memory->m_pool->field_0x0 = entry;
+        memory->m_pool->m_freeHead = entry;
         entry->previous = 0;
     }
-    memory->m_pool->field_0x4 = entry;
+    memory->m_pool->m_freeTail = entry;
     entry->next = 0;
-    ++memory->m_pool->field_0x10;
+    ++memory->m_pool->m_freeCount;
 }
 
 namespace Effect {
 namespace System {
 
 UnkEffectPool::UnkEffectPool(unsigned int payloadSize, int count) {
-    field_0x1C = payloadSize + sizeof(UnkEffectPoolEntry);
-    unsigned int remainder = field_0x1C & 0xF;
+    m_blockStride = payloadSize + sizeof(UnkEffectPoolEntry);
+    unsigned int remainder = m_blockStride & 0xF;
     if (remainder != 0) {
-        field_0x1C += 0x10 - remainder;
+        m_blockStride += 0x10 - remainder;
     }
 
     if (count != 0) {
-        field_0x18 = lbl_805E1508->Allocate(field_0x1C * count);
+        m_blockStorage = lbl_805E1508->Allocate(m_blockStride * count);
     } else {
-        field_0x18 = 0;
+        m_blockStorage = 0;
     }
-    if (field_0x18 == 0) {
+    if (m_blockStorage == 0) {
         count = 0;
     }
 
-    field_0x0 = static_cast<UnkEffectPoolEntry *>(field_0x18);
-    field_0x4 = 0;
-    field_0xC = 0;
-    field_0x8 = 0;
-    field_0x14 = 0;
-    field_0x10 = count;
-    if (field_0x0 != 0) {
-        UnkEffectPoolEntry *entry = field_0x0;
+    m_freeHead = static_cast<UnkEffectPoolEntry *>(m_blockStorage);
+    m_freeTail = 0;
+    m_usedTail = 0;
+    m_usedHead = 0;
+    m_usedCount = 0;
+    m_freeCount = count;
+    if (m_freeHead != 0) {
+        UnkEffectPoolEntry *entry = m_freeHead;
         UnkEffectPoolEntry *previous = 0;
         for (int i = 0; i < count; ++i) {
             entry->previous = previous;
             previous = entry;
             entry->next = reinterpret_cast<UnkEffectPoolEntry *>(
-                reinterpret_cast<unsigned char *>(entry) + field_0x1C);
+                reinterpret_cast<unsigned char *>(entry) + m_blockStride);
             entry = entry->next;
         }
         // The original does not reject negative counts before this final link write.
         previous->next = 0;
-        field_0x4 = previous;
+        m_freeTail = previous;
     }
 }
 
 UnkEffectPool::~UnkEffectPool() {
-    if (field_0x18 != 0) {
-        lbl_805E1508->Free(field_0x18);
+    if (m_blockStorage != 0) {
+        lbl_805E1508->Free(m_blockStorage);
     }
 }
 

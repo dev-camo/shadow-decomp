@@ -252,23 +252,26 @@ EffectArranger::EffectArranger(const UnkEffectElementData3 *definition, EffectLa
     m_commandPool = new UnkEffectPool(0x30, definition->field_0x30);
     if (m_commandPool == 0 ||
         (definition->field_0x30 != 0 &&
-         m_commandPool->field_0x1C * (m_commandPool->field_0x14 + m_commandPool->field_0x10) ==
+         m_commandPool->m_blockStride * (m_commandPool->m_usedCount + m_commandPool->m_freeCount) ==
              0)) {
         m_flags &= ~ELEMENT_ACTIVE;
         return;
     }
-    m_size += m_commandPool->field_0x1C * (m_commandPool->field_0x14 + m_commandPool->field_0x10) +
-              sizeof(UnkEffectPool);
+    m_size +=
+        m_commandPool->m_blockStride * (m_commandPool->m_usedCount + m_commandPool->m_freeCount) +
+        sizeof(UnkEffectPool);
     m_launchPool = new UnkEffectPool(0x80, definition->field_0x32);
     if (m_launchPool == 0 ||
         (definition->field_0x32 != 0 &&
-         m_launchPool->field_0x1C * (m_launchPool->field_0x14 + m_launchPool->field_0x10) == 0)) {
+         m_launchPool->m_blockStride * (m_launchPool->m_usedCount + m_launchPool->m_freeCount) ==
+             0)) {
         m_flags &= ~ELEMENT_ACTIVE;
         return;
     }
     /* The original accounts for the command pool again here. */
-    m_size += m_commandPool->field_0x1C * (m_commandPool->field_0x14 + m_commandPool->field_0x10) +
-              sizeof(UnkEffectPool);
+    m_size +=
+        m_commandPool->m_blockStride * (m_commandPool->m_usedCount + m_commandPool->m_freeCount) +
+        sizeof(UnkEffectPool);
     m_command = static_cast<const UnkCommandData *>(definition->field_0x38);
 }
 
