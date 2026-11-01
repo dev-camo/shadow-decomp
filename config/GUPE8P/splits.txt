@@ -2055,6 +2055,11 @@ Game/fn_80425860.cpp:
 	extabindex  start:0x800084E0 end:0x80008594
 	.text       start:0x80425860 end:0x8042631C
 
+Game/fn_8042631C.cpp:
+	extab       start:0x800066D0 end:0x800067F8
+	extabindex  start:0x80008594 end:0x800085C4
+	.text       start:0x8042631C end:0x80426DDC
+
 Game/gcaxSndMemory.c:
 	.text       start:0x8043AA7C end:0x8043B25C
 	.rodata     start:0x8051BB28 end:0x8051BC08
