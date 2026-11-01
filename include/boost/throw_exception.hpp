@@ -12,16 +12,30 @@
 //
 //  http://www.boost.org/libs/utility/throw_exception.html
 //
-//  Adapted from Boost 1.32: the include guard follows this project's naming and the
-//  configuration is resolved for the game, which is built without exceptions
-//  (BOOST_NO_EXCEPTIONS): boost::throw_exception is only declared, and the game supplies it.
+//  Adapted from Boost 1.32: the include guard follows this project's naming.
+//  Exception support follows boost/config.hpp. Without exceptions the game supplies
+//  the std::exception overload; with exceptions the template throws its argument.
 //
 
+#include "boost/config.hpp"
+
+#ifdef BOOST_NO_EXCEPTIONS
 #include <exception>
+#endif
 
 namespace boost {
 
+#ifdef BOOST_NO_EXCEPTIONS
+
 void throw_exception(std::exception const &e); // user defined
+
+#else
+
+template <class E> inline void throw_exception(E const &e) {
+    throw e;
+}
+
+#endif
 
 } // namespace boost
 

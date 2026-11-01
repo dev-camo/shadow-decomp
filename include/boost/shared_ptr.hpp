@@ -19,10 +19,10 @@
 //
 //  Adapted from Boost 1.32 (the include guard follows this project's naming):
 //  boost/shared_ptr.hpp and boost/detail/shared_count.hpp (the sp_counted_base,
-//  sp_counted_base_impl and shared_count classes, merged into this header). The game is built
-//  without exceptions, threads and debug hooks, so the configuration macros of those files are
-//  resolved for that case (BOOST_NO_EXCEPTIONS, no BOOST_HAS_THREADS, no
-//  BOOST_SP_ENABLE_DEBUG_HOOKS, no allocator override); MWCC's Boost configuration also defines
+//  sp_counted_base_impl and shared_count classes, merged into this header). Exception support
+//  follows boost/config.hpp. Threads, debug hooks and allocator overrides remain disabled
+//  (no BOOST_HAS_THREADS, no BOOST_SP_ENABLE_DEBUG_HOOKS, no allocator override);
+//  The selected MWCC Boost configuration also defines
 //  BOOST_NO_MEMBER_TEMPLATE_FRIENDS. BOOST_ASSERT is resolved for an NDEBUG build, so the checks
 //  in reset(), operator* and operator-> are left out. The workarounds for other compilers are
 //  dropped. Left out, because the reconstructed units use none of them: the auto_ptr constructor
@@ -32,6 +32,7 @@
 //  cflags_game_cpp in configure.py). weak_count and weak_ptr are in boost/weak_ptr.hpp.
 //
 
+#include "boost/config.hpp"
 #include "boost/checked_delete.hpp"
 #include "boost/throw_exception.hpp"
 #include <exception>
@@ -173,12 +174,21 @@ class shared_count {
     {}
 
     template <class P, class D> shared_count(P p, D d) : pi_(0) {
+#ifndef BOOST_NO_EXCEPTIONS
+        try {
+            pi_ = new sp_counted_base_impl<P, D>(p, d);
+        } catch (...) {
+            d(p); // delete p
+            throw;
+        }
+#else
         pi_ = new sp_counted_base_impl<P, D>(p, d);
 
         if (pi_ == 0) {
             d(p); // delete p
             boost::throw_exception(std::bad_alloc());
         }
+#endif
     }
 
     ~shared_count() // nothrow
