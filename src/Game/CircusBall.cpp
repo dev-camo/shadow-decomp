@@ -173,7 +173,8 @@ CircusBall::CircusBall(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(pa
     m_name = s_name;
     m_charInfo = fn_8015CB88(0x41, 4, "CircusBall");
     ReadOwner(m_owner);
-    m_resource = fn_80012700(fn_800122D4(), 1, "CIRCUSBALL.BIN");
+    m_resource =
+        static_cast<UnkResource_80012700 *>(fn_80012700(fn_800122D4(), 1, "CIRCUSBALL.BIN"));
     m_model = fn_8015F800(1, "CIRCUSBALL.BIN");
     m_model->fn_80162A68(0, 0);
     m_model->fn_80160C28(0);

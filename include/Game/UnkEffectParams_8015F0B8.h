@@ -1,12 +1,12 @@
 #ifndef GAME_UNKEFFECTPARAMS_8015F0B8_H
 #define GAME_UNKEFFECTPARAMS_8015F0B8_H
 
-#include "Game/UnkResource_80012700.h"
 #include "boost/shared_ptr.hpp"
 #include <dolphin/types.h>
 #include "layout_check.h"
 
 class CharInfo;
+struct RpClump;
 
 /* A 0x5C-byte parameter block, constructed in many places in the game (placeholder name; the
  * original class is unknown). For a kind below 0x20 the constructor first copies a 0x5C-byte entry
@@ -20,7 +20,7 @@ struct UnkEffectParams_8015F0B8 {
     /* 0x34 */ float field_0x34;
     /* 0x38 */ u8 field_0x38[0x40 - 0x38];
     /* 0x40 */ float field_0x40;
-    /* 0x44 */ UnkResource_80012700 *field_0x44;
+    /* 0x44 */ RpClump *field_0x44;
     /* 0x48 */ u8 field_0x48[0x4A - 0x48];
     /* 0x4A */ u8 field_0x4A;
     /* 0x4B */ u8 field_0x4B[0x54 - 0x4B];

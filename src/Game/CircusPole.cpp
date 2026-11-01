@@ -17,6 +17,7 @@
 #include "rw/rpworld.h"
 #include "Game/UnkRegistry_801DE414.h"
 #include "Game/UnkResource_80012700.h"
+#include "Game/fn_80037A80.h"
 #include "Game/UnkString_8004F888.h"
 #include "Game/fn_8006_resource_list.h"
 #include "Game/fn_8040_vector_types.h"
@@ -51,9 +52,6 @@ class UnkLayerManager_80046178 {
 extern "C" {
 UnkLayerManager_80046178 *fn_80046178(void);
 boost::shared_ptr<UnkLayer_8004DFB0> fn_8004DFB0(void *arg0, const char *name);
-/* Hands the resource to each atomic of the clump: calls fn_80037B54 for every atomic with the
- * resource as its argument (behaviour inferred from the body; purpose unknown). */
-void fn_80037A80(RpClump *clump, UnkResource_80012700 *resource);
 /* Rotates the frame about the y axis by angle radians, with the combine operation combine
  * (behaviour inferred from the sin and cos it computes and the matrix rotation it calls). */
 void fn_800E9CEC(RwFrame *frame, int combine, float angle);
@@ -98,9 +96,9 @@ CircusPole::CircusPole(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(pa
 
     /* fn_80037A80 hands the .DMA resource to each atomic of the clump. The resource loader returns
      * the clump of the .DFF file as an opaque pointer (type inferred from its uses). */
-    UnkResource_80012700 *dmaResource = fn_80012700(fn_800122D4(), 1, "PR0302CIRCUSPOLETOP.DMA");
+    void *dmaResource = fn_80012700(fn_800122D4(), 1, "PR0302CIRCUSPOLETOP.DMA");
 
-    m_clump = reinterpret_cast<RpClump *>(fn_80012700(fn_800122D4(), 1, "PR0302CIRCUSPOLETOP.DFF"));
+    m_clump = static_cast<RpClump *>(fn_80012700(fn_800122D4(), 1, "PR0302CIRCUSPOLETOP.DFF"));
     fn_80037A80(m_clump, dmaResource);
     fn_801DE0EC(fn_80130B2C(), UnkString_8004F888("CircusPole"), m_clump);
     m_layer = fn_8004DFB0(fn_80046178()->field_0x8, "CircusPole");

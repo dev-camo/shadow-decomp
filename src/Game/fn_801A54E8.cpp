@@ -1,3 +1,5 @@
+/* EnemyMoveCommon (RTTI name) and collision helpers; original filename unknown.
+ * NonMatching: vector-return copies, collision-query code and metadata still differ. */
 #include "Game/EnemyMoveCommon.h"
 #include "Game/Enemy.h"
 #include "Game/EnemyParaFunc.h"
@@ -112,16 +114,16 @@ EnemyMoveCommon::EnemyMoveCommon() {
     field_0x60 = false;
 }
 
-void EnemyMoveCommon::fn_801A5CBC() {
+void EnemyMoveCommon::fn_8019B438() {
     fn_800091D0(&field_0x2C, fn_8017C690(m_enemy));
-    fn_801A5778(0.0f);
+    fn_8019B43C(0.0f);
 }
 
 const Fn8040Vector3 &Unk801A5E50::fn_801A5CB4() const {
     return field_0x14;
 }
 
-void EnemyMoveCommon::fn_801A5778(float delta) {
+void EnemyMoveCommon::fn_8019B43C(float delta) {
     if (fn_8019B450()) {
         m_enemy->m_boundary.fn_801A687C(*fn_8017C690(m_enemy));
     }
@@ -153,7 +155,7 @@ void EnemyMoveCommon::fn_801A5778(float delta) {
     float distanceSquared = fn_8040CF2C(&movement);
     if (field_0x5C) {
         int mode;
-        if (field_0x8.fn_801A5758() || !fn_801A5760() || distanceSquared > 0.5f) {
+        if (field_0x8.fn_801A5758() || !fn_8019588C() || distanceSquared > 0.5f) {
             mode = 2;
         } else if (distanceSquared > 0.1f) {
             mode = 1;
@@ -206,7 +208,7 @@ void EnemyMoveCommon::fn_801A5778(float delta) {
     m_enemy->m_display->fn_8017F234(1);
 }
 
-bool EnemyMoveCommon::fn_801A5760() {
+bool EnemyMoveCommon::fn_8019588C() {
     return field_0x38 < 5.0f;
 }
 
@@ -214,11 +216,11 @@ bool Unk801A5E50::fn_801A5758() const {
     return field_0x20;
 }
 
-bool EnemyMoveCommon::fn_801A5734() {
+bool EnemyMoveCommon::fn_8019B448() {
     return field_0x8.fn_801A5758();
 }
 
-void EnemyMoveCommon::fn_801A560C() {
+void EnemyMoveCommon::fn_8019B460() {
     field_0x5D = true;
     field_0x5E = true;
     Fn8040Vector3 direction(0.0f, 0.0f, m_enemy->m_status->fn_8017B780() == 0 ? 1.0f : -1.0f);

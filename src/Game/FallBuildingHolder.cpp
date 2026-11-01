@@ -272,8 +272,8 @@ void FallBuilding::Update(float dt) {
             if (m_config->effectPart != -1) {
                 UnkEffectParams_8015F0B8 effect(m_charInfo, 0);
 
-                effect.field_0x44 =
-                    fn_80012700(fn_800122D4(), 1, m_model->fn_8015F7BC(m_config->effectPart)->name);
+                effect.field_0x44 = static_cast<RpClump *>(fn_80012700(
+                    fn_800122D4(), 1, m_model->fn_8015F7BC(m_config->effectPart)->name));
                 effect.field_0x40 = m_charInfo->m_position.y;
                 effect.field_0x34 = 1.0f;
                 effect.field_0x4A = 0;

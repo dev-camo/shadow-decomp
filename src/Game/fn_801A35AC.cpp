@@ -1,3 +1,5 @@
+/* Model wrapper and items; original class and filename unknown.
+ * NonMatching: bulk setup and several wrapper/item methods retain control and copy differences. */
 #include "Game/fn_801A35AC.h"
 #include "Game/fn_80015A7C.h"
 #include "Game/fn_80038198.h"

@@ -9,14 +9,14 @@ class SetAdapterState;
 class UnkGadgetOwner_800C9CD0;
 class UnkOwnerManager_800C9B84;
 
-/* Copy the owner's position, its rotation converted from degrees to radians, and its byte at
- * +0x22 (behaviour inferred). */
 extern "C" {
 /* Owner lists indexed by the byte id; original names are unknown. */
 UnkOwnerManager_800C9B84 *fn_800C9B84();
 UnkGadgetOwner_800C9CD0 *fn_800CB560(UnkOwnerManager_800C9B84 *manager, int id);
 /* Returns the unsigned 16-bit kind stored in the owner's record. */
 u16 fn_800C9D24(UnkGadgetOwner_800C9CD0 *owner);
+/* Copy the owner's position, its rotation converted from degrees to radians, and its byte at
+ * +0x22 (behaviour inferred). */
 void fn_800C9F14(UnkGadgetOwner_800C9CD0 *owner, Fn8040Vector3 *position);
 void fn_800C9ED4(UnkGadgetOwner_800C9CD0 *owner, Fn8040Vector3 *rotation);
 /* CandleStick's parameter SAME_COMID_SWITCH_NUM suggests that the byte at +0x22 is the com id
