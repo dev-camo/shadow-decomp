@@ -1414,6 +1414,13 @@ Game/EffectShimmer.cpp:
 	.rodata     start:0x8051BFF8 end:0x8051C1A8
 	.data       start:0x8056B9C8 end:0x8056BBA0
 
+Game/EffectLocus.cpp:
+	extab       start:0x80006E5C end:0x80007034
+	extabindex  start:0x800087D4 end:0x80008834
+	.text       start:0x8042C3FC end:0x8042D870
+	.rodata     start:0x8051C1A8 end:0x8051C268
+	.data       start:0x8056BBA0 end:0x8056BC68
+
 Game/EffectGlobalParamRW3.cpp:
 	extab       start:0x800074A0 end:0x800074CC
 	extabindex  start:0x80008CB4 end:0x80008CD8

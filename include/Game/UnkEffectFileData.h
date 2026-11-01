@@ -111,9 +111,18 @@ struct UnkEffectElementData6 : UnkEffectElementData {
 CHECK_SIZEOF(UnkEffectElementData6, 0x70);
 
 struct UnkEffectElementData7 : UnkEffectElementData {
-    /* 0x2C */ unsigned char field_0x2C[0x24];
-    /* 0x50 */ void *field_0x50;
-    /* 0x54 */ void *field_0x54;
+    /* 0x2C */ unsigned int field_0x2C;
+    /* 0x30 */ float field_0x30;
+    /* 0x34 */ int field_0x34;
+    /* 0x38 */ unsigned int field_0x38;
+    /* 0x3C */ int field_0x3C;
+    /* 0x40 */ unsigned char field_0x40[4];
+    /* 0x44 */ unsigned int field_0x44;
+    /* 0x48 */ short field_0x48;
+    /* 0x4A */ short field_0x4A;
+    /* 0x4C */ float field_0x4C;
+    /* 0x50 */ const UnkCommandData *field_0x50;
+    /* 0x54 */ const UnkCommandData *field_0x54;
 };
 CHECK_SIZEOF(UnkEffectElementData7, 0x58);
 
