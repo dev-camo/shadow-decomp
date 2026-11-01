@@ -1331,6 +1331,10 @@ CRI/mwsfdlib.c:
 	.rodata     start:0x80519FF0 end:0x8051A3A0
 	.bss        start:0x805DDE98 end:0x805DF5A0
 
+CRI/mwsfdply.c:
+	.text       start:0x804074FC end:0x80407BA8
+	.rodata     start:0x8051A3A0 end:0x8051A6F8
+
 CRI/mwsfdset.c:
 	.text       start:0x80407BA8 end:0x80407E4C
 	.rodata     start:0x8051A6F8 end:0x8051A7A8

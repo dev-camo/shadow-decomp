@@ -973,6 +973,7 @@ Sint32 SFD_IsVersionCompatible(const Char8 *version, Sint32 ver);
 
 /* sfd_set.c */
 Sint32 SFSET_GetCond(SFD sfd, Sint32 id);
+Sint32 SFD_GetCond(SFD sfd, Sint32 id, Sint32 *val);
 void SFSET_SetCond(SFD sfd, Sint32 id, Sint32 val);
 Sint32 SFD_SetCond(SFD sfd, Sint32 id, Sint32 val);
 Sint32 SFD_GetHnStat(SFD sfd);
@@ -980,10 +981,13 @@ Sint32 SFD_GetHnStat(SFD sfd);
 /* sfd_ply.c */
 /* default conditions; one entry longer than the SFD_COND_NUM copied into each handle */
 extern const Sint32 SFPLY_cond_dfl[101];
+Sint32 SFD_GetPaStat(SFD sfd);
 Sint32 SFD_RelFrm(SFD sfd, void *frm);
 Sint32 SFD_GetFrm(SFD sfd, void **frm);
 Sint32 SFD_TermSupply(SFD sfd);
 Sint32 SFPLY_GetResetFlg(void);
+Sint32 SFD_Stop(SFD sfd);
+Sint32 SFD_Start(SFD sfd);
 Sint32 SFD_Destroy(SFD sfd);
 Sint32 SFD_ExecOne(SFD sfd);
 Bool SFD_IsSvrWait(void);
@@ -999,7 +1003,9 @@ Sint32 SFD_SetUsrSj(SFD sfd, Sint32 chno, SJ sj, void *prm);
 /* sfd_pl2.c */
 Sint32 SFD_SetSpeed(SFD sfd, Sint32 speed);
 Sint32 SFPL2_Standby(SFD sfd);
+Sint32 SFD_Standby(SFD sfd);
 Sint32 SFPL2_Pause(SFD sfd, Sint32 sw);
+Sint32 SFD_Pause(SFD sfd, Sint32 sw);
 
 /* sfd_trn.c */
 Sint32 SFTRN_IsSetup(SFD sfd, Sint32 strm);

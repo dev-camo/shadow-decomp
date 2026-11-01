@@ -1668,12 +1668,9 @@ CRI/mwsfdlib.c:
 	.rodata     start:0x80519950 end:0x80519D00
 	.bss        start:0x805DD878 end:0x805DEF80
 
-Game/fn_80406EBC.c:
-	.text       start:0x80406EBC end:0x80406F08
-
-Game/fn_80406F08.c:
-	.text       start:0x80406F08 end:0x80406F64
-	.rodata     start:0x80519DB8 end:0x80519DC8
+CRI/mwsfdply.c:
+	.text       start:0x80406EBC end:0x80407568
+	.rodata     start:0x80519D00 end:0x8051A058
 
 CRI/mwsfdset.c:
 	.text       start:0x80407568 end:0x8040780C
