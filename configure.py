@@ -716,6 +716,13 @@ config.libs = [
                 Object(Matching, "Game/TestNakazawa.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/BDHologram.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/BDTrue.cpp", cflags=cflags_game_cpp),
+                # All 14 functions have identical instructions; .data, .rodata and .sdata match and
+                # .sdata2 is 4 bytes short of the original's trailing pad. The unit cannot replace
+                # the original object: GetTaskGroup is local here, where the original's is
+                # inferred to be a weak function with weak statics (seven functions in other units
+                # call it and its statics lie outside the unit). An inline definition is expanded
+                # into Create, and a global one keeps its statics local to the unit.
+                Object(NonMatching, "Game/RainEffect.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/GravitySignBoard.cpp", cflags=cflags_game_cpp),
                 # Every function, the data and all relocations match except ProcessHits, which is
                 # one word short: the original branches twice on one comparison of the word at 0x50

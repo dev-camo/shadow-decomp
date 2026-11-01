@@ -34,6 +34,13 @@ Game/WeaponStickBase.cpp:
 	.sbss       start:0x805EE2D0 end:0x805EE2E8
 	.sdata2     start:0x805F2208 end:0x805F2230
 
+Game/RainEffect.cpp:
+	.text       start:0x800D4D58 end:0x800D54A8
+	.rodata     start:0x804B7340 end:0x804B7390
+	.data       start:0x80523238 end:0x80523340
+	.sdata      start:0x805E4EF0 end:0x805E4F10
+	.sdata2     start:0x805F31F8 end:0x805F3230
+
 Game/TornadoCollision.cpp:
 	.text       start:0x800DF4E8 end:0x800DFBAC
 	.rodata     start:0x804B8180 end:0x804B81A8

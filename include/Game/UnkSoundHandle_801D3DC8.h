@@ -32,6 +32,9 @@ extern "C" {
  * copies it (behaviour inferred from their bodies). owner is stored in the handle. */
 UnkSoundHandle_801D3DC8 fn_801D3DC8(u16 id, const Fn8040Vector3 *position, Task *owner);
 UnkSoundHandle_801D3DC8 fn_801D3E58(u16 id, const Fn8040Vector3 *position, Task *owner);
+/* Starts the sound id without a position (behaviour inferred from the arguments only; owner is
+ * stored in the handle). */
+UnkSoundHandle_801D3DC8 fn_801D3EF0(u16 id, Task *owner);
 }
 
 #endif
