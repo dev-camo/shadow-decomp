@@ -1439,6 +1439,10 @@ config.libs = [
             # Six of eight functions identical; Update has six register-word differences; the
             # constructor is 968 versus 920 bytes, including allocation exception handling.
             Object(NonMatching, "Game/EffectLocus.cpp", cflags=cflags_effect),
+            # Matching workaround: these two units address literals independently in the
+            # original. Keep unpooled addressing until their original build options are known.
+            Object(NonMatching, "Game/fn_80437118.cpp", cflags=cflags_effect),
+            Object(NonMatching, "Game/fn_80437C40.cpp", cflags=cflags_effect),
             Object(Matching, "Game/EffectGlobalParamRW3.cpp", cflags=cflags_effect_rw3),
             # Four functions match; the vertex builder is 2556 versus 2736 bytes,
             # with vertex-copy, stack and instruction-layout differences.
