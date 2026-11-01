@@ -976,6 +976,7 @@ Sint32 SFSET_GetCond(SFD sfd, Sint32 id);
 Sint32 SFD_GetCond(SFD sfd, Sint32 id, Sint32 *val);
 void SFSET_SetCond(SFD sfd, Sint32 id, Sint32 val);
 Sint32 SFD_SetCond(SFD sfd, Sint32 id, Sint32 val);
+Sint32 SFD_GetTrHn(SFD sfd, Sint32 strm, void **hn);
 Sint32 SFD_GetHnStat(SFD sfd);
 
 /* sfd_ply.c */
@@ -990,6 +991,7 @@ Sint32 SFPLY_GetResetFlg(void);
 Sint32 SFD_Stop(SFD sfd);
 Sint32 SFD_Start(SFD sfd);
 Sint32 SFD_Destroy(SFD sfd);
+SFD SFD_Create(SFD_CREPRM *prm, Sint32 x);
 Sint32 SFD_ExecOne(SFD sfd);
 Bool SFD_IsSvrWait(void);
 Bool SFD_IsHnSvrWait(SFD sfd);

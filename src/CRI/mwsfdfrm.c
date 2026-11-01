@@ -432,7 +432,7 @@ void mwPlyGetCurFrm(void *obj, void *frmobj) {
 
     SFD_GetFrm(sfd, &vfrm);
     if (vfrm != NULL && mwply->noskip == 0) {
-        nskip = mwply->prm.max_skip;
+        nskip = mwply->prm.nfrm_pool_wk;
         for (i = 0; i < nskip; i++) {
             if (mwPlyIsNextFrmReady(mwply) != 1) {
                 break;
