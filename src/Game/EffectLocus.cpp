@@ -100,7 +100,7 @@ EffectLocus::EffectLocus(UnkEffectElementData7 *definition, EffectLaunchInfo *in
         unsigned int stride;
         if (point->type == COMMAND_LOCUS_POINT) {
             ++m_pointCount;
-            stride = COMMAND_LOCUS_POINT_STRIDE;
+            stride = sizeof(UnkLocusPointData);
         } else {
             stride = 0;
         }

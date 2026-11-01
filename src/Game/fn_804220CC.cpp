@@ -73,7 +73,7 @@ unsigned int fn_804220CC(const UnkCommandData *command) {
             size = sizeof(UnkSingleData);
             break;
         case COMMAND_LOCUS_POINT:
-            size = COMMAND_LOCUS_POINT_STRIDE;
+            size = sizeof(UnkLocusPointData);
             break;
         case COMMAND_TOP_COLOR:
             size = COMMAND_MAT_COLOR_STRIDE;

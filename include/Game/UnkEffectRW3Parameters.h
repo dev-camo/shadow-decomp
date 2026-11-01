@@ -55,6 +55,9 @@ CHECK_SIZEOF(UnkEffectRW3Param2, 0xB);
 
 /* The original copy operations preserve two equal groups of six words. */
 struct UnkEffectRW3Param3Part {
+    /* Non-trivial construction preserves Param3's typed memberwise copy operation. */
+    UnkEffectRW3Param3Part() {}
+
     /* 0x00 */ int field_0x0;
     /* 0x04 */ float field_0x4;
     /* 0x08 */ float field_0x8;
@@ -70,8 +73,6 @@ struct UnkEffectRW3Param3 {
                        float field18 = 0.0f, float field1C = 1.0f, int field20 = 0,
                        float field24 = 0.0f, float field28 = 0.0f, float field2C = 0.0f,
                        float field30 = 0.0f, float field34 = 1.0f);
-
-    UnkEffectRW3Param3(const UnkEffectRW3Param3 &other);
 
     /* 0x00 */ unsigned char field_0x0;
     /* 0x01 */ unsigned char field_0x1;

@@ -74,7 +74,7 @@ void UnkEffectManagerRW3Data4C::fn_804376EC() {
                 fn_804857BC(m_camera, &clearColor, rwCAMERACLEARIMAGE);
                 if (fn_804854DC(m_camera) != 0) {
                     RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void *)rwFILTERNEAREST);
-                    RwRenderStateSet(rwRENDERSTATESHADEMODE, (void *)1); /* Flat shading. */
+                    RwRenderStateSet(rwRENDERSTATESHADEMODE, (void *)rwSHADEMODEFLAT);
                     RwRenderStateSet(rwRENDERSTATEZWRITEENABLE, (void *)FALSE);
                     RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void *)FALSE);
                     RwRenderStateSet(rwRENDERSTATEFOGENABLE, (void *)FALSE);
@@ -167,7 +167,7 @@ void UnkEffectManagerRW3Data4C::fn_80437118(RpClump *clump, unsigned char flag, 
         fn_804854B4(camera);
     }
     if (m_camera != 0 && field_0x68 != 0 && field_0x70 != 0 && fn_804854DC(m_camera) != 0) {
-        RwRenderStateSet(rwRENDERSTATECULLMODE, (void *)3); /* Front-face culling. */
+        RwRenderStateSet(rwRENDERSTATECULLMODE, (void *)rwCULLMODECULLFRONT);
         if (field_0x78 != 0) {
             RwRenderStateSet(rwRENDERSTATESRCBLEND, (void *)rwBLENDZERO);
             RwRenderStateSet(rwRENDERSTATEDESTBLEND, (void *)rwBLENDONE);

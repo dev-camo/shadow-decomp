@@ -202,6 +202,7 @@ typedef struct RwCamera RwCamera;
 #define rwTEXTUREADDRESSMIRROR 2
 #define rwTEXTUREADDRESSCLAMP 3
 #define rwTEXTUREADDRESSBORDER 4
+#define rwSHADEMODEFLAT 1
 #define rwSHADEMODEGOURAUD 2
 #define rwFOGTYPENAFOGTYPE 0
 #define rwFOGTYPELINEAR 1
@@ -218,6 +219,7 @@ typedef struct RwCamera RwCamera;
 #define rwBLENDSRCALPHASAT 11
 #define rwCULLMODECULLNONE 1
 #define rwCULLMODECULLBACK 2
+#define rwCULLMODECULLFRONT 3
 
 /* a texture's filter mode and addressing in its filterAddressing word */
 #define rwTEXTUREFILTERMODEMASK 0x000000FF
@@ -1467,7 +1469,7 @@ RwBool fn_8047BDD0(const RwBBox *box, const RwV3d *v0, const RwV3d *v1, const Rw
 RwBool fn_8047B720(const RwSphere *sphere, const RwV3d *v0, const RwV3d *v1, const RwV3d *v2,
                    RwV3d *normal, RwReal *distance);
 
-/* whether a sphere is in a camera's view frustum (inferred) */
+/* Classifies a sphere against a camera's frustum: outside (0), crossing (1), inside (2). */
 RwInt32 fn_804856C8(const RwCamera *camera, const RwSphere *sphere);
 
 /* free lists (inferred) */

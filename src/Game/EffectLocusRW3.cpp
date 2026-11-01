@@ -9,15 +9,6 @@
 namespace Effect {
 namespace RW3 {
 
-/* Accessed command prefix; original type name and unused field meanings are unknown. */
-struct UnkLocusPointData : System::UnkCommandData {
-    /* 0x04 */ Fn8040Vector3 position;
-    /* These encoded bytes have no identified reader in this unit. */
-    /* 0x10 */ unsigned char field_0x10[12];
-    /* 0x1C */ RwRGBA color;
-};
-CHECK_SIZEOF(UnkLocusPointData, 0x20);
-
 EffectLocusRW3::EffectLocusRW3(System::UnkEffectElementData7 *definition,
                                System::EffectLaunchInfo *info, System::EffectManager *manager)
     : System::EffectLocus(definition, info, manager), m_vertices(0) {
@@ -190,8 +181,9 @@ void EffectLocusRW3::fn_80439B18() {
         }
         const System::UnkCommandData *command = definition->field_0x54;
         int pointIndex = 0;
-        while (command != 0 && command->type == 0x15) {
-            const UnkLocusPointData *point = static_cast<const UnkLocusPointData *>(command);
+        while (command != 0 && command->type == System::COMMAND_LOCUS_POINT) {
+            const System::UnkLocusPointData *point =
+                static_cast<const System::UnkLocusPointData *>(command);
             int vertexIndex;
             int previousIndex;
             if (m_pointCount < m_capacity) {
@@ -251,7 +243,8 @@ void EffectLocusRW3::fn_80439B18() {
                 break;
             }
             command = reinterpret_cast<const System::UnkCommandData *>(
-                reinterpret_cast<const unsigned char *>(command) + sizeof(UnkLocusPointData));
+                reinterpret_cast<const unsigned char *>(command) +
+                sizeof(System::UnkLocusPointData));
             ++pointIndex;
         }
         System::EffectLocusExecUnit *next = unit->m_next;

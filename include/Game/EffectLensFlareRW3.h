@@ -14,6 +14,7 @@ class EffectLensFlareRW3 : public System::EffectLensFlare {
                        System::EffectManager *manager);
     virtual ~EffectLensFlareRW3();
     virtual void Update(float deltaTime);
+    virtual void Render() {}
 
     /* 0x108 */ UnkEffectRW3Param4 m_initial;
     /* 0x118 */ UnkEffectRW3Param4 m_target;

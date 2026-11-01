@@ -3,6 +3,7 @@
 
 #include "Game/fn_8042A444.h"
 #include "Game/fn_8040_vector_types.h"
+#include "rw/rwcore.h"
 #include "boost/weak_ptr.hpp"
 #include "layout_check.h"
 
@@ -53,13 +54,12 @@ enum CommandType {
     COMMAND_WAVE_LENGTH = 0x21,
 };
 
-/* Encoded strides for partial or not-yet-shared record layouts. */
+/* Encoded strides for partial or unrepresented record layouts. */
 enum {
     COMMAND_GLARE_SWITCH_STRIDE = 0x8,
     COMMAND_MAT_COLOR_STRIDE = 0x14,
     COMMAND_MAT_ALPHA_STRIDE = 0x10,
-    COMMAND_CALLBACK_STRIDE = 0x8,
-    COMMAND_LOCUS_POINT_STRIDE = 0x20
+    COMMAND_CALLBACK_STRIDE = 0x8
 };
 
 /* Command output flags (names inferred from the command classes and their writes). */
@@ -73,6 +73,15 @@ struct UnkCommandData {
     /* 0x03 */ unsigned char field_0x3;
 };
 CHECK_SIZEOF(UnkCommandData, 0x4);
+
+/* Encoded locus-point record; original type name and unused field meanings are unknown. */
+struct UnkLocusPointData : UnkCommandData {
+    /* 0x04 */ Fn8040Vector3 position;
+    /* These encoded bytes have no identified reader. */
+    /* 0x10 */ unsigned char field_0x10[12];
+    /* 0x1C */ RwRGBA color;
+};
+CHECK_SIZEOF(UnkLocusPointData, 0x20);
 
 struct UnkLoopStartData : UnkCommandData {
     /* 0x04 */ unsigned int count;
