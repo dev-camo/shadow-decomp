@@ -167,6 +167,15 @@ Game/GrindGadget.cpp:
 	.sdata      start:0x805E9B08 end:0x805E9B28
 	.sdata2     start:0x805F6F18 end:0x805F6F30
 
+Game/PopFooting.cpp:
+	.text       start:0x8022BC28 end:0x8022C43C
+	.ctors      start:0x804A9EA4 end:0x804A9EA8
+	.rodata     start:0x804F20C0 end:0x804F2120
+	.data       start:0x80546B00 end:0x80546C08
+	.sdata      start:0x805E9BD8 end:0x805E9BF8
+	.sbss       start:0x805EFE68 end:0x805EFE70
+	.sdata2     start:0x805F7050 end:0x805F7078
+
 Game/ElecSmallPillar.cpp:
 	.text       start:0x80230F98 end:0x80231340
 	.rodata     start:0x804F2568 end:0x804F25A0

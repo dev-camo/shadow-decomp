@@ -8,7 +8,6 @@
  * are unknown). fn_80053164 constructs it on first use, registers its destructor and caches its
  * address in a static pointer (behaviour inferred). */
 class UnkSoundManager_80053164;
-class Task;
 
 extern "C" {
 UnkSoundManager_80053164 *fn_80053164(void);
@@ -21,16 +20,18 @@ bool fn_801D54F4(UnkSoundManager_80053164 *manager, u16 id, const Fn8040Vector3 
  * 0x18; returns false for id 0xFFFF or when there is no object (behaviour inferred; arg2 and arg3
  * are not understood). */
 bool fn_801D560C(UnkSoundManager_80053164 *manager, u16 id, int arg2, int arg3);
-/* Plays sound id at position for owner (behaviour inferred); returns false for id 0xFFFF or when
- * no sound could be started. When owner is not null and fn_801D5A64 finds a sound for id and
- * owner, it updates that sound's position (fn_801D956C), stores arg5 as its byte at 0x6 and,
- * unless fn_801D9608 returns 1, passes arg4 and arg6 to fn_801D95A4. Otherwise it starts a new
- * sound with fn_801D5B74 (bit 1 of arg4 selects that call's flag), passes it to fn_801D9780, passes
- * arg4 with the position to fn_801D9688 and arg4 with arg6 to fn_801D9714, and stores arg5 as its
- * byte at 0x6 and owner as its word at 0x18 (owner type inferred from the BDHologram caller).
- * arg4 to arg6 are not understood. */
+/* Plays sound id at position (behaviour inferred); returns false for id 0xFFFF or when fn_801D5B74
+ * gives no object. owner is a key identifying the caller, not a typed object: it is only compared
+ * with a sound object's word at 0x18 and stored there, and callers pass themselves, other values
+ * or 0. When owner is not null and fn_801D5A64 finds a sound for id and owner, it moves that sound
+ * to position (fn_801D956C), stores arg5 as its byte at 0x6 and, unless fn_801D9608 returns 1,
+ * passes arg4 and arg6 to fn_801D95A4; either way it returns true without starting another sound.
+ * Otherwise it starts a new sound with fn_801D5B74 (bit 1 of arg4 selects that call's flag),
+ * passes it to fn_801D9780, passes arg4 with the position to fn_801D9688 and arg4 with arg6 to
+ * fn_801D9714, and stores arg5 as its byte at 0x6 and owner as its word at 0x18. arg4 to arg6 are
+ * not understood. */
 bool fn_801D53C4(UnkSoundManager_80053164 *manager, u16 id, const Fn8040Vector3 *position,
-                 Task *owner, u16 arg4, u8 arg5, s16 arg6);
+                 const void *owner, u16 arg4, u8 arg5, s16 arg6);
 }
 
 #endif
