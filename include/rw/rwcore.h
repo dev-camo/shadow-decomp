@@ -1736,6 +1736,7 @@ void fn_804903F8(RwPalQuant *palQuant);                 /* terminate */
 RwBool fn_8048D2C0(RwRaster *raster, RwImage *image); /* generates the mip levels */
 
 /* rasters (inferred) */
+void fn_804951B8(RwRaster *raster, RwBool halve); /* copy the frame buffer into a camera texture */
 RwRaster *fn_80489E74(RwInt32 width, RwInt32 height, RwInt32 depth, RwInt32 flags); /* create */
 RwBool fn_80489BDC(RwRaster *raster);                                               /* destroy */
 RwRaster *fn_80489B2C(RwRaster *raster, RwInt16 *xOffset, RwInt16 *yOffset);        /* its offset */

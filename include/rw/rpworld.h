@@ -3,7 +3,11 @@
 
 #include "rw/rwcore.h"
 #include <dolphin/gx/GXStruct.h>
+#ifdef __cplusplus
+#include <cstddef>
+#else
 #include <stddef.h>
+#endif
 #include "layout_check.h"
 
 /* RenderWare world objects; only the members used by recovered code are mapped. Type and member
@@ -482,6 +486,7 @@ RpWorld *fn_804622F0(RpAtomic *atomic);  /* the world the atomic is in, or NULL 
 #define rpATOMICSAMEBOUNDINGSPHERE 0x1
 
 /* clumps (inferred) */
+RpClump *fn_80456BC4(RpClump *clump);                   /* render */
 RpClump *fn_804573A8(void);                             /* create */
 RwBool fn_80457468(RpClump *clump);                     /* destroy */
 RpClump *fn_80457090(RpClump *clump);                   /* clone */

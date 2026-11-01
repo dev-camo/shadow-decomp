@@ -14,7 +14,7 @@
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
 #include "Game/GadgetTypeInfo.h"
-#include "Game/RwClumpView.h"
+#include "rw/rpworld.h"
 #include "Game/UnkRegistry_801DE414.h"
 #include "Game/UnkResource_80012700.h"
 #include "Game/UnkString_8004F888.h"
@@ -53,10 +53,10 @@ UnkLayerManager_80046178 *fn_80046178(void);
 boost::shared_ptr<UnkLayer_8004DFB0> fn_8004DFB0(void *arg0, const char *name);
 /* Hands the resource to each atomic of the clump: calls fn_80037B54 for every atomic with the
  * resource as its argument (behaviour inferred from the body; purpose unknown). */
-void fn_80037A80(UnkRwClump *clump, UnkResource_80012700 *resource);
+void fn_80037A80(RpClump *clump, UnkResource_80012700 *resource);
 /* Rotates the frame about the y axis by angle radians, with the combine operation combine
  * (behaviour inferred from the sin and cos it computes and the matrix rotation it calls). */
-void fn_800E9CEC(UnkRwFrame *frame, int combine, float angle);
+void fn_800E9CEC(RwFrame *frame, int combine, float angle);
 }
 
 class CircusPole : public Gadget {
@@ -83,7 +83,7 @@ class CircusPole : public Gadget {
     /* 0x38 */ boost::shared_ptr<GadgetModelInfo> m_model;
     /* 0x40 */ float m_scaleY;
     /* 0x44 */ boost::shared_ptr<UnkLayer_8004DFB0> m_layer;
-    /* 0x4C */ UnkRwClump *m_clump;
+    /* 0x4C */ RpClump *m_clump;
 };
 CHECK_SIZEOF(CircusPole, 0x50);
 
@@ -100,8 +100,7 @@ CircusPole::CircusPole(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(pa
      * the clump of the .DFF file as an opaque pointer (type inferred from its uses). */
     UnkResource_80012700 *dmaResource = fn_80012700(fn_800122D4(), 1, "PR0302CIRCUSPOLETOP.DMA");
 
-    m_clump =
-        reinterpret_cast<UnkRwClump *>(fn_80012700(fn_800122D4(), 1, "PR0302CIRCUSPOLETOP.DFF"));
+    m_clump = reinterpret_cast<RpClump *>(fn_80012700(fn_800122D4(), 1, "PR0302CIRCUSPOLETOP.DFF"));
     fn_80037A80(m_clump, dmaResource);
     fn_801DE0EC(fn_80130B2C(), UnkString_8004F888("CircusPole"), m_clump);
     m_layer = fn_8004DFB0(fn_80046178()->field_0x8, "CircusPole");
@@ -156,7 +155,7 @@ void CircusPole::UpdateModelMatrix() {
 }
 
 void CircusPole::OnDraw(RednerDrawArgs &args) {
-    UnkRwSphere sphere;
+    RwSphere sphere;
 
     sphere.radius = 20.0f;
     sphere.center.x = m_charInfo->m_position.x;
@@ -164,7 +163,7 @@ void CircusPole::OnDraw(RednerDrawArgs &args) {
     sphere.center.z = m_charInfo->m_position.z;
 
     if (fn_804856C8(lbl_805F15B4->curCamera, &sphere)) {
-        UnkRwFrame *frame = m_clump->frame;
+        RwFrame *frame = static_cast<RwFrame *>(m_clump->object.parent);
 
         fn_800E9CEC(frame, rwCOMBINEREPLACE, m_charInfo->m_rotation.y);
         fn_804875B0(frame, &sphere.center, rwCOMBINEPOSTCONCAT);
@@ -176,7 +175,7 @@ void CircusPole::OnDraw(RednerDrawArgs &args) {
     sphere.center.z = m_charInfo->m_position.z;
 
     if (fn_804856C8(lbl_805F15B4->curCamera, &sphere)) {
-        UnkRwFrame *frame = m_clump->frame;
+        RwFrame *frame = static_cast<RwFrame *>(m_clump->object.parent);
 
         fn_800E9CEC(frame, rwCOMBINEREPLACE, m_charInfo->m_rotation.y);
         fn_804875B0(frame, &sphere.center, rwCOMBINEPOSTCONCAT);
