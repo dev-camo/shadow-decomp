@@ -22,18 +22,22 @@ extern "C" int stMtnControlWorkFlag(UnkMotionControl_801602B4 *control, int id, 
  * unknown, and the return types are unknown (the Chao ignores them). */
 extern "C" void stMtnPrepareBlendWithTarget(UnkMotionControl_801602B4 *control, int arg1, int arg2,
                                             int arg3);
-/* Also declared, with MotionControl for the control, in Game/fn_804157E8_motion_control.h, whose
- * unit defines it (the two control types are not unified yet). */
+/* Also declared in Game/fn_804157E8_motion_control.h, whose unit defines them, with the original
+ * type _stMtnPlayWork for the control. Both declarations name that same type: the shared_ptr that
+ * fn_80160C90 builds at 0x80160DA4 with the deleter fn_8041B884 is typed _stMtnPlayWork by its
+ * RTTI and is destroyed as a shared_ptr<UnkMotionControl_801602B4>. UnkMotionControl_801602B4
+ * keeps its placeholder name until the class is renamed. */
 extern "C" void stMtnRequestBlendFrame(UnkMotionControl_801602B4 *control, int id, float frames);
 extern "C" void stMtnRequestFrameSpeed(UnkMotionControl_801602B4 *control, int id, float speed);
 
 /* Copies the four floats at 0xA0 of the motion that the slot table of the control gives for id to
  * out (behaviour inferred from its body). It does nothing for a null control or out, a slot of -1,
- * or a motion whose word at 0x90 has bit 0x4 clear. Also declared, with MotionControl for the
- * control, in Game/fn_804157E8_motion_control.h, whose unit defines it. */
+ * or a motion whose word at 0x90 has bit 0x4 clear. Also declared in
+ * Game/fn_804157E8_motion_control.h with _stMtnPlayWork for the control (see above). */
 extern "C" void fn_80415D40(UnkMotionControl_801602B4 *control, int id, MotionRange *out);
 /* Requests a current frame for the motion with the given id (purpose inferred from the symbol
- * name; FallBuildingHolder passes 0 and the end frame from fn_80415D40). */
+ * name; FallBuildingHolder passes 0 and the end frame from fn_80415D40). Also declared in
+ * Game/fn_804157E8_motion_control.h with _stMtnPlayWork for the control (see above). */
 extern "C" void stMtnRequestCurrentFrame(UnkMotionControl_801602B4 *control, int id, float frame);
 
 /* An entry of the array at 0x0 of the object at 0x30 of a GadgetModelInfo, found by the word at

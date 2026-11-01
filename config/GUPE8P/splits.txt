@@ -1856,6 +1856,8 @@ Game/fn_804157E8.c:
 	extab       start:0x80005D74 end:0x80005D7C
 	extabindex  start:0x80007DE4 end:0x80007DF0
 	.text       start:0x804157E8 end:0x8041583C
+	.sdata      start:0x805EDD60 end:0x805EDD68
+	.sbss       start:0x805F13D0 end:0x805F13E8
 	.sdata2     start:0x805FAE00 end:0x805FAE04
 
 Game/fn_8041583C.c:
@@ -1867,17 +1869,47 @@ Game/fn_80415854.c:
 	.text       start:0x80415854 end:0x80416198
 	.sdata2     start:0x805FAE04 end:0x805FAE0C
 
+Game/fn_80416198.cpp:
+	extab       start:0x80005DC4 end:0x80005F9C
+	extabindex  start:0x80007E5C end:0x80008120
+	.text       start:0x80416198 end:0x8041FD6C
+	.rodata     start:0x8051A558 end:0x8051A5A0
+	.bss        start:0x805E12E0 end:0x805E1500
+	.sdata2     start:0x805FAE0C end:0x805FAE2C
+
 Game/fn_8041FD6C.c:
 	.text       start:0x8041FD6C end:0x8041FD70
+
+Game/fn_8041FD70.cpp:
+	extab       start:0x80005F9C end:0x80005FAC
+	extabindex  start:0x80008120 end:0x80008138
+	.text       start:0x8041FD70 end:0x8041FF08
 
 Game/fn_8041FF08.c:
 	.text       start:0x8041FF08 end:0x8041FF0C
 
+Game/fn_8041FF0C.cpp:
+	extab       start:0x80005FAC end:0x80005FBC
+	extabindex  start:0x80008138 end:0x80008150
+	.text       start:0x8041FF0C end:0x804202B8
+	.sdata2     start:0x805FAE2C end:0x805FAE30
+
 Game/fn_804202B8.c:
 	.text       start:0x804202B8 end:0x80420308
 
+Game/fn_80420308.cpp:
+	extab       start:0x80005FBC end:0x80005FCC
+	extabindex  start:0x80008150 end:0x80008168
+	.text       start:0x80420308 end:0x80420438
+
 Game/fn_80420438.c:
 	.text       start:0x80420438 end:0x8042043C
+
+Game/fn_8042043C.cpp:
+	extab       start:0x80005FCC end:0x80005FF4
+	extabindex  start:0x80008168 end:0x800081A4
+	.text       start:0x8042043C end:0x80420724
+	.ctors      start:0x804AA064 end:0x804AA068
 
 Game/fn_804212F4.c:
 	.text       start:0x804212F4 end:0x80421300
