@@ -18,6 +18,7 @@
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
+#include "Game/fn_804157E8_motion_control.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/UnkAttack_8005A840.h"
 #include "Game/UnkEffectParams_8015F0B8.h"
@@ -211,7 +212,7 @@ void ThreatObj::Update(float dt) {
         break;
 
     case 1: {
-        boost::shared_ptr<UnkMotionControl_801602B4> motion =
+        boost::shared_ptr<_stMtnPlayWork> motion =
             m_model->fn_801602B4(m_holder->m_params.modelType).lock();
 
         if (motion.get() != 0) {

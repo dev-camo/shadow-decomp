@@ -19,6 +19,7 @@
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
+#include "Game/fn_804157E8_motion_control.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/SetAdapterState.h"
 #include "Game/UnkAttack_8005A840.h"
@@ -302,8 +303,7 @@ void FallBuilding::Update(float dt) {
         break;
 
     case 1: {
-        boost::shared_ptr<UnkMotionControl_801602B4> motion =
-            m_model->fn_801602B4(m_config->field_0x8).lock();
+        boost::shared_ptr<_stMtnPlayWork> motion = m_model->fn_801602B4(m_config->field_0x8).lock();
 
         if (motion.get() != 0) {
             if (m_flags.Test(1)) {
@@ -333,8 +333,7 @@ void FallBuilding::Update(float dt) {
     }
 
     case 2: {
-        boost::shared_ptr<UnkMotionControl_801602B4> motion =
-            m_model->fn_801602B4(m_config->field_0x8).lock();
+        boost::shared_ptr<_stMtnPlayWork> motion = m_model->fn_801602B4(m_config->field_0x8).lock();
 
         if (motion.get() != 0) {
             if (stMtnControlWorkFlag(motion.get(), 0, 3, 1)) {

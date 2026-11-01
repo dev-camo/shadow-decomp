@@ -12,6 +12,7 @@
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
+#include "Game/fn_804157E8_motion_control.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/SetAdapterState.h"
 #include "Game/SharedConstants.h"
@@ -371,7 +372,7 @@ void Chao::UpdateMovement(float dt) {
             fn_8003B9E8(&heading, &m_charInfo->m_rotation.x, &m_charInfo->m_rotation.y);
             fn_800091D0(&m_data->m_position, &direction);
 
-            boost::shared_ptr<UnkMotionControl_801602B4> control =
+            boost::shared_ptr<_stMtnPlayWork> control =
                 m_model->fn_801602B4(m_entry->motions[m_state].id).lock();
 
             if (control.get() != 0) {
@@ -458,7 +459,7 @@ void Chao::SetMotion(const ChaoMotion *motion, bool blend) {
         m_model->fn_8015FF60();
     }
 
-    boost::shared_ptr<UnkMotionControl_801602B4> control = m_model->fn_801602B4(motion->id).lock();
+    boost::shared_ptr<_stMtnPlayWork> control = m_model->fn_801602B4(motion->id).lock();
 
     if (blend && control.get() != 0) {
         stMtnPrepareBlendWithTarget(control.get(), 0, -1, -1);

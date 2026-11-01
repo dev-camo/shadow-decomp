@@ -27,7 +27,8 @@ static inline MotionPlayer *FindActivePlayer(_stMtnPlayWork *control, int id) {
  * moving speed was replaced by 0 as the last argument. The motion id goes with the first call;
  * while a call returns nonzero, up to repeats further calls without an id follow. With a null
  * control the last player is used again and no call carries an id. Returns the last result. */
-int fn_80415854(_stMtnPlayWork *control, int id, int arg2, int arg3, int repeats) {
+int fn_80415854(_stMtnPlayWork *control, int id, unsigned short *eventId, void **payload,
+                int repeats) {
     MotionPlayer *player;
     unsigned short motionId = 0;
     int stopped = 0;
@@ -73,15 +74,16 @@ int fn_80415854(_stMtnPlayWork *control, int id, int arg2, int arg3, int repeats
         }
     }
 
-    result = fn_80411818(motionId, arg2, &range, arg3, stopped);
+    result = fn_80411818(motionId, eventId, &range, payload, stopped);
     while (repeats-- != 0 && result != 0) {
-        result = fn_80411818(0, arg2, &range, arg3, stopped);
+        result = fn_80411818(0, eventId, &range, payload, stopped);
     }
     return result;
 }
 
 /* The same as fn_80415854 with fn_80411DEC and its own last player. */
-int fn_80415A18(_stMtnPlayWork *control, int id, int arg2, int arg3, int repeats) {
+int fn_80415A18(_stMtnPlayWork *control, int id, unsigned short eventId, void *destination,
+                int repeats) {
     MotionPlayer *player;
     unsigned short motionId = 0;
     int stopped = 0;
@@ -127,9 +129,9 @@ int fn_80415A18(_stMtnPlayWork *control, int id, int arg2, int arg3, int repeats
         }
     }
 
-    result = fn_80411DEC(motionId, arg2, &range, arg3, stopped);
+    result = fn_80411DEC(motionId, eventId, &range, destination, stopped);
     while (repeats-- != 0 && result != 0) {
-        result = fn_80411DEC(0, arg2, &range, arg3, stopped);
+        result = fn_80411DEC(0, eventId, &range, destination, stopped);
     }
     return result;
 }

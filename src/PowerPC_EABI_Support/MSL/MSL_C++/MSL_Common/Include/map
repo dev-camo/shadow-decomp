@@ -315,6 +315,9 @@ class map {
     mapped_type &operator[](const key_type &k) {
         return tree_.__find_or_insert(k).second;
     }
+    iterator begin() {
+        return tree_.begin();
+    }
     iterator end() {
         return tree_.end();
     }

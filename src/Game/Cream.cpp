@@ -9,6 +9,7 @@
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
+#include "Game/fn_804157E8_motion_control.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/SetAdapterState.h"
 #include "Game/UnkActor_800740E4.h"
@@ -241,7 +242,7 @@ void Cream::UpdateModelMatrix() {
 }
 
 void Cream::SetMotion(int motion) {
-    boost::shared_ptr<UnkMotionControl_801602B4> control = m_model->fn_801602B4(0).lock();
+    boost::shared_ptr<_stMtnPlayWork> control = m_model->fn_801602B4(0).lock();
 
     if (control.get() != 0) {
         stMtnPrepareBlendWithTarget(control.get(), 0, -1, -1);
