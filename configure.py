@@ -1435,6 +1435,8 @@ config.libs = [
             Object(NonMatching, "Game/fn_801A4430.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A54E8.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A61E4.cpp", cflags=cflags_game_cpp),
+            # All six function bodies match; float literal order and readonly-span layout differ.
+            Object(NonMatching, "Game/fn_801A6588.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_804220CC.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EffCmdGlareSWExec.cpp", cflags=cflags_effect),
             Object(Matching, "Game/fn_8042A2D8.cpp", cflags=cflags_effect),

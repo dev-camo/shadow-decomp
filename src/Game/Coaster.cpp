@@ -91,8 +91,6 @@ float fn_8012773C(float target, float current, float maxStep);
 const float *fn_80070460(const float *value, const float *low, const float *high);
 
 /* Path control functions (behaviour inferred). */
-/* Prepares the path control (arguments and result unknown). */
-void fn_80018304(SonicteamUSA::System::PathCtrl *path);
 /* The position where the path starts. */
 Fn8040Vector3 fn_80018634(SonicteamUSA::System::PathCtrl *path);
 /* The rotation angles of the path at its start (the numbers are not understood). */

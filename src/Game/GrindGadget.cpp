@@ -100,7 +100,7 @@ void GrindGadget::UpdateBody(float dt) {
         UnkPathData_8001DB08 *resource =
             static_cast<UnkPathData_8001DB08 *>(fn_80012700(fn_800122D4(), 1, *s_file));
         fn_8001DB08(fn_8001B494(), resource, &m_charInfo->m_position, m_charInfo->m_rotation,
-                    m_charInfo->field_0x30, &m_path, &lbl_80570B50);
+                    m_charInfo->field_0x30, &m_path, lbl_80570B50);
         m_pathFlags.Reset(0);
     }
     m_model->fn_80162FB0(dt);
