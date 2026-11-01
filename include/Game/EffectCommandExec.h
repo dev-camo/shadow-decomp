@@ -174,7 +174,8 @@ struct UnkTimedLaunchData : UnkLaunchData {
 };
 CHECK_SIZEOF(UnkTimedLaunchData, 0x5C);
 
-/* Class names are recorded in the original RTTI. Member names are inferred from use. */
+/* Class names are recorded in the original RTTI. Member names are inferred from use.
+ * Derived virtual declaration order is inferred from the shared vtable/RTTI ownership. */
 class EffectCommandExec {
   public:
     EffectCommandExec(const UnkCommandData *command)
@@ -202,8 +203,8 @@ CHECK_SIZEOF(EffectCommandExec, 0x14);
 class EffCmdCallbackExec : public EffectCommandExec {
   public:
     EffCmdCallbackExec(const UnkCommandData *command, unsigned int *flags);
-    virtual ~EffCmdCallbackExec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmdCallbackExec();
 
     /* 0x14 */ unsigned int *m_flags;
 };
@@ -213,8 +214,8 @@ class EffCmdLoopEndExec : public EffectCommandExec {
   public:
     EffCmdLoopEndExec(const UnkCommandData *command, unsigned int *flags, EffectCommandExec *last,
                       const UnkCommandData **restart);
-    virtual ~EffCmdLoopEndExec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmdLoopEndExec();
 
     /* 0x14 */ unsigned int *m_flags;
     /* 0x18 */ bool m_finished;
@@ -224,8 +225,8 @@ CHECK_SIZEOF(EffCmdLoopEndExec, 0x1C);
 class EffCmdLoopStartExec : public EffectCommandExec {
   public:
     EffCmdLoopStartExec(const UnkCommandData *command, unsigned int *flags);
-    virtual ~EffCmdLoopStartExec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmdLoopStartExec();
 
     /* 0x14 */ unsigned int *m_flags;
     /* 0x18 */ unsigned int m_count;
@@ -237,8 +238,8 @@ CHECK_SIZEOF(EffCmdLoopStartExec, 0x24);
 class EffCmdWaitExec : public EffectCommandExec {
   public:
     EffCmdWaitExec(const UnkCommandData *command, unsigned int *flags, EffectCommandExec *last);
-    virtual ~EffCmdWaitExec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmdWaitExec();
 
     /* 0x14 */ unsigned int *m_flags;
     /* 0x18 */ float m_elapsed;
@@ -250,8 +251,8 @@ CHECK_SIZEOF(EffCmdWaitExec, 0x24);
 class EffCmdGlareSWExec : public EffectCommandExec {
   public:
     EffCmdGlareSWExec(const UnkCommandData *command, unsigned int *flags);
-    virtual ~EffCmdGlareSWExec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmdGlareSWExec();
 
     /* 0x14 */ unsigned int *m_flags;
 };
@@ -260,8 +261,8 @@ CHECK_SIZEOF(EffCmdGlareSWExec, 0x18);
 class EffCmdSingleExec : public EffectCommandExec {
   public:
     EffCmdSingleExec(const UnkCommandData *command, unsigned int *flags, float *target);
-    virtual ~EffCmdSingleExec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmdSingleExec();
 
     /* 0x14 */ unsigned int *m_flags;
     /* 0x18 */ float *m_target;
@@ -274,8 +275,8 @@ CHECK_SIZEOF(EffCmdSingleExec, 0x28);
 class EffCmdVector2Exec : public EffectCommandExec {
   public:
     EffCmdVector2Exec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target);
-    virtual ~EffCmdVector2Exec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmdVector2Exec();
 
     /* 0x14 */ unsigned int *m_flags;
     /* 0x18 */ Fn8040Vector3 *m_target;
@@ -288,8 +289,8 @@ CHECK_SIZEOF(EffCmdVector2Exec, 0x30);
 class EffCmdVector3Exec : public EffectCommandExec {
   public:
     EffCmdVector3Exec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target);
-    virtual ~EffCmdVector3Exec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmdVector3Exec();
 
     /* 0x14 */ unsigned int *m_flags;
     /* 0x18 */ Fn8040Vector3 *m_target;
@@ -327,8 +328,8 @@ CHECK_SIZEOF(EffCmd3DVelExec, 0x30);
 class EffCmdMatAlphaExec : public EffectCommandExec {
   public:
     EffCmdMatAlphaExec(const UnkCommandData *command, unsigned int *flags, int *target);
-    virtual ~EffCmdMatAlphaExec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmdMatAlphaExec();
 
     /* 0x14 */ unsigned int *m_flags;
     /* 0x18 */ int *m_target;
@@ -341,8 +342,8 @@ CHECK_SIZEOF(EffCmdMatAlphaExec, 0x28);
 class EffCmdMatColorExec : public EffectCommandExec {
   public:
     EffCmdMatColorExec(const UnkCommandData *command, unsigned int *flags, int *target);
-    virtual ~EffCmdMatColorExec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmdMatColorExec();
 
     /* 0x14 */ unsigned int *m_flags;
     /* 0x18 */ int *m_target;
@@ -355,8 +356,8 @@ CHECK_SIZEOF(EffCmdMatColorExec, 0x30);
 class EffCmd2DSclExec : public EffectCommandExec {
   public:
     EffCmd2DSclExec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target);
-    virtual ~EffCmd2DSclExec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmd2DSclExec();
 
     /* 0x14 */ unsigned int *m_flags;
     /* 0x18 */ Fn8040Vector3 *m_target;
@@ -369,8 +370,8 @@ CHECK_SIZEOF(EffCmd2DSclExec, 0x30);
 class EffCmd3DSclExec : public EffectCommandExec {
   public:
     EffCmd3DSclExec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target);
-    virtual ~EffCmd3DSclExec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmd3DSclExec();
 
     /* 0x14 */ unsigned int *m_flags;
     /* 0x18 */ Fn8040Vector3 *m_target;
@@ -384,8 +385,8 @@ class EffCmdPtnAnimExec : public EffectCommandExec {
   public:
     EffCmdPtnAnimExec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector2 *lower,
                       Fn8040Vector2 *upper);
-    virtual ~EffCmdPtnAnimExec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmdPtnAnimExec();
 
     /* 0x14 */ unsigned int *m_flags;
     /* 0x18 */ Fn8040Vector2 *m_lower;
@@ -403,8 +404,8 @@ class EffCmdRequestStopExec : public EffectCommandExec {
   public:
     EffCmdRequestStopExec(const UnkCommandData *command, unsigned int *flags,
                           EffectElement *target);
-    virtual ~EffCmdRequestStopExec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmdRequestStopExec();
 
     /* 0x14 */ unsigned int *m_flags;
 };
@@ -414,8 +415,8 @@ class EffCmdLaunchExec : public EffectCommandExec {
   public:
     EffCmdLaunchExec(const UnkCommandData *command, unsigned int *flags, EffectManager *manager,
                      EffectLaunchInfo *info, EffectArranger *parent);
-    virtual ~EffCmdLaunchExec();
     virtual bool Update(float deltaTime);
+    virtual ~EffCmdLaunchExec();
 
     /* 0x14 */ unsigned int *m_flags;
     /* 0x18 */ float m_elapsed;
