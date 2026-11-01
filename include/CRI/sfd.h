@@ -980,6 +980,8 @@ Sint32 SFD_GetHnStat(SFD sfd);
 /* sfd_ply.c */
 /* default conditions; one entry longer than the SFD_COND_NUM copied into each handle */
 extern const Sint32 SFPLY_cond_dfl[101];
+Sint32 SFD_RelFrm(SFD sfd, void *frm);
+Sint32 SFD_GetFrm(SFD sfd, void **frm);
 Sint32 SFD_TermSupply(SFD sfd);
 Sint32 SFPLY_GetResetFlg(void);
 Sint32 SFD_Destroy(SFD sfd);
@@ -1065,6 +1067,7 @@ void SFD_SetMpvParaTbl(SFMPV_PARA *para, Uint32 *rfb, Uint32 *ta);
 
 /* sfd_mpvf.c */
 SFMPV_FRM *sfmpvf_ReferNextFrmReady(SFD sfd);
+Bool SFD_IsNextFrmReady(SFD sfd);
 SFMPV_FRM *SFMPVF_HoldFrm(SFD sfd);
 void SFMPVF_EndRefFrm(SFMPV_FRM *frm);
 void SFMPVF_EndDrawFrm(SFMPV_FRM *frm);
@@ -1124,6 +1127,7 @@ void SFTIM_UpdateItime(SFTIM tim, Sint32 t);
 Bool SFTIM_IsVideoTerm(SFD sfd);
 Bool SFTIM_IsGetFrmTimeTunit(SFD sfd, Sint32 ftime, Sint32 tunit);
 Bool SFTIM_IsGetFrmTime(SFD sfd, SFD_VFRM_INF *inf);
+Sint32 SFD_GetFps(SFD sfd, Sint32 *fps);
 void SFTIM_GetTimeOneFrmVideo(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 void SFTIM_Pause(SFD sfd, Sint32 sw);
 void SFTIM_SetTimeFn(SFD sfd, SFTIM_FN fn, Sint32 type);
