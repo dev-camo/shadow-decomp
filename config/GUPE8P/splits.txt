@@ -1941,8 +1941,11 @@ Game/fn_804210E4.c:
 	extabindex  start:0x80008228 end:0x80008234
 	.text       start:0x804210E4 end:0x804211CC
 
-Game/fn_804212F4.c:
-	.text       start:0x804212F4 end:0x80421300
+Game/fn_804211CC.c:
+	extab       start:0x80006054 end:0x8000608C
+	extabindex  start:0x80008234 end:0x80008288
+	.text       start:0x804211CC end:0x8042166C
+	.sbss       start:0x805F13E8 end:0x805F1400
 
 Game/fn_80424D18.c:
 	.text       start:0x80424D18 end:0x80424D20
