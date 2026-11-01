@@ -15,8 +15,8 @@
 //  See http://www.boost.org/libs/utility/checked_delete.html for documentation.
 //
 //  Adapted from Boost 1.32: the include guard follows this project's naming, the MSVC-only
-//  pragma once is dropped, and checked_array_delete and checked_array_deleter are left out
-//  because the reconstructed units use no array deleters. The remaining declarations are unchanged.
+//  pragma once is dropped, and checked_array_deleter is omitted because it is unused.
+//  The remaining declarations are unchanged.
 //
 
 namespace boost {
@@ -28,6 +28,12 @@ template <class T> inline void checked_delete(T *x) {
     typedef char type_must_be_complete[sizeof(T) ? 1 : -1];
     (void)sizeof(type_must_be_complete);
     delete x;
+}
+
+template <class T> inline void checked_array_delete(T *x) {
+    typedef char type_must_be_complete[sizeof(T) ? 1 : -1];
+    (void)sizeof(type_must_be_complete);
+    delete[] x;
 }
 
 template <class T> struct checked_deleter {
