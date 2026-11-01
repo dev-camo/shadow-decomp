@@ -2,7 +2,7 @@
 #include "Game/EffectCommandExec.h"
 #include "Game/EffectElement.h"
 #include "Game/EffectManager.h"
-#include "Game/EffectObject.h"
+#include "Game/EffectArranger.h"
 #include "Game/EffectSystem.h"
 #include "Game/fn_80424D18.h"
 
@@ -11,7 +11,7 @@ namespace System {
 
 EffCmdLaunchExec::EffCmdLaunchExec(const UnkCommandData *command, unsigned int *flags,
                                    EffectManager *manager, EffectLaunchInfo *info,
-                                   EffectObject *parent)
+                                   EffectArranger *parent)
     : EffectCommandExec(command), m_flags(flags), m_elapsed(0.0f), m_parent(parent) {
     const UnkLaunchData *data = static_cast<const UnkLaunchData *>(m_command);
     /* A zero base duration also suppresses the random duration range. */
@@ -69,7 +69,7 @@ bool EffCmdLaunchExec::Update(float deltaTime) {
         }
         return false;
     }
-    EffectObject *parent = m_parent;
+    EffectArranger *parent = m_parent;
     if ((parent->m_flags & ELEMENT_STOP_REQUESTED) != 0 &&
         !child->HasFlags(ELEMENT_STOP_REQUESTED)) {
         child->RequestStop();
@@ -93,7 +93,7 @@ bool EffCmdLaunchExec::Update(float deltaTime) {
         fn_8040B848(&m_transform, m_rotation.y);
         fn_8040B884(&m_transform, m_rotation.x);
         fn_8040B790(&m_transform, &m_scale);
-        if ((parent->m_definitionFlags & OBJECT_LINK_TRANSFORM) != 0) {
+        if ((parent->m_definitionFlags & ARRANGER_LINK_TRANSFORM) != 0) {
             child->SetMatrixSource(&m_transform);
         } else {
             fn_80425E68(child.get(), &m_transform);
@@ -117,7 +117,7 @@ bool EffCmdLaunchExec::Update(float deltaTime) {
             return false;
         }
     }
-    if ((parent->m_definitionFlags & OBJECT_LINK_TRANSFORM) != 0) {
+    if ((parent->m_definitionFlags & ARRANGER_LINK_TRANSFORM) != 0) {
         fn_8040C148(&m_transform, &parent->m_transform);
         fn_8040B59C(&m_transform, &m_translation);
         fn_8040B80C(&m_transform, m_rotation.z);

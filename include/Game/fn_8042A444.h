@@ -8,7 +8,8 @@ class EffectSystem;
 } // namespace Effect
 
 extern "C" {
-Effect::System::EffectSystem *fn_8042A5D0();
+Effect::System::EffectSystem *fn_8042A5D0() throw();
+void *fn_8042A50C(Effect::System::EffectSystem *memory) throw();
 void fn_8042A444(Effect::System::EffectSystem *memory, void *block);
 }
 

@@ -12,6 +12,9 @@ struct UnkCommandData;
 struct UnkEffectElementData3;
 struct UnkEffectPool;
 
+/* Launch commands retain a borrowed transform source for this option (name inferred). */
+enum { ARRANGER_LINK_TRANSFORM = 0x800 };
+
 /* Class/base identity from RTTI; member and non-placeholder method names are inferred. */
 class EffectArranger : public EffectElement {
   public:

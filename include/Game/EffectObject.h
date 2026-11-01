@@ -11,9 +11,6 @@ class EffectCommandExec;
 struct UnkCommandData;
 struct UnkEffectPool;
 
-/* Launch commands retain a borrowed transform source for this option (name inferred). */
-enum { OBJECT_LINK_TRANSFORM = 0x800 };
-
 /* Class and base names from RTTI; member names are inferred. */
 class EffectObject : public EffectElement {
   public:

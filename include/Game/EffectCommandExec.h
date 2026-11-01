@@ -10,7 +10,7 @@ namespace Effect {
 namespace System {
 
 class EffectElement;
-class EffectObject;
+class EffectArranger;
 class EffectManager;
 class EffectLaunchInfo;
 
@@ -126,6 +126,11 @@ class EffectCommandExec {
     /* Advances a command; false removes it from the executor list (name inferred). */
     virtual bool Update(float deltaTime) = 0;
 
+    /* The selected pool determines the allocation size. */
+    static void *operator new(unsigned long) throw() {
+        return fn_8042A50C(fn_8042A5D0());
+    }
+
     static void operator delete(void *block) {
         fn_8042A444(fn_8042A5D0(), block);
     }
@@ -237,6 +242,31 @@ class EffCmdVector3Exec : public EffectCommandExec {
 };
 CHECK_SIZEOF(EffCmdVector3Exec, 0x30);
 
+/* Class identities and inheritance are recorded in the original RTTI. */
+class EffCmd3DPosExec : public EffCmdVector3Exec {
+  public:
+    EffCmd3DPosExec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target)
+        : EffCmdVector3Exec(command, flags, target) {}
+    virtual ~EffCmd3DPosExec();
+};
+CHECK_SIZEOF(EffCmd3DPosExec, 0x30);
+
+class EffCmd3DRotExec : public EffCmdVector3Exec {
+  public:
+    EffCmd3DRotExec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target)
+        : EffCmdVector3Exec(command, flags, target) {}
+    virtual ~EffCmd3DRotExec();
+};
+CHECK_SIZEOF(EffCmd3DRotExec, 0x30);
+
+class EffCmd3DVelExec : public EffCmdVector3Exec {
+  public:
+    EffCmd3DVelExec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target)
+        : EffCmdVector3Exec(command, flags, target) {}
+    virtual ~EffCmd3DVelExec();
+};
+CHECK_SIZEOF(EffCmd3DVelExec, 0x30);
+
 class EffCmdMatAlphaExec : public EffectCommandExec {
   public:
     EffCmdMatAlphaExec(const UnkCommandData *command, unsigned int *flags, int *target);
@@ -326,7 +356,7 @@ CHECK_SIZEOF(EffCmdRequestStopExec, 0x18);
 class EffCmdLaunchExec : public EffectCommandExec {
   public:
     EffCmdLaunchExec(const UnkCommandData *command, unsigned int *flags, EffectManager *manager,
-                     EffectLaunchInfo *info, EffectObject *parent);
+                     EffectLaunchInfo *info, EffectArranger *parent);
     virtual ~EffCmdLaunchExec();
     virtual bool Update(float deltaTime);
 
@@ -334,7 +364,7 @@ class EffCmdLaunchExec : public EffectCommandExec {
     /* 0x18 */ float m_elapsed;
     /* 0x1C */ float m_duration;
     /* 0x20 */ boost::weak_ptr<EffectElement> m_child;
-    /* 0x28 */ EffectObject *m_parent;
+    /* 0x28 */ EffectArranger *m_parent;
     /* 0x2C */ Fn8040Vector3 m_translation;
     /* 0x38 */ Fn8040Vector3 m_rotation;
     /* 0x44 */ Fn8040Vector3 m_scale;

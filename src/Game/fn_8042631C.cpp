@@ -131,6 +131,113 @@ void EffectArranger::Update(float deltaTime) {
     }
 }
 
+void EffectArranger::fn_80426700() {
+    fn_8042A5C0(fn_8042A5D0(), m_commandPool);
+    while (m_command != 0) {
+        if (m_commandTail != 0 && dynamic_cast<EffCmdWaitExec *>(m_commandTail) != 0) {
+            return;
+        }
+        EffectCommandExec *command = 0;
+        unsigned int stride;
+        switch (m_command->type) {
+        case 3:
+            command = new EffCmd3DPosExec(m_command, &m_commandFlags, &m_translation);
+            stride = 0x24;
+            break;
+        case 4:
+            command = new EffCmd3DRotExec(m_command, &m_commandFlags, &m_rotation);
+            stride = 0x24;
+            break;
+        case 6:
+            command = new EffCmd3DSclExec(m_command, &m_commandFlags, &m_scale);
+            stride = 0x24;
+            break;
+        case 8:
+            command = new EffCmd3DVelExec(m_command, &m_commandFlags, &m_velocity);
+            stride = 0x24;
+            break;
+        case 0xD:
+            command = new EffCmdWaitExec(m_command, &m_commandFlags, m_commandTail);
+            stride = 8;
+            break;
+        case 0xE:
+            command = new EffCmdLoopStartExec(m_command, &m_commandFlags);
+            stride = 8;
+            ++field_0x4;
+            if (field_0x5 != 0 || (m_flags & ELEMENT_STOP_REQUESTED) != 0) {
+                ++field_0x5;
+            }
+            break;
+        case 0xF: {
+            const UnkCommandData *restart = 0;
+            if (field_0x5 != 0 || (m_flags & ELEMENT_STOP_REQUESTED) != 0) {
+                command = new EffCmdLoopEndExec(m_command, &m_commandFlags, m_commandTail, 0);
+                if (field_0x5 != 0) {
+                    --field_0x5;
+                }
+            } else {
+                command =
+                    new EffCmdLoopEndExec(m_command, &m_commandFlags, m_commandTail, &restart);
+            }
+            if (restart != 0) {
+                m_command = restart;
+                stride = 8;
+            } else {
+                stride = 4;
+                --field_0x4;
+            }
+            break;
+        }
+        case 0x10:
+            command = new EffCmdCallbackExec(m_command, &m_commandFlags);
+            stride = 8;
+            break;
+        case 0x11:
+            if ((m_flags & ELEMENT_STOP_REQUESTED) == 0 || (m_definitionFlags & 0x40000) != 0) {
+                fn_8042A5C0(fn_8042A5D0(), m_launchPool);
+                command =
+                    new EffCmdLaunchExec(m_command, &m_commandFlags, m_manager, m_launchInfo, this);
+                fn_8042A5C0(fn_8042A5D0(), m_commandPool);
+            }
+            stride = 0x58;
+            break;
+        case 0x12:
+            if ((m_flags & ELEMENT_STOP_REQUESTED) == 0 || (m_definitionFlags & 0x40000) != 0) {
+                fn_8042A5C0(fn_8042A5D0(), m_launchPool);
+                command =
+                    new EffCmdLaunchExec(m_command, &m_commandFlags, m_manager, m_launchInfo, this);
+                fn_8042A5C0(fn_8042A5D0(), m_commandPool);
+            }
+            stride = 0x5C;
+            break;
+        case 0x13:
+            command = new EffCmdRequestStopExec(m_command, &m_commandFlags, this);
+            stride = 4;
+            break;
+        default:
+            return;
+        }
+        if (command != 0) {
+            if (m_commandTail != 0) {
+                m_commandTail->m_next = command;
+                command->m_prev = m_commandTail;
+                m_commandTail = command;
+            } else {
+                m_commandHead = m_commandTail = command;
+            }
+        } else {
+            m_commandFlags |= COMMAND_STOP_REQUESTED;
+            return;
+        }
+        if (m_command->hasNext != 0 && stride != 0) {
+            m_command = reinterpret_cast<const UnkCommandData *>(
+                reinterpret_cast<const unsigned char *>(m_command) + stride);
+        } else {
+            m_command = 0;
+        }
+    }
+}
+
 EffectArranger::EffectArranger(const UnkEffectElementData3 *definition, EffectLaunchInfo *info,
                                EffectManager *manager)
     : EffectElement(definition, info, manager), m_commandFlags(0), m_definitionFlags(0),
