@@ -47,6 +47,14 @@ Game/fn_801A6588.cpp:
 	.rodata     start:0x804CD8D8 end:0x804CD8E8
 	.sdata2     start:0x805F68C0 end:0x805F68C8
 
+Game/ElecSmallCube.cpp:
+	.text       start:0x8021B0C0 end:0x8021C074
+	.rodata     start:0x804F1518 end:0x804F1628
+	.data       start:0x80546988 end:0x805469F8
+	.sdata      start:0x805EA8F0 end:0x805EA918
+	.sbss       start:0x805F0DE8 end:0x805F0DF8
+	.sdata2     start:0x805F7CF0 end:0x805F7D28
+
 dolphin/PPCArch.c:
 	.text       start:0x80370ADC end:0x80370BF0
 
