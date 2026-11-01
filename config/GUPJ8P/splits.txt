@@ -1386,3 +1386,9 @@ Game/fn_804220CC.cpp:
 
 Game/EffCmdGlareSWExec.cpp:
 	.text       start:0x804245D8 end:0x80424678
+
+Game/fn_8042A2D8.cpp:
+	extab       start:0x80006CF8 end:0x80006D08
+	extabindex  start:0x80008714 end:0x8000872C
+	.text       start:0x8042A918 end:0x8042AC2C
+	.bss        start:0x805E1B28 end:0x805E1B30

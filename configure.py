@@ -1421,6 +1421,7 @@ config.libs = [
             # These Game units are enabled for all regions; the list above remains USA-only.
             Object(Matching, "Game/fn_804220CC.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EffCmdGlareSWExec.cpp", cflags=cflags_effect),
+            Object(Matching, "Game/fn_8042A2D8.cpp", cflags=cflags_effect),
         ],
     },
     DolphinLib(

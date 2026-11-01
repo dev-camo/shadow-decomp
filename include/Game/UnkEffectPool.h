@@ -18,9 +18,7 @@ struct UnkEffectPool {
     static void *operator new(unsigned long size) throw() {
         return fn_8042A5D0()->Allocate(size);
     }
-    static void operator delete(void *block) {
-        fn_8042A5D0()->Free(block);
-    }
+    static void operator delete(void *block);
 
     /* 0x00 */ UnkEffectPoolEntry *field_0x0;
     /* 0x04 */ UnkEffectPoolEntry *field_0x4;
