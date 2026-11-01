@@ -292,17 +292,17 @@ Rt2dPath *fn_80475B4C(Rt2dPath *path) {
     return path;
 }
 
+/* Destroys a subpath and every subpath after it; returns whether one was given */
 RwBool fn_80475E2C(Rt2dPath *path) {
     RwBool result = path != NULL;
 
     if (result) {
-        Rt2dPath *next = fn_80474BEC(path);
-
-        fn_80475E2C(next);
+        fn_80475E2C(fn_80474BEC(path));
     }
     return result;
 }
 
+/* Frees a path's points and destroys the subpaths after it, leaving the path empty */
 void fn_804760C8(Rt2dPath *path) {
     if (path->numPoints == rt2dPATHLOCKED) {
         fn_8047DFC8(path->points);
