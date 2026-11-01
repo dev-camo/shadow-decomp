@@ -37,7 +37,7 @@
 // not reconstructed, and the MSL C++ headers of this project have no <stdexcept> for
 // bad_function_call). The typedefs and constants no reconstructed unit refers to are also left
 // out: args, arity, sig and arg1_type. The configuration macros are resolved for MWCC
-// (BOOST_NO_SFINAE, BOOST_NO_EXCEPTIONS), and BOOST_ASSERT is resolved for an NDEBUG build, so the
+// (BOOST_NO_SFINAE), and BOOST_ASSERT is resolved for an NDEBUG build, so the
 // checks in the int constructor and assignment are left out. The bodies stay in the classes as in
 // Boost: the game's inlining depends on them (see cflags_game_cpp in configure.py).
 
