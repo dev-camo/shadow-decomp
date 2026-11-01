@@ -95,9 +95,10 @@ CHECK_SIZEOF(EffectElement, 0xFC);
 
 extern "C" {
 void fn_80425C34(Effect::System::EffectElement *effect, float deltaTime);
-/* Creates an effect at position (the other arguments are not understood). */
+/* Creates effect id from the global launch info at position, applies rotation derived
+ * from the negated direction, and clears ELEMENT_FLAG_4 (behaviour inferred). */
 boost::weak_ptr<Effect::System::EffectElement> fn_80168C48(const Fn8040Vector3 *position,
-                                                           const Fn8040Vector3 *arg1, int arg2);
+                                                           const Fn8040Vector3 *direction, int id);
 /* These helpers write the base transform (names remain unknown). */
 void fn_80425E4C(Effect::System::EffectElement *effect, const Fn8040Vector3 *position);
 void fn_80425E68(Effect::System::EffectElement *effect, const Fn8040Matrix34 *matrix);

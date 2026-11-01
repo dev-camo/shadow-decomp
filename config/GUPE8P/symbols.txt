@@ -33567,7 +33567,7 @@ Remove__Q36Effect6System13EffectManagerFQ25boost43shared_ptr<Q36Effect6System13E
 Clear__Q36Effect6System13EffectManagerFv = .text:0x8042554C; // type:function size:0xA8
 Create__Q36Effect6System13EffectManagerFRCQ25boost46shared_ptr<Q36Effect6System16EffectLaunchInfo>i = .text:0x804255F4; // type:function size:0x3C
 Create__Q36Effect6System13EffectManagerFPQ36Effect6System16EffectLaunchInfoi = .text:0x80425630; // type:function size:0x228
-fn_80425858 = .text:0x80425858; // type:function size:0x8
+CreateElement__Q36Effect6System13EffectManagerFPCQ36Effect6System20UnkEffectElementDataPQ36Effect6System16EffectLaunchInfo = .text:0x80425858; // type:function size:0x8
 fn_80425860__Q36Effect6System13EffectManagerFPQ36Effect6System17UnkEffectFileData = .text:0x80425860; // type:function size:0x2EC
 __dt__Q36Effect6System13EffectManagerFv = .text:0x80425B4C; // type:function size:0x80
 __ct__Q36Effect6System13EffectManagerFv = .text:0x80425BCC; // type:function size:0x68

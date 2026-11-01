@@ -13,7 +13,7 @@ EffectGlobalParam::EffectGlobalParam(UnkEffectElementData8 *definition, EffectLa
     if ((m_flags & ELEMENT_ACTIVE) == 0) {
         return;
     }
-    field_0x108 = static_cast<const UnkEffectGlobalParamData *>(definition->field_0x34);
+    field_0x108 = definition->field_0x34;
     m_duration = definition->field_0x30;
     m_definitionFlags = definition->field_0x2C;
 }

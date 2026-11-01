@@ -105,7 +105,7 @@ bool EffCmdLaunchExec::Update(float deltaTime) {
     }
     m_elapsed += deltaTime;
     if (m_duration > 0.0001f && m_elapsed > m_duration) {
-        if (m_command->type == 18 &&
+        if (m_command->type == COMMAND_TIMED_LAUNCH &&
             static_cast<const UnkTimedLaunchData *>(m_command)->stopAtDuration != 0 &&
             !child->HasFlags(ELEMENT_STOP_REQUESTED)) {
             child->RequestStop();
