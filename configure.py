@@ -2534,6 +2534,16 @@ config.libs = [
             ),
             Object(
                 Matching,
+                "CRI/fn_8040305C.c",
+                extra_cflags=[
+                    "-sdata 0",
+                    "-sdata2 0",
+                    "-str readonly",
+                    "-use_lmw_stmw on",
+                ],
+            ),
+            Object(
+                Matching,
                 "CRI/mwsfdsl.c",
                 extra_cflags=[
                     "-sdata 0",
