@@ -12,9 +12,9 @@
  * The unit is compiled with deferred inlining, so the functions are defined in the reverse of
  * their order in .text and the variables in the reverse of their order in .bss.
  *
- * Not yet written: SFMPV_GetRead, SFMPV_AddRead and sfmpv_SetFrmInf, which need a flag type for
- * SFD_VFRM.frm, the decoding functions from sfmpv_GoDdelim to sfmpv_ExecServerSub, the layout
- * check sfmpv_ChkFatal and fn_803F894C. */
+ * Not yet written: the decoding functions from sfmpv_GoDdelim to sfmpv_ExecServerSub and the layout
+ * check sfmpv_ChkFatal. */
+#include <stddef.h>
 #include <string.h>
 
 #include "CRI/mpv.h"
@@ -32,11 +32,14 @@
 #define SFMPV_ERR_SETERRFN 0xFF000F0B
 #define SFMPV_ERR_DESTROY 0xFF000F0C
 #define SFMPV_ERR_NOTSUPPORTED 0xFF000F0D
+#define SFMPV_ERR_FRM_UNUSED 0xFF000F0E      /* the frame information was not handed out */
+#define SFMPV_ERR_FRM_NOT_CURRENT 0xFF000F0F /* not the frame handed out last */
 #define SFMPV_ERR_SETCOND 0xFF000F12
 #define SFMPV_ERR_INIT_FF05 0xFF000F13 /* MPV_Init returned 0xFF03FF05 */
 #define SFMPV_ERR_PARA 0xFF000F15
 #define SFMPV_ERR_PICATR 0xFF000F1B
 #define SFMPV_ERR_PICUSR 0xFF000F1D
+#define SFMPV_ERR_FRM_ID 0xFF000F1F /* no frame has this id (released twice) */
 #define SFD_ERR_SETPICUSR 0xFF000185
 #define SFD_ERR_SETMPVCOND 0xFF000181
 
@@ -69,9 +72,12 @@ Sint32 SFMPV_Stop(SFD sfd);
 Sint32 SFMPV_Pause(SFD sfd);
 static Sint32 SFMPV_GetWrite(SFD sfd);
 Sint32 SFMPV_AddWrite(SFD sfd);
-/* Slots 0xB and 0xC: SFBUF_VfrmGetRead and SFBUF_VfrmAddRead pass the frame and their argument. */
-Sint32 SFMPV_GetRead(SFD sfd, void **frm, Sint32 arg);
-Sint32 SFMPV_AddRead(SFD sfd, void *frm, Sint32 arg);
+/* Slots 0xB and 0xC: SFBUF_VfrmGetRead and SFBUF_VfrmAddRead pass the frame information and their
+ * argument. When frames are handed out with an id (sfd->x58 == 2), GetRead returns the frame id
+ * through it and AddRead receives that id. */
+Sint32 SFMPV_GetRead(SFD sfd, SFD_VFRM_INF **inf, Sint32 *id);
+Sint32 SFMPV_AddRead(SFD sfd, SFD_VFRM_INF *inf, Sint32 id);
+void sfmpv_SetFrmInf(SFD sfd, SFMPV_FRM *frm, SFD_VFRM_INF **out);
 Sint32 SFMPV_Seek(SFD sfd);
 void sfmpv_ErrFn(void *obj, Sint32 code);
 Sint32 sfmpv_InitInf(SFD sfd, SFMPV_WORK *wk);
@@ -89,6 +95,22 @@ const Sint32 sfmpv_fps_round[9] = {0, 24, 24, 25, 30, 30, 50, 60, 60};
  * first minute of ten and in the other minutes, then four further constants. */
 const Sint32 sfmpv_conv_29_97[8] = {107892, 17982, 1800, 1798, 28, 30, 10, 2};
 const Sint32 sfmpv_conv_59_94[8] = {215784, 35964, 3600, 3596, 56, 60, 10, 4};
+
+/* Matching workaround: #pragma dont_inline around fn_803F894C. The original calls it out of line
+ * from SFMPV_GetRead, its only caller; with deferred inlining it is expanded there instead.
+ * Revisit when the original unit's inline settings are known. */
+#pragma dont_inline on
+/* Next frame id: returns sfd->x5c and counts it up, back to 0 after an overflow. The frame gets the
+ * id when frames are handed out with an id (inferred from SFMPV_GetRead). */
+Sint32 fn_803F894C(SFD sfd) {
+    Sint32 id = sfd->x5c++;
+
+    if (sfd->x5c < 0) {
+        sfd->x5c = 0;
+    }
+    return id;
+}
+#pragma dont_inline off
 
 /* Saves the decoder parameters and the buffers for the reference frames (rfb) and the decoded
  * frames (ta) the application supplies, each aligned up to 32 bytes; SFMPV_Create picks them up. */
@@ -442,6 +464,124 @@ static Sint32 SFMPV_GetWrite(SFD sfd) {
 
 Sint32 SFMPV_AddWrite(SFD sfd) {
     return SFLIB_SetErr(sfd, SFMPV_ERR_NOTSUPPORTED);
+}
+
+/* Hands out the next frame to display: its information (SFD_VFRM_INF, *inf) when the frame is due,
+ * otherwise *inf is 0. With frame ids the frame also gets an id, returned in *id. */
+Sint32 SFMPV_GetRead(SFD sfd, SFD_VFRM_INF **inf, Sint32 *id) {
+    SFMPV_FRM *frm = SFMPVF_HoldFrm(sfd);
+    Sint32 frm_id;
+
+    if (frm == 0) {
+        *inf = 0;
+        return 0;
+    }
+    sfmpv_SetFrmInf(sfd, frm, inf);
+    SFD_TIM(sfd)->vterm = (*inf)->ftime;
+    SFD_TIM(sfd)->vterm_unit = (*inf)->tunit;
+    if (!SFTIM_IsGetFrmTime(sfd, *inf)) {
+        *inf = 0;
+        return 0;
+    }
+    if (sfd->x58 == 2) {
+        frm_id = fn_803F894C(sfd);
+        frm->x58 = frm_id;
+        *id = frm_id;
+    }
+    return 0;
+}
+
+/* Fills in the picture information of the frame slot paired with frm, marks the slot as handed out
+ * and makes frm the current frame. *out gets the information. */
+void sfmpv_SetFrmInf(SFD sfd, SFMPV_FRM *frm, SFD_VFRM_INF **out) {
+    SFMPV_WORK *wk = SFMPV_WK(sfd);
+    SFD_VFRM *vfrm = SFMPVF_SearchVfrmData(sfd, frm);
+
+    *out = &vfrm->inf;
+    vfrm->used = 1;
+    wk->curfrm = frm;
+    (*out)->width = frm->picatr.width;
+    (*out)->height = frm->picatr.height;
+    (*out)->mb_width = frm->picatr.mb_width;
+    (*out)->mb_height = frm->picatr.mb_height;
+    (*out)->pic_type = frm->picatr.pic_type;
+    (*out)->ftime = frm->ftime;
+    (*out)->tunit = frm->tunit;
+    (*out)->x1c = sfd->prm.x38;
+    (*out)->buf = frm->buf;
+    (*out)->ndct = frm->ndct;
+    (*out)->nbyte = frm->nbyte;
+    (*out)->gopno = frm->gopno;
+    (*out)->x30 = frm->x4c;
+    (*out)->x34 = frm->x50;
+    (*out)->picusr = frm->picusr;
+    (*out)->x3c = frm->picatr.x40;
+    (*out)->x40 = frm->picatr.x44;
+    if (frm->picatr.x40 == 0) {
+        (*out)->x48 = 2;
+    } else {
+        (*out)->x48 = 1;
+    }
+    (*out)->pts = frm->pts;
+    (*out)->x58 = frm->picatr.x38;
+    (*out)->x5c = frm->picatr.x3c;
+    (*out)->bitrate = frm->picatr.bitrate;
+    (*out)->vbv_size = frm->picatr.vbv_size;
+    (*out)->x68 = frm->picatr.x50;
+    (*out)->x6a = frm->picatr.x52;
+    (*out)->x6c = frm->picatr.x55;
+    (*out)->x6d = frm->picatr.x56;
+    (*out)->x6e = frm->picatr.x57;
+    (*out)->aspect = frm->picatr.aspect;
+    (*out)->constrained = frm->picatr.constrained;
+    (*out)->x71 = frm->picatr.x5b;
+    (*out)->x72 = frm->picatr.x5c;
+    (*out)->x73 = frm->picatr.x5d;
+    (*out)->x74 = frm->picatr.x5e;
+    (*out)->x75 = frm->picatr.x5f;
+    (*out)->x76 = frm->picatr.x60;
+    (*out)->x77 = frm->picatr.x61;
+    (*out)->x78 = frm->picatr.x62;
+    (*out)->x79 = frm->picatr.x63;
+    (*out)->x7a = frm->picatr.x64;
+}
+
+/* Takes back a frame handed out by SFMPV_GetRead once the application has displayed it. With frame
+ * ids the frame is found by id, otherwise it must be the one handed out last. */
+Sint32 SFMPV_AddRead(SFD sfd, SFD_VFRM_INF *inf, Sint32 id) {
+    Sint32 cs;
+    SFMPV_WORK *wk;
+    SFMPV_FRM *frm;
+    SFD_VFRM *vfrm;
+    Sint32 ret;
+
+    SFLIB_LockCs(&cs);
+    wk = SFMPV_WK(sfd);
+    if (sfd->x58 == 2) {
+        frm = fn_803F8FC0(sfd, id);
+        if (frm == 0) {
+            ret = SFLIB_SetErr(sfd, SFMPV_ERR_FRM_ID);
+            goto done;
+        }
+        vfrm = SFMPVF_SearchVfrmData(sfd, frm);
+    } else {
+        vfrm = (SFD_VFRM *)((Uint8 *)inf - offsetof(SFD_VFRM, inf));
+        if (vfrm->used != 1) {
+            ret = SFLIB_SetErr(sfd, SFMPV_ERR_FRM_UNUSED);
+            goto done;
+        }
+        frm = SFMPVF_SearchFrmObj(sfd, inf);
+        if (wk->curfrm != frm) {
+            ret = SFLIB_SetErr(sfd, SFMPV_ERR_FRM_NOT_CURRENT);
+            goto done;
+        }
+    }
+    vfrm->used = 0;
+    SFMPVF_EndDrawFrm(frm);
+    ret = 0;
+done:
+    SFLIB_UnlockCs(&cs);
+    return ret;
 }
 
 /* The video header analysis of the seek work, or 0 when no seek work is attached or after a

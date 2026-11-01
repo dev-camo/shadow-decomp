@@ -436,7 +436,7 @@ typedef struct {
     Sint32 x4c;           /* 0x4C ttu.val */
     Sint32 x50;           /* 0x50 ttu.val + concatenation time */
     SFMPV_PICUSR *picusr; /* 0x54 */
-    Sint32 x58;           /* 0x58 -1 when the frame is released for drawing */
+    Sint32 x58;           /* 0x58 id from SFMPV_GetRead (frame ids), -1 when released for drawing */
     MPV_PICATR picatr;    /* 0x5C picture attributes (x68: ordering key of sfmpvf_IsPrior) */
     Sint64 pts;           /* 0xE0 */
 } SFMPV_FRM;
@@ -845,8 +845,8 @@ typedef struct SFD_OBJ {
     Sint32 req;                    /* 0x4C requested state (3 = standby, 4 = start) */
     Sint32 pause_sw;               /* 0x50 */
     Sint32 pause_cnt;              /* 0x54 */
-    Sint32 x58;                    /* 0x58 frame access claimed by SFD_GetFrm/SFD_RelFrm */
-    Sint32 x5c;                    /* 0x5C */
+    Sint32 x58;                    /* 0x58 1: SFD_GetFrm access, 2: frames handed out with ids */
+    Sint32 x5c;                    /* 0x5C next frame id (fn_803F894C) */
     Uint8 pad60[0x74 - 0x60];      /* 0x60 */
     Sint32 x74;                    /* 0x74 */
     SFHDS_FHD fhd;                 /* 0x78 file header analysis */
