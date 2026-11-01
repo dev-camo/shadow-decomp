@@ -1,14 +1,22 @@
 #ifndef GAME_PATHCTRL_H
 #define GAME_PATHCTRL_H
 
+#include "Game/fn_8040_vector_types.h"
 #include <dolphin/types.h>
 #include "layout_check.h"
 
 class GadgetCharInfo;
-class UnkBss_80570B50;
+/* Two vectors copied by the original constructor at 0x8001C4B8; type name unknown. */
+class UnkBss_80570B50 {
+  public:
+    UnkBss_80570B50(const Fn8040Vector3 &first, const Fn8040Vector3 &second);
+
+    /* 0x00 */ Fn8040Vector3 field_0x0;
+    /* 0x0C */ Fn8040Vector3 field_0xC;
+};
+CHECK_SIZEOF(UnkBss_80570B50, 0x18);
 /* Path-file payload consumed by fn_8001DB08; original type name and layout are unknown. */
 struct UnkPathData_8001DB08;
-struct Fn8040Vector3;
 
 namespace SonicteamUSA {
 namespace System {
@@ -50,7 +58,7 @@ bool fn_8001C91C(UnkCollision_8001B494 *collision, SonicteamUSA::System::PathCtr
  * 0x0-0x8 and 0xC-0x14) and also passed on (the GrindGadget passes lbl_80570B50). */
 void fn_8001DB08(UnkCollision_8001B494 *collision, UnkPathData_8001DB08 *resource,
                  const Fn8040Vector3 *position, Fn8040Vector3 rotation, int arg4,
-                 SonicteamUSA::System::PathCtrl *path, const UnkBss_80570B50 *arg6);
+                 SonicteamUSA::System::PathCtrl *path, const UnkBss_80570B50 &arg6);
 /* Releases path (behaviour inferred from its body: it passes objects derived from the path to
  * release functions). The collision argument is unused. */
 void fn_8001E2DC(UnkCollision_8001B494 *collision, SonicteamUSA::System::PathCtrl *path);
@@ -62,7 +70,12 @@ bool fn_8001CDA0(UnkCollision_8001B494 *collision, SonicteamUSA::System::PathCtr
  * the negation of fn_80016980, which tests the counter for none). */
 bool fn_800ABDCC(SonicteamUSA::System::PathCtrl *path);
 
-/* A 0x18-byte object in .bss that fn_8001DB08 receives (placeholder name; its type is unknown). */
+/* These callers establish the PathCtrl argument but do not use either procedure's result. */
+void fn_800181BC(SonicteamUSA::System::PathCtrl *path);
+void fn_80018304(SonicteamUSA::System::PathCtrl *path);
+float fn_800183D8(SonicteamUSA::System::PathCtrl *path);
+
+/* External two-vector record read by fn_8001DB08. */
 extern UnkBss_80570B50 lbl_80570B50;
 }
 

@@ -42,6 +42,11 @@ Game/fn_801A61E4.cpp:
 	.sdata      start:0x805E8800 end:0x805E8818
 	.sdata2     start:0x805F5E28 end:0x805F5E40
 
+Game/fn_801A6588.cpp:
+	.text       start:0x801A6908 end:0x801A6BFC
+	.rodata     start:0x804CCEA0 end:0x804CCEB0
+	.sdata2     start:0x805F5E40 end:0x805F5E48
+
 dolphin/PPCArch.c:
 	.text       start:0x803702C8 end:0x803703DC
 
