@@ -10,7 +10,7 @@ namespace System {
 /* Requests termination of the owning effect (name inferred). */
 enum { COMMAND_STOP_REQUESTED = 1 };
 
-/* Encoded command headers and loop data; these record names are placeholders. */
+/* Encoded command headers, loop and wait data; these record names are placeholders. */
 struct UnkCommandData {
     /* 0x00 */ unsigned char type;
     /* 0x01 */ unsigned char hasNext;
@@ -23,6 +23,11 @@ struct UnkLoopStartData : UnkCommandData {
     /* 0x04 */ unsigned int count;
 };
 CHECK_SIZEOF(UnkLoopStartData, 0x8);
+
+struct UnkWaitData : UnkCommandData {
+    /* 0x04 */ unsigned int duration;
+};
+CHECK_SIZEOF(UnkWaitData, 0x8);
 
 /* Class names are recorded in the original RTTI. Member names are inferred from use. */
 class EffectCommandExec {
@@ -78,6 +83,19 @@ class EffCmdLoopStartExec : public EffectCommandExec {
     /* 0x20 */ bool m_finished;
 };
 CHECK_SIZEOF(EffCmdLoopStartExec, 0x24);
+
+class EffCmdWaitExec : public EffectCommandExec {
+  public:
+    EffCmdWaitExec(const UnkCommandData *command, unsigned int *flags, EffectCommandExec *last);
+    virtual ~EffCmdWaitExec();
+    virtual bool Update(float deltaTime);
+
+    /* 0x14 */ unsigned int *m_flags;
+    /* 0x18 */ float m_elapsed;
+    /* 0x1C */ float m_duration;
+    /* 0x20 */ EffectCommandExec *m_last;
+};
+CHECK_SIZEOF(EffCmdWaitExec, 0x24);
 
 } // namespace System
 } // namespace Effect
