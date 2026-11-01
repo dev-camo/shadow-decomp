@@ -1498,3 +1498,7 @@ Game/EffectLocusRW3.cpp:
 	.text       start:0x8043AB68 end:0x8043BACC
 	.rodata     start:0x8051CB78 end:0x8051CC40
 	.data       start:0x8056C0E8 end:0x8056C150
+
+rw/fn_8046ACBC.c:
+	.text       start:0x8046BD0C end:0x8046C160
+	.data       start:0x8056EBB8 end:0x8056EC10

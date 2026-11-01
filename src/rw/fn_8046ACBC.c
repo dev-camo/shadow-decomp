@@ -22,7 +22,7 @@
     do {                                                                                           \
         RwUInt32 type = ((builder)->vcd[1] >> (2 * (n))) & 3;                                      \
                                                                                                    \
-        ATTRIBUTEBYTES(stride, type, fn_80466A54(builder, n));                                     \
+        ATTRIBUTEBYTES(stride, type, fn_80466A54((builder), (n)));                                 \
     } while (0)
 
 RwInt32 fn_8046ACBC(const RpGameCubeVertexDescBuilder *builder) {
@@ -78,10 +78,9 @@ RwInt32 fn_8046ACBC(const RpGameCubeVertexDescBuilder *builder) {
         }
         case GX_VA_CLR0:
         case GX_VA_CLR1: {
-            RwInt32 channel = attribute - GX_VA_CLR0;
-            RwUInt32 type = (builder->vcd[0] >> (channel * 2 + 13)) & 3;
+            RwUInt32 type = (builder->vcd[0] >> ((attribute - GX_VA_CLR0) * 2 + 13)) & 3;
 
-            ATTRIBUTEBYTES(stride, type, fn_804669EC(builder, channel));
+            ATTRIBUTEBYTES(stride, type, fn_804669EC(builder, attribute - GX_VA_CLR0));
             break;
         }
         case GX_VA_TEX0:
@@ -117,9 +116,11 @@ RwInt32 fn_8046ACBC(const RpGameCubeVertexDescBuilder *builder) {
  * primitive has a 3-byte header and each index a vertex */
 RwUInt32 fn_8046B094(const RpGameCubeVertexDescBuilder *builder, RwInt32 numPrimitives,
                      RwUInt32 numIndices) {
-    RwUInt32 size = numPrimitives * 3 + numIndices * fn_8046ACBC(builder);
+    RwUInt32 stride = fn_8046ACBC(builder);
+    RwUInt32 size = numPrimitives * 3 + numIndices * stride;
 
-    return (size + 31) & ~31;
+    size = (size + 31) & ~31;
+    return size;
 }
 
 /* Prepares a mesh's display list record over cleared data; the mesh index is not used */

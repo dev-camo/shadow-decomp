@@ -571,7 +571,6 @@ config.libs = [
                 Object(Matching, "rw/fn_8046528C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80465CDC.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80466B58.c", cflags=cflags_game),
-                Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8046B110.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8046D8C8.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8046EE8C.c", cflags=cflags_game),
@@ -1427,7 +1426,10 @@ config.libs = [
             if config.version == "GUPE8P"
             else []
         ) + [
-            # These Game units are enabled for all regions; the list above remains USA-only.
+            # These units are enabled for all regions; the conditional list above remains USA-only.
+            # The size and preparation helpers match; the vertex-byte counter retains twelve
+            # register-word differences in its normal-attribute case.
+            Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
             Object(NonMatching, "Game/fn_801A1FA0.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A35AC.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A4430.cpp", cflags=cflags_game_cpp),
