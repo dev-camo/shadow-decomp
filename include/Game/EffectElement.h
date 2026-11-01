@@ -14,7 +14,13 @@ class EffectLaunchInfo;
 struct UnkEffectElementData;
 
 /* Flag names are inferred from the update and stop paths. */
-enum { ELEMENT_ACTIVE = 1, ELEMENT_FLAG_4 = 4, ELEMENT_FLAG_8 = 8, ELEMENT_STOP_REQUESTED = 0x10 };
+enum {
+    ELEMENT_ACTIVE = 1,
+    ELEMENT_FLAG_2 = 2,
+    ELEMENT_FLAG_4 = 4,
+    ELEMENT_FLAG_8 = 8,
+    ELEMENT_STOP_REQUESTED = 0x10
+};
 
 /* Class name from RTTI. Method and member names are inferred where not placeholders. */
 class EffectElement {
@@ -58,7 +64,7 @@ class EffectElement {
     /* 0x1C */ EffectManager *m_manager;
     /* 0x20 */ boost::shared_ptr<EffectElement> m_updatePrev;
     /* 0x28 */ boost::shared_ptr<EffectElement> m_updateNext;
-    /* 0x30 */ unsigned int field_0x30;
+    /* 0x30 */ int field_0x30;
     /* 0x34 */ boost::shared_ptr<EffectElement> m_renderPrev;
     /* 0x3C */ boost::shared_ptr<EffectElement> m_renderNext;
     /* 0x44 */ const UnkEffectElementData *m_definition;
