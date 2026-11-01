@@ -10,10 +10,7 @@
  * expansions, are inferred from what they do.
  *
  * The unit is compiled with deferred inlining, so the functions are defined in the reverse of
- * their order in .text and the variables in the reverse of their order in .bss.
- *
- * Not yet written: the layout check sfmpv_ChkFatal, whose three compared quantities are not tied
- * to known sizes. */
+ * their order in .text and the variables in the reverse of their order in .bss. */
 #include <stddef.h>
 #include <string.h>
 
@@ -51,7 +48,10 @@ typedef void (*SFMPV_HDRCB)(void *obj, Uint8 *data, Sint32 size);
 #define SFMPV_ERR_SKIP 0xFF000F07       /* MPV_SkipFrmSj failed */
 #define SFMPV_ERR_BITRATE 0xFF000F16    /* MPV_GetBitRate failed */
 #define SFMPV_ERR_FRMSIZE 0xFF000F17    /* the frame buffers do not hold the picture size */
-#define SFMPV_ERR_RING_FULL 0xFF000F1C  /* the input ring is too full for another unit */
+#define SFMPV_ERR_PICATR_SIZE 0xFF000F19 /* MPV_PICATR is not 0x80 bytes */
+#define SFMPV_ERR_VHDR_SIZE 0xFF000F1A   /* the video header analysis is too large */
+#define SFMPV_ERR_RING_FULL 0xFF000F1C   /* the input ring is too full for another unit */
+#define SFMPV_ERR_INT_SIZE 0xFF000F1E    /* Sint32 is not 4 bytes */
 /* start code classes that begin a unit of the driver: the first slice and the picture bounds */
 #define SFMPV_DLM_UNIT (MPV_DLM_PIC_BOUND | MPV_DLM_SLICE1)
 /* PTS clock (90 kHz) ticks in a thousand seconds, for the frame rates of SFTIM_prate, which are in
@@ -76,9 +76,7 @@ Sint32 sfmpv_picusr_buf1siz;
 
 Sint32 sfmpv_discard_wsiz; /* use unknown: the written functions only clear it */
 
-/* Not written yet: the layout check SFMPV_Init calls, whose three compared quantities are not
- * tied to known sizes. */
-Sint32 sfmpv_ChkFatal(void);
+static Sint32 sfmpv_ChkFatal(void);
 
 Sint32 sfmpv_GetActiveSize(SFD sfd, Sint32 *size, Sint32 *cls, Sint32 *partial);
 Bool sfmpv_NeedSafeDlmRefresh(SFBUF_RINF *inf, Sint32 head_cls, Uint8 *delim);
@@ -311,8 +309,8 @@ Sint32 SFD_SetPicUsrBuf(SFD sfd, Uint8 *buf, Sint32 num, Sint32 siz) {
     return sfmpv_SetPicUsrBuf(sfd, buf, num, siz);
 }
 
-/* Brings up the MPV library on its work area and clears the saved resources. A failed layout
- * check hangs the system. */
+/* Brings up the MPV library on its work area and clears the saved resources. A failed
+ * check in sfmpv_ChkFatal hangs the system. */
 Sint32 SFMPV_Init(void) {
     Sint32 err;
     Sint32 code;
@@ -336,6 +334,35 @@ Sint32 SFMPV_Init(void) {
     sfmpv_discard_wsiz = 0;
     return 0;
 }
+
+/* Layout checks of the driver, made at run time: the picture attributes, the part of the video
+ * header analysis after its first 0x38 bytes and Sint32 must have the sizes the code assumes. All
+ * three sizes are compile-time constants, so the compiler keeps only the compares. The quantities
+ * and error codes follow the Resident Evil 4 decompilation of this file; the first check's code is
+ * dropped from the bytes with its dead branch. Returns 0 when all hold.
+ *
+ * Matching workaround: #pragma dont_inline around sfmpv_ChkFatal. The original calls it out of
+ * line from SFMPV_Init, its only caller; with deferred inlining it is expanded there instead
+ * (SFMPV_Init 66 words against the original 45). Revisit when the original unit's inline settings
+ * are known. */
+#pragma dont_inline on
+static Sint32 sfmpv_ChkFatal(void) {
+    Sint32 picatr_size = sizeof(MPV_PICATR);
+    Sint32 vhdr_size = sizeof(SFSEE_VHDR) - 0x38;
+    Sint32 int_size = sizeof(Sint32);
+
+    if (picatr_size != 0x80) {
+        return SFLIB_SetErr(0, SFMPV_ERR_PICATR_SIZE);
+    }
+    if (vhdr_size > 0x204) {
+        return SFLIB_SetErr(0, SFMPV_ERR_VHDR_SIZE);
+    }
+    if (int_size != 4) {
+        return SFLIB_SetErr(0, SFMPV_ERR_INT_SIZE);
+    }
+    return 0;
+}
+#pragma dont_inline off
 
 Sint32 SFMPV_Finish(void) {
     MPV_Finish();
