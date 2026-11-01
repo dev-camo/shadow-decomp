@@ -1,0 +1,26 @@
+#ifndef MSL_STDEXCEPT_H_
+#define MSL_STDEXCEPT_H_
+
+#include <exception>
+#include "layout_check.h"
+
+namespace std {
+
+class runtime_error : public exception {
+  public:
+    explicit runtime_error(const char *message);
+    runtime_error(const runtime_error &other);
+    runtime_error &operator=(const runtime_error &other);
+    virtual ~runtime_error();
+    virtual const char *what() const;
+
+  private:
+    /* The original owns a reference-counted message; field names are inferred. */
+    /* 0x04 */ char *message_;
+    /* 0x08 */ unsigned int *references_;
+};
+CHECK_SIZEOF(std::runtime_error, 0xC);
+
+} // namespace std
+
+#endif

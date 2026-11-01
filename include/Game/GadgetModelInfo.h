@@ -10,35 +10,7 @@
 
 class CharInfo;
 class UnkAttack_8005A840;
-class UnkMotionControl_801602B4;
-
-/* Tests or sets a work flag of the motion control (behaviour inferred: CityLaser and ThreatObj
- * pass 0, 3, 1 and test the result, GadgetModelInfo::fn_8015FF60 passes 0, 11, 0). */
-extern "C" int stMtnControlWorkFlag(UnkMotionControl_801602B4 *control, int id, int arg2, int arg3);
-
-/* Motion control calls with behaviour inferred from the names: prepare a blend towards the target
- * motion, set the blend length and set the frame speed. The Chao gadget passes 0, -1 and -1, then a
- * blend length of 15, and speeds of 1 and of its movement; the meaning of the other arguments is
- * unknown, and the return types are unknown (the Chao ignores them). */
-extern "C" void stMtnPrepareBlendWithTarget(UnkMotionControl_801602B4 *control, int arg1, int arg2,
-                                            int arg3);
-/* Also declared in Game/fn_804157E8_motion_control.h, whose unit defines them, with the original
- * type _stMtnPlayWork for the control. Both declarations name that same type: the shared_ptr that
- * fn_80160C90 builds at 0x80160DA4 with the deleter fn_8041B884 is typed _stMtnPlayWork by its
- * RTTI and is destroyed as a shared_ptr<UnkMotionControl_801602B4>. UnkMotionControl_801602B4
- * keeps its placeholder name until the class is renamed. */
-extern "C" void stMtnRequestBlendFrame(UnkMotionControl_801602B4 *control, int id, float frames);
-extern "C" void stMtnRequestFrameSpeed(UnkMotionControl_801602B4 *control, int id, float speed);
-
-/* Copies the four floats at 0xA0 of the motion that the slot table of the control gives for id to
- * out (behaviour inferred from its body). It does nothing for a null control or out, a slot of -1,
- * or a motion whose word at 0x90 has bit 0x4 clear. Also declared in
- * Game/fn_804157E8_motion_control.h with _stMtnPlayWork for the control (see above). */
-extern "C" void fn_80415D40(UnkMotionControl_801602B4 *control, int id, MotionRange *out);
-/* Requests a current frame for the motion with the given id (purpose inferred from the symbol
- * name; FallBuildingHolder passes 0 and the end frame from fn_80415D40). Also declared in
- * Game/fn_804157E8_motion_control.h with _stMtnPlayWork for the control (see above). */
-extern "C" void stMtnRequestCurrentFrame(UnkMotionControl_801602B4 *control, int id, float frame);
+struct _stMtnPlayWork;
 
 /* An entry of the array at 0x0 of the object at 0x30 of a GadgetModelInfo, found by the word at
  * 0x3C (placeholder name; only the name at 0x4 is mapped). */
@@ -126,9 +98,9 @@ class GadgetModelInfo {
      * object at 0x30 by arg0, and passes both on with info (behaviour inferred from its body; the
      * result is not used by FallBuildingHolder). */
     int fn_80161BD8(int arg0, const boost::weak_ptr<CharInfo> &info, int arg2);
-    /* Returns the motion control of the part with id arg0 (placeholder type; behaviour
+    /* Returns the motion control of the part with id arg0 (behaviour
      * inferred). */
-    boost::weak_ptr<UnkMotionControl_801602B4> fn_801602B4(int arg0);
+    boost::weak_ptr<_stMtnPlayWork> fn_801602B4(int arg0);
 
     /* 0x04 */ u8 field_0x4[0x70];
 };

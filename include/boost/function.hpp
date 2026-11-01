@@ -33,15 +33,16 @@
 // reproduced, and the pieces that depend on type traits the reconstructed units never need are
 // left out: plain function pointers, member pointers, boost::ref and stateless function objects
 // (the reconstructed units store only boost::bind expressions), target(), the comparison against
-// other functors and operator() with its bad_function_call (the units that call the callbacks are
-// not reconstructed, and the MSL C++ headers of this project have no <stdexcept> for
-// bad_function_call). The typedefs and constants no reconstructed unit refers to are also left
+// other functors. The bad_function_call constructor and destructor use the original out-of-line
+// definitions. The typedefs and constants no reconstructed unit refers to are also left
 // out: args, arity, sig and arg1_type. The configuration macros are resolved for MWCC
 // (BOOST_NO_SFINAE), and BOOST_ASSERT is resolved for an NDEBUG build, so the
 // checks in the int constructor and assignment are left out. The bodies stay in the classes as in
 // Boost: the game's inlining depends on them (see cflags_game_cpp in configure.py).
 
 #include "boost/utility/addressof.hpp"
+#include "boost/throw_exception.hpp"
+#include <stdexcept>
 #include <memory>
 #include <new>
 #include <typeinfo>
@@ -49,6 +50,13 @@
 #include "layout_check.h"
 
 namespace boost {
+
+class bad_function_call : public std::runtime_error {
+  public:
+    bad_function_call();
+    virtual ~bad_function_call();
+};
+CHECK_SIZEOF(boost::bad_function_call, 0xC);
 
 namespace detail {
 namespace function {
@@ -288,6 +296,14 @@ class function1 : public function_base {
 
         self_type(f).swap(*this);
         return *this;
+    }
+
+    result_type operator()(T0 a0) const {
+        if (this->empty()) {
+            boost::throw_exception(bad_function_call());
+        }
+        internal_result_type result = invoker(this->functor, a0);
+        return static_cast<result_type>(result);
     }
 
     void swap(function1 &other) {

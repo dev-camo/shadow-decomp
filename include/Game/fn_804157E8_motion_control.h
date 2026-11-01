@@ -294,12 +294,10 @@ void fn_804208EC(Fn8040Vector4 *quaternion, const Fn8040Matrix34 *matrix);
 int fn_80420724(Fn8040Vector4 *result, const Fn8040Vector4 *a, const Fn8040Vector4 *b, float t);
 void fn_80420B60(Fn8040Matrix34 *matrix, const Fn8040Vector4 *quaternion);
 
-/* stMtnRequestBlendFrame, stMtnRequestFrameSpeed, stMtnRequestCurrentFrame and fn_80415D40 are
- * also declared in Game/GadgetModelInfo.h for the C++ callers, with UnkMotionControl_801602B4 for
- * the control. Both declarations name the same _stMtnPlayWork type (fn_80160C90 builds that
- * shared_ptr at 0x80160DA4 and destroys it with the destructor of
- * shared_ptr<UnkMotionControl_801602B4>), but that class keeps its placeholder name for now, so a
- * unit cannot include both headers. */
+int stMtnControlWorkFlag(_stMtnPlayWork *control, int id, int flag, int action);
+int stMtnPrepareBlendWithTarget(_stMtnPlayWork *control, int target, int first, int last);
+int stMtnAbortBlend(_stMtnPlayWork *control, int id);
+void fn_80417568(_stMtnPlayWork *control, unsigned short motionId);
 void stMtnRequestBlendRatio(_stMtnPlayWork *control, int id, float ratio);
 void stMtnRequestBlendSpeed(_stMtnPlayWork *control, int id, float speed);
 void stMtnRequestBlendFrame(_stMtnPlayWork *control, int id, float frames);
@@ -311,8 +309,10 @@ void stMtnRequestStartFrame(_stMtnPlayWork *control, int id, float frame);
 float fn_804157E8(float scale);
 int fn_80415808(_stMtnPlayWork *control, unsigned int nodeId, int arg2, int arg3);
 int fn_8041583C(_stMtnPlayWork *control);
-int fn_80415854(_stMtnPlayWork *control, int id, int arg2, int arg3, int repeats);
-int fn_80415A18(_stMtnPlayWork *control, int id, int arg2, int arg3, int repeats);
+int fn_80415854(_stMtnPlayWork *control, int id, unsigned short *eventId, void **payload,
+                int repeats);
+int fn_80415A18(_stMtnPlayWork *control, int id, unsigned short eventId, void *destination,
+                int repeats);
 void fn_80415BDC(_stMtnPlayWork *control, const Fn8040Vector3 *offset);
 unsigned short fn_80415CDC(_stMtnPlayWork *control, int id);
 void fn_80415D40(_stMtnPlayWork *control, int id, MotionRange *range);

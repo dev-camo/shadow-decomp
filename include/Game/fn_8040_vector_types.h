@@ -51,6 +51,7 @@ CHECK_SIZEOF(Fn8040Vector4, 0x10);
 typedef struct Fn8040Matrix34 {
 #ifdef __cplusplus
     Fn8040Matrix34() {}
+    Fn8040Matrix34(const Fn8040Matrix34 &other);
     /* Stores the elements itself: delegating to Set changes the startup code of the identity and
      * zero matrices (37 instead of 29 instructions). */
     Fn8040Matrix34(float m00, float m01, float m02, float m03, float m10, float m11, float m12,
@@ -171,6 +172,9 @@ void fn_80008E1C(Fn8040Vector3 *vector, float x, float y, float z);
  * descriptions are inferred from the code. */
 /* Copies source to destination. */
 void fn_8040C148(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
+/* Original matrix conversion wrappers; C++ member identities are unknown. */
+void fn_80016370(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
+Fn8040Matrix34 fn_800163F4(const Fn8040Matrix34 *source);
 /* Returns the address of the element at the given row and column. */
 float *fn_8040C17C(Fn8040Matrix34 *matrix, int row, int column);
 /* Returns the element at the given row and column. */
@@ -338,6 +342,10 @@ extern Fn8040Matrix34 lbl_805E0720; /* identity */
 extern Fn8040Matrix34 lbl_805E0750; /* zero */
 
 #ifdef __cplusplus
+}
+
+inline Fn8040Matrix34::Fn8040Matrix34(const Fn8040Matrix34 &other) {
+    fn_8040C148(this, &other);
 }
 
 /* Returns whether the value is close enough to 0 to count as 0 (behaviour inferred). */

@@ -139,6 +139,11 @@ Game/fn_801A35AC.cpp:
 	.text       start:0x801A35AC end:0x801A4430
 	.sdata2     start:0x805F57B8 end:0x805F57C8
 
+Game/fn_801A4430.cpp:
+	.text       start:0x801A4430 end:0x801A54E8
+	.rodata     start:0x804CC1F8 end:0x804CC230
+	.sdata2     start:0x805F57C8 end:0x805F57D0
+
 Game/ElecCircuit.cpp:
 	.text       start:0x801F78B8 end:0x801F7D24
 	.rodata     start:0x804EB930 end:0x804EB958

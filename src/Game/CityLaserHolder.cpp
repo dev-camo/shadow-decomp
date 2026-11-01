@@ -18,6 +18,7 @@
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
+#include "Game/fn_804157E8_motion_control.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/UnkManager_80009548.h"
 #include "Game/UnkManager_800CB69C.h"
@@ -205,7 +206,7 @@ void CityLaser::Update(float dt) {
         }
         break;
     case 2: {
-        boost::shared_ptr<UnkMotionControl_801602B4> motion = m_model->fn_801602B4(0).lock();
+        boost::shared_ptr<_stMtnPlayWork> motion = m_model->fn_801602B4(0).lock();
 
         if (motion.get() != 0) {
             if (stMtnControlWorkFlag(motion.get(), 0, 3, 1)) {
@@ -215,7 +216,7 @@ void CityLaser::Update(float dt) {
         break;
     }
     case 3: {
-        boost::shared_ptr<UnkMotionControl_801602B4> motion = m_model->fn_801602B4(1).lock();
+        boost::shared_ptr<_stMtnPlayWork> motion = m_model->fn_801602B4(1).lock();
 
         if (motion.get() != 0) {
             if (stMtnControlWorkFlag(motion.get(), 0, 3, 1)) {
