@@ -1380,9 +1380,14 @@ CRI/cft_lib.c:
 	.rodata     start:0x8051B370 end:0x8051B3C8
 	.bss        start:0x805E17D8 end:0x805E17E0
 
-Game/fn_804220CC.cpp:
-	.text       start:0x8042311C end:0x8042327C
-	.data       start:0x8056B1A0 end:0x8056B228
+Game/fn_80422070.cpp:
+	extab       start:0x800061D8 end:0x800061E0
+	extabindex  start:0x8000830C end:0x80008318
+	.text       start:0x804230C0 end:0x8042311C
 
-Game/EffCmdGlareSWExec.cpp:
-	.text       start:0x80424FE8 end:0x80425088
+Game/fn_804220CC.cpp:
+	extab       start:0x800061E0 end:0x80006464
+	extabindex  start:0x80008318 end:0x80008498
+	.text       start:0x8042311C end:0x804261C0
+	.rodata     start:0x8051B7C8 end:0x8051BA20
+	.data       start:0x8056B160 end:0x8056B410
