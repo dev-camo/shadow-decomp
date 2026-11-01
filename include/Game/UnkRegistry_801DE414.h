@@ -1,7 +1,7 @@
 #ifndef GAME_UNKREGISTRY_801DE414_H
 #define GAME_UNKREGISTRY_801DE414_H
 
-#include "Game/RwClumpView.h"
+#include "rw/rpworld.h"
 #include "Game/UnkString_8004F888.h"
 #include <dolphin/types.h>
 #include "layout_check.h"
@@ -21,7 +21,7 @@ extern "C" {
 /* Registers the clump under name, or counts another user of it when the name is known (behaviour
  * inferred from the body). Returns true when it adds a new entry, false when the name is already
  * registered. */
-bool fn_801DE0EC(UnkRegistry_801DE414 *registry, const UnkString_8004F888 &name, UnkRwClump *clump);
+bool fn_801DE0EC(UnkRegistry_801DE414 *registry, const UnkString_8004F888 &name, RpClump *clump);
 /* Releases one user of the entry under name; the entry goes with the last one (behaviour inferred
  * from the body). */
 void fn_801DDFDC(UnkRegistry_801DE414 *registry, const UnkString_8004F888 &name);
