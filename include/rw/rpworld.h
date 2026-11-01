@@ -528,8 +528,9 @@ RpWorld *fn_804621C0(RpWorld *world, RpAtomic *atomic); /* adds an atomic */
 RpWorld *fn_8046221C(RpWorld *world, RpAtomic *atomic); /* removes an atomic */
 RpWorld *fn_804622FC(RpWorld *world, RpClump *clump);   /* adds a clump */
 RpWorld *fn_804623EC(RpWorld *world, RpClump *clump);   /* removes a clump */
-RpWorld *fn_80462578(RpWorld *world, RpLight *light);   /* adds a light */
-RpWorld *fn_80462618(RpWorld *world, RpLight *light);   /* removes a light */
+RpWorld *fn_8046256C(const RpClump *clump);
+RpWorld *fn_80462578(RpWorld *world, RpLight *light); /* adds a light */
+RpWorld *fn_80462618(RpWorld *world, RpLight *light); /* removes a light */
 /* attaches the pipeline plugin: nothing to attach, returns TRUE */
 RwBool fn_80462884(void);
 RpWorld *fn_8045FEA0(RpWorldSector *sector); /* the world a sector belongs to */

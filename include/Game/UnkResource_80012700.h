@@ -22,6 +22,7 @@ class Resource;
 
 extern "C" {
 UnkResourceManager_800122D4 *fn_800122D4(void);
+void *fn_8001277C(UnkResourceManager_800122D4 *manager, int key, int index);
 /* Unloads and removes the resource registered under key (behaviour inferred). */
 void fn_800127F8(UnkResourceManager_800122D4 *manager, int key);
 /* Registers resource when key is absent; returns whether it was inserted (inferred). */

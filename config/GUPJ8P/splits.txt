@@ -19,6 +19,10 @@ Game/fn_801A1FA0.cpp:
 	.data       start:0x8053B018 end:0x8053B078
 	.sdata      start:0x805E87C0 end:0x805E87E0
 
+Game/fn_801A35AC.cpp:
+	.text       start:0x801A392C end:0x801A47B0
+	.sdata2     start:0x805F5DE0 end:0x805F5DF0
+
 dolphin/PPCArch.c:
 	.text       start:0x803702C8 end:0x803703DC
 
