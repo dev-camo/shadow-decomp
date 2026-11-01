@@ -17,6 +17,10 @@ class UnkTarget_80166AF4 {
      * only to entries whose word at 0xC equals arg0 (behaviour inferred). */
     void fn_80167010(int arg0);
     void fn_8016761C(float dt);
+    /* Acts on the entries whose word at 0x8 has bit 0 clear and, unless arg0 is -1, whose word at
+     * 0xC equals arg0; fn_80167010 uses the same selector on the entries with that bit set
+     * (behaviour inferred). FallBuildingHolder calls it with -1. */
+    void fn_80167448(int arg0);
     /* Called before the object is released (behaviour inferred from the CityLaser gadget). */
     void fn_80166F88();
 

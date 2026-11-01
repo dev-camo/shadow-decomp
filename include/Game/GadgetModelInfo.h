@@ -2,6 +2,7 @@
 #define GAME_GADGETMODELINFO_H
 
 #include "Game/fn_8040_vector_types.h"
+#include "Game/fn_804157E8_motion_range.h"
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include <dolphin/types.h>
@@ -25,6 +26,25 @@ extern "C" void stMtnPrepareBlendWithTarget(UnkMotionControl_801602B4 *control, 
  * unit defines it (the two control types are not unified yet). */
 extern "C" void stMtnRequestBlendFrame(UnkMotionControl_801602B4 *control, int id, float frames);
 extern "C" void stMtnRequestFrameSpeed(UnkMotionControl_801602B4 *control, int id, float speed);
+
+/* Copies the four floats at 0xA0 of the motion that the slot table of the control gives for id to
+ * out (behaviour inferred from its body). It does nothing for a null control or out, a slot of -1,
+ * or a motion whose word at 0x90 has bit 0x4 clear. Also declared, with MotionControl for the
+ * control, in Game/fn_804157E8_motion_control.h, whose unit defines it. */
+extern "C" void fn_80415D40(UnkMotionControl_801602B4 *control, int id, MotionRange *out);
+/* Requests a current frame for the motion with the given id (purpose inferred from the symbol
+ * name; FallBuildingHolder passes 0 and the end frame from fn_80415D40). */
+extern "C" void stMtnRequestCurrentFrame(UnkMotionControl_801602B4 *control, int id, float frame);
+
+/* An entry of the array at 0x0 of the object at 0x30 of a GadgetModelInfo, found by the word at
+ * 0x3C (placeholder name; only the name at 0x4 is mapped). */
+struct UnkModelEntry_8015F7BC {
+    /* 0x00 */ u8 field_0x0[4];
+    /* 0x04 */ const char *name; /* FallBuildingHolder passes it to fn_80012700 as a file name */
+    /* 0x08 */ u8 field_0x8[0x3C - 0x8];
+    /* 0x3C */ s32 id;
+};
+CHECK_SIZEOF(UnkModelEntry_8015F7BC, 0x40);
 
 /* The three words that fn_8015FA78 passes to its callback for each part (names and meaning
  * unknown). */
@@ -91,6 +111,17 @@ class GadgetModelInfo {
     void fn_80161FC8(int arg0, const boost::weak_ptr<CharInfo> &info);
     /* Returns the attack object of the part with id arg0 (behaviour inferred). */
     boost::weak_ptr<UnkAttack_8005A840> fn_80161428(int arg0);
+    /* Returns the entry of the array at 0x0 of the object at 0x30 whose id equals arg0, or null
+     * (behaviour inferred). */
+    UnkModelEntry_8015F7BC *fn_8015F7BC(int arg0);
+    /* Finds the entry of the list at 0x64 with the id arg0, passes the member at 0x8 of that entry
+     * to fn_8016193C and erases the entry from the list, returning whether there was one
+     * (behaviour inferred from its body). */
+    bool fn_80161A24(int arg0);
+    /* Looks up an entry of the list at 0x58 by arg2 and an entry of the array at 0x18 of the
+     * object at 0x30 by arg0, and passes both on with info (behaviour inferred from its body; the
+     * result is not used by FallBuildingHolder). */
+    int fn_80161BD8(int arg0, const boost::weak_ptr<CharInfo> &info, int arg2);
     /* Returns the motion control of the part with id arg0 (placeholder type; behaviour
      * inferred). */
     boost::weak_ptr<UnkMotionControl_801602B4> fn_801602B4(int arg0);

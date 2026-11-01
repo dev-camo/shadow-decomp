@@ -140,9 +140,9 @@ int fn_8041CFB0(MotionNode *node, int playerIndex, unsigned int key, float arg3,
 int fn_8041D1A0(MotionNode *node, unsigned int key, int arg2, int arg3);
 int fn_8041D31C(MotionNode *node, unsigned int key);
 
-/* stMtnRequestBlendFrame is also declared in Game/GadgetModelInfo.h for the C++ callers, with
- * UnkMotionControl_801602B4 standing for the control; that class and MotionControl are not unified
- * yet, so a unit cannot include both headers. */
+/* stMtnRequestBlendFrame and fn_80415D40 are also declared in Game/GadgetModelInfo.h for the C++
+ * callers, with UnkMotionControl_801602B4 standing for the control; that class and MotionControl
+ * are not unified yet, so a unit cannot include both headers. */
 void stMtnRequestBlendRatio(MotionControl *control, int id, float ratio);
 void stMtnRequestBlendSpeed(MotionControl *control, int id, float speed);
 void stMtnRequestBlendFrame(MotionControl *control, int id, float frames);
