@@ -1354,14 +1354,14 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
-                # All six methods and their local data match. The remaining command classes
-                # still reference this unit's local RTTI, preventing source linkage alone.
-                Object(NonMatching, "Game/EffCmdLoopExec.cpp", cflags=cflags_effect),
+                # Six method instruction sequences match. Their local RTTI is shared with
+                # remaining command classes and stays in the original data fallback.
+                Object(NonMatching, "Game/fn_80422B18.cpp", cflags=cflags_effect),
                 # Exact methods; other commands still share the local floating-point literals.
                 Object(NonMatching, "Game/EffCmdWaitExec.cpp", cflags=cflags_effect),
                 # Four destructors match; their vtables/RTTI belong with the other command
                 # classes and cannot yet be merged across the intervening matching unit.
-                Object(NonMatching, "Game/EffCmdLoopExecDtor.cpp", cflags=cflags_effect),
+                Object(NonMatching, "Game/fn_80424D20.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/fn_8040CF2C.c"),
                 Object(Matching, "Game/fn_804202B8.c"),
                 Object(Matching, "Game/fn_8040CD20.c"),
@@ -1391,8 +1391,9 @@ config.libs = [
             if config.version == "GUPE8P"
             else []
         ) + [
-            # First Game unit enabled for Japan and PAL; the list above remains USA-only.
+            # These Game units are enabled for all regions; the list above remains USA-only.
             Object(Matching, "Game/fn_804220CC.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/EffCmdGlareSWExec.cpp", cflags=cflags_effect),
         ],
     },
     DolphinLib(

@@ -1,14 +1,14 @@
 #ifndef GAME_EFFECTCOMMANDEXEC_H
 #define GAME_EFFECTCOMMANDEXEC_H
 
-#include "Game/EffectMemory.h"
+#include "Game/fn_8042A444.h"
 #include "layout_check.h"
 
 namespace Effect {
 namespace System {
 
-/* Requests termination of the owning effect (name inferred). */
-enum { COMMAND_STOP_REQUESTED = 1 };
+/* Command output flags (names inferred from the command classes and their writes). */
+enum { COMMAND_STOP_REQUESTED = 1, COMMAND_GLARE_CHANGED = 2, COMMAND_GLARE_ENABLED = 4 };
 
 /* Encoded command headers, loop and wait data; these record names are placeholders. */
 struct UnkCommandData {
@@ -28,6 +28,11 @@ struct UnkWaitData : UnkCommandData {
     /* 0x04 */ unsigned int duration;
 };
 CHECK_SIZEOF(UnkWaitData, 0x8);
+
+struct UnkGlareSWData : UnkCommandData {
+    /* 0x04 */ unsigned char enabled;
+};
+CHECK_SIZEOF(UnkGlareSWData, 0x5);
 
 /* Class names are recorded in the original RTTI. Member names are inferred from use. */
 class EffectCommandExec {
@@ -96,6 +101,16 @@ class EffCmdWaitExec : public EffectCommandExec {
     /* 0x20 */ EffectCommandExec *m_last;
 };
 CHECK_SIZEOF(EffCmdWaitExec, 0x24);
+
+class EffCmdGlareSWExec : public EffectCommandExec {
+  public:
+    EffCmdGlareSWExec(const UnkCommandData *command, unsigned int *flags);
+    virtual ~EffCmdGlareSWExec();
+    virtual bool Update(float deltaTime);
+
+    /* 0x14 */ unsigned int *m_flags;
+};
+CHECK_SIZEOF(EffCmdGlareSWExec, 0x18);
 
 } // namespace System
 } // namespace Effect

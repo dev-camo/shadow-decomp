@@ -1966,12 +1966,11 @@ Game/fn_804220CC.cpp:
 	.text       start:0x804220CC end:0x8042222C
 	.data       start:0x8056A0E0 end:0x8056A168
 
-Game/EffCmdLoopExec.cpp:
+Game/fn_80422B18.cpp:
 	extab       start:0x800062C8 end:0x800062E4
 	extabindex  start:0x8000833C end:0x80008348
 	.text       start:0x80422B18 end:0x80422D78
 	.rodata     start:0x8051A6B0 end:0x8051A6F8
-	.data       start:0x8056A0A0 end:0x8056A0BC
 
 Game/EffCmdWaitExec.cpp:
 	extab       start:0x800062E4 end:0x800062EC
@@ -1979,10 +1978,13 @@ Game/EffCmdWaitExec.cpp:
 	.text       start:0x80422D78 end:0x80422ED0
 	.rodata     start:0x8051A720 end:0x8051A730
 
+Game/EffCmdGlareSWExec.cpp:
+	.text       start:0x80423F98 end:0x80424038
+
 Game/fn_80424D18.c:
 	.text       start:0x80424D18 end:0x80424D20
 
-Game/EffCmdLoopExecDtor.cpp:
+Game/fn_80424D20.cpp:
 	extab       start:0x80006404 end:0x80006424
 	extabindex  start:0x80008408 end:0x80008438
 	.text       start:0x80424D20 end:0x80424E90
