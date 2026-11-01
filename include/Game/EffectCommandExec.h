@@ -63,6 +63,26 @@ struct UnkVector3Data : UnkValueData {
 };
 CHECK_SIZEOF(UnkVector3Data, 0x24);
 
+/* Material channels use 22 fractional bits; names are inferred from the integer accesses. */
+enum {
+    MATERIAL_FRACTION_BITS = 22,
+    MATERIAL_CHANNEL_MAX = 255 << MATERIAL_FRACTION_BITS,
+    MATERIAL_CHANNEL_CUTOFF = (1 << MATERIAL_FRACTION_BITS) - 1
+};
+
+/* Accessed record prefixes; encoded strides are 0x10 and 0x14 bytes respectively. */
+struct UnkMatAlphaData : UnkValueData {
+    /* 0x0C */ unsigned char value;
+    /* 0x0D */ unsigned char range;
+};
+CHECK_SIZEOF(UnkMatAlphaData, 0xE);
+
+struct UnkMatColorData : UnkValueData {
+    /* 0x0C */ unsigned char value[3];
+    /* 0x0F */ unsigned char range[3];
+};
+CHECK_SIZEOF(UnkMatColorData, 0x12);
+
 /* Class names are recorded in the original RTTI. Member names are inferred from use. */
 class EffectCommandExec {
   public:
@@ -182,6 +202,62 @@ class EffCmdVector3Exec : public EffectCommandExec {
     /* 0x24 */ Fn8040Vector3 m_rate;
 };
 CHECK_SIZEOF(EffCmdVector3Exec, 0x30);
+
+class EffCmdMatAlphaExec : public EffectCommandExec {
+  public:
+    EffCmdMatAlphaExec(const UnkCommandData *command, unsigned int *flags, int *target);
+    virtual ~EffCmdMatAlphaExec();
+    virtual bool Update(float deltaTime);
+
+    /* 0x14 */ unsigned int *m_flags;
+    /* 0x18 */ int *m_target;
+    /* 0x1C */ float m_elapsed;
+    /* 0x20 */ float m_duration;
+    /* 0x24 */ int m_rate;
+};
+CHECK_SIZEOF(EffCmdMatAlphaExec, 0x28);
+
+class EffCmdMatColorExec : public EffectCommandExec {
+  public:
+    EffCmdMatColorExec(const UnkCommandData *command, unsigned int *flags, int *target);
+    virtual ~EffCmdMatColorExec();
+    virtual bool Update(float deltaTime);
+
+    /* 0x14 */ unsigned int *m_flags;
+    /* 0x18 */ int *m_target;
+    /* 0x1C */ float m_elapsed;
+    /* 0x20 */ float m_duration;
+    /* 0x24 */ int m_rate[3];
+};
+CHECK_SIZEOF(EffCmdMatColorExec, 0x30);
+
+class EffCmd2DSclExec : public EffectCommandExec {
+  public:
+    EffCmd2DSclExec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target);
+    virtual ~EffCmd2DSclExec();
+    virtual bool Update(float deltaTime);
+
+    /* 0x14 */ unsigned int *m_flags;
+    /* 0x18 */ Fn8040Vector3 *m_target;
+    /* 0x1C */ float m_elapsed;
+    /* 0x20 */ float m_duration;
+    /* 0x24 */ Fn8040Vector3 m_rate;
+};
+CHECK_SIZEOF(EffCmd2DSclExec, 0x30);
+
+class EffCmd3DSclExec : public EffectCommandExec {
+  public:
+    EffCmd3DSclExec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target);
+    virtual ~EffCmd3DSclExec();
+    virtual bool Update(float deltaTime);
+
+    /* 0x14 */ unsigned int *m_flags;
+    /* 0x18 */ Fn8040Vector3 *m_target;
+    /* 0x1C */ float m_elapsed;
+    /* 0x20 */ float m_duration;
+    /* 0x24 */ Fn8040Vector3 m_rate;
+};
+CHECK_SIZEOF(EffCmd3DSclExec, 0x30);
 
 } // namespace System
 } // namespace Effect
