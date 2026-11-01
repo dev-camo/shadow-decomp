@@ -204,15 +204,66 @@ typedef struct {
 } SFPTS_QUE;
 CHECK_SIZEOF(SFPTS_QUE, 0x14);
 
-/* per-frame picture information handed to the user (0x80 bytes) */
+/* picture user data slot of a decoded frame */
 typedef struct {
-    Sint32 raw[0x20]; /* 0x00 */
+    void *buf;  /* 0x00 */
+    Sint32 len; /* 0x04 */
+} SFMPV_PICUSR;
+CHECK_SIZEOF(SFMPV_PICUSR, 0x8);
+
+/* per-frame picture information handed to the user (0x80 bytes), filled in from the decoded frame
+ * (SFMPV_FRM) and its picture attributes (MPV_PICATR) by sfmpv_SetFrmInf; the notes name the
+ * source field */
+typedef struct {
+    Sint32 width;             /* 0x00 picatr.width */
+    Sint32 height;            /* 0x04 picatr.height */
+    Sint32 mb_width;          /* 0x08 picatr.mb_width */
+    Sint32 mb_height;         /* 0x0C picatr.mb_height */
+    Sint32 pic_type;          /* 0x10 picatr.pic_type */
+    Sint32 ftime;             /* 0x14 SFMPV_FRM.ftime */
+    Sint32 tunit;             /* 0x18 SFMPV_FRM.tunit */
+    Sint32 x1c;               /* 0x1C SFD_CREPRM.x38 of the player */
+    void *buf;                /* 0x20 SFMPV_FRM.buf */
+    Sint32 ndct;              /* 0x24 SFMPV_FRM.ndct */
+    Sint32 nbyte;             /* 0x28 SFMPV_FRM.nbyte */
+    Sint32 gopno;             /* 0x2C SFMPV_FRM.gopno */
+    Sint32 x30;               /* 0x30 SFMPV_FRM.x4c */
+    Sint32 x34;               /* 0x34 SFMPV_FRM.x50 */
+    SFMPV_PICUSR *picusr;     /* 0x38 SFMPV_FRM.picusr */
+    Sint32 x3c;               /* 0x3C picatr.x40 */
+    Sint32 x40;               /* 0x40 picatr.x44 */
+    Sint32 x44;               /* 0x44 */
+    Sint32 x48;               /* 0x48 2 when x3c is 0, otherwise 1 */
+    Sint32 x4c;               /* 0x4C */
+    Sint64 pts;               /* 0x50 SFMPV_FRM.pts */
+    Sint32 x58;               /* 0x58 picatr.x38 */
+    Sint32 x5c;               /* 0x5C picatr.x3c */
+    Sint32 bitrate;           /* 0x60 picatr.bitrate */
+    Sint32 vbv_size;          /* 0x64 picatr.vbv_size */
+    Sint16 x68;               /* 0x68 picatr.x50 */
+    Sint16 x6a;               /* 0x6A picatr.x52 */
+    Sint8 x6c;                /* 0x6C picatr.x55 */
+    Sint8 x6d;                /* 0x6D picatr.x56 */
+    Sint8 x6e;                /* 0x6E picatr.x57 */
+    Uint8 aspect;             /* 0x6F picatr.aspect */
+    Uint8 constrained;        /* 0x70 picatr.constrained */
+    Uint8 x71;                /* 0x71 picatr.x5b */
+    Uint8 x72;                /* 0x72 picatr.x5c */
+    Uint8 x73;                /* 0x73 picatr.x5d */
+    Sint8 x74;                /* 0x74 picatr.x5e */
+    Sint8 x75;                /* 0x75 picatr.x5f */
+    Sint8 x76;                /* 0x76 picatr.x60 */
+    Uint8 x77;                /* 0x77 picatr.x61 */
+    Uint8 x78;                /* 0x78 picatr.x62 */
+    Uint8 x79;                /* 0x79 picatr.x63 */
+    Uint8 x7a;                /* 0x7A picatr.x64 */
+    Uint8 pad7B[0x80 - 0x7B]; /* 0x7B */
 } SFD_VFRM_INF;
 CHECK_SIZEOF(SFD_VFRM_INF, 0x80);
 
 /* video frame slot (0x88 bytes), SFD_OBJ + 0x16B0 + n * 0x88; slot n pairs with SFMPV frame n */
 typedef struct {
-    void *frm;        /* 0x00 */
+    Sint32 used;      /* 0x00 set by sfmpv_SetFrmInf (SFMPV_GetRead), cleared by SFMPV_AddRead */
     Sint32 x04;       /* 0x04 */
     SFD_VFRM_INF inf; /* 0x08 */
 } SFD_VFRM;
@@ -370,13 +421,6 @@ CHECK_SIZEOF(SFD_TR, 0x44);
 #define SFMPV_FRM_STBY 2
 #define SFMPV_FRM_DRAWN 3
 #define SFMPV_FRM_REF 4
-
-/* picture user data slot of a decoded frame */
-typedef struct {
-    void *buf;  /* 0x00 */
-    Sint32 len; /* 0x04 */
-} SFMPV_PICUSR;
-CHECK_SIZEOF(SFMPV_PICUSR, 0x8);
 
 /* decoded frame object of the video driver (0xE8 bytes) */
 typedef struct {
@@ -995,6 +1039,23 @@ Sint32 SFD_SetMpvCond(SFD sfd, Sint32 id, Sint32 val);
 void SFD_CalcYccPlane(void *buf, Sint32 width, Sint32 height, MPV_RFB *rfb);
 void SFD_SetMpvParaTbl(SFMPV_PARA *para, Uint32 *rfb, Uint32 *ta);
 
+/* sfd_mpvf.c */
+SFMPV_FRM *sfmpvf_ReferNextFrmReady(SFD sfd);
+SFMPV_FRM *SFMPVF_HoldFrm(SFD sfd);
+void SFMPVF_EndRefFrm(SFMPV_FRM *frm);
+void SFMPVF_EndDrawFrm(SFMPV_FRM *frm);
+void SFMPVF_RefStbyFrm(SFMPV_FRM *frm);
+void SFMPVF_StbyFrm(SFMPV_FRM *frm);
+void SFMPVF_FreeFrm(SFMPV_FRM *frm);
+SFMPV_FRM *SFMPVF_AllocFrm(SFD sfd);
+Sint32 SFMPVF_GetNumFrm(SFD sfd);
+void SFMPVF_SetGopStat(SFD sfd, Sint32 stat);
+Sint32 SFMPVF_IsTermDec(SFD sfd);
+void SFMPVF_TermDec(SFD sfd);
+SFD_VFRM *SFMPVF_SearchVfrmData(SFD sfd, SFMPV_FRM *frm);
+SFMPV_FRM *fn_803F8FC0(SFD sfd, Sint32 key);
+SFMPV_FRM *SFMPVF_SearchFrmObj(SFD sfd, SFD_VFRM_INF *inf);
+
 /* sfd_aoap.c */
 void SFAOAP_SetSpeed(SFD sfd, Sint32 speed);
 Sint32 SFD_GetOutVol(SFD sfd);
@@ -1031,7 +1092,7 @@ void SFSEE_InitHn(SFSEE_HN *see);
 void SFTIM_SetSpeed(SFD sfd, Sint32 speed);
 Bool SFTIM_IsVideoTerm(SFD sfd);
 Bool SFTIM_IsGetFrmTimeTunit(SFD sfd, Sint32 ftime, Sint32 tunit);
-Bool SFTIM_IsGetFrmTime(SFD sfd, SFD_VFRM *frm);
+Bool SFTIM_IsGetFrmTime(SFD sfd, SFD_VFRM_INF *inf);
 void SFTIM_GetTimeOneFrmVideo(SFD sfd, Sint32 *ncount, Sint32 *tscale);
 void SFTIM_Pause(SFD sfd, Sint32 sw);
 void SFTIM_SetTimeFn(SFD sfd, SFTIM_FN fn, Sint32 type);

@@ -544,7 +544,7 @@ static void sfbuf_InitVfrm(SFD sfd, SFBUF_WORK *wk, Uint32 *adr, Sint32 *size) {
     wk->u.vfrm.x1c = 0;
     wk->u.vfrm.vfrm = sfd->vfrm;
     for (i = 0; i < SFD_VFRM_NUM; i++) {
-        wk->u.vfrm.vfrm[i].frm = 0;
+        wk->u.vfrm.vfrm[i].used = 0;
     }
 }
 
