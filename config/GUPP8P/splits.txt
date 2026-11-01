@@ -1306,6 +1306,9 @@ CRI/mwsfdrna.c:
 CRI/mwsfdrsc.c:
 	.text       start:0x804040A4 end:0x804040AC
 
+CRI/fn_8040305C.c:
+	.text       start:0x804040AC end:0x804040CC
+
 CRI/mwsfdsl.c:
 	.text       start:0x804040CC end:0x80404124
 
