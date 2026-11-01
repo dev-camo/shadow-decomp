@@ -733,11 +733,10 @@ config.libs = [
                 # constructor differ, and 16 small helper functions (the constructor chain, the
                 # accessors, the pair swap) are not reproduced one for one.
                 Object(NonMatching, "Game/CityLaserHolder.cpp", cflags=cflags_game_cpp),
-                # All 48 functions match the original once the weak copies that the linker
-                # discards are removed. The original's .data also keeps a std::bad_alloc base list
-                # and the space of its vtable (0x1C bytes) that this object does not emit, and
-                # checked_delete<FallBuilding> is a local symbol here where the original's is
-                # weak, as in CityLaserHolder.cpp.
+                # All 48 functions and the data match the original once the weak copies that the
+                # linker discards are removed, and linking this object gives the original
+                # executable, but checked_delete<FallBuilding> is a local symbol here where the
+                # original's is weak, as in CityLaserHolder.cpp.
                 Object(NonMatching, "Game/FallBuildingHolder.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCristalWallSwitch.cpp", cflags=cflags_game_cpp),
                 Object(NonMatching, "Game/ElecCube.cpp", cflags=cflags_game_cpp),

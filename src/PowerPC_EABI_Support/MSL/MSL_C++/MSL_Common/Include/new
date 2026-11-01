@@ -6,15 +6,19 @@
 
 namespace std {
 
-/* The exception for a failed allocation. The constructor and destructor are inline, so a unit
- * that reports one emits its own weak copies of them. what() is declared out of line here; an
- * inline body would add the vtable, what() and its string to every unit that reports a
- * bad_alloc. */
+/* The exception for a failed allocation. The constructor, destructor and what() are all inline,
+ * so every unit that needs the vtable emits its own weak copies of them, as for std::exception.
+ * In the USA release the kept copies of its destructor and what() (0x8000D460, 0x8000DEDC) sit
+ * among the weak copies in the game code, as std::exception's do, not in the library, and
+ * FallBuildingHolder.cpp's .data keeps bad_alloc's base list and the space of its vtable where an
+ * inline what() emits them. */
 class bad_alloc : public exception {
   public:
     bad_alloc() {}
     virtual ~bad_alloc() {}
-    virtual const char *what() const;
+    virtual const char *what() const {
+        return "bad_alloc";
+    }
 };
 
 } // namespace std
