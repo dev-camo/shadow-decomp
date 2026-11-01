@@ -22,6 +22,8 @@ class Resource;
 
 extern "C" {
 UnkResourceManager_800122D4 *fn_800122D4(void);
+/* Returns the resource's 32-bit indexed value, or zero when key is absent (inferred). */
+u32 fn_80012608(UnkResourceManager_800122D4 *manager, int key, int index);
 void *fn_8001277C(UnkResourceManager_800122D4 *manager, int key, int index);
 /* Unloads and removes the resource registered under key (behaviour inferred). */
 void fn_800127F8(UnkResourceManager_800122D4 *manager, int key);
