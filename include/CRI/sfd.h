@@ -76,7 +76,7 @@ typedef struct {
     Sint32 sec;   /* 0x10 */
     Sint32 frm;   /* 0x14 */
     Sint32 frm2;  /* 0x18 added to frm */
-    Sint16 x1c;   /* 0x1C */
+    Sint16 x1c;   /* 0x1C repeated fields of the picture (MPV_PICATR.x54, sfd_mpv.c) */
     Sint16 field; /* 0x1E half frame */
 } SFTIM_TC;
 CHECK_SIZEOF(SFTIM_TC, 0x20);
@@ -97,6 +97,13 @@ typedef struct {
     Sint32 x08; /* 0x08 */
 } SFPLY_PTSM;
 CHECK_SIZEOF(SFPLY_PTSM, 0xC);
+
+/* repeated fields of a picture (SFTIM_WORK.rfld) */
+typedef struct {
+    Sint16 rpt; /* 0x00 repeat_first_field count of the picture */
+    Sint16 acc; /* 0x02 accumulated repeated fields */
+} SFTIM_RFLD;
+CHECK_SIZEOF(SFTIM_RFLD, 0x4);
 
 /* entries in each concatenated-play ring queue of SFTIM_WORK (indexed modulo this, sfd_con.c) */
 #define SFCON_QUE_NUM 32
@@ -167,11 +174,8 @@ typedef struct {
     void *ext_obj;            /* 0x2E8 */
     Sint32 x2ec;              /* 0x2EC */
     SFTST_WORK tst;           /* 0x2F0 time stabiliser work */
-    struct {
-        Sint16 rpt;  /* repeat_first_field count of the picture */
-        Sint16 acc;  /* accumulated repeated fields */
-    } rfld[64];      /* 0x4B0 per temporal reference (sfd_mpv.c) */
-    SFPLY_PTSM ptsm; /* 0x5B0 */
+    SFTIM_RFLD rfld[64];      /* 0x4B0 per temporal reference (sfd_mpv.c) */
+    SFPLY_PTSM ptsm;          /* 0x5B0 */
 } SFTIM_WORK;
 CHECK_SIZEOF(SFTIM_WORK, 0x5C0);
 
@@ -519,20 +523,20 @@ CHECK_OFFSETOF(SFMPV_WORK, rfbuf, 0x140);
 /* 0xA8-byte player information block (SFD_OBJ + 0x950): cleared by sfply_InitHn and passed to the
  * picture hooks (conditions 0x24/0x25). The 64-bit counters are the stream flow statistics: the
  * system stream ones are written by sfd_mps.c and the audio ones by sfd_adxt.c; the video ones
- * are updated only by the video driver (sfd_mpv.c, not decompiled), so their meaning is
- * inferred. */
+ * are updated only by the video driver (sfd_mpv.c adds the bytes it takes from the input), so
+ * their meaning is inferred. */
 typedef struct {
     Sint32 ndecpic;   /* 0x00 decoded pictures (SFPLY_AddDecPic) */
     Sint32 nskippic;  /* 0x04 skipped pictures (SFPLY_AddSkipPic) */
     Sint32 x08;       /* 0x08 */
     Sint32 x0c;       /* 0x0C */
-    Sint32 x10;       /* 0x10 */
-    Sint32 x14;       /* 0x14 */
+    Sint32 x10;       /* 0x10 empty B pictures (MPV_IsEmptyBpic in sfmpv_IsEmptyPic) */
+    Sint32 x14;       /* 0x14 empty P pictures (MPV_IsEmptyPpic in sfmpv_IsEmptyPic) */
     Sint32 getcnt;    /* 0x18 frames taken by SFD_GetFrm */
     Sint32 relcnt;    /* 0x1C frames returned by SFD_RelFrm */
     Sint32 bpa;       /* 0x20 buffering pause active */
     Sint32 nbpa;      /* 0x24 buffering pauses so far */
-    Sint32 x28;       /* 0x28 */
+    Sint32 x28;       /* 0x28 set by sfmpv_DecodeOneUnit while only a start code is waiting */
     Sint32 x2c;       /* 0x2C */
     Sint32 x30;       /* 0x30 */
     Sint64 s_flow;    /* 0x38 system stream ring: flow count (sfd_mps.c) */
