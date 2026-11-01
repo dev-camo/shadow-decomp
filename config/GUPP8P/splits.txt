@@ -55,6 +55,14 @@ Game/ElecSmallCube.cpp:
 	.sbss       start:0x805F0DE8 end:0x805F0DF8
 	.sdata2     start:0x805F7CF0 end:0x805F7D28
 
+Game/ElecRollHexa.cpp:
+	.text       start:0x802674D4 end:0x80268128
+	.rodata     start:0x804F6EE8 end:0x804F7000
+	.data       start:0x8054D358 end:0x8054D418
+	.sdata      start:0x805EB860 end:0x805EB888
+	.sbss       start:0x805F1178 end:0x805F1188
+	.sdata2     start:0x805F8D38 end:0x805F8D70
+
 dolphin/PPCArch.c:
 	.text       start:0x80370ADC end:0x80370BF0
 
