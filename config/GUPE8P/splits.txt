@@ -2101,6 +2101,13 @@ Game/EffectGlobalParamRW3.cpp:
 	.rodata     start:0x8051B998 end:0x8051BA60
 	.data       start:0x8056AFC0 end:0x8056B028
 
+Game/EffectLocusRW3.cpp:
+	extab       start:0x800074CC end:0x80007508
+	extabindex  start:0x80008CD8 end:0x80008D14
+	.text       start:0x80439B18 end:0x8043AA7C
+	.rodata     start:0x8051BA60 end:0x8051BB28
+	.data       start:0x8056B028 end:0x8056B090
+
 Game/gcaxSndMemory.c:
 	.text       start:0x8043AA7C end:0x8043B25C
 	.rodata     start:0x8051BB28 end:0x8051BC08
