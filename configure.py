@@ -2849,13 +2849,13 @@ config.libs = [
                 ],
             ),
             # NonMatching: all 39 functions are written and 19 are identical (sfmpv_ChkFatal among
-            # them). With equal sizes, raw words differ in SFMPV_AddRead (7 of 71), SFMPV_Seek
+            # them). With equal sizes, raw words differ in SFMPV_AddRead (2 of 71), SFMPV_Seek
             # (24 of 93), SFMPV_Destroy (40 of 68), SFMPV_Create (61 of 156),
             # sfmpv_ExecServerSub (78 of 263), sfmpv_NeedSafeDlmRefresh (34 of 233) and
             # sfmpv_GetActiveSize (95 of 474). The sizes differ, or the stack frame shifts the
             # offsets of most words, in these (original / source words, then the larger length
             # minus the longest common subsequence of words): SFMPV_Stop (4 / 2, 2),
-            # sfmpv_InitInf (228 / 231, 113), sfmpv_SetFrmPara (156 / 155, 36), sfmpv_GoDdelim
+            # sfmpv_InitInf (228 / 229, 19), sfmpv_SetFrmPara (156 / 155, 36), sfmpv_GoDdelim
             # (164 / 163, 62), sfmpv_DecodeFrm (324 / 322, 171), sfmpv_CalcRepeatField (308 / 310,
             # 63), sfmpv_IsSkip (268 / 255, 80), sfmpv_DecodeOneUnit (364 / 356, 170),
             # sfmpv_Pts2Tc (119 / 118, 94), sfmpv_DoReformTc (148 / 143, 112), sfmpv_Concat
