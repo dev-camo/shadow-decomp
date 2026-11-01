@@ -8,11 +8,6 @@ namespace Effect {
 namespace System {
 
 /* Accessed payload prefixes; original type names and complete extents are unknown. */
-struct UnkEffectShimmerData {
-    /* 0x00 */ int type;
-};
-CHECK_SIZEOF(UnkEffectShimmerData, 0x4);
-
 struct UnkEffectShimmerData0 : UnkEffectShimmerData {
     /* 0x04 */ int field_0x4[2];
     /* 0x0C */ float field_0xC[2];

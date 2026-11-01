@@ -11,7 +11,11 @@ class EffectCommandExec;
 struct UnkCommandData;
 struct UnkEffectElementData10;
 struct UnkEffectPool;
-struct UnkEffectShimmerData;
+/* Accessed payload prefix; original type name and complete extent are unknown. */
+struct UnkEffectShimmerData {
+    /* 0x00 */ int type;
+};
+CHECK_SIZEOF(UnkEffectShimmerData, 0x4);
 
 /* Class and base names are recorded in RTTI; method and member names are inferred. */
 class EffectShimmer : public EffectElement {
@@ -31,7 +35,7 @@ class EffectShimmer : public EffectElement {
     /* 0x118 */ Fn8040Vector3 m_amplitude;
     /* 0x124 */ Fn8040Vector3 m_cycle;
     /* 0x130 */ Fn8040Vector3 m_waveLength;
-    /* 0x13C */ unsigned int field_0x13C;
+    /* 0x13C */ int field_0x13C;
     /* 0x140 */ int m_alpha;
     /* 0x144 */ UnkEffectShimmerData *m_parameters;
     /* 0x148 */ const UnkCommandData *m_command;

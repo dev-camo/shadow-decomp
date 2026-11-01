@@ -1421,6 +1421,13 @@ Game/EffectLocus.cpp:
 	.rodata     start:0x8051B730 end:0x8051B7F0
 	.data       start:0x8056B160 end:0x8056B228
 
+Game/fn_804342CC.cpp:
+	extab       start:0x80007374 end:0x80007438
+	extabindex  start:0x80008B40 end:0x80008C30
+	.text       start:0x8043490C end:0x80437758
+	.rodata     start:0x8051BDF0 end:0x8051BF50
+	.data       start:0x8056B578 end:0x8056B600
+
 Game/fn_80437118.cpp:
 	extab       start:0x80007438 end:0x80007458
 	extabindex  start:0x80008C30 end:0x80008C60

@@ -43,6 +43,10 @@ class EffectManagerRW3 : public System::EffectManager {
     void fn_804389F0(const UnkEffectRW3Param2 *parameters);
     UnkEffectRW3Param3 fn_80436F2C();
     void fn_80436FC0(const UnkEffectRW3Param3 &parameters);
+    void fn_80436FEC();
+    void fn_80437018(float deltaTime);
+    void fn_80437044();
+    void fn_80437088(const UnkEffectRW3Param3 *parameters);
 
     /* 0x2C */ UnkEffectManagerRW3Data2C *field_0x2C;
     /* 0x30 */ int field_0x30;
