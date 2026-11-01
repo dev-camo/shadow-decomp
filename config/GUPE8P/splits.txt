@@ -2073,6 +2073,13 @@ Game/EffectGlobalParam.cpp:
 	.rodata     start:0x8051AE48 end:0x8051AE98
 	.data       start:0x8056A8A8 end:0x8056A8D8
 
+Game/EffectLensFlare.cpp:
+	extab       start:0x80006D18 end:0x80006D28
+	extabindex  start:0x80008744 end:0x8000875C
+	.text       start:0x8042A770 end:0x8042A8EC
+	.rodata     start:0x8051AE98 end:0x8051AEE0
+	.data       start:0x8056A8D8 end:0x8056A908
+
 Game/gcaxSndMemory.c:
 	.text       start:0x8043AA7C end:0x8043B25C
 	.rodata     start:0x8051BB28 end:0x8051BC08
