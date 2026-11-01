@@ -8,9 +8,8 @@
  * inferred from the class. Method names marked "(name inferred)" are not original. Definitions
  * are ordered so that deferred inlining emits the functions at their original addresses.
  *
- * NonMatching: every function matches the original once the weak copies that the linker
- * discards are removed, but the original's .data also keeps a std::bad_alloc base list and the
- * space of its vtable, and checked_delete<FallBuilding> is a local symbol here where the
+ * NonMatching: every function and the data match the original once the weak copies that the
+ * linker discards are removed, but checked_delete<FallBuilding> is a local symbol here where the
  * original's is weak. See the note in configure.py. */
 /* TNumEdit.h comes before CharaColliBase.h, in the order their names appear in the unit's .rodata
  * (alphabetical order would reverse them). */
