@@ -1314,6 +1314,20 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
+                # Support code of the same library after the quaternion helpers: the start-up and
+                # shut-down wrappers with a name registry, the byte reversal (two functions that do
+                # not match yet) and the ARAM transfers and allocator.
+                Object(
+                    Matching,
+                    "Game/fn_80420C30.c",
+                    extra_cflags=[
+                        "-Cpp_exceptions on",
+                        "-O4,s",
+                        "-use_lmw_stmw on",
+                        "-str reuse,readonly",
+                        "-inline auto,level=1",
+                    ],
+                ),
                 Object(Matching, "Game/fn_8040CF2C.c"),
                 Object(Matching, "Game/fn_804202B8.c"),
                 Object(Matching, "Game/fn_8040CD20.c"),
