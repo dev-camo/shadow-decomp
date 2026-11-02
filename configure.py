@@ -1441,6 +1441,9 @@ config.libs = [
             Object(NonMatching, "Game/ElecSmallCube.cpp", cflags=cflags_game_cpp),
             # Constructor temporary cleanup, matrix calls, and literal/weak metadata layout differ.
             Object(NonMatching, "Game/ElecRollHexa.cpp", cflags=cflags_game_cpp),
+            # The external helper destructor leaves checked_delete inlined; metadata layout differs.
+            Object(NonMatching, "Game/FleetHolder.cpp", cflags=cflags_game_cpp),
+            Object(NonMatching, "Game/fn_805E4DFC.cpp", cflags=cflags_game_cpp, progress_category=["game"]),
             Object(Matching, "Game/fn_804220CC.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EffCmdGlareSWExec.cpp", cflags=cflags_effect),
             Object(Matching, "Game/fn_8042A2D8.cpp", cflags=cflags_effect),
