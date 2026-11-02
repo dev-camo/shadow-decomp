@@ -1479,6 +1479,13 @@ config.libs = [
             Object(
                 Matching, "Game/fn_8040CB2C.cpp", extra_cflags=["-Cpp_exceptions on"]
             ),
+
+            # The zero-tolerance literal still belongs to the shared original pool.
+            Object(NonMatching, "Game/fn_8000A950.cpp", cflags=cflags_game_cpp),
+            # The emitted fabsf body matches the adjacent fn_8000A9A0, whose ownership
+            # and symbol identity remain unrecovered.
+            Object(NonMatching, "Game/fn_8000A980.cpp", cflags=cflags_game_cpp),
+
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
