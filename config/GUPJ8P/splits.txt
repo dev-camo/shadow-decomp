@@ -13,6 +13,12 @@ Sections:
 	.sdata2     type:rodata align:32
 	.sbss2      type:bss align:32
 
+Game/fn_8000A950.cpp:
+	.text       start:0x8000A950 end:0x8000A980
+
+Game/fn_8000A980.cpp:
+	.text       start:0x8000A980 end:0x8000A9A0
+
 Game/fn_8000AAEC.cpp:
 	.text       start:0x8000AAEC end:0x8000AAF4
 
