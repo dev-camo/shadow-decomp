@@ -1545,6 +1545,9 @@ Game/fn_8040CB2C.cpp:
 Game/fn_8040CBF8.cpp:
 	.text       start:0x8040DC48 end:0x8040DCAC
 
+Game/fn_8040CC5C.c:
+	.text       start:0x8040DCAC end:0x8040DCBC
+
 Game/fn_8040CCD4.c:
 	.text       start:0x8040DD24 end:0x8040DD3C
 
@@ -1553,6 +1556,9 @@ Game/fn_8040CD20.c:
 
 Game/fn_8040CD74.cpp:
 	.text       start:0x8040DDC4 end:0x8040DEB0
+
+Game/fn_8040CE60.c:
+	.text       start:0x8040DEB0 end:0x8040DEC4
 
 Game/fn_8040CEE8.cpp:
 	extab       start:0x80005868 end:0x80005870
