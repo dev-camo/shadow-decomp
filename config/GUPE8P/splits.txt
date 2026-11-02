@@ -1145,6 +1145,9 @@ PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_sqrt.
 	.text       start:0x803B1CDC end:0x803B1F00
 	.sdata2     start:0x805FAD30 end:0x805FAD38
 
+PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/fn_803B1F48.c:
+	.text       start:0x803B1F48 end:0x803B1F68
+
 dolphin/AmcExi2Stubs.c:
 	.text       start:0x803B1FAC end:0x803B1FDC
 
