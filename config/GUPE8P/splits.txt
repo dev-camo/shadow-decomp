@@ -49,6 +49,9 @@ Game/fn_80020A20.cpp:
 Game/fn_80021C04.cpp:
 	.text       start:0x80021C04 end:0x80021C44
 
+Game/fn_8003B9E8.cpp:
+	.text       start:0x8003B9E8 end:0x8003BADC
+
 Game/fn_800498A0.cpp:
 	.text       start:0x800498A0 end:0x80049AF4
 
