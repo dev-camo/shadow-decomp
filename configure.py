@@ -1436,6 +1436,18 @@ config.libs = [
                 extra_cflags=["-Cpp_exceptions on"],
             ),
             Object(Matching, "Game/fn_8040CD74.cpp", cflags=cflags_game),
+            Object(
+                Matching,
+                "Game/fn_8040CEE8.cpp",
+                cflags=cflags_game,
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
+            Object(
+                Matching,
+                "Game/fn_8040D1B4.cpp",
+                cflags=cflags_game,
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
