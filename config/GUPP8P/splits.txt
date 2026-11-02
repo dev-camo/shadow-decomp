@@ -13,6 +13,9 @@ Sections:
 	.sdata2     type:rodata align:8
 	.sbss2      type:bss align:16
 
+Game/fn_8003B9E8.cpp:
+	.text       start:0x8003BA10 end:0x8003BB04
+
 Game/fn_800498A0.cpp:
 	.text       start:0x800498C8 end:0x80049B1C
 

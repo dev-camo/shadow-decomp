@@ -25,6 +25,9 @@ Game/fn_80008E1C.c:
 Game/fn_800091D0.c:
 	.text       start:0x800091D0 end:0x80009208
 
+Game/fn_8003B9E8.cpp:
+	.text       start:0x8003B9E8 end:0x8003BADC
+
 Game/fn_800498A0.cpp:
 	.text       start:0x800498A0 end:0x80049AF4
 
