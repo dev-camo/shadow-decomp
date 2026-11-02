@@ -1420,6 +1420,9 @@ CRI/cft_lib.c:
 	.rodata     start:0x8051A8F8 end:0x8051A950
 	.bss        start:0x805E0D38 end:0x805E0D40
 
+Game/fn_8040C244.c:
+	.text       start:0x8040C884 end:0x8040C89C
+
 Game/fn_8040C340.cpp:
 	extab       start:0x80005818 end:0x80005820
 	extabindex  start:0x8000773C end:0x80007748
@@ -1435,6 +1438,9 @@ Game/fn_8040CA84.c:
 
 Game/fn_8040CAB4.cpp:
 	.text       start:0x8040D0F4 end:0x8040D138
+
+Game/fn_8040CB2C.c:
+	.text       start:0x8040D16C end:0x8040D198
 
 Game/fn_8040CBF8.cpp:
 	.text       start:0x8040D238 end:0x8040D29C
