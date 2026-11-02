@@ -79,6 +79,13 @@ Game/fn_8007D624.cpp:
 Game/fn_8007D770.cpp:
 	.text       start:0x8007D770 end:0x8007D794
 
+Game/FleetHolder.cpp:
+	.text       start:0x800CBC38 end:0x800CC130
+	.rodata     start:0x804B6B5C end:0x804B6BC8
+	.data       start:0x80522D78 end:0x80522EF4
+	.sdata      start:0x805E4E08 end:0x805E4E18
+	.sbss       start:0x805EE768 end:0x805EE770
+
 Game/RainEffect.cpp:
 	.text       start:0x800D4D58 end:0x800D54A8
 	.rodata     start:0x804B7340 end:0x804B7390
