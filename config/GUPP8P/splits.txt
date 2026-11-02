@@ -1525,6 +1525,7 @@ Game/fn_8040CB58.cpp:
 	extab       start:0x80005848 end:0x80005850
 	extabindex  start:0x80007784 end:0x80007790
 	.text       start:0x8040DBA8 end:0x8040DC48
+	.sdata2     start:0x805FBDE0 end:0x805FBDF0
 
 Game/fn_8040CBF8.cpp:
 	.text       start:0x8040DC48 end:0x8040DCAC
