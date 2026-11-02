@@ -1427,6 +1427,7 @@ config.libs = [
             else []
         ) + [
             # These units are enabled for all regions; the conditional list above remains USA-only.
+            Object(Matching, "Game/fn_8040CD74.cpp", cflags=cflags_game),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),

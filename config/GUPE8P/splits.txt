@@ -1797,6 +1797,9 @@ Game/fn_8040CD60.cpp:
 	.ctors      start:0x804AA050 end:0x804AA054
 	.sbss       start:0x805F1358 end:0x805F1360
 
+Game/fn_8040CD74.cpp:
+	.text       start:0x8040CD74 end:0x8040CE60
+
 Game/fn_8040CE74.cpp:
 	extab       start:0x80005860 end:0x80005868
 	extabindex  start:0x800077A8 end:0x800077B4
