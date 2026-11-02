@@ -13,6 +13,17 @@ Sections:
 	.sdata2     type:rodata align:32
 	.sbss2      type:bss align:32
 
+Game/fn_805E4DFC.cpp:
+	.rodata     start:0x804B71E8 end:0x804B71F4
+	.sdata      start:0x805E541C end:0x805E5420
+
+Game/FleetHolder.cpp:
+	.text       start:0x800CBFE4 end:0x800CC4DC
+	.rodata     start:0x804B71F4 end:0x804B7260
+	.data       start:0x80523418 end:0x80523594
+	.sdata      start:0x805E5428 end:0x805E5438
+	.sbss       start:0x805EED70 end:0x805EED78
+
 Game/fn_801A1FA0.cpp:
 	.text       start:0x801A2320 end:0x801A392C
 	.rodata     start:0x804CC7C0 end:0x804CC870
