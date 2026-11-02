@@ -1087,7 +1087,6 @@ config.libs = [
                     cflags=cflags_game_cpp,
                     extra_cflags=["-Cpp_exceptions on"],
                 ),
-                Object(Matching, "Game/fn_8040CCD4.c"),
                 Object(Matching, "Game/fn_8040D6F4.c"),
                 Object(Matching, "Game/fn_8040E38C.c"),
                 # SonicUSA::System::Random. Matching workaround: -sdata 0 and -sdata2 0; the target
@@ -1397,7 +1396,6 @@ config.libs = [
                 Object(NonMatching, "Game/fn_80424D20.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/fn_8040CF2C.c"),
                 Object(Matching, "Game/fn_804202B8.c"),
-                Object(Matching, "Game/fn_8040CD20.c"),
                 Object(Matching, "Game/fn_8040CD60.cpp"),
                 Object(Matching, "Game/fn_8040D02C.cpp"),
                 Object(
@@ -1465,6 +1463,8 @@ config.libs = [
             Object(Matching, "Game/fn_8040CAB4.cpp"),
             Object(Matching, "Game/fn_8040C244.c"),
             Object(Matching, "Game/fn_8040CB2C.c"),
+            Object(Matching, "Game/fn_8040CCD4.c"),
+            Object(Matching, "Game/fn_8040CD20.c"),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
