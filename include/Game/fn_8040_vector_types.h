@@ -181,6 +181,8 @@ void fn_8040CE60(Fn8040Vector3 *vector);
 void fn_8040E970(Fn8040Vector3 *vector);
 /* result += value (behaviour inferred). */
 void fn_8040CFF8(Fn8040Vector3 *result, const Fn8040Vector3 *value);
+/* Squared distance between two 3D vectors (behaviour inferred). */
+float fn_8040D180(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 /* The length of a - b (behaviour inferred). */
 float fn_8040D1B4(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 void fn_800091D0(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
