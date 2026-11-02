@@ -34,6 +34,9 @@ Game/fn_8000A980.cpp:
 Game/fn_8000AAEC.cpp:
 	.text       start:0x8000AAEC end:0x8000AAF4
 
+Game/fn_8000B044.cpp:
+	.text       start:0x8000B044 end:0x8000B074
+
 Game/ResourceOneFile.cpp:
 	.text       start:0x80014C58 end:0x80014CF4
 
@@ -48,6 +51,9 @@ Game/fn_80014EC0.cpp:
 
 Game/fn_80015954.cpp:
 	.text       start:0x80015954 end:0x800159D8
+
+Game/fn_80016260.cpp:
+	.text       start:0x80016260 end:0x80016284
 
 Game/fn_8001C4B8.cpp:
 	.text       start:0x8001C4B8 end:0x8001C4F8
@@ -252,6 +258,9 @@ Game/fn_801A6588.cpp:
 	.text       start:0x801A6588 end:0x801A687C
 	.rodata     start:0x804CC828 end:0x804CC838
 	.sdata2     start:0x805F5818 end:0x805F5820
+
+Game/fn_801B1DB0.cpp:
+	.text       start:0x801B1DB0 end:0x801B1DD4
 
 Game/fn_801D455C.cpp:
 	.text       start:0x801D455C end:0x801D45C4
@@ -1262,6 +1271,9 @@ PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_sin.c
 PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_tan.c:
 	.text       start:0x803B1B84 end:0x803B1BFC
 	.sdata2     start:0x805FAD28 end:0x805FAD30
+
+PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_acos.c:
+	.text       start:0x803B1BFC end:0x803B1C1C
 
 PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_sqrt.c:
 	.text       start:0x803B1CDC end:0x803B1F00

@@ -1402,6 +1402,10 @@ config.libs = [
                 extra_cflags=["-Cpp_exceptions on"],
             ),
             Object(Matching, "Game/fn_8040CA10.cpp", cflags=cflags_game_cpp),
+            # The 0.0001f pool is shared with fn_8000ABA8/fn_8000AD08 in the original larger unit.
+            Object(NonMatching, "Game/fn_8000B044.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_80016260.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_801B1DB0.cpp", cflags=cflags_game_cpp),
             # Two adjacent instructions exchange order in each helper: the Y cosine load and
             # multiply, and the X first component store and subtract. Sizes and call targets agree.
             Object(
@@ -1787,6 +1791,10 @@ config.libs = [
                 extra_cflags=["-Cpp_exceptions on"],
             ),
             Object(Matching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_acos.c"),
+            Object(
+                Matching,
+                "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_acos.c",
+            ),
             Object(Matching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_asin.c"),
             Object(Matching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_atan2.c"),
             Object(Matching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_fmod.c"),
