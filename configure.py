@@ -1562,6 +1562,17 @@ config.libs = [
             Object(NonMatching, "Game/fn_801A61E4.cpp", cflags=cflags_game_cpp),
             # All six function bodies match; float literal order and readonly-span layout differ.
             Object(NonMatching, "Game/fn_801A6588.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_801A687C.cpp", cflags=cflags_game_cpp),
+            # The instruction sequence matches; zero-literal ownership remains shared with
+            # fn_801A68C0 and fn_801A69FC (which also reads lbl_805F5824).
+            Object(NonMatching, "Game/fn_801A6944.cpp", cflags=cflags_game_cpp),
+            Object(
+                Matching,
+                "Game/fn_8040D180.cpp",
+                cflags=cflags_game_cpp,
+                # The original keeps eight-byte extab and twelve-byte extabindex records.
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
             Object(Matching, "Game/fn_801D455C.cpp", cflags=cflags_game_cpp),
             # Constructor temporary cleanup, rotation registers, and literal order still differ.
             # Constructor temporary cleanup and float literal pool order still differ.

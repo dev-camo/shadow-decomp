@@ -159,6 +159,12 @@ Game/fn_801A6588.cpp:
 	.rodata     start:0x804CD8D8 end:0x804CD8E8
 	.sdata2     start:0x805F68C0 end:0x805F68C8
 
+Game/fn_801A687C.cpp:
+	.text       start:0x801A6C38 end:0x801A6C7C
+
+Game/fn_801A6944.cpp:
+	.text       start:0x801A6D00 end:0x801A6D5C
+
 Game/fn_801B1DB0.cpp:
 	.text       start:0x801B2150 end:0x801B2174
 
@@ -1678,6 +1684,11 @@ Game/fn_8040D0AC.cpp:
 	extab       start:0x80005880 end:0x80005890
 	extabindex  start:0x800077D8 end:0x800077F0
 	.text       start:0x8040E0FC end:0x8040E1D0
+
+Game/fn_8040D180.cpp:
+	extab       start:0x80005890 end:0x80005898
+	extabindex  start:0x800077F0 end:0x800077FC
+	.text       start:0x8040E1D0 end:0x8040E204
 
 Game/fn_8040D1B4.cpp:
 	extab       start:0x80005898 end:0x800058A0
