@@ -1417,10 +1417,20 @@ CRI/cft_lib.c:
 Game/fn_8040CD74.cpp:
 	.text       start:0x8040D3B4 end:0x8040D4A0
 
+Game/fn_8040CEE8.cpp:
+	extab       start:0x80005868 end:0x80005870
+	extabindex  start:0x800077B4 end:0x800077C0
+	.text       start:0x8040D528 end:0x8040D56C
+
 Game/fn_8040D0AC.cpp:
 	extab       start:0x80005880 end:0x80005890
 	extabindex  start:0x800077D8 end:0x800077F0
 	.text       start:0x8040D6EC end:0x8040D7C0
+
+Game/fn_8040D1B4.cpp:
+	extab       start:0x80005898 end:0x800058A0
+	extabindex  start:0x800077FC end:0x80007808
+	.text       start:0x8040D7F4 end:0x8040D828
 
 Game/fn_804220CC.cpp:
 	.text       start:0x8042270C end:0x8042286C
