@@ -1445,6 +1445,12 @@ Game/fn_8040CB2C.c:
 Game/fn_8040CBF8.cpp:
 	.text       start:0x8040D238 end:0x8040D29C
 
+Game/fn_8040CCD4.c:
+	.text       start:0x8040D314 end:0x8040D32C
+
+Game/fn_8040CD20.c:
+	.text       start:0x8040D360 end:0x8040D3A0
+
 Game/fn_8040CD74.cpp:
 	.text       start:0x8040D3B4 end:0x8040D4A0
 
