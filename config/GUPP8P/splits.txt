@@ -1538,6 +1538,11 @@ Game/fn_8040C3EC.cpp:
 	.rodata     start:0x8051B400 end:0x8051B410
 	.sdata2     start:0x805FBDD0 end:0x805FBDD4
 
+Game/fn_8040C874.cpp:
+	extab       start:0x80005838 end:0x80005840
+	extabindex  start:0x8000776C end:0x80007778
+	.text       start:0x8040D8C4 end:0x8040D958
+
 Game/fn_8040CA84.c:
 	.text       start:0x8040DAD4 end:0x8040DB04
 
