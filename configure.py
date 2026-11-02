@@ -1427,6 +1427,14 @@ config.libs = [
             else []
         ) + [
             # These units are enabled for all regions; the conditional list above remains USA-only.
+            # Two adjacent instructions exchange order in each helper: the Y cosine load and
+            # multiply, and the X first component store and subtract. Sizes and call targets agree.
+            Object(
+                NonMatching,
+                "Game/fn_8040D0AC.cpp",
+                cflags=cflags_game_cpp,
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
