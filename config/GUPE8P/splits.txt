@@ -63,6 +63,10 @@ Game/fn_80027D5C.cpp:
 Game/fn_8003B9E8.cpp:
 	.text       start:0x8003B9E8 end:0x8003BADC
 
+Game/fn_8004924C.cpp:
+	.text       start:0x8004924C end:0x8004962C
+	.sdata2     start:0x805F1C78 end:0x805F1C80
+
 Game/fn_800498A0.cpp:
 	.text       start:0x800498A0 end:0x80049AF4
 
