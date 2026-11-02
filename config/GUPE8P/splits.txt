@@ -1914,6 +1914,9 @@ Game/fn_8040CD60.cpp:
 Game/fn_8040CD74.cpp:
 	.text       start:0x8040CD74 end:0x8040CE60
 
+Game/fn_8040CE60.c:
+	.text       start:0x8040CE60 end:0x8040CE74
+
 Game/fn_8040CE74.cpp:
 	extab       start:0x80005860 end:0x80005868
 	extabindex  start:0x800077A8 end:0x800077B4
