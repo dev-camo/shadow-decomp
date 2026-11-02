@@ -1518,6 +1518,10 @@ config.libs = [
             Object(NonMatching, "Game/ElecSmallCube.cpp", cflags=cflags_game_cpp),
             # Constructor temporary cleanup, matrix calls, and literal/weak metadata layout differ.
             Object(NonMatching, "Game/ElecRollHexa.cpp", cflags=cflags_game_cpp),
+            # First part of a larger original object. The following EggFleet/EggCannon code,
+            # including ~EggFleet, is not reconstructed, so checked_delete<EggFleet> is inlined
+            # here and the shared metadata remains in the original data.
+            Object(NonMatching, "Game/FleetHolder.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_804220CC.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EffCmdGlareSWExec.cpp", cflags=cflags_effect),
             Object(Matching, "Game/fn_8042A2D8.cpp", cflags=cflags_effect),
