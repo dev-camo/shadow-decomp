@@ -40,6 +40,14 @@ typedef struct Fn8040Vector4 {
 #ifdef __cplusplus
     Fn8040Vector4() {}
     Fn8040Vector4(float x_, float y_, float z_, float w_) : x(x_), y(y_), z(z_), w(w_) {}
+    /* Stores the four components (name inferred): the arguments are evaluated before the first
+     * store, as the original does where a vector is assigned in place. */
+    void Set(float x_, float y_, float z_, float w_) {
+        x = x_;
+        y = y_;
+        z = z_;
+        w = w_;
+    }
 #endif
     /* 0x00 */ float x;
     /* 0x04 */ float y;
