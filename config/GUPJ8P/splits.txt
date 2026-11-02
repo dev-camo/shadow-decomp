@@ -1592,6 +1592,20 @@ Game/fn_8040C874.cpp:
 	extabindex  start:0x8000776C end:0x80007778
 	.text       start:0x8040CEB4 end:0x8040CF48
 
+Game/fn_8040C908.cpp:
+	.text       start:0x8040CF48 end:0x8040CF64
+
+Game/fn_8040C924.cpp:
+	.text       start:0x8040CF64 end:0x8040CF98
+
+Game/fn_8040C958.cpp:
+	extab       start:0x80005840 end:0x80005848
+	extabindex  start:0x80007778 end:0x80007784
+	.text       start:0x8040CF98 end:0x8040D050
+
+Game/fn_8040CA10.cpp:
+	.text       start:0x8040D050 end:0x8040D0C4
+
 Game/fn_8040CA84.c:
 	.text       start:0x8040D0C4 end:0x8040D0F4
 

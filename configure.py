@@ -1390,6 +1390,18 @@ config.libs = [
             else []
         ) + [
             # These units are enabled for all regions; the conditional list above remains USA-only.
+            # The one and zero literals remain local copies of the unowned shared original pool.
+            Object(NonMatching, "Game/fn_8040C908.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_8040C924.cpp", cflags=cflags_game_cpp),
+            # The one, zero and threshold literals remain local copies of the shared original pool.
+            Object(
+                NonMatching,
+                "Game/fn_8040C958.cpp",
+                cflags=cflags_game_cpp,
+                # The original retains eight-byte extab and twelve-byte extabindex records.
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
+            Object(Matching, "Game/fn_8040CA10.cpp", cflags=cflags_game_cpp),
             # Two adjacent instructions exchange order in each helper: the Y cosine load and
             # multiply, and the X first component store and subtract. Sizes and call targets agree.
             Object(
