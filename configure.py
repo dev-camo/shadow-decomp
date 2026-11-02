@@ -1068,7 +1068,6 @@ config.libs = [
                     cflags=cflags_game_cpp,
                     extra_cflags=["-Cpp_exceptions on"],
                 ),
-                Object(Matching, "Game/fn_8040C244.c"),
                 Object(Matching, "Game/fn_8040CC5C.c"),
                 Object(
                     Matching,
@@ -1179,7 +1178,6 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
-                Object(Matching, "Game/fn_8040CB2C.c"),
                 Object(Matching, "Game/fn_8040E310.c"),
                 Object(Matching, "Game/fn_8040D608.c"),
                 # Transform helpers over the current matrix stack: a C++ unit of the library, built
@@ -1465,6 +1463,8 @@ config.libs = [
                 extra_cflags=["-Cpp_exceptions on"],
             ),
             Object(Matching, "Game/fn_8040CAB4.cpp"),
+            Object(Matching, "Game/fn_8040C244.c"),
+            Object(Matching, "Game/fn_8040CB2C.c"),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
