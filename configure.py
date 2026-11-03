@@ -1470,6 +1470,7 @@ config.libs = [
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
             Object(Matching, "Game/fn_8000AAEC.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80014E04.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_8006127C.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A1FA0.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A35AC.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A4430.cpp", cflags=cflags_game_cpp),

@@ -37,6 +37,9 @@ Game/fn_8001E070.cpp:
 Game/fn_800498A0.cpp:
 	.text       start:0x800498A0 end:0x80049AF4
 
+Game/fn_8006127C.cpp:
+	.text       start:0x8006127C end:0x80061294
+
 Game/WeaponStickBase.cpp:
 	.text       start:0x80067870 end:0x80068A48
 	.ctors      start:0x804A9C7C end:0x804A9C80
