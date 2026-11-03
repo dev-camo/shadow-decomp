@@ -10,6 +10,10 @@
  * fn_8040C2B8, which stores its argument as the capacity (name inferred) and allocates that many
  * matrices; the game constructs the stack with a capacity of 100. */
 typedef struct MatrixStack {
+#ifdef __cplusplus
+    MatrixStack(int count);
+    ~MatrixStack();
+#endif
     /* 0x00 */ Fn8040Matrix34 *matrices;
     /* 0x04 */ int capacity;
     /* 0x08 */ int top;

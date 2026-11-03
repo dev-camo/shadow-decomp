@@ -1469,6 +1469,21 @@ config.libs = [
             Object(Matching, "Game/fn_8001C4B8.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80021C04.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80020A20.cpp", cflags=cflags_game_cpp),
+            # Both original units own C++ exception-table records.
+            Object(
+                Matching,
+                "Game/fn_8040C25C.cpp",
+                cflags=cflags_game_cpp,
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
+            # Code and meaningful exception data match; two constructor exception-table padding
+            # bytes differ between compiler hosts, so the original object remains selected.
+            Object(
+                NonMatching,
+                "Game/fn_8040C2B8.cpp",
+                cflags=cflags_game_cpp,
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
