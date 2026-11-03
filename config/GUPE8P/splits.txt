@@ -34,6 +34,9 @@ Game/ResourceOneFile.cpp:
 Game/fn_80014E04.cpp:
 	.text       start:0x80014E04 end:0x80014E50
 
+Game/fn_80015954.cpp:
+	.text       start:0x80015954 end:0x800159D8
+
 Game/fn_8001C4B8.cpp:
 	.text       start:0x8001C4B8 end:0x8001C4F8
 
