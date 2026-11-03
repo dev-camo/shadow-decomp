@@ -337,7 +337,7 @@ CHECK_SIZEOF(SFBUF_WORK, 0x74);
 
 #define SFD_BUF_NUM 8
 
-/* Transfer/stream driver slots, in their original table order. */
+/* Function indices of a transfer driver interface (SFD_TR_IF.functions), in table order. */
 typedef Sint32 (*SFD_TR_FUNC)();
 enum {
     SFD_TR_INIT,

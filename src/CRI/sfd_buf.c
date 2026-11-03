@@ -131,7 +131,7 @@ Sint32 SFBUF_VfrmAddRead(SFD sfd, Sint32 n, void *frm, Sint32 arg) {
     SFBUF_HN *hn = SFBUF_GET_HN(sfd, n);
 
     if (hn->w.used == 0) {
-        ret = SFTRN_CallTrtTrif(sfd, hn->w.in_tr, 0xC, (Sint32)frm, arg);
+        ret = SFTRN_CallTrtTrif(sfd, hn->w.in_tr, SFD_TR_ADD_READ, (Sint32)frm, arg);
     }
     sfd->chg_flg = 1;
     return ret;
@@ -143,7 +143,7 @@ Sint32 SFBUF_VfrmGetRead(SFD sfd, Sint32 n, void **frm, Sint32 arg) {
     SFBUF_HN *hn = SFBUF_GET_HN(sfd, n);
 
     if (hn->w.used == 0) {
-        return SFTRN_CallTrtTrif(sfd, hn->w.in_tr, 0xB, (Sint32)frm, arg);
+        return SFTRN_CallTrtTrif(sfd, hn->w.in_tr, SFD_TR_GET_READ, (Sint32)frm, arg);
     }
     return 0;
 }

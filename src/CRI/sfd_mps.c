@@ -62,11 +62,22 @@ Sint32 SFMPS_GetRead(SFD sfd);
 Sint32 SFMPS_AddRead(SFD sfd);
 static Sint32 SFMPS_Seek(SFD sfd);
 
-const SFD_TR_IF SFD_tr_sd_mps = {
-    SFMPS_Init,     SFMPS_Finish,  SFMPS_ExecServer, SFMPS_Create, SFMPS_Destroy,
-    SFMPS_Standby,  SFMPS_Start,   SFMPS_Stop,       SFMPS_Pause,  SFMPS_GetWrite,
-    SFMPS_AddWrite, SFMPS_GetRead, SFMPS_AddRead,    SFMPS_Seek,
-};
+const SFD_TR_IF SFD_tr_sd_mps = {{
+    SFMPS_Init,
+    SFMPS_Finish,
+    SFMPS_ExecServer,
+    SFMPS_Create,
+    SFMPS_Destroy,
+    SFMPS_Standby,
+    SFMPS_Start,
+    SFMPS_Stop,
+    SFMPS_Pause,
+    SFMPS_GetWrite,
+    SFMPS_AddWrite,
+    SFMPS_GetRead,
+    SFMPS_AddRead,
+    SFMPS_Seek,
+}};
 
 /* Program end codes passed so far in concatenated play (0 in a single-file movie). */
 Sint32 SFMPS_GetConcatCnt(SFD sfd) {

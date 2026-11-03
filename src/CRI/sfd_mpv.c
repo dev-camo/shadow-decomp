@@ -114,11 +114,22 @@ Sint32 SFMPV_Seek(SFD sfd);
 void sfmpv_ErrFn(void *obj, Sint32 code);
 Sint32 sfmpv_InitInf(SFD sfd, SFMPV_WORK *wk);
 
-const SFD_TR_IF SFD_tr_vd_mpv = {
-    SFMPV_Init,     SFMPV_Finish,  SFMPV_ExecServer, SFMPV_Create, SFMPV_Destroy,
-    SFMPV_Standby,  SFMPV_Start,   SFMPV_Stop,       SFMPV_Pause,  SFMPV_GetWrite,
-    SFMPV_AddWrite, SFMPV_GetRead, SFMPV_AddRead,    SFMPV_Seek,
-};
+const SFD_TR_IF SFD_tr_vd_mpv = {{
+    SFMPV_Init,
+    SFMPV_Finish,
+    SFMPV_ExecServer,
+    SFMPV_Create,
+    SFMPV_Destroy,
+    SFMPV_Standby,
+    SFMPV_Start,
+    SFMPV_Stop,
+    SFMPV_Pause,
+    SFMPV_GetWrite,
+    SFMPV_AddWrite,
+    SFMPV_GetRead,
+    SFMPV_AddRead,
+    SFMPV_Seek,
+}};
 
 /* Rounded frame rate for each MPEG frame_rate_code (1 23.976 ... 8 60 Hz; inferred from the
  * values), the frames per second of sfmpv_Pts2Tc and sfmpv_NextTc. */

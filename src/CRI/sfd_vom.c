@@ -103,8 +103,19 @@ Sint32 SFVOM_Init(void) {
     return 0;
 }
 
-const SFD_TR_IF SFD_tr_vo_manu = {
-    SFVOM_Init,     SFVOM_Finish,  SFVOM_ExecServer, SFVOM_Create, SFVOM_Destroy,
-    SFVOM_Standby,  SFVOM_Start,   SFVOM_Stop,       SFVOM_Pause,  SFVOM_GetWrite,
-    SFVOM_AddWrite, SFVOM_GetRead, SFVOM_AddRead,    SFVOM_Seek,
-};
+const SFD_TR_IF SFD_tr_vo_manu = {{
+    SFVOM_Init,
+    SFVOM_Finish,
+    SFVOM_ExecServer,
+    SFVOM_Create,
+    SFVOM_Destroy,
+    SFVOM_Standby,
+    SFVOM_Start,
+    SFVOM_Stop,
+    SFVOM_Pause,
+    SFVOM_GetWrite,
+    SFVOM_AddWrite,
+    SFVOM_GetRead,
+    SFVOM_AddRead,
+    SFVOM_Seek,
+}};
