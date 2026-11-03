@@ -50,12 +50,11 @@ ElecSmallCube::ElecSmallCube(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gad
     {
         boost::shared_ptr<UnkAttack_8005A840> attack(weakAttack.lock());
         if (attack.get() != 0) {
-            attack->fn_80096B64(1,
-                                AttackCallback(boost::bind(&ElecSmallCube::fn_8021AEAC, this, _1)));
+            attack->fn_80096B64(1, AttackCallback(boost::bind(&ElecSmallCube::OnAttack, this, _1)));
         }
     }
 
-    fn_8021B1B0(m_owner);
+    CopyFromOwner(m_owner);
     switch (fn_8040EA90(3)) {
     case 0:
         m_charInfo->field_0x30 = 0;
@@ -74,7 +73,7 @@ ElecSmallCube::ElecSmallCube(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gad
     m_rotationFrom.y = fn_8040EC80(-lbl_805FAD38, lbl_805FAD38);
     m_rotationFrom.z = fn_8040EC80(-lbl_805FAD38, lbl_805FAD38);
     PickNextRotation();
-    fn_8021B140();
+    UpdateModelMatrix();
 }
 
 ElecSmallCube::~ElecSmallCube() {
@@ -84,22 +83,13 @@ ElecSmallCube::~ElecSmallCube() {
     }
 }
 
-void ElecSmallCube::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
-    fn_8021B1B0(owner);
-    fn_8021B140();
-    if (m_model != 0) {
-        m_model->fn_80162EF4();
-        m_model->fn_8016108C();
-    }
-}
-
 void ElecSmallCube::UpdateBody(float dt) {
     if (m_model != 0) {
         m_model->fn_80162FB0(dt);
     }
     switch (field_0x3C) {
     case 0:
-        fn_8021AEC0(dt);
+        UpdateRotation(dt);
         break;
     case 1:
         fn_8021ADC0();
@@ -107,15 +97,24 @@ void ElecSmallCube::UpdateBody(float dt) {
         m_flags |= 1;
         return;
     }
-    fn_8021B140();
+    UpdateModelMatrix();
 }
 
-void ElecSmallCube::fn_8021B1B0(UnkGadgetOwner_800C9CD0 *owner) {
+void ElecSmallCube::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
+    CopyFromOwner(owner);
+    UpdateModelMatrix();
+    if (m_model != 0) {
+        m_model->fn_80162EF4();
+        m_model->fn_8016108C();
+    }
+}
+
+void ElecSmallCube::CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     fn_800C9F14(owner, &m_charInfo->m_position);
     fn_800C9ED4(owner, &m_charInfo->m_rotation);
 }
 
-void ElecSmallCube::fn_8021B140() {
+void ElecSmallCube::UpdateModelMatrix() {
     if (m_model != 0) {
         Fn8040Matrix34 matrix;
         fn_8040C148(&matrix, &lbl_805E0720);
@@ -125,7 +124,7 @@ void ElecSmallCube::fn_8021B140() {
     }
 }
 
-void ElecSmallCube::fn_8021AEC0(float dt) {
+void ElecSmallCube::UpdateRotation(float dt) {
     float t;
     m_timer += dt;
     if (m_timer < 0.25f) {
@@ -137,13 +136,12 @@ void ElecSmallCube::fn_8021AEC0(float dt) {
         }
     }
 
-    const float totalWeight = t + (1.0f - t);
-    m_charInfo->m_rotation.x =
-        m_rotationFrom.x + (m_rotationTo.x - m_rotationFrom.x) * t / totalWeight;
-    m_charInfo->m_rotation.y =
-        m_rotationFrom.y + (m_rotationTo.y - m_rotationFrom.y) * t / totalWeight;
-    m_charInfo->m_rotation.z =
-        m_rotationFrom.z + (m_rotationTo.z - m_rotationFrom.z) * t / totalWeight;
+    float deltaX = m_rotationTo.x - m_rotationFrom.x;
+    m_charInfo->m_rotation.x = m_rotationFrom.x + deltaX * t / (t + (1.0f - t));
+    float deltaY = m_rotationTo.y - m_rotationFrom.y;
+    m_charInfo->m_rotation.y = m_rotationFrom.y + deltaY * t / (t + (1.0f - t));
+    float deltaZ = m_rotationTo.z - m_rotationFrom.z;
+    m_charInfo->m_rotation.z = m_rotationFrom.z + deltaZ * t / (t + (1.0f - t));
 
     if (m_timer > 1.1f) {
         m_timer = 0.0f;
@@ -152,7 +150,7 @@ void ElecSmallCube::fn_8021AEC0(float dt) {
     }
 }
 
-void ElecSmallCube::fn_8021AEAC(SonicteamUSA::System::CharaColli::AttackCallbackParam &param) {
+void ElecSmallCube::OnAttack(SonicteamUSA::System::CharaColli::AttackCallbackParam &param) {
     param.field_0x54 = 3;
     field_0x3C = 1;
 }
