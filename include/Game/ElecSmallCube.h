@@ -3,7 +3,7 @@
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
-#include "Game/UnkAttack_8005A840.h"
+#include "Game/CharaColliAttack.h"
 
 /* Class name from RTTI; member names and virtual entry-point names are inferred. */
 class ElecSmallCube : public Gadget {

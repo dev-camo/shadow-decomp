@@ -89,6 +89,16 @@ Game/Task.cpp:
 	.sbss       start:0x805EE1D8 end:0x805EE1DC
 	.sdata2     start:0x805F1CF8 end:0x805F1D00
 
+Game/fn_800532F8.cpp:
+	.text       start:0x800532F8 end:0x80053340
+
+Game/fn_80054DD0.cpp:
+	.text       start:0x80054DD0 end:0x80054E28
+
+Game/fn_8005A300.cpp:
+	.text       start:0x8005A300 end:0x8005A4F0
+	.sbss       start:0x805EE2A8 end:0x805EE2B0
+
 Game/fn_8006127C.cpp:
 	.text       start:0x8006127C end:0x80061294
 
@@ -106,6 +116,9 @@ Game/fn_8007D624.cpp:
 
 Game/fn_8007D770.cpp:
 	.text       start:0x8007D770 end:0x8007D794
+
+Game/fn_80096B64.cpp:
+	.text       start:0x80096B64 end:0x80096B9C
 
 Game/FleetHolder.cpp:
 	.text       start:0x800CBC38 end:0x800CC130

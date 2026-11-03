@@ -11,10 +11,10 @@
  *
  * NonMatching: WeaponStickBaseImpl's destructor is a global symbol where the original's is weak
  * (see the note at the destructor), and this object defines a local
- * boost::checked_delete<UnkAttack_8005A840> and some type records and name strings that the
+ * boost::checked_delete<CharaColliAttack> and some type records and name strings that the
  * original unit does not have (listed in the note in configure.py). */
 #include "Game/CharInfo.h"
-#include "Game/UnkAttack_8005A840.h"
+#include "Game/CharaColliAttack.h"
 #include "Game/UnkBitFlags_80014E04.h"
 #include "Game/UnkProbeTarget_800587A0.h"
 #include "Game/UnkSoundManager_80053164.h"
@@ -27,6 +27,8 @@
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include "layout_check.h"
+
+using SonicteamUSA::System::CharaColli::CharaColliAttack;
 
 using SonicteamUSA::System::CharaColli::AttackCallbackParam;
 
@@ -74,7 +76,7 @@ class WeaponStickBaseImpl {
     }
 
     /* The member names from m_attack to m_scale are inferred. */
-    /* 0x00 */ boost::shared_ptr<UnkAttack_8005A840> m_attack;
+    /* 0x00 */ boost::shared_ptr<CharaColliAttack> m_attack;
     /* 0x08 */ WeaponStickBase *m_stick;       /* the stick that holds this implementation */
     /* 0x0C */ UnkSegment_80020A20 m_lines[2]; /* the current line, then the previous one */
     /* 0x3C */ UnkBitFlags_80014E04 m_flags;   /* bit 0 while the attack object exists */
@@ -244,7 +246,7 @@ void WeaponStickBaseImpl::SweepAttack() {
 }
 
 void WeaponStickBaseImpl::CreateAttack() {
-    m_attack = boost::shared_ptr<UnkAttack_8005A840>(new UnkAttack_8005A840());
+    m_attack = boost::shared_ptr<CharaColliAttack>(new CharaColliAttack());
 
     if (m_attack.get() != 0) {
         m_attack->fn_80054DD0(
