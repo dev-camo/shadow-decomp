@@ -136,6 +136,9 @@ Game/ElecRollHexa.cpp:
 	.sbss       start:0x805F1178 end:0x805F1188
 	.sdata2     start:0x805F8D38 end:0x805F8D70
 
+Game/fn_80293AC8.cpp:
+	.text       start:0x80293EBC end:0x80293F54
+
 Game/CSD/csdMatrix.cpp:
 	.text       start:0x80360664 end:0x80361370
 	.rodata     start:0x80514000 end:0x80514020

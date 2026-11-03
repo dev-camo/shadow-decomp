@@ -343,6 +343,9 @@ Game/BackDrop.cpp:
 	.sbss       start:0x805F0118 end:0x805F0120
 	.sdata2     start:0x805F7DA0 end:0x805F7DB8
 
+Game/fn_80293AC8.cpp:
+	.text       start:0x80293AC8 end:0x80293B60
+
 Game/EscapePlaneRail.cpp:
 	.text       start:0x802ABA94 end:0x802ABE8C
 	.rodata     start:0x804FCE00 end:0x804FCE58
