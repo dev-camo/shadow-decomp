@@ -910,25 +910,6 @@ config.libs = [
                 # delete-policy Assign (0x1C0 bytes) that only the weak Reset calls: this unit's form of
                 # the original's fn_803655F8 (0x1E0 bytes), which it does not match yet.
                 Object(NonMatching, "Game/CSD/csdmScene.cpp", cflags=cflags_csd),
-                # The palette object of a scene (CMotionPalette, which owns the palette block
-                # through a reference-counted handle) and the CMotionPattern constructor that wraps
-                # one of its entries. 12 of 12 functions are sourced; 8 match in raw instruction
-                # words, and the unit's .rodata layout is identical. The CMotionPalette constructor
-                # and Rebuild differ in one word each, the __LINE__ of their allocations (the
-                # original passes 55 and 100). The holder Assign for the function release policy
-                # (112 words, the original's 115) shows the difference described for csdLoader.cpp.
-                # GetPattern differs in 7 words: the original loads the element's index before the
-                # palette and the layer index (scheduling; four spellings of the entry address gave
-                # the same code). The holder's SetRelease matches but comes last in the unit, where
-                # the original has it right after the holder constructor for the function policy
-                # (see csdRCObject.h). The unit also emits weak copies of
-                # RCPtr<unsigned char>::Reset and the holder constructor for the delete policy and
-                # of CMemoryAlloc::AllocObject, which the link discards in favour of the game's
-                # earlier copies, and a local instance of the delete-policy Assign that only the
-                # discarded Reset calls. It also emits a weak copy of the RCObject<unsigned char>
-                # vtable (the original unit has no .data), which the link discards in favour of the
-                # game's copy.
-                Object(NonMatching, "Game/CSD/csdmMotionPalette.cpp", cflags=cflags_csd),
                 # The accessors that override the animated values of an element's entry
                 # (CMotionPattern), its constructor and Copy, and UpdateTransform. 32 of 32
                 # functions are sourced. 9 have identical instructions; 13 differ only in the
@@ -1511,6 +1492,11 @@ config.libs = [
             # Registers/scheduling differ; the literals continue the preceding functions' pool.
             # This one-function unit's 8-aligned pool cannot begin at 0x805F1984 (4 mod 8).
             Object(NonMatching, "Game/fn_80027D5C.cpp", cflags=cflags_game_cpp),
+            # The palette object and its entry wrapper: eight of twelve functions match.
+            # Rebuild and the constructor retain allocation-line differences; GetPattern has seven
+            # load-scheduling word differences, and the function-policy Assign differs.
+            # Helper emission/order and extra weak data also keep the whole unit NonMatching.
+            Object(NonMatching, "Game/CSD/csdmMotionPalette.cpp", cflags=cflags_csd),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
