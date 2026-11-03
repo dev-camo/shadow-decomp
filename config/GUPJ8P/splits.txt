@@ -1518,13 +1518,10 @@ Game/fn_8040CA84.c:
 Game/fn_8040CAB4.cpp:
 	.text       start:0x8040D0F4 end:0x8040D138
 
-Game/fn_8040CB2C.c:
-	.text       start:0x8040D16C end:0x8040D198
-
-Game/fn_8040CB58.cpp:
+Game/fn_8040CB2C.cpp:
 	extab       start:0x80005848 end:0x80005850
 	extabindex  start:0x80007784 end:0x80007790
-	.text       start:0x8040D198 end:0x8040D238
+	.text       start:0x8040D16C end:0x8040D238
 	.sdata2     start:0x805FB390 end:0x805FB3A0
 
 Game/fn_8040CBF8.cpp:

@@ -1860,13 +1860,10 @@ Game/fn_8040CA84.c:
 Game/fn_8040CAB4.cpp:
 	.text       start:0x8040CAB4 end:0x8040CAF8
 
-Game/fn_8040CB2C.c:
-	.text       start:0x8040CB2C end:0x8040CB58
-
-Game/fn_8040CB58.cpp:
+Game/fn_8040CB2C.cpp:
 	extab       start:0x80005848 end:0x80005850
 	extabindex  start:0x80007784 end:0x80007790
-	.text       start:0x8040CB58 end:0x8040CBF8
+	.text       start:0x8040CB2C end:0x8040CBF8
 	.sdata2     start:0x805FAD68 end:0x805FAD78
 
 Game/fn_8040CBF8.cpp:
