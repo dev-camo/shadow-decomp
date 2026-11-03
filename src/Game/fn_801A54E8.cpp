@@ -229,8 +229,7 @@ void EnemyMoveCommon::fn_8019B460() {
     fn_8040D0AC(&rotated, &field_0x50, fn_8017C684(m_enemy)->y);
     fn_800091D0(&field_0x50, &rotated);
     fn_8040CE38(&field_0x50, m_enemy->m_parameter->fn_8019B4F0()[0]);
-    float factor = m_enemy->m_parameter->fn_8019B4F0()[1];
-    field_0x50.y = m_enemy->m_parameter->fn_8019B4E0() * factor;
+    field_0x50.y = m_enemy->m_parameter->fn_8019B4E0() * m_enemy->m_parameter->fn_8019B4F0()[1];
 }
 
 Fn8040Vector3 EnemyMoveCommon::fn_801A54E8(float delta) {
