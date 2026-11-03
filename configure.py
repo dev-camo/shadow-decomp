@@ -849,20 +849,6 @@ config.libs = [
                 # MarkMatrixUsers also comes after its caller MarkLayerMatrixUsers, where the
                 # original has it before.
                 Object(NonMatching, "Game/CSD/csdMotionPalette.cpp", cflags=cflags_csd),
-                # Every function matches except LoadFile (its allocation passes __LINE__ 47 where
-                # the original passes 137) and RegisterTexList (the pair conversion takes its
-                # argument from a recomputed stack address where the original reuses make_pair's
-                # returned pointer: two words). The map's out-of-line functions also come out in a
-                # different order: __destroy and its four helpers directly follow the tree
-                # destructor, where the original has them after root, InitTexLists, the map
-                # constructor, tree::find, its two key comparisons and comp; after the map
-                # constructor the final block begins with erase (followed by __size, __begin, begin
-                # and insert) instead of tree::find, and comp, tree::find and its two comparisons
-                # come only after insert's pair constructor and comparison (the original's order is
-                # not reproduced yet). The inline CMemoryAlloc::FreeObject is also emitted as an
-                # unreferenced weak copy (0x2C bytes); the original's copy was removed at link, and
-                # the game keeps its own at 0x8003CB64.
-                Object(NonMatching, "Game/CSD/csdTexList.cpp", cflags=cflags_csd),
                 # Matching workaround: -inline auto for this unit only (the rest of the library uses
                 # -inline noauto). The texture array's constructor (0xA0 bytes) and destructor (0x54
                 # bytes) are emitted out of line and also expanded in CTexListRW::Load and in the
@@ -1484,6 +1470,10 @@ config.libs = [
                 cflags=cflags_game_cpp,
                 extra_cflags=["-Cpp_exceptions on"],
             ),
+            # All 46 functions except LoadFile match individually; its allocation passes line 47
+            # instead of 137. The map helpers emit in a different order, and an extra weak
+            # CMemoryAlloc::FreeObject copy is emitted without a reference from this unit.
+            Object(NonMatching, "Game/CSD/csdTexList.cpp", cflags=cflags_csd),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
