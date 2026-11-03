@@ -5,9 +5,13 @@
 #include <dolphin/types.h>
 
 /* The stage's gravity direction (placeholder names; the original class and functions are unknown,
- * the behaviour is inferred from the GravityChangeCollision gadget). A four-byte state object at
- * lbl_805F0340 holds the index of the current direction in a table of vectors at lbl_8058436C. */
+ * the behaviour is inferred from the GravityChangeCollision gadget). The pointer at
+ * lbl_UnkGravityState_805F0340 refers to a separately allocated four-byte state holding the current
+ * direction index in the vector table at lbl_8058436C. */
+class UnkGravityState_805F0340;
+
 extern "C" {
+extern UnkGravityState_805F0340 *lbl_UnkGravityState_805F0340;
 /* Creates the state object with index 0 unless it exists (the gravity gadgets' hookA calls it:
  * GravityChangeCollision, GravitySignBoard). */
 void fn_80293B1C(void);
