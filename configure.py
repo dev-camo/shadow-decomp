@@ -1068,7 +1068,6 @@ config.libs = [
                     extra_cflags=["-Cpp_exceptions on"],
                 ),
                 Object(Matching, "Game/fn_8040D6F4.c"),
-                Object(Matching, "Game/fn_8040E38C.c"),
                 # SonicUSA::System::Random. Matching workaround: -sdata 0 and -sdata2 0; the target
                 # keeps its doubles in .rodata and its RTTI record and twist table in .data. Revisit
                 # when the original unit's flags are known. NextFloat and
@@ -1157,7 +1156,6 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
-                Object(Matching, "Game/fn_8040E310.c"),
                 Object(Matching, "Game/fn_8040D608.c"),
                 # Transform helpers over the current matrix stack: a C++ unit of the library, built
                 # with the MSL headers for <cmath> and the library's flag set. The original keeps
@@ -1502,6 +1500,8 @@ config.libs = [
             # The clear value belongs to the same original-file pool; keep the ordinary literal
             # NonMatching until the pool-owning functions are merged into one unit.
             Object(NonMatching, "Game/fn_8040CE60.c"),
+            Object(Matching, "Game/fn_8040E310.c"),
+            Object(Matching, "Game/fn_8040E38C.c"),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),

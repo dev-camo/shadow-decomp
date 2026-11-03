@@ -1,14 +1,6 @@
-#include "layout_check.h"
+/* Stores a halfword value or word mask and sets the record's mode (inferred purpose). */
 
-/* The field types follow the access widths. mode records which member the setters stored: 1 for
- * the halfword field_0x0, 2 for the word field_0x4. The alignment padding after field_0x0 is left
- * to the compiler. */
-typedef struct Fn8040E310Object {
-    /* 0x00 */ unsigned short field_0x0;
-    /* 0x04 */ unsigned int field_0x4;
-    /* 0x08 */ unsigned int mode;
-} Fn8040E310Object;
-CHECK_SIZEOF(Fn8040E310Object, 0xC);
+#include "Game/fn_8040E310.h"
 
 /* Both setters clear the object first; the cleared fields are then overwritten (inferred
  * helper). */
