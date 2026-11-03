@@ -1495,10 +1495,12 @@ config.libs = [
             # 0x805FAD68. External literal symbols would hide this artificial unit boundary;
             # revisit when the data-owning functions can be sourced and merged into this unit.
             Object(NonMatching, "Game/fn_8040CAF8.cpp"),
-            # Preserve the legacy USA status; new regions retain the external-literal source as
-            # NonMatching until natural literal ownership or an accepted matching form is established.
+            # Preserve the legacy USA status; Japan and PAL remain NonMatching because the clear
+            # value belongs to the larger original file's shared .sdata2 pool (0x805FAD78-0x805FAD88).
+            # Revisit when the pool-owning functions are merged into one unit.
             Object(Matching if config.version == "GUPE8P" else NonMatching, "Game/fn_8040CC5C.c"),
-            # The code matches, but the local zero literal differs from the shared pool referent.
+            # The clear value belongs to the same original-file pool; keep the ordinary literal
+            # NonMatching until the pool-owning functions are merged into one unit.
             Object(NonMatching, "Game/fn_8040CE60.c"),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
