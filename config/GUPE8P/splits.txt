@@ -70,6 +70,12 @@ Game/fn_8004924C.cpp:
 Game/fn_800498A0.cpp:
 	.text       start:0x800498A0 end:0x80049AF4
 
+Game/Task.cpp:
+	.text       start:0x8004EED4 end:0x8004F098
+	.data       start:0x8051D648 end:0x8051D658
+	.sdata      start:0x805E3978 end:0x805E3988
+	.sdata2     start:0x805F1CF8 end:0x805F1D00
+
 Game/fn_8006127C.cpp:
 	.text       start:0x8006127C end:0x80061294
 
