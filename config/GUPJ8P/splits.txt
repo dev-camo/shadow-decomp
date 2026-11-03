@@ -28,6 +28,12 @@ Game/fn_800498A0.cpp:
 Game/fn_8006127C.cpp:
 	.text       start:0x80061368 end:0x80061380
 
+Game/fn_8007D624.cpp:
+	.text       start:0x8007D72C end:0x8007D7A0
+
+Game/fn_8007D770.cpp:
+	.text       start:0x8007D878 end:0x8007D89C
+
 Game/fn_801A1FA0.cpp:
 	.text       start:0x801A2320 end:0x801A392C
 	.rodata     start:0x804CC7C0 end:0x804CC870

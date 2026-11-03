@@ -1465,6 +1465,8 @@ config.libs = [
             Object(Matching, "Game/fn_8040CB2C.c"),
             Object(Matching, "Game/fn_8040CCD4.c"),
             Object(Matching, "Game/fn_8040CD20.c"),
+            Object(Matching, "Game/fn_8007D624.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_8007D770.cpp", cflags=cflags_game_cpp),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),

@@ -49,6 +49,12 @@ Game/WeaponStickBase.cpp:
 	.sbss       start:0x805EE2D0 end:0x805EE2E8
 	.sdata2     start:0x805F2208 end:0x805F2230
 
+Game/fn_8007D624.cpp:
+	.text       start:0x8007D624 end:0x8007D698
+
+Game/fn_8007D770.cpp:
+	.text       start:0x8007D770 end:0x8007D794
+
 Game/RainEffect.cpp:
 	.text       start:0x800D4D58 end:0x800D54A8
 	.rodata     start:0x804B7340 end:0x804B7390
