@@ -5,12 +5,17 @@
 #include "layout_check.h"
 
 /* One entry of the table that a resource keeps at 0x30 (placeholder name; the entries are 0x1C
- * bytes apart and fn_80208848 finds one by the word at 0x4). Only name and id are mapped. */
+ * bytes apart and fn_80208848 finds one by the word at 0x4). Ornament reads the last three
+ * floats as a sound-position offset. They remain scalar fields because this borrowed resource
+ * record has no recovered C++ subobject construction. */
 struct UnkResourceRecord_80208848 {
     /* 0x0 */ const char *name;
     /* 0x4 */ s32 id;
     /* 0x8 */ u32 field_0x8; /* ThreatObj passes it to fn_801D54F4 as a 16-bit value */
-    /* 0xC */ u8 field_0xC[0x1C - 0xC];
+    /* 0x0C */ u8 field_0xC[4];
+    /* 0x10 */ float field_0x10;
+    /* 0x14 */ float field_0x14;
+    /* 0x18 */ float field_0x18;
 };
 CHECK_SIZEOF(UnkResourceRecord_80208848, 0x1C);
 

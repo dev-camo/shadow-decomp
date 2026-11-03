@@ -1520,6 +1520,8 @@ config.libs = [
             Object(Matching, "Game/fn_80160B18.cpp", cflags=cflags_game_cpp),
             # Part cleanup retains one extra element-address addi and register differences.
             Object(NonMatching, "Game/fn_80162804.cpp", cflags=cflags_game_cpp),
+            # The constructor retains inlining differences; UpdateBody lacks one switch branch.
+            Object(NonMatching, "Game/fn_800E59F8.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A1FA0.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A35AC.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A4430.cpp", cflags=cflags_game_cpp),
