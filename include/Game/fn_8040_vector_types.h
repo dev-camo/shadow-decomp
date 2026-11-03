@@ -37,6 +37,10 @@ CHECK_SIZEOF(Fn8040Vector3, 0xC);
 
 /* 4-float vector; the matrix helpers read a rotation quaternion (x, y, z, w) from it. */
 typedef struct Fn8040Vector4 {
+#ifdef __cplusplus
+    Fn8040Vector4() {}
+    Fn8040Vector4(float x_, float y_, float z_, float w_) : x(x_), y(y_), z(z_), w(w_) {}
+#endif
     /* 0x00 */ float x;
     /* 0x04 */ float y;
     /* 0x08 */ float z;

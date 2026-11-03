@@ -1490,6 +1490,8 @@ config.libs = [
             # ownership and symbol identity remain unrecovered.
             Object(NonMatching, "Game/fn_8000A980.cpp", cflags=cflags_game_cpp),
 
+            # The startup instructions match, but its literals belong to a shared original pool.
+            Object(NonMatching, "Game/fn_8040CAF8.cpp"),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
