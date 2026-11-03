@@ -77,8 +77,8 @@ void ElecRollHexa::fn_802673E8(UnkGadgetOwner_800C9CD0 *owner) {
 void ElecRollHexa::fn_80267334() {
     if (m_model != 0) {
         Fn8040Vector3 position;
-        fn_80008E1C(&position, (*m_charInfo).m_position.x,
-                    m_heightOffset + (*m_charInfo).m_position.y, (*m_charInfo).m_position.z);
+        fn_80008E1C(&position, m_charInfo->m_position.x, m_heightOffset + m_charInfo->m_position.y,
+                    m_charInfo->m_position.z);
         Fn8040Matrix34 translation;
         fn_8040B034(&translation, &position);
         Fn8040Matrix34 matrix(translation);
