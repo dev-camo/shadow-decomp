@@ -100,6 +100,9 @@ Game/fn_80160B18.cpp:
 Game/fn_80162804.cpp:
 	.text       start:0x80162BE8 end:0x80162CD4
 
+Game/fn_80165EFC.cpp:
+	.text       start:0x801662E0 end:0x80166360
+
 Game/fn_801A1FA0.cpp:
 	.text       start:0x801A235C end:0x801A3968
 	.rodata     start:0x804CD1F8 end:0x804CD2A8

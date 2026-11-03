@@ -21,9 +21,9 @@ class UnkSwitchCounter_801660A0 {
     /* Adds delta to the count of id and, once it reaches the target, sets state 1 of the id in the
      * UnkManager_800CB69C (behaviour inferred). */
     void fn_801658AC(u8 id, int delta);
-    /* Calls fn_80166424 and clears the byte at 0x10, when it is set (behaviour inferred). */
+    /* Removes every record and clears the byte at 0x10, when it is set (behaviour inferred). */
     void fn_80165EFC();
-    /* Calls fn_80166424 and sets the byte at 0x10, when it is clear (behaviour inferred). */
+    /* Removes every record and sets the byte at 0x10, when it is clear (behaviour inferred). */
     void fn_80165F3C();
 
     /* The counter, constructed on first use: a function-local static whose address is cached in
@@ -38,5 +38,9 @@ class UnkSwitchCounter_801660A0 {
     /* 0x11 */ u8 field_0x11[0x14 - 0x11];
 };
 CHECK_SIZEOF(UnkSwitchCounter_801660A0, 0x14);
+
+/* Frees all tree nodes and resets the header when the container is nonempty (behaviour inferred).
+ * Only the counter's 0x10-byte container prefix is accessed; its original type is unknown. */
+extern "C" void fn_80166424(UnkSwitchCounter_801660A0 *records);
 
 #endif
