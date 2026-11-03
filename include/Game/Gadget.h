@@ -79,5 +79,8 @@ CHECK_SIZEOF(Gadget, 0x30);
 
 /* Passes the gadget's owner (m_owner) to fn_800C9B34 when there is one (behaviour inferred). */
 extern "C" void fn_8015A794(Gadget *gadget);
+/* Sets bit 0x20000000 of the word at 0x18 of the owner's record when m_owner is set
+ * (behaviour inferred). Original free-function or member spelling is unrecovered. */
+extern "C" void fn_8015A7EC(Gadget *gadget);
 
 #endif

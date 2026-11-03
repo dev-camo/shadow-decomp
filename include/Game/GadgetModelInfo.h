@@ -43,6 +43,20 @@ class GadgetModelInfo {
     GadgetModelInfo(int arg0, const char *fileName);
     virtual ~GadgetModelInfo();
 
+    /* Finds a model entry by name and forwards its index and arg1 to fn_80162AD0
+     * (behaviour inferred; the original integral spelling of arg1 is unknown). */
+    bool fn_801629D8(const char *name, int arg1);
+    /* Finds a motion resource by name and forwards its index to fn_80160C90 (inferred). */
+    bool fn_80160BA0(const char *name);
+    /* Requests the motion identified by arg1 plus the matching payload's word at +0x14 minus
+     * one, truncated to 16 bits (behaviour inferred). */
+    bool fn_80160960(const char *name, int arg1);
+    /* Attaches info through the named resource and named motion control (behaviour inferred). */
+    bool fn_80161AB8(const char *name, const boost::weak_ptr<CharInfo> &info,
+                     const char *motionName);
+    /* Returns a weak reference to the first motion control whose payload name matches (inferred). */
+    boost::weak_ptr<_stMtnPlayWork> fn_801601A0(const char *name);
+
     void fn_8016108C();
     void fn_801604FC();
     /* Finds the motion entry whose resource record's word at +0x18 equals arg0, then requests

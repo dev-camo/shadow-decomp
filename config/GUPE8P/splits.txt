@@ -118,6 +118,13 @@ Game/FallBuildingHolder.cpp:
 	.sbss       start:0x805EE870 end:0x805EE888
 	.sdata2     start:0x805F3398 end:0x805F33B0
 
+Game/fn_800E59F8.cpp:
+	.text       start:0x800E59F8 end:0x800E6380
+	.rodata     start:0x804B8848 end:0x804B88A8
+	.data       start:0x805243C8 end:0x80524518
+	.sdata      start:0x805E51F8 end:0x805E5218
+	.sdata2     start:0x805F33E0 end:0x805F3418
+
 Game/CandleStick.cpp:
 	.text       start:0x8012C900 end:0x8012DACC
 	.ctors      start:0x804A9D50 end:0x804A9D54
