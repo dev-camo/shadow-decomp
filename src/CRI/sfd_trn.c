@@ -33,8 +33,8 @@ void SFTRN_SetPrepFlg(SFD sfd, Sint32 strm, Sint32 flg) {
     sfd->tr[strm].prepflg = flg;
 }
 
-/* Calls function `fn` of driver `strm` (SFD_TR_IF index: 6 Start, 7 Stop, 9 GetWrite, 10 AddWrite,
- * 11 GetRead, 12 AddRead) with two arguments; 0 when the slot is empty. */
+/* Calls function `fn` of driver `strm` (e.g. SFD_TR_START, SFD_TR_STOP, SFD_TR_GET_WRITE,
+ * SFD_TR_ADD_WRITE, SFD_TR_GET_READ, SFD_TR_ADD_READ) with two arguments; 0 when the slot is empty. */
 Sint32 SFTRN_CallTrtTrif(SFD sfd, Sint32 strm, Sint32 fn, Sint32 a, Sint32 b) {
     SFD_TR_IF *trif;
 
@@ -45,8 +45,8 @@ Sint32 SFTRN_CallTrtTrif(SFD sfd, Sint32 strm, Sint32 fn, Sint32 a, Sint32 b) {
     return trif->functions[fn](sfd, a, b, 0);
 }
 
-/* Calls function `fn` (2 ExecServer, 3 Create, 4 Destroy) on every installed driver in slot order,
- * stopping at the first error. */
+/* Calls function `fn` (SFD_TR_EXEC_SERVER, SFD_TR_CREATE, SFD_TR_DESTROY) on every installed driver
+ * in slot order, stopping at the first error. */
 Sint32 SFTRN_CallTrSetup(SFD sfd, Sint32 fn) {
     Sint32 i;
     SFD_TR *tr;

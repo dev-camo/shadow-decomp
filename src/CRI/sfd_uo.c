@@ -121,7 +121,19 @@ Sint32 SFD_SetUsrSj(SFD sfd, Sint32 chno, SJ sj, void *prm) {
     return 0;
 }
 
-const SFD_TR_IF SFD_tr_uo = {
-    SFUO_Init, SFUO_Finish, SFUO_ExecServer, SFUO_Create,   SFUO_Destroy, SFUO_Standby, SFUO_Start,
-    SFUO_Stop, SFUO_Pause,  SFUO_GetWrite,   SFUO_AddWrite, SFUO_GetRead, SFUO_AddRead, SFUO_Seek,
-};
+const SFD_TR_IF SFD_tr_uo = {{
+    SFUO_Init,
+    SFUO_Finish,
+    SFUO_ExecServer,
+    SFUO_Create,
+    SFUO_Destroy,
+    SFUO_Standby,
+    SFUO_Start,
+    SFUO_Stop,
+    SFUO_Pause,
+    SFUO_GetWrite,
+    SFUO_AddWrite,
+    SFUO_GetRead,
+    SFUO_AddRead,
+    SFUO_Seek,
+}};

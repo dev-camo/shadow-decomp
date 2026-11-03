@@ -46,11 +46,22 @@ Sint32 SFADXT_GetRead(SFD sfd);
 Sint32 SFADXT_AddRead(SFD sfd);
 Sint32 SFADXT_Seek(SFD sfd);
 
-const SFD_TR_IF SFD_tr_ad_adxt = {
-    SFADXT_Init,     SFADXT_Finish,  SFADXT_ExecServer, SFADXT_Create, SFADXT_Destroy,
-    SFADXT_Standby,  SFADXT_Start,   SFADXT_Stop,       SFADXT_Pause,  SFADXT_GetWrite,
-    SFADXT_AddWrite, SFADXT_GetRead, SFADXT_AddRead,    SFADXT_Seek,
-};
+const SFD_TR_IF SFD_tr_ad_adxt = {{
+    SFADXT_Init,
+    SFADXT_Finish,
+    SFADXT_ExecServer,
+    SFADXT_Create,
+    SFADXT_Destroy,
+    SFADXT_Standby,
+    SFADXT_Start,
+    SFADXT_Stop,
+    SFADXT_Pause,
+    SFADXT_GetWrite,
+    SFADXT_AddWrite,
+    SFADXT_GetRead,
+    SFADXT_AddRead,
+    SFADXT_Seek,
+}};
 
 const Uint8 sfadxt_silence[SFADXT_FRMSIZ] = {0};
 

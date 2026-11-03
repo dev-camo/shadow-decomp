@@ -47,7 +47,7 @@ Sint32 SFAOAP_Pause(SFD sfd, Sint32 sw) {
     if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         return 0;
     }
-    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, SFADXT_TR, 8, sw, 0));
+    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, SFADXT_TR, SFD_TR_PAUSE, sw, 0));
 }
 
 /* Stops the audio decoder driver (fn 7). */
@@ -55,7 +55,7 @@ Sint32 SFAOAP_Stop(SFD sfd) {
     if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         return 0;
     }
-    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, SFADXT_TR, 7, 0, 0));
+    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, SFADXT_TR, SFD_TR_STOP, 0, 0));
 }
 
 /* Starts the audio decoder driver (fn 6): the ADXT begins playing. */
@@ -63,7 +63,7 @@ Sint32 SFAOAP_Start(SFD sfd) {
     if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         return 0;
     }
-    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, SFADXT_TR, 6, 0, 0));
+    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, SFADXT_TR, SFD_TR_START, 0, 0));
 }
 
 /* Puts the audio decoder driver in standby (fn 5). */
@@ -71,7 +71,7 @@ Sint32 SFAOAP_Standby(SFD sfd) {
     if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
         return 0;
     }
-    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, SFADXT_TR, 5, 0, 0));
+    return sfaoap_ChkRet(SFTRN_CallTrtTrif(sfd, SFADXT_TR, SFD_TR_STANDBY, 0, 0));
 }
 
 Sint32 SFAOAP_Destroy(void) {
@@ -160,8 +160,19 @@ Sint32 SFD_SetOutVol(SFD sfd, Sint32 vol) {
     return cond;
 }
 
-const SFD_TR_IF SFD_tr_ao_auto_p = {
-    SFAOAP_Init,     SFAOAP_Finish,  SFAOAP_ExecServer, SFAOAP_Create, SFAOAP_Destroy,
-    SFAOAP_Standby,  SFAOAP_Start,   SFAOAP_Stop,       SFAOAP_Pause,  SFAOAP_GetWrite,
-    SFAOAP_AddWrite, SFAOAP_GetRead, SFAOAP_AddRead,    SFAOAP_Seek,
-};
+const SFD_TR_IF SFD_tr_ao_auto_p = {{
+    SFAOAP_Init,
+    SFAOAP_Finish,
+    SFAOAP_ExecServer,
+    SFAOAP_Create,
+    SFAOAP_Destroy,
+    SFAOAP_Standby,
+    SFAOAP_Start,
+    SFAOAP_Stop,
+    SFAOAP_Pause,
+    SFAOAP_GetWrite,
+    SFAOAP_AddWrite,
+    SFAOAP_GetRead,
+    SFAOAP_AddRead,
+    SFAOAP_Seek,
+}};

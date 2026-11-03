@@ -68,8 +68,19 @@ Sint32 SFMEM_Init(void) {
     return 0;
 }
 
-const SFD_TR_IF SFD_tr_in_mem = {
-    SFMEM_Init,     SFMEM_Finish,  SFMEM_ExecServer, SFMEM_Create, SFMEM_Destroy,
-    SFMEM_Standby,  SFMEM_Start,   SFMEM_Stop,       SFMEM_Pause,  SFMEM_GetWrite,
-    SFMEM_AddWrite, SFMEM_GetRead, SFMEM_AddRead,    SFMEM_Seek,
-};
+const SFD_TR_IF SFD_tr_in_mem = {{
+    SFMEM_Init,
+    SFMEM_Finish,
+    SFMEM_ExecServer,
+    SFMEM_Create,
+    SFMEM_Destroy,
+    SFMEM_Standby,
+    SFMEM_Start,
+    SFMEM_Stop,
+    SFMEM_Pause,
+    SFMEM_GetWrite,
+    SFMEM_AddWrite,
+    SFMEM_GetRead,
+    SFMEM_AddRead,
+    SFMEM_Seek,
+}};

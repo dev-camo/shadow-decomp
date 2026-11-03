@@ -57,7 +57,7 @@ Sint32 SFD_GetSupplyInf(SFD sfd, SFBUF_RINF *inf) {
     if (SFLIB_CheckHn(sfd) != 0) {
         return SFLIB_SetErr(0, 0xFF000134);
     }
-    return SFTRN_CallTrtTrif(sfd, 0, 9, (Sint32)inf, 0);
+    return SFTRN_CallTrtTrif(sfd, 0, SFD_TR_GET_WRITE, (Sint32)inf, 0);
 }
 
 /* Hands nbyte bytes at adr to the input driver (driver function 10). Stripped from the game; its
@@ -66,7 +66,7 @@ Sint32 SFD_AddSupply(SFD sfd, Sint32 adr, Sint32 nbyte) {
     if (SFLIB_CheckHn(sfd) != 0) {
         return SFLIB_SetErr(0, 0xFF000135);
     }
-    return SFTRN_CallTrtTrif(sfd, 0, 10, adr, nbyte);
+    return SFTRN_CallTrtTrif(sfd, 0, SFD_TR_ADD_WRITE, adr, nbyte);
 }
 
 /* The first frame access claims sfd->x58 (0 -> 1); any other value is error 0xFF000207
@@ -97,7 +97,7 @@ Sint32 SFD_RelFrm(SFD sfd, void *frm) {
     if (sfd->plyinf.relcnt < sfd->plyinf.getcnt) {
         sfd->plyinf.relcnt++;
     }
-    return SFTRN_CallTrtTrif(sfd, SFVOM_TR, 12, (Sint32)frm, 0);
+    return SFTRN_CallTrtTrif(sfd, SFVOM_TR, SFD_TR_ADD_READ, (Sint32)frm, 0);
 }
 
 /* Asks the selected video output driver (SFVOM_TR, GetRead) for the next frame; *frm = 0 when it
@@ -114,7 +114,7 @@ Sint32 SFD_GetFrm(SFD sfd, void **frm) {
     if (ret != 0) {
         return ret;
     }
-    ret = SFTRN_CallTrtTrif(sfd, SFVOM_TR, 11, (Sint32)frm, 0);
+    ret = SFTRN_CallTrtTrif(sfd, SFVOM_TR, SFD_TR_GET_READ, (Sint32)frm, 0);
     if (*frm != 0 && sfd->plyinf.getcnt == sfd->plyinf.relcnt) {
         if (sfd->plyinf.getcnt == 0) {
             sfd->frmstat.t0 = fn_803FEA5C();
@@ -223,7 +223,7 @@ Sint32 sfply_ResetHn(SFD sfd) {
     nmpv = SFMPV_SaveCond(sfd, mpvcond, sizeof(mpvcond));
     sfd->stat = SFD_STAT_NONE;
     sfd->req = SFD_REQ_NONE;
-    ret = SFTRN_CallTrSetup(sfd, 4);
+    ret = SFTRN_CallTrSetup(sfd, SFD_TR_DESTROY);
     if (ret != 0) {
         return ret;
     }
@@ -290,7 +290,7 @@ static Sint32 sfply_StopTr(SFD sfd) {
     Sint32 ret;
 
     if (sfd->stat == SFD_STAT_PLAYING) {
-        ret = SFTRN_CallTrtTrif(sfd, SFAOAP_TR, 7, 0, 0);
+        ret = SFTRN_CallTrtTrif(sfd, SFAOAP_TR, SFD_TR_STOP, 0, 0);
         if (ret != 0) {
             return ret;
         }
@@ -367,7 +367,7 @@ Sint32 SFD_Destroy(SFD sfd) {
     SFBUF_DestroySj(sfd);
     sfd->stat = SFD_STAT_NONE;
     sfd->req = SFD_REQ_NONE;
-    ret = SFTRN_CallTrSetup(sfd, 4);
+    ret = SFTRN_CallTrSetup(sfd, SFD_TR_DESTROY);
     tbl = SFLIB_libwork.hn;
     for (i = 0; i < SFD_HN_MAX; i++, tbl++) {
         if (*tbl == sfd) {
@@ -496,7 +496,7 @@ static SFD sfply_InitHn(SFD_CREPRM *prm, Sint32 x) {
     }
     SFTRN_InitHn(hn, hn->tr, (SFTRN_PRM *)prm, x);
     SFSEE_InitHn(&hn->see);
-    if (SFTRN_CallTrSetup(hn, 3) != 0) {
+    if (SFTRN_CallTrSetup(hn, SFD_TR_CREATE) != 0) {
         return 0;
     }
     hn->req = SFD_REQ_STOP;
@@ -924,7 +924,7 @@ static Sint32 sfply_StatPrep(SFD sfd) {
     case SFD_REQ_START:
     case SFD_REQ_END:
         if (sfply_IsStartable(sfd)) {
-            SFTRN_CallTrtTrif(sfd, SFAOAP_TR, 6, 0, 0);
+            SFTRN_CallTrtTrif(sfd, SFAOAP_TR, SFD_TR_START, 0, 0);
             stat = SFD_STAT_PLAYING;
         } else {
             stat = SFD_STAT_STBY;
@@ -946,7 +946,7 @@ static Sint32 sfply_StatStby(SFD sfd, Sint32 stat) {
     case SFD_REQ_START:
     case SFD_REQ_END:
         if (sfply_IsStartable(sfd)) {
-            SFTRN_CallTrtTrif(sfd, SFAOAP_TR, 6, 0, 0);
+            SFTRN_CallTrtTrif(sfd, SFAOAP_TR, SFD_TR_START, 0, 0);
             stat = SFD_STAT_PLAYING;
         }
         break;
@@ -972,7 +972,7 @@ void sfply_ExecOne(SFD sfd) {
     sfd->chg_flg = 0;
     t0 = fn_803FEA5C();
     if (stat == SFD_STAT_PREP || stat == SFD_STAT_STBY || stat == SFD_STAT_PLAYING) {
-        SFTRN_CallTrSetup(sfd, 2);
+        SFTRN_CallTrSetup(sfd, SFD_TR_EXEC_SERVER);
         SFSEE_ExecServer(sfd);
     }
     stat = sfd->stat;
