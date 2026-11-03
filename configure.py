@@ -1481,9 +1481,13 @@ config.libs = [
             ),
 
             # The zero-tolerance literal still belongs to the shared original pool.
+            # The 0.0001f literal lies four bytes past an 8-byte boundary in the shared .sdata2 pool
+            # (USA 0x805F1714; Japan 0x805F1D34; PAL 0x805F27B4); a separate 8-aligned pool
+            # cannot start there.
             Object(NonMatching, "Game/fn_8000A950.cpp", cflags=cflags_game_cpp),
-            # The emitted fabsf body matches the adjacent fn_8000A9A0, whose ownership
-            # and symbol identity remain unrecovered.
+            # A 12-byte weak fabsf copy (identical to fn_8000A9A0) and 16 bytes of unreferenced
+            # weak sqrtf constants from <cmath> are emitted here. The helper's original
+            # ownership and symbol identity remain unrecovered.
             Object(NonMatching, "Game/fn_8000A980.cpp", cflags=cflags_game_cpp),
 
             # The size and preparation helpers match; the vertex-byte counter retains twelve
