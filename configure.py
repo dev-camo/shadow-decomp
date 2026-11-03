@@ -633,7 +633,6 @@ config.libs = [
                 Object(Matching, "rw/fn_8049F3F8.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049F8AC.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049FAFC.c", cflags=cflags_game),
-                Object(NonMatching, "rw/fn_804A076C.c", cflags=cflags_game),
                 # Matching workaround: the original calls fn_804A2F24 from fn_804A457C; the default
                 # limit inlines it, an inline_max_size of 350 to 480 keeps the call. Revisit when the
                 # unit's real inline settings, or a source shape that keeps the call at the default
@@ -1473,6 +1472,8 @@ config.libs = [
             Object(Matching, "Game/fn_8000AAEC.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80014E04.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_8006127C.cpp", cflags=cflags_game_cpp),
+            # The material-copy callback retains seven register-word differences.
+            Object(NonMatching, "rw/fn_804A076C.c", cflags=cflags_game),
             Object(NonMatching, "Game/fn_801A1FA0.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A35AC.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A4430.cpp", cflags=cflags_game_cpp),
