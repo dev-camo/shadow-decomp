@@ -99,7 +99,6 @@ void RNARES_Finish(void) {
 
 /* On the first call: allocates the ARAM unless rnares_setup_fg is set and records the buffers. */
 void RNARES_Init(void) {
-    Uint32 ofs;
     Uint32 sum;
     Uint32 ptr;
     Uint32 i;
@@ -116,10 +115,8 @@ void RNARES_Init(void) {
         n = rnares_nbuf;
         res = rnares_obj;
         ptr = rnares_aram_ptr;
-        ofs = 0;
-        for (i = 0; i < n; i++, res++) {
-            sum = ptr + ofs;
-            ofs += RNARES_BUF_SIZE;
+        for (i = 0; i < n; res++) {
+            sum = ptr + i++ * RNARES_BUF_SIZE;
             res->buf = sum >> 1;
             res->size = RNARES_BUF_SIZE / 2;
         }
