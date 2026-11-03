@@ -2,6 +2,8 @@
 #define GAME_GADGETMODELINFO_H
 
 #include "Game/fn_8040_vector_types.h"
+#include "Game/GadgetModelInfoStorage.h"
+#include "Game/UnkBitFlags_80014E04.h"
 #include "Game/fn_804157E8_motion_range.h"
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
@@ -12,6 +14,7 @@ class CharInfo;
 class UnkAttack_8005A840;
 struct _stMtnPlayWork;
 struct RpClump;
+struct RpAtomic;
 
 /* An entry of the array at 0x0 of the object at 0x30 of a GadgetModelInfo, found by the word at
  * 0x3C (placeholder name; only the name at 0x4 is mapped). */
@@ -33,8 +36,8 @@ struct UnkModelPart_8015FA78 {
 CHECK_SIZEOF(UnkModelPart_8015FA78, 0xC);
 
 /* GadgetModelInfo (class name from RTTI): the 0x74-byte model of a gadget, loaded from a named
- * model file. Its members are not mapped yet; the methods keep placeholder names and argument types
- * taken from their callers. */
+ * model file. Only the flag and the two accessed list members are mapped here. The other intervals remain
+ * unrecovered storage with subobject lifetimes managed by the native constructor and destructor. */
 class GadgetModelInfo {
   public:
     GadgetModelInfo(int arg0, const char *fileName);
@@ -42,9 +45,9 @@ class GadgetModelInfo {
 
     void fn_8016108C();
     void fn_801604FC();
-    /* Looks for the entry of the list at 0x58 whose info word at 0x18 equals arg0; when there is
-     * one, passes the entry's word at 0xC to fn_80417568 with the low 16 bits of its word at 0x1C
-     * and returns true, otherwise false (behaviour inferred). */
+    /* Finds the motion entry whose resource record's word at +0x18 equals arg0, then requests
+     * its motion using the shared control and low 16 bits of the payload's word at +0x14
+     * (behaviour inferred). */
     bool fn_80160B18(int arg0);
     /* Finds the first entry whose id word equals arg0 in a table of the object at 0x30 and
      * returns fn_80160C90's result for its index, or false when there is none (behaviour
@@ -57,6 +60,8 @@ class GadgetModelInfo {
     /* Attaches a character info to the model node named nodeName (behaviour inferred). */
     bool fn_80161F08(const char *nodeName, const boost::weak_ptr<CharInfo> &info);
     void fn_80162804();
+    void fn_80163534();
+    void fn_801635D8();
     void fn_80160670(int arg0);
     /* Finds the first entry whose id word equals arg0 in another table of the object at 0x30 and
      * returns fn_80162AD0's result for its index and arg1, or false when there is none (behaviour
@@ -68,10 +73,8 @@ class GadgetModelInfo {
     /* Sets the model's world matrix (behaviour inferred). */
     void fn_801633DC(const Fn8040Matrix34 *matrix);
 
-    /* Looks for the entry of the list at 0x58 whose info word at 0x18 equals arg0; when there is
-     * one, passes the entry's word at 0xC to fn_80417568 with (u16)(arg1 + the entry's word at
-     * 0x1C - 1) and returns true, otherwise false (behaviour inferred; the meaning of the
-     * arguments is unknown). */
+    /* Finds the motion entry by its resource record's word at +0x18 and requests the motion
+     * identified by the low 16 bits of arg1 + payload word at +0x14 - 1 (behaviour inferred). */
     bool fn_80160A84(int arg0, int arg1);
     /* Sets a motion control work flag of each entry of the list at 0x58 (behaviour inferred from
      * its call of stMtnControlWorkFlag with 0, 11, 0). */
@@ -104,7 +107,12 @@ class GadgetModelInfo {
      * inferred). */
     boost::weak_ptr<_stMtnPlayWork> fn_801602B4(int arg0);
 
-    /* 0x04 */ u8 field_0x4[0x70];
+    /* 0x04 */ u8 field_0x4[0x38]; /* Unrecovered members, including native subobjects. */
+    /* 0x3C */ UnkBitFlags_80014E04 field_0x3C;
+    /* 0x40 */ u8 unknown_0x40[0xC];
+    /* 0x4C */ UnkModelPartList field_0x4C;
+    /* 0x58 */ UnkModelMotionList field_0x58;
+    /* 0x64 */ u8 unknown_0x64[0x10]; /* Includes a third native container. */
 };
 CHECK_SIZEOF(GadgetModelInfo, 0x74);
 
@@ -115,5 +123,8 @@ extern "C" boost::shared_ptr<GadgetModelInfo> fn_8015F800(int arg0, const char *
 /* Returns the word at 0x0 of the object at 0x34 of the model, or null when there is none: a name
  * (behaviour inferred from the ball, which looks it up with fn_80208888). */
 extern "C" const char *fn_801626D8(GadgetModelInfo *model);
+
+/* Native atomic callback; its original free/static-member spelling is unknown. */
+extern "C" RpAtomic *fn_80164064(RpAtomic *atomic, void *data);
 
 #endif

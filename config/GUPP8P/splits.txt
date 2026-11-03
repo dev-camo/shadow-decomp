@@ -65,6 +65,12 @@ Game/FleetHolder.cpp:
 	.sdata      start:0x805E5EC8 end:0x805E5ED8
 	.sbss       start:0x805EF810 end:0x805EF818
 
+Game/fn_80160B18.cpp:
+	.text       start:0x80160EFC end:0x80160F84
+
+Game/fn_80162804.cpp:
+	.text       start:0x80162BE8 end:0x80162CD4
+
 Game/fn_801A1FA0.cpp:
 	.text       start:0x801A235C end:0x801A3968
 	.rodata     start:0x804CD1F8 end:0x804CD2A8
