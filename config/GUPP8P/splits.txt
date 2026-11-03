@@ -1580,3 +1580,12 @@ Game/EffectLocusRW3.cpp:
 rw/fn_8046ACBC.c:
 	.text       start:0x8046BD0C end:0x8046C160
 	.data       start:0x8056EBB8 end:0x8056EC10
+
+rw/fn_804A076C.c:
+	.text       start:0x804A17BC end:0x804A3CE0
+	.rodata     start:0x8051D4D8 end:0x8051D518
+	.data       start:0x8056FDC0 end:0x8056FDE8
+	.bss        start:0x805E4360 end:0x805E4388
+	.sdata      start:0x805EF010 end:0x805EF018
+	.sbss       start:0x805F2750 end:0x805F2760
+	.sdata2     start:0x805FC4B0 end:0x805FC4C8
