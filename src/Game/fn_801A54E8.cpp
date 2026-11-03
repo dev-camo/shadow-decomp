@@ -19,6 +19,7 @@ bool fn_801A61D0(const UnkProbeFilterRecord *record) {
 
 unsigned int fn_801A609C(const Fn8040Vector3 *position, float *height, Fn8040Vector3 *normal,
                          int flags, int arg) {
+    UnkProbeHit_8001E9BC *hit;
     Fn8040Vector3 end(position->x, position->y - 10000.0f, position->z);
     UnkSegment_80020A20 segment(*position, end);
     UnkProbeList_80021FE4 *hits = fn_80021FE4(fn_80020D40(), &segment, flags, arg, fn_801A61D0, 0);
@@ -26,7 +27,7 @@ unsigned int fn_801A609C(const Fn8040Vector3 *position, float *height, Fn8040Vec
     if (hits != 0 && hits->field_0x4 > 0) {
         for (UnkProbeIterator_80027374 it(hits->fn_8001EE04()); it.node != hits->fn_8001EDEC();
              fn_80027398(&it)) {
-            UnkProbeHit_8001E9BC *hit = it.node->hit;
+            hit = it.node->hit;
             if (hit != 0 && fn_8001E9F0(hit) != 3) {
                 if (height != 0) {
                     *height = fn_8001E9BC(hit)->y;
