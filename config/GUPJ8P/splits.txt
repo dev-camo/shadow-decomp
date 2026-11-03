@@ -80,6 +80,11 @@ Game/fn_801A6588.cpp:
 Game/fn_801D455C.cpp:
 	.text       start:0x801D48C0 end:0x801D4928
 
+Game/CSD/csdMatrix.cpp:
+	.text       start:0x8035FE50 end:0x80360B5C
+	.rodata     start:0x80513588 end:0x805135A8
+	.bss        start:0x80585F80 end:0x80585FB0
+
 Game/CSD/csdTexList.cpp:
 	.text       start:0x80362564 end:0x80363208
 	.rodata     start:0x805135F0 end:0x80513638

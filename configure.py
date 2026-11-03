@@ -833,10 +833,6 @@ config.libs = [
                 # allocation emits after them is a weak copy of a function the game has at
                 # 0x8003DF84.
                 Object(NonMatching, "Game/CSD/csdLoader.cpp", cflags=cflags_csd),
-                # Every function matches except InitMatrixStack, whose allocations pass lines 64 and
-                # 65 instead of the original 53 and 54. .rodata also starts with the two static
-                # doubles of MSL <cmath>'s sqrtf, unreferenced weak data that the link discards.
-                Object(NonMatching, "Game/CSD/csdMatrix.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80360528.cpp", cflags=cflags_csd),
                 # Current file system and its directory (original file name unknown).
                 Object(Matching, "Game/CSD/fn_80361738.cpp", cflags=cflags_csd),
@@ -1474,6 +1470,10 @@ config.libs = [
             # instead of 137. The map helpers emit in a different order, and an extra weak
             # CMemoryAlloc::FreeObject copy is emitted without a reference from this unit.
             Object(NonMatching, "Game/CSD/csdTexList.cpp", cflags=cflags_csd),
+            # Of the 25 original functions, only InitMatrixStack differs: its allocations pass
+            # lines 64 and 65 instead of 53 and 54. Source also emits seven extra weak vector
+            # helpers and the two static doubles of MSL <cmath>'s sqrtf.
+            Object(NonMatching, "Game/CSD/csdMatrix.cpp", cflags=cflags_csd),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
