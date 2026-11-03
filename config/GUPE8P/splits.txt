@@ -2080,10 +2080,12 @@ Game/fn_8040D498.c:
 Game/fn_8040D608.c:
 	.text       start:0x8040D608 end:0x8040D640
 
-Game/fn_8040D6F4.c:
-	.text       start:0x8040D6F4 end:0x8040D714
+Game/fn_8040D640.cpp:
+	extab       start:0x80005928 end:0x80005958
+	extabindex  start:0x80007874 end:0x8000788C
+	.text       start:0x8040D640 end:0x8040D714
 
-Game/fn_8040D850.c:
+Game/fn_8040D850.cpp:
 	.text       start:0x8040D850 end:0x8040D858
 
 Game/fn_8040D8D4.c:
