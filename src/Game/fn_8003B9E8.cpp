@@ -6,12 +6,11 @@
 
 extern "C" void fn_8003B9E8(const Fn8040Vector3 *direction, float *pitch, float *yaw) {
     float yawAngle = fn_80016260(direction->x, direction->z);
-    float z = direction->z;
     *yaw = yawAngle;
 
     float trig;
     float angle;
-    if (fn_8000A980(direction->x) > fn_8000A980(z)) {
+    if (fn_8000A980(direction->x) > fn_8000A980(direction->z)) {
         trig = std::sin(yawAngle);
         angle = fn_80016260(-direction->y * trig, direction->x);
     } else {
