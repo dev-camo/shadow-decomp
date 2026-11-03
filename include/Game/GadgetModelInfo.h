@@ -109,10 +109,10 @@ class GadgetModelInfo {
 
     /* 0x04 */ u8 field_0x4[0x38]; /* Unrecovered members, including native subobjects. */
     /* 0x3C */ UnkBitFlags_80014E04 field_0x3C;
-    /* 0x40 */ u8 unknown_0x40[0xC];
+    /* 0x40 */ u8 field_0x40[0xC];
     /* 0x4C */ UnkModelPartList field_0x4C;
     /* 0x58 */ UnkModelMotionList field_0x58;
-    /* 0x64 */ u8 unknown_0x64[0x10]; /* Includes a third native container. */
+    /* 0x64 */ u8 field_0x64[0x10]; /* Includes a third native container. */
 };
 CHECK_SIZEOF(GadgetModelInfo, 0x74);
 
