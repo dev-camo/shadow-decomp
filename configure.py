@@ -1483,6 +1483,7 @@ config.libs = [
             Object(Matching, "Game/fn_8006127C.cpp", cflags=cflags_game_cpp),
             # The material-copy callback retains seven register-word differences.
             Object(NonMatching, "rw/fn_804A076C.c", cflags=cflags_game),
+            Object(Matching, "Game/fn_80015954.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A1FA0.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A35AC.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A4430.cpp", cflags=cflags_game_cpp),

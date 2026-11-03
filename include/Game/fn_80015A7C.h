@@ -24,6 +24,9 @@ class Unk80015A7C {
     /* 0x10 */ RwMatrix *field_0x10;
     /* 0x14 */ const Fn8040Vector3 *field_0x14;
     /* 0x18 */ const Fn8040Matrix34 *field_0x18;
+
+  private:
+    void fn_800158C4();
 };
 CHECK_SIZEOF(Unk80015A7C, 0x1C);
 
