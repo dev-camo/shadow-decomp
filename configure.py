@@ -1474,6 +1474,7 @@ config.libs = [
             # lines 64 and 65 instead of 53 and 54. Source also emits seven extra weak vector
             # helpers and the two static doubles of MSL <cmath>'s sqrtf.
             Object(NonMatching, "Game/CSD/csdMatrix.cpp", cflags=cflags_csd),
+            Object(Matching, "Game/ResourceOneFile.cpp", cflags=cflags_game_cpp),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),

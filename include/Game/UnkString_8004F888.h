@@ -11,6 +11,7 @@
  * The destructor is fn_80014EC0. */
 class UnkString_8004F888 {
   public:
+    explicit UnkString_8004F888(const std::allocator<char> &allocator = std::allocator<char>());
     UnkString_8004F888(const char *chars,
                        const std::allocator<char> &allocator = std::allocator<char>());
     ~UnkString_8004F888();
