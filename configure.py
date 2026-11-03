@@ -1508,6 +1508,9 @@ config.libs = [
             Object(NonMatching, "Game/fn_8040CE60.c"),
             Object(Matching, "Game/fn_8040E310.c"),
             Object(Matching, "Game/fn_8040E38C.c"),
+            # Registers/scheduling differ; the literals continue the preceding functions' pool.
+            # This one-function unit's 8-aligned pool cannot begin at 0x805F1984 (4 mod 8).
+            Object(NonMatching, "Game/fn_80027D5C.cpp", cflags=cflags_game_cpp),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),

@@ -43,6 +43,11 @@ Game/fn_80020A20.cpp:
 Game/fn_80021C04.cpp:
 	.text       start:0x80021C04 end:0x80021C44
 
+Game/fn_80027D5C.cpp:
+	.text       start:0x80027D5C end:0x80027DC4
+	.rodata     start:0x804AC280 end:0x804AC290
+	.sdata2     start:0x805F2A24 end:0x805F2A30
+
 Game/fn_8003B9E8.cpp:
 	.text       start:0x8003BA10 end:0x8003BB04
 
