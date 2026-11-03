@@ -5,12 +5,25 @@
 
 struct Fn8040D594Object;
 
-/* Provisional layout of the manager's 0x30-stride elements. The observed access
- * widths and offsets do not fully recover the original member types, signedness,
- * alignment or lifetime. No original copying or lifetime behaviour is implied. */
+#ifdef __cplusplus
+namespace Sonicteam {
+namespace System {
+namespace Peripheral {
+class IKeyboardManagerImp;
+} // namespace Peripheral
+} // namespace System
+} // namespace Sonicteam
+typedef Sonicteam::System::Peripheral::IKeyboardManagerImp Fn8040D594Provider;
+#else
+typedef struct Fn8040D594Provider Fn8040D594Provider;
+#endif
+
+/* Provisional member types for the manager's 0x30-stride records. The manager
+ * constructor fn_8040D594 constructs two records with fn_8040D608/fn_8040D558;
+ * its destructor fn_8040D4B8 destroys them with fn_8040D558. */
 typedef struct Fn8040D608Object {
     /* 0x00 */ unsigned char field_0x0;
-    /* 0x01 */ unsigned char field_0x1;
+    /* 0x01 */ unsigned char field_0x1; /* Record index (0 or 1). */
     /* 0x02 */ unsigned short field_0x2;
     /* 0x04 */ unsigned short field_0x4;
     /* 0x08 */ unsigned int field_0x8;
@@ -24,13 +37,22 @@ typedef struct Fn8040D608Object {
 } Fn8040D608Object;
 CHECK_SIZEOF(Fn8040D608Object, 0x30);
 
+/* Provisional manager layout through its owned interface pointer. */
+typedef struct Fn8040D594Object {
+    /* 0x00 */ Fn8040D608Object field_0x0[2];
+    /* 0x60 */ Fn8040D594Provider *field_0x60;
+} Fn8040D594Object;
+CHECK_SIZEOF(Fn8040D594Object, 0x64);
+CHECK_OFFSETOF(Fn8040D594Object, field_0x0, 0x00);
+CHECK_OFFSETOF(Fn8040D594Object, field_0x60, 0x60);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 // fn_8040D498.c
 void *fn_8040D498(void **slot);
-Fn8040D608Object *fn_8040D4AC(Fn8040D608Object *base, unsigned int index);
+Fn8040D608Object *fn_8040D4AC(Fn8040D594Object *manager, unsigned int index);
 
 // fn_8040D608.c
 void fn_8040D608(Fn8040D608Object *object);
