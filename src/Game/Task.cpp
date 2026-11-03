@@ -11,6 +11,8 @@ void fn_80050BF8(void);
 u32 lbl_Task_805EE1D8;
 const char *lbl_805E3978 = "Task";
 
+UnkTick::UnkTick(u64 count) : ticks(count) {}
+
 Task::Task(Task *parent) {
     m_flags = 0;
 #if !defined(VERSION_GUPE8P)
