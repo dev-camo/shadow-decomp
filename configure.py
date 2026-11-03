@@ -1511,8 +1511,8 @@ config.libs = [
             # The material-copy callback retains seven register-word differences.
             Object(NonMatching, "rw/fn_804A076C.c", cflags=cflags_game),
             Object(Matching, "Game/fn_80015954.cpp", cflags=cflags_game_cpp),
-            # Native iterator accessors retain an extra call in these typed reconstructions.
-            Object(NonMatching, "Game/fn_80160B18.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_80160B18.cpp", cflags=cflags_game_cpp),
+            # Part cleanup retains one extra element-address addi and register differences.
             Object(NonMatching, "Game/fn_80162804.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A1FA0.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A35AC.cpp", cflags=cflags_game_cpp),

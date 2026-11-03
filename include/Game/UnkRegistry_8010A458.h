@@ -5,24 +5,17 @@
 #include <dolphin/types.h>
 #include "layout_check.h"
 
-/* Opaque native tree positions: the first position may identify an allocated node or the
- * embedded end position. Their value-bearing representation is not recovered here. */
-struct UnkRegistryPosition;
-
-struct UnkRegistryEndPosition {
-    /* 0x00 */ UnkRegistryPosition *root;
+/* Partial storage view of the native container member. The word at +0 is its count;
+ * the remaining storage includes the tree header, comparison and first position, whose
+ * complete types are unrecovered. Native member construction/destruction owns their lifetimes. */
+struct UnkRegistryStorage_8010A458 {
+    /* 0x00 */ u32 count;
+    /* 0x04 */ u8 field_0x4[0xC];
 };
-CHECK_SIZEOF(UnkRegistryEndPosition, 0x4);
-
-/* Unrecovered representation of the comparison subobject. Its native construction copies one
- * byte; the observed comparison operations use the two strings without reading this byte. */
-struct UnkRegistryComparison {
-    /* 0x00 */ u8 unknown_0x0[1];
-};
-CHECK_SIZEOF(UnkRegistryComparison, 0x1);
+CHECK_SIZEOF(UnkRegistryStorage_8010A458, 0x10);
 
 /* The distinct registry returned by fn_8010A458 (original type name unknown).
- * Native construction and destruction preserve its allocator/tree subobject lifetimes. */
+ * Native construction and destruction preserve its container subobject's lifetime. */
 class UnkRegistry_8010A458 {
   public:
     UnkRegistry_8010A458();
@@ -30,11 +23,7 @@ class UnkRegistry_8010A458 {
     /* Releases one reference to the named entry and erases it after its last user (inferred). */
     void fn_801EB550(const UnkString_8004F888 &name);
 
-    /* 0x00 */ u32 count;
-    /* 0x04 */ UnkRegistryEndPosition end;
-    /* 0x08 */ UnkRegistryComparison comparison;
-    /* May hold the embedded end or an allocated position; their common type is unrecovered. */
-    /* 0x0C */ void *first;
+    /* 0x00 */ UnkRegistryStorage_8010A458 field_0x0;
 
   private:
     /* Registry copying has not been recovered. */
