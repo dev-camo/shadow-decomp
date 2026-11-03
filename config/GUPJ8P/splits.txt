@@ -686,7 +686,17 @@ PowerPC_EABI_Support/Runtime/Src/__va_arg.c:
 
 Runtime.PPCEABI.H/global_destructor_chain.c:
 	.text       start:0x803A07B8 end:0x803A0818
-	.sbss       start:0x805F18D8 end:0x805F18DC
+	.sbss       start:0x805F18D8 end:0x805F18E0
+
+PowerPC_EABI_Support/Runtime/Src/CPlusLibPPC.cp:
+	.text       start:0x803A0818 end:0x803A0848
+
+Runtime.PPCEABI.H/fn_803A0208.cpp:
+	extab       start:0x80005600 end:0x80005660
+	extabindex  start:0x80007520 end:0x80007550
+	.text       start:0x803A0848 end:0x803A09FC
+	.rodata     start:0x80514218 end:0x80514240
+	.sbss       start:0x805F18E0 end:0x805F18E8
 
 PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/errno.c:
 	.sbss       start:0x805F1900 end:0x805F1908

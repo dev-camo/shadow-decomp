@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 void free(void *ptr);
+void *malloc(unsigned long size);
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,7 @@
 /* MSL runtime malloc-pool entry points (alloc.c). */
 #include <cstring>
 
+#include "alloc.h"
 #include "alloc_internal.h"
 #include "critical_regions.h"
 

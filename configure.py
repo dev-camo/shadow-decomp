@@ -503,6 +503,14 @@ config.libs = [
             Object(Matching, "Runtime.PPCEABI.H/allocator_release.c"),
             Object(Matching, "Runtime.PPCEABI.H/abort_exit.c"),
             Object(Matching, "Runtime.PPCEABI.H/global_destructor_chain.c"),
+            # All four operators match; pooled what() strings and weak destructor unwind records differ.
+            Object(
+                NonMatching,
+                "Runtime.PPCEABI.H/fn_803A0208.cpp",
+                cflags=cflags_eabi,
+                # The native operators retain throw/specification unwind records.
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
             Object(Matching, "Runtime.PPCEABI.H/__init_cpp_exceptions.cpp"),
         ],
     },
@@ -1755,6 +1763,7 @@ config.libs = [
         "mw_version": config.linker_version,
         "cflags": cflags_eabi,
         "objects": [
+            Object(Matching, "PowerPC_EABI_Support/Runtime/Src/CPlusLibPPC.cp"),
             Object(Matching, "PowerPC_EABI_Support/Runtime/Src/ptmf.c"),
             Object(
                 Matching,
