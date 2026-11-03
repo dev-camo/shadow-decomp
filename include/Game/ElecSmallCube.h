@@ -14,10 +14,14 @@ class ElecSmallCube : public Gadget {
     virtual void ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner);
     /* Allocates the gadget under task layer 11 (name inferred). */
     static void Create(UnkGadgetOwner_800C9CD0 *owner);
-    void fn_8021B1B0(UnkGadgetOwner_800C9CD0 *owner);
-    void fn_8021B140();
-    void fn_8021AEC0(float dt);
-    void fn_8021AEAC(SonicteamUSA::System::CharaColli::AttackCallbackParam &param);
+    /* Copies the owner position and rotation (name inferred). */
+    void CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner);
+    /* Applies the character transform to the model (name inferred). */
+    void UpdateModelMatrix();
+    /* Advances the rotation interpolation (name inferred). */
+    void UpdateRotation(float dt);
+    /* Marks the cube for destruction when attacked (name inferred). */
+    void OnAttack(SonicteamUSA::System::CharaColli::AttackCallbackParam &param);
     void fn_8021ADC0();
     static const char *s_name;
     /* 0x30 */ boost::shared_ptr<GadgetCharInfo> m_charInfo;

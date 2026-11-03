@@ -1493,6 +1493,7 @@ config.libs = [
             Object(NonMatching, "Game/fn_801A6588.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_801D455C.cpp", cflags=cflags_game_cpp),
             # Constructor temporary cleanup, rotation registers, and literal order still differ.
+            # Constructor temporary cleanup and float literal pool order still differ.
             Object(NonMatching, "Game/ElecSmallCube.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_804220CC.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EffCmdGlareSWExec.cpp", cflags=cflags_effect),
