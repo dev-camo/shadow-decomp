@@ -1538,6 +1538,7 @@ config.libs = [
             Object(NonMatching, "Game/CSD/csdmMotionPalette.cpp", cflags=cflags_csd),
             Object(Matching, "Game/fn_80293AC8.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_8004924C.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_8004EDAC.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Task.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80165EFC.cpp", cflags=cflags_game_cpp),
             # The size and preparation helpers match; the vertex-byte counter retains twelve

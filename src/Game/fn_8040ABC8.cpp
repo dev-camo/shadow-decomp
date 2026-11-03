@@ -9,23 +9,11 @@
 #include <dolphin/os.h>
 #include <dolphin/types.h>
 #include "layout_check.h"
-#include "Game/UnkTick.h"
+#include "Game/UnkTickSource_8040ABC8.h"
 
 /* Rounds value up to a multiple of the power-of-two alignment (name inferred). The behaviour comes
  * from its code; the parameter types are unverified, since its own unit is not decompiled. */
 u32 AlignUp(u32 value, u32 alignment);
-
-/* An object without data that the game allocates into a global pointer and deletes again, and that
- * reads the current tick (placeholder class: its name is unknown). */
-class UnkTickSource_8040ABC8 {
-  public:
-    UnkTickSource_8040ABC8();
-    ~UnkTickSource_8040ABC8();
-
-    /* Returns the current value of the processor tick counter (name inferred). */
-    UnkTick GetTick();
-};
-CHECK_SIZEOF(UnkTickSource_8040ABC8, 0x1);
 
 namespace Sonicteam {
 namespace System {

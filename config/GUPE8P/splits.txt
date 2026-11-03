@@ -82,6 +82,9 @@ Game/fn_8004924C.cpp:
 Game/fn_800498A0.cpp:
 	.text       start:0x800498A0 end:0x80049AF4
 
+Game/fn_8004EDAC.cpp:
+	.text       start:0x8004EDAC end:0x8004EE88
+
 Game/Task.cpp:
 	.text       start:0x8004EED4 end:0x8004F0A4
 	.data       start:0x8051D648 end:0x8051D658
