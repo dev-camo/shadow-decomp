@@ -699,9 +699,8 @@ static void UpdateEntries(MotionPaletteLayer *layer, int index, const LayerData 
             entry->flags |= ENTRY_SUBTREE_SET;
         } else {
             entry->flags &= ~ENTRY_SUBTREE_SET;
-            /* Matching workaround: the original has these five words, which clear the same flag
-             * of the same entry again. The source form of this repeated clear is not known; revisit
-             * if the inline function or macro that produces it is found. */
+            /* The original clears this entry again when a parent exists. Parent propagation is
+             * handled separately below, after any child update. */
             if (parent != NULL) {
                 entry->flags &= ~ENTRY_SUBTREE_SET;
             }
