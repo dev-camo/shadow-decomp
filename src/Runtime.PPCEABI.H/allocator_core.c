@@ -63,11 +63,11 @@ void *__pool_realloc(__mem_pool *pool, void *ptr, unsigned long size) {
     unsigned int free_head_offset;
     Block *area;
     unsigned int owner;
-    SubBlock *coalesced_block;
     unsigned int old_size;
     unsigned int block_size;
     unsigned int required_size;
     unsigned int combined_size;
+    unsigned int available_size;
     void *new_ptr;
     if (ptr == 0) {
         return __pool_alloc(pool, size);
@@ -112,12 +112,11 @@ void *__pool_realloc(__mem_pool *pool, void *ptr, unsigned long size) {
                 UnlinkFreeBlock(area, free_head_offset,
                                 (SubBlock *)((unsigned char *)block + block_size));
             }
-            coalesced_block = block;
-            combined_size = BlockSize(coalesced_block);
-            if (combined_size >= required_size) {
-                if ((combined_size - required_size) >= MINIMUM_BLOCK_SIZE) {
+            available_size = BlockSize(block);
+            if (available_size >= required_size) {
+                if ((available_size - required_size) >= MINIMUM_BLOCK_SIZE) {
                     {
-                        SubBlock *split_block = coalesced_block;
+                        SubBlock *split_block = block;
                         unsigned int split_size = required_size;
                         unsigned int split_old_size;
                         unsigned int split_old_flags;
