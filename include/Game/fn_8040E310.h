@@ -3,12 +3,13 @@
 
 #include "layout_check.h"
 
-/* An element of the array constructed by fn_8040E274. Mode 1 selects the halfword;
- * mode 2 selects the word mask. The original type name is unknown. */
+/* An element of the array constructed by fn_8040E274. Mode (name inferred) 0 marks
+ * an empty element, 1 selects the halfword, and 2 selects the word mask.
+ * The original type name is unknown. */
 typedef struct Fn8040E310Object {
     /* 0x00 */ unsigned short field_0x0;
     /* 0x04 */ unsigned int field_0x4;
-    /* 0x08 */ unsigned int mode;
+    /* 0x08 */ int mode;
 } Fn8040E310Object;
 CHECK_SIZEOF(Fn8040E310Object, 0xC);
 
