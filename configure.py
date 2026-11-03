@@ -1467,6 +1467,8 @@ config.libs = [
             # helpers and the two static doubles of MSL <cmath>'s sqrtf.
             Object(NonMatching, "Game/CSD/csdMatrix.cpp", cflags=cflags_csd),
             Object(Matching, "Game/ResourceOneFile.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_80014D58.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_80014EC0.cpp", cflags=cflags_game_cpp),
             # The fn_8040CB58 member owns the original extab/extabindex records.
             Object(
                 Matching, "Game/fn_8040CB2C.cpp", extra_cflags=["-Cpp_exceptions on"]
