@@ -147,6 +147,10 @@ Game/CSD/csdTexList.cpp:
 	.data       start:0x80560110 end:0x80560138
 	.bss        start:0x80586048 end:0x80586050
 
+Game/CSD/csdmMotionPalette.cpp:
+	.text       start:0x80368D60 end:0x803692A4
+	.rodata     start:0x805137A8 end:0x805137F0
+
 dolphin/PPCArch.c:
 	.text       start:0x803702C8 end:0x803703DC
 
