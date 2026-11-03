@@ -17,7 +17,7 @@
 #include "Game/SetAdapterState.h"
 #include "Game/SharedConstants.h"
 #include "Game/UnkActor_800740E4.h"
-#include "Game/UnkAttack_8005A840.h"
+#include "Game/CharaColliAttack.h"
 #include "Game/UnkBitFlags_80014E04.h"
 #include "Game/UnkGadgetOwner_800C9CD0.h"
 #include "Game/UnkManager_800CB69C.h"
@@ -34,6 +34,8 @@
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include "layout_check.h"
+
+using SonicteamUSA::System::CharaColli::CharaColliAttack;
 
 class Chao;
 class ChaoHolder;
@@ -213,8 +215,8 @@ Chao::Chao(ChaoHolder *holder, UnkGadgetOwner_800C9CD0 *owner)
     m_probe = fn_800C7DEC(fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), 2, 7, 0,
                           &lbl_805E07A0, s_probeRadius.value);
 
-    boost::weak_ptr<UnkAttack_8005A840> attackWeak = fn_800C4374(fn_80021B08(), m_probe);
-    boost::shared_ptr<UnkAttack_8005A840> attack = attackWeak.lock();
+    boost::weak_ptr<CharaColliAttack> attackWeak = fn_800C4374(fn_80021B08(), m_probe);
+    boost::shared_ptr<CharaColliAttack> attack = attackWeak.lock();
 
     attack->fn_80096B64(1, AttackCallback(boost::bind(&Chao::OnAttack, this, _1)));
 

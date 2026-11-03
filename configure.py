@@ -735,10 +735,10 @@ config.libs = [
                 # in the class or after the constructor, makes it weak but emits it at its first
                 # use instead of at its definition, which moves it away from the original's
                 # position. The object also defines a local
-                # boost::checked_delete<UnkAttack_8005A840> (0x24 bytes), which the original unit
-                # does not have (the checked_deleter<UnkAttack_8005A840> call operator is external
+                # boost::checked_delete<CharaColliAttack> (0x24 bytes), which the original unit
+                # does not have (the checked_deleter<CharaColliAttack> call operator is external
                 # there), and appends to .rodata, .data and .sdata the type records, name strings
-                # and vtables of sp_counted_base, std::exception and the UnkAttack_8005A840
+                # and vtables of sp_counted_base, std::exception and the CharaColliAttack
                 # sp_counted_base_impl and checked_deleter.
                 Object(NonMatching, "Game/WeaponStickBase.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/TestNakazawa.cpp", cflags=cflags_game_cpp),
@@ -1578,6 +1578,10 @@ config.libs = [
                 cflags=cflags_game_cpp,
                 extra_cflags=["-Cpp_exceptions on"],
             ),
+            Object(Matching, "Game/fn_8005A300.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_80054DD0.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_80096B64.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_800532F8.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_804220CC.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EffCmdGlareSWExec.cpp", cflags=cflags_effect),
             Object(Matching, "Game/fn_8042A2D8.cpp", cflags=cflags_effect),

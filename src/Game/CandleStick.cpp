@@ -12,7 +12,7 @@
 #include "Game/GadgetModelInfo.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/SetAdapterState.h"
-#include "Game/UnkAttack_8005A840.h"
+#include "Game/CharaColliAttack.h"
 #include "Game/UnkBitFlags_80014E04.h"
 #include "Game/EffectElement.h"
 #include "Game/UnkEffectParams_8015F0B8.h"
@@ -28,6 +28,8 @@
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include "layout_check.h"
+
+using SonicteamUSA::System::CharaColli::CharaColliAttack;
 
 class CandleStick;
 
@@ -265,7 +267,7 @@ void CandleStick::ApplyState() {
     m_model->fn_80161FC8(0, m_charInfo);
 
     {
-        boost::shared_ptr<UnkAttack_8005A840> attack(m_model->fn_80161428(0).lock());
+        boost::shared_ptr<CharaColliAttack> attack(m_model->fn_80161428(0).lock());
 
         if (attack.get() != 0) {
             attack->fn_80096B64(1, AttackCallback(boost::bind(&CandleStick::OnAttack, this, _1)));
@@ -301,7 +303,7 @@ void CandleStick::OnAttack(SonicteamUSA::System::CharaColli::AttackCallbackParam
     param.field_0x54 = 1;
 
     if (!m_data->m_flags.Test(1) && fn_8015D4E4(&param)) {
-        boost::shared_ptr<UnkAttack_8005A840> attack(param.field_0x0.lock());
+        boost::shared_ptr<CharaColliAttack> attack(param.field_0x0.lock());
 
         if (attack.get() != 0 && (attack->field_0x40 & 0x400) != 0) {
             m_flags.Set(1);

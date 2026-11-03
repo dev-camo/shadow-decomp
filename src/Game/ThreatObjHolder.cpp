@@ -20,7 +20,7 @@
 #include "Game/GadgetModelInfo.h"
 #include "Game/fn_804157E8_motion_control.h"
 #include "Game/GadgetTypeInfo.h"
-#include "Game/UnkAttack_8005A840.h"
+#include "Game/CharaColliAttack.h"
 #include "Game/UnkEffectParams_8015F0B8.h"
 #include "Game/UnkGlobal_8057D6A0.h"
 #include "Game/UnkResource_80012700.h"
@@ -33,6 +33,8 @@
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include "layout_check.h"
+
+using SonicteamUSA::System::CharaColli::CharaColliAttack;
 
 class ThreatObjHolder;
 
@@ -189,7 +191,7 @@ void ThreatObj::Update(float dt) {
             m_model->fn_80161FC8(m_holder->m_params.modelType, m_charInfo);
 
             {
-                boost::shared_ptr<UnkAttack_8005A840> attack =
+                boost::shared_ptr<CharaColliAttack> attack =
                     m_model->fn_80161428(m_holder->m_params.modelType).lock();
 
                 if (attack.get() != 0) {

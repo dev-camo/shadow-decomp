@@ -22,7 +22,7 @@
 #include "Game/fn_804157E8_motion_control.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/SetAdapterState.h"
-#include "Game/UnkAttack_8005A840.h"
+#include "Game/CharaColliAttack.h"
 #include "Game/UnkBitFlags_80014E04.h"
 #include "Game/UnkEffectParams_8015F0B8.h"
 #include "Game/UnkGadgetOwner_800C9CD0.h"
@@ -40,6 +40,8 @@
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include "layout_check.h"
+
+using SonicteamUSA::System::CharaColli::CharaColliAttack;
 
 class FallBuilding;
 class FallBuildingHolder;
@@ -173,7 +175,7 @@ FallBuilding::FallBuilding(FallBuildingHolder *holder, UnkGadgetOwner_800C9CD0 *
 
         m_model->fn_80161FC8(m_config->field_0xC, boost::weak_ptr<CharInfo>(m_charInfo));
         {
-            boost::shared_ptr<UnkAttack_8005A840> attack =
+            boost::shared_ptr<CharaColliAttack> attack =
                 m_model->fn_80161428(m_config->field_0xC).lock();
 
             if (attack.get() != 0) {
@@ -185,7 +187,7 @@ FallBuilding::FallBuilding(FallBuildingHolder *holder, UnkGadgetOwner_800C9CD0 *
         if (m_config->field_0x10 != -1) {
             m_model->fn_80161FC8(m_config->field_0x10, boost::weak_ptr<CharInfo>(m_charInfo));
 
-            boost::shared_ptr<UnkAttack_8005A840> attack =
+            boost::shared_ptr<CharaColliAttack> attack =
                 m_model->fn_80161428(m_config->field_0x10).lock();
 
             if (attack.get() != 0) {
@@ -197,7 +199,7 @@ FallBuilding::FallBuilding(FallBuildingHolder *holder, UnkGadgetOwner_800C9CD0 *
         if (m_config->field_0x14 != -1) {
             m_model->fn_80161FC8(m_config->field_0x14, boost::weak_ptr<CharInfo>(m_charInfo));
 
-            boost::shared_ptr<UnkAttack_8005A840> attack =
+            boost::shared_ptr<CharaColliAttack> attack =
                 m_model->fn_80161428(m_config->field_0x14).lock();
 
             if (attack.get() != 0) {
@@ -241,7 +243,7 @@ void FallBuilding::Update(float dt) {
 
         if (m_flags.Test(0)) {
             if (m_config->field_0x14 != -1) {
-                boost::shared_ptr<UnkAttack_8005A840> attack =
+                boost::shared_ptr<CharaColliAttack> attack =
                     m_model->fn_80161428(m_config->field_0x14).lock();
 
                 if (attack.get() != 0) {
@@ -380,7 +382,7 @@ void FallBuilding::UpdateModelMatrix() {
 
 void FallBuilding::OnAttack(SonicteamUSA::System::CharaColli::AttackCallbackParam &param) {
     if (m_state == 0 && !m_flags.Test(0) && fn_8015D4E4(&param)) {
-        boost::shared_ptr<UnkAttack_8005A840> attack = param.field_0x0.lock();
+        boost::shared_ptr<CharaColliAttack> attack = param.field_0x0.lock();
 
         if (attack.get() != 0 && (attack->field_0x40 & 0x10) != 0) {
             param.field_0x54 = 1;

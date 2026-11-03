@@ -63,7 +63,13 @@ class UnkProbeTarget_800587A0 {
 };
 
 class UnkWorld_80021B08;
-class UnkAttack_8005A840;
+namespace SonicteamUSA {
+namespace System {
+namespace CharaColli {
+class CharaColliAttack;
+} // namespace CharaColli
+} // namespace System
+} // namespace SonicteamUSA
 
 /* A sphere of a centre and a radius (placeholder name; layout from the constructor at 0x80021C04,
  * which copies the centre to 0x0 and stores the radius at 0xC). */
@@ -122,8 +128,8 @@ fn_800C7D04(UnkWorld_80021B08 *world, const Fn8040Vector3 *position,
 bool fn_800C5878(UnkWorld_80021B08 *world, const UnkSphere_80021C04 *sphere,
                  const boost::weak_ptr<UnkProbeTarget_800587A0> &probe, int arg3);
 /* Creates the attack object of a probe and returns it (behaviour inferred). */
-boost::weak_ptr<UnkAttack_8005A840> fn_800C4374(UnkWorld_80021B08 *world,
-                                                boost::shared_ptr<UnkProbeTarget_800587A0> probe);
+boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack>
+fn_800C4374(UnkWorld_80021B08 *world, boost::shared_ptr<UnkProbeTarget_800587A0> probe);
 /* True when one of the probe hits in the list is a character info whose virtual function at
  * vtable offset 0x24 reports true (behaviour inferred). */
 bool fn_8015D2EC(UnkProbeList_80021FE4 *hits);
@@ -135,10 +141,10 @@ boost::weak_ptr<CharInfo> fn_800C4568(UnkWorld_80021B08 *world,
                                       boost::weak_ptr<UnkProbeTarget_800587A0> target);
 /* Tests the attack along the segment and returns a newly allocated list of what it met, or 0
  * (behaviour inferred); arg2 and arg3 are forwarded with unresolved meanings. */
-UnkProbeList_80021FE4 *fn_800C5D74(UnkWorld_80021B08 *world, const UnkSegment_80020A20 *segment,
-                                   int arg2, int arg3, UnkProbeList_80021FE4 *hits,
-                                   UnkProbePredicate predicate, void *context,
-                                   boost::weak_ptr<UnkAttack_8005A840> attack);
+UnkProbeList_80021FE4 *
+fn_800C5D74(UnkWorld_80021B08 *world, const UnkSegment_80020A20 *segment, int arg2, int arg3,
+            UnkProbeList_80021FE4 *hits, UnkProbePredicate predicate, void *context,
+            boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack> attack);
 }
 
 #endif

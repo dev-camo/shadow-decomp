@@ -10,6 +10,8 @@
 #include "boost/bind.hpp"
 #include <cmath>
 
+using SonicteamUSA::System::CharaColli::CharaColliAttack;
+
 const char *ElecRollHexa::s_name = "ElecRollHexa";
 
 ElecRollHexa::ElecRollHexa(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(parent, owner) {
@@ -19,9 +21,9 @@ ElecRollHexa::ElecRollHexa(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadge
     m_model = new GadgetModelInfo(1, "ROLLHEXA.BIN");
     m_model->fn_80162A68(0, 0);
     m_model->fn_80161F08("col", m_charInfo);
-    boost::weak_ptr<UnkAttack_8005A840> weakAttack = m_model->fn_80161428(0);
+    boost::weak_ptr<CharaColliAttack> weakAttack = m_model->fn_80161428(0);
     {
-        boost::shared_ptr<UnkAttack_8005A840> attack(weakAttack.lock());
+        boost::shared_ptr<CharaColliAttack> attack(weakAttack.lock());
         if (attack.get() != 0) {
             attack->fn_80096B64(1,
                                 AttackCallback(boost::bind(&ElecRollHexa::fn_80267264, this, _1)));

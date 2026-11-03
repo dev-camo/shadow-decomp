@@ -11,7 +11,13 @@
 #include "layout_check.h"
 
 class CharInfo;
-class UnkAttack_8005A840;
+namespace SonicteamUSA {
+namespace System {
+namespace CharaColli {
+class CharaColliAttack;
+} // namespace CharaColli
+} // namespace System
+} // namespace SonicteamUSA
 struct _stMtnPlayWork;
 struct RpClump;
 struct RpAtomic;
@@ -105,7 +111,7 @@ class GadgetModelInfo {
     /* Attaches a character info to the part with id arg0 (behaviour inferred). */
     void fn_80161FC8(int arg0, const boost::weak_ptr<CharInfo> &info);
     /* Returns the attack object of the part with id arg0 (behaviour inferred). */
-    boost::weak_ptr<UnkAttack_8005A840> fn_80161428(int arg0);
+    boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack> fn_80161428(int arg0);
     /* Returns the entry of the array at 0x0 of the object at 0x30 whose id equals arg0, or null
      * (behaviour inferred). */
     UnkModelEntry_8015F7BC *fn_8015F7BC(int arg0);
