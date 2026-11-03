@@ -1490,7 +1490,11 @@ config.libs = [
             # ownership and symbol identity remain unrecovered.
             Object(NonMatching, "Game/fn_8000A980.cpp", cflags=cflags_game_cpp),
 
-            # The startup instructions match, but its literals belong to a shared original pool.
+            # Tail of a larger original file whose functions own the pool at 0x805FAD50:
+            # 1.0f, 0.0f, 0.99999f, 0.5f and 1e-5f are used by fn_8040C3EC, fn_8040C55C,
+            # fn_8040C874, fn_8040C908 and fn_8040C958. fn_8040CB58 uses the next pool at
+            # 0x805FAD68. External literal symbols would hide this artificial unit boundary;
+            # revisit when the data-owning functions can be sourced and merged into this unit.
             Object(NonMatching, "Game/fn_8040CAF8.cpp"),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.

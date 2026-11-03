@@ -3,7 +3,7 @@
 
 #include "layout_check.h"
 
-/* 2- and 3-float vectors used by the fn_8040xxxx vector helpers. Layouts come from their accesses;
+/* 2-, 3- and 4-float vectors used by the fn_8040xxxx vector helpers. Layouts come from their accesses;
  * the original type and function names are unknown. The original constructs its global vectors
  * at startup in .sbss/.bss, so the C++ view has component constructors, and an empty default
  * constructor for the members and locals declared without an initialiser. */
@@ -134,6 +134,12 @@ extern Fn8040Vector3 lbl_805E07A0;
 /* A zero vector that the startup code at 0x8040EA64 stores (together with a 2D one at 0x805E07B0);
  * the GravityChangeCollision gadget passes it to the box probe factory fn_800C7C34. */
 extern Fn8040Vector3 lbl_805E07B8;
+
+/* Four-component globals constructed by fn_8040CAF8.cpp. lbl_805E0790 = (0, 0, 0, 1)
+ * is copied through fn_8007A34C at 0x801B0574 and 0x801B06B4; use as an identity rotation is
+ * inferred. lbl_805E0780 is all zero; no reader was found in the original references. */
+extern Fn8040Vector4 lbl_805E0780;
+extern Fn8040Vector4 lbl_805E0790;
 
 /* Lengths of a 2D and a 3D vector, through MSL <cmath>'s inline std::sqrt(float). Retail calls the
  * out-of-line copy of std::sqrt at 0x8000FEE4, which calls the copy of sqrtf at 0x8000FF04. The E3
