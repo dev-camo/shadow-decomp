@@ -8,6 +8,6 @@ void *fn_8040D498(void **slot) {
     return value;
 }
 
-Fn8040D608Object *fn_8040D4AC(Fn8040D608Object *base, unsigned int index) {
-    return base + index;
+Fn8040D608Object *fn_8040D4AC(Fn8040D594Object *manager, unsigned int index) {
+    return &manager->field_0x0[index];
 }
