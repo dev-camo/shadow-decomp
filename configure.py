@@ -1016,8 +1016,6 @@ config.libs = [
                 Object(NonMatching, "Game/EffectManager.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/fn_80425860.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/EffectArranger.cpp", cflags=cflags_effect),
-                Object(Matching, "Game/fn_8040D8D4.c"),
-                Object(Matching, "Game/fn_8040D850.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/fn_80424D18.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/fn_8040D9D8.c"),
                 Object(Matching, "Game/fn_8040D498.c"),
@@ -1545,6 +1543,20 @@ config.libs = [
                 "Game/fn_8040D640.cpp",
                 cflags=cflags_game_cpp,
                 # The original unit retains 48 bytes of extab and 24 bytes of extabindex.
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
+            Object(
+                Matching,
+                "Game/fn_8040D714.cpp",
+                cflags=cflags_game_cpp,
+                # The native destructors retain 16 bytes of extab and 24 bytes of extabindex.
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
+            Object(
+                Matching,
+                "Game/fn_8040D7C4.cpp",
+                cflags=cflags_game_cpp,
+                # The native constructors retain 52 bytes of extab and 36 bytes of extabindex.
                 extra_cflags=["-Cpp_exceptions on"],
             ),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
