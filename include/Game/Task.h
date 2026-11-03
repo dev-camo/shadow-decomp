@@ -3,6 +3,7 @@
 
 #include <dolphin/types.h>
 #include "layout_check.h"
+#include <Game/UnkTick.h>
 
 /* Task (class name from RTTI): a node of the game's task tree. Each task links to its parent, its
  * neighbouring siblings and its first child; every constructor stores its class name in m_name. */
@@ -21,8 +22,7 @@ class Task {
     virtual void Update(float dt);
 
     /* 0x1C */ u32 field_0x1C;
-    /* 0x20 */ u32 field_0x20;
-    /* 0x24 */ u32 field_0x24;
+    /* 0x20 */ UnkTick field_0x20;
 };
 CHECK_SIZEOF(Task, 0x28);
 
@@ -34,6 +34,10 @@ CHECK_SIZEOF(Task, 0x28);
 class UnkTaskManager_8001C4F8;
 
 extern "C" {
+/* Critical-section wrappers used by Japan and PAL. */
+void fn_80050C40(void);
+void fn_80050BF8(void);
+
 UnkTaskManager_8001C4F8 *fn_8001C4F8(void);
 Task *fn_801EB304(UnkTaskManager_8001C4F8 *manager, int index);
 }
