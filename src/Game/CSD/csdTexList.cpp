@@ -29,7 +29,7 @@ void RegisterTexList(CTexList *texList) {
     if (it != s_pTexLists->end()) {
         s_pTexLists->erase(it);
     }
-    s_pTexLists->insert(std::make_pair(texList->GetType(), texList));
+    s_pTexLists->insert(std::pair<u32, CTexList *>(texList->GetType(), texList));
 }
 
 CTexList::~CTexList() {}
