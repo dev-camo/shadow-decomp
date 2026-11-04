@@ -155,8 +155,8 @@ RwUInt32 *fn_8044CDBC(RpSkin *skin);
 /* GameCube (inferred from their use) */
 /* sorts the weights heaviest first and makes the byte weights and indices for the kernels */
 RpSkin *fn_8044E408(RpSkin *skin, RwUInt32 numVertices);
-RpAtomic *fn_8044D924(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh); /* instance */
-RpAtomic *fn_8044DA3C(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh); /* reinstance */
+void *fn_8044D924(void *object, RpGameCubeRenderMesh *renderMesh);         /* instance */
+void *fn_8044DA3C(void *object, RpGameCubeRenderMesh *renderMesh);         /* reinstance */
 RpAtomic *fn_8044DE74(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh); /* render */
 /* loads a bone matrix into the GX position (and normal) matrix at index */
 void fn_8044DC4C(RwMatrix *matrix, RwUInt32 index, RwBool normals);

@@ -544,6 +544,23 @@ config.libs = [
                 Object(Matching, "rw/fn_80448CB0.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8044920C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8044BAB4.c", cflags=[*cflags_game, "-inline noauto"]),
+                # NonMatching, USA raw differing words per function (branch displacements included;
+                # data unchanged): fn_8044CDC4, fn_8044CEE0, fn_8044CF68, fn_8044D554, fn_8044D6E8,
+                # fn_8044D924 and fn_8044DC4C exact. fn_8044DA3C 3: the lis of the skin globals'
+                # address is scheduled before the copy of the object pointer and takes r5 instead of
+                # r3. fn_8044DD1C 11: the original adds the run's offset to the run table before the
+                # first run's (ours adds the two offsets first), and the run counter and the first
+                # run's offset take r24 and r25 the other way round. fn_8044DE74 35: the same
+                # address order and register colouring in its two inlined copies of fn_8044DD1C, and
+                # the matrix index and the normals flag of the rigid-skin loop take r17 and r18 the
+                # other way round. fn_8044E408 23: register colouring of the weight offset and shift
+                # counters, of two bit-mask temporaries and of the index loop, and two loop offsets
+                # start as a copy of the zeroed counter instead of li 0 (which also moves the
+                # zeroing of the weight total). fn_8044D344 111 (508 of 528 bytes): in the loop over
+                # the bones without hierarchy matrices the original keeps a separate incremented
+                # pointer for each of the three boneIds[i] reads and loads the 0 for
+                # boneMatrix.flags in every iteration; ours shares one pointer and keeps the 0 in a
+                # register.
                 Object(NonMatching, "rw/fn_8044CDC4.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8044E6BC.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80450D6C.c", cflags=cflags_game),
