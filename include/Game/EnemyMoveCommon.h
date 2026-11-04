@@ -7,7 +7,7 @@
 #include "layout_check.h"
 
 /* Original RTTI name. The virtual EnemyReferer base is at 0x64, with its compiler link at 0x4. */
-class EnemyMoveCommon : public EnemyMoveFunc, public virtual EnemyReferer {
+class EnemyMoveCommon : public virtual EnemyReferer, public EnemyMoveFunc {
   public:
     EnemyMoveCommon();
 

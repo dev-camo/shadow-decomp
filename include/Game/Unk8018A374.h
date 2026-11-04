@@ -27,6 +27,7 @@ struct Unk8018A374 {
     Unk8018A374();
     void fn_801A687C(const Fn8040Vector3 &position);
     bool fn_801A6944(const Fn8040Vector3 &position) const;
+    bool fn_801A68C0(const Fn8040Vector3 &position) const;
 
     /* 0x00 */ Unk8018A3D0 field_0x0;
     /* 0x20 */ Unk8018A3CC field_0x20;

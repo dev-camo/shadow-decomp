@@ -90,6 +90,12 @@ Fn8040Vector3 *fn_8017C684(Enemy *enemy);
 Fn8040Vector3 *fn_8017C690(Enemy *enemy);
 Fn8040Vector3 *fn_80181F0C(Enemy *enemy);
 float fn_8018346C(const Enemy *enemy);
+/* Play sound `id` through the sound manager, passing the m_charInfo object as its position when
+ * `flag` is set (behaviour inferred). fn_8019A954 first returns when field_0xFC already holds
+ * the word at USA 0x8057D730 less field_0x2C, and otherwise stores that value. */
+void fn_8019A954(Enemy *enemy, unsigned short id, bool flag);
+void fn_8019A9DC(Enemy *enemy, unsigned short id, bool flag);
+void fn_8019AA40(Enemy *enemy, unsigned short id, bool flag);
 }
 
 #endif

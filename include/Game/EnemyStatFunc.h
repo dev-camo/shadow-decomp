@@ -1,7 +1,7 @@
 #ifndef GAME_ENEMYSTATFUNC_H
 #define GAME_ENEMYSTATFUNC_H
 
-/* Original RTTI name; virtual prefix through 0xA8. Method types and qualifiers are inferred. */
+/* Original RTTI name; all 44 slots (0x08-0xB4). Method types and qualifiers are inferred. */
 #include "Game/CharInfo.h"
 #include "Game/UnkBitFlags_80014E04.h"
 
@@ -54,6 +54,9 @@ class EnemyStatFunc {
     virtual void fn_801A84DC();                                    // 0xA0
     virtual void fn_801A84D8();                                    // 0xA4
     virtual UnkBitFlags_80014E04 *fn_8017B83C();                   // 0xA8
+    virtual float fn_8017B844();                                   // 0xAC
+    virtual float fn_8017B84C();                                   // 0xB0
+    virtual void fn_8017B854(float);                               // 0xB4
 };
 CHECK_SIZEOF(EnemyStatFunc, 0x4);
 
