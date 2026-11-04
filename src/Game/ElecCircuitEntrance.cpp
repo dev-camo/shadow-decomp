@@ -25,6 +25,7 @@
 #include "Game/UnkManager_800CB69C.h"
 #include "Game/UnkWorld_80021B08.h"
 #include "Game/fn_8040_vector_types.h"
+#include "Game/fn_801F8040.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"
 #include "boost/shared_ptr.hpp"
@@ -123,9 +124,6 @@ const char *ElecCircuitEntrance::s_name = "ElecCircuitEntrance";
 /* Three angles (in radians) built at startup; the constructor passes them to fn_800C7A84. */
 static Fn8040Vector3 lbl_80583B78(0.5f * lbl_805FAD38, 0.0f, 0.0f);
 
-/* The angle helper is defined after fn_801F888C, which calls it. */
-inline void fn_801F8040(float *sine, float *cosine, float angle, float scale);
-
 /* The callback that fn_8015AA84 calls for each character info in the collision results (name
  * inferred). */
 static void fn_801F888C(boost::shared_ptr<CharInfo> hit, UnkHitContext_801F7E28 *context) {
@@ -196,12 +194,6 @@ void ElecCircuitEntrance::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
 void ElecCircuitEntrance::fn_800CBC1C() {
     fn_801F7F9C();
-}
-
-/* Sets *sine and *cosine to scale times the sine and cosine of angle (behaviour inferred). */
-inline void fn_801F8040(float *sine, float *cosine, float angle, float scale) {
-    *sine = scale * std::sin(angle);
-    *cosine = scale * std::cos(angle);
 }
 
 void ElecCircuitEntrance::fn_801F7F9C() {

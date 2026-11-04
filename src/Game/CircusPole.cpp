@@ -18,44 +18,15 @@
 #include "Game/UnkRegistry_801DE414.h"
 #include "Game/UnkResource_80012700.h"
 #include "Game/fn_80037A80.h"
+#include "Game/UnkLayer_8004DFB0.h"
 #include "Game/UnkString_8004F888.h"
 #include "Game/fn_8006_resource_list.h"
+#include "Game/fn_800E9CEC.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"
 #include "boost/shared_ptr.hpp"
 #include "layout_check.h"
-
-// RednerDrawArgs is the original spelling (from the RTTI name).
-class RednerDrawArgs;
-
-typedef boost::function1<void, RednerDrawArgs &> RenderDrawCallback;
-CHECK_SIZEOF(RenderDrawCallback, 0xC);
-
-/* The 0x28-byte draw layer that fn_8004DFB0 creates (placeholder name; only the members the gadget
- * uses are mapped): its callback at 0x14 is called when the layer is drawn. */
-class UnkLayer_8004DFB0 {
-  public:
-    /* 0x00 */ u8 field_0x0[0x14];
-    /* 0x14 */ RenderDrawCallback m_drawCallback;
-    /* 0x20 */ u8 field_0x20[0x8];
-};
-CHECK_SIZEOF(UnkLayer_8004DFB0, 0x28);
-
-/* The manager that fn_80046178 returns (placeholder). Its word at 0x8 is what fn_8004DFB0 takes. */
-class UnkLayerManager_80046178 {
-  public:
-    /* 0x0 */ u8 field_0x0[0x8];
-    /* 0x8 */ void *field_0x8;
-};
-
-extern "C" {
-UnkLayerManager_80046178 *fn_80046178(void);
-boost::shared_ptr<UnkLayer_8004DFB0> fn_8004DFB0(void *arg0, const char *name);
-/* Rotates the frame about the y axis by angle radians, with the combine operation combine
- * (behaviour inferred from the sin and cos it computes and the matrix rotation it calls). */
-void fn_800E9CEC(RwFrame *frame, int combine, float angle);
-}
 
 class CircusPole : public Gadget {
   public:
