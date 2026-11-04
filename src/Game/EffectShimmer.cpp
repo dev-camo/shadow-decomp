@@ -143,8 +143,7 @@ EffectShimmer::EffectShimmer(UnkEffectElementData10 *definition, EffectLaunchInf
     }
     }
     // Only the supplied vector components are initialized.
-    int alpha = definition->field_0x30;
-    m_alpha = MaterialChannelToFixed(alpha);
+    m_alpha = (definition->field_0x30 & 0xFF) << MATERIAL_FRACTION_BITS;
     for (int i = 0; i < 2; ++i) {
         if (field_0x108[i] < 1) {
             field_0x108[i] = 1;
