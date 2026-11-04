@@ -6,26 +6,26 @@
  * stage. File name inferred from the class. Method names marked "(name inferred)" are not original.
  * Definitions are in reverse address order (deferred inlining emits functions last-defined first).
  *
- * NonMatching: 79 of the 85 functions have identical instructions. Five differ in a few words
+ * NonMatching: 80 of the 85 functions have identical instructions. Four differ in a few words
  * (counted as words of the original that have no equal in this object): the preload hook (5, the
  * registers of the table pointer and the stage number), SetupPath (2, the order of two argument
  * moves), ResetFromOwner (7, the original calls the smart pointer's operator-> out of line for
- * the character info's yaw), the camera event handler (2: the original tests the event argument
- * for null; the source form of that test is unknown) and UpdateBody (14: the stack slots of the
- * path start and direction vectors and of the launch vectors are exchanged, one argument move is
- * scheduled earlier, and the stage pointer is loaded into another register). The sixth, the
- * conversion fn_80131654, has no function of that name here. The destructor, UpdateBody and the
- * camera event handler pass a copy of the follower pointer to fn_801CE9F4 or fn_801CEA54: the
- * original builds that copy with fn_80131654 and destroys it with fn_80009844, so the parameter
- * of those two functions is a shared pointer of another, unknown type, and each copy differs in
- * two relocation targets (this object calls the copy constructor and the destructor of the
- * member's type; the copy constructor it emits has the bytes of fn_80131654). The RTTI and vtable
- * records of the boost and std templates differ in layout from the original's, and the object has
- * additional weak template instances and the RTTI records of the headers' casts. */
+ * the character info's yaw) and UpdateBody (14: the stack slots of the path start and direction
+ * vectors and of the launch vectors are exchanged, one argument move is scheduled earlier, and
+ * the stage pointer is loaded into another register). The fifth, the conversion fn_80131654, has
+ * no function of that name here. The destructor, UpdateBody and the command handler pass a copy
+ * of the follower pointer to fn_801CE9F4 or fn_801CEA54: the original builds that copy with
+ * fn_80131654 and destroys it with fn_80009844, so the parameter of those two functions is a
+ * shared pointer of another, unknown type, and each copy differs in two relocation targets (this
+ * object calls the copy constructor and the destructor of the member's type; the copy constructor
+ * it emits has the bytes of fn_80131654). The RTTI and vtable records of the boost and std
+ * templates differ in layout from the original's, and the object has additional weak template
+ * instances and the RTTI records of the headers' casts. */
 /* TNumEdit.h comes before CharaColliBase.h, in the order their names appear in the unit's .rodata
  * (alphabetical order would reverse them). */
 #include "Game/TNumEdit.h"
 #include "Game/CharaColliBase.h"
+#include "Game/CameraModeUser.h"
 #include "Game/CharCommand.h"
 #include "Game/CharCommandUnit.h"
 #include "Game/CharInfo.h"
@@ -59,11 +59,11 @@
 #include "layout_check.h"
 #include <cmath>
 
-typedef boost::function1<void, CharCommand &> PathCallback;
+typedef boost::function1<void, CameraUpdateEventArgs &> PathCallback;
 
 /* The path follower (placeholder name; the original class is unknown). The coaster keeps one in a
  * shared pointer, sets the start and end of its path and registers it with the manager that
- * fn_80099954 returns. The callback at 0xC4 is called with a CharCommand. */
+ * fn_80099954 returns. The callback at 0xC4 is called with camera update event arguments. */
 class UnkPathFollower_800096F4 {
   public:
     /* 0x00 */ u8 field_0x0[0xC4];
@@ -108,11 +108,6 @@ void fn_801CE9F4(UnkFollowerManager_80099954 *manager, boost::shared_ptr<UnkPath
 /* Registers the follower with the manager (the numbers are not understood). */
 void fn_801CEA54(UnkFollowerManager_80099954 *manager, boost::shared_ptr<UnkPathFollower_800096F4>,
                  int arg2, const UnkFollowerParams_8000B2C0 &params, int arg4, int arg5);
-
-/* Model effect helpers (behaviour inferred). */
-void fn_8015FD10(GadgetModelInfo *model);
-void fn_8015FDD8(GadgetModelInfo *model, float fraction);
-void fn_8016082C(GadgetModelInfo *model, int arg1);
 /* Owner queries (behaviour inferred): the owner's flag word, its range and a call that finishes
  * it. */
 void fn_800C9E70(UnkGadgetOwner_800C9CD0 *owner, u32 *flags);
@@ -135,7 +130,7 @@ struct CoasterStage {
     /* 0x10 */ u8 field_0x10;    /* when set, the matrix keeps only the y angle of its rotation */
     /* 0x11 */ u8 field_0x11;    /* the last argument of the path move in state 2 */
     /* 0x12 */ u8 field_0x12;    /* gates calls of the model's functions */
-    /* 0x13 */ u8 field_0x13;    /* gates the roll that the camera event adds */
+    /* 0x13 */ u8 field_0x13;    /* gates the roll that the id-1 command adds */
     /* 0x14 */ u8 field_0x14;    /* selects how a ride ends */
     /* 0x18 */ float field_0x18; /* the y of an offset of the start of the path callback */
     /* 0x1C */ float field_0x1C; /* the z of that offset */
@@ -185,8 +180,8 @@ class Coaster : public Gadget {
     /* Sends the carried character the command to follow the ride (name inferred). */
     void SendCommand(boost::shared_ptr<CharInfo> hit);
     /* The callbacks (names inferred). */
-    void OnPathCallback(CharCommand &command);
-    void OnCameraEvent(CameraUpdateEventArgs &args);
+    void OnPathCallback(CameraUpdateEventArgs &args);
+    void OnCommand(CharCommand &command);
     void OnCollision(ColliDetectArgs &args);
 
     static const char *s_name;
@@ -246,8 +241,8 @@ Coaster::Coaster(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
     m_charInfo = fn_8015CD90(0x43, 4);
     m_charInfo->field_0x30 = 1;
     fn_8015CF7C(m_charInfo.get());
-    m_charInfo->m_commandUnit->m_cameraCallback =
-        CameraUpdateCallback(boost::bind(&Coaster::OnCameraEvent, this, _1));
+    m_charInfo->m_commandUnit->m_handler =
+        CharCommandHandler(boost::bind(&Coaster::OnCommand, this, _1));
     ReadOwner(owner);
 
     m_model = fn_8015F800(1, "COASTER.BIN");
@@ -672,7 +667,7 @@ void Coaster::UpdateModelMatrix() {
     }
 }
 
-void Coaster::OnPathCallback(CharCommand &command) {
+void Coaster::OnPathCallback(CameraUpdateEventArgs &args) {
     Fn8040Matrix34 matrix;
     Fn8040Vector3 angles;
     Fn8040Vector3 start;
@@ -743,8 +738,8 @@ void Coaster::OnCollision(ColliDetectArgs &args) {
     }
 }
 
-void Coaster::OnCameraEvent(CameraUpdateEventArgs &args) {
-    switch (args.m_type) {
+void Coaster::OnCommand(CharCommand &command) {
+    switch (command.m_type) {
     case 0xB:
         if (m_state == 0 || m_state == 3) {
             m_handle->field_0x18.SetFlags(2);
@@ -794,8 +789,10 @@ void Coaster::OnCameraEvent(CameraUpdateEventArgs &args) {
         m_state = 2;
         break;
 
-    case 1:
-        if (s_stage->field_0x13 && m_timer <= 0.0f) {
+    case 1: {
+        AccelerateInputCommand *accelerate = static_cast<AccelerateInputCommand *>(&command);
+
+        if (s_stage->field_0x13 && m_timer <= 0.0f && accelerate != 0) {
             Fn8040Matrix34 matrix;
             Fn8040Vector3 angles;
             Fn8040Vector3 direction;
@@ -804,7 +801,7 @@ void Coaster::OnCameraEvent(CameraUpdateEventArgs &args) {
             float strength = 540.0f;
 
             strength *= lbl_8057D6A0.field_0x28;
-            strength *= fn_8040CF50(&args.m_vector);
+            strength *= fn_8040CF50(&accelerate->m_vector);
 
             fn_8040C148(&matrix, &lbl_805E0720);
             fn_8040B80C(&matrix, m_rotation.z);
@@ -818,7 +815,7 @@ void Coaster::OnCameraEvent(CameraUpdateEventArgs &args) {
             }
             fn_8040BCD4(&matrix);
 
-            fn_8040B67C(&directionTemporary, &matrix, &args.m_vector);
+            fn_8040B67C(&directionTemporary, &matrix, &accelerate->m_vector);
             fn_800091EC(&direction, &directionTemporary);
             direction.y = 0.0f;
             fn_8040CE74(&direction);
@@ -833,8 +830,9 @@ void Coaster::OnCameraEvent(CameraUpdateEventArgs &args) {
         }
         break;
     }
+    }
 
-    args.m_flags |= 2;
+    command.m_flags |= 2;
 }
 
 static GadgetParamInfo s_paramInfo[] = {

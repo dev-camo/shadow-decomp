@@ -42,6 +42,28 @@ class ClrVelocityCommand : public CharCommand {
 };
 CHECK_SIZEOF(ClrVelocityCommand, 0x14);
 
+/* The command with the id 1. Its constructor (0x801DBE84) receives a vector by address (the bytes
+ * do not show whether as a pointer or a reference) and the base constructor's second argument,
+ * and copies the vector to 0x14. The Coaster gadget scales the roll of its ride by the length of
+ * the vector and its direction. */
+class AccelerateInputCommand : public CharCommand {
+  public:
+    /* 0x14 */ Fn8040Vector3 m_vector;
+};
+CHECK_SIZEOF(AccelerateInputCommand, 0x20);
+
+/* The command with the id 0x17. Its constructor (0x801DAB3C) passes 0x17 and 4 to the base
+ * constructor and stores a byte, a float and a word. The member names are inferred from the
+ * FootingBreak gadget, which passes the float to its model's fn_8015FDD8 when the byte is set
+ * and calls fn_8015FD10 otherwise; the word is not used there. */
+class SetTransparentCommand : public CharCommand {
+  public:
+    /* 0x14 */ u8 m_enable;
+    /* 0x18 */ float m_alpha;
+    /* 0x1C */ int field_0x1C;
+};
+CHECK_SIZEOF(SetTransparentCommand, 0x20);
+
 namespace Player {
 
 /* Makes the player ignore input for a time (the first member holds the time; the gadgets that

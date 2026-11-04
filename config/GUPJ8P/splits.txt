@@ -188,6 +188,14 @@ Game/ArkCannon.cpp:
 	.sbss       start:0x805F0408 end:0x805F0420
 	.sdata2     start:0x805F74F0 end:0x805F7540
 
+Game/FootingBreak.cpp:
+	.text       start:0x802621E8 end:0x80263BCC
+	.rodata     start:0x804F5E50 end:0x804F5FF8
+	.data       start:0x8054C310 end:0x8054C580
+	.sdata      start:0x805EACB0 end:0x805EACE8
+	.sbss       start:0x805F0688 end:0x805F0698
+	.sdata2     start:0x805F81A0 end:0x805F81D8
+
 Game/ElecBarrier.cpp:
 	.text       start:0x80263BCC end:0x802642B4
 	.ctors      start:0x804AA544 end:0x804AA548
