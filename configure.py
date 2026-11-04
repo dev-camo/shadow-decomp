@@ -1687,6 +1687,16 @@ config.libs = [
             # original loads m_crashInfo's pointer before m_model's, this build loads them the other
             # way round (the same instructions, registers and relocations otherwise).
             Object(NonMatching, "Game/SuperComputer.cpp", cflags=cflags_game_cpp),
+            # 37 of the 38 functions have identical instructions and relocations in USA, Japan and
+            # PAL. The constructor is 186 words against the original's 188: the original converts
+            # the lock() result with a bool conversion (addic/subfe on the copy constructor's
+            # result, then clrlwi. after the temporary is destroyed), where this source compares
+            # attack.get() after the temporary is destroyed (lwz/cmplwi); this tree's shared_ptr
+            # has no bool conversion. The later words move by 8 bytes, so 113 words of the
+            # function differ in the object comparison. With a bool conversion added to shared_ptr
+            # and used as the if condition the constructor matches, and that build passes the
+            # whole-object comparison once the linker-discarded weak and local copies are removed.
+            Object(NonMatching, "Game/ElecFireWall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecKyuu.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),
             # UpdateBody loads the startup float after the store to the offset (6 of 91 words).
