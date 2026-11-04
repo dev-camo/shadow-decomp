@@ -283,6 +283,13 @@ Game/EggMeca411.cpp:
 	.sdata      start:0x805ED968 end:0x805ED980
 	.sdata2     start:0x805FA390 end:0x805FA3B0
 
+Game/BAShield.cpp:
+	.text       start:0x80301A20 end:0x803021B8
+	.rodata     start:0x8050C3A8 end:0x8050C3E8
+	.data       start:0x8055BDB0 end:0x8055BE68
+	.sdata      start:0x805EDDF8 end:0x805EDE18
+	.sdata2     start:0x805FA770 end:0x805FA790
+
 Game/BombingWall.cpp:
 	.text       start:0x80315A60 end:0x803167E8
 	.rodata     start:0x8050D620 end:0x8050D738

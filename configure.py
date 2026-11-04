@@ -1622,6 +1622,7 @@ config.libs = [
             Object(Matching, "Game/ElecBomb.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecBlock.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecKyuu.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),
             # Constructor temporary cleanup, rotation registers, and literal order still differ.
             # Constructor temporary cleanup and float literal pool order still differ.
             Object(NonMatching, "Game/ElecSmallCube.cpp", cflags=cflags_game_cpp),

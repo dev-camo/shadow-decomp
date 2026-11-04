@@ -523,6 +523,13 @@ Game/EggMeca411.cpp:
 	.sdata      start:0x805EC8B8 end:0x805EC8D0
 	.sdata2     start:0x805F9308 end:0x805F9328
 
+Game/BAShield.cpp:
+	.text       start:0x803014A8 end:0x80301C40
+	.rodata     start:0x8050B2B8 end:0x8050B2F8
+	.data       start:0x8055ACA8 end:0x8055AD60
+	.sdata      start:0x805ECD48 end:0x805ECD68
+	.sdata2     start:0x805F96E8 end:0x805F9708
+
 Game/BDHologram.cpp:
 	.text       start:0x80303750 end:0x80303C74
 	.ctors      start:0x804A9FD8 end:0x804A9FDC

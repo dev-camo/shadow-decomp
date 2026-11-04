@@ -164,6 +164,13 @@ class GadgetModelInfo {
      * of the bit is unknown). */
     void fn_801612B8();
     void fn_801612E0();
+    /* For each entry of the list at 0x64 whose part id (the word at 0x14 of the object at 0x14 of
+     * the entry) equals arg0, pass arg1 to the second virtual method of the entry's object at 0xC
+     * (behaviour inferred from its body). */
+    void fn_8016111C(int arg0, int arg1);
+    /* As fn_8016111C, but calls the third virtual method of those objects (behaviour inferred from
+     * its body). */
+    void fn_80161230(int arg0, int arg1);
 
     /* The constructor builds three callback objects at 0x4, 0x10 and 0x1C with the same function,
      * and the destructor destroys them with the same function. The gadgets bind their collision
