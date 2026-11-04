@@ -38,8 +38,10 @@ void fn_804204C8(MotionScaledVectorTrack *track) {
     }
 }
 
-void fn_80420590(Fn8040Matrix34 *result, const Fn8040Matrix34 *a, const Fn8040Matrix34 *b,
-                 float t) {
+/* a and b are not pointers to const: the original reads the translation of each row of a and b
+ * only after storing the blended translation of the previous row, which the compiler does only
+ * when those stores may change them. */
+void fn_80420590(Fn8040Matrix34 *result, Fn8040Matrix34 *a, Fn8040Matrix34 *b, float t) {
     Fn8040Matrix34 blended;
 
     fn_8042062C(&blended, a, b, t);

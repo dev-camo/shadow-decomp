@@ -351,7 +351,7 @@ void fn_80420438(struct MotionTrackData *data);
 void fn_8042043C(MotionReflectedVectorTrack *track);
 void fn_804204C8(MotionScaledVectorTrack *track);
 /* Blends two matrices (behaviour inferred): t = 0 gives b and t = 1 gives a. */
-void fn_80420590(Fn8040Matrix34 *result, const Fn8040Matrix34 *a, const Fn8040Matrix34 *b, float t);
+void fn_80420590(Fn8040Matrix34 *result, Fn8040Matrix34 *a, Fn8040Matrix34 *b, float t);
 void fn_8042062C(Fn8040Matrix34 *result, const Fn8040Matrix34 *a, const Fn8040Matrix34 *b, float t);
 
 #ifdef __cplusplus
