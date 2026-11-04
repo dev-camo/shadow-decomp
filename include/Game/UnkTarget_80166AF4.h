@@ -24,6 +24,10 @@ class UnkTarget_80166AF4 {
     /* Called before fn_80167010 and before the object is released (behaviour inferred; purpose
      * unknown). */
     void fn_80166F88();
+    /* Does what fn_80167010 does to the same entries, except that it does not set bit 2 of an
+     * entry's word at 0x8 after fn_80425E68 (purpose unknown). GravityChangeZone calls it with -1
+     * once the model is set up. */
+    void fn_80167180(int arg0);
 
     /* 0x00 */ u8 field_0x0[0x10];
 };

@@ -83,8 +83,8 @@ class CharaColliBase {
     virtual void UnkSlot17(const Fn8040Vector3 *vector, int selector);
     virtual void UnkSlot18() = 0;
     virtual void UnkSlot19() = 0;
-    /* The ElecBarrier gadget calls it with 0x30302 or 0x30301 (by barrier type) and -1 (purpose
-     * unknown). */
+    /* The ElecBarrier gadget calls it with 0x30302 or 0x30301 (by barrier type) and -1, and
+     * GravityChangeZone with 0x140100 and -1 on its zone model's probe (purpose unknown). */
     virtual void UnkSlot20(int arg0, int arg1) = 0;
     virtual void UnkSlot21() = 0;
     virtual void UnkSlot22() = 0;

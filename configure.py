@@ -787,6 +787,14 @@ config.libs = [
                 Object(Matching, "Game/ElecSmallPillar.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecWakka.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/GravityChangeCollision.cpp", cflags=cflags_game_cpp),
+                # 32 of 33 functions have identical words and the data matches. The startup
+                # function is 7 words instead of 16: the original builds the effect direction in a
+                # temporary and copies it with the out-of-line vector copy fn_800091EC. Two calls
+                # differ only in the callee's symbol: the bound call operator's call of boost's
+                # list1 operator[] and the constructor's call of the function1 destructor go to the
+                # copies at 0x800D05D0 and 0x800D0CEC in the original, and to the copies of the same
+                # mangled names that symbols.txt names at 0x800F5238 and 0x800F5B08 here.
+                Object(NonMatching, "Game/GravityChangeZone.cpp", cflags=cflags_game_cpp),
                 # The remaining differences: five allocations pass lower __LINE__ values (one word
                 # each; the original passes 723, 965, 667, 773 and 1046); CopyFirstComponent
                 # computes the length of the component once where the original subtracts the

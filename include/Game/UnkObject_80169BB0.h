@@ -22,6 +22,10 @@ boost::weak_ptr<UnkObject_80169BB0> fn_80169BB0(const boost::weak_ptr<CharInfo> 
  * so the float precedes the position here, but its exact place before it is not known. */
 boost::weak_ptr<UnkObject_80169BB0> fn_8034DD24(int kind, float arg1, const Fn8040Vector3 *position,
                                                 int arg3);
+/* Creates an object of the given kind and returns a weak pointer to it (purpose unknown; the
+ * second argument is not understood). fn_80169BB0 passes its kind and 0, GravityChangeZone 5 and
+ * -2 when a character touches its zone, and both discard the result. */
+boost::weak_ptr<UnkObject_80169BB0> fn_8034DF48(int kind, int arg1);
 }
 
 #endif
