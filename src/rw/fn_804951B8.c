@@ -201,92 +201,74 @@ void fn_8049572C(RwUInt8 *tiles, RwUInt8 *pixels, RwInt32 width, RwInt32 height,
     case 4: {
         RwInt32 tilesWide = ((width + 7) & ~7) >> 3;
         RwInt32 y;
-        RwInt32 rowOffset = 0;
 
         for (y = 0; y < height; y++) {
+            RwUInt8 *row = pixels + y * stride;
             RwInt32 tileRow = tilesWide * (y >> 3);
-            RwUInt8 *row = pixels + rowOffset;
             RwInt32 lineOffset = (y & 7) << 3;
-            RwInt32 source = 0;
-            RwInt32 tile = 0;
             RwInt32 x;
 
             for (x = 0; x < width; x += 8) {
-                memcpy(tiles + ((RwUInt32)(lineOffset + ((tileRow + tile) << 6)) >> 1),
-                       row + source, 4);
-                source += 4;
-                tile++;
+                memcpy(tiles + ((RwUInt32)(lineOffset + ((tileRow + (x >> 3)) << 6)) >> 1),
+                       row + (x >> 1), 4);
             }
-            rowOffset += stride;
         }
         break;
     }
     case 8: {
         RwInt32 tilesWide = ((width + 7) & ~7) >> 3;
         RwInt32 y;
-        RwInt32 rowOffset = 0;
 
         for (y = 0; y < height; y++) {
-            RwUInt8 *row = pixels + rowOffset;
+            RwUInt8 *row = pixels + y * stride;
             RwInt32 tileRow = tilesWide * (y >> 2);
             RwInt32 lineOffset = (y & 3) << 3;
             RwInt32 x;
-            RwInt32 tile = 0;
 
             for (x = 0; x < width; x += 8) {
-                memcpy(lineOffset + (((tileRow + tile) << 5) + tiles), row + x, 8);
-                tile++;
+                memcpy(tiles + (lineOffset + ((tileRow + (x >> 3)) << 5)), row + x, 8);
             }
-            rowOffset += stride;
         }
         break;
     }
     case 16: {
         RwInt32 tilesWide = ((width + 3) & ~3) >> 2;
         RwInt32 y;
-        RwInt32 rowOffset = 0;
 
         for (y = 0; y < height; y++) {
+            RwUInt8 *row = pixels + y * stride;
             RwInt32 tileRow = tilesWide * (y >> 2);
             RwInt32 lineOffset = (y & 3) << 2;
-            RwUInt8 *source = pixels + rowOffset;
             RwInt32 x;
-            RwInt32 tile = 0;
 
             for (x = 0; x < width; x += 4) {
-                memcpy(tiles + ((lineOffset + ((tileRow + tile) << 4)) << 1), source, 8);
-                source += 8;
-                tile++;
+                memcpy(tiles + ((lineOffset + ((tileRow + (x >> 2)) << 4)) << 1), row + (x << 1),
+                       8);
             }
-            rowOffset += stride;
         }
         break;
     }
     case 32: {
         RwInt32 tilesWide = ((width + 3) & ~3) >> 2;
         RwInt32 y;
-        RwInt32 rowOffset = 0;
 
         for (y = 0; y < height; y++) {
+            RwUInt16 *row = (RwUInt16 *)(pixels + y * stride);
             RwInt32 tileRow = tilesWide * (y >> 2);
-            RwUInt8 *row = pixels + rowOffset;
             RwInt32 lineOffset = (y & 3) << 2;
-            RwInt32 source = 0;
-            RwInt32 tileOffset = 0;
             RwInt32 x;
+            RwInt32 tileOffset = 0;
 
             for (x = 0; x < width; x++) {
-                RwUInt16 *texel;
+                RwInt32 offset;
 
                 if ((x & 3) == 0) {
                     tileOffset = (tileRow + (x >> 2)) << 4;
                 }
-                texel = (RwUInt16 *)(tiles + (tileOffset << 2) + ((lineOffset + (x & 3)) << 1));
-                texel[0] = *(RwUInt16 *)(row + source);
-                texel[16] = *(RwUInt16 *)(row + source + 2);
-                source += 4;
+                offset = (tileOffset << 2) + ((lineOffset + (x & 3)) << 1);
+                *(RwUInt16 *)&tiles[offset] = row[x << 1];
+                *(RwUInt16 *)&tiles[offset + 32] = row[(x << 1) + 1];
             }
-            rowOffset += stride;
         }
         break;
     }
@@ -304,92 +286,74 @@ void fn_804959C0(RwUInt8 *pixels, RwUInt8 *tiles, RwInt32 width, RwInt32 height,
     case 4: {
         RwInt32 tilesWide = ((width + 7) & ~7) >> 3;
         RwInt32 y;
-        RwInt32 rowOffset = 0;
 
         for (y = 0; y < height; y++) {
+            RwUInt8 *row = pixels + y * stride;
             RwInt32 tileRow = tilesWide * (y >> 3);
-            RwUInt8 *row = pixels + rowOffset;
             RwInt32 lineOffset = (y & 7) << 3;
-            RwInt32 source = 0;
-            RwInt32 tile = 0;
             RwInt32 x;
 
             for (x = 0; x < width; x += 8) {
-                memcpy(row + source,
-                       tiles + ((RwUInt32)(lineOffset + ((tileRow + tile) << 6)) >> 1), 4);
-                source += 4;
-                tile++;
+                memcpy(row + (x >> 1),
+                       tiles + ((RwUInt32)(lineOffset + ((tileRow + (x >> 3)) << 6)) >> 1), 4);
             }
-            rowOffset += stride;
         }
         break;
     }
     case 8: {
         RwInt32 tilesWide = ((width + 7) & ~7) >> 3;
         RwInt32 y;
-        RwInt32 rowOffset = 0;
 
         for (y = 0; y < height; y++) {
-            RwUInt8 *row = pixels + rowOffset;
+            RwUInt8 *row = pixels + y * stride;
             RwInt32 tileRow = tilesWide * (y >> 2);
             RwInt32 lineOffset = (y & 3) << 3;
             RwInt32 x;
-            RwInt32 tile = 0;
 
             for (x = 0; x < width; x += 8) {
-                memcpy(row + x, lineOffset + (((tileRow + tile) << 5) + tiles), 8);
-                tile++;
+                memcpy(row + x, tiles + (lineOffset + ((tileRow + (x >> 3)) << 5)), 8);
             }
-            rowOffset += stride;
         }
         break;
     }
     case 16: {
         RwInt32 tilesWide = ((width + 3) & ~3) >> 2;
         RwInt32 y;
-        RwInt32 rowOffset = 0;
 
         for (y = 0; y < height; y++) {
+            RwUInt8 *row = pixels + y * stride;
             RwInt32 tileRow = tilesWide * (y >> 2);
             RwInt32 lineOffset = (y & 3) << 2;
-            RwUInt8 *source = pixels + rowOffset;
             RwInt32 x;
-            RwInt32 tile = 0;
 
             for (x = 0; x < width; x += 4) {
-                memcpy(source, tiles + ((lineOffset + ((tileRow + tile) << 4)) << 1), 8);
-                source += 8;
-                tile++;
+                memcpy(row + (x << 1), tiles + ((lineOffset + ((tileRow + (x >> 2)) << 4)) << 1),
+                       8);
             }
-            rowOffset += stride;
         }
         break;
     }
     case 32: {
         RwInt32 tilesWide = ((width + 3) & ~3) >> 2;
         RwInt32 y;
-        RwInt32 rowOffset = 0;
 
         for (y = 0; y < height; y++) {
+            RwUInt16 *row = (RwUInt16 *)(pixels + y * stride);
             RwInt32 tileRow = tilesWide * (y >> 2);
-            RwUInt8 *row = pixels + rowOffset;
             RwInt32 lineOffset = (y & 3) << 2;
-            RwInt32 source = 0;
-            RwInt32 tileOffset = 0;
             RwInt32 x;
+            RwInt32 tileOffset = 0;
 
             for (x = 0; x < width; x++) {
-                RwUInt16 *texel;
+                RwInt32 offset;
 
                 if ((x & 3) == 0) {
                     tileOffset = (tileRow + (x >> 2)) << 4;
                 }
-                texel = (RwUInt16 *)(tiles + (tileOffset << 2) + ((lineOffset + (x & 3)) << 1));
-                *(RwUInt16 *)(row + source) = texel[0];
-                *(RwUInt16 *)(row + source + 2) = texel[16];
-                source += 4;
+                offset = (tileOffset << 2) + ((lineOffset + (x & 3)) << 1);
+                row[x << 1] = *(RwUInt16 *)&tiles[offset];
+                row[(x << 1) + 1] = *(RwUInt16 *)&tiles[offset + 32];
             }
-            rowOffset += stride;
         }
         break;
     }
