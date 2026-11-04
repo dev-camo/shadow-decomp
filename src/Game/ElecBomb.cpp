@@ -33,7 +33,7 @@ const char *ElecBomb::s_name = "ElecBomb";
 /* The part callback (placeholder name): for a part whose bit (1 << its word at 0x8) is set in the
  * mask passed as the user data, calls fn_80038F94 on its clump when bit 0x8000 of the mask is set
  * and fn_80038FC0 otherwise (behaviour inferred). */
-static UnkModelPart_8015FA78 *fn_80263F38(UnkModelPart_8015FA78 *part, const void *userData);
+static UnkModelPart_8015FA78 *fn_80263F38(UnkModelPart_8015FA78 *part, void *userData);
 
 ElecBomb::ElecBomb(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(parent, owner) {
     m_name = s_name;
@@ -62,14 +62,14 @@ ElecBomb::ElecBomb(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(parent
             weakTarget.ptr = m_target;
             m_model->fn_8015FA78(fn_80169D00, &weakTarget);
         }
-        m_model->fn_8015FA78(fn_80263F38, reinterpret_cast<const void *>(0x4));
-        m_model->fn_8015FA78(fn_80263F38, reinterpret_cast<const void *>(0x8003));
+        m_model->fn_8015FA78(fn_80263F38, reinterpret_cast<void *>(0x4));
+        m_model->fn_8015FA78(fn_80263F38, reinterpret_cast<void *>(0x8003));
         m_object = fn_802B4254(0, 0);
         fn_802B4498(m_object.get(), 1200.0f);
         fn_802B4510(m_object.get(), 1);
     } else {
-        m_model->fn_8015FA78(fn_80263F38, reinterpret_cast<const void *>(0x3));
-        m_model->fn_8015FA78(fn_80263F38, reinterpret_cast<const void *>(0x8004));
+        m_model->fn_8015FA78(fn_80263F38, reinterpret_cast<void *>(0x3));
+        m_model->fn_8015FA78(fn_80263F38, reinterpret_cast<void *>(0x8004));
     }
 
     UpdateModelMatrix();
@@ -91,8 +91,8 @@ void ElecBomb::UpdateBody(float dt) {
     case 0:
         if (IsCharacterNear()) {
             m_state = 1;
-            m_model->fn_8015FA78(fn_80263F38, reinterpret_cast<const void *>(0x3));
-            m_model->fn_8015FA78(fn_80263F38, reinterpret_cast<const void *>(0x8004));
+            m_model->fn_8015FA78(fn_80263F38, reinterpret_cast<void *>(0x3));
+            m_model->fn_8015FA78(fn_80263F38, reinterpret_cast<void *>(0x8004));
             fn_801D560C(fn_80053164(), 0x7248, 0, 0);
         }
         break;
@@ -179,7 +179,7 @@ void ElecBomb::UpdateModelMatrix() {
     }
 }
 
-static UnkModelPart_8015FA78 *fn_80263F38(UnkModelPart_8015FA78 *part, const void *userData) {
+static UnkModelPart_8015FA78 *fn_80263F38(UnkModelPart_8015FA78 *part, void *userData) {
     u32 mask = reinterpret_cast<u32>(userData);
 
     if ((1 << part->field_0x8) & mask) {
