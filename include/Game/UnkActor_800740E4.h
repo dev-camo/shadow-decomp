@@ -48,6 +48,9 @@ UnkManager_80109D64 *fn_80109D64(void);
 /* Returns its argument. */
 int fn_801FAAC4(int arg0);
 void fn_801FAF00(UnkManager_80109D64 *manager, int id, int arg2, int arg3, int arg4);
+/* Stores 1 in the actor's word at 0xC and calls fn_8016B058 with the actor (behaviour inferred
+ * from its body). */
+void fn_8016B2A4(UnkActor_800740E4 *actor);
 }
 
 #endif
