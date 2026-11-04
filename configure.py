@@ -538,6 +538,12 @@ config.libs = [
                 Object(Matching, "rw/fn_804447B0.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804448B8.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80445CF4.c", cflags=cflags_game),
+                # Two functions differ. The hierarchy create function fn_804472AC: 7 of its 91
+                # words, and it saves r26-r31 (its two relocations name _savegpr_26/_restgpr_26
+                # instead of _savegpr_27/_restgpr_27) because maxInterpKeyFrameSize and the new
+                # hierarchy get separate registers where the original shares r31. The hierarchy
+                # attach function fn_804474D8: 5 of its 41 words (the original copies the node
+                # index's zero into the node offset and keeps the index in r31).
                 Object(NonMatching, "rw/fn_80446A04.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80447598.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_804485BC.c", cflags=cflags_game),
