@@ -1717,6 +1717,13 @@ config.libs = [
             # words: the original loads the saved link register before it stores the startup float
             # (0x80231AF4), this build after it.
             Object(NonMatching, "Game/MissionClearCollision.cpp", cflags=cflags_game_cpp),
+            # The data matches once the weak copies the linker discards are removed, apart from
+            # .bss, where the original keeps 12 bytes that no code reads or writes before the four
+            # line segments. Differences (raw words): the static initialiser 6 (the segments'
+            # offsets from that .bss start, and the order of two startup-float loads) and
+            # DrawDebugMarker 10 (the original loads the startup radius before it saves the
+            # registers).
+            Object(NonMatching, "Game/DebugMissionClearCollision.cpp", cflags=cflags_game_cpp),
             # Interpolation scheduling, the index-table extent and shared literal ownership differ.
             Object(
                 NonMatching,
