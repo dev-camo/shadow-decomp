@@ -395,7 +395,7 @@ void FootingBreak::SetupModels(int previousState, int state) {
     case 3:
         m_model->fn_80162A68(0, 1);
         m_model->fn_80160C28(0);
-        fn_8016082C(m_model.get(), 0);
+        m_model->fn_8016082C(0);
         m_model->fn_80161BD8(0, m_charInfo, 0);
         m_model->fn_80161BD8(1, m_charInfo, 0);
         m_model->fn_80160B18(0);
@@ -405,7 +405,7 @@ void FootingBreak::SetupModels(int previousState, int state) {
     case 5:
         m_model->fn_80162A68(1, 1);
         m_model->fn_80160C28(1);
-        fn_8016082C(m_model.get(), 1);
+        m_model->fn_8016082C(1);
         m_model->fn_80161BD8(2, m_charInfo, 1);
         m_model->fn_80161BD8(3, m_charInfo, 1);
         m_model->fn_80160B18(1);

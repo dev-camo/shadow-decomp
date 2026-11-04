@@ -283,7 +283,7 @@ void ArkCannon::UpdateModelMatrix() {
     fn_800CCE38(m_object.get(), &m_charInfo->m_position);
 
     /* The objects stand around the cannon at even angles. */
-    std::vector<boost::shared_ptr<UnkObject_801E72DC> >::iterator it = m_objects.begin();
+    std::vector<boost::shared_ptr<Target> >::iterator it = m_objects.begin();
     /* Matching workaround: the distance is read once, before the loop, as the original does.
      * Reading s_objectDistance.value in the loop reloads it on every pass (0x174 bytes instead
      * of 0x184), and reading it after step changes four instruction words. Revisit with the

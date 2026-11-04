@@ -109,6 +109,16 @@ Game/FleetHolder.cpp:
 	.sdata      start:0x805E5EC8 end:0x805E5ED8
 	.sbss       start:0x805EF810 end:0x805EF818
 
+Game/PowerDeviceNaked.cpp:
+	.text       start:0x800D3AC4 end:0x800D5140
+	.ctors      start:0x804AAD68 end:0x804AAD6C
+	.rodata     start:0x804B8268 end:0x804B8410
+	.data       start:0x80524280 end:0x80524358
+	.bss        start:0x8057E8C8 end:0x8057E8E8
+	.sdata      start:0x805E5F78 end:0x805E5FB0
+	.sbss       start:0x805EF840 end:0x805EF860
+	.sdata2     start:0x805F4250 end:0x805F42A0
+
 Game/fn_800E59F8.cpp:
 	.text       start:0x800E5DE0 end:0x800E6768
 	.rodata     start:0x804B9918 end:0x804B9978

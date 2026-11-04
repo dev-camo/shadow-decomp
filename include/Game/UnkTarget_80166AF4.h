@@ -21,7 +21,8 @@ class UnkTarget_80166AF4 {
      * 0xC equals arg0; fn_80167010 uses the same selector on the entries with that bit set
      * (behaviour inferred). FallBuildingHolder calls it with -1. */
     void fn_80167448(int arg0);
-    /* Called before the object is released (behaviour inferred from the CityLaser gadget). */
+    /* Called before fn_80167010 and before the object is released (behaviour inferred; purpose
+     * unknown). */
     void fn_80166F88();
 
     /* 0x00 */ u8 field_0x0[0x10];

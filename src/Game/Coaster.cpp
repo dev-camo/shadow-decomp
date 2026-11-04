@@ -38,10 +38,10 @@
 #include "Game/PlayerCommands.h"
 #include "Game/SharedConstants.h"
 #include "Game/AngleConversion.h"
+#include "Game/Target.h"
 #include "Game/UnkEffectParams_8015F0B8.h"
 #include "Game/UnkGlobal_8057D6A0.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
-#include "Game/UnkObject_801E72DC.h"
 #include "Game/UnkParamCursor_800CBC20.h"
 #include "Game/UnkProbeTarget_800587A0.h"
 #include "Game/UnkResource_80012700.h"
@@ -188,7 +188,7 @@ class Coaster : public Gadget {
 
     /* 0x30 */ boost::shared_ptr<SonicteamUSA::System::PathCtrl> m_path;
     /* 0x38 */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
-    /* 0x40 */ boost::shared_ptr<UnkObject_801E72DC> m_object;
+    /* 0x40 */ boost::shared_ptr<Target> m_object;
     /* 0x48 */ boost::shared_ptr<GadgetModelInfo> m_model;
     /* 0x50 */ boost::shared_ptr<UnkHandleBTarget_8015BE64> m_handle;
     /* 0x58 */ boost::shared_ptr<UnkTarget_80166AF4> m_target;
@@ -745,7 +745,7 @@ void Coaster::OnCommand(CharCommand &command) {
             m_handle->field_0x18.SetFlags(2);
             if (s_stage->field_0x12) {
                 m_model->fn_80160C28(0);
-                fn_8016082C(m_model.get(), 0);
+                m_model->fn_8016082C(0);
                 m_model->fn_80160B18(0);
             }
 

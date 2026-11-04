@@ -130,6 +130,16 @@ Game/FleetHolder.cpp:
 	.sdata      start:0x805E4E08 end:0x805E4E18
 	.sbss       start:0x805EE768 end:0x805EE770
 
+Game/PowerDeviceNaked.cpp:
+	.text       start:0x800D36DC end:0x800D4D58
+	.ctors      start:0x804A9D08 end:0x804A9D0C
+	.rodata     start:0x804B7198 end:0x804B7340
+	.data       start:0x80523160 end:0x80523238
+	.bss        start:0x8057D808 end:0x8057D828
+	.sdata      start:0x805E4EB8 end:0x805E4EF0
+	.sbss       start:0x805EE798 end:0x805EE7B8
+	.sdata2     start:0x805F31A8 end:0x805F31F8
+
 Game/RainEffect.cpp:
 	.text       start:0x800D4D58 end:0x800D54A8
 	.rodata     start:0x804B7340 end:0x804B7390
