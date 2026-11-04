@@ -39,7 +39,7 @@ CHECK_SIZEOF(UnkModelEntry_8015F7BC, 0x40);
 struct UnkModelPart_8015FA78 {
     /* 0x0 */ RpClump *clump;
     /* 0x4 */ u32 field_0x4;
-    /* 0x8 */ u32 field_0x8;
+    /* 0x8 */ s32 field_0x8;
 };
 CHECK_SIZEOF(UnkModelPart_8015FA78, 0xC);
 
@@ -104,8 +104,8 @@ class GadgetModelInfo {
     /* Calls callback(part, userData) for each entry of the list at 0x4C until it returns zero
      * (behaviour inferred). */
     void fn_8015FA78(UnkModelPart_8015FA78 *(*callback)(UnkModelPart_8015FA78 *part,
-                                                        const void *userData),
-                     const void *userData);
+                                                        void *userData),
+                     void *userData);
     /* Methods that ThreatObj calls (purposes unknown). */
     void fn_8016271C();
     void fn_80162790();
