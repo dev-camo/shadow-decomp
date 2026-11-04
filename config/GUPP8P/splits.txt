@@ -368,6 +368,15 @@ Game/BAShield.cpp:
 	.sdata      start:0x805EDDF8 end:0x805EDE18
 	.sdata2     start:0x805FA770 end:0x805FA790
 
+Game/SuctionPillar.cpp:
+	.text       start:0x8030463C end:0x803054B8
+	.ctors      start:0x804AB03C end:0x804AB040
+	.rodata     start:0x8050C628 end:0x8050C750
+	.data       start:0x8055C030 end:0x8055C0A0
+	.sdata      start:0x805EDE88 end:0x805EDEB0
+	.sbss       start:0x805F19E0 end:0x805F19F8
+	.sdata2     start:0x805FA7F8 end:0x805FA820
+
 Game/BombingWall.cpp:
 	.text       start:0x80315A60 end:0x803167E8
 	.rodata     start:0x8050D620 end:0x8050D738
