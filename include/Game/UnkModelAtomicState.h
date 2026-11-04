@@ -10,9 +10,10 @@
  * (placeholder name). fn_8016248C finds the model part whose name equals the name at 0x4 and
  * either converts the colour to floats or hands the entry to fn_801640A4, depending on the word
  * at 0x8. fn_80162424 looks an entry up by the id at 0x10, and fn_80162298 a part by the id of
- * its state's entry. */
+ * its state's entry. The string at 0x0 is the one that GadgetModelInfo::fn_801621F0 and
+ * fn_8016239C compare with their argument; its role relative to the name at 0x4 is unknown. */
 struct UnkModelAtomicEntry {
-    /* 0x00 */ u8 field_0x0[0x4]; /* Unrecovered. */
+    /* 0x00 */ const char *field_0x0; /* the name that fn_801621F0 and fn_8016239C look up */
     /* 0x04 */ const char *name;
     /* 0x08 */ int field_0x8; /* 0 or 1 selects how fn_8016248C applies the entry */
     /* 0x0C */ UnkDebugColor_802E0E84 color;

@@ -175,6 +175,14 @@ class GadgetModelInfo {
      * to 0), calls fn_80162804 and passes the index and arg1 to fn_80162AD0, then returns the
      * index (behaviour inferred from its body). */
     int fn_801625D8(int arg0, int arg1);
+    /* Returns the atomic state of the first part of the list at 0x4C whose state's entry has a
+     * string equal to name as its word at 0x0, or null (also when name is null; behaviour
+     * inferred from its body). */
+    UnkModelAtomicState *fn_801621F0(const char *name);
+    /* Finds the entry of the table at 0x20 of the object at 0x30 whose word at 0x0 is a string
+     * equal to name and passes its index to fn_8016248C, returning that result, or false when
+     * there is none or name is null (behaviour inferred from its body). */
+    bool fn_8016239C(const char *name);
 
     /* The constructor builds three callback objects at 0x4, 0x10 and 0x1C with the same function,
      * and the destructor destroys them with the same function. The gadgets bind their collision
