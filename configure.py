@@ -1596,6 +1596,7 @@ config.libs = [
             # here and the shared metadata remains in the original data.
             Object(NonMatching, "Game/FleetHolder.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PowerDeviceNaked.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/MonsterControl.cpp", cflags=cflags_game_cpp),
             # Interpolation scheduling, the index-table extent and shared literal ownership differ.
             Object(
                 NonMatching,
