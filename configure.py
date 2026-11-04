@@ -1346,6 +1346,14 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
+                # fn_8042043C, fn_804204C8, fn_80420590 and fn_8042062C have the original's
+                # instructions, but the 0.0f of fn_804204C8 and the 1.0f of fn_80420590 are local
+                # literals here, while the original reads them from the file's shared .sdata2 pool
+                # (0x805FAE00 in Game/fn_804157E8.c and 0x805FAE08 in Game/fn_80415854.c). The
+                # static initializer fn_804206A4 (0x80 bytes) is missing: it constructs nine
+                # matrices and four 0xC-byte objects (constructor fn_80028BA0) in lbl_805E12E0, which
+                # is in the .bss of Game/fn_80416198.cpp. Revisit when the pieces of the file are
+                # merged into one unit.
                 Object(
                     NonMatching,
                     "Game/fn_8042043C.cpp",
