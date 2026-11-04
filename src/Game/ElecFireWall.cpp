@@ -9,6 +9,7 @@
 #include "Game/ElecFireWall.h"
 #include "Game/CharInfo.h"
 #include "Game/DebugDisp.h"
+#include "Game/GadgetAccelerate.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/UnkEffectParams_8015F0B8.h"
 #include "Game/UnkResource_80012700.h"
@@ -96,38 +97,6 @@ ElecFireWall::~ElecFireWall() {
         delete m_model;
         m_model = 0;
     }
-}
-
-/* Advances a position by dt at a speed that changes by acceleration * dt, limited to maxSpeed
- * while it rises (name inferred). ElecBlock.cpp expands the same helper, which it defines as a
- * static inline function of its own; the two files' code is identical, so where the original
- * defined it is not known. */
-static inline void Accelerate(float *position, float *speed, float acceleration, float maxSpeed,
-                              float dt) {
-    float startSpeed = *speed;
-    float accelerationTime = dt;
-    float cruiseTime = 0.0f;
-
-    if (startSpeed >= maxSpeed) {
-        accelerationTime = 0.0f;
-        cruiseTime = dt;
-    } else {
-        float speedStep = acceleration * dt;
-        float newSpeed = startSpeed + speedStep;
-
-        if (newSpeed > maxSpeed) {
-            *speed = maxSpeed;
-            accelerationTime = (maxSpeed - startSpeed) / acceleration;
-            cruiseTime = dt - accelerationTime;
-        } else {
-            *speed = newSpeed;
-        }
-    }
-
-    float accelerationStep = acceleration * accelerationTime;
-
-    *position = *position + startSpeed * accelerationTime +
-                0.5f * (accelerationTime * accelerationStep) + maxSpeed * cruiseTime;
 }
 
 void ElecFireWall::UpdateBody(float dt) {
