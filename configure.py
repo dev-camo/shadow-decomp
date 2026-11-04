@@ -2872,6 +2872,10 @@ config.libs = [
                     "-inline auto,deferred",
                 ],
             ),
+            # NonMatching: mwsffrm_AnalySofdecHeader, 17 of 118 words: the handle and the Sofdec
+            # header object have r30 and r31 exchanged, and the original copies the handle into its
+            # register one prologue slot later. Every other function the original object keeps is
+            # byte-identical.
             Object(
                 NonMatching,
                 "CRI/mwsfdfrm.c",
