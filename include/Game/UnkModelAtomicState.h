@@ -32,4 +32,11 @@ struct UnkModelAtomicState {
 };
 CHECK_SIZEOF(UnkModelAtomicState, 0x10);
 
+extern "C" {
+/* Sets each of the four bytes at 0x8 of state to from + (to - from) * (t - t0) / (t1 - t0), byte
+ * by byte (behaviour inferred from its body). */
+void fn_80154C6C(UnkModelAtomicState *state, float t, const UnkDebugColor_802E0E84 &from,
+                 const UnkDebugColor_802E0E84 &to, float t0, float t1);
+}
+
 #endif

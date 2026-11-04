@@ -8,19 +8,13 @@
 #include "Game/DebugDisp.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/UnkManager_800CB69C.h"
+#include "Game/UnkModelAtomicState.h"
 #include "Game/UnkWorld_80021B08.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/fn_8006_resource_list.h"
 #include "Game/fn_8040_vector_types.h"
 
 using SonicteamUSA::System::CharaColli::CharaColliBase;
-
-extern "C" {
-/* Sets each of the four bytes at 0x8 of state to from + (to - from) * (t - t0) / (t1 - t0), byte
- * by byte (behaviour inferred from its body). */
-void fn_80154C6C(UnkModelAtomicState *state, float t, const UnkDebugColor_802E0E84 &from,
-                 const UnkDebugColor_802E0E84 &to, float t0, float t1);
-}
 
 /* The three colours of the fade (names inferred). */
 static UnkDebugColor_802E0E84 s_fadeColorStart(0xFF, 0x4C, 0x47, 0x00);
