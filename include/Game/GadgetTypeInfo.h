@@ -37,7 +37,10 @@ struct GadgetTypeInfo {
     /* 0x04 */ void (*hookA)(void);
     /* 0x08 */ void (*hookB)(void);
     /* 0x0C */ void (*create)(UnkGadgetOwner_800C9CD0 *owner);
-    /* 0x10 */ u32 field_0x10;
+    /* Null, or an empty function in the descriptors of the BLACK_BULL, HEAVY_DOG, BLACK_DOOM,
+     * EGG_MECA and DEVIL_DOOM bosses. The signature is inferred: the targets are empty and no
+     * caller has been identified, so the parameters and the result are unknown. */
+    /* 0x10 */ void (*field_0x10)(void);
     /* 0x14 */ u32 field_0x14;
     /* 0x18 */ u16 id; /* meaning unknown */
     /* 0x1A */ u8 field_0x1A;
