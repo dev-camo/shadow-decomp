@@ -1666,6 +1666,7 @@ config.libs = [
                 extra_cflags=["-Cpp_exceptions on"],
             ),
             Object(Matching, "Game/fn_801D455C.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/FootingRoll.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/FootingBreak.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecBarrier.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecBomb.cpp", cflags=cflags_game_cpp),
