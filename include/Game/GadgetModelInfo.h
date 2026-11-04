@@ -183,6 +183,9 @@ class GadgetModelInfo {
      * equal to name and passes its index to fn_8016248C, returning that result, or false when
      * there is none or name is null (behaviour inferred from its body). */
     bool fn_8016239C(const char *name);
+    /* Stores arg0 at 0x40 and sets bit 4 of the flags at 0x3C; a negative arg0 stores 0 and sets
+     * bit 5 instead (behaviour inferred from its body). */
+    void fn_8016268C(float arg0);
 
     /* The constructor builds three callback objects at 0x4, 0x10 and 0x1C with the same function,
      * and the destructor destroys them with the same function. The gadgets bind their collision
