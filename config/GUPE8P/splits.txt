@@ -436,6 +436,15 @@ Game/CloseWall.cpp:
 	.sbss       start:0x805EFE18 end:0x805EFE30
 	.sdata2     start:0x805F6F98 end:0x805F6FD0
 
+Game/MagmaGuard.cpp:
+	.text       start:0x8022AD1C end:0x8022BC28
+	.ctors      start:0x804A9EA0 end:0x804A9EA4
+	.rodata     start:0x804F1F80 end:0x804F20C0
+	.data       start:0x80546A90 end:0x80546B00
+	.sdata      start:0x805E9BB0 end:0x805E9BD8
+	.sbss       start:0x805EFE50 end:0x805EFE68
+	.sdata2     start:0x805F7020 end:0x805F7050
+
 Game/PopFooting.cpp:
 	.text       start:0x8022BC28 end:0x8022C43C
 	.ctors      start:0x804A9EA4 end:0x804A9EA8

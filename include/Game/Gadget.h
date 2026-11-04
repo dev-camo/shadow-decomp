@@ -59,6 +59,12 @@ void fn_800C9930(UnkGadgetOwner_800C9CD0 *owner, SetAdapterState *state);
  * (behaviour inferred from its body). ArkCannon calls it when it is destroyed and BombingWall when
  * it breaks. */
 void fn_800C9B04(UnkGadgetOwner_800C9CD0 *owner);
+/* Stores the word at 0x18 of the record that owner points to in *flags (behaviour inferred from
+ * its body). MagmaGuard tests bit 0x400000 of it. */
+void fn_800C9EC4(UnkGadgetOwner_800C9CD0 *owner, u32 *flags);
+/* Sets bits in the word at 0x18 of the record that owner points to (behaviour inferred from its
+ * body). MagmaGuard sets bit 0x400000 when it is destroyed. */
+void fn_800C9EB0(UnkGadgetOwner_800C9CD0 *owner, u32 bits);
 }
 
 /* Gadget (class name from RTTI): a stage object task registered with an owner object. */
