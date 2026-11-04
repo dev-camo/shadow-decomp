@@ -164,6 +164,14 @@ Game/TornadoCollision.cpp:
 	.sbss       start:0x805EE840 end:0x805EE848
 	.sdata2     start:0x805F3330 end:0x805F3348
 
+Game/CityChaosEmerald.cpp:
+	.text       start:0x800DFBAC end:0x800E0590
+	.rodata     start:0x804B81A8 end:0x804B8290
+	.data       start:0x80523F90 end:0x80524000
+	.sdata      start:0x805E5108 end:0x805E5130
+	.sbss       start:0x805EE848 end:0x805EE858
+	.sdata2     start:0x805F3348 end:0x805F3360
+
 Game/CityLaserHolder.cpp:
 	.text       start:0x800E0590 end:0x800E2590
 	.ctors      start:0x804A9D14 end:0x804A9D18
