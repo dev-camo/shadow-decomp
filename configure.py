@@ -1657,6 +1657,15 @@ config.libs = [
             Object(Matching, "Game/FootingBreak.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecBarrier.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecBomb.cpp", cflags=cflags_game_cpp),
+            # Every function except UpdateBody is identical in every word and relocation, and the
+            # data matches once the linker-discarded weak copies are set aside. UpdateBody
+            # (0x80157F24) is 0x26C bytes against the original's 0x280: for the two positions it
+            # passes to fn_8000AD64, the original calls the smart pointers' operator-> out of line
+            # (0x800CD638 and 0x80096434) and keeps the first result in r30, nine instructions
+            # where this build has four (it loads both pointers in place). Aligned, that is the
+            # only difference; the 0x14-byte shift after it makes 125 of the original's 160 words
+            # differ by position.
+            Object(NonMatching, "Game/ElecSecurityCodeGenerator.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecBlock.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecKyuu.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),

@@ -151,6 +151,14 @@ Game/MonsterControl.cpp:
 	.sbss       start:0x805F0020 end:0x805F0038
 	.sdata2     start:0x805F5440 end:0x805F5458
 
+Game/ElecSecurityCodeGenerator.cpp:
+	.text       start:0x80157F94 end:0x801589C0
+	.rodata     start:0x804C3180 end:0x804C31C0
+	.data       start:0x8052BB98 end:0x8052BC78
+	.sdata      start:0x805E75C0 end:0x805E75E0
+	.sbss       start:0x805F0240 end:0x805F0248
+	.sdata2     start:0x805F5A50 end:0x805F5A70
+
 Game/ElecBlock.cpp:
 	.text       start:0x801589C0 end:0x801593A4
 	.ctors      start:0x804AADDC end:0x804AADE0

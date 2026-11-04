@@ -1,0 +1,184 @@
+#ifndef MSL_LIST_H_
+#define MSL_LIST_H_
+
+#include <memory>
+#include "layout_check.h"
+
+/* The parts of <list> that the game uses so far: the list of pointers (the ElecSecurityCode list of
+ * the ELEC_SECURITY gadget).
+ *
+ * Every list of pointers is implemented by the list of void pointers, through a private base, as
+ * the vectors of pointers are: the GameCube code has, for each pointer type, an out-of-line copy
+ * of the list's constructor, destructor, begin, end, erase and push_back and of each member of its
+ * iterator, each calling the void-pointer layer, and one shared copy of each void-pointer member
+ * (in the USA release the constructor 0x8001BE04, the destructors 0x8001B5B8 and 0x8001B604, begin
+ * 0x8001B6B0, end 0x8001B674, size 0x80058F00 and push_back 0x8001D820). The names __list_imp,
+ * __list_node_base and __list_node are placeholders: the library's names for these internal
+ * classes are not recoverable from the game. The void-pointer layer has two levels, as its two
+ * destructors show (the outer one only calls the inner one); modelling the outer level as a
+ * specialisation list<void *> deriving from __list_imp is an assumption.
+ *
+ * The void-pointer constructor, insert and the range erase are only declared: the program uses the
+ * game's own instances (0x8001BE04, 0x8001E528 and 0x8001BD24). */
+namespace std {
+
+/* The links of a list node; the sentinel node of a list is one of these. */
+struct __list_node_base {
+    __list_node_base *prev_;
+    __list_node_base *next_;
+};
+
+template <class T> struct __list_node : public __list_node_base {
+    T data_;
+};
+CHECK_SIZEOF(std::__list_node_base, 0x8);
+CHECK_SIZEOF(std::__list_node<void *>, 0xC);
+
+/* The list implementation: the size (paired with the node allocator), then the sentinel node
+ * (paired with the allocator). The pairing is inferred: the game's constructor of the size pair
+ * (0x8001BE90) is a separate function from the identical one of the vector's size pair
+ * (0x80019AA0), so the two pairs have different types. */
+template <class T, class Allocator> class __list_imp {
+    typedef __list_node<T> node;
+    typedef allocator<node> node_allocator;
+
+  public:
+    typedef T value_type;
+    typedef size_t size_type;
+
+    class iterator {
+      public:
+        iterator() {}
+        iterator(__list_node_base *n) : node_(n) {}
+
+        T &operator*() const {
+            return static_cast<node *>(node_)->data_;
+        }
+        iterator &operator++() {
+            node_ = node_->next_;
+            return *this;
+        }
+        bool operator!=(const iterator &other) const {
+            return node_ != other.node_;
+        }
+
+      private:
+        friend class __list_imp;
+
+        __list_node_base *node_;
+    };
+
+    __list_imp();
+    ~__list_imp() {
+        erase(begin(), end());
+    }
+
+    iterator begin() {
+        return iterator(__tail()->next_);
+    }
+    iterator end() {
+        return iterator(__tail());
+    }
+    size_type size() const {
+        return __size();
+    }
+    void push_back(const value_type &x) {
+        insert(end(), x);
+    }
+    iterator insert(iterator position, const value_type &x);
+    iterator erase(iterator position);
+    iterator erase(iterator first, iterator last);
+
+  private:
+    __list_node_base *__tail() {
+        return &tail_.first();
+    }
+    size_type &__size() {
+        return size_.first();
+    }
+    const size_type &__size() const {
+        return size_.first();
+    }
+    node_allocator &__node_alloc() {
+        return size_.second();
+    }
+    Allocator &__alloc() {
+        return tail_.second();
+    }
+
+    __compressed_pair<size_type, node_allocator> size_;
+    __compressed_pair<__list_node_base, Allocator> tail_;
+};
+
+template <class T, class Allocator>
+typename __list_imp<T, Allocator>::iterator __list_imp<T, Allocator>::erase(iterator position) {
+    __list_node_base *n = position.node_;
+    ++position;
+    n->prev_->next_ = n->next_;
+    n->next_->prev_ = n->prev_;
+    node_allocator &na = __node_alloc();
+    __alloc().destroy(&static_cast<node *>(n)->data_);
+    na.deallocate(static_cast<node *>(n), 1);
+    --__size();
+    return position;
+}
+
+template <class T, class Allocator = allocator<T> > class list;
+
+/* The list of void pointers that implements every list of pointers. */
+template <class Allocator> class list<void *, Allocator> : public __list_imp<void *, Allocator> {};
+
+/* A list of T pointers stored as void pointers. */
+template <class T, class Allocator>
+class list<T *, Allocator> : private list<void *, allocator<void *> > {
+    typedef list<void *, allocator<void *> > base;
+    typedef base::iterator base_iterator;
+
+  public:
+    typedef size_t size_type;
+
+    class iterator {
+      public:
+        iterator() {}
+        iterator(const base_iterator &i) : i_(i) {}
+        /* User-declared: the game copies these iterators with an out-of-line call. */
+        iterator(const iterator &x) : i_(x.i_) {}
+
+        T *&operator*() const {
+            return (T *&)*i_;
+        }
+        iterator operator++(int) {
+            iterator tmp(*this);
+            ++i_;
+            return tmp;
+        }
+        operator base_iterator() const {
+            return i_;
+        }
+
+        friend bool operator!=(const iterator &x, const iterator &y) {
+            return x.i_ != y.i_;
+        }
+
+      private:
+        base_iterator i_;
+    };
+
+    iterator begin() {
+        return iterator(base::begin());
+    }
+    iterator end() {
+        return iterator(base::end());
+    }
+    using base::size;
+    void push_back(T *const &x) {
+        base::push_back((void *const &)x);
+    }
+    iterator erase(iterator position) {
+        return iterator(base::erase(position));
+    }
+};
+
+} // namespace std
+
+#endif
