@@ -267,6 +267,15 @@ Game/MissionClearCollision.cpp:
 	.sbss       start:0x805F04C0 end:0x805F04D0
 	.sdata2     start:0x805F77B0 end:0x805F77C8
 
+Game/DarkSpinEntrance.cpp:
+	.text       start:0x80258BEC end:0x802590D8
+	.ctors      start:0x804AA538 end:0x804AA53C
+	.rodata     start:0x804F54B0 end:0x804F54D8
+	.data       start:0x8054A510 end:0x8054A5C8
+	.bss        start:0x80584690 end:0x805846A0
+	.sdata      start:0x805EAAF0 end:0x805EAB10
+	.sdata2     start:0x805F7D88 end:0x805F7DB0
+
 Game/FootingBreak.cpp:
 	.text       start:0x802621E8 end:0x80263BCC
 	.rodata     start:0x804F5E50 end:0x804F5FF8

@@ -468,6 +468,15 @@ Game/GravityChangeZone.cpp:
 	.sbss       start:0x805EFF70 end:0x805EFF80
 	.sdata2     start:0x805F74C8 end:0x805F74F0
 
+Game/DarkSpinEntrance.cpp:
+	.text       start:0x8025885C end:0x80258D48
+	.ctors      start:0x804A9EF8 end:0x804A9EFC
+	.rodata     start:0x804F4E18 end:0x804F4E40
+	.data       start:0x80549E88 end:0x80549F40
+	.bss        start:0x80584068 end:0x80584078
+	.sdata      start:0x805EA4E0 end:0x805EA500
+	.sdata2     start:0x805F7760 end:0x805F7788
+
 Game/GravitySignBoard.cpp:
 	.text       start:0x80258D48 end:0x802593B0
 	.rodata     start:0x804F4E40 end:0x804F4E70
