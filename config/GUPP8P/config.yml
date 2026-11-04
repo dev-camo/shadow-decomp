@@ -4,3 +4,10 @@ hash: 6ff04994371e93d6ba1015644f4e7467713b9363
 symbols: config/GUPP8P/symbols.txt
 splits: config/GUPP8P/splits.txt
 mw_comment_version: 11
+add_relocations:
+# The RTTI record of Gadget in Game/BAShield.cpp points at its name string, which lies at the
+# small-data base address (_SDA2_BASE_ = 0x805FA780) in PAL only. Name the string as the target so
+# the split object refers to it rather than to the base symbol at the same address.
+- source: 0x805EDE08
+  type: abs
+  target: lbl_805FA780
