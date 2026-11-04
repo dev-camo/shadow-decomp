@@ -1693,6 +1693,11 @@ config.libs = [
             # different function1 instantiation for the model callback is one possible explanation
             # (hypothesis, not established).
             Object(NonMatching, "Game/CityChaosEmerald.cpp", cflags=cflags_game_cpp),
+            # Every function but the static initialiser is identical, and the data matches once
+            # the weak copies the linker discards are removed. The static initialiser differs in 2
+            # words: the original loads the saved link register before it stores the startup float
+            # (0x80231AF4), this build after it.
+            Object(NonMatching, "Game/MissionClearCollision.cpp", cflags=cflags_game_cpp),
             # Interpolation scheduling, the index-table extent and shared literal ownership differ.
             Object(
                 NonMatching,
