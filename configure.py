@@ -1492,10 +1492,23 @@ config.libs = [
             # Registers/scheduling differ; the literals continue the preceding functions' pool.
             # This one-function unit's 8-aligned pool cannot begin at 0x805F1984 (4 mod 8).
             Object(NonMatching, "Game/fn_80027D5C.cpp", cflags=cflags_game_cpp),
-            # The palette object and its entry wrapper: eight of twelve functions match.
-            # Rebuild and the constructor retain allocation-line differences; GetPattern has seven
-            # load-scheduling word differences, and the function-policy Assign differs.
-            # Helper emission/order and extra weak data also keep the whole unit NonMatching.
+            # The palette object of a scene (CMotionPalette, which owns the palette block
+            # through a reference-counted handle) and the CMotionPattern constructor that wraps
+            # one of its entries. 12 of 12 functions are sourced; 8 match in raw instruction
+            # words. Source read-only data is 70 bytes against the original 72-byte extent.
+            # The CMotionPalette constructor and Rebuild differ in one word each, the __LINE__
+            # of their allocations (the original passes 55 and 100). The holder Assign for the
+            # function release policy (112 words, the original's 115) shows the difference
+            # described for csdLoader.cpp. GetPattern retains seven positional setup/load
+            # scheduling differences, including an equivalent palette-pointer base register.
+            # The holder's SetRelease matches but comes last in the unit, where the original
+            # has it right after the holder constructor for the function policy (see csdRCObject.h).
+            # The source also emits weak copies of RCPtr<unsigned char>::Reset, the holder
+            # constructor for the delete policy and CMemoryAlloc::AllocObject, plus a local
+            # delete-policy Assign referenced only by that source Reset. It also emits a weak
+            # RCObject<unsigned char> vtable (the original unit has no .data). Normal links
+            # select the original unit and its existing providers; these links do not include
+            # this source object or establish which source weak copies would be discarded.
             Object(NonMatching, "Game/CSD/csdmMotionPalette.cpp", cflags=cflags_csd),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
