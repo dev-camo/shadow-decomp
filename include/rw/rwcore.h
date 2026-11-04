@@ -1624,9 +1624,9 @@ RwTexDictionary *fn_8048CA64(void);                  /* create */
 RwBool fn_8048CB38(RwTexDictionary *dict);           /* destroy */
 RwTexDictionary *fn_8048D0C4(RwTexDictionary *dict); /* sets the current one */
 RwTexDictionary *fn_8048D0D8(void);                  /* the current one */
-RwTexDictionary *fn_8048CBE0(RwTexDictionary *dict,
-                             RwTexture *(*callBack)(RwTexture *texture, void *data),
-                             void *data); /* calls a function for each texture */
+const RwTexDictionary *fn_8048CBE0(const RwTexDictionary *dict,
+                                   RwTexture *(*callBack)(RwTexture *texture, void *data),
+                                   void *data); /* calls a function for each texture */
 RwTexture *fn_8048CFAC(RwTexDictionary *dict, RwTexture *texture); /* adds a texture */
 extern RwPluginRegistry lbl_8056E030;                              /* the texture plugin registry */
 extern RwPluginRegistry lbl_8056E048; /* the texture dictionary plugin registry */

@@ -647,10 +647,11 @@ RwBool fn_8048CB38(RwTexDictionary *dict) {
     return TRUE;
 }
 
-RwTexDictionary *fn_8048CBE0(RwTexDictionary *dict, RwTextureCallBack callBack, void *data) {
+const RwTexDictionary *fn_8048CBE0(const RwTexDictionary *dict, RwTextureCallBack callBack,
+                                   void *data) {
     RwLLLink *next;
     RwLLLink *link;
-    RwLLLink *end = &dict->texturesInDict.link;
+    const RwLLLink *end = &dict->texturesInDict.link;
 
     for (link = dict->texturesInDict.link.next; link != end; link = next) {
         next = link->next;
