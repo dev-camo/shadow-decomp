@@ -301,6 +301,16 @@ Game/MissionClearCollision.cpp:
 	.sbss       start:0x805F0F60 end:0x805F0F70
 	.sdata2     start:0x805F8210 end:0x805F8228
 
+Game/GiantLantern.cpp:
+	.text       start:0x80236BCC end:0x80237D3C
+	.ctors      start:0x804AAF1C end:0x804AAF20
+	.rodata     start:0x804F3C18 end:0x804F3D80
+	.data       start:0x805489F0 end:0x80548B10
+	.bss        start:0x80584D90 end:0x80584DA0
+	.sdata      start:0x805EAEE0 end:0x805EAF30
+	.sbss       start:0x805F0F78 end:0x805F0F90
+	.sdata2     start:0x805F8308 end:0x805F8338
+
 Game/DarkSpinEntrance.cpp:
 	.text       start:0x80258BE0 end:0x802590CC
 	.ctors      start:0x804AAF58 end:0x804AAF5C

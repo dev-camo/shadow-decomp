@@ -1793,6 +1793,12 @@ config.libs = [
             # three regions. The two operator[] copies have identical 8-byte bodies; the two
             # 0x48-byte destructor copies call different clear functions (0x800D0D34, 0x800F5B50).
             Object(NonMatching, "Game/SecretDisk.cpp", cflags=cflags_game_cpp),
+            # 32 of 34 functions are identical in every word and relocation. The constructor
+            # differs in 23 of its 336 words, all stack offsets (the object's position and the six
+            # bound-callback temporaries sit in other slots); the startup function is 11 words
+            # instead of 20 (the original copies the effect direction from a temporary with the
+            # out-of-line vector copy fn_800091EC).
+            Object(NonMatching, "Game/GiantLantern.cpp", cflags=cflags_game_cpp),
             # Interpolation scheduling, the index-table extent and shared literal ownership differ.
             Object(
                 NonMatching,

@@ -25,12 +25,13 @@ class AttackCallbackParam {
     /* 0x10 */ u8 field_0x10[0x18 - 0x10];
     /* 0x18 */ Fn8040Vector3 field_0x18;
     /* 0x24 */ u8 field_0x24[0x34 - 0x24];
-    /* The stick stores field_0x18 minus its owner's position here (inferred). */
+    /* The stick stores field_0x18 minus its owner's position here; GiantLantern stores
+     * field_0x18 minus its character info's position, normalised (inferred). */
     /* 0x34 */ Fn8040Vector3 field_0x34;
     /* 0x40 */ u8 field_0x40[0x4C - 0x40];
-    /* Meteor stores its movement speed here (inferred). */
+    /* Meteor stores its movement speed here (inferred); GiantLantern stores 10. */
     /* 0x4C */ float field_0x4C;
-    /* 0x50 */ float field_0x50; /* ThreatObj subtracts it from its health */
+    /* 0x50 */ float field_0x50; /* ThreatObj subtracts it from its health; GiantLantern stores 1 */
     /* Bit 0 makes the stick count a hit; ThreatObj stores 1, 3 or 8, the Chao 1 or 8,
      * FallBuilding 1 or 5. */
     /* 0x54 */ u32 field_0x54;

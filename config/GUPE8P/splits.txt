@@ -485,6 +485,16 @@ Game/MissionClearCollision.cpp:
 	.sbss       start:0x805EFEB8 end:0x805EFEC8
 	.sdata2     start:0x805F7188 end:0x805F71A0
 
+Game/GiantLantern.cpp:
+	.text       start:0x80236848 end:0x802379B8
+	.ctors      start:0x804A9EBC end:0x804A9EC0
+	.rodata     start:0x804F2B48 end:0x804F2CB0
+	.data       start:0x805478E8 end:0x80547A08
+	.bss        start:0x80583D28 end:0x80583D38
+	.sdata      start:0x805E9E30 end:0x805E9E80
+	.sbss       start:0x805EFED0 end:0x805EFEE8
+	.sdata2     start:0x805F7280 end:0x805F72B0
+
 Game/GravityChangeCollision.cpp:
 	.text       start:0x802476A8 end:0x80247B24
 	.rodata     start:0x804F3CC8 end:0x804F3D08
