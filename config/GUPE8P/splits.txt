@@ -250,6 +250,15 @@ Game/ThreatObjHolder.cpp:
 	.sbss       start:0x805EEFD8 end:0x805EEFF8
 	.sdata2     start:0x805F4470 end:0x805F44A0
 
+Game/ElecBlock.cpp:
+	.text       start:0x801585DC end:0x80158FC0
+	.ctors      start:0x804A9D7C end:0x804A9D80
+	.rodata     start:0x804C20F0 end:0x804C21F8
+	.data       start:0x8052AB58 end:0x8052AD28
+	.bss        start:0x80580150 end:0x80580160
+	.sdata      start:0x805E6520 end:0x805E6548
+	.sdata2     start:0x805F49C8 end:0x805F4A28
+
 Game/fn_80160B18.cpp:
 	.text       start:0x80160B18 end:0x80160BA0
 
