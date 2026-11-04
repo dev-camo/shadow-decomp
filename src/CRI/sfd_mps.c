@@ -256,8 +256,8 @@ static inline void sfmps_ProcPrepSee(SFD sfd) {
         if (w->pts_min2 != INT64_MAX_VAL) {
             SFD_TIM(sfd)->as_pts = w->pts_min2 - shdr->pts_min;
             if (shdr->analyzed == 0) {
-                shdr->ncount = sfd->x924 * 50;
-                shdr->tscale = sfd->x928;
+                shdr->ncount = sfd->vid.x18 * 50;
+                shdr->tscale = sfd->vid.x1c;
                 shdr->nvid = w->nvid;
                 shdr->naud = w->naud;
                 shdr->pts_base = SFD_TIM(sfd)->pts_base;
@@ -313,11 +313,11 @@ static void sfmps_ProcPrep(SFD sfd) {
     mps = wk->mps;
     MPS_GetPackHd(mps, &packhd);
     if (packhd.mux_rate != -1 && packhd.mux_rate > 0) {
-        sfd->x924 = packhd.mux_rate;
+        sfd->vid.x18 = packhd.mux_rate;
     }
     MPS_GetSysHd(mps, &syshd, 1);
     if (syshd.raw[4] != -1) {
-        sfd->x928 = syshd.raw[4];
+        sfd->vid.x1c = syshd.raw[4];
     }
     if (sfd->numelem_aud == -1) {
         sfd->numelem_aud = wk->naud;
