@@ -18,7 +18,7 @@ enum { ARRANGER_LINK_TRANSFORM = 0x800 };
 /* Class/base identity from RTTI; member and non-placeholder method names are inferred. */
 class EffectArranger : public EffectElement {
   public:
-    EffectArranger(const UnkEffectElementData3 *definition, EffectLaunchInfo *info,
+    EffectArranger(UnkEffectElementData3 *definition, EffectLaunchInfo *info,
                    EffectManager *manager);
     virtual ~EffectArranger();
     virtual void Update(float deltaTime);
