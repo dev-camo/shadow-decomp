@@ -57,8 +57,8 @@ void CFT_Init(void);   /* name inferred: the library start called from SFX_Init 
 void CFT_MakeArgb8888Alp3211Tbl(void *tbl, Uint8 alp0, Uint8 alp1, Uint8 alp2);
 void CFT_MakeArgb8888Alp3110Tbl(void *tbl, Uint8 alp0, Uint8 alp1, Uint8 alp2);
 void CFT_MakeArgb8888AlpLumiTbl(Sint32 mode, Sint32 lo, Sint32 hi, void *tbl);
-/* The paired-single converters called by CFT_Ycc420plnToArgb8888 (not yet decompiled): the one
- * that takes the conversion table and the plain one. tbl has the type of SFX_CNVARG.tbl, which is
+/* The paired-single converters called by CFT_Ycc420plnToArgb8888: the one that takes the
+ * conversion table and the plain one. tbl has the type of SFX_CNVARG.tbl, which is
  * shared with the byte-sized A256 user table; for this converter it holds the CFT_ARGBENT entries
  * built by the table makers above. */
 void cnvDynamicYcc420plnToArgb8888(const CFT_YCC420PLN *src, const CFT_ARGBDST *dst,
