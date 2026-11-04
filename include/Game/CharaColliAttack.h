@@ -8,13 +8,12 @@
 #include <dolphin/types.h>
 #include "layout_check.h"
 
-class UnkProbeTarget_800587A0;
-
 namespace SonicteamUSA {
 namespace System {
 namespace CharaColli {
 
 class CharaColliAttack;
+class CharaColliBase;
 
 /* SonicteamUSA::System::CharaColli::AttackCallbackParam (class name from the RTTI names of the
  * weapon stick's and ThreatObj's bound callbacks): what an attack object passes to its callbacks.
@@ -112,7 +111,7 @@ class CharaColliAttack {
     /* Passes the attack on to the member at 0x44 (behaviour inferred). */
     void fn_800532F8(boost::weak_ptr<CharaColliAttack> attack);
 
-    /* 0x00 */ boost::weak_ptr<UnkProbeTarget_800587A0> field_0x0;
+    /* 0x00 */ boost::weak_ptr<CharaColliBase> field_0x0;
     /* 0x08 */ boost::weak_ptr<CharInfo> m_owner; /* name inferred */
     /* 0x10 */ UnkAttackCallback_8005A98C field_0x10;
     /* 0x1C */ UnkAttackCallback_8005A98C field_0x1C;

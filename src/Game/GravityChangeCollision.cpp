@@ -12,11 +12,13 @@
 #include "Game/UnkBitFlags_80014E04.h"
 #include "Game/UnkGadgetOwner_800C9CD0.h"
 #include "Game/UnkGravity_80293928.h"
-#include "Game/UnkProbeTarget_800587A0.h"
+#include "Game/UnkWorld_80021B08.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include "layout_check.h"
+
+using SonicteamUSA::System::CharaColli::CharaColliBase;
 
 /* The gadget parameters in the order of the descriptor's table below. CopyFromOwner scales the
  * three sizes by 10 and halves them after reading them, so from then on they hold the half
@@ -48,7 +50,7 @@ class GravityChangeCollision : public Gadget {
 
     /* 0x30 */ GravityChangeCollisionParams m_params;
     /* 0x40 */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
-    /* 0x48 */ boost::shared_ptr<UnkProbeTarget_800587A0> m_probe;
+    /* 0x48 */ boost::shared_ptr<CharaColliBase> m_probe;
     /* 0x50 */ UnkBitFlags_80014E04 m_hitFlags; /* bit 0: a character touched the box (inferred) */
     /* 0x54 */ u32 field_0x54;
 };

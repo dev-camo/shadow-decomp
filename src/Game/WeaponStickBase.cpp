@@ -16,7 +16,7 @@
 #include "Game/CharInfo.h"
 #include "Game/CharaColliAttack.h"
 #include "Game/UnkBitFlags_80014E04.h"
-#include "Game/UnkProbeTarget_800587A0.h"
+#include "Game/UnkWorld_80021B08.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/UnkStartupFloat_800E2570.h"
 #include "Game/UnkWorldProbe_80021FE4.h"

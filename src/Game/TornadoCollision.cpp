@@ -9,9 +9,11 @@
 #include "Game/TornadoCharInfo.h"
 #include "Game/UnkCharInfoTable_800DDF20.h"
 #include "Game/UnkCharInfo_800999C0.h"
-#include "Game/UnkProbeTarget_800587A0.h"
+#include "Game/UnkWorld_80021B08.h"
 #include "Game/UnkWorldProbe_80021FE4.h"
 #include "layout_check.h"
+
+using SonicteamUSA::System::CharaColli::CharaColliBase;
 
 class TornadoCollision : public Task {
   public:
@@ -32,7 +34,7 @@ class TornadoCollision : public Task {
     static const char *s_name;
 
     /* 0x28 */ UnkGadgetOwner_800C9CD0 *m_owner;
-    /* 0x2C */ boost::shared_ptr<UnkProbeTarget_800587A0> m_target;
+    /* 0x2C */ boost::shared_ptr<CharaColliBase> m_target;
     /* 0x34 */ float m_radius; /* the gadget parameter "Radius" */
     /* 0x38 */ Fn8040Vector3 m_position;
     /* 0x44 */ u8 m_tag; /* copied from the owner; compared with the tornado's tag (inferred) */

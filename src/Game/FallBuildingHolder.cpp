@@ -11,10 +11,10 @@
  * NonMatching: every function and the data match the original once the weak copies that the
  * linker discards are removed, but checked_delete<FallBuilding> is a local symbol here where the
  * original's is weak. See the note in configure.py. */
-/* TNumEdit.h comes before CharaColliBase.h, in the order their names appear in the unit's .rodata
- * (alphabetical order would reverse them). */
+/* TNumEdit.h comes before CharaColliBaseCharInfo.h, in the order their names appear in the unit's
+ * .rodata (alphabetical order would reverse them). */
 #include "Game/TNumEdit.h"
-#include "Game/CharaColliBase.h"
+#include "Game/CharaColliBaseCharInfo.h"
 #include "Game/CharInfo.h"
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"

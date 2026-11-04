@@ -13,7 +13,13 @@
  * allocated list of 0x1C bytes (nullable). The list is a doubly linked list of nodes whose first
  * eight bytes are a weak pointer to the object found; the original class names are unknown. */
 class UnkWorld_80020D40;
-class UnkProbeTarget_800587A0;
+namespace SonicteamUSA {
+namespace System {
+namespace CharaColli {
+class CharaColliBase;
+} // namespace CharaColli
+} // namespace System
+} // namespace SonicteamUSA
 class UnkProbeHit_8001E9BC;
 struct UnkSphere_80021C04;
 
@@ -21,7 +27,7 @@ struct UnkSphere_80021C04;
 struct UnkProbeFilterRecord {
     /* 0x00 */ RwV3d **vertices;
     /* 0x04 */ u32 field_0x4;
-    /* 0x08 */ UnkProbeTarget_800587A0 *target;
+    /* 0x08 */ SonicteamUSA::System::CharaColli::CharaColliBase *target;
     /* 0x0C */ u32 flags;
     /* 0x10 */ void *context;
 };
@@ -29,7 +35,7 @@ CHECK_SIZEOF(UnkProbeFilterRecord, 0x14);
 typedef bool (*UnkProbePredicate)(const UnkProbeFilterRecord *record);
 
 struct UnkProbeNode_80021FE4 {
-    /* 0x00 */ boost::weak_ptr<UnkProbeTarget_800587A0> target;
+    /* 0x00 */ boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> target;
     /* 0x08 */ u8 field_0x8[0x14 - 0x8];
     /* 0x14 */ UnkProbeHit_8001E9BC *hit;
     /* 0x18 */ UnkProbeNode_80021FE4 *field_0x18;
@@ -92,8 +98,8 @@ UnkProbeIterator_80027374 fn_80027374(UnkProbeIterator_80027374 *iterator, int a
 Fn8040Vector3 *fn_8001E9BC(UnkProbeHit_8001E9BC *hit);
 /* A weak pointer to the object a node refers to, built from the weak pointer at the node's start
  * (behaviour inferred). */
-boost::weak_ptr<UnkProbeTarget_800587A0>
-fn_800587A0(const boost::weak_ptr<UnkProbeTarget_800587A0> *source);
+boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>
+fn_800587A0(const boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> *source);
 }
 
 #endif

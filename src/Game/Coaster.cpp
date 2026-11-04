@@ -21,10 +21,10 @@
  * it emits has the bytes of fn_80131654). The RTTI and vtable records of the boost and std
  * templates differ in layout from the original's, and the object has additional weak template
  * instances and the RTTI records of the headers' casts. */
-/* TNumEdit.h comes before CharaColliBase.h, in the order their names appear in the unit's .rodata
- * (alphabetical order would reverse them). */
+/* TNumEdit.h comes before CharaColliBaseCharInfo.h, in the order their names appear in the unit's
+ * .rodata (alphabetical order would reverse them). */
 #include "Game/TNumEdit.h"
-#include "Game/CharaColliBase.h"
+#include "Game/CharaColliBaseCharInfo.h"
 #include "Game/CameraModeUser.h"
 #include "Game/CharCommand.h"
 #include "Game/CharCommandUnit.h"
@@ -43,7 +43,7 @@
 #include "Game/UnkGlobal_8057D6A0.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
 #include "Game/UnkParamCursor_800CBC20.h"
-#include "Game/UnkProbeTarget_800587A0.h"
+#include "Game/UnkWorld_80021B08.h"
 #include "Game/UnkResource_80012700.h"
 #include "Game/UnkSoundHandle_801D3DC8.h"
 #include "Game/UnkSoundManager_80053164.h"
@@ -58,6 +58,8 @@
 #include "boost/weak_ptr.hpp"
 #include "layout_check.h"
 #include <cmath>
+
+using SonicteamUSA::System::CharaColli::CharaColliBase;
 
 typedef boost::function1<void, CameraUpdateEventArgs &> PathCallback;
 
@@ -252,7 +254,7 @@ Coaster::Coaster(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
     BuildMatrices();
 
     {
-        boost::shared_ptr<UnkProbeTarget_800587A0> probe = fn_800C7EA8(
+        boost::shared_ptr<CharaColliBase> probe = fn_800C7EA8(
             fn_80021B08(), &m_position, 0x100, 10, 0, boost::weak_ptr<CharInfo>(lbl_805EE698),
             &lbl_805E07A0, s_probeRadius.value);
 
@@ -397,7 +399,7 @@ void Coaster::UpdateBody(float dt) {
                 } else {
                     m_state = 0;
                 }
-                m_handle->field_0x18.ClearFlags(2);
+                m_handle->ClearFlags(2);
                 m_handle->SuspendProbe(0.4f);
                 if (s_stage->field_0x12) {
                     m_model->fn_801604FC();
@@ -449,7 +451,7 @@ void Coaster::UpdateBody(float dt) {
             m_sound.fn_801D455C();
 
             if (!s_stage->field_0x14) {
-                m_handle->field_0x18.ClearFlags(2);
+                m_handle->ClearFlags(2);
                 if (s_stage->field_0x12) {
                     m_model->fn_801604FC();
                 }
@@ -488,7 +490,7 @@ void Coaster::UpdateBody(float dt) {
     }
     if (m_handle.get() != 0) {
         fn_8015BE9C(m_handle.get(), dt);
-        m_handle->field_0x18.m_probe->SetPosition(&m_position);
+        m_handle->m_probe->SetPosition(&m_position);
     }
 }
 
@@ -499,7 +501,7 @@ void Coaster::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     if (previous.pathNo != m_params.pathNo) {
         m_state = 0;
         SetupPath();
-        m_handle->field_0x18.ClearFlags(2);
+        m_handle->ClearFlags(2);
     }
     BuildMatrices();
     UpdateModelMatrix();
@@ -663,7 +665,7 @@ void Coaster::UpdateModelMatrix() {
     m_model->fn_801633DC(&m_matrix);
     fn_800CCE38(m_object.get(), &m_charInfo->m_position);
     if (m_handle.get() != 0) {
-        m_handle->field_0x18.m_probe->SetPosition(&m_position);
+        m_handle->m_probe->SetPosition(&m_position);
     }
 }
 
@@ -742,7 +744,7 @@ void Coaster::OnCommand(CharCommand &command) {
     switch (command.m_type) {
     case 0xB:
         if (m_state == 0 || m_state == 3) {
-            m_handle->field_0x18.SetFlags(2);
+            m_handle->SetFlags(2);
             if (s_stage->field_0x12) {
                 m_model->fn_80160C28(0);
                 m_model->fn_8016082C(0);

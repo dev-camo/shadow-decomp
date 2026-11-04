@@ -7,10 +7,10 @@
  * last-defined first). */
 #include <cmath>
 #include <cstring>
-/* TNumEdit.h comes before CharaColliBase.h, in the order their names appear in the unit's .rodata
- * (alphabetical order would reverse them). */
+/* TNumEdit.h comes before CharaColliBaseCharInfo.h, in the order their names appear in the unit's
+ * .rodata (alphabetical order would reverse them). */
 #include "Game/TNumEdit.h"
-#include "Game/CharaColliBase.h"
+#include "Game/CharaColliBaseCharInfo.h"
 #include "Game/FootingBreak.h"
 #include "Game/CharCommandUnit.h"
 #include "Game/DebugDisp.h"

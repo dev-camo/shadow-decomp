@@ -5,10 +5,10 @@
  * stretches the model. File name inferred from the class. Method names marked "(name inferred)"
  * are not original. Definitions are in reverse address order (deferred inlining emits functions
  * last-defined first). */
-/* TNumEdit.h comes before CharaColliBase.h, in the order their names appear in the unit's .rodata
- * (alphabetical order would reverse them). */
+/* TNumEdit.h comes before CharaColliBaseCharInfo.h, in the order their names appear in the unit's
+ * .rodata (alphabetical order would reverse them). */
 #include "Game/TNumEdit.h"
-#include "Game/CharaColliBase.h"
+#include "Game/CharaColliBaseCharInfo.h"
 #include "Game/CharInfo.h"
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"

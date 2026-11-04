@@ -22,7 +22,7 @@
 #include "Game/GadgetTypeInfo.h"
 #include "Game/UnkManager_80009548.h"
 #include "Game/UnkManager_800CB69C.h"
-#include "Game/UnkProbeTarget_800587A0.h"
+#include "Game/UnkWorld_80021B08.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/UnkStartupFloat_800E2570.h"
 #include "Game/UnkTarget_80166AF4.h"
@@ -34,6 +34,8 @@
 #include "layout_check.h"
 #include <algorithm>
 #include <vector>
+
+using SonicteamUSA::System::CharaColli::CharaColliBase;
 
 class CityLaser;
 class CityLaserHolder;
@@ -110,9 +112,9 @@ class CityLaser {
     /* 0x08 */ s32 m_state;
     /* 0x0C */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
     /* 0x14 */ boost::shared_ptr<GadgetModelInfo> m_model;
-    /* 0x1C */ boost::shared_ptr<UnkProbeTarget_800587A0> m_probe;
+    /* 0x1C */ boost::shared_ptr<CharaColliBase> m_probe;
     /* 0x24 */ boost::shared_ptr<UnkTarget_80166AF4> m_target;
-    /* 0x2C */ std::vector<boost::weak_ptr<UnkProbeTarget_800587A0> > m_hits;
+    /* 0x2C */ std::vector<boost::weak_ptr<CharaColliBase> > m_hits;
     /* 0x38 */ float m_timer;
     /* 0x3C */ u8 m_tag; /* copied from the owner; passed to fn_801690D0 (name inferred) */
 };
@@ -144,7 +146,7 @@ CHECK_SIZEOF(CityLaserHolder, 0x48);
 const char *CityLaserHolder::s_name = "CityLaserHolder";
 
 /* The predicate that remove_if uses to drop the targets that are gone (name inferred). */
-static bool IsExpired(boost::weak_ptr<UnkProbeTarget_800587A0> target) {
+static bool IsExpired(boost::weak_ptr<CharaColliBase> target) {
     return target.expired();
 }
 
@@ -236,21 +238,21 @@ void CityLaser::Update(float dt) {
 
                     for (UnkProbeIterator_80027374 iterator(hits->fn_8001EE04());
                          iterator.node != hits->fn_8001EDEC(); fn_80027374(&iterator, 0)) {
-                        boost::shared_ptr<UnkProbeTarget_800587A0> target =
+                        boost::shared_ptr<CharaColliBase> target =
                             fn_800587A0(&iterator.node->target).lock();
 
                         if (target.get() != 0) {
-                            std::vector<boost::weak_ptr<UnkProbeTarget_800587A0> >::iterator known;
+                            std::vector<boost::weak_ptr<CharaColliBase> >::iterator known;
 
                             for (known = m_hits.begin(); known != m_hits.end(); ++known) {
-                                boost::shared_ptr<UnkProbeTarget_800587A0> listed = known->lock();
+                                boost::shared_ptr<CharaColliBase> listed = known->lock();
 
                                 if (listed.get() != 0 && listed == target) {
                                     break;
                                 }
                             }
                             if (known == m_hits.end()) {
-                                m_hits.push_back(boost::weak_ptr<UnkProbeTarget_800587A0>(target));
+                                m_hits.push_back(boost::weak_ptr<CharaColliBase>(target));
 
                                 /* Set when the target's owner has the word at 0x50 equal to 1
                                  * (meaning unknown; a different field from the word at 0x5C that
@@ -259,9 +261,8 @@ void CityLaser::Update(float dt) {
 
                                 if (m_holder->m_params.mode == 1) {
                                     boost::shared_ptr<CharInfo> owner =
-                                        fn_800C4568(
-                                            fn_80021B08(),
-                                            boost::weak_ptr<UnkProbeTarget_800587A0>(target))
+                                        fn_800C4568(fn_80021B08(),
+                                                    boost::weak_ptr<CharaColliBase>(target))
                                             .lock();
 
                                     if (owner.get() != 0 && owner->field_0x50 == 1) {

@@ -8,10 +8,12 @@
 #include "Game/DebugDisp.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/UnkManager_800CB69C.h"
-#include "Game/UnkProbeTarget_800587A0.h"
+#include "Game/UnkWorld_80021B08.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/fn_8006_resource_list.h"
 #include "Game/fn_8040_vector_types.h"
+
+using SonicteamUSA::System::CharaColli::CharaColliBase;
 
 extern "C" {
 /* Sets each of the four bytes at 0x8 of state to from + (to - from) * (t - t0) / (t1 - t0), byte
@@ -38,10 +40,10 @@ ElecBarrier::ElecBarrier(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(
     ReadOwner(m_owner);
     m_model->fn_80161FC8(m_modelType, m_charInfo);
 
-    boost::weak_ptr<UnkProbeTarget_800587A0> probe = m_model->fn_80161614(m_modelType);
+    boost::weak_ptr<CharaColliBase> probe = m_model->fn_80161614(m_modelType);
 
     if (!probe.expired()) {
-        boost::shared_ptr<UnkProbeTarget_800587A0> target = probe.lock();
+        boost::shared_ptr<CharaColliBase> target = probe.lock();
 
         switch (m_modelType) {
         case 0:

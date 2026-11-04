@@ -19,7 +19,7 @@
 #include "Game/UnkGadgetOwner_800C9CD0.h"
 #include "Game/UnkManager_800CB69C.h"
 #include "Game/UnkObject_802B4254.h"
-#include "Game/UnkProbeTarget_800587A0.h"
+#include "Game/UnkWorld_80021B08.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/UnkStartupFloat_800E2570.h"
 #include "Game/fn_8006_resource_list.h"
@@ -31,6 +31,7 @@
 #include "layout_check.h"
 
 using SonicteamUSA::System::CharaColli::CharaColliAttack;
+using SonicteamUSA::System::CharaColli::CharaColliBase;
 
 class Cream;
 
@@ -86,7 +87,7 @@ class Cream : public Gadget {
     /* 0x3C */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
     /* 0x44 */ boost::shared_ptr<Target> m_object;
     /* 0x4C */ boost::shared_ptr<UnkObject_802B4254> m_object2;
-    /* 0x54 */ boost::shared_ptr<UnkProbeTarget_800587A0> m_probe;
+    /* 0x54 */ boost::shared_ptr<CharaColliBase> m_probe;
     /* 0x5C */ boost::shared_ptr<GadgetModelInfo> m_model;
     /* 0x64 */ CreamSetState *m_data;
     /* The state (names inferred from the code that sets them): 0 waiting, 1 touched for the first
