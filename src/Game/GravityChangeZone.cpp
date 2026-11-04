@@ -38,9 +38,7 @@ GravityChangeZone::GravityChangeZone(Task *parent, UnkGadgetOwner_800C9CD0 *owne
     m_zoneModel->fn_80162A68(0, 0);
     m_zoneModel->fn_80161FC8(0, boost::weak_ptr<CharInfo>(m_charInfo));
 
-    /* The model's collision callback is at 0x4 of GadgetModelInfo (inferred from the assignment
-     * the original makes to that address). */
-    *reinterpret_cast<ColliDetectCallback *>(m_zoneModel->field_0x4) =
+    m_zoneModel->m_collisionCallback =
         ColliDetectCallback(boost::bind(&GravityChangeZone::OnCollision, this, _1));
 
     {

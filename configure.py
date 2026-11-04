@@ -787,7 +787,9 @@ config.libs = [
                 Object(Matching, "Game/ElecSmallPillar.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecWakka.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/GravityChangeCollision.cpp", cflags=cflags_game_cpp),
-                # 32 of 33 functions have identical words and the data matches. The startup
+                # 32 of 33 functions have identical words. The data sections are not compared:
+                # the compiled object's .data and .sbss are 0x104 and 0x2D bytes against the
+                # original's 0xC0 and 0x10. The startup
                 # function is 7 words instead of 16: the original builds the effect direction in a
                 # temporary and copies it with the out-of-line vector copy fn_800091EC. Two calls
                 # differ only in the callee's symbol: the bound call operator's call of boost's

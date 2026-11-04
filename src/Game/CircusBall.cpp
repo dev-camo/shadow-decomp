@@ -186,9 +186,7 @@ CircusBall::~CircusBall() {
 
 void CircusBall::StartCollision() {
     m_model->fn_80161F08("ball", boost::weak_ptr<CharInfo>(m_charInfo));
-    /* The model's collision callback is at 0x4 of GadgetModelInfo (inferred from the assignment
-     * the original makes to that address). */
-    *reinterpret_cast<ColliDetectCallback *>(m_model->field_0x4) =
+    m_model->m_collisionCallback =
         ColliDetectCallback(boost::bind(&CircusBall::OnCollision, this, _1));
     m_object = fn_801E72DC(0x400);
 }
