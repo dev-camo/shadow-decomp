@@ -4,27 +4,53 @@
  * group whose data lies in ARAM, through a counted copy in main memory. Definitions are in address
  * order, with automatic inlining one level deep (see configure.py).
  *
- * Not complete: fn_80411818 (0x5D4 bytes) and fn_80411DEC (0x5F0 bytes) are not written yet, and
- * fn_804124DC, fn_80413058, fn_80413318 and fn_80413538 do not match yet. */
+ * Not complete: fn_804124DC, fn_80413058, fn_80413318 and fn_80413538 do not match yet (see
+ * configure.py). */
 #include <stddef.h>
 #include <string.h>
 
 #include "Game/fn_804110EC_allocator_hooks.h"
 #include "Game/fn_80410630_pack.h"
 #include "Game/fn_80411714_resource_groups.h"
+#include "Game/fn_8040_vector_types.h"
+#include "Game/fn_804157E8_motion_range.h"
 #include "Game/fn_8042_byte_order.h"
 #include "Game/fn_8042_name_registry.h"
 
-/* The uninitialised globals are laid out last-defined first, so they are listed from the highest
- * address down. */
+/* The .sbss globals are laid out last-defined first, so they are listed from the highest address
+ * down. The .bss ones are laid out in the order of their first use (lbl_805E12B0, lbl_805E12A0,
+ * nameBuffer), the reverse of the original's. */
+MotionRange lbl_805E12B0;
+MotionRange lbl_805E12A0;
 static char nameBuffer[256];
+ResourceRecord *lbl_805F13CC;
+ResourceRecord *lbl_805F13C8;
 static char blockIteratorInitialised;
 static ResourceBlock *currentBlock;
 unsigned short lbl_805F13BE;
 unsigned short lbl_805F13BC;
 unsigned short lbl_805F13BA;
 unsigned short lbl_805F13B8;
+ResourceRecord *lbl_805F13B4;
 ResourceGroup *lbl_805F13B0;
+
+/* The records of an item that apply between two frames (flag 0x8000) and at one frame (flag
+ * 0x4000); their payload follows. A negative frame of a window stands for the start or end frame
+ * of the item's data (names inferred). The original's byte-order fix in fn_80412D7C swaps these
+ * payloads as 16-bit halves (the first four bytes of a window, the first two of a frame), not as
+ * the floats read here. */
+typedef struct ResourceWindowRecord {
+    /* 0x00 */ ResourceRecord header;
+    /* 0x04 */ float startFrame;
+    /* 0x08 */ float endFrame;
+} ResourceWindowRecord;
+CHECK_SIZEOF(ResourceWindowRecord, 0xC);
+
+typedef struct ResourceFrameRecord {
+    /* 0x00 */ ResourceRecord header;
+    /* 0x04 */ float frame;
+} ResourceFrameRecord;
+CHECK_SIZEOF(ResourceFrameRecord, 0x8);
 
 /* Returns the item of an id, or 0.
  *
@@ -135,14 +161,6 @@ static inline int FixDataHeader(ResourceData *data) {
     return 0;
 }
 
-/* Rounds a size up to a multiple of 32 bytes, the unit of the ARAM transfers. */
-static inline int RoundUpTo32(int size) {
-    if (size % 32 != 0) {
-        size += 32 - size % 32;
-    }
-    return size;
-}
-
 /* Rounds an address down to a multiple of 32 bytes, the alignment of the ARAM transfers. */
 static inline char *RoundDownTo32(char *address) {
     unsigned int excess = (unsigned int)address % 32;
@@ -186,6 +204,322 @@ void fn_80411714(void) {
     }
 }
 
+/* Steps through the records of a motion's item (behaviour inferred): with a motion id it starts at
+ * the first record, with 0 it goes on after the record returned last, storing the flags of each
+ * record it reaches in eventId. Returns 1 at the next record that applies to the range, with its
+ * payload (0 when it has none) in payload. A window record applies while the current frame lies in
+ * its window, a frame record when the range passed its frame (or, with a zero speed after a stop,
+ * when the current frame lies within 0.0001 of it), any other record always. Returns 0 at the end
+ * of the chain, or at a window or frame record when there is no range; it then forgets its
+ * position and drops the copy of the item. */
+int fn_80411818(unsigned short motionId, unsigned short *eventId, const MotionRange *range,
+                void **payload, int stopped) {
+    ResourceRecord *record;
+    int found = 0;
+
+    lbl_805F13B4 = 0;
+    if (motionId != 0) {
+        ResourceItem *item;
+
+        lbl_805F13CC = 0;
+        fn_80413318(motionId);
+        item = FindItem(motionId);
+        if (item != 0) {
+            fn_804125F4(&lbl_805E12B0, motionId);
+            lbl_805F13CC = item->records;
+            ReleaseInstance(lbl_805F13BA);
+            lbl_805F13BA = motionId;
+        }
+    }
+    if (lbl_805F13CC == 0) {
+        return 0;
+    }
+
+    record = lbl_805F13CC;
+    while ((short)record->size != -1) {
+        *eventId = record->flags;
+        if (*eventId & 0x8000) {
+            const ResourceWindowRecord *window = (const ResourceWindowRecord *)record;
+            float start;
+            float end;
+
+            if (range == 0) {
+                break;
+            }
+            if (window->startFrame < 0.0f) {
+                start = lbl_805E12B0.startFrame;
+            } else {
+                start = window->startFrame;
+            }
+            if (window->endFrame < 0.0f) {
+                end = lbl_805E12B0.endFrame;
+            } else {
+                end = window->endFrame;
+            }
+            if (range->currentFrame >= start && range->currentFrame <= end) {
+                *payload = 0;
+                if (record->size != sizeof(ResourceWindowRecord)) {
+                    *payload = (char *)lbl_805F13CC + sizeof(ResourceWindowRecord);
+                }
+                lbl_805F13B4 = lbl_805F13CC;
+                found = 1;
+                lbl_805F13CC = (ResourceRecord *)((char *)lbl_805F13CC + record->size);
+                break;
+            }
+        } else if (*eventId & 0x4000) {
+            const ResourceFrameRecord *frameRecord = (const ResourceFrameRecord *)record;
+            int hit;
+
+            if (range == 0) {
+                break;
+            }
+            hit = 0;
+            if (fn_8000A980(range->speed) <= 0.0f) {
+                if (stopped && fn_8000A980(range->currentFrame - frameRecord->frame) < 0.0001f) {
+                    hit = 1;
+                }
+            } else if (range->speed > 0.0f) {
+                if (range->speed >= range->endFrame - range->startFrame) {
+                    if (range->startFrame <= frameRecord->frame &&
+                        range->endFrame >= frameRecord->frame) {
+                        hit = 1;
+                    }
+                } else {
+                    float previous = range->currentFrame - range->speed;
+
+                    if (previous < range->startFrame) {
+                        if (range->startFrame <= frameRecord->frame &&
+                            range->currentFrame >= frameRecord->frame) {
+                            hit = 1;
+                        } else {
+                            float wrapped = range->endFrame - (range->startFrame - previous);
+
+                            if (wrapped < frameRecord->frame &&
+                                range->endFrame >= frameRecord->frame) {
+                                hit = 1;
+                            }
+                        }
+                    } else if (previous < frameRecord->frame &&
+                               range->currentFrame >= frameRecord->frame) {
+                        hit = 1;
+                    }
+                }
+            } else {
+                if (range->speed <= range->startFrame - range->endFrame) {
+                    if (range->startFrame <= frameRecord->frame &&
+                        range->endFrame >= frameRecord->frame) {
+                        hit = 1;
+                    }
+                } else {
+                    float previous = range->currentFrame - range->speed;
+
+                    if (previous > range->endFrame) {
+                        if (range->currentFrame <= frameRecord->frame &&
+                            range->endFrame >= frameRecord->frame) {
+                            hit = 1;
+                        } else {
+                            float wrapped = range->startFrame + (previous - range->endFrame);
+
+                            if (range->startFrame <= frameRecord->frame &&
+                                wrapped > frameRecord->frame) {
+                                hit = 1;
+                            }
+                        }
+                    } else if (range->currentFrame <= frameRecord->frame &&
+                               previous > frameRecord->frame) {
+                        hit = 1;
+                    }
+                }
+            }
+            if (hit) {
+                *payload = 0;
+                if (record->size != sizeof(ResourceFrameRecord)) {
+                    *payload = (char *)lbl_805F13CC + sizeof(ResourceFrameRecord);
+                }
+                lbl_805F13B4 = lbl_805F13CC;
+                found = 1;
+                lbl_805F13CC = (ResourceRecord *)((char *)lbl_805F13CC + record->size);
+                break;
+            }
+        } else {
+            *payload = 0;
+            if (record->size != sizeof(ResourceRecord)) {
+                *payload = (char *)lbl_805F13CC + sizeof(ResourceRecord);
+            }
+            lbl_805F13B4 = lbl_805F13CC;
+            found = 1;
+            lbl_805F13CC = (ResourceRecord *)((char *)lbl_805F13CC + record->size);
+            break;
+        }
+        lbl_805F13CC = (ResourceRecord *)((char *)lbl_805F13CC + record->size);
+        record = lbl_805F13CC;
+    }
+
+    if (!found) {
+        lbl_805F13CC = 0;
+        ReleaseInstance(lbl_805F13BA);
+        lbl_805F13BA = 0;
+    }
+    return found;
+}
+
+/* The same as fn_80411818 for the records whose flags equal eventId, with its own position and
+ * motion (behaviour inferred): the payload of the next one that applies is copied to destination
+ * when both exist. The tests are repeated from fn_80411818 rather than shared: with the frame test
+ * in an inline function, fn_80411818 gives two of its float registers the other way round. */
+int fn_80411DEC(unsigned short motionId, unsigned short eventId, const MotionRange *range,
+                void *destination, int stopped) {
+    ResourceRecord *record;
+    int found = 0;
+
+    lbl_805F13B4 = 0;
+    if (motionId != 0) {
+        ResourceItem *item;
+
+        lbl_805F13C8 = 0;
+        fn_80413318(motionId);
+        item = FindItem(motionId);
+        if (item != 0) {
+            fn_804125F4(&lbl_805E12A0, motionId);
+            lbl_805F13C8 = item->records;
+            ReleaseInstance(lbl_805F13B8);
+            lbl_805F13B8 = motionId;
+        }
+    }
+    if (lbl_805F13C8 == 0) {
+        return 0;
+    }
+
+    record = lbl_805F13C8;
+    while ((short)record->size != -1) {
+        if (record->flags == eventId) {
+            if (eventId & 0x8000) {
+                const ResourceWindowRecord *window = (const ResourceWindowRecord *)record;
+                float start;
+                float end;
+
+                if (range == 0) {
+                    break;
+                }
+                if (window->startFrame < 0.0f) {
+                    start = lbl_805E12A0.startFrame;
+                } else {
+                    start = window->startFrame;
+                }
+                if (window->endFrame < 0.0f) {
+                    end = lbl_805E12A0.endFrame;
+                } else {
+                    end = window->endFrame;
+                }
+                if (range->currentFrame >= start && range->currentFrame <= end) {
+                    if (record->size != sizeof(ResourceWindowRecord) && destination != 0) {
+                        memcpy(destination, (char *)lbl_805F13C8 + sizeof(ResourceWindowRecord),
+                               record->size - sizeof(ResourceWindowRecord));
+                    }
+                    lbl_805F13B4 = lbl_805F13C8;
+                    found = 1;
+                    lbl_805F13C8 = (ResourceRecord *)((char *)lbl_805F13C8 + record->size);
+                    break;
+                }
+            } else if (eventId & 0x4000) {
+                const ResourceFrameRecord *frameRecord = (const ResourceFrameRecord *)record;
+                int hit;
+
+                if (range == 0) {
+                    break;
+                }
+                hit = 0;
+                if (fn_8000A980(range->speed) <= 0.0f) {
+                    if (stopped &&
+                        fn_8000A980(range->currentFrame - frameRecord->frame) < 0.0001f) {
+                        hit = 1;
+                    }
+                } else if (range->speed > 0.0f) {
+                    if (range->speed >= range->endFrame - range->startFrame) {
+                        if (range->startFrame <= frameRecord->frame &&
+                            range->endFrame >= frameRecord->frame) {
+                            hit = 1;
+                        }
+                    } else {
+                        float previous = range->currentFrame - range->speed;
+
+                        if (previous < range->startFrame) {
+                            if (range->startFrame <= frameRecord->frame &&
+                                range->currentFrame >= frameRecord->frame) {
+                                hit = 1;
+                            } else {
+                                float wrapped = range->endFrame - (range->startFrame - previous);
+
+                                if (wrapped < frameRecord->frame &&
+                                    range->endFrame >= frameRecord->frame) {
+                                    hit = 1;
+                                }
+                            }
+                        } else if (previous < frameRecord->frame &&
+                                   range->currentFrame >= frameRecord->frame) {
+                            hit = 1;
+                        }
+                    }
+                } else {
+                    if (range->speed <= range->startFrame - range->endFrame) {
+                        if (range->startFrame <= frameRecord->frame &&
+                            range->endFrame >= frameRecord->frame) {
+                            hit = 1;
+                        }
+                    } else {
+                        float previous = range->currentFrame - range->speed;
+
+                        if (previous > range->endFrame) {
+                            if (range->currentFrame <= frameRecord->frame &&
+                                range->endFrame >= frameRecord->frame) {
+                                hit = 1;
+                            } else {
+                                float wrapped = range->startFrame + (previous - range->endFrame);
+
+                                if (range->startFrame <= frameRecord->frame &&
+                                    wrapped > frameRecord->frame) {
+                                    hit = 1;
+                                }
+                            }
+                        } else if (range->currentFrame <= frameRecord->frame &&
+                                   previous > frameRecord->frame) {
+                            hit = 1;
+                        }
+                    }
+                }
+                if (hit) {
+                    if (record->size != sizeof(ResourceFrameRecord) && destination != 0) {
+                        memcpy(destination, (char *)lbl_805F13C8 + sizeof(ResourceFrameRecord),
+                               record->size - sizeof(ResourceFrameRecord));
+                    }
+                    lbl_805F13B4 = lbl_805F13C8;
+                    found = 1;
+                    lbl_805F13C8 = (ResourceRecord *)((char *)lbl_805F13C8 + record->size);
+                    break;
+                }
+            } else {
+                if (record->size != sizeof(ResourceRecord) && destination != 0) {
+                    memcpy(destination, (char *)lbl_805F13C8 + sizeof(ResourceRecord),
+                           record->size - sizeof(ResourceRecord));
+                }
+                lbl_805F13B4 = lbl_805F13C8;
+                found = 1;
+                lbl_805F13C8 = (ResourceRecord *)((char *)lbl_805F13C8 + record->size);
+                break;
+            }
+        }
+        lbl_805F13C8 = (ResourceRecord *)((char *)lbl_805F13C8 + record->size);
+        record = lbl_805F13C8;
+    }
+
+    if (!found) {
+        lbl_805F13C8 = 0;
+        ReleaseInstance(lbl_805F13B8);
+        lbl_805F13B8 = 0;
+    }
+    return found;
+}
+
 /* Returns the entry id of the data of an id's item (0 for an id without an item). */
 unsigned int fn_804123DC(unsigned short id) {
     ResourceData *data;
@@ -226,9 +560,9 @@ ResourceBlock *fn_804124DC(unsigned short id) {
     return currentBlock;
 }
 
-/* Stores the values at 0x10 (in out[0] and out[3]) and 0x12 (in out[1]) of an id's data as floats
- * and returns whether the id has data. */
-int fn_804125F4(float *out, unsigned short id) {
+/* Stores the values at 0x10 (as the start and current frames) and 0x12 (as the end frame) of an id's
+ * data in a range, leaving its speed, and returns whether the id has data. */
+int fn_804125F4(MotionRange *range, unsigned short id) {
     ResourceData *data;
     int found = 0;
 
@@ -236,8 +570,8 @@ int fn_804125F4(float *out, unsigned short id) {
     data = fn_80412920(id);
     if (data != 0) {
         found = 1;
-        out[0] = out[3] = data->unknown10;
-        out[1] = data->unknown12;
+        range->startFrame = range->currentFrame = data->unknown10;
+        range->endFrame = data->unknown12;
     }
     ReleaseInstance(id);
     return found;
@@ -508,6 +842,7 @@ unsigned short fn_80413058(ResourceGroup *group) {
 
     if (group->firstId != 0) {
         if (lbl_805F13B0 != 0) {
+            last = lbl_805F13B0;
             for (other = lbl_805F13B0; other != 0; other = other->next) {
                 last = other;
                 if (other->firstId > group->firstId &&
@@ -567,14 +902,14 @@ void fn_80413240(unsigned short id) {
  * copy that exists. The three parts of the item are read from ARAM into one block, each from a
  * 32-byte boundary. */
 void fn_80413318(unsigned short id) {
-    ResourceGroup *group;
+    ResourceGroup *group = lbl_805F13B0;
 
     if (id == 0) {
         return;
     }
-    for (group = lbl_805F13B0; group != 0; group = group->next) {
+    for (; group != 0; group = group->next) {
         if (group->firstId <= id && id < group->firstId + group->count) {
-            ResourceInstance *previous = 0;
+            ResourceInstance *previous;
             ResourceInstance *instance;
             ResourceSource *sources;
             ResourceSource *source;
@@ -592,6 +927,7 @@ void fn_80413318(unsigned short id) {
             }
             instance = group->instances;
             sources = (ResourceSource *)(group + 1);
+            previous = 0;
             for (; instance != 0; instance = instance->next) {
                 if (instance->id == id) {
                     instance->referenceCount++;
@@ -605,19 +941,26 @@ void fn_80413318(unsigned short id) {
             dataOffset = source->dataAddress % 32;
             nameSize = nameOffset + source->nameSize;
             dataSize = dataOffset + source->dataSize;
+            recordsOffset = 0;
             if (source->recordsAddress != 0) {
                 recordsOffset = source->recordsAddress % 32;
-            } else {
-                recordsOffset = 0;
             }
             recordsSize = source->recordsSize != 0 ? recordsOffset + source->recordsSize : 0;
-            nameSize = RoundUpTo32(nameSize);
-            dataSize = RoundUpTo32(dataSize);
-            recordsSize = RoundUpTo32(recordsSize);
+            /* Each size is rounded up to a multiple of 32 bytes, the unit of the ARAM transfers. An
+             * inline function returning the rounded size would keep it in a new register here. */
+            if (nameSize % 32 != 0) {
+                nameSize += 32 - nameSize % 32;
+            }
+            if (dataSize % 32 != 0) {
+                dataSize += 32 - dataSize % 32;
+            }
+            if (recordsSize % 32 != 0) {
+                recordsSize += 32 - recordsSize % 32;
+            }
 
             /* The record, up to 32 bytes to align the first part, then the parts. */
             instance =
-                fn_80411134(1, nameSize + dataSize + recordsSize + sizeof(ResourceInstance) + 32);
+                fn_80411134(1, sizeof(ResourceInstance) + 32 + nameSize + dataSize + recordsSize);
             if (instance == 0) {
                 return;
             }
@@ -687,12 +1030,18 @@ ResourceGroup *fn_80413538(ResourceGroup *group) {
         nameBase = RoundDownTo32(group->items->name);
         sources->nameSize = strlen(group->items->name) + 1;
         sources->nameAddress = group->items->name - nameBase;
-        nameBytes = RoundUpTo32(group->items->name + sources->nameSize - nameBase);
+        nameBytes = group->items->name + sources->nameSize - nameBase;
+        if (nameBytes % 32 != 0) {
+            nameBytes += 32 - nameBytes % 32;
+        }
 
         dataBase = RoundDownTo32((char *)group->items->data);
         sources->dataSize = group->items->data->size;
         sources->dataAddress = nameBytes + ((char *)group->items->data - dataBase);
-        dataBytes = RoundUpTo32((char *)group->items->data + sources->dataSize - dataBase);
+        dataBytes = (char *)group->items->data + sources->dataSize - dataBase;
+        if (dataBytes % 32 != 0) {
+            dataBytes += 32 - dataBytes % 32;
+        }
 
         converted->aramAddress = fn_80421368(nameBytes + dataBytes);
         if (converted->aramAddress == 0) {
@@ -738,7 +1087,10 @@ ResourceGroup *fn_80413538(ResourceGroup *group) {
             }
         }
 
-        bytes = RoundUpTo32(end - base);
+        bytes = end - base;
+        if (bytes % 32 != 0) {
+            bytes += 32 - bytes % 32;
+        }
         converted->aramAddress = fn_80421368(bytes);
         if (converted->aramAddress == 0) {
             fn_804110FC(converted);

@@ -9,8 +9,9 @@
  * names nothing. */
 
 /* A record in the chain that an item holds; the chain ends with a record whose size is 0xFFFF. The
- * size is the distance to the next record. fn_80412D7C reverses the bytes of the chain of a group
- * written in the opposite byte order. */
+ * size is the distance to the next record. The flags are the record's event id as fn_80411818
+ * hands it back, kind bits 0x8000 and 0x4000 included (inferred). fn_80412D7C reverses the bytes
+ * of the chain of a group written in the opposite byte order. */
 typedef struct ResourceRecord {
     /* 0x00 */ unsigned short flags;
     /* 0x02 */ unsigned short size;
@@ -95,10 +96,12 @@ CHECK_SIZEOF(ResourceGroup, 0x1C);
 extern "C" {
 #endif
 
+struct MotionRange;
+
 void fn_80411714(void);
 unsigned int fn_804123DC(unsigned short id);
 ResourceBlock *fn_804124DC(unsigned short id);
-int fn_804125F4(float *out, unsigned short id);
+int fn_804125F4(struct MotionRange *range, unsigned short id);
 unsigned short fn_80412738(const char *name);
 const char *fn_80412820(unsigned short id);
 ResourceData *fn_80412920(unsigned short id);
@@ -114,7 +117,6 @@ int fn_804139B4(ResourceData *data);
 
 /* The enumerator returns an event ID and a pointer into the encoded event record. The query
  * copies the payload for a requested ID into destination (behaviour inferred). */
-struct MotionRange;
 int fn_80411818(unsigned short motionId, unsigned short *eventId, const struct MotionRange *range,
                 void **payload, int stopped);
 int fn_80411DEC(unsigned short motionId, unsigned short eventId, const struct MotionRange *range,
