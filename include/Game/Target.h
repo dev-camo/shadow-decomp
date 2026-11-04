@@ -12,7 +12,8 @@ class CharInfo;
 /* Target (class name from the RTTI record at 0x805E8D78, with no bases): the 0x38-byte object that
  * fn_801E72DC creates. Gadgets keep it in a shared_ptr and move it with their position. Its
  * constructors (0x801E7490, 0x801E752C) set the vtable at 0x8053DBA8 and initialise the position,
- * the character pointer and the flag word; only those members are mapped. */
+ * the floats at 0x14-0x24, the character pointer and the flag word; only the position, the float
+ * at 0x20, the character pointer and the flag word are mapped. */
 class Target {
   public:
     /* The vtable slots in their original order: 0x801E73EC, then the destructor 0x801E7434.
@@ -33,16 +34,26 @@ class Target {
     void ClearFlags(u32 mask) {
         m_flags &= ~mask;
     }
+    /* Matching workaround: the same kind of stand-in for the float at 0x20, which SuctionPillar's
+     * constructor and the code at 0x80104E20 store through an out-of-line operator->; a direct
+     * store to the member expands the operator in place and changes SuctionPillar's constructor.
+     * Revisit with the accessors above. Name inferred from what it does. */
+    void SetField20(float value) {
+        field_0x20 = value;
+    }
 
     /* 0x04 */ u8 field_0x4[0x8 - 0x4];          /* Unrecovered. */
     /* 0x08 */ Fn8040Vector3 m_position;         /* fn_800CCE38 sets it (name inferred) */
-    /* 0x14 */ u8 field_0x14[0x28 - 0x14];       /* Unrecovered (initialised floats). */
+    /* 0x14 */ u8 field_0x14[0x20 - 0x14];       /* Unrecovered (initialised floats). */
+    /* 0x20 */ float field_0x20;                 /* -1.0f from the constructors (meaning unknown) */
+    /* 0x24 */ u8 field_0x24[0x28 - 0x24];       /* Unrecovered (an initialised float). */
     /* 0x28 */ boost::weak_ptr<CharInfo> m_info; /* Set by 0x801E7490 (name inferred). */
     /* 0x30 */ u32 m_flags;                      /* Bit flags (name inferred). */
     /* 0x34 */ u8 field_0x34[0x38 - 0x34];       /* Unrecovered. */
 };
 CHECK_SIZEOF(Target, 0x38);
 CHECK_OFFSETOF(Target, m_position, 0x8);
+CHECK_OFFSETOF(Target, field_0x20, 0x20);
 CHECK_OFFSETOF(Target, m_info, 0x28);
 CHECK_OFFSETOF(Target, m_flags, 0x30);
 

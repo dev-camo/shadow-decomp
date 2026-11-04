@@ -6,7 +6,8 @@
 #include "boost/weak_ptr.hpp"
 
 /* The object that fn_80169BB0 and fn_8034DD24 create and return a weak pointer to (placeholder
- * name; the original class is unknown). Its callers discard the result. */
+ * name; the original class is unknown). Most callers discard the result; SuctionPillar keeps the
+ * one from fn_80169B1C. */
 class UnkObject_80169BB0;
 
 extern "C" {
@@ -27,6 +28,14 @@ boost::weak_ptr<UnkObject_80169BB0> fn_8034DD24(int kind, float arg1, const Fn80
  * its caller; GravityChangeZone passes 5 and -2 when a character touches its zone and discards the
  * result. */
 boost::weak_ptr<UnkObject_80169BB0> fn_8034DF48(int kind, int arg1);
+/* Creates an object of the given kind at position: forwards to fn_8034DD9C with -2 as its last
+ * argument (behaviour inferred from the 0x30-byte wrapper). SuctionPillar keeps the result. */
+boost::weak_ptr<UnkObject_80169BB0> fn_80169B1C(int kind, const Fn8040Vector3 *position);
+/* Unless the object has expired, passes a value derived from it (through fn_8034DC44 and
+ * fn_8034AA14) to fn_8034A418 together with fn_80177F38's result; then empties the weak pointer
+ * (fn_8034DBD8) (behaviour inferred; purpose unknown). SuctionPillar calls it when it stops rising
+ * and from its destructor. */
+void fn_8034DB60(boost::weak_ptr<UnkObject_80169BB0> &object);
 }
 
 #endif
