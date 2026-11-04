@@ -386,6 +386,15 @@ Game/GravitySignBoard.cpp:
 	.sdata      start:0x805EA500 end:0x805EA520
 	.sdata2     start:0x805F7788 end:0x805F77A8
 
+Game/ElecBarrier.cpp:
+	.text       start:0x802637CC end:0x80263EB4
+	.ctors      start:0x804A9F04 end:0x804A9F08
+	.rodata     start:0x804F5960 end:0x804F5998
+	.data       start:0x8054BEF8 end:0x8054BFB0
+	.sdata      start:0x805EA6D8 end:0x805EA6F8
+	.sbss       start:0x805F0090 end:0x805F00A0
+	.sdata2     start:0x805F7BB0 end:0x805F7BD0
+
 Game/ElecRollHexa.cpp:
 	.text       start:0x802670E0 end:0x80267D34
 	.rodata     start:0x804F5E18 end:0x804F5F30
