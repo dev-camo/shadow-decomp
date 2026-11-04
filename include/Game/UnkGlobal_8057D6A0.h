@@ -24,8 +24,8 @@ struct UnkGlobal_8057D6A0 {
     /* CityChaosEmerald sets it to 1 in its collision callback (meaning unknown). */
     /* 0xC1 */ u8 field_0xC1;
     /* 0xC2 */ u8 field_0xC2[0x125 - 0xC2];
-    /* The Researcher gadget passes 1 to fn_800740E4 when it is set, otherwise 2 (meaning
-     * unknown). */
+    /* The Researcher and ElecAccessPanel gadgets pass 1 to fn_800740E4 when it is set, otherwise 2
+     * (meaning unknown). */
     /* 0x125 */ u8 field_0x125;
     /* 0x126 */ u8 field_0x126[0x150 - 0x126];
 };

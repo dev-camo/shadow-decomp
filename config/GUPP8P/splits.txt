@@ -311,6 +311,15 @@ Game/GiantLantern.cpp:
 	.sbss       start:0x805F0F78 end:0x805F0F90
 	.sdata2     start:0x805F8308 end:0x805F8338
 
+Game/ElecAccessPanel.cpp:
+	.text       start:0x80248D10 end:0x80249C30
+	.ctors      start:0x804AAF40 end:0x804AAF44
+	.rodata     start:0x804F4EE0 end:0x804F4FE8
+	.data       start:0x80549C60 end:0x80549CE8
+	.sdata      start:0x805EB250 end:0x805EB288
+	.sbss       start:0x805F1028 end:0x805F1040
+	.sdata2     start:0x805F8578 end:0x805F85A0
+
 Game/DarkSpinEntrance.cpp:
 	.text       start:0x80258BE0 end:0x802590CC
 	.ctors      start:0x804AAF58 end:0x804AAF5C

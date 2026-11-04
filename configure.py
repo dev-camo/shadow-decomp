@@ -1799,6 +1799,17 @@ config.libs = [
             # instead of 20 (the original copies the effect direction from a temporary with the
             # out-of-line vector copy fn_800091EC).
             Object(NonMatching, "Game/GiantLantern.cpp", cflags=cflags_game_cpp),
+            # 34 of 36 functions have identical words and relocations, and the data matches once
+            # the linker-discarded weak and local copies are set aside. The constructor is 185
+            # words in the original and 184 here: in the branch for a stored state of 3, the
+            # original loads the com id into r30 before the fn_800CB69C call and zero-extends it
+            # with clrlwi for fn_801690D0, where this build loads it into r4 after the call (a
+            # local copy of m_comId moves the load but leaves mr for the clrlwi). The
+            # constructor's call of the function1 destructor and the bound call operator's call of
+            # boost's list1 operator[] also differ in the callee's symbol only: the copies at
+            # 0x800D0CEC and 0x800D05D0 in the original, and those that symbols.txt names at
+            # 0x800F5B08 and 0x800F5238 here (USA addresses).
+            Object(NonMatching, "Game/ElecAccessPanel.cpp", cflags=cflags_game_cpp),
             # Interpolation scheduling, the index-table extent and shared literal ownership differ.
             Object(
                 NonMatching,

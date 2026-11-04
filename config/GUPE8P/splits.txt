@@ -512,6 +512,15 @@ Game/GravityChangeZone.cpp:
 	.sbss       start:0x805EFF70 end:0x805EFF80
 	.sdata2     start:0x805F74C8 end:0x805F74F0
 
+Game/ElecAccessPanel.cpp:
+	.text       start:0x8024898C end:0x802498AC
+	.ctors      start:0x804A9EE0 end:0x804A9EE4
+	.rodata     start:0x804F3E10 end:0x804F3F18
+	.data       start:0x80548B58 end:0x80548BE0
+	.sdata      start:0x805EA1A0 end:0x805EA1D8
+	.sbss       start:0x805EFF80 end:0x805EFF98
+	.sdata2     start:0x805F74F0 end:0x805F7518
+
 Game/DarkSpinEntrance.cpp:
 	.text       start:0x8025885C end:0x80258D48
 	.ctors      start:0x804A9EF8 end:0x804A9EFC
