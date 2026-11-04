@@ -1732,6 +1732,13 @@ config.libs = [
             Object(Matching, "Game/PowerDeviceNaked.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/MonsterControl.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BombingWall.cpp", cflags=cflags_game_cpp),
+            # 41 of the 42 functions have identical instructions and the data matches once the
+            # linker-discarded weak copies are set aside. The constructor differs in 9 words, all
+            # stack offsets: the original keeps the second object's position in the 12-byte slot
+            # below the command handler's two temporaries, where a temporary made after them goes
+            # (a by-value vector sum reproduces it, see the note in the source); the named local
+            # here takes the slot above them.
+            Object(NonMatching, "Game/Researcher.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/StoneStatue.cpp", cflags=cflags_game_cpp),
             # The data (apart from the unreferenced weak and local copies that the linker strips)
             # and 27 of the 29 functions match. The other two have identical words and differ only

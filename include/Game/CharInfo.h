@@ -44,6 +44,16 @@ class CharInfo {
     virtual bool fn_80078B4C();
     virtual bool fn_80073634();
 
+    /* Stores value in the word at 0x5C (name inferred).
+     * Matching workaround: this inline member stands for an unknown original accessor. Called
+     * through a smart pointer, an inline member leaves the smart pointer's operator-> out of line,
+     * as the character info factories at 0x8015CB88 and 0x8015CD90 and the Researcher's factory do
+     * where they store this word; a plain member store expands the operator in place. Revisit when
+     * the original accessor is identified. */
+    void SetField0x5C(s32 value) {
+        field_0x5C = value;
+    }
+
     /* 0x3C */ u8 field_0x3C[0x50 - 0x3C];
     /* 0x50 */ s32 field_0x50; /* the constructor's arg0 */
     /* 0x54 */ s32 field_0x54; /* set by fn_8007A4CC; PlayerBase compares it with 0 as signed */

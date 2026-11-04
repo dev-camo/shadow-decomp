@@ -12,7 +12,13 @@ class CharCommandUnit;
  * info of a gadget. */
 class GadgetCharInfo : public CharInfo {
   public:
+    /* Passes arg0 to the CharInfo constructor, default-constructs m_commandUnit, then stores 2 at
+     * 0x30 and 4 at 0x5C (0x8015D1C8). */
+    GadgetCharInfo(int arg0);
     virtual ~GadgetCharInfo();
+    /* The override at 0x8015D0E0: passes the command on (fn_801D9C0C) when there is a command unit,
+     * otherwise deletes it (behaviour inferred from its body). */
+    virtual void fn_801DC980(CharCommand *command);
 
     /* 0x64 */ boost::shared_ptr<CharCommandUnit> m_commandUnit; /* created by fn_8015CF7C */
 };
