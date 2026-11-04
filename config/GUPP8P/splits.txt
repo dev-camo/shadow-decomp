@@ -223,6 +223,15 @@ Game/ElecSmallCube.cpp:
 	.sbss       start:0x805F0DE8 end:0x805F0DF8
 	.sdata2     start:0x805F7CF0 end:0x805F7D28
 
+Game/Meteor.cpp:
+	.text       start:0x8021CCDC end:0x8021E13C
+	.ctors      start:0x804AAED0 end:0x804AAED4
+	.rodata     start:0x804F1678 end:0x804F1838
+	.data       start:0x80546B18 end:0x80546D80
+	.sdata      start:0x805EA958 end:0x805EA9B0
+	.sbss       start:0x805F0DF8 end:0x805F0E18
+	.sdata2     start:0x805F7D80 end:0x805F7DD0
+
 Game/ArkCannon.cpp:
 	.text       start:0x80226D9C end:0x80228488
 	.ctors      start:0x804AAEF4 end:0x804AAEF8

@@ -1635,6 +1635,17 @@ config.libs = [
             # the original's third saved register and larger frame (0x80 instead of 0x70) move the
             # stack offsets of the other vectors.
             Object(NonMatching, "Game/ElecFan.cpp", cflags=cflags_game_cpp),
+            # 33 of 35 functions and all data match once the weak copies the linker discards are
+            # removed. UpdateBody differs in 27 words. The original has three intermediate vectors
+            # (the difference in state 0, the step in state 1 and the difference in state 2) at
+            # sp+0x6C, sp+0x60 and sp+0x48, where this source places them at sp+0xA8, sp+0x90 and
+            # sp+0x78, and the other vectors of states 0 and 2 move with them (one hypothesis, not
+            # established: the original computes these three in compiler temporaries rather than
+            # named locals). It also sets up the two arguments of the copy of the part's
+            # translation in the other order. __sinit_Meteor_cpp differs
+            # in 2 words: the original loads the saved link register before the store of the
+            # startup float.
+            Object(NonMatching, "Game/Meteor.cpp", cflags=cflags_game_cpp),
             # Constructor temporary cleanup, matrix calls, and literal/weak metadata layout differ.
             Object(NonMatching, "Game/ElecRollHexa.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ArkCannon.cpp", cflags=cflags_game_cpp),
