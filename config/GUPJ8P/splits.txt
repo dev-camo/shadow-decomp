@@ -62,6 +62,7 @@ Game/Task.cpp:
 	.text       start:0x8004EF18 end:0x8004F0F0
 	.data       start:0x8051DCE8 end:0x8051DCF8
 	.sdata      start:0x805E3F98 end:0x805E3FA8
+	.sbss       start:0x805EE7D8 end:0x805EE7DC
 	.sdata2     start:0x805F2318 end:0x805F2320
 
 Game/fn_8006127C.cpp:

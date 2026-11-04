@@ -1,7 +1,14 @@
 /* Task is the class name from RTTI; the original source filename is unknown. */
-#include <Game/Task.h>
+#include "Game/Task.h"
 
-extern u32 lbl_Task_805EE1D8;
+extern "C" {
+/* Japan/PAL: enters critical region 1 and waits for the guard byte. */
+void fn_80050C40(void);
+/* Japan/PAL: clears the guard byte and leaves critical region 1. */
+void fn_80050BF8(void);
+}
+
+u32 lbl_Task_805EE1D8;
 const char *lbl_805E3978 = "Task";
 
 Task::Task(Task *parent) {

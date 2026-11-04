@@ -8,6 +8,7 @@
 struct UnkTick {
     UnkTick() : ticks(0) {}
     UnkTick(u32 count) : ticks(count) {}
+    /* Out of line at USA 0x8004F098; constructor identity is inferred. */
     UnkTick(u64 count);
 
     /* 0x00 */ u64 ticks;
