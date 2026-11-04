@@ -3188,10 +3188,18 @@ config.libs = [
             ),
             # NonMatching: the seven little-endian 32-bit readers (SFH_AnlyElemSmpHz,
             # SFH_AnlyMaxFrmNum, SFH_AnlyMaxPlyLenVid, SFH_AnlyMaxPlyLenAud, SFH_AnlyPackSiz,
-            # SFH_AnlyHdrSiz and SFH_AnlyByteRate) store the swapped word with stwbrx; the original
-            # has a rlwinm/rlwimi chain and a plain stw (87/39/44 words against 83/35/40: in each,
-            # 3 aligned words differ and the original has 4 more, 7 in all); the other functions
-            # match.
+            # SFH_AnlyHdrSiz and SFH_AnlyByteRate) store the swapped word with stwbrx where the
+            # original has a rlwinm/rlwimi chain and a plain stw: the original is 87/39/44 words
+            # where ours is 83/35/40. Compared in order, each differs in 6 words: 2 replaced (the
+            # load's destination register and the first rlwinm against stwbrx) and 4 original-only
+            # (the three rlwimi and the stw). The other 29 functions match.
+            # Why: after register allocation MWCC turns a `stw` at offset 0 into `stwbrx` when the
+            # stored register is built in the same basic block by the four-lane rlwinm/rlwimi swap
+            # of one source register that is not redefined before the store. Why the original's
+            # store was not folded is not established; one possibility is that the store was in a
+            # different block when the fold ran. The original's loaded word is also in r6 where
+            # ours takes r5 (r4 in SmpHz), the register of the header pointer (of the stream id in
+            # SmpHz), so that register may have stayed live past the load in the original.
             Object(
                 NonMatching,
                 "CRI/sfh_main.c",

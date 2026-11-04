@@ -513,7 +513,8 @@ Bool SFH_AnlyElemCodecVid(SFH sfh, Uint8 id, Sint32 *val) {
 
 /* Audio element: sampling rate (little-endian 32-bit). */
 /* The original stores the swapped word with `stw` after a `rlwinm`/`rlwimi` chain; the compiler
- * folds this swap and store into `stwbrx`, and no natural form found keeps the `stw`. */
+ * folds this swap and store into `stwbrx` (the note on this unit in configure.py gives the fold
+ * condition). */
 Bool SFH_AnlyElemSmpHz(SFH sfh, Uint8 id, Sint32 *val) {
     SFH_ELEM *elem;
 
