@@ -171,4 +171,12 @@ extern "C" RpAtomic *fn_80164064(RpAtomic *atomic, void *data);
 extern "C" bool fn_80169EF0(Fn8040Matrix34 *matrix, boost::shared_ptr<GadgetModelInfo> model,
                             int arg2, int arg3);
 
+extern "C" {
+/* Model effect helpers (behaviour inferred): the Coaster gadget fades its model in with
+ * fn_8015FDD8 and ends the fade with fn_8015FD10, and the FootingBreak gadget passes the value of
+ * a SetTransparentCommand to fn_8015FDD8. */
+void fn_8015FD10(GadgetModelInfo *model);
+void fn_8015FDD8(GadgetModelInfo *model, float fraction);
+void fn_8016082C(GadgetModelInfo *model, int arg1);
+}
 #endif
