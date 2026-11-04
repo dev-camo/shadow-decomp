@@ -19,7 +19,8 @@ class CharCommandUnit {
     virtual ~CharCommandUnit();
 
     /* The command manager's dispatch loop (fn_801DA204) calls it with each queued command; the
-     * Coaster and FootingBreak gadgets bind their command handlers to it (name inferred). */
+     * Coaster, FootingBreak and BombServer gadgets bind their command handlers to it (name
+     * inferred). */
     /* 0x04 */ CharCommandHandler m_handler;
 };
 CHECK_SIZEOF(CharCommandUnit, 0x10);

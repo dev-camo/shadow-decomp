@@ -1800,6 +1800,7 @@ config.libs = [
             Object(Matching, "Game/PowerDeviceNaked.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/MonsterControl.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BombingWall.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/BombServer.cpp", cflags=cflags_game_cpp),
             # 41 of the 42 functions have identical instructions and the data matches once the
             # linker-discarded weak copies are set aside. The constructor differs in 9 words, all
             # stack offsets: the original keeps the second object's position in the 12-byte slot

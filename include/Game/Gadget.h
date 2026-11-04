@@ -65,6 +65,10 @@ void fn_800C9EC4(UnkGadgetOwner_800C9CD0 *owner, u32 *flags);
 /* Sets bits in the word at 0x18 of the record that owner points to (behaviour inferred from its
  * body). MagmaGuard sets bit 0x400000 when it is destroyed. */
 void fn_800C9EB0(UnkGadgetOwner_800C9CD0 *owner, u32 bits);
+/* Returns 100 times one more than the byte at 0x23 of the record that owner points to (behaviour
+ * inferred from its body; Coaster compares a distance with it, BombServer passes it to the items
+ * it spawns). */
+float fn_800C9938(UnkGadgetOwner_800C9CD0 *owner);
 }
 
 /* Gadget (class name from RTTI): a stage object task registered with an owner object. */

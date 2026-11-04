@@ -107,10 +107,8 @@ void fn_801CE9F4(UnkFollowerManager_80099954 *manager, boost::shared_ptr<UnkPath
 /* Registers the follower with the manager (the numbers are not understood). */
 void fn_801CEA54(UnkFollowerManager_80099954 *manager, boost::shared_ptr<UnkPathFollower_800096F4>,
                  int arg2, const UnkFollowerParams_8000B2C0 &params, int arg4, int arg5);
-/* Owner queries (behaviour inferred): the owner's flag word, its range and a call that finishes
- * it. */
+/* Owner query (behaviour inferred): the owner's flag word. */
 void fn_800C9E70(UnkGadgetOwner_800C9CD0 *owner, u32 *flags);
-float fn_800C9938(UnkGadgetOwner_800C9CD0 *owner);
 /* Creates a path follower (behaviour inferred; the numbers are not understood). */
 boost::shared_ptr<UnkPathFollower_800096F4> fn_80009704(int arg0, int arg1);
 /* Sets the start and end of the path that the follower moves along, and its up direction. */
