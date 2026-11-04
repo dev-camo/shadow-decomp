@@ -27,7 +27,9 @@ class AttackCallbackParam {
     /* 0x24 */ u8 field_0x24[0x34 - 0x24];
     /* The stick stores field_0x18 minus its owner's position here (inferred). */
     /* 0x34 */ Fn8040Vector3 field_0x34;
-    /* 0x40 */ u8 field_0x40[0x50 - 0x40];
+    /* 0x40 */ u8 field_0x40[0x4C - 0x40];
+    /* Meteor stores its movement speed here (inferred). */
+    /* 0x4C */ float field_0x4C;
     /* 0x50 */ float field_0x50; /* ThreatObj subtracts it from its health */
     /* Bit 0 makes the stick count a hit; ThreatObj stores 1, 3 or 8, the Chao 1 or 8,
      * FallBuilding 1 or 5. */

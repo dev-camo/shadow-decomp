@@ -384,6 +384,10 @@ inline Fn8040Matrix34::Fn8040Matrix34(const Fn8040Matrix34 &other) {
 extern "C" bool fn_8000A950(float value);
 /* True when |value| < 0.0001 (behaviour inferred). */
 extern "C" bool fn_8000B044(float value);
+/* Returns whichever of value, low and high lies in between (a clamp; behaviour inferred). The
+ * parameters are references: Meteor's calls with literal bounds keep each bound in its own .sdata
+ * slot, as the original does. */
+extern "C" const float &fn_80070460(const float &value, const float &low, const float &high);
 /* Whether a - b (from fn_8000AD64) is close to zero: its squared length is below the float at
  * 0x805F1730 (1e-4). */
 extern "C" bool fn_8000AD08(const Fn8040Vector3 *a, const Fn8040Vector3 *b);

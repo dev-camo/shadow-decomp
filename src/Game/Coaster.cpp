@@ -89,9 +89,6 @@ extern "C" {
 /* Float helpers (descriptions inferred from the code that calls them). */
 /* Moves current towards target by at most maxStep (behaviour inferred). */
 float fn_8012773C(float target, float current, float maxStep);
-/* Returns the address of whichever of value, low and high lies in between (a clamp; behaviour
- * inferred). */
-const float *fn_80070460(const float *value, const float *low, const float *high);
 
 /* Path control functions (behaviour inferred). */
 /* The position where the path starts. */
@@ -331,7 +328,7 @@ void Coaster::UpdateBody(float dt) {
         high = DegreesToRadians(90.0f);
         low = DegreesToRadians(-90.0f);
 
-        m_roll = *fn_80070460(&m_roll, &low, &high);
+        m_roll = fn_80070460(m_roll, low, high);
     }
 
     switch (m_state) {
