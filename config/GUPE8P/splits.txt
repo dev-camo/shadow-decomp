@@ -529,6 +529,14 @@ Game/BDTrue.cpp:
 	.sdata      start:0x805ECDB8 end:0x805ECDD8
 	.sdata2     start:0x805F9750 end:0x805F9770
 
+Game/BombingWall.cpp:
+	.text       start:0x80314410 end:0x80315198
+	.rodata     start:0x8050C3D8 end:0x8050C4F0
+	.data       start:0x8055BE70 end:0x8055BF58
+	.sdata      start:0x805ED098 end:0x805ED0C0
+	.sbss       start:0x805F0A38 end:0x805F0A48
+	.sdata2     start:0x805F99C8 end:0x805F99E8
+
 Game/FallRoad.cpp:
 	.text       start:0x803296D8 end:0x80329ED4
 	.rodata     start:0x8050D9A8 end:0x8050D9D0

@@ -55,8 +55,8 @@ void fn_800CCE38(Target *object, const Fn8040Vector3 *position);
 /* Hands the shared pointer on to fn_8008A1B0 (purpose unknown; CircusBall calls it from its
  * destructor). */
 void fn_801E7108(boost::shared_ptr<Target> &object);
-/* Creates an object for the character info (the number is not understood; Coaster passes 0x2000
- * and ArkCannon 0xA400 and 0x8800). */
+/* Creates an object for the character info (the number is not understood; Coaster passes 0x2000,
+ * ArkCannon 0xA400 and 0x8800, and BombingWall 0xA000). */
 boost::shared_ptr<Target> fn_801E7128(boost::weak_ptr<CharInfo> info, int arg1);
 }
 
