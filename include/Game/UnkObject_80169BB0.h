@@ -36,6 +36,11 @@ boost::weak_ptr<UnkObject_80169BB0> fn_80169B1C(int kind, const Fn8040Vector3 *p
  * (fn_8034DBD8) (behaviour inferred; purpose unknown). SuctionPillar calls it when it stops rising
  * and from its destructor. */
 void fn_8034DB60(boost::weak_ptr<UnkObject_80169BB0> &object);
+/* Creates an object of the given kind at position: forwards to fn_8034DD24 with -2 as its last
+ * argument (behaviour inferred from the 0x30-byte wrapper). MagmaGuard passes 7 and 2.0 at its
+ * character info's position when its health is used up and discards the result. */
+boost::weak_ptr<UnkObject_80169BB0> fn_80169AEC(int kind, float arg1,
+                                                const Fn8040Vector3 *position);
 }
 
 #endif

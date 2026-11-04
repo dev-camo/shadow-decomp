@@ -1747,6 +1747,7 @@ config.libs = [
             # whole-object comparison once the linker-discarded weak and local copies are removed.
             Object(NonMatching, "Game/ElecFireWall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecKyuu.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/MagmaGuard.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),
             # UpdateBody loads the startup float after the store to the offset (6 of 91 words).
             Object(NonMatching, "Game/CloseWall.cpp", cflags=cflags_game_cpp),
