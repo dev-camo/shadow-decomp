@@ -5,10 +5,8 @@
 #include "Game/fn_8040_vector_types.h"
 #include "boost/function.hpp"
 #include <map>
-#include <utility>
+#include "Game/Unk801A4430Event.h"
 #include "layout_check.h"
-
-typedef std::pair<unsigned short, void *> Unk801A4430Event;
 
 /* Original name unknown; the wrapper invokes its callback only when nonempty. */
 class Unk801A4430Callback {

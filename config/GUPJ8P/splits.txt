@@ -169,6 +169,13 @@ Game/fn_80162804.cpp:
 Game/fn_80165EFC.cpp:
 	.text       start:0x801662A4 end:0x80166324
 
+Game/BkWingSmall.cpp:
+	.text       start:0x801915F0 end:0x80192068
+	.rodata     start:0x804C9AF8 end:0x804C9E20
+	.data       start:0x80533EC8 end:0x80534FA8
+	.sdata      start:0x805E7F48 end:0x805E8050
+	.sdata2     start:0x805F5990 end:0x805F59D8
+
 Game/fn_801A1FA0.cpp:
 	.text       start:0x801A2320 end:0x801A392C
 	.rodata     start:0x804CC7C0 end:0x804CC870

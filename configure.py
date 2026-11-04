@@ -1699,6 +1699,10 @@ config.libs = [
             # load and multiply-add use f1 and f2 the other way round. Opcodes, relocations and
             # load/store counts are identical.
             Object(NonMatching, "Game/FallRoad.cpp", cflags=cflags_game_cpp),
+            # All 60 functions have identical instructions and the data bytes match, but the 0.0f
+            # and 120.0f literals are pooled in the opposite order, and the vtable relocations
+            # name functions of other units whose symbols still have address names.
+            Object(NonMatching, "Game/BkWingSmall.cpp", cflags=cflags_game_cpp),
             # First part of a larger original object. The following EggFleet/EggCannon code,
             # including ~EggFleet, is not reconstructed, so checked_delete<EggFleet> is inlined
             # here and the shared metadata remains in the original data.
