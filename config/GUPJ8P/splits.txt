@@ -241,6 +241,15 @@ Game/ArkCannon.cpp:
 	.sbss       start:0x805F0408 end:0x805F0420
 	.sdata2     start:0x805F74F0 end:0x805F7540
 
+Game/CloseWall.cpp:
+	.text       start:0x80228D68 end:0x80229A98
+	.ctors      start:0x804AA4D8 end:0x804AA4DC
+	.rodata     start:0x804F22C8 end:0x804F2418
+	.data       start:0x80546E90 end:0x80546FD0
+	.sdata      start:0x805EA158 end:0x805EA190
+	.sbss       start:0x805F0420 end:0x805F0438
+	.sdata2     start:0x805F75C0 end:0x805F75F8
+
 Game/ElecKyuu.cpp:
 	.text       start:0x802308CC end:0x80231328
 	.rodata     start:0x804F2B20 end:0x804F2C00
