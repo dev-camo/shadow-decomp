@@ -1,5 +1,5 @@
 /* Access and lifecycle of the gravity direction index. */
-#include <Game/UnkGravity_80293928.h>
+#include "Game/UnkGravity_80293928.h"
 #include "layout_check.h"
 
 class UnkGravityState_805F0340 {
