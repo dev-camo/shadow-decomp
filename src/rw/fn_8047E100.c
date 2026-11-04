@@ -425,66 +425,76 @@ RwMatrix *fn_8047EFC8(RwMatrix *matrix, const RwV3d *axis, RwReal angle, RwInt32
     return matrix;
 }
 
+/* Inverts an orthonormal matrix (name inferred): the transpose of its rotation, and the position
+ * rotated back and negated */
+static inline RwMatrix *MatrixInvertOrthoNormalized(RwMatrix *dst, const RwMatrix *matrix) {
+    dst->right.x = matrix->right.x;
+    dst->right.y = matrix->up.x;
+    dst->right.z = matrix->at.x;
+    dst->up.x = matrix->right.y;
+    dst->up.y = matrix->up.y;
+    dst->up.z = matrix->at.y;
+    dst->at.x = matrix->right.z;
+    dst->at.y = matrix->up.z;
+    dst->at.z = matrix->at.z;
+    dst->pos.x = -(matrix->pos.x * matrix->right.x + matrix->pos.y * matrix->right.y +
+                   matrix->pos.z * matrix->right.z);
+    dst->pos.y = -(matrix->pos.x * matrix->up.x + matrix->pos.y * matrix->up.y +
+                   matrix->pos.z * matrix->up.z);
+    dst->pos.z = -(matrix->pos.x * matrix->at.x + matrix->pos.y * matrix->at.y +
+                   matrix->pos.z * matrix->at.z);
+    dst->flags = rwMATRIXTYPEORTHONORMAL;
+    return dst;
+}
+
+/* Inverts any matrix (name inferred): the adjugate over the determinant (the adjugate itself when
+ * the determinant is +0.0, tested on its bits), and the position transformed by it and negated */
+static inline RwMatrix *MatrixInvertGeneric(RwMatrix *dst, const RwMatrix *matrix) {
+    RwSplitBits determinant;
+    RwReal recipDeterminant;
+
+    dst->right.x = matrix->up.y * matrix->at.z - matrix->up.z * matrix->at.y;
+    dst->right.y = -(matrix->right.y * matrix->at.z - matrix->right.z * matrix->at.y);
+    dst->right.z = matrix->right.y * matrix->up.z - matrix->right.z * matrix->up.y;
+    determinant.nReal =
+        dst->right.x * matrix->right.x + dst->right.y * matrix->up.x + dst->right.z * matrix->at.x;
+    if (determinant.nInt != 0) {
+        recipDeterminant = 1.0f / determinant.nReal;
+    } else {
+        recipDeterminant = 1.0f;
+    }
+    dst->right.x *= recipDeterminant;
+    dst->right.y *= recipDeterminant;
+    dst->right.z *= recipDeterminant;
+    dst->up.x = recipDeterminant * -(matrix->up.x * matrix->at.z - matrix->up.z * matrix->at.x);
+    dst->up.y =
+        recipDeterminant * (matrix->right.x * matrix->at.z - matrix->right.z * matrix->at.x);
+    dst->up.z =
+        recipDeterminant * -(matrix->right.x * matrix->up.z - matrix->right.z * matrix->up.x);
+    dst->at.x = recipDeterminant * (matrix->up.x * matrix->at.y - matrix->up.y * matrix->at.x);
+    dst->at.y =
+        recipDeterminant * -(matrix->right.x * matrix->at.y - matrix->right.y * matrix->at.x);
+    dst->at.z =
+        recipDeterminant * (matrix->right.x * matrix->up.y - matrix->right.y * matrix->up.x);
+    dst->pos.x =
+        -(matrix->pos.x * dst->right.x + matrix->pos.y * dst->up.x + matrix->pos.z * dst->at.x);
+    dst->pos.y =
+        -(matrix->pos.x * dst->right.y + matrix->pos.y * dst->up.y + matrix->pos.z * dst->at.y);
+    dst->pos.z =
+        -(matrix->pos.x * dst->right.z + matrix->pos.y * dst->up.z + matrix->pos.z * dst->at.z);
+    dst->flags = 0;
+    return dst;
+}
+
 /* Inverts a matrix: a copy of the identity, the transpose of an orthonormal matrix, or the
  * adjugate over the determinant otherwise */
 RwMatrix *fn_8047F0B0(RwMatrix *dst, const RwMatrix *matrix) {
     if (matrix->flags & (RWMATRIXGLOBAL(matrixOptimizations) & rwMATRIXINTERNALIDENTITY)) {
         *dst = *matrix;
-        return dst;
-    }
-    if ((matrix->flags & rwMATRIXTYPEORTHONORMAL) == rwMATRIXTYPEORTHONORMAL) {
-        dst->right.x = matrix->right.x;
-        dst->right.y = matrix->up.x;
-        dst->right.z = matrix->at.x;
-        dst->up.x = matrix->right.y;
-        dst->up.y = matrix->up.y;
-        dst->up.z = matrix->at.y;
-        dst->at.x = matrix->right.z;
-        dst->at.y = matrix->up.z;
-        dst->at.z = matrix->at.z;
-        dst->pos.x = -(matrix->pos.x * matrix->right.x + matrix->pos.y * matrix->right.y +
-                       matrix->pos.z * matrix->right.z);
-        dst->pos.y = -(matrix->pos.x * matrix->up.x + matrix->pos.y * matrix->up.y +
-                       matrix->pos.z * matrix->up.z);
-        dst->pos.z = -(matrix->pos.x * matrix->at.x + matrix->pos.y * matrix->at.y +
-                       matrix->pos.z * matrix->at.z);
-        dst->flags = rwMATRIXTYPEORTHONORMAL;
-        return dst;
-    }
-    {
-        RwSplitBits determinant;
-        RwReal recipDeterminant;
-
-        dst->right.x = matrix->up.y * matrix->at.z - matrix->up.z * matrix->at.y;
-        dst->right.y = -(matrix->right.y * matrix->at.z - matrix->right.z * matrix->at.y);
-        dst->right.z = matrix->right.y * matrix->up.z - matrix->right.z * matrix->up.y;
-        determinant.nReal = dst->right.x * matrix->right.x + dst->right.y * matrix->up.x +
-                            dst->right.z * matrix->at.x;
-        if (determinant.nInt != 0) {
-            recipDeterminant = 1.0f / determinant.nReal;
-        } else {
-            recipDeterminant = 1.0f;
-        }
-        dst->right.x *= recipDeterminant;
-        dst->right.y *= recipDeterminant;
-        dst->right.z *= recipDeterminant;
-        dst->up.x = recipDeterminant * -(matrix->up.x * matrix->at.z - matrix->up.z * matrix->at.x);
-        dst->up.y =
-            recipDeterminant * (matrix->right.x * matrix->at.z - matrix->right.z * matrix->at.x);
-        dst->up.z =
-            recipDeterminant * -(matrix->right.x * matrix->up.z - matrix->right.z * matrix->up.x);
-        dst->at.x = recipDeterminant * (matrix->up.x * matrix->at.y - matrix->up.y * matrix->at.x);
-        dst->at.y =
-            recipDeterminant * -(matrix->right.x * matrix->at.y - matrix->right.y * matrix->at.x);
-        dst->at.z =
-            recipDeterminant * (matrix->right.x * matrix->up.y - matrix->right.y * matrix->up.x);
-        dst->pos.x =
-            -(matrix->pos.x * dst->right.x + matrix->pos.y * dst->up.x + matrix->pos.z * dst->at.x);
-        dst->pos.y =
-            -(matrix->pos.x * dst->right.y + matrix->pos.y * dst->up.y + matrix->pos.z * dst->at.y);
-        dst->pos.z =
-            -(matrix->pos.x * dst->right.z + matrix->pos.y * dst->up.z + matrix->pos.z * dst->at.z);
-        dst->flags = 0;
+    } else if ((matrix->flags & rwMATRIXTYPEORTHONORMAL) == rwMATRIXTYPEORTHONORMAL) {
+        MatrixInvertOrthoNormalized(dst, matrix);
+    } else {
+        MatrixInvertGeneric(dst, matrix);
     }
     return dst;
 }
