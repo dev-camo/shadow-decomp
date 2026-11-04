@@ -671,6 +671,11 @@ config.libs = [
                 Object(Matching, "rw/fn_8049043C.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80491AB4.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_804939DC.c", cflags=cflags_game),
+                # fn_80496408 differs in 7 words: its error strings are addressed from a .data
+                # base 0x74 bytes below the original's. The original loads 0x8056E4F8 (fn_80495428's
+                # jump table, 0x74 bytes after fn_804951B8's at 0x8056E484) as its base. That suggests
+                # the original file's .data starts there and fn_804951B8 belonged to another file
+                # (inferred, not established).
                 Object(NonMatching, "rw/fn_804951B8.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80497198.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80497FB4.c", cflags=cflags_game),
