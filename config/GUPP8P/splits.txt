@@ -265,6 +265,15 @@ Game/CloseWall.cpp:
 	.sbss       start:0x805F0EC0 end:0x805F0ED8
 	.sdata2     start:0x805F8020 end:0x805F8058
 
+Game/SuperComputer.cpp:
+	.text       start:0x8022DD1C end:0x8022EFA8
+	.ctors      start:0x804AAF0C end:0x804AAF10
+	.rodata     start:0x804F33D0 end:0x804F3528
+	.data       start:0x80547FA0 end:0x80548030
+	.sdata      start:0x805EACE8 end:0x805EAD10
+	.sbss       start:0x805F0F38 end:0x805F0F50
+	.sdata2     start:0x805F8178 end:0x805F81A8
+
 Game/ElecKyuu.cpp:
 	.text       start:0x802308C0 end:0x8023131C
 	.rodata     start:0x804F3558 end:0x804F3638

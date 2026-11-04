@@ -26,10 +26,11 @@
 //  BOOST_NO_MEMBER_TEMPLATE_FRIENDS. BOOST_ASSERT is resolved for an NDEBUG build, so the checks
 //  in reset(), operator* and operator-> are left out. The workarounds for other compilers are
 //  dropped. Left out, because the reconstructed units use none of them: the auto_ptr constructor
-//  and assignment, the conversion to bool and operator!, the polymorphic_cast_tag constructor,
-//  the deprecated shared_*_cast functions, operator<< and the free get_deleter function. The
-//  bodies stay in the classes as in Boost: the game's inlining depends on them (see
-//  cflags_game_cpp in configure.py). weak_count and weak_ptr are in boost/weak_ptr.hpp.
+//  and assignment, operator!, the polymorphic_cast_tag constructor, the deprecated
+//  shared_*_cast functions, operator<< and the free get_deleter function. The conversion to bool
+//  is the plain operator bool (see the comment there). The bodies stay in the classes as in
+//  Boost: the game's inlining depends on them (see cflags_game_cpp in configure.py). weak_count
+//  and weak_ptr are in boost/weak_ptr.hpp.
 //
 
 #include "boost/config.hpp"
@@ -396,6 +397,23 @@ template <class T> class shared_ptr {
     T *get() const // never throws
     {
         return px;
+    }
+
+    // implicit conversion to "bool"
+    //
+    // The game's code compiles a shared_ptr tested in a condition (for example a pointer declared
+    // in an if condition from weak_ptr::lock) to a compare of px with zero, materialised as a bool
+    // before the condition's temporaries are destroyed and then tested with clrlwi. Boost 1.32
+    // gives Metrowerks compilers a conversion to a member function pointer, which this compiler
+    // tests with a __ptmf_test call, and other compilers a conversion to a data member pointer,
+    // which this compiler tests with a cmplwi of the pointer instead of the bool (in
+    // SuperComputer's attack callback and constructor). The plain operator bool, the form Boost
+    // keeps for old Sun compilers, reproduces the game's code; the original header's exact form
+    // is not known.
+
+    operator bool() const // never throws
+    {
+        return px != 0;
     }
 
     bool unique() const // never throws

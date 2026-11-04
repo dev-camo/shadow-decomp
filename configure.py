@@ -1680,6 +1680,13 @@ config.libs = [
             # differ by position.
             Object(NonMatching, "Game/ElecSecurityCodeGenerator.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecBlock.cpp", cflags=cflags_game_cpp),
+            # Every function but the constructor has identical instruction words, and the data,
+            # symbols and relocations match once the linker-discarded weak and local copies are set
+            # aside. The constructor (0x8022E698, USA) differs in 6 of its 189 words: for each of its
+            # three calls of a GadgetModelInfo method with a CrashInfoCtrl name as the argument, the
+            # original loads m_crashInfo's pointer before m_model's, this build loads them the other
+            # way round (the same instructions, registers and relocations otherwise).
+            Object(NonMatching, "Game/SuperComputer.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecKyuu.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),
             # UpdateBody loads the startup float after the store to the offset (6 of 91 words).

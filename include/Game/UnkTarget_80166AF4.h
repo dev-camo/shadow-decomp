@@ -28,6 +28,9 @@ class UnkTarget_80166AF4 {
      * entry's word at 0x8 after fn_80425E68 (purpose unknown). GravityChangeZone calls it with -1
      * once the model is set up. */
     void fn_80167180(int arg0);
+    /* Calls fn_80166D90 on the entries whose word at 0xC equals arg0 (behaviour inferred from
+     * its body; purpose unknown). */
+    void fn_80166E20(int arg0);
 
     /* 0x00 */ u8 field_0x0[0x10];
 };
