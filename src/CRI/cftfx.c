@@ -29,11 +29,11 @@ Float32 cft_yuv_rgb_coeff[9];
  * layout. */
 Float32 cft_basic_ccir601[9];
 
-/* One row of a 4x4 RGBA8 tile's AR half: the alpha bytes ANDed with the luma of the row, four
- * samples read as one word. */
-#define CFT_A256_ROW_STATIC(dst, w, lo)                                                            \
-    (lo) = (((w) << 16) & 0xFF000000) | (((w) & 0xFF) << 8);                                       \
-    (dst)[0] &= (((w) & 0xFF000000) | (((w) >> 8) & 0x0000FF00)) | 0x00FF00FF;                     \
+/* One row of a 4x4 RGBA8 tile's AR half: the alpha bytes ANDed with the luma of the row, the
+ * four samples read as one word through y. */
+#define CFT_A256_ROW_STATIC(dst, y, lo)                                                            \
+    (lo) = ((*(y) << 16) & 0xFF000000) | ((*(y) & 0xFF) << 8);                                     \
+    (dst)[0] &= ((*(y) & 0xFF000000) | ((*(y) >> 8) & 0x0000FF00)) | 0x00FF00FF;                   \
     (dst)[1] &= (lo) | 0x00FF00FF
 
 /* Alpha masked by the luma, without a table. */
@@ -46,23 +46,18 @@ void cnvStaticYcc420plnToA256V(const CFT_YCC420PLN *src, const CFT_ARGBDST *dst)
     Sint32 dskip = (dst->pitch - dst->width) / 4 * 16;
     Uint32 *d = dst->buf;
     const Uint32 *y = (const Uint32 *)src->y;
-    Uint32 w;
     Uint32 lo;
 
     for (i = 0; i < hblk; i++) {
         for (j = 0; j < wblk; j++) {
-            w = *y;
+            CFT_A256_ROW_STATIC(d, y, lo);
             y += ystep;
-            CFT_A256_ROW_STATIC(d, w, lo);
-            w = *y;
+            CFT_A256_ROW_STATIC(d + 2, y, lo);
             y += ystep;
-            CFT_A256_ROW_STATIC(d + 2, w, lo);
-            w = *y;
+            CFT_A256_ROW_STATIC(d + 4, y, lo);
             y += ystep;
-            CFT_A256_ROW_STATIC(d + 4, w, lo);
-            w = *y;
+            CFT_A256_ROW_STATIC(d + 6, y, lo);
             y += ystep;
-            CFT_A256_ROW_STATIC(d + 6, w, lo);
             y = y - ystep * 4 + 1;
             d += 16;
         }

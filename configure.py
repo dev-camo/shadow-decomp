@@ -3073,8 +3073,11 @@ config.libs = [
                     "-inline auto,deferred",
                 ],
             ),
-            # NonMatching: 2 of 4 functions match. cnvStaticYcc420plnToA256V differs in 20 of 103 words and
-            # cnvDynamicYcc420plnToA256UserTable in 137 of 139.
+            # NonMatching: 3 of 4 functions match. cnvDynamicYcc420plnToA256UserTable differs in 137 of 139
+            # words (same size): the original advances a separate register per tile row (ywidth - 4 computed
+            # in the inner loop and copied, the +4 of each row kept as its own addi) and saves r25-r31 with
+            # stmw in a 48-byte frame; ours walks one pointer by ywidth per row, reads the samples at
+            # negative offsets and saves four registers in a 32-byte frame.
             # Matching workaround: -inline auto,deferred. MWCC emits the functions (and lays out .bss) in
             # reverse source order. Revisit if the original unit's compiler flags are found.
             Object(
