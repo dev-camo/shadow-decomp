@@ -24,7 +24,8 @@ class Random {
     float NextFloatInclusive();
     /* Returns the next float between min and max (name inferred). */
     float NextFloat(float min, float max);
-    /* Returns a random integer from 0 to count - 1 (name inferred). */
+    /* Returns floor(NextFloat() * count): normally 0 to count - 1, but count when NextFloat rounds
+     * to 1 (name inferred). */
     u32 NextInt(u32 count);
 
   private:
