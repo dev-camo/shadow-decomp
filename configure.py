@@ -591,6 +591,11 @@ config.libs = [
                 Object(NonMatching, "rw/fn_8046335C.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80463D28.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_804641CC.c", cflags=cflags_game),
+                # fn_804649C0 and the data match. fn_80464814 differs in 28 of 107 instruction
+                # words, all register numbers (opcodes, relocations and stack offsets are the
+                # original's): the two component sizes, start and end take r29/r31/r30 instead
+                # of r31/r30/r29, and r5-r8 are permuted among short-lived values (the two GQR6
+                # settings, the morph target array, the position type and two table addresses).
                 Object(NonMatching, "rw/fn_80464814.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80464A94.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8046528C.c", cflags=cflags_game),

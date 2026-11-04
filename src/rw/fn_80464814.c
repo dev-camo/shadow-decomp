@@ -13,6 +13,20 @@ asm void fn_804649C0(register void *dst, register const RwV3d *start, register c
                      register const RwReal *t, register RwInt32 numVertices,
                      register RwInt32 srcSize, register RwInt32 dstSize, register RwInt32 padding);
 
+/* Returns the GQR6 store setting for normals of GX component type `type` (its quantization type,
+ * and the scale of normals in bits 8-13) and stores the component size in *size (name inferred).
+ * The initializer and stack layouts are consistent with an inlined helper (the tables' stack copies
+ * lie in declaration order, which MWCC gives an inlined function's locals; block locals of the
+ * caller itself lie in reverse order); its original form and signature are inferred. */
+static inline RwUInt32 NormalQuantization(RwUInt8 type, RwInt32 *size) {
+    RwUInt8 quantizeType[5] = {4, 6, 5, 7, 0};
+    RwUInt8 typeSize[5] = {1, 1, 2, 2, 4};
+    RwUInt8 normalScale[5] = {0, 6, 0, 14, 0};
+
+    *size = typeSize[type];
+    return quantizeType[type] | (normalScale[type] << 8);
+}
+
 /* Writes an atomic's positions, and its normals, interpolated between its interpolator's start
  * and end morph targets into its instanced data, in the vertex format's component types */
 void fn_80464814(RpGeometry *geometry, RpGameCubeInstanceData *instance,
@@ -24,7 +38,6 @@ void fn_80464814(RpGeometry *geometry, RpGameCubeInstanceData *instance,
     RpGameCubeVertexFormat *format = GAMECUBEVERTEXFORMAT(geometry);
     register RwUInt32 gqr6 = 0; /* asm operands need registers */
     RwInt32 size;
-    RwInt32 padding;
 
     if (format != NULL) {
         gqr6 = lbl_805EDDE0[format->posType] | (format->posFrac << 8);
@@ -39,27 +52,23 @@ void fn_80464814(RpGeometry *geometry, RpGameCubeInstanceData *instance,
     if (geometry->flags & rpGEOMETRYNORMALS) {
         void *normals = instance->vertexDescriptors[1].data;
         register RwUInt32 normalGqr6 = 0;
+        RwInt32 normalSize;
+        RwInt32 padding;
 
         format = GAMECUBEVERTEXFORMAT(geometry);
         if (format != NULL) {
-            /* GX component type to quantization type, component size, and the scale of
-             * normals; binormals and tangents follow each normal */
-            RwUInt8 quantizeType[5] = {4, 6, 5, 7, 0};
-            RwUInt8 typeSize[5] = {1, 1, 2, 2, 4};
-            RwUInt8 normalScale[5] = {0, 6, 0, 14, 0};
-
-            normalGqr6 = quantizeType[format->normalType] | (normalScale[format->normalType] << 8);
-            size = typeSize[format->normalType];
-            padding = format->normalNbt ? size * 6 : 0;
+            normalGqr6 = NormalQuantization(format->normalType, &normalSize);
+            /* binormals and tangents follow each normal */
+            padding = format->normalNbt ? normalSize * 6 : 0;
         } else {
-            size = 4;
+            normalSize = 4;
             padding = 0;
         }
         asm { mtspr GQR6, normalGqr6 }
-        fn_804649C0(normals, start->normals, end->normals, &t, geometry->numVertices, 4, size,
+        fn_804649C0(normals, start->normals, end->normals, &t, geometry->numVertices, 4, normalSize,
                     padding);
         DCFlushRange(instance->vertexDescriptors[1].data,
-                     geometry->numVertices * (padding + size * 3));
+                     geometry->numVertices * (padding + normalSize * 3));
     }
     GXInvalidateVtxCache();
 }
