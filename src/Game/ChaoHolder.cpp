@@ -23,7 +23,7 @@
 #include "Game/UnkGadgetOwner_800C9CD0.h"
 #include "Game/UnkManager_800CB69C.h"
 #include "Game/UnkObject_802B4254.h"
-#include "Game/UnkProbeTarget_800587A0.h"
+#include "Game/UnkWorld_80021B08.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/UnkStartupFloat_800E2570.h"
 #include "Game/fn_8006_resource_list.h"
@@ -36,6 +36,7 @@
 #include "layout_check.h"
 
 using SonicteamUSA::System::CharaColli::CharaColliAttack;
+using SonicteamUSA::System::CharaColli::CharaColliBase;
 
 class Chao;
 class ChaoHolder;
@@ -127,7 +128,7 @@ class Chao {
     /* 0x24 */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
     /* 0x2C */ boost::shared_ptr<Target> m_object;
     /* 0x34 */ boost::shared_ptr<UnkObject_802B4254> m_object2;
-    /* 0x3C */ boost::shared_ptr<UnkProbeTarget_800587A0> m_probe;
+    /* 0x3C */ boost::shared_ptr<CharaColliBase> m_probe;
     /* 0x44 */ boost::shared_ptr<GadgetModelInfo> m_model;
     /* The state (names inferred from the code that sets them): 0 walking around, 1 touched, 2
      * attacked, 3 after the attack motion. */

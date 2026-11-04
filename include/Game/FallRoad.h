@@ -4,8 +4,8 @@
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
-#include "Game/UnkProbeTarget_800587A0.h"
 #include "Game/UnkTarget_80166AF4.h"
+#include "Game/UnkWorld_80021B08.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/shared_ptr.hpp"
 #include "layout_check.h"
@@ -38,7 +38,7 @@ class FallRoad : public Gadget {
     /* 0x44 */ u8 m_tag;                 /* copied from the owner with fn_800C9E60 */
     /* 0x48 */ Fn8040Vector3 m_position; /* the falling position */
     /* 0x54 */ Fn8040Vector3 m_velocity;
-    /* 0x60 */ boost::shared_ptr<UnkProbeTarget_800587A0> m_probe;
+    /* 0x60 */ boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> m_probe;
     /* 0x68 */ boost::shared_ptr<UnkTarget_80166AF4> m_target; /* created on landing */
     /* 0x70 */ float m_bounce;     /* the model's vertical offset after landing */
     /* 0x74 */ float m_prevBounce; /* m_bounce of the previous frame */

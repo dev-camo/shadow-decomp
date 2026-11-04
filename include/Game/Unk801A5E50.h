@@ -1,7 +1,7 @@
 #ifndef GAME_UNK801A5E50_H
 #define GAME_UNK801A5E50_H
 
-#include "Game/UnkProbeTarget_800587A0.h"
+#include "Game/UnkWorld_80021B08.h"
 #include "Game/fn_8040_vector_types.h"
 #include "layout_check.h"
 

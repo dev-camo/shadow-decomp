@@ -15,11 +15,11 @@ namespace SonicteamUSA {
 namespace System {
 namespace CharaColli {
 class CharaColliAttack;
+class CharaColliBase;
 } // namespace CharaColli
 } // namespace System
 } // namespace SonicteamUSA
 struct _stMtnPlayWork;
-class UnkProbeTarget_800587A0;
 struct RpClump;
 struct RpAtomic;
 
@@ -144,7 +144,7 @@ class GadgetModelInfo {
     /* Returns the probe of the first node of the list at 0x64 for which the word at 0x14 of the
      * object that the node's word at 0x14 points to equals arg0, or an empty pointer (behaviour
      * inferred from its body). */
-    boost::weak_ptr<UnkProbeTarget_800587A0> fn_80161614(int arg0);
+    boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> fn_80161614(int arg0);
     /* Sets a motion control work flag (stMtnControlWorkFlag with 0, 1, 0) of each entry of the
      * list at 0x58 whose resource record has the word arg0 at 0x18 (behaviour inferred from its
      * body). */

@@ -13,7 +13,7 @@
 #include "Game/GadgetTypeInfo.h"
 #include "Game/UnkManager_80009548.h"
 #include "Game/UnkParamCursor_800CBC20.h"
-#include "Game/UnkProbeTarget_800587A0.h"
+#include "Game/UnkWorld_80021B08.h"
 #include "Game/UnkSingleton_8000DCC0.h"
 #include "Game/UnkSoundHandle_801D3DC8.h"
 #include "Game/UnkSoundManager_80053164.h"
@@ -24,6 +24,8 @@
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include "layout_check.h"
+
+using SonicteamUSA::System::CharaColli::CharaColliBase;
 
 /* The sounds that the gadget plays at random while the probe touches the entry's position. */
 static const u16 s_sounds[2] = {0x7340, 0x7341};
@@ -60,7 +62,7 @@ class RainEffect : public Gadget {
 
     /* 0x30 */ Fn8040Vector3 m_position;
     /* 0x3C */ Fn8040Vector3 m_rotation;
-    /* 0x48 */ boost::shared_ptr<UnkProbeTarget_800587A0> m_probe;
+    /* 0x48 */ boost::shared_ptr<CharaColliBase> m_probe;
     /* 0x50 */ boost::shared_ptr<GadgetModelInfo> m_model;
     /* The names of the members below are inferred. */
     /* 0x58 */ s32 m_state; /* 1 while the probe touches the entry's position, otherwise 0 */
@@ -123,7 +125,7 @@ void RainEffect::Create(UnkGadgetOwner_800C9CD0 *owner) {
 void RainEffect::UpdateBody(float dt) {
     UnkSphere_80021C04 sphere(fn_80010244(fn_80009548(), 0), 0.0f);
 
-    if (fn_800C5878(fn_80021B08(), &sphere, boost::weak_ptr<UnkProbeTarget_800587A0>(m_probe), 0)) {
+    if (fn_800C5878(fn_80021B08(), &sphere, boost::weak_ptr<CharaColliBase>(m_probe), 0)) {
         if (m_state == 0) {
             m_model->fn_8016271C();
             m_sound = fn_801D3EF0(0x733E, this);

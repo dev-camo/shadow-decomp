@@ -9,6 +9,8 @@
 #include "Game/UnkWorldProbe_80021FE4.h"
 #include "layout_check.h"
 
+using SonicteamUSA::System::CharaColli::CharaColliBase;
+
 class TestNakazawa : public Task {
   public:
     TestNakazawa(Task *parent, UnkGadgetOwner_800C9CD0 *owner);
@@ -84,8 +86,7 @@ void TestNakazawa::Update(float dt) {
                 UnkProbeNode_80021FE4 *node = iterator.node;
 
                 if (node != 0) {
-                    boost::shared_ptr<UnkProbeTarget_800587A0> target =
-                        fn_800587A0(&node->target).lock();
+                    boost::shared_ptr<CharaColliBase> target = fn_800587A0(&node->target).lock();
 
                     if (target.get() != 0) {
                         fn_800091EC(&hitPoint, fn_8001E9BC(node->hit));

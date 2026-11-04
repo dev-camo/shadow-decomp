@@ -8,11 +8,11 @@
  * boost::bind(&ElecCircuitEntrance::method, this, _1); their manager, invoker and copy functions
  * come from the boost headers. */
 #include <cmath>
-/* The RTTI data of TNumEdit.h comes before that of CharaColliBase.h at the start of the unit's
- * .data, .sdata and .rodata, so TNumEdit.h is included before CharaColliBase.h (alphabetical
- * order would reverse them). */
+/* The RTTI data of TNumEdit.h comes before that of CharaColliBaseCharInfo.h at the start of the
+ * unit's .data, .sdata and .rodata, so TNumEdit.h is included before CharaColliBaseCharInfo.h
+ * (alphabetical order would reverse them). */
 #include "Game/TNumEdit.h"
-#include "Game/CharaColliBase.h"
+#include "Game/CharaColliBaseCharInfo.h"
 #include "Game/CharCommand.h"
 #include "Game/CharInfo.h"
 #include "Game/DebugDisp.h"
@@ -23,13 +23,15 @@
 #include "Game/SharedConstants.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
 #include "Game/UnkManager_800CB69C.h"
-#include "Game/UnkProbeTarget_800587A0.h"
+#include "Game/UnkWorld_80021B08.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include "layout_check.h"
+
+using SonicteamUSA::System::CharaColli::CharaColliBase;
 
 class ElecCircuitEntrance;
 
@@ -168,7 +170,7 @@ ElecCircuitEntrance::ElecCircuitEntrance(Task *parent, UnkGadgetOwner_800C9CD0 *
     m_name = s_name;
     m_charInfo = fn_8015CB88(0x59, 4, "ElecCircuitEntrance");
 
-    boost::shared_ptr<UnkProbeTarget_800587A0> probe =
+    boost::shared_ptr<CharaColliBase> probe =
         fn_800C7A84(fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), 7.5f, 20.0f, 0x40000, 10,
                     0, &lbl_805E07A0, &lbl_80583B78, 0);
     field_0x3C = fn_8015B8C4(probe);
@@ -178,7 +180,7 @@ ElecCircuitEntrance::ElecCircuitEntrance(Task *parent, UnkGadgetOwner_800C9CD0 *
     field_0x3C->field_0x18.fn_800F5980(
         ColliDetectCallback(boost::bind(&ElecCircuitEntrance::fn_801F7D80, this, _1)));
 
-    field_0x3C->field_0x18.ClearFlags(2);
+    field_0x3C->ClearFlags(2);
     CopyFromOwner(m_owner);
 }
 
