@@ -551,6 +551,16 @@ Game/ElecCircuitExit.cpp:
 	.sdata      start:0x805EC030 end:0x805EC050
 	.sdata2     start:0x805F8D88 end:0x805F8DA0
 
+Game/DebugMissionClearCollision.cpp:
+	.text       start:0x802C846C end:0x802C8AF4
+	.ctors      start:0x804A9F84 end:0x804A9F88
+	.rodata     start:0x80500208 end:0x80500278
+	.data       start:0x80557BB0 end:0x80557D00
+	.bss        start:0x805845A0 end:0x80584610
+	.sdata      start:0x805EC050 end:0x805EC080
+	.sbss       start:0x805F05B0 end:0x805F05E0
+	.sdata2     start:0x805F8DA0 end:0x805F8DC8
+
 Game/TestNakazawa.cpp:
 	.text       start:0x802DF6B0 end:0x802DFA00
 	.rodata     start:0x80505840 end:0x80505860
