@@ -69,10 +69,10 @@ void EffectManager::Clear() {
 }
 
 void EffectManager::Remove(boost::shared_ptr<EffectElement> element) {
-    if (element->m_updateNext.get() != 0) {
+    if (element->m_updateNext) {
         element->m_updateNext->m_updatePrev = element->m_updatePrev;
     }
-    if (element->m_updatePrev.get() != 0) {
+    if (element->m_updatePrev) {
         element->m_updatePrev->m_updateNext = element->m_updateNext;
     }
     if (element == m_updateHead) {
@@ -81,10 +81,10 @@ void EffectManager::Remove(boost::shared_ptr<EffectElement> element) {
     if (element == m_updateTail) {
         m_updateTail = element->m_updatePrev;
     }
-    if (element->m_renderNext.get() != 0) {
+    if (element->m_renderNext) {
         element->m_renderNext->m_renderPrev = element->m_renderPrev;
     }
-    if (element->m_renderPrev.get() != 0) {
+    if (element->m_renderPrev) {
         element->m_renderPrev->m_renderNext = element->m_renderNext;
     }
     if (element == m_renderHead) {
