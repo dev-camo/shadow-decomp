@@ -1324,6 +1324,12 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
+                # The instructions of all three functions, the exception tables and the relocation
+                # types are identical to the original; the six 2.0f loads are relocated against this
+                # unit's own literal instead of the shared pool's 0x805FAE2C. That literal is the
+                # last of the original file's shared .sdata2 pool (0x805FAE00-0x805FAE30), and this
+                # unit's 8-aligned pool cannot begin at 0x805FAE2C (4 mod 8). Revisit when the
+                # pool-owning functions are merged into one unit.
                 Object(
                     NonMatching,
                     "Game/fn_8041FF0C.cpp",
