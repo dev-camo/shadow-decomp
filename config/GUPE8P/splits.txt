@@ -414,6 +414,16 @@ Game/GravityChangeCollision.cpp:
 	.sdata      start:0x805EA158 end:0x805EA178
 	.sdata2     start:0x805F74A0 end:0x805F74C8
 
+Game/GravityChangeZone.cpp:
+	.text       start:0x80247B24 end:0x8024898C
+	.ctors      start:0x804A9EDC end:0x804A9EE0
+	.rodata     start:0x804F3D08 end:0x804F3E10
+	.data       start:0x80548A98 end:0x80548B58
+	.bss        start:0x80583E58 end:0x80583E68
+	.sdata      start:0x805EA178 end:0x805EA1A0
+	.sbss       start:0x805EFF70 end:0x805EFF80
+	.sdata2     start:0x805F74C8 end:0x805F74F0
+
 Game/GravitySignBoard.cpp:
 	.text       start:0x80258D48 end:0x802593B0
 	.rodata     start:0x804F4E40 end:0x804F4E70

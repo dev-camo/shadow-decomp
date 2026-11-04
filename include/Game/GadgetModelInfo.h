@@ -159,6 +159,10 @@ class GadgetModelInfo {
      * 0x64 whose id equals arg0, as fn_801617D0 passes its arguments to SetSize (behaviour
      * inferred). */
     void fn_80161740(int arg0, const Fn8040Vector3 *vector, int selector);
+    /* Clear and set bit 1 of the flags at 0x3C (behaviour inferred from their bodies; the meaning
+     * of the bit is unknown). */
+    void fn_801612B8();
+    void fn_801612E0();
 
     /* 0x04 */ u8 field_0x4[0x38]; /* Unrecovered members, including native subobjects. */
     /* 0x3C */ UnkBitFlags_80014E04 field_0x3C;
