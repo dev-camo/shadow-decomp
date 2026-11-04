@@ -36,6 +36,9 @@ class UnkTaskManager_8001C4F8;
 extern "C" {
 UnkTaskManager_8001C4F8 *fn_8001C4F8(void);
 Task *fn_801EB304(UnkTaskManager_8001C4F8 *manager, int index);
+/* True when neither the task nor any of its parents has flag 0x01 set (behaviour inferred from
+ * its body). */
+bool fn_8004EAC0(Task *task);
 }
 
 #endif

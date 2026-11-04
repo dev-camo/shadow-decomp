@@ -147,6 +147,15 @@ Game/RainEffect.cpp:
 	.sdata      start:0x805E4EF0 end:0x805E4F10
 	.sdata2     start:0x805F31F8 end:0x805F3230
 
+Game/StoneStatue.cpp:
+	.text       start:0x800DC40C end:0x800DD77C
+	.ctors      start:0x804A9D10 end:0x804A9D14
+	.rodata     start:0x804B7E48 end:0x804B7FD8
+	.data       start:0x80523B00 end:0x80523C50
+	.sdata      start:0x805E5058 end:0x805E5098
+	.sbss       start:0x805EE820 end:0x805EE838
+	.sdata2     start:0x805F32B0 end:0x805F32E8
+
 Game/TornadoCollision.cpp:
 	.text       start:0x800DF4E8 end:0x800DFBAC
 	.rodata     start:0x804B8180 end:0x804B81A8
