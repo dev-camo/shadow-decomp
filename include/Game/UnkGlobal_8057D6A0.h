@@ -6,7 +6,7 @@
 
 /* The 0x150-byte object at 0x8057D6A0 in .bss (placeholder name; the original name and type are
  * unknown). More than 400 functions across the game read it. Only the words at 0x28, 0x90, 0x98,
- * 0xA8 and 0xAC are mapped. */
+ * 0xA8 and 0xAC and the byte at 0xC1 are mapped. */
 struct UnkGlobal_8057D6A0 {
     /* 0x00 */ u8 field_0x0[0x28];
     /* 0x28 */ float field_0x28; /* Coaster multiplies it by 540 (meaning unknown) */
@@ -20,7 +20,10 @@ struct UnkGlobal_8057D6A0 {
      * with 12 and 5 to limit the building type, and GrindGadget's hookA with 13 to pick
      * its PTB file. */
     /* 0xAC */ s32 field_0xAC;
-    /* 0xB0 */ u8 field_0xB0[0x150 - 0xB0];
+    /* 0xB0 */ u8 field_0xB0[0xC1 - 0xB0];
+    /* CityChaosEmerald sets it to 1 in its collision callback (meaning unknown). */
+    /* 0xC1 */ u8 field_0xC1;
+    /* 0xC2 */ u8 field_0xC2[0x150 - 0xC2];
 };
 CHECK_SIZEOF(UnkGlobal_8057D6A0, 0x150);
 

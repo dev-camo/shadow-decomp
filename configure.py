@@ -1657,6 +1657,16 @@ config.libs = [
             Object(Matching, "Game/MonsterControl.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BombingWall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/StoneStatue.cpp", cflags=cflags_game_cpp),
+            # The data (apart from the unreferenced weak and local copies that the linker strips)
+            # and 27 of the 29 functions match. The other two have identical words and differ only
+            # in a callee's symbol: the bound call operator's call of boost's list1 operator[] and
+            # the constructor's call of the function1 destructor go to the copies at 0x800D05D0 and
+            # 0x800D0CEC in the original and to the copies at 0x800F5238 and 0x800F5B08 here. The
+            # two operator[] copies are 8 bytes each with the same body; the two destructor copies
+            # are 0x48 bytes each and call different symbols. The original copies are unnamed; a
+            # different function1 instantiation for the model callback is one possible explanation
+            # (hypothesis, not established).
+            Object(NonMatching, "Game/CityChaosEmerald.cpp", cflags=cflags_game_cpp),
             # Interpolation scheduling, the index-table extent and shared literal ownership differ.
             Object(
                 NonMatching,

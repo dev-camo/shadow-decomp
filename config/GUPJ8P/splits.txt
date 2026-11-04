@@ -128,6 +128,14 @@ Game/StoneStatue.cpp:
 	.sbss       start:0x805EEE28 end:0x805EEE40
 	.sdata2     start:0x805F38D8 end:0x805F3910
 
+Game/CityChaosEmerald.cpp:
+	.text       start:0x800DFF58 end:0x800E093C
+	.rodata     start:0x804B8840 end:0x804B8928
+	.data       start:0x80524630 end:0x805246A0
+	.sdata      start:0x805E5728 end:0x805E5750
+	.sbss       start:0x805EEE50 end:0x805EEE60
+	.sdata2     start:0x805F3970 end:0x805F3988
+
 Game/fn_800E59F8.cpp:
 	.text       start:0x800E5DA4 end:0x800E672C
 	.rodata     start:0x804B8EE0 end:0x804B8F40
