@@ -16,7 +16,6 @@ static inline void CopyMatrixValue(MatrixValue *dst, const MatrixValue *src) {
     dst->m[4] = src->m[4];
     dst->m[5] = src->m[5];
 }
-
 static inline void SetIdentity(f32 *m) {
     m[0] = 1.0f;
     m[1] = 0.0f;
@@ -25,6 +24,7 @@ static inline void SetIdentity(f32 *m) {
     m[4] = 1.0f;
     m[5] = 0.0f;
 }
+/* Copies all but the translations (m[2], m[5]); does nothing when the target is the source. */
 static inline void CopyLinearParts() {
     if (s_pTarget == s_pSource) {
         return;
@@ -57,9 +57,9 @@ void InitMatrixStack() {
 }
 
 /* csdMatrix.cpp (original name from allocation calls): the scene matrix stack. Function,
- * variable and helper names are inferred. Definitions use reverse address order for deferred
- * inlining. The stack starts at s_identity; transformations read s_pSource and write s_pTarget.
- * CopyLinearParts preserves the translations (m[2] and m[5]) and skips identical matrices.
+ * variable and helper names are inferred. Definitions are in reverse address order (deferred
+ * inlining emits them reversed). The stack starts at s_identity; transformations read s_pSource
+ * and write s_pTarget.
  * Matching workaround: keep the two allocation calls on original lines 53 and 54 so __LINE__
  * preserves their diagnostic metadata. Documentation follows initialization to retain those
  * positions; revisit if the original source layout is recovered. */
