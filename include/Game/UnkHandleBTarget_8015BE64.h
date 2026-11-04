@@ -138,6 +138,10 @@ boost::shared_ptr<UnkHandleBTarget_8015BE64>
 fn_8015B8C4(boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> probe);
 void fn_8015BE64(UnkHandleBTarget_8015BE64 *target);
 void fn_8015BE9C(UnkHandleBTarget_8015BE64 *target, float dt);
+/* True when one of the hits of args belongs to a character info whose fn_80078B4C reports true
+ * (behaviour inferred; the counterpart of fn_8015D2EC in UnkWorld_80021B08.h for the next virtual
+ * function, taking the collision callback's arguments). */
+bool fn_8015AC84(ColliDetectArgs &args);
 }
 
 #endif

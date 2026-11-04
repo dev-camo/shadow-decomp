@@ -99,6 +99,10 @@ void fn_80425C34(Effect::System::EffectElement *effect, float deltaTime);
  * from the negated direction, and clears ELEMENT_FLAG_4 (behaviour inferred). */
 boost::weak_ptr<Effect::System::EffectElement> fn_80168C48(const Fn8040Vector3 *position,
                                                            const Fn8040Vector3 *direction, int id);
+/* Creates effect id from the global launch info at position with rotation, and clears
+ * ELEMENT_FLAG_4 (behaviour inferred). */
+boost::weak_ptr<Effect::System::EffectElement> fn_80168B38(const Fn8040Vector3 *position,
+                                                           const Fn8040Vector3 *rotation, int id);
 /* These helpers write the base transform (names remain unknown). */
 void fn_80425E4C(Effect::System::EffectElement *effect, const Fn8040Vector3 *position);
 void fn_80425E68(Effect::System::EffectElement *effect, const Fn8040Matrix34 *matrix);

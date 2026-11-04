@@ -1748,6 +1748,15 @@ config.libs = [
             # than in the original (const floats with a dynamic initialiser reproduce both loads);
             # UpdateModelMatrix (8 words): two vector stack slots exchanged (r1+0x14/0x20).
             Object(NonMatching, "Game/SuctionPillar.cpp", cflags=cflags_game_cpp),
+            # Every function has identical instruction words and the data matches once the
+            # linker-discarded weak and local copies are set aside. Two calls differ only in the
+            # callee's symbol: the bound call operator's call of boost's list1 operator[] and the
+            # constructor's call of the function1 destructor go to the copies at 0x800D05D0 and
+            # 0x800D0CEC (USA addresses) in the original, whose original names are not established,
+            # and to the copies that symbols.txt names at 0x800F5238 and 0x800F5B08 here, in all
+            # three regions. The two operator[] copies have identical 8-byte bodies; the two
+            # 0x48-byte destructor copies call different clear functions (0x800D0D34, 0x800F5B50).
+            Object(NonMatching, "Game/SecretDisk.cpp", cflags=cflags_game_cpp),
             # Interpolation scheduling, the index-table extent and shared literal ownership differ.
             Object(
                 NonMatching,
