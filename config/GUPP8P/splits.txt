@@ -230,6 +230,16 @@ Game/fn_801B1DB0.cpp:
 Game/fn_801D455C.cpp:
 	.text       start:0x801D48FC end:0x801D4964
 
+Game/ElecFireWall.cpp:
+	.text       start:0x801F68EC end:0x801F7BC8
+	.ctors      start:0x804AAE60 end:0x804AAE64
+	.rodata     start:0x804EC880 end:0x804ECA00
+	.data       start:0x805431E8 end:0x805433C8
+	.bss        start:0x80584BD0 end:0x80584BE0
+	.sdata      start:0x805EA078 end:0x805EA0B8
+	.sbss       start:0x805F0BF8 end:0x805F0C08
+	.sdata2     start:0x805F7640 end:0x805F76B0
+
 Game/ElecSmallCube.cpp:
 	.text       start:0x8021B0C0 end:0x8021C074
 	.rodata     start:0x804F1518 end:0x804F1628
