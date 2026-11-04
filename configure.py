@@ -3204,8 +3204,8 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            # sfadxt_ExecServerSub 239 differing words (1048 vs 1064 bytes),
-            # sfadxt_ExcludeHdr 38 words.
+            # sfadxt_ExecServerSub 62 differing words, sfadxt_ExcludeHdr 38 (same sizes,
+            # registers only: the parameters sfd / data take other saved registers).
             Object(
                 NonMatching,
                 "CRI/sfd_adxt.c",

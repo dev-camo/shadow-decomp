@@ -721,6 +721,7 @@ static inline Sint32 sfadxt_Transfer(SFD sfd, Sint32 *len) {
     Sint32 nbyte;
     SFBUF_RINF inf;
     Sint32 ret;
+    Sint32 err;
     Uint8 *data;
     Sint32 n;
 
@@ -736,11 +737,15 @@ static inline Sint32 sfadxt_Transfer(SFD sfd, Sint32 *len) {
     *len = n;
     wk->func(sfd, data, n, &nbyte);
     ret = SFBUF_RingAddRead(sfd, sfd->tr[SFADXT_TR].bufin, nbyte);
+    err = 0;
     if (ret != 0) {
-        return ret;
+        err = ret;
+    }
+    if (err != 0) {
+        return err;
     }
     sfadxt_UpdateFlowCnt(sfd);
-    return ret;
+    return err;
 }
 
 /* the total sample count into the control queue once it is empty */
