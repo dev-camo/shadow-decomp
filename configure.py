@@ -1463,13 +1463,16 @@ config.libs = [
                 cflags=cflags_game_cpp,
                 extra_cflags=["-Cpp_exceptions on"],
             ),
-            # Code and meaningful exception data match; two constructor exception-table padding
-            # bytes differ between compiler hosts, so the original object remains selected.
+            # Matching workaround: extab_padding writes the original's two padding bytes of the
+            # constructor's exception action record (extab+0x16, ac 02 in all three regions). MWCC
+            # fills that padding with leftover stack contents, so no compiler host reproduces it;
+            # the code and the meaningful exception data match.
             Object(
-                NonMatching,
+                Matching,
                 "Game/fn_8040C2B8.cpp",
                 cflags=cflags_game_cpp,
                 extra_cflags=["-Cpp_exceptions on"],
+                extab_padding=b"\xac\x02",
             ),
             # All 46 functions except LoadFile match individually; its allocation passes line 47
             # instead of 137. The map helpers emit in a different order, and an extra weak
