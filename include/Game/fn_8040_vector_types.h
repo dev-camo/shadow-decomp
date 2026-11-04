@@ -263,6 +263,9 @@ void fn_80049290(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix);
 float fn_8004924C(float from, float to, float a, float b);
 /* Builds the matrix that rotates by angle about axis. */
 void fn_800498A0(Fn8040Matrix34 *matrix, const Fn8040Vector3 *axis, float angle);
+/* Builds the same rotation as fn_800498A0, storing the elements directly instead of through
+ * fn_8040C17C (behaviour inferred from its body). */
+void fn_80049778(Fn8040Matrix34 *matrix, const Fn8040Vector3 *axis, float angle);
 /* Quaternion, vector, interpolation and rotation-vector helpers used by the matrix and vector
  * math units, wherever they are defined. Their original names are unknown and the descriptions
  * are inferred from the code. A rotation vector holds the angles about the x, y and z axes; order

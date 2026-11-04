@@ -150,4 +150,9 @@ extern "C" const char *fn_801626D8(GadgetModelInfo *model);
 /* Native atomic callback; its original free/static-member spelling is unknown. */
 extern "C" RpAtomic *fn_80164064(RpAtomic *atomic, void *data);
 
+/* Looks for the frame with the id arg3 in the model's part arg2, stores the frame's world matrix in
+ * matrix and returns whether it was found (behaviour inferred from its fn_8015FA78 callback). */
+extern "C" bool fn_80169EF0(Fn8040Matrix34 *matrix, boost::shared_ptr<GadgetModelInfo> model,
+                            int arg2, int arg3);
+
 #endif

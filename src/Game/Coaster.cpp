@@ -37,6 +37,7 @@
 #include "Game/PathCtrl.h"
 #include "Game/PlayerCommands.h"
 #include "Game/SharedConstants.h"
+#include "Game/AngleConversion.h"
 #include "Game/UnkEffectParams_8015F0B8.h"
 #include "Game/UnkGlobal_8057D6A0.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
@@ -122,13 +123,6 @@ boost::shared_ptr<UnkPathFollower_800096F4> fn_80009704(int arg0, int arg1);
 void fn_8000A5D4(UnkPathFollower_800096F4 *follower, const Fn8040Vector3 *start,
                  const Fn8040Vector3 *end);
 void fn_8000ACE4(UnkPathFollower_800096F4 *follower, const Fn8040Vector3 *up);
-/* Creates the object of the gadget (the number is not understood). */
-boost::shared_ptr<UnkObject_801E72DC> fn_801E7128(boost::weak_ptr<CharInfo> info, int arg1);
-}
-
-/* Converts degrees to radians (name inferred). */
-static inline float DegreesToRadians(float degrees) {
-    return degrees * (lbl_805FAD38 / 180.0f);
 }
 
 /* One row of the table of stage settings (name inferred). The meaning of most members is not
