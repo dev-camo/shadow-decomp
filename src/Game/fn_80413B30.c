@@ -483,26 +483,45 @@ float fn_8041525C(MotionKeyCursor *cursor) {
 
 /* The interpolated value and slope between two keys: fn_804156D8 and fn_8041564C in one pass. */
 void fn_80415530(float *value, float *slope, MotionKey *from, MotionKey *to, float frame) {
-    float elapsed = frame - from->time;
-    float elapsedSquared = elapsed * elapsed;
-    float inverseSpan = 1.0f / (to->time - from->time);
-    float inverseSpanSquared = inverseSpan * inverseSpan;
-    float cubicTerm = inverseSpanSquared * (elapsedSquared * elapsed);
-    float quadraticTerm = elapsedSquared * inverseSpan;
-    float cubicWeight = 2.0f * cubicTerm * inverseSpan;
-    float squareWeight = 3.0f * elapsedSquared * inverseSpanSquared;
-    float fromWeight = cubicWeight - squareWeight;
-    float toWeight = -cubicWeight + squareWeight;
-    float fromSlopeWeight = elapsed + (cubicTerm - quadraticTerm - quadraticTerm);
-    float toSlopeWeight = cubicTerm - quadraticTerm;
-    float fromTerm = 6.0f * elapsedSquared * inverseSpanSquared * inverseSpan;
-    float middleTerm = 6.0f * elapsed * inverseSpanSquared;
-    float stepTerm = 2.0f * elapsed * inverseSpan;
-    float toSlopeTerm = squareWeight - stepTerm;
+    float elapsed;
+    float elapsedSquared;
+    float inverseSpan;
+    float inverseSpanSquared;
+    float cubicTerm;
+    float quadraticTerm;
+    float cubicWeight;
+    float squareWeight;
+    float fromWeight;
+    float toWeight;
+    float fromSlopeWeight;
+    float toSlopeWeight;
+    float fromTerm;
+    float middleTerm;
+    float stepTerm;
+    float toSlopeTerm;
+    float interpolatedValue;
+    float interpolatedSlope;
 
-    float interpolatedValue = from->value * (1.0f + fromWeight) + to->value * toWeight +
-                              from->tangentOut * fromSlopeWeight + to->tangentIn * toSlopeWeight;
-    float interpolatedSlope =
+    elapsed = frame - from->time;
+    elapsedSquared = elapsed * elapsed;
+    inverseSpan = 1.0f / (to->time - from->time);
+    inverseSpanSquared = inverseSpan * inverseSpan;
+    cubicTerm = inverseSpanSquared * (elapsedSquared * elapsed);
+    quadraticTerm = elapsedSquared * inverseSpan;
+    cubicWeight = 2.0f * cubicTerm * inverseSpan;
+    squareWeight = 3.0f * elapsedSquared * inverseSpanSquared;
+    fromWeight = cubicWeight - squareWeight;
+    toWeight = -cubicWeight + squareWeight;
+    fromSlopeWeight = elapsed + (cubicTerm - quadraticTerm - quadraticTerm);
+    toSlopeWeight = cubicTerm - quadraticTerm;
+    fromTerm = 6.0f * elapsedSquared * inverseSpanSquared * inverseSpan;
+    middleTerm = 6.0f * elapsed * inverseSpanSquared;
+    stepTerm = 2.0f * elapsed * inverseSpan;
+    toSlopeTerm = squareWeight - stepTerm;
+
+    interpolatedValue = from->value * (1.0f + fromWeight) + to->value * toWeight +
+                        from->tangentOut * fromSlopeWeight + to->tangentIn * toSlopeWeight;
+    interpolatedSlope =
         from->value * (fromTerm - middleTerm) + to->value * (-fromTerm + middleTerm) +
         from->tangentOut * (1.0f + (toSlopeTerm - stepTerm)) + to->tangentIn * toSlopeTerm;
 
@@ -512,19 +531,29 @@ void fn_80415530(float *value, float *slope, MotionKey *from, MotionKey *to, flo
 
 /* The derivative of fn_804156D8 with respect to the frame. */
 float fn_8041564C(MotionKey *from, MotionKey *to, float frame) {
-    float elapsed = frame - from->time;
-    float elapsedSquared = elapsed * elapsed;
-    float inverseSpan = 1.0f / (to->time - from->time);
-    float inverseSpanSquared = inverseSpan * inverseSpan;
-    float fromTerm = 6.0f * elapsedSquared * inverseSpanSquared * inverseSpan;
-    float middleTerm = 6.0f * elapsed * inverseSpanSquared;
-    float stepTerm = 2.0f * elapsed * inverseSpan;
-    /* Matching workaround: a statement of its own, as in fn_80415530. In one expression with the
-     * subtraction of stepTerm, the multiply and the subtraction compile to a fused fmsubs, which
-     * the original does not have. Revisit if another compiler version or a -fp_contract setting is
-     * found for this code. */
-    float squareWeight = 3.0f * elapsedSquared * inverseSpanSquared;
-    float toSlopeTerm = squareWeight - stepTerm;
+    float elapsed;
+    float elapsedSquared;
+    float inverseSpan;
+    float inverseSpanSquared;
+    float fromTerm;
+    float middleTerm;
+    float stepTerm;
+    float squareWeight;
+    float toSlopeTerm;
+
+    elapsed = frame - from->time;
+    elapsedSquared = elapsed * elapsed;
+    inverseSpan = 1.0f / (to->time - from->time);
+    inverseSpanSquared = inverseSpan * inverseSpan;
+    fromTerm = 6.0f * elapsedSquared * inverseSpanSquared * inverseSpan;
+    middleTerm = 6.0f * elapsed * inverseSpanSquared;
+    stepTerm = 2.0f * elapsed * inverseSpan;
+    /* Matching workaround: squareWeight is a separate local, as in fn_80415530. Written inline in
+     * the subtraction of stepTerm, the multiply and the subtraction compile to a fused fmsubs,
+     * which the original does not have. Revisit if another compiler version or a -fp_contract
+     * setting is found for this code. */
+    squareWeight = 3.0f * elapsedSquared * inverseSpanSquared;
+    toSlopeTerm = squareWeight - stepTerm;
 
     return from->value * (fromTerm - middleTerm) + to->value * (-fromTerm + middleTerm) +
            from->tangentOut * (1.0f + (toSlopeTerm - stepTerm)) + to->tangentIn * toSlopeTerm;
@@ -533,24 +562,37 @@ float fn_8041564C(MotionKey *from, MotionKey *to, float frame) {
 /* The cubic Hermite interpolation of the value between two keys, with the tangentOut of the first
  * and the tangentIn of the second. */
 float fn_804156D8(MotionKey *from, MotionKey *to, float frame) {
-    float elapsed = frame - from->time;
-    float elapsedSquared = elapsed * elapsed;
-    float inverseSpan = 1.0f / (to->time - from->time);
-    float inverseSpanSquared = inverseSpan * inverseSpan;
-    float cubicTerm = inverseSpanSquared * (elapsedSquared * elapsed);
-    float quadraticTerm = elapsedSquared * inverseSpan;
-    float cubicWeight = 2.0f * cubicTerm * inverseSpan;
-    float squareWeight = 3.0f * elapsedSquared * inverseSpanSquared;
-    float fromWeight = cubicWeight - squareWeight;
-    float toWeight = -cubicWeight + squareWeight;
-    float fromSlopeWeight = elapsed + (cubicTerm - quadraticTerm - quadraticTerm);
-    float toSlopeWeight = cubicTerm - quadraticTerm;
+    float elapsed;
+    float elapsedSquared;
+    float inverseSpanSquared;
+    float cubicTerm;
+    float quadraticTerm;
+    float cubicWeight;
+    float squareWeight;
+    float fromWeight;
+    float toWeight;
+    float fromSlopeWeight;
+    float toSlopeWeight;
+    float inverseSpan;
+
+    elapsed = frame - from->time;
+    elapsedSquared = elapsed * elapsed;
+    inverseSpan = 1.0f / (to->time - from->time);
+    inverseSpanSquared = inverseSpan * inverseSpan;
+    cubicTerm = inverseSpanSquared * (elapsedSquared * elapsed);
+    quadraticTerm = elapsedSquared * inverseSpan;
+    cubicWeight = 2.0f * cubicTerm * inverseSpan;
+    squareWeight = 3.0f * elapsedSquared * inverseSpanSquared;
+    fromWeight = cubicWeight - squareWeight;
+    toWeight = -cubicWeight + squareWeight;
+    fromSlopeWeight = elapsed + (cubicTerm - quadraticTerm - quadraticTerm);
+    toSlopeWeight = cubicTerm - quadraticTerm;
 
     return from->value * (1.0f + fromWeight) + to->value * toWeight +
            from->tangentOut * fromSlopeWeight + to->tangentIn * toSlopeWeight;
 }
 
-void fn_8041575C(const MotionRange *range) {
+void fn_8041575C(MotionRange *range) {
     lbl_805E12C0.startFrame = range->startFrame;
     lbl_805E12C0.endFrame = range->endFrame;
     lbl_805E12C0.speed = range->speed;

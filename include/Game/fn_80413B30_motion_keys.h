@@ -84,7 +84,7 @@ void fn_80415530(float *value, float *slope, MotionKey *from, MotionKey *to, flo
 float fn_8041564C(MotionKey *from, MotionKey *to, float frame);
 float fn_804156D8(MotionKey *from, MotionKey *to, float frame);
 /* Copies a range into lbl_805E12C0. */
-void fn_8041575C(const MotionRange *range);
+void fn_8041575C(MotionRange *range);
 void fn_80415784(void);
 
 #ifdef __cplusplus

@@ -1249,6 +1249,12 @@ config.libs = [
                 ),
                 # Reading of animation curves. The flags follow the library code (fn_80410630.c,
                 # where the inline depth is shown); with level=1 the key reader must be a macro.
+                # Not complete: the registers differ in fn_80414120 (29 differing words),
+                # fn_804142B0 (6), fn_80414438 (17), fn_80414CBC (38), fn_80414FD0 (60),
+                # fn_8041474C and fn_804149E0 (41 each, including the larger frame; the original
+                # also saves r31, 2 more words) and fn_80415530 (58, including the frame offsets;
+                # the original also saves f28, 4 more words). The instruction sequences are
+                # otherwise the same.
                 Object(
                     NonMatching,
                     "Game/fn_80413B30.c",
