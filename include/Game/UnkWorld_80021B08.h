@@ -81,6 +81,11 @@ bool fn_800C5878(UnkWorld_80021B08 *world, const UnkSphere_80021C04 *sphere,
 boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack>
 fn_800C4374(UnkWorld_80021B08 *world,
             boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> probe);
+/* The attack object of a probe that is a CharaColliBaseCharInfo (its member at 0x38), or an empty
+ * pointer for any other probe (behaviour inferred; the world argument is unused). */
+boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack>
+fn_800C42D0(UnkWorld_80021B08 *world,
+            boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> probe);
 /* True when one of the probe hits in the list is a character info whose virtual function at
  * vtable offset 0x24 reports true (behaviour inferred). */
 bool fn_8015D2EC(UnkProbeList_80021FE4 *hits);
