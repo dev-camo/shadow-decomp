@@ -242,7 +242,7 @@ void EffectArranger::fn_80426700() {
     }
 }
 
-EffectArranger::EffectArranger(const UnkEffectElementData3 *definition, EffectLaunchInfo *info,
+EffectArranger::EffectArranger(UnkEffectElementData3 *definition, EffectLaunchInfo *info,
                                EffectManager *manager)
     : EffectElement(definition, info, manager), m_commandFlags(0), m_definitionFlags(0),
       m_launchInfo(0), m_command(0), m_commandHead(0), m_commandTail(0), m_commandPool(0),

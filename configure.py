@@ -1062,9 +1062,8 @@ config.libs = [
                 Object(Matching, "Game/fn_80425858.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/EffectManager.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/fn_80425860.cpp", cflags=cflags_effect),
-                # Constructor: six register/scheduling words differ (468 bytes in both).
-                # Update retains 60 differing words; the other two bodies have identical
-                # instruction words.
+                # Update retains 60 differing instruction words. The other three bodies have
+                # identical instruction words; fn_80426700 RTTI relocations remain unverified.
                 Object(NonMatching, "Game/EffectArranger.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/fn_8040D9D8.c"),
                 Object(Matching, "Game/fn_8040D498.c"),

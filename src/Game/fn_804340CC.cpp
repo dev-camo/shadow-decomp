@@ -11,7 +11,7 @@ EffectLaunchInfoRW3::EffectLaunchInfoRW3(System::UnkEffectFileData *file,
     : System::EffectLaunchInfo(file), field_0x8(dictionary), field_0xC(clump), field_0x10(field10) {
 }
 
-EffectArrangerRW3::EffectArrangerRW3(const System::UnkEffectElementData3 *definition,
+EffectArrangerRW3::EffectArrangerRW3(System::UnkEffectElementData3 *definition,
                                      System::EffectLaunchInfo *info, System::EffectManager *manager)
     : System::EffectArranger(definition, info, manager) {
     m_size -= sizeof(System::EffectArranger);

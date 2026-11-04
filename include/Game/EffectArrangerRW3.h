@@ -9,8 +9,8 @@ namespace RW3 {
 /* Class and base names come from RTTI. */
 class EffectArrangerRW3 : public System::EffectArranger {
   public:
-    EffectArrangerRW3(const System::UnkEffectElementData3 *definition,
-                      System::EffectLaunchInfo *info, System::EffectManager *manager);
+    EffectArrangerRW3(System::UnkEffectElementData3 *definition, System::EffectLaunchInfo *info,
+                      System::EffectManager *manager);
     virtual ~EffectArrangerRW3();
 };
 CHECK_SIZEOF(EffectArrangerRW3, 0x11C);
