@@ -26,15 +26,28 @@ class CharInfo {
      * which may be ids. */
     CharInfo(int arg0);
     virtual ~CharInfo();
-    /* The next two virtual functions are named after their implementations in CharInfo's vtable;
-     * their purpose is unknown. The second takes a command (behaviour inferred from its caller in
-     * ElecCircuitEntrance). */
-    virtual void fn_8007A4CC();
+    /* The remaining virtual functions are named after their implementations in CharInfo's vtable
+     * (0x8053D540), in slot order; their purpose is unknown. fn_8007A4CC stores its argument at
+     * 0x54 (callers pass -1 or forward a value; type inferred). fn_801DC980 and
+     * fn_801DC97C take a command: ElecCircuitEntrance passes one to the first, and the overrides
+     * of the second read the command type at 0x4 and the flags at 0x7. */
+    virtual void fn_8007A4CC(int arg0);
     virtual void fn_801DC980(CharCommand *command);
+    virtual void fn_801DC97C(CharCommand *command);
+    /* CharInfo's implementations return 0; the overrides return 0, 1 or another character info's
+     * result. The callers of all but fn_80078B3C (none found) test only the low byte of the
+     * result, so bool is inferred. */
+    virtual bool fn_80078B2C();
+    virtual bool fn_80078B34();
+    virtual bool fn_80078B3C();
+    virtual bool fn_80078B44();
+    virtual bool fn_80078B4C();
+    virtual bool fn_80073634();
 
     /* 0x3C */ u8 field_0x3C[0x50 - 0x3C];
     /* 0x50 */ s32 field_0x50; /* the constructor's arg0 */
-    /* 0x54 */ u8 field_0x54[0x5C - 0x54];
+    /* 0x54 */ s32 field_0x54; /* set by fn_8007A4CC; PlayerBase compares it with 0 as signed */
+    /* 0x58 */ u8 field_0x58[0x5C - 0x58];
     /* 0x5C */ s32 field_0x5C;         /* cleared by the constructor */
     /* 0x60 */ const void *field_0x60; /* the constructor stores a data address here */
 };

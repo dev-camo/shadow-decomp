@@ -64,6 +64,20 @@ class SetTransparentCommand : public CharCommand {
 };
 CHECK_SIZEOF(SetTransparentCommand, 0x20);
 
+/* Accelerates the character info (the constructor at 0x8006E354 passes 6 as the command id and
+ * copies the vector to 0x14). The ElecFan gadget sends it to push the character info it blows.
+ * The vector is taken by const reference (inferred): where ElecFan scales a vector for it, the
+ * original builds the scaled vector into an argument temporary after the allocation, as a
+ * reference bound to a by-value expression would. */
+class AccelerateCommand : public CharCommand {
+  public:
+    AccelerateCommand(const Fn8040Vector3 &acceleration, int arg1);
+    virtual ~AccelerateCommand();
+
+    /* 0x14 */ Fn8040Vector3 m_acceleration;
+};
+CHECK_SIZEOF(AccelerateCommand, 0x20);
+
 namespace Player {
 
 /* Makes the player ignore input for a time (the first member holds the time; the gadgets that
@@ -89,6 +103,18 @@ class LaunchCommand : public PlayerCommand {
     /* 0x14 */ int m_arg0;
 };
 CHECK_SIZEOF(Player::LaunchCommand, 0x18);
+
+/* The constructor at 0x8009AD8C passes 0x122 as the command id and stores arg0 at 0x14, widened
+ * to a word. The ElecFan gadget sends it with true when it starts to blow a character info and
+ * with false when it lets go of it (meaning inferred from that use). */
+class StreamCommand : public PlayerCommand {
+  public:
+    StreamCommand(bool arg0, int arg1);
+    virtual ~StreamCommand();
+
+    /* 0x14 */ int m_arg0;
+};
+CHECK_SIZEOF(Player::StreamCommand, 0x18);
 
 /* The command that the Coaster gadget sends to the character it carries. The constructor at
  * 0x80115B70 passes 0x112 as the command id, stores a copy of target at 0x14, the two vector

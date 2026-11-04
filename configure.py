@@ -1578,6 +1578,15 @@ config.libs = [
             # Constructor temporary cleanup, rotation registers, and literal order still differ.
             # Constructor temporary cleanup and float literal pool order still differ.
             Object(NonMatching, "Game/ElecSmallCube.cpp", cflags=cflags_game_cpp),
+            # Every function but UpdateBody is identical in every word and relocation. UpdateBody
+            # (0x80266BAC) differs in 75 of its 174 words: the original allocates the
+            # AccelerateCommand before it scales the player's vector at 0xE8 into the argument
+            # (fn_8040CDA8 builds the result in the temporary that the constructor receives), and it
+            # copies the ElecFanDraw position argument with a call to fn_800091EC whose result it
+            # passes on, where this build scales into a local first and copies the argument inline;
+            # the original's third saved register and larger frame (0x80 instead of 0x70) move the
+            # stack offsets of the other vectors.
+            Object(NonMatching, "Game/ElecFan.cpp", cflags=cflags_game_cpp),
             # Constructor temporary cleanup, matrix calls, and literal/weak metadata layout differ.
             Object(NonMatching, "Game/ElecRollHexa.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ArkCannon.cpp", cflags=cflags_game_cpp),

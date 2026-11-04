@@ -43,6 +43,10 @@ void fn_802E0B7C(const Fn8040Vector3 *center, const Fn8040Vector3 *rotation,
  * unknown). */
 void fn_802E0D6C(const Fn8040Vector3 *position, const Fn8040Vector3 *rotation, int arg2, float arg3,
                  float arg4);
+/* Forwards to fn_802E0B7C (a cylinder) with the colour lbl_805F06D8 and arg2 as its integer flag
+ * (behaviour inferred from the 0x28-byte wrapper; the original function name is unknown). */
+void fn_802E0C60(const Fn8040Vector3 *center, const Fn8040Vector3 *rotation, int arg2,
+                 float halfLength, float radius);
 }
 
 /* A zero-filled .sbss colour that several gadgets pass when they draw their range (purpose
