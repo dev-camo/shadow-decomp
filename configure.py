@@ -1076,6 +1076,9 @@ config.libs = [
                 Object(Matching, "Game/fn_8041FF08.c"),
                 Object(Matching, "Game/fn_80420438.c"),
                 Object(Matching, "Game/fn_80425858.cpp", cflags=cflags_effect),
+                # All six method bodies have identical instruction words and named relocation
+                # targets. Live local template copies have their original providers in
+                # fn_80425860.cpp, so this split is still NonMatching.
                 Object(NonMatching, "Game/EffectManager.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/fn_80425860.cpp", cflags=cflags_effect),
                 # All four bodies have identical instruction words; fn_80426700 RTTI
