@@ -869,7 +869,7 @@ config.libs = [
                 # functions, FindSceneNameIndex, ApplyScreenAspect, DrawScene, DrawLayer,
                 # DrawElement, UnpackPatternBlend, PackPatternBlend, SplitFloat, SetEntryColors,
                 # TintEntryColors, HoldKeyValue, InterpolateLinear, InterpolateColor,
-                # TransformPoint, UpdateEntries, UpdateEntry, EvaluateChannels,
+                # TransformPoint, UpdatePalette, UpdateEntries, UpdateEntry, EvaluateChannels,
                 # UpdateEntryTransform, RCPtr::Reset and the constructor of its holder match
                 # (rodata operands and the holder's vtable compared by target). SwapBytes differs by
                 # the register of the loaded value in four instructions. InterpolateKeys differs
@@ -892,12 +892,9 @@ config.libs = [
                 # stack frame offsets (the original's frame is 16 bytes larger) and the register
                 # of one comparison operand. Counting differing words at the same position (and,
                 # in parentheses, the original's words outside the runs that still match once the
-                # instruction streams are aligned): UpdatePalette (244 words, the original's 243)
-                # differs in 164 (111): the registers of the arguments and locals, plus the
-                # branches of the early exit and of the loop heads (the opcode counts differ only
-                # in b, beq, bne and mr). SetEntryPattern (317 words, the original's 319) differs
-                # in 201 (105): the original copies the vertices that change layout word by word
-                # through integer registers and addresses some of the stores differently.
+                # instruction streams are aligned): SetEntryPattern (317 words, the original's
+                # 319) differs in 201 (105): the original copies the vertices that change layout
+                # word by word through integer registers and addresses some stores differently.
                 # RCPtr::Assign (117 words, the original's 120) differs in 100 (24): the original
                 # keeps the object to release in r4 and copies it to r3 for each call, and the
                 # allocation of the holder passes line 132 of csdRCObject.h where the original
