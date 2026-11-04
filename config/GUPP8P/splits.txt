@@ -126,6 +126,14 @@ Game/fn_800E59F8.cpp:
 	.sdata      start:0x805E62B8 end:0x805E62D8
 	.sdata2     start:0x805F4488 end:0x805F44C0
 
+Game/MonsterControl.cpp:
+	.text       start:0x8013A67C end:0x8013B1A8
+	.rodata     start:0x804C0C40 end:0x804C0D48
+	.data       start:0x80529FE8 end:0x8052A120
+	.sdata      start:0x805E7150 end:0x805E7178
+	.sbss       start:0x805F0020 end:0x805F0038
+	.sdata2     start:0x805F5440 end:0x805F5458
+
 Game/fn_80160B18.cpp:
 	.text       start:0x80160EFC end:0x80160F84
 
