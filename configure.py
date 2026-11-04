@@ -2892,10 +2892,15 @@ config.libs = [
             # inlining expands the first two into their callers (fn_804035A8 0x80 bytes instead
             # of 0x30, MWSFTAG_UpdateTagInf 0x20C instead of 0xB8). Revisit when the library's
             # real compiler flags are known.
-            # NonMatching: MWSFSFX_CnvFrmInfToSfx, 12 of 231 words: two chroma plane loads in the
-            # other order with r4/r5 exchanged (7 words), and five string offsets, because the
-            # original pools the function's four error texts in the reverse of their order of use
-            # (the reason is not known).
+            # NonMatching, USA raw differing words per function: MWSFSFX_CnvFrmInfToSfx 12 of 231;
+            # the other functions are exact. 7 words are in the YCC plane block: the original
+            # loads plane 1's buffer before its pitch (this build loads the pitch first for all
+            # three planes, as the original does for planes 0 and 2) and gives r5 to the luma
+            # pitch and r4 to the halved height (this build the other way round). 5 are string
+            # offsets: the original pools the function's four error texts in the reverse of their
+            # order of use. Per-switch inline helpers, function-local static texts and named
+            # static texts declared in their order of use keep that order; only declaring named
+            # texts in the reverse order reproduces it.
             Object(
                 NonMatching,
                 "CRI/mwsfdsfx.c",
