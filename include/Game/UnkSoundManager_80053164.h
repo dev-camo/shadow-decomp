@@ -29,9 +29,10 @@ bool fn_801D560C(UnkSoundManager_80053164 *manager, u16 id, int arg2, int arg3);
  * Otherwise it starts a new sound with fn_801D5B74 (bit 1 of arg4 selects that call's flag),
  * passes it to fn_801D9780, passes arg4 with the position to fn_801D9688 and arg4 with arg6 to
  * fn_801D9714, and stores arg5 as its byte at 0x6 and owner as its word at 0x18. arg4 to arg6 are
- * not understood. */
+ * not understood. arg5 is wider than a byte: ElecFan converts a computed value to a signed byte
+ * and sign-extends it when it passes it (the width is otherwise unknown). */
 bool fn_801D53C4(UnkSoundManager_80053164 *manager, u16 id, const Fn8040Vector3 *position,
-                 const void *owner, u16 arg4, u8 arg5, s16 arg6);
+                 const void *owner, u16 arg4, int arg5, s16 arg6);
 }
 
 #endif

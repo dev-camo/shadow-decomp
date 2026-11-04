@@ -360,6 +360,10 @@ void fn_8040FEBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix,
 /* result = vector rotated by a rotation vector. */
 void fn_80410098(Fn8040Vector3 *result, const Fn8040Vector3 *vector, const Fn8040Vector3 *rotation,
                  int order);
+/* A segment helper outside fn_8040F364.cpp: the distance from point to the closest point of the
+ * segment, which it also stores in closest unless that is null (behaviour inferred). */
+float fn_8003C63C(const Fn8040Vector3 *point, const UnkSegment_80020A20 *segment,
+                  Fn8040Vector3 *closest);
 /* Advances a position and a velocity under a constant acceleration and a drag coefficient over
  * a duration (behaviour inferred; the segment is in fn_804103E8.cpp). */
 void fn_804103E8(Fn8040Vector3 *position, Fn8040Vector3 *velocity,
