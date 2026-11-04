@@ -1221,8 +1221,21 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
-                # Groups of numbered resources. Not complete: fn_80411818 and fn_80411DEC are not
-                # written yet, and fn_804124DC, fn_80413058, fn_80413318 and fn_80413538 differ.
+                # Groups of numbered resources. Not complete (differing words, GUPE8P; for the two
+                # functions of different length, original words left unmatched by
+                # difflib.SequenceMatcher(autojunk=False) over the instruction words):
+                # fn_804124DC 12 of 70 (r5 and r6 swapped in the inlined item lookup); fn_80413058 7
+                # of 122 (r5 and r6 swapped in the overlap loop, and li r30,0 where the original
+                # copies mr r30,r29 before the last loop); fn_80413318 0x21C bytes instead of 0x220,
+                # 74 of 136 words differ: the original branches to an else block (li) for a zero
+                # records offset where this build sets 0 first, it schedules one subf before two
+                # register copies where this build has it after them, and it allocates the saved
+                # registers differently; fn_80413538 0x478 bytes instead of 0x47C, 94 of 287
+                # words differ: the original computes the name bytes of a group that owns itself in
+                # r0 and copies them (mr r31,r0), and gives the saved registers in another order.
+                # The .bss objects come out in first-use order; the original has nameBuffer first,
+                # the definition order a C++ compile keeps, and fn_804124DC's initialisation test is
+                # the code MWCC gives the guard of a C++ function-local static.
                 Object(
                     NonMatching,
                     "Game/fn_80411714.c",
