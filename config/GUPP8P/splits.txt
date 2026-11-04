@@ -197,6 +197,13 @@ Game/ElecBarrier.cpp:
 	.sbss       start:0x805F1138 end:0x805F1148
 	.sdata2     start:0x805F8C38 end:0x805F8C58
 
+Game/ElecBomb.cpp:
+	.text       start:0x802642A8 end:0x80264B54
+	.rodata     start:0x804F6A68 end:0x804F6AB0
+	.data       start:0x8054D0B8 end:0x8054D138
+	.sdata      start:0x805EB7A8 end:0x805EB7D8
+	.sdata2     start:0x805F8C58 end:0x805F8C90
+
 Game/ElecRollHexa.cpp:
 	.text       start:0x802674D4 end:0x80268128
 	.rodata     start:0x804F6EE8 end:0x804F7000
