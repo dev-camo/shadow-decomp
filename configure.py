@@ -1303,6 +1303,29 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
+                # stMtnAbortBlend to fn_8041FD0C: 29 of the 67 functions are written. A word differs
+                # when its instruction or its relocation target (symbol, or section and offset)
+                # differs; the words are counted positionally and, where noted, as the larger length
+                # minus the exact longest common subsequence (LCS). 16 are identical. Many loads of
+                # 0.0f, 0.0001f and 1.0f differ only in their target: the original takes these from
+                # the shared pool of Game/fn_804157E8.c and fn_80415854.c. The other constants of
+                # this unit have the original values but sit 4 bytes later in its .sdata2 (the unit
+                # defines the pool values itself and lacks the constants of the missing functions).
+                # fn_804172D8 and fn_8041734C differ in 2 pool loads each, fn_8041E420 and
+                # fn_8041FD0C in 1, fn_8041CC18 and fn_8041CD6C in 4, fn_8041AD94 in 8 (6 pool loads
+                # and 2 loads of -0.0001f) and fn_804188A0 in 2 (a pool load and the conversion
+                # constant), and stMtnControlWorkFlag only in the 2 words that address its jump
+                # table, which the original keeps in .data at 0x80569F28. The others:
+                # stMtnRequestMotion is 28 words against 30 in the original (25 positional, 2 by
+                # LCS: the original tests the control a second time before the lookup of the
+                # player); fn_8041E480 32 words (19 by LCS; the loads of the conversion constant and
+                # of the matrix stack are scheduled in another order, as in fn_8041FD70, and 4 loads
+                # of the angle constants differ in placement); fn_8041AFCC 18 words (14 by LCS) and
+                # fn_8041B6FC 94 words against 98 (85 positional, 41 by LCS): the original forms the
+                # address of the tracks of a step (0x10) before indexing them, and fn_8041B6FC also
+                # keeps the address of the curves of each track in a register. The .bss at
+                # 0x805E12E0 that many of the missing functions use is constructed by the static
+                # initializer of the file, which this unit does not have yet.
                 Object(
                     NonMatching,
                     "Game/fn_80416198.cpp",
