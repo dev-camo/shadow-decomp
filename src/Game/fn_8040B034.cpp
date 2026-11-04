@@ -235,30 +235,22 @@ void fn_8040B6F8(Fn8040Matrix34 *matrix) {
     fn_80325384(matrix, &lbl_805E0720);
 }
 
-/* The three results are computed before the first store. */
 void fn_8040B67C(Fn8040Vector3 *result, const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector) {
-    float x = matrix->values[0][0] * vector->x + matrix->values[0][1] * vector->y +
-              matrix->values[0][2] * vector->z + matrix->values[0][3];
-    float y = matrix->values[1][0] * vector->x + matrix->values[1][1] * vector->y +
-              matrix->values[1][2] * vector->z + matrix->values[1][3];
-    float z = matrix->values[2][0] * vector->x + matrix->values[2][1] * vector->y +
-              matrix->values[2][2] * vector->z + matrix->values[2][3];
-    result->x = x;
-    result->y = y;
-    result->z = z;
+    result->Set(matrix->values[0][0] * vector->x + matrix->values[0][1] * vector->y +
+                    matrix->values[0][2] * vector->z + matrix->values[0][3],
+                matrix->values[1][0] * vector->x + matrix->values[1][1] * vector->y +
+                    matrix->values[1][2] * vector->z + matrix->values[1][3],
+                matrix->values[2][0] * vector->x + matrix->values[2][1] * vector->y +
+                    matrix->values[2][2] * vector->z + matrix->values[2][3]);
 }
 
-/* The three results are computed before the first store. */
 void fn_8040B618(Fn8040Vector3 *result, const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector) {
-    float x = matrix->values[0][0] * vector->x + matrix->values[0][1] * vector->y +
-              matrix->values[0][2] * vector->z;
-    float y = matrix->values[1][0] * vector->x + matrix->values[1][1] * vector->y +
-              matrix->values[1][2] * vector->z;
-    float z = matrix->values[2][0] * vector->x + matrix->values[2][1] * vector->y +
-              matrix->values[2][2] * vector->z;
-    result->x = x;
-    result->y = y;
-    result->z = z;
+    result->Set(matrix->values[0][0] * vector->x + matrix->values[0][1] * vector->y +
+                    matrix->values[0][2] * vector->z,
+                matrix->values[1][0] * vector->x + matrix->values[1][1] * vector->y +
+                    matrix->values[1][2] * vector->z,
+                matrix->values[2][0] * vector->x + matrix->values[2][1] * vector->y +
+                    matrix->values[2][2] * vector->z);
 }
 
 void fn_8040B59C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *offset) {
@@ -314,15 +306,15 @@ void fn_8040B228(Fn8040Matrix34 *matrix, const Fn8040Vector4 *quaternion) {
     float xs = quaternion->x * scale;
     float ys = quaternion->y * scale;
     float zs = quaternion->z * scale;
-    float xx = quaternion->x * xs;
-    float yy = quaternion->y * ys;
-    float zz = quaternion->z * zs;
-    float xy = quaternion->x * ys;
-    float xz = quaternion->x * zs;
-    float yz = quaternion->y * zs;
     float wx = quaternion->w * xs;
     float wy = quaternion->w * ys;
     float wz = quaternion->w * zs;
+    float xx = quaternion->x * xs;
+    float xy = quaternion->x * ys;
+    float xz = quaternion->x * zs;
+    float yy = quaternion->y * ys;
+    float yz = quaternion->y * zs;
+    float zz = quaternion->z * zs;
 
     matrix->Set(1.0f - (yy + zz), xy - wz, xz + wy, 0.0f, xy + wz, 1.0f - (xx + zz), yz - wx, 0.0f,
                 xz - wy, yz + wx, 1.0f - (xx + yy), 0.0f);

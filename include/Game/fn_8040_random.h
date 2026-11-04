@@ -12,12 +12,14 @@ extern "C" {
 
 /* Returns a random float between min and max (behaviour inferred). */
 float fn_8040EC80(float min, float max);
-/* Returns a random float from 0 up to but excluding 1 (behaviour inferred). */
+/* Returns a random float from 0 to 1: below 1 before rounding to float, so the largest values round
+ * to exactly 1 (behaviour inferred). */
 float fn_8040EE90(void);
 /* Returns a random float from 0 up to and including 1 (behaviour inferred). */
 float fn_8040ECF8(void);
-/* Returns a random integer from 0 to count - 1 (behaviour inferred); passes count straight to
- * the generator's integer method (Random::NextInt, name inferred). */
+/* Returns floor(NextFloat() * count), normally 0 to count - 1; because NextFloat can round to 1,
+ * it can return count (behaviour inferred). Passes count straight to the generator's integer method
+ * (Random::NextInt, name inferred). */
 u32 fn_8040EA90(u32 count);
 
 #ifdef __cplusplus
