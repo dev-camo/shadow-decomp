@@ -3155,6 +3155,9 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # NonMatching: AXRNA_SetPlaySw, 1 of 99 words: the add that forms the voice's end
+            # address has its source operands in the other order (original `add r8,r7,r8`,
+            # loop + last; this source `add r8,r8,r7`); the other 22 functions match.
             Object(
                 NonMatching,
                 "CRI/ax_rna.c",

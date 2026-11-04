@@ -9,8 +9,8 @@
  * here (the last two are inlined); they are kept so that MWCC lays out .bss and the literals as
  * the original does, together with the stand-in axrna_OrderStandIn for another stripped function.
  *
- * Not yet matching: AXRNA_SetPlaySw differs in 3 words, all in the additions that form the
- * voice's end and current addresses (an operand order and a register number). */
+ * Not yet matching: AXRNA_SetPlaySw differs in 1 word, the addition that forms the voice's end
+ * address (the same registers, the two source operands in the other order). */
 #include "CRI/cri_xpt.h"
 #include <string.h>
 #include <dolphin/os.h>
@@ -520,11 +520,11 @@ void AXRNA_SetPlaySw(AXRNA rna, Sint32 sw) {
                 last = rna->bufsize - 1;
                 loop = rna->buf[i];
                 cur = rna->buf[i] + start;
-                last += loop;
                 addr.loopFlag = 1;
                 addr.format = AX_PB_FORMAT_PCM16;
                 addr.loopAddressHi = loop >> 16;
                 addr.loopAddressLo = loop;
+                last += loop;
                 addr.endAddressHi = last >> 16;
                 addr.endAddressLo = last;
                 addr.currentAddressHi = cur >> 16;
