@@ -256,7 +256,7 @@ RwFreeList *fn_8047FF50(RwFreeList *freeList, void *mem) {
 
 /* Calls callBack on each entry in use */
 RwFreeList *fn_804800DC(RwFreeList *freeList, void (*callBack)(void *mem, void *data), void *data) {
-    RwUInt32 heapSize;
+    RwInt32 heapSize;
     RwLLLink *block;
     RwLLLink *end;
     RwLLLink *next;
