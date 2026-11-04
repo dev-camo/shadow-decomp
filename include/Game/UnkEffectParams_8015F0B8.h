@@ -1,6 +1,7 @@
 #ifndef GAME_UNKEFFECTPARAMS_8015F0B8_H
 #define GAME_UNKEFFECTPARAMS_8015F0B8_H
 
+#include "Game/fn_8040_vector_types.h"
 #include "boost/shared_ptr.hpp"
 #include <dolphin/types.h>
 #include "layout_check.h"
@@ -16,7 +17,9 @@ struct RpClump;
 struct UnkEffectParams_8015F0B8 {
     UnkEffectParams_8015F0B8(const boost::shared_ptr<CharInfo> &charInfo, int kind);
 
-    /* 0x00 */ u8 field_0x0[0x34];
+    /* 0x00 */ u8 field_0x0[0x4];
+    /* 0x04 */ Fn8040Vector3 field_0x4; /* the constructor copies the character info's position */
+    /* 0x10 */ u8 field_0x10[0x34 - 0x10];
     /* 0x34 */ float field_0x34;
     /* 0x38 */ u8 field_0x38[0x40 - 0x38];
     /* 0x40 */ float field_0x40;
