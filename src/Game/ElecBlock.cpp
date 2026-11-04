@@ -5,6 +5,7 @@
 #include "Game/ElecBlock.h"
 #include "Game/CharInfo.h"
 #include "Game/DebugDisp.h"
+#include "Game/GadgetAccelerate.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/UnkParamCursor_800CBC20.h"
 #include "Game/UnkSoundManager_80053164.h"
@@ -48,38 +49,6 @@ ElecBlock::~ElecBlock() {
         delete m_model;
         m_model = 0;
     }
-}
-
-/* Advances a position by dt at a speed that changes by acceleration * dt, limited to maxSpeed
- * while it rises (name inferred). Only a rising speed is limited: with a negative acceleration
- * (the block above its position) the speed falls below zero, and there is no lower limit, so the
- * descent is never capped. */
-static inline void Accelerate(float *position, float *speed, float acceleration, float maxSpeed,
-                              float dt) {
-    float startSpeed = *speed;
-    float accelerationTime = dt;
-    float cruiseTime = 0.0f;
-
-    if (startSpeed >= maxSpeed) {
-        accelerationTime = 0.0f;
-        cruiseTime = dt;
-    } else {
-        float speedStep = acceleration * dt;
-        float newSpeed = startSpeed + speedStep;
-
-        if (newSpeed > maxSpeed) {
-            *speed = maxSpeed;
-            accelerationTime = (maxSpeed - startSpeed) / acceleration;
-            cruiseTime = dt - accelerationTime;
-        } else {
-            *speed = newSpeed;
-        }
-    }
-
-    float accelerationStep = acceleration * accelerationTime;
-
-    *position = *position + startSpeed * accelerationTime +
-                0.5f * (accelerationTime * accelerationStep) + maxSpeed * cruiseTime;
 }
 
 void ElecBlock::UpdateBody(float dt) {
