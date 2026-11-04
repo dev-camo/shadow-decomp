@@ -134,6 +134,15 @@ Game/MonsterControl.cpp:
 	.sbss       start:0x805F0020 end:0x805F0038
 	.sdata2     start:0x805F5440 end:0x805F5458
 
+Game/ElecBlock.cpp:
+	.text       start:0x801589C0 end:0x801593A4
+	.ctors      start:0x804AADDC end:0x804AADE0
+	.rodata     start:0x804C31C0 end:0x804C32C8
+	.data       start:0x8052BC78 end:0x8052BE48
+	.bss        start:0x80581210 end:0x80581220
+	.sdata      start:0x805E75E0 end:0x805E7608
+	.sdata2     start:0x805F5A70 end:0x805F5AD0
+
 Game/fn_80160B18.cpp:
 	.text       start:0x80160EFC end:0x80160F84
 

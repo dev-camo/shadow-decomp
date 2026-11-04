@@ -109,8 +109,10 @@ class GadgetModelInfo {
     void fn_8016271C();
     void fn_80162790();
     void fn_80160480(int arg0);
-    /* Attaches a character info to the part with id arg0 (behaviour inferred). */
-    void fn_80161FC8(int arg0, const boost::weak_ptr<CharInfo> &info);
+    /* Attaches a character info to the part with id arg0 and returns whether that succeeded:
+     * false when the info has expired or no entry has that id, otherwise the result of
+     * fn_80162084 (behaviour and result type inferred). */
+    bool fn_80161FC8(int arg0, const boost::weak_ptr<CharInfo> &info);
     /* Returns the attack object of the part with id arg0 (behaviour inferred). */
     boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack> fn_80161428(int arg0);
     /* Returns the entry of the array at 0x0 of the object at 0x30 whose id equals arg0, or null
@@ -153,6 +155,10 @@ class GadgetModelInfo {
      * 0x64 whose name equals name, or an empty pointer (behaviour inferred from its body). */
     boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack>
     fn_80161334(const char *name);
+    /* Calls CharaColliBase::UnkSlot17(vector, selector) on the probe of each node of the list at
+     * 0x64 whose id equals arg0, as fn_801617D0 passes its arguments to SetSize (behaviour
+     * inferred). */
+    void fn_80161740(int arg0, const Fn8040Vector3 *vector, int selector);
 
     /* 0x04 */ u8 field_0x4[0x38]; /* Unrecovered members, including native subobjects. */
     /* 0x3C */ UnkBitFlags_80014E04 field_0x3C;
