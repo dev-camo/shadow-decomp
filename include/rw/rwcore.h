@@ -900,10 +900,12 @@ typedef struct RxClusterDefinition {
 } RxClusterDefinition;
 CHECK_SIZEOF(RxClusterDefinition, 0x10);
 
-/* What a node requires of a cluster on input (RxClusterValidityReq) */
-#define rxCLREQ_DONTWANT 0
-#define rxCLREQ_REQUIRED 1
-#define rxCLREQ_OPTIONAL 2
+/* What a node requires of a cluster on input */
+typedef enum RxClusterValidityReq {
+    rxCLREQ_DONTWANT,
+    rxCLREQ_REQUIRED,
+    rxCLREQ_OPTIONAL
+} RxClusterValidityReq;
 
 /* What becomes of a cluster on one of a node's outputs (RxClusterValid) */
 #define rxCLVALID_NOCHANGE 0
@@ -930,7 +932,7 @@ CHECK_SIZEOF(RxClusterRef, 0xC);
 typedef struct RxIoSpec {
     /* 0x00 */ RwUInt32 numClustersOfInterest;
     /* 0x04 */ RxClusterRef *clustersOfInterest;
-    /* 0x08 */ RwInt32 *inputRequirements; /* rxCLREQ_* per cluster of interest */
+    /* 0x08 */ RxClusterValidityReq *inputRequirements; /* one per cluster of interest */
     /* 0x0C */ RwUInt32 numOutputs;
     /* 0x10 */ RxOutputSpec *outputs;
 } RxIoSpec;
@@ -1070,7 +1072,7 @@ CHECK_SIZEOF(RxExecutionContext, 0x18);
 /* A cluster an unlocked pipeline needs on input, and the packet slot it occupies */
 typedef struct RxPipelineRequiresCluster {
     /* 0x0 */ RxClusterDefinition *clusterDef;
-    /* 0x4 */ RwInt32 rqdOrOpt; /* rxCLREQ_* */
+    /* 0x4 */ RxClusterValidityReq rqdOrOpt;
     /* 0x8 */ RwUInt32 slotIndex;
 } RxPipelineRequiresCluster;
 CHECK_SIZEOF(RxPipelineRequiresCluster, 0xC);
@@ -2064,7 +2066,7 @@ typedef struct rxScopeTrace rxScopeTrace;
  * inferred) */
 struct rxReqEntry {
     /* 0x00 */ RxClusterDefinition *clusterDef;
-    /* 0x04 */ RwInt32 rqdOrOpt;    /* rxCLREQ_* */
+    /* 0x04 */ RxClusterValidityReq rqdOrOpt;
     /* 0x08 */ RwUInt32 numInsLeft; /* the node's inputs that do not yet invalidate it */
     /* 0x0C */ rxScopeTrace *scope;
     /* 0x10 */ rxReqEntry *nextInScope;

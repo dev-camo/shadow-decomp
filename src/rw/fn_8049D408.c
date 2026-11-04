@@ -14,13 +14,11 @@ typedef void (*rxEnumClustersCallBack)(RxClusterDefinition *clusterDef, RwUInt32
 
 /* Finds the entry for a cluster in a node's requirements; NULL if there is none */
 rxReqEntry *fn_8049D408(rxReq *req, RxClusterDefinition *clusterDef) {
-    RwUInt32 numReqs = req->numReqs;
-
-    if (numReqs != 0) {
+    if (req->numReqs != 0) {
         rxReqEntry *entry = req->reqs;
         RwUInt32 i;
 
-        for (i = 0; i < numReqs; i++) {
+        for (i = 0; i < req->numReqs; i++) {
             if (entry->clusterDef == clusterDef) {
                 return entry;
             }
@@ -50,8 +48,11 @@ RwUInt32 fn_8049D4B8(RxIoSpec *io, RxClusterDefinition *clusterDef) {
     return (RwUInt32)-1;
 }
 
-/* An entry of a node's requirements by index; NULL past the last one (name inferred) */
-#define ReqGetEntry(req, index) ((index) < (req)->numReqs ? &(req)->reqs[index] : NULL)
+/* An entry of a node's requirements by index; NULL past the last one (name inferred). MWCC types
+ * a conditional with the plain (void *)0 NULL as void *; the typed null keeps it an entry pointer
+ * (with plain NULL, fn_8049E1A4 and fn_8049E54C allocate registers differently). */
+#define ReqGetEntry(req, index)                                                                    \
+    ((index) < (req)->numReqs ? &(req)->reqs[index] : (rxReqEntry *)NULL)
 
 /* One input of a node invalidates a cluster: when none of its inputs leaves the cluster valid any
  * more, the node no longer requires it, and neither do the nodes after it that only get the
@@ -105,8 +106,9 @@ static inline rxReq *ReqCreate(RwUInt32 maxReqs, RxPipelineNode *node) {
 
 /* Adds a cluster to a node's requirements, or makes an existing entry required when the new
  * requirement is; returns the entry (name inferred) */
-static inline rxReqEntry *ReqAddEntry(rxReq *req, RxClusterDefinition *clusterDef, RwInt32 rqdOrOpt,
-                                      RwUInt32 numIns, RxPipelineNode *node) {
+static inline rxReqEntry *ReqAddEntry(rxReq *req, RxClusterDefinition *clusterDef,
+                                      RxClusterValidityReq rqdOrOpt, RwUInt32 numIns,
+                                      RxPipelineNode *node) {
     rxReqEntry *entry = fn_8049D408(req, clusterDef);
 
     if (entry != NULL) {

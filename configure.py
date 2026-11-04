@@ -635,6 +635,9 @@ config.libs = [
                 Object(Matching, "rw/fn_8049B14C.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049B1F8.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049B8BC.c", cflags=cflags_game),
+                # fn_8049D934 differs in 10 words: in the duplicate check of the clusters of interest
+                # the index, its 12-byte offset and the hoisted count take r7/r5/r6 instead of
+                # r5/r6/r7. All other functions and the data match.
                 Object(NonMatching, "rw/fn_8049D408.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049EA2C.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049F2A4.c", cflags=cflags_game),
