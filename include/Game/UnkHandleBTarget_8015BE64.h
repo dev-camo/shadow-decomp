@@ -6,6 +6,7 @@
 #include <dolphin/types.h>
 #include "layout_check.h"
 
+class CharInfo;
 class UnkProbeList_80021FE4;
 class GadgetModelInfo;
 class UnkPair_8015C9DC;
@@ -122,7 +123,16 @@ CHECK_OFFSETOF(UnkHandleBTarget_8015BE64, m_flags, 0x2C);
 CHECK_OFFSETOF(UnkHandleBTarget_8015BE64, field_0x34, 0x34);
 CHECK_SIZEOF(UnkHandleBTarget_8015BE64, 0x40);
 
+/* What fn_8015AA84 calls for each character info it takes from the hits (name inferred). context is
+ * the pointer the caller passed to fn_8015AA84: fn_8015AA84 forwards it unchanged without reading
+ * it (the argument is kept in r29 and passed as r4), so each callback converts it to its own
+ * context record. */
+typedef void (*ColliHitCallback)(boost::shared_ptr<CharInfo> hit, void *context);
+
 extern "C" {
+/* Calls callback with the character infos taken from the hits of args, passing context through
+ * (behaviour inferred). */
+void fn_8015AA84(ColliDetectArgs *args, ColliHitCallback callback, void *context);
 /* Wraps a probe in a handle target (behaviour inferred). */
 boost::shared_ptr<UnkHandleBTarget_8015BE64>
 fn_8015B8C4(boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> probe);
