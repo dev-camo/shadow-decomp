@@ -133,11 +133,6 @@ enum {
     MATERIAL_CHANNEL_CUTOFF = (1 << MATERIAL_FRACTION_BITS) - 1
 };
 
-/* Byte material channel to fixed point; helper name inferred from the channel conversions. */
-inline unsigned int MaterialChannelToFixed(unsigned char channel) {
-    return static_cast<unsigned int>(channel) << MATERIAL_FRACTION_BITS;
-}
-
 /* Accessed record prefixes; encoded strides are 0x10 and 0x14 bytes respectively. */
 struct UnkMatAlphaData : UnkValueData {
     /* 0x0C */ unsigned char value;
