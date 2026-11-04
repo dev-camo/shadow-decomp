@@ -3148,7 +3148,8 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            # SFPTS_ReadPtsQue: 11 differing words (branch layout of the two found arms).
+            # SFPTS_ReadPtsQue: 11 differing words at matching offsets from conditional success-branch
+            # layout in the found tests and an extra queue-index copy.
             Object(
                 NonMatching,
                 "CRI/sfd_pts.c",
