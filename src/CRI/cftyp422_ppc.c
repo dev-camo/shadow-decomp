@@ -1,9 +1,7 @@
 /* CRI Sofdec ARGB8888 conversion of YCC 4:2:0 planar frames (cftyp422_ppc.c): the alpha table
- * makers registered with the SFX converter, the converter entry that picks the plain or the
- * table-driven paired-single converter, and the initialiser of the static YCC to RGB tables.
- *
- * Not yet decompiled: the two paired-single converters cnvDynamicYcc420plnToArgb8888 and
- * cnvStaticYcc420plnToArgb8888, declared in cft.h.
+ * makers registered with the SFX converter, the paired-single converters into RGBA8 4x4 tiles,
+ * the converter entry that picks the plain or the table-driven one, and the initialiser of the
+ * static YCC to RGB tables.
  *
  * File, function and table names follow RE4's GameCube symbols, whose functions of these names
  * come in the same order with the same roles; all but CFT_Ycc420plnToArgb8888 (which takes the
@@ -17,9 +15,9 @@
 
 #include "CRI/cft.h"
 
-/* Tables of the paired-single converters, which read them and save GQR4 in gqr_save around a
- * conversion: the luma gain and the green and blue contribution of Cb and the red and green
- * contribution of Cr. In reverse order these give the original layout: gqr_save at 0, cr_r at 4,
+/* Tables of the static converter, the luma gain and the green and blue contribution of Cb and the
+ * red and green contribution of Cr, and gqr_save, where both paired-single converters keep GQR4
+ * during a conversion. In reverse order these give the original layout: gqr_save at 0, cr_r at 4,
  * cr_g at 0x404, cb_b at 0x804, cb_g at 0xC04 and the 32-byte aligned y at 0x1020. */
 Float32 y[256] __attribute__((aligned(32)));
 static Float32 cb_g[256];
@@ -71,6 +69,533 @@ void CFT_Ycc420plnToArgb8888(const SFX_FRM *frm, const SFX_FRM *dstfrm, const SF
         cnvStaticYcc420plnToArgb8888(&src, &dst);
     } else {
         cnvDynamicYcc420plnToArgb8888(&src, &dst, arg->tbl);
+    }
+}
+
+/* The two paired-single converters write the output as RGBA8 4x4 tiles of 64 bytes: a 32-byte AR
+ * half (the alpha and red byte pairs, 8 bytes per pixel row) followed by a 32-byte GB half (the
+ * green and blue pairs). A tile takes four luma rows, each read as one big-endian word of four
+ * samples, and two rows of Cb and Cr, each read as one halfword of two samples: the high byte
+ * serves pixels 0 and 1, the low byte pixels 2 and 3, chroma row 0 serves luma rows 0 and 1 and
+ * chroma row 1 luma rows 2 and 3. Red is the luma value plus the Cr red value, green the luma value
+ * plus the Cb and Cr green values, blue the luma value plus the Cb blue value. The table values
+ * and the static converter's alpha are loaded with lfs, which on the Gekko fills both halves of the
+ * paired-single register. The luma values of pixels 0 and 1 and of pixels 2 and 3 are paired, the
+ * chroma values added to both halves, and the (alpha, red) and (green, blue) pairs stored with
+ * psq_st through GQR4, which the converters set to unsigned 8-bit quantisation with scale 0
+ * (0x00040004) and restore from gqr_save at the end.
+ * The first luma word and the chroma halfwords of a tile are read before dcbz is applied to the
+ * addresses of its two halves, and the table values are looked up again for each pixel row.
+ *
+ * The tile counts (ywidth / 4 tiles per tile row, height / 4 tile rows) and the output skip of
+ * (pitch - ywidth) / 4 tiles after each tile row are signed divisions. The plane strides are
+ * unsigned shifts that round down: the luma stride is ywidth truncated to a multiple of 4 (ywidth 5
+ * steps 4 bytes per row and 12 bytes for three rows) and the chroma stride is cbwidth truncated to
+ * a multiple of 2 (cbwidth 3 steps 2 bytes per row and 4 bytes for two rows). crwidth is not read:
+ * the Cr plane is stepped with the Cb stride. */
+
+/* Converter with the static tables of CFT_Ycc420plnToArgb8888Init and alpha 255. */
+void cnvStaticYcc420plnToArgb8888(const CFT_YCC420PLN *src, const CFT_ARGBDST *dst) {
+    Sint32 wblk = src->ywidth / 4;
+    Sint32 hblk = dst->height / 4;
+    Sint32 dskip = (dst->pitch - src->ywidth) / 4 * 16; /* in words, 16 per tile */
+    Uint32 ystride = (Uint32)src->ywidth >> 2;          /* luma words per row */
+    Uint32 cstride = (Uint32)src->cbwidth >> 1;         /* chroma halfwords per row */
+    const Uint32 *yp = (const Uint32 *)src->y;
+    const Uint16 *cbrow = (const Uint16 *)src->cb;
+    const Uint16 *crrow = (const Uint16 *)src->cr;
+    register Uint32 *ar = dst->buf;     /* AR half of the tile */
+    register Uint32 *gb = dst->buf + 8; /* GB half of the tile */
+    const Uint16 *cbp0;
+    const Uint16 *crp0;
+    const Uint16 *cbp1;
+    const Uint16 *crp1;
+    Uint32 luma;
+    Uint32 cb;
+    Uint32 cr;
+    register Uint32 gqr;
+    register Uint32 gqr_u8 = 0x00040004;
+    register Float32 alpha = 255.0f;
+    /* table values of the four luma samples of a row and of the two chroma samples of a row */
+    register Float32 l0, l1, l2, l3;
+    register Float32 cr_r0, cr_g0, cb_g0, cb_b0, cr_r1, cr_g1, cb_g1, cb_b1;
+    /* the summed green chroma values, the luma pairs, the channel pairs and the pair stored */
+    register __vec2x32float__ grn0, grn1, l01, l23, red01, grn01, blu01, red23, grn23, blu23, pair;
+    Sint32 i;
+    Sint32 j;
+
+    asm {
+        mfspr gqr, GQR4
+    }
+    gqr_save = gqr;
+    asm {
+        mtspr GQR4, gqr_u8
+    }
+    for (i = 0; i < hblk; i++) {
+        cbp0 = cbrow;
+        crp0 = crrow;
+        cbp1 = cbrow + cstride;
+        crp1 = crrow + cstride;
+        for (j = 0; j < wblk; j++) {
+            /* pixel row 0, with chroma row 0; the plane words are read before the dcbz */
+            luma = yp[0];
+            cb = *cbp0;
+            cr = *crp0;
+            __dcbz(ar, 0);
+            __dcbz(gb, 0);
+            cr_r0 = cr_r[cr >> 8];
+            cr_g0 = cr_g[cr >> 8];
+            cb_g0 = cb_g[cb >> 8];
+            cb_b0 = cb_b[cb >> 8];
+            cr_r1 = cr_r[cr & 0xFF];
+            cr_g1 = cr_g[cr & 0xFF];
+            cb_g1 = cb_g[cb & 0xFF];
+            cb_b1 = cb_b[cb & 0xFF];
+            l0 = y[luma >> 24];
+            l1 = y[(luma >> 16) & 0xFF];
+            l2 = y[(luma >> 8) & 0xFF];
+            l3 = y[luma & 0xFF];
+            asm {
+                ps_add grn0, cr_g0, cb_g0
+                ps_add grn1, cr_g1, cb_g1
+                ps_merge11 l01, l0, l1
+                ps_merge11 l23, l2, l3
+                ps_add red01, l01, cr_r0
+                ps_add grn01, l01, grn0
+                ps_add blu01, l01, cb_b0
+                ps_add red23, l23, cr_r1
+                ps_add grn23, l23, grn1
+                ps_add blu23, l23, cb_b1
+                ps_merge10 pair, alpha, red01
+                psq_st pair, 0x0(ar), 0, 4
+                ps_merge11 pair, alpha, red01
+                psq_st pair, 0x2(ar), 0, 4
+                ps_merge10 pair, alpha, red23
+                psq_st pair, 0x4(ar), 0, 4
+                ps_merge11 pair, alpha, red23
+                psq_st pair, 0x6(ar), 0, 4
+                ps_merge00 pair, grn01, blu01
+                psq_st pair, 0x0(gb), 0, 4
+                ps_merge11 pair, grn01, blu01
+                psq_st pair, 0x2(gb), 0, 4
+                ps_merge00 pair, grn23, blu23
+                psq_st pair, 0x4(gb), 0, 4
+                ps_merge11 pair, grn23, blu23
+                psq_st pair, 0x6(gb), 0, 4
+            }
+
+            /* pixel row 1, with chroma row 0 */
+            luma = yp[ystride];
+            cr_r0 = cr_r[cr >> 8];
+            cr_g0 = cr_g[cr >> 8];
+            cb_g0 = cb_g[cb >> 8];
+            cb_b0 = cb_b[cb >> 8];
+            cr_r1 = cr_r[cr & 0xFF];
+            cr_g1 = cr_g[cr & 0xFF];
+            cb_g1 = cb_g[cb & 0xFF];
+            cb_b1 = cb_b[cb & 0xFF];
+            l0 = y[luma >> 24];
+            l1 = y[(luma >> 16) & 0xFF];
+            l2 = y[(luma >> 8) & 0xFF];
+            l3 = y[luma & 0xFF];
+            asm {
+                ps_add grn0, cr_g0, cb_g0
+                ps_add grn1, cr_g1, cb_g1
+                ps_merge11 l01, l0, l1
+                ps_merge11 l23, l2, l3
+                ps_add red01, l01, cr_r0
+                ps_add grn01, l01, grn0
+                ps_add blu01, l01, cb_b0
+                ps_add red23, l23, cr_r1
+                ps_add grn23, l23, grn1
+                ps_add blu23, l23, cb_b1
+                ps_merge10 pair, alpha, red01
+                psq_st pair, 0x8(ar), 0, 4
+                ps_merge11 pair, alpha, red01
+                psq_st pair, 0xa(ar), 0, 4
+                ps_merge10 pair, alpha, red23
+                psq_st pair, 0xc(ar), 0, 4
+                ps_merge11 pair, alpha, red23
+                psq_st pair, 0xe(ar), 0, 4
+                ps_merge00 pair, grn01, blu01
+                psq_st pair, 0x8(gb), 0, 4
+                ps_merge11 pair, grn01, blu01
+                psq_st pair, 0xa(gb), 0, 4
+                ps_merge00 pair, grn23, blu23
+                psq_st pair, 0xc(gb), 0, 4
+                ps_merge11 pair, grn23, blu23
+                psq_st pair, 0xe(gb), 0, 4
+            }
+            yp += ystride * 2;
+
+            /* pixel row 2, with chroma row 1 */
+            luma = yp[0];
+            cb = *cbp1;
+            cr = *crp1;
+            cr_r0 = cr_r[cr >> 8];
+            cr_g0 = cr_g[cr >> 8];
+            cb_g0 = cb_g[cb >> 8];
+            cb_b0 = cb_b[cb >> 8];
+            cr_r1 = cr_r[cr & 0xFF];
+            cr_g1 = cr_g[cr & 0xFF];
+            cb_g1 = cb_g[cb & 0xFF];
+            cb_b1 = cb_b[cb & 0xFF];
+            l0 = y[luma >> 24];
+            l1 = y[(luma >> 16) & 0xFF];
+            l2 = y[(luma >> 8) & 0xFF];
+            l3 = y[luma & 0xFF];
+            asm {
+                ps_add grn0, cr_g0, cb_g0
+                ps_add grn1, cr_g1, cb_g1
+                ps_merge11 l01, l0, l1
+                ps_merge11 l23, l2, l3
+                ps_add red01, l01, cr_r0
+                ps_add grn01, l01, grn0
+                ps_add blu01, l01, cb_b0
+                ps_add red23, l23, cr_r1
+                ps_add grn23, l23, grn1
+                ps_add blu23, l23, cb_b1
+                ps_merge10 pair, alpha, red01
+                psq_st pair, 0x10(ar), 0, 4
+                ps_merge11 pair, alpha, red01
+                psq_st pair, 0x12(ar), 0, 4
+                ps_merge10 pair, alpha, red23
+                psq_st pair, 0x14(ar), 0, 4
+                ps_merge11 pair, alpha, red23
+                psq_st pair, 0x16(ar), 0, 4
+                ps_merge00 pair, grn01, blu01
+                psq_st pair, 0x10(gb), 0, 4
+                ps_merge11 pair, grn01, blu01
+                psq_st pair, 0x12(gb), 0, 4
+                ps_merge00 pair, grn23, blu23
+                psq_st pair, 0x14(gb), 0, 4
+                ps_merge11 pair, grn23, blu23
+                psq_st pair, 0x16(gb), 0, 4
+            }
+
+            /* pixel row 3, with chroma row 1 */
+            luma = yp[ystride];
+            cr_r0 = cr_r[cr >> 8];
+            cr_g0 = cr_g[cr >> 8];
+            cb_g0 = cb_g[cb >> 8];
+            cb_b0 = cb_b[cb >> 8];
+            cr_r1 = cr_r[cr & 0xFF];
+            cr_g1 = cr_g[cr & 0xFF];
+            cb_g1 = cb_g[cb & 0xFF];
+            cb_b1 = cb_b[cb & 0xFF];
+            l0 = y[luma >> 24];
+            l1 = y[(luma >> 16) & 0xFF];
+            l2 = y[(luma >> 8) & 0xFF];
+            l3 = y[luma & 0xFF];
+            asm {
+                ps_add grn0, cr_g0, cb_g0
+                ps_add grn1, cr_g1, cb_g1
+                ps_merge11 l01, l0, l1
+                ps_merge11 l23, l2, l3
+                ps_add red01, l01, cr_r0
+                ps_add grn01, l01, grn0
+                ps_add blu01, l01, cb_b0
+                ps_add red23, l23, cr_r1
+                ps_add grn23, l23, grn1
+                ps_add blu23, l23, cb_b1
+                ps_merge10 pair, alpha, red01
+                psq_st pair, 0x18(ar), 0, 4
+                ps_merge11 pair, alpha, red01
+                psq_st pair, 0x1a(ar), 0, 4
+                ps_merge10 pair, alpha, red23
+                psq_st pair, 0x1c(ar), 0, 4
+                ps_merge11 pair, alpha, red23
+                psq_st pair, 0x1e(ar), 0, 4
+                ps_merge00 pair, grn01, blu01
+                psq_st pair, 0x18(gb), 0, 4
+                ps_merge11 pair, grn01, blu01
+                psq_st pair, 0x1a(gb), 0, 4
+                ps_merge00 pair, grn23, blu23
+                psq_st pair, 0x1c(gb), 0, 4
+                ps_merge11 pair, grn23, blu23
+                psq_st pair, 0x1e(gb), 0, 4
+            }
+            yp = yp - ystride * 2 + 1;
+            cbp0++;
+            crp0++;
+            cbp1++;
+            crp1++;
+            ar += 16;
+            gb += 16;
+        }
+        yp += ystride * 3;
+        cbrow += cstride * 2;
+        crrow += cstride * 2;
+        ar += dskip;
+        gb += dskip;
+    }
+    gqr = gqr_save;
+    asm {
+        mtspr GQR4, gqr
+    }
+}
+
+/* Table-driven converter: the values come from the CFT_ARGBENT entries of tbl, the Y entries
+ * first, then 256 Cb and 256 Cr entries. The luma value is the red member of the Y entry and the
+ * alpha its alpha member; Cr contributes its red and green members, Cb its green and blue
+ * members. */
+void cnvDynamicYcc420plnToArgb8888(const CFT_YCC420PLN *src, const CFT_ARGBDST *dst,
+                                   const Uint8 *tbl) {
+    const CFT_ARGBENT *ytbl = (const CFT_ARGBENT *)tbl;
+    const CFT_ARGBENT *cbtbl = ytbl + 256;
+    const CFT_ARGBENT *crtbl = ytbl + 512;
+    Sint32 wblk = src->ywidth / 4;
+    Sint32 hblk = dst->height / 4;
+    Sint32 dskip = (dst->pitch - src->ywidth) / 4 * 16; /* in words, 16 per tile */
+    Uint32 ystride = (Uint32)src->ywidth >> 2;          /* luma words per row */
+    Uint32 cstride = (Uint32)src->cbwidth >> 1;         /* chroma halfwords per row */
+    const Uint32 *yp = (const Uint32 *)src->y;
+    const Uint16 *cbrow = (const Uint16 *)src->cb;
+    const Uint16 *crrow = (const Uint16 *)src->cr;
+    register Uint32 *ar = dst->buf;     /* AR half of the tile */
+    register Uint32 *gb = dst->buf + 8; /* GB half of the tile */
+    const Uint16 *cbp0;
+    const Uint16 *crp0;
+    const Uint16 *cbp1;
+    const Uint16 *crp1;
+    Uint32 luma;
+    Uint32 cb;
+    Uint32 cr;
+    register Uint32 gqr;
+    register Uint32 gqr_u8 = 0x00040004;
+    /* table values of the four luma samples of a row (luma and alpha) and of the two chroma
+     * samples of a row */
+    register Float32 l0, l1, l2, l3, a0, a1, a2, a3;
+    register Float32 cr_r0, cr_g0, cb_g0, cb_b0, cr_r1, cr_g1, cb_g1, cb_b1;
+    /* the summed green chroma values, the luma pairs, the channel pairs and the pair stored */
+    register __vec2x32float__ grn0, grn1, l01, l23, red01, grn01, blu01, red23, grn23, blu23, pair;
+    Sint32 i;
+    Sint32 j;
+
+    asm {
+        mfspr gqr, GQR4
+    }
+    gqr_save = gqr;
+    asm {
+        mtspr GQR4, gqr_u8
+    }
+    for (i = 0; i < hblk; i++) {
+        cbp0 = cbrow;
+        crp0 = crrow;
+        cbp1 = cbrow + cstride;
+        crp1 = crrow + cstride;
+        for (j = 0; j < wblk; j++) {
+            /* pixel row 0, with chroma row 0; the plane words are read before the dcbz */
+            luma = yp[0];
+            cb = *cbp0;
+            cr = *crp0;
+            __dcbz(ar, 0);
+            __dcbz(gb, 0);
+            cr_r0 = crtbl[cr >> 8].r;
+            cr_g0 = crtbl[cr >> 8].g;
+            cb_g0 = cbtbl[cb >> 8].g;
+            cb_b0 = cbtbl[cb >> 8].b;
+            cr_r1 = crtbl[cr & 0xFF].r;
+            cr_g1 = crtbl[cr & 0xFF].g;
+            cb_g1 = cbtbl[cb & 0xFF].g;
+            cb_b1 = cbtbl[cb & 0xFF].b;
+            l0 = ytbl[luma >> 24].r;
+            l1 = ytbl[(luma >> 16) & 0xFF].r;
+            l2 = ytbl[(luma >> 8) & 0xFF].r;
+            l3 = ytbl[luma & 0xFF].r;
+            a0 = ytbl[luma >> 24].a;
+            a1 = ytbl[(luma >> 16) & 0xFF].a;
+            a2 = ytbl[(luma >> 8) & 0xFF].a;
+            a3 = ytbl[luma & 0xFF].a;
+            asm {
+                ps_add grn0, cr_g0, cb_g0
+                ps_add grn1, cr_g1, cb_g1
+                ps_merge11 l01, l0, l1
+                ps_merge11 l23, l2, l3
+                ps_add red01, l01, cr_r0
+                ps_add grn01, l01, grn0
+                ps_add blu01, l01, cb_b0
+                ps_add red23, l23, cr_r1
+                ps_add grn23, l23, grn1
+                ps_add blu23, l23, cb_b1
+                ps_merge10 pair, a0, red01
+                psq_st pair, 0x0(ar), 0, 4
+                ps_merge11 pair, a1, red01
+                psq_st pair, 0x2(ar), 0, 4
+                ps_merge10 pair, a2, red23
+                psq_st pair, 0x4(ar), 0, 4
+                ps_merge11 pair, a3, red23
+                psq_st pair, 0x6(ar), 0, 4
+                ps_merge00 pair, grn01, blu01
+                psq_st pair, 0x0(gb), 0, 4
+                ps_merge11 pair, grn01, blu01
+                psq_st pair, 0x2(gb), 0, 4
+                ps_merge00 pair, grn23, blu23
+                psq_st pair, 0x4(gb), 0, 4
+                ps_merge11 pair, grn23, blu23
+                psq_st pair, 0x6(gb), 0, 4
+            }
+
+            /* pixel row 1, with chroma row 0 */
+            luma = yp[ystride];
+            cr_r0 = crtbl[cr >> 8].r;
+            cr_g0 = crtbl[cr >> 8].g;
+            cb_g0 = cbtbl[cb >> 8].g;
+            cb_b0 = cbtbl[cb >> 8].b;
+            cr_r1 = crtbl[cr & 0xFF].r;
+            cr_g1 = crtbl[cr & 0xFF].g;
+            cb_g1 = cbtbl[cb & 0xFF].g;
+            cb_b1 = cbtbl[cb & 0xFF].b;
+            l0 = ytbl[luma >> 24].r;
+            l1 = ytbl[(luma >> 16) & 0xFF].r;
+            l2 = ytbl[(luma >> 8) & 0xFF].r;
+            l3 = ytbl[luma & 0xFF].r;
+            a0 = ytbl[luma >> 24].a;
+            a1 = ytbl[(luma >> 16) & 0xFF].a;
+            a2 = ytbl[(luma >> 8) & 0xFF].a;
+            a3 = ytbl[luma & 0xFF].a;
+            asm {
+                ps_add grn0, cr_g0, cb_g0
+                ps_add grn1, cr_g1, cb_g1
+                ps_merge11 l01, l0, l1
+                ps_merge11 l23, l2, l3
+                ps_add red01, l01, cr_r0
+                ps_add grn01, l01, grn0
+                ps_add blu01, l01, cb_b0
+                ps_add red23, l23, cr_r1
+                ps_add grn23, l23, grn1
+                ps_add blu23, l23, cb_b1
+                ps_merge10 pair, a0, red01
+                psq_st pair, 0x8(ar), 0, 4
+                ps_merge11 pair, a1, red01
+                psq_st pair, 0xa(ar), 0, 4
+                ps_merge10 pair, a2, red23
+                psq_st pair, 0xc(ar), 0, 4
+                ps_merge11 pair, a3, red23
+                psq_st pair, 0xe(ar), 0, 4
+                ps_merge00 pair, grn01, blu01
+                psq_st pair, 0x8(gb), 0, 4
+                ps_merge11 pair, grn01, blu01
+                psq_st pair, 0xa(gb), 0, 4
+                ps_merge00 pair, grn23, blu23
+                psq_st pair, 0xc(gb), 0, 4
+                ps_merge11 pair, grn23, blu23
+                psq_st pair, 0xe(gb), 0, 4
+            }
+            yp += ystride * 2;
+
+            /* pixel row 2, with chroma row 1 */
+            luma = yp[0];
+            cb = *cbp1;
+            cr = *crp1;
+            cr_r0 = crtbl[cr >> 8].r;
+            cr_g0 = crtbl[cr >> 8].g;
+            cb_g0 = cbtbl[cb >> 8].g;
+            cb_b0 = cbtbl[cb >> 8].b;
+            cr_r1 = crtbl[cr & 0xFF].r;
+            cr_g1 = crtbl[cr & 0xFF].g;
+            cb_g1 = cbtbl[cb & 0xFF].g;
+            cb_b1 = cbtbl[cb & 0xFF].b;
+            l0 = ytbl[luma >> 24].r;
+            l1 = ytbl[(luma >> 16) & 0xFF].r;
+            l2 = ytbl[(luma >> 8) & 0xFF].r;
+            l3 = ytbl[luma & 0xFF].r;
+            a0 = ytbl[luma >> 24].a;
+            a1 = ytbl[(luma >> 16) & 0xFF].a;
+            a2 = ytbl[(luma >> 8) & 0xFF].a;
+            a3 = ytbl[luma & 0xFF].a;
+            asm {
+                ps_add grn0, cr_g0, cb_g0
+                ps_add grn1, cr_g1, cb_g1
+                ps_merge11 l01, l0, l1
+                ps_merge11 l23, l2, l3
+                ps_add red01, l01, cr_r0
+                ps_add grn01, l01, grn0
+                ps_add blu01, l01, cb_b0
+                ps_add red23, l23, cr_r1
+                ps_add grn23, l23, grn1
+                ps_add blu23, l23, cb_b1
+                ps_merge10 pair, a0, red01
+                psq_st pair, 0x10(ar), 0, 4
+                ps_merge11 pair, a1, red01
+                psq_st pair, 0x12(ar), 0, 4
+                ps_merge10 pair, a2, red23
+                psq_st pair, 0x14(ar), 0, 4
+                ps_merge11 pair, a3, red23
+                psq_st pair, 0x16(ar), 0, 4
+                ps_merge00 pair, grn01, blu01
+                psq_st pair, 0x10(gb), 0, 4
+                ps_merge11 pair, grn01, blu01
+                psq_st pair, 0x12(gb), 0, 4
+                ps_merge00 pair, grn23, blu23
+                psq_st pair, 0x14(gb), 0, 4
+                ps_merge11 pair, grn23, blu23
+                psq_st pair, 0x16(gb), 0, 4
+            }
+
+            /* pixel row 3, with chroma row 1 */
+            luma = yp[ystride];
+            cr_r0 = crtbl[cr >> 8].r;
+            cr_g0 = crtbl[cr >> 8].g;
+            cb_g0 = cbtbl[cb >> 8].g;
+            cb_b0 = cbtbl[cb >> 8].b;
+            cr_r1 = crtbl[cr & 0xFF].r;
+            cr_g1 = crtbl[cr & 0xFF].g;
+            cb_g1 = cbtbl[cb & 0xFF].g;
+            cb_b1 = cbtbl[cb & 0xFF].b;
+            l0 = ytbl[luma >> 24].r;
+            l1 = ytbl[(luma >> 16) & 0xFF].r;
+            l2 = ytbl[(luma >> 8) & 0xFF].r;
+            l3 = ytbl[luma & 0xFF].r;
+            a0 = ytbl[luma >> 24].a;
+            a1 = ytbl[(luma >> 16) & 0xFF].a;
+            a2 = ytbl[(luma >> 8) & 0xFF].a;
+            a3 = ytbl[luma & 0xFF].a;
+            asm {
+                ps_add grn0, cr_g0, cb_g0
+                ps_add grn1, cr_g1, cb_g1
+                ps_merge11 l01, l0, l1
+                ps_merge11 l23, l2, l3
+                ps_add red01, l01, cr_r0
+                ps_add grn01, l01, grn0
+                ps_add blu01, l01, cb_b0
+                ps_add red23, l23, cr_r1
+                ps_add grn23, l23, grn1
+                ps_add blu23, l23, cb_b1
+                ps_merge10 pair, a0, red01
+                psq_st pair, 0x18(ar), 0, 4
+                ps_merge11 pair, a1, red01
+                psq_st pair, 0x1a(ar), 0, 4
+                ps_merge10 pair, a2, red23
+                psq_st pair, 0x1c(ar), 0, 4
+                ps_merge11 pair, a3, red23
+                psq_st pair, 0x1e(ar), 0, 4
+                ps_merge00 pair, grn01, blu01
+                psq_st pair, 0x18(gb), 0, 4
+                ps_merge11 pair, grn01, blu01
+                psq_st pair, 0x1a(gb), 0, 4
+                ps_merge00 pair, grn23, blu23
+                psq_st pair, 0x1c(gb), 0, 4
+                ps_merge11 pair, grn23, blu23
+                psq_st pair, 0x1e(gb), 0, 4
+            }
+            yp = yp - ystride * 2 + 1;
+            cbp0++;
+            crp0++;
+            cbp1++;
+            crp1++;
+            ar += 16;
+            gb += 16;
+        }
+        yp += ystride * 3;
+        cbrow += cstride * 2;
+        crrow += cstride * 2;
+        ar += dskip;
+        gb += dskip;
+    }
+    gqr = gqr_save;
+    asm {
+        mtspr GQR4, gqr
     }
 }
 

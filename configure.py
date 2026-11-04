@@ -2893,6 +2893,14 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # NonMatching: 4 of 7 functions match; the .rodata and .bss bytes match. The paired-single converters
+            # are C with asm statements only for GQR4 and the paired-single adds, merges and quantised stores; all
+            # their raw words differ: cnvDynamicYcc420plnToArgb8888 is 0x50C bytes (original 0x5C8, 370 words) and
+            # cnvStaticYcc420plnToArgb8888 0x498 (original 0x508, 322 words). The static converter's plane and
+            # table loads come in the same order as the original's relative to dcbz and the stores; in the dynamic
+            # one the compiler keeps the chroma table values of pixel rows 0 and 2 for rows 1 and 3, where the
+            # original loads 3 and 5 of them again. CFT_Ycc420plnToArgb8888Init differs in 9 of 63 words (f6, f7
+            # and f8 rotate).
             # Matching workaround: -inline auto,deferred. MWCC then emits the functions (and lays out .bss) in
             # reverse order, as the original has them; revisit when the original unit's flags are found.
             Object(
