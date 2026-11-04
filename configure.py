@@ -2421,9 +2421,11 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            # NonMatching: SFXA_Create, 12 of 36 words: the same instructions, but the address of
-            # sfxa_work is formed before the constants instead of after them, so the constants take
-            # other registers; the other 7 functions and the .bss layout match.
+            # NonMatching: SFXA_Create, 12 of 36 words: the same instructions and relocation
+            # targets in another order: the high half of sfxa_work's address (lis) is formed
+            # before the first store instead of after the second, and 255 is loaded before the
+            # store of 100 instead of after it, so the constants take other registers; the other 7
+            # functions and the .bss layout match.
             Object(
                 NonMatching,
                 "CRI/sfx_alp.c",
