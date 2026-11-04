@@ -25,6 +25,7 @@ void EffectArranger::Update(float deltaTime) {
     }
     if ((m_flags & ELEMENT_FLAG_4) != 0) {
         fn_8042A5C0(fn_8042A5D0(), m_launchPool);
+        EffectCommandExec *next;
         EffectCommandExec *command = m_commandHead;
         while (command != 0) {
             if (command->m_command->type != COMMAND_LAUNCH &&
@@ -45,7 +46,7 @@ void EffectArranger::Update(float deltaTime) {
                 if (command == m_commandTail) {
                     m_commandTail = command->m_prev;
                 }
-                EffectCommandExec *next = command->m_next;
+                next = command->m_next;
                 delete command;
                 command = next;
             } else {
@@ -66,6 +67,7 @@ void EffectArranger::Update(float deltaTime) {
     fn_80426700();
     if ((m_commandFlags & COMMAND_STOP_REQUESTED) == 0) {
         fn_8042A5C0(fn_8042A5D0(), m_commandPool);
+        EffectCommandExec *next;
         EffectCommandExec *command = m_commandHead;
         while (command != 0) {
             if (command->m_command->type == COMMAND_LAUNCH ||
@@ -86,7 +88,7 @@ void EffectArranger::Update(float deltaTime) {
                 if (command == m_commandTail) {
                     m_commandTail = command->m_prev;
                 }
-                EffectCommandExec *next = command->m_next;
+                next = command->m_next;
                 delete command;
                 command = next;
             } else {
@@ -100,6 +102,7 @@ void EffectArranger::Update(float deltaTime) {
     }
     fn_80425C34(this, deltaTime);
     fn_8042A5C0(fn_8042A5D0(), m_launchPool);
+    EffectCommandExec *next;
     EffectCommandExec *command = m_commandHead;
     while (command != 0) {
         if (command->m_command->type != COMMAND_LAUNCH &&
@@ -120,7 +123,7 @@ void EffectArranger::Update(float deltaTime) {
             if (command == m_commandTail) {
                 m_commandTail = command->m_prev;
             }
-            EffectCommandExec *next = command->m_next;
+            next = command->m_next;
             delete command;
             command = next;
         } else {
