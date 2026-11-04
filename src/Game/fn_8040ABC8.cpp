@@ -9,7 +9,7 @@
 #include <dolphin/os.h>
 #include <dolphin/types.h>
 #include "layout_check.h"
-#include <Game/UnkTick.h>
+#include "Game/UnkTick.h"
 
 /* Rounds value up to a multiple of the power-of-two alignment (name inferred). The behaviour comes
  * from its code; the parameter types are unverified, since its own unit is not decompiled. */
