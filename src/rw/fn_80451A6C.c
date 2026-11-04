@@ -97,9 +97,9 @@ RwBool fn_80451D60(RwUInt32 flags) {
     SkinGlobals *globals = &lbl_8056D708;
 
     if (flags & SKINPIPELINEOPENGENERIC) {
-        globals->pipelines[SKINPIPELINEGENERIC] =
-            fn_8046335C(rpID_SKINPLUGIN, SKINPIPELINEGENERIC, fn_8044D924, fn_8044DA3C, fn_80463428,
-                        fn_8044DE74);
+        globals->pipelines[SKINPIPELINEGENERIC] = fn_8046335C(
+            rpID_SKINPLUGIN, SKINPIPELINEGENERIC, (RpGameCubeInstanceCallBack)fn_8044D924,
+            (RpGameCubeInstanceCallBack)fn_8044DA3C, fn_80463428, fn_8044DE74);
     }
     if (flags & SKINPIPELINEOPENMATFX) {
         globals->pipelines[SKINPIPELINEMATFX] = fn_8046335C(

@@ -230,6 +230,8 @@ void fn_8044D554(RpSkin *skin, RwMatrix *matrices, void *srcPositions, void *dst
     /* GQR5 loads the byte weights as unsigned bytes scaled by 2^-7 */
     register RwUInt32 gqr5 = 0x07040000;
     register RwUInt32 gqr6 = 0;
+    /* GQR5 passes through this register to and from savedGqr5 */
+    register RwUInt32 oldGqr5;
     RwUInt32 savedGqr5; /* GQR5 is restored after the kernels */
     RwInt32 i;
 
@@ -248,8 +250,8 @@ void fn_8044D554(RpSkin *skin, RwMatrix *matrices, void *srcPositions, void *dst
     }
 
     asm {
-        mfspr r0, GQR5
-        stw r0, savedGqr5
+        mfspr oldGqr5, GQR5
+        stw oldGqr5, savedGqr5
         mtspr GQR5, gqr5
         mtspr GQR6, gqr6
     }
@@ -275,8 +277,8 @@ void fn_8044D554(RpSkin *skin, RwMatrix *matrices, void *srcPositions, void *dst
     }
 
     asm {
-        lwz r0, savedGqr5
-        mtspr GQR5, r0
+        lwz oldGqr5, savedGqr5
+        mtspr GQR5, oldGqr5
     }
 
     DCFlushRange(dstPositions, (numVertices * (params.positionSize * 3) + 31) & ~31);
@@ -292,8 +294,12 @@ void fn_8044D6E8(RpSkin *skin, RwMatrix *matrices, void *srcPositions, void *src
     register RwUInt32 gqr5 = 0x07040000;
     register RwUInt32 gqr6 = 0;
     register RwUInt32 gqr7 = 0;
+    /* GQR5 passes through this register to and from savedGqr5 */
+    register RwUInt32 oldGqr5;
     RwUInt32 savedGqr5; /* GQR5 is restored after the kernels */
+    RwMatrix *matrix;
     RwInt32 i;
+    RwUInt32 size;
 
     params.dstPositions = dstPositions;
     params.dstNormals = dstNormals;
@@ -305,17 +311,13 @@ void fn_8044D6E8(RpSkin *skin, RwMatrix *matrices, void *srcPositions, void *src
         RwUInt8 typeSize[5] = {1, 1, 2, 2, 4};
         RwUInt8 normalScale[5] = {0, 6, 0, 14, 0};
 
-        params.positionSize = typeSize[format->posType];
-        params.normalSize = typeSize[format->normalType];
         gqr6 = (format->posFrac << 8) | quantizeType[format->posType];
         gqr6 |= gqr6 << 16;
+        params.positionSize = typeSize[format->posType];
         gqr7 = (normalScale[format->normalType] << 8) | quantizeType[format->normalType];
         gqr7 |= gqr7 << 16;
-        if (format->normalNbt != 0) {
-            params.nbtSize = params.normalSize * 6;
-        } else {
-            params.nbtSize = 0;
-        }
+        params.normalSize = typeSize[format->normalType];
+        params.nbtSize = format->normalNbt != 0 ? params.normalSize * 6 : 0;
     } else {
         params.positionSize = 4;
         params.normalSize = 4;
@@ -323,8 +325,8 @@ void fn_8044D6E8(RpSkin *skin, RwMatrix *matrices, void *srcPositions, void *src
     }
 
     asm {
-        mfspr r0, GQR5
-        stw r0, savedGqr5
+        mfspr oldGqr5, GQR5
+        stw oldGqr5, savedGqr5
         mtspr GQR5, gqr5
         mtspr GQR6, gqr6
         mtspr GQR7, gqr7
@@ -333,8 +335,7 @@ void fn_8044D6E8(RpSkin *skin, RwMatrix *matrices, void *srcPositions, void *src
     switch (skin->maxNumWeightsForVertex) {
     case 1:
         for (i = 0; i < numVertices; i++) {
-            RwMatrix *matrix = &matrices[skin->vertexBoneIndices[i] & 0xFF];
-
+            matrix = &matrices[skin->vertexBoneIndices[i] & 0xFF];
             fn_80482458((RwV3d *)dstPositions + i, (RwV3d *)srcPositions + i, matrix);
             fn_80482504((RwV3d *)dstNormals + i, (RwV3d *)srcNormals + i, matrix);
         }
@@ -351,19 +352,21 @@ void fn_8044D6E8(RpSkin *skin, RwMatrix *matrices, void *srcPositions, void *src
     }
 
     asm {
-        lwz r0, savedGqr5
-        mtspr GQR5, r0
+        lwz oldGqr5, savedGqr5
+        mtspr GQR5, oldGqr5
     }
 
-    DCFlushRange(dstPositions, ((numVertices * (params.positionSize * 3) + 31) & ~31) +
-                                   numVertices * (params.nbtSize + params.normalSize * 3));
+    size = (numVertices * (params.positionSize * 3) + 31) & ~31;
+    size += numVertices * (params.nbtSize + params.normalSize * 3);
+    DCFlushRange(dstPositions, size);
     GXInvalidateVtxCache();
 }
 
 /* Instances a skinned geometry: rigid skins and toon skins drawn with the frame use the skin
  * instancing, others the generic instancing; geometries with native data use the native skin
  * instancing in render mode 1 */
-RpAtomic *fn_8044D924(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
+void *fn_8044D924(void *object, RpGameCubeRenderMesh *renderMesh) {
+    RpAtomic *atomic = object;
     RpGeometry *geometry = atomic->geometry;
     RpSkin *skin = fn_8044CCAC(geometry);
     void *owner;
@@ -402,16 +405,18 @@ RpAtomic *fn_8044D924(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
 
 /* Reinstances a skinned geometry: updates the bone matrices and skins the vertices into a fresh
  * vertex buffer */
-RpAtomic *fn_8044DA3C(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
+void *fn_8044DA3C(void *object, RpGameCubeRenderMesh *renderMesh) {
+    RpGameCubeInstanceData *instance;
+    RpAtomic *atomic = object;
     RpGeometry *geometry = atomic->geometry;
     RpSkin *skin = RPSKINGEOMETRYGETDATA(geometry);
 
     if (skin->maxNumWeightsForVertex > 1 || skin->pipelineType == SKINPIPELINETOON) {
-        RpGameCubeInstanceData *instance = (RpGameCubeInstanceData *)(renderMesh->repEntry + 1);
         void *owner = renderMesh->repEntry->owner;
         void **bindPositions;
         void **bindNormals;
 
+        instance = (RpGameCubeInstanceData *)(renderMesh->repEntry + 1);
         if (((RwObject *)owner)->type == rpATOMIC) {
             SkinAtomicData *atomicData = RPSKINATOMICGETDATA(owner);
 
@@ -470,9 +475,9 @@ RpAtomic *fn_8044DA3C(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
     return atomic;
 }
 
-/* Loads a matrix as a GX position (and normal) matrix: RenderWare matrices are column vectors with
- * the x and z axes the other way round */
-static inline void SkinLoadMatrix(RwMatrix *matrix, RwUInt32 index, RwBool normals) {
+/* Loads a bone matrix into a GX position (and normal) matrix slot: RenderWare matrices are column
+ * vectors with the x and z axes the other way round */
+void fn_8044DC4C(RwMatrix *matrix, RwUInt32 index, RwBool normals) {
     Mtx mtx;
 
     mtx[0][0] = -matrix->right.x;
@@ -493,27 +498,25 @@ static inline void SkinLoadMatrix(RwMatrix *matrix, RwUInt32 index, RwBool norma
     }
 }
 
-/* Loads a bone matrix into a GX matrix slot */
-void fn_8044DC4C(RwMatrix *matrix, RwUInt32 index, RwBool normals) {
-    SkinLoadMatrix(matrix, index, normals);
-}
-
 /* Loads the bone matrices that a split mesh uses into consecutive GX matrix slots */
 void fn_8044DD1C(RpSkin *skin, RwInt32 meshIndex, RwBool normals) {
-    SkinRLE *meshRuns = &skin->skinSplitData.meshRLECount[meshIndex];
-    RwUInt32 firstRun = meshRuns->start & 0x7F;
-    RwUInt8 numRuns = meshRuns->length;
-    RwUInt32 index = 0;
+    RwUInt32 firstRun;
     RwUInt8 run;
+    RwUInt8 numRuns;
+    RwUInt32 index;
 
+    firstRun = skin->skinSplitData.meshRLECount[meshIndex].start & 0x7F;
+    numRuns = skin->skinSplitData.meshRLECount[meshIndex].length;
+    index = 0;
     for (run = 0; run < numRuns; run++) {
-        SkinRLE *bones = skin->skinSplitData.meshRLE + firstRun + run;
-        RwUInt32 bone = bones->start;
-        RwUInt32 numBones = bones->length;
+        SkinRLE *runs = &skin->skinSplitData.meshRLE[firstRun];
+        RwUInt8 firstBone = runs[run].start;
+        RwUInt8 numBones = runs[run].length;
         RwUInt32 i;
 
-        for (i = 0; i < numBones; i++, bone++, index += 3) {
-            SkinLoadMatrix(&lbl_8056D708.matrixCache[bone], index, normals);
+        for (i = 0; i < numBones; i++) {
+            fn_8044DC4C(&lbl_8056D708.matrixCache[firstBone + i], index, normals);
+            index += 3;
         }
     }
 }
@@ -522,12 +525,12 @@ void fn_8044DD1C(RpSkin *skin, RwInt32 meshIndex, RwBool normals) {
  * each mesh sets its texture and material color and calls its display list */
 RpAtomic *fn_8044DE74(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
     RpGameCubeInstanceData *instance = (RpGameCubeInstanceData *)(renderMesh->repEntry + 1);
+    RwUInt32 numMeshes;
     RpGameCubeDisplayList *displayList;
+    RpMesh *mesh;
+    RpGameCubeMaterialColorCallBack setMaterialColor;
     RwMatrix *ltm;
     RpSkin *skin;
-    RpGameCubeMaterialColorCallBack setMaterialColor;
-    RwUInt32 numMeshes;
-    RpMesh *mesh;
     RwUInt32 i;
     RwUInt32 index;
 
@@ -555,8 +558,8 @@ RpAtomic *fn_8044DE74(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
     /* rigid skins load all their bone matrices up front */
     if (skin->maxNumWeightsForVertex == 1 && skin->skinSplitData.numMeshes == 0) {
         for (i = 0, index = 0; i < skin->numBoneIds; index += 3, i++) {
-            SkinLoadMatrix(&lbl_8056D708.matrixCache[skin->boneIds[i]], index,
-                           (renderMesh->geometryFlags >> 4) & 1);
+            fn_8044DC4C(&lbl_8056D708.matrixCache[skin->boneIds[i]], index,
+                        (renderMesh->geometryFlags >> 4) & 1);
         }
     }
 
@@ -605,6 +608,11 @@ RpAtomic *fn_8044DE74(RpAtomic *atomic, RpGameCubeRenderMesh *renderMesh) {
     return atomic;
 }
 
+/* A vertex's four weights as an array: RwMatrixWeights keeps the library's four named members, which
+ * are consecutive RwReals with no padding (its size check is 0x10), and the original indexes them
+ * from the first one at a 0x10-byte vertex stride. */
+#define SKINVERTEXWEIGHTS(skin, vertex) (&(skin)->vertexBoneWeights[vertex].w0)
+
 /* Prepares a skin's weights for the kernels: each vertex's weights are sorted heaviest first with
  * their bone indices, and for skins with more than one weight per vertex they are stored as bytes
  * (1.0 is 128) that add up to at least 128, with the bone indices as bytes in the same order */
@@ -621,22 +629,23 @@ RpSkin *fn_8044E408(RpSkin *skin, RwUInt32 numVertices) {
     for (i = 0; i < numVertices; i++) {
         for (j = 0; j < 3; j++) {
             RwUInt32 jShift = j * 8;
+            /* The masks shift a plain int constant (with an unsigned constant this compiler emits
+             * one instruction fewer than the original). For kShift 24 the shift reaches the sign
+             * bit; this compiler computes the intended 32-bit mask. */
             RwUInt32 jMask = ~(0xFF << jShift);
 
             /* compare the j-th weight with each later one */
             for (k = 1; k < 4 - j; k++) {
-                RwReal *weights = &skin->vertexBoneWeights[i].w0 + j;
-
-                if (weights[k] > weights[0]) {
-                    RwReal weight = weights[0];
+                if ((SKINVERTEXWEIGHTS(skin, i) + j)[k] > SKINVERTEXWEIGHTS(skin, i)[j]) {
+                    RwReal weight = SKINVERTEXWEIGHTS(skin, i)[j];
                     RwUInt32 kShift = (j + k) * 8;
                     RwUInt32 kMask = ~(0xFF << kShift);
                     RwUInt32 indices;
                     RwUInt32 jIndex;
                     RwUInt32 kIndex;
 
-                    weights[0] = weights[k];
-                    weights[k] = weight;
+                    SKINVERTEXWEIGHTS(skin, i)[j] = (SKINVERTEXWEIGHTS(skin, i) + j)[k];
+                    (SKINVERTEXWEIGHTS(skin, i) + j)[k] = weight;
 
                     indices = skin->vertexBoneIndices[i];
                     skin->vertexBoneIndices[i] = indices & jMask;
@@ -661,7 +670,7 @@ RpSkin *fn_8044E408(RpSkin *skin, RwUInt32 numVertices) {
             RwUInt32 total = 0;
 
             for (j = 0; j < skin->maxNumWeightsForVertex; j++) {
-                *weight = 128.0f * (&skin->vertexBoneWeights[i].w0)[j];
+                *weight = 128.0f * SKINVERTEXWEIGHTS(skin, i)[j];
                 total += *weight++;
             }
             /* make up the rounding on the heaviest weights */
