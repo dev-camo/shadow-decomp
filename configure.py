@@ -3331,10 +3331,8 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            # SFBUF_InitHn: 429 differing words (1712 vs 1744 bytes; adr kept on the stack in the
-            # original).
             Object(
-                NonMatching,
+                Matching,
                 "CRI/sfd_buf.c",
                 extra_cflags=[
                     "-sdata 0",
