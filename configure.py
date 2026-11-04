@@ -908,10 +908,11 @@ config.libs = [
                 Object(Matching, "Game/CSD/fn_80361738.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361A24.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361CF8.cpp", cflags=cflags_csd),
-                # Every function present matches except BuildTextEntry and InitPalette, which address
-                # .rodata through one section base where the original addresses each literal on its
-                # own (probably also the cause of their register and scheduling differences), and
-                # whose allocations pass lower __LINE__ values than the original 442 and 234.
+                # BuildTextEntry uses the original independent literal addresses, but retains
+                # register/control differences and allocation line metadata (original line 442).
+                # InitPalette still uses a pooled .rodata base and lower allocation line than 234;
+                # disabling pooling there also loses the original pooled .bss addressing.
+                # Every other function present has matching instruction words.
                 # MarkMatrixUsers also comes after its caller MarkLayerMatrixUsers, where the
                 # original has it before.
                 Object(NonMatching, "Game/CSD/csdMotionPalette.cpp", cflags=cflags_csd),

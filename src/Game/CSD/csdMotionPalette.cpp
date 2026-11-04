@@ -195,6 +195,14 @@ static inline int IsShiftJisLeadByte(u8 c) {
     return folded >= 0xA1 && folded <= 0xD5;
 }
 
+/* Matching workaround: use separate lis/lfs pairs for 0.0f, -1000000.0f and 16.0f, and lis/addi
+ * for the file-name string, instead of one pooled .rodata base. This reduces differing
+ * instruction words from 333 to 328; the other function bodies and data are unchanged.
+ * The original InitPalette pools its .bss state at offsets 0/4/8, so file-level pooling
+ * was enabled. Why these .rodata literals are unpooled remains unknown. Revisit when
+ * that cause is recovered. */
+#pragma pool_data off
+
 static void BuildTextEntry(MotionPaletteEntry *entry, const ElementData *element,
                            const SceneData *scene, const FontList *fonts) {
     if (fonts == NULL || fonts->fonts == NULL) {
@@ -353,6 +361,8 @@ static void BuildTextEntry(MotionPaletteEntry *entry, const ElementData *element
     entry->flags &= ~ENTRY_COLOR_CHANNELS;
     entry->channels.named.tint = -1;
 }
+
+#pragma pool_data reset
 
 static void BuildEntries(MotionPaletteLayer *layer, int index, const LayerData *src,
                          MotionPaletteEntry *parent, const SceneData *scene,
