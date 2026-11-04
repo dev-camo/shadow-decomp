@@ -693,14 +693,21 @@ typedef struct {
 } SFSEE_AHDR;
 CHECK_SIZEOF(SFSEE_AHDR, 0x18);
 
+/* header data the seek analysis keeps (SFSEE_VHDR.hdr, decoded by SFMPV_Seek through a pointer to
+ * it; sfmpv_ChkFatal checks that SFSEE_VHDR past its first 0x38 bytes is at most 0x204 bytes) */
+typedef struct {
+    Uint8 data[0x200]; /* 0x000 */
+    Sint32 len;        /* 0x200 */
+} SFSEE_HDRDAT;
+CHECK_SIZEOF(SFSEE_HDRDAT, 0x204);
+
 /* video stream header analysis kept in the seek work (SFSEE_WORK.vid) */
 typedef struct {
     Sint32 analyzed;  /* 0x00 video header analysed (driver 2) */
     Sint32 ncount;    /* 0x04 */
     Sint32 tscale;    /* 0x08 */
     SFTIM_TTU ttu;    /* 0x0C seek analysis time, copied into SFTIM_WORK.ttu0 by SFMPV_Seek */
-    Uint8 hdr[0x200]; /* 0x38 header data the seek analysis keeps (decoded by SFMPV_Seek) */
-    Sint32 hdrlen;    /* 0x238 */
+    SFSEE_HDRDAT hdr; /* 0x38 */
 } SFSEE_VHDR;
 CHECK_SIZEOF(SFSEE_VHDR, 0x23C);
 
@@ -853,10 +860,11 @@ typedef struct {
 } SFMPS_WORK;                               /* 0x168 */
 CHECK_SIZEOF(SFMPS_WORK, 0x168);
 
-/* video stream information the video driver takes from the first sequence header
- * (sfmpv_DecodePicAtr; SFD_OBJ + 0x90C). Where the record ends is not known: sfply_InitHn clears
- * 16 words from its start (through 0x94B, past these 6 words), and sfmpv_DecodePicAtr also writes
- * x92c beside them, so the original may be one larger stream information record. */
+/* stream information (SFD_OBJ + 0x90C): the video driver takes the picture size, bit rate, frame
+ * rate and VBV buffer size from the first sequence header (sfmpv_DecodePicAtr, which writes
+ * vbvbufsiz through the record), the system stream driver the pack and system header values.
+ * Where the record ends is not known: sfply_InitHn clears 16 words from its start (through 0x94B,
+ * past these 9). */
 typedef struct {
     Sint32 width;     /* 0x00 picture size in pixels */
     Sint32 height;    /* 0x04 */
@@ -864,8 +872,11 @@ typedef struct {
     Sint32 mb_height; /* 0x0C */
     Sint32 bitrate;   /* 0x10 as MPV_GetBitRate returns it (0: no sequence header yet) */
     Sint32 picrate;   /* 0x14 frame rate type (index into SFTIM_prate, 0: unknown) */
+    Sint32 x18;       /* 0x18 last positive pack-header mux_rate (sfmps_ProcPrep) */
+    Sint32 x1c;       /* 0x1C (1) */
+    Sint32 vbvbufsiz; /* 0x20 VBV buffer size (MPV_GetVbvBufSiz) */
 } SFD_VIDINF;
-CHECK_SIZEOF(SFD_VIDINF, 0x18);
+CHECK_SIZEOF(SFD_VIDINF, 0x24);
 
 typedef struct SFD_OBJ {
     SFD_CREPRM prm;                /* 0x00 */
@@ -880,9 +891,6 @@ typedef struct SFD_OBJ {
     Sint32 x74;                    /* 0x74 */
     SFHDS_FHD fhd;                 /* 0x78 file header analysis */
     SFD_VIDINF vid;                /* 0x90C (sfply_InitHn clears 16 words from here) */
-    Sint32 x924;                   /* 0x924 last positive pack-header mux_rate (sfmps_ProcPrep) */
-    Sint32 x928;                   /* 0x928 (1) */
-    Sint32 x92c;                   /* 0x92C */
     Sint32 numelem_aud;            /* 0x930 copied from fhd after (re)processing */
     Sint32 numelem_vid;            /* 0x934 */
     Sint32 numelem_prv;            /* 0x938 */

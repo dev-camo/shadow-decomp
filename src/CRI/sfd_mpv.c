@@ -6,8 +6,9 @@
  * build, where the functions appear in the same order; sfmpv_InitInf, sfmpv_ExecServerSub,
  * SFMPV_GetRead and SFMPV_AddRead differ in size there but sit at the same positions.
  * fn_803F5134 (the sfmpv_ChkBufSiz position there, but a different size) and fn_803F894C keep
- * placeholder names. The names of the static inline helpers, which exist only as inline
- * expansions, are inferred from what they do.
+ * placeholder names. The static inline helpers exist only as inline expansions; their names are
+ * inferred from what they do, several after the helper names the Resident Evil 4 decompilation
+ * inferred for the same code.
  *
  * The unit is compiled with deferred inlining, so the functions are defined in the reverse of
  * their order in .text and the variables in the reverse of their order in .bss. */
@@ -132,7 +133,7 @@ const SFD_TR_IF SFD_tr_vd_mpv = {{
 }};
 
 /* Rounded frame rate for each MPEG frame_rate_code (1 23.976 ... 8 60 Hz; inferred from the
- * values), the frames per second of sfmpv_Pts2Tc and sfmpv_NextTc. */
+ * values), the frames per second of sfmpv_Pts2Tc, sfmpv_DoReformTc and sfmpv_Concat. */
 const Sint32 sfmpv_fps_round[9] = {0, 24, 24, 25, 30, 30, 50, 60, 60};
 /* Drop-frame time code constants for 29.97 and 59.94 Hz, as sfmpv_Pts2Tc uses them: frames per
  * hour, per ten minutes, in the first minute of the ten and in each of the other nine, then the
@@ -546,13 +547,11 @@ Sint32 sfmpv_ExecServerSub(SFD sfd) {
  *
  * Matching workaround: the join search is written out here and in sfmpv_FindLastDelim instead of
  * in a helper of its own. With a shared helper, sfmpv_GetActiveSize becomes 490 words against the
- * original's 474 (136 differing instead of 95), and sfmpv_NeedSafeDlmRefresh and sfmpv_GoDdelim
- * also move further from the original. Revisit when the original's source form of the search is
- * known. */
+ * original's 474 and sfmpv_NeedSafeDlmRefresh 241 against 233; written out, both match. Revisit
+ * when the original's source form of the search is known. */
 static inline Uint8 *sfmpv_FindDelimRing(SFBUF_RINF *inf, Sint32 mask, Sint32 *cls) {
     Uint8 edge[6];
     Uint8 *delim;
-    Uint8 *q;
     Sint32 head;
     Sint32 tail;
     Sint32 i;
@@ -570,9 +569,8 @@ static inline Uint8 *sfmpv_FindDelimRing(SFBUF_RINF *inf, Sint32 mask, Sint32 *c
     tail = inf->ck2.len < 3 ? inf->ck2.len : 3;
     memcpy(edge, inf->ck1.data + inf->ck1.len - head, head);
     memcpy(edge + head, inf->ck2.data, tail);
-    q = edge;
-    for (i = 0; i < head + tail - 3; i++, q++) {
-        found = MPV_CheckDelim(q);
+    for (i = 0; i < head + tail - 3; i++) {
+        found = MPV_CheckDelim(&edge[i]);
         if (found & mask) {
             *cls = found;
             return inf->ck1.data + inf->ck1.len - head + i;
@@ -616,7 +614,6 @@ static inline Sint32 sfmpv_CheckRingRoom(SFD sfd) {
 static inline Uint8 *sfmpv_FindLastDelim(SFBUF_RINF *inf) {
     Uint8 edge[6];
     Uint8 *delim;
-    Uint8 *q;
     Sint32 head;
     Sint32 tail;
     Sint32 i;
@@ -633,9 +630,8 @@ static inline Uint8 *sfmpv_FindLastDelim(SFBUF_RINF *inf) {
         tail = inf->ck2.len < 3 ? inf->ck2.len : 3;
         memcpy(edge, inf->ck1.data + inf->ck1.len - head, head);
         memcpy(edge + head, inf->ck2.data, tail);
-        q = edge;
-        for (i = 0; i < head + tail - 3; i++, q++) {
-            if (MPV_CheckDelim(q) & MPV_DLM_PIC_BOUND) {
+        for (i = 0; i < head + tail - 3; i++) {
+            if (MPV_CheckDelim(&edge[i]) & MPV_DLM_PIC_BOUND) {
                 return inf->ck1.data + inf->ck1.len - head + i;
             }
         }
@@ -755,9 +751,9 @@ Sint32 sfmpv_GetActiveSize(SFD sfd, Sint32 *size, Sint32 *cls, Sint32 *partial) 
  * code at the head of the ring, decides whether that search is made. */
 Bool sfmpv_NeedSafeDlmRefresh(SFBUF_RINF *inf, Sint32 head_cls, Uint8 *delim) {
     Uint8 code[4];
-    Uint8 *next;
-    Sint32 cls;
     Sint32 over;
+    Sint32 cls;
+    Uint8 *next;
 
     if (delim == 0) {
         return TRUE;
@@ -816,6 +812,75 @@ Bool sfmpv_NeedSafeDlmRefresh(SFBUF_RINF *inf, Sint32 head_cls, Uint8 *delim) {
     return FALSE;
 }
 
+/* Counts bytes the decoder took from the video input ring: in the ring's read total and in the
+ * player information. */
+static inline void sfmpv_AddRtot(SFD sfd, Sint32 nbyte) {
+    SFBUF_AddRtotSj(sfd, sfd->tr[SFMPV_TR].bufin, nbyte);
+    sfd->plyinf.v_byte += nbyte;
+}
+
+/* The error code for a result of the MPV decoder: the results -2 and -3 are errors only when the
+ * decoder took no bytes (flow); any other nonzero result is reported as code. */
+static inline Sint32 sfmpv_ChkDecRet(SFD sfd, Sint32 ret, Sint32 flow, Sint32 code) {
+    Sint32 err;
+
+    switch (ret) {
+    case 0:
+        err = 0;
+        break;
+    case -2:
+        if (flow > 0) {
+            err = 0;
+        } else {
+            err = SFLIB_SetErr(sfd, -2);
+        }
+        break;
+    case -3:
+        if (flow > 0) {
+            err = 0;
+        } else {
+            err = SFLIB_SetErr(sfd, -3);
+        }
+        break;
+    default:
+        err = SFLIB_SetErr(sfd, code);
+        break;
+    }
+    return err;
+}
+
+/* Skips the picture at the head of sj (the decoder reads past it without decoding it) and counts
+ * it. A picture before the video start offset moves the start of the video (vstart) to it. Returns
+ * an error code, 0 when there is none. */
+static inline Sint32 sfmpv_SkipPic(SFD sfd, SJ sj) {
+    SFMPV_WORK *wk = SFMPV_WK(sfd);
+    SFTIM_WORK *tim = SFD_TIM(sfd);
+    SFTIM_TTU *ttu3 = &tim->ttu3;
+    SFTIM_TTU *vstart = &tim->vstart;
+    MPV hn;
+    Sint32 flow;
+    Sint32 ret;
+    Sint32 err;
+
+    hn = wk->mpv;
+    if (ttu3->val < tim->vofst.val) {
+        *vstart = *ttu3;
+    }
+    flow = SJRBF_GetFlowCnt(sj, 0, 1);
+    ret = MPV_SkipFrmSj(hn, sj);
+    flow = SJRBF_GetFlowCnt(sj, 0, 1) - flow;
+    err = sfmpv_ChkDecRet(sfd, ret, flow, SFMPV_ERR_SKIP);
+    sfmpv_AddRtot(sfd, flow);
+    if (err != 0) {
+        return err;
+    }
+    if (wk->picatr.x58 == 0) {
+        wk->skipret = 1;
+    }
+    SFPLY_AddSkipPic(sfd, 1, wk->picatr.pic_type);
+    return 0;
+}
+
 /* Discards the sequence end codes at the head of the stream joint's data, counting their bytes
  * as consumed. */
 static inline void sfmpv_SkipEndCodes(SFD sfd, SJ sj) {
@@ -827,8 +892,7 @@ static inline void sfmpv_SkipEndCodes(SFD sfd, SJ sj) {
             break;
         }
         SJ_PutChunk(sj, SJ_CK_FREE, &ck);
-        SFBUF_AddRtotSj(sfd, sfd->tr[SFMPV_TR].bufin, 4);
-        sfd->plyinf.v_byte += 4;
+        sfmpv_AddRtot(sfd, 4);
     }
     SJ_UngetChunk(sj, SJ_CK_DATA, &ck);
 }
@@ -858,6 +922,21 @@ static inline void sfmpv_GetHeadChunk(SFD sfd, SJCK *ck) {
     }
 }
 
+/* At a sequence end code, each when not set yet: records the total read from the video input ring
+ * up to the end of the code in the transfer record (x20) and takes ttu1 as the total time. */
+static inline void sfmpv_SetEnd(SFD sfd) {
+    SFTIM_WORK *tim = SFD_TIM(sfd);
+    SFTIM_TTU *tot = &tim->tot;
+    Sint32 bufin = sfd->tr[SFMPV_TR].bufin;
+
+    if (sfd->tr[SFMPV_TR].x20 < 0) {
+        sfd->tr[SFMPV_TR].x20 = SFBUF_GetRTot(sfd, bufin) + 4;
+    }
+    if (tot->val < 0) {
+        *tot = tim->ttu1;
+    }
+}
+
 /* Decodes one unit at the head of the video input ring. size, mask and partial are what
  * sfmpv_GetActiveSize reports: the length of the unit, the class of its start code and whether it
  * is data without a start code. A sequence end code ends the decoder or, in concatenated play,
@@ -866,22 +945,21 @@ static inline void sfmpv_GetHeadChunk(SFD sfd, SJCK *ck) {
  * up to the next start code. *more is set when the server should look at the ring again. Returns an
  * error code, 0 when there is none. */
 Sint32 sfmpv_DecodeOneUnit(SFD sfd, Sint32 size, Sint32 mask, Sint32 partial, Sint32 *more) {
-    SFMPV_WORK *wk;
-    SJCK ck;
-    SJ sj;
     Sint32 ret;
+    SFMPV_WORK *wk;
+    Sint32 bufin;
+    SJ sj;
     Sint32 result;
-    Sint32 before;
-    Sint32 flow;
-    Sint32 err;
+    SJCK ck;
 
     *more = 0;
     wk = SFMPV_WK(sfd);
+    bufin = sfd->tr[SFMPV_TR].bufin;
     sfd->plyinf.x28 = 0;
     if (wk->dlmmask != MPV_DLM_PIC_BOUND || wk->dlmwait == 0) {
         mask &= MPV_DLM_PIC_BOUND;
     }
-    ret = SFBUF_RingGetSj(sfd, sfd->tr[SFMPV_TR].bufin, &sj);
+    ret = SFBUF_RingGetSj(sfd, bufin, &sj);
     if (ret != 0) {
         return 0;
     }
@@ -891,75 +969,40 @@ Sint32 sfmpv_DecodeOneUnit(SFD sfd, Sint32 size, Sint32 mask, Sint32 partial, Si
     if (mask & (MPV_DLM_END | MPV_DLM_SEQ | MPV_DLM_GOP)) {
         SFMPVF_SetGopStat(sfd, 1);
     }
-
     if (mask == MPV_DLM_END) {
-        SFTIM_TTU *tot = &SFD_TIM(sfd)->tot;
-
-        if (sfd->tr[SFMPV_TR].x20 < 0) {
-            sfd->tr[SFMPV_TR].x20 = SFBUF_GetRTot(sfd, sfd->tr[SFMPV_TR].bufin) + 4;
-        }
-        if (tot->val < 0) {
-            *tot = SFD_TIM(sfd)->ttu1;
-        }
+        sfmpv_SetEnd(sfd);
     }
-    if (mask == MPV_DLM_END && SFCON_IsEndcodeSkip(sfd)) {
+    if (mask == MPV_DLM_END && SFCON_IsEndcodeSkip(sfd) != 0) {
         if (sfmpv_Concat(sfd, sj) == 0) {
             *more = 1;
         }
-    } else if (mask == MPV_DLM_END && SFCON_IsVideoEndcodeSkip(sfd)) {
+    } else if (mask == MPV_DLM_END && SFCON_IsVideoEndcodeSkip(sfd) != 0) {
         sfmpv_SkipEndCodes(sfd, sj);
         *more = 1;
     } else if (partial == 0 && sfmpv_IsStreamEnd(sfd, mask, size)) {
         SFMPVF_TermDec(sfd);
     } else if (partial == 0 && size <= 4) {
         sfd->plyinf.x28 = 1;
-    } else if (mask & (MPV_DLM_SEQ | MPV_DLM_PIC | MPV_DLM_GOP)) {
+    } else if (mask & (MPV_DLM_SEQ | MPV_DLM_GOP | MPV_DLM_PIC)) {
         sfmpv_GetHeadChunk(sfd, &ck);
         ret = sfmpv_DecodePicAtr(sfd, &ck, sj, mask, &result);
-        if (ret == 0) {
-            if (result == 0) {
-                if (mask & wk->dlmmask) {
-                    wk->dlmmask = MPV_DLM_PIC_BOUND;
-                }
-                wk->dlmwait = 1;
-            }
-            if (mask == MPV_DLM_SEQ && result == -2) {
-                wk->dlmmask = MPV_DLM_END | MPV_DLM_SEQ;
-            }
-            *more = 1;
+        if (ret != 0) {
+            return ret;
         }
+        if (result == 0) {
+            if (mask & wk->dlmmask) {
+                wk->dlmmask = MPV_DLM_PIC_BOUND;
+            }
+            wk->dlmwait = 1;
+        }
+        if (mask == MPV_DLM_SEQ && result == -2) {
+            wk->dlmmask = MPV_DLM_END | MPV_DLM_SEQ;
+        }
+        *more = 1;
     } else if (mask & MPV_DLM_SLICE1) {
         sfmpv_GetHeadChunk(sfd, &ck);
         if (sfmpv_IsSkip(sfd, &ck)) {
-            if (SFD_TIM(sfd)->ttu3.val < SFD_TIM(sfd)->vofst.val) {
-                SFD_TIM(sfd)->vstart = SFD_TIM(sfd)->ttu3;
-            }
-            before = SJRBF_GetFlowCnt(sj, 0, 1);
-            result = MPV_SkipFrmSj(wk->mpv, sj);
-            flow = SJRBF_GetFlowCnt(sj, 0, 1) - before;
-            switch (result) {
-            case 0:
-                err = 0;
-                break;
-            case -2:
-                err = flow > 0 ? 0 : SFLIB_SetErr(sfd, -2);
-                break;
-            case -3:
-                err = flow > 0 ? 0 : SFLIB_SetErr(sfd, -3);
-                break;
-            default:
-                err = SFLIB_SetErr(sfd, SFMPV_ERR_SKIP);
-                break;
-            }
-            SFBUF_AddRtotSj(sfd, sfd->tr[SFMPV_TR].bufin, flow);
-            sfd->plyinf.v_byte += flow;
-            if (err == 0) {
-                if (wk->picatr.x58 == 0) {
-                    wk->skipret = 1;
-                }
-                SFPLY_AddSkipPic(sfd, 1, wk->picatr.pic_type);
-            }
-            ret = err;
+            ret = sfmpv_SkipPic(sfd, sj);
             if (ret == 0) {
                 *more = 1;
             }
@@ -974,35 +1017,6 @@ Sint32 sfmpv_DecodeOneUnit(SFD sfd, Sint32 size, Sint32 mask, Sint32 partial, Si
     return ret;
 }
 
-/* The time code one picture after src: the frames are frm + frm2 + 1 plus half of x1c + field
- * (the repeated fields counted in half frames), carried into seconds, minutes and hours at the
- * nominal frame rate; the field is the remainder of that half. With drop frame time code a minute
- * that is not a tenth one starts at frame 2 instead of 0 or 1. Fills in the type, drop flag, time
- * and field of dst. */
-static inline void sfmpv_NextTc(SFTIM_TC *src, SFTIM_TC *dst) {
-    Sint32 fps = sfmpv_fps_round[src->type];
-    Sint32 fields = src->x1c + src->field;
-    Sint32 frames = src->frm + (src->frm2 + 1) + fields / 2;
-    Sint32 field = fields % 2;
-    Sint32 sec = src->sec + frames / fps;
-    Sint32 min = src->min + sec / 60;
-    Sint32 hour = src->hour + min / 60;
-
-    frames %= fps;
-    sec %= 60;
-    min %= 60;
-    if (src->drop != 0 && sec == 0 && min % 10 != 0 && (frames == 0 || frames == 1)) {
-        frames = 2;
-    }
-    dst->type = src->type;
-    dst->drop = src->drop;
-    dst->hour = hour;
-    dst->min = min;
-    dst->sec = sec;
-    dst->frm = frames;
-    dst->field = field;
-}
-
 /* A sequence end code in concatenated play: adds the duration of the finished file to the
  * concatenation time, starts the times of the next file afresh and discards the end codes. The
  * duration is that of the time code after the last one when audio is off, else it comes from the
@@ -1011,42 +1025,70 @@ static inline void sfmpv_NextTc(SFTIM_TC *src, SFTIM_TC *dst) {
 Sint32 sfmpv_Concat(SFD sfd, SJ sj) {
     SFMPV_WORK *wk = SFMPV_WK(sfd);
     SFTIM_WORK *tim = SFD_TIM(sfd);
-    Sint32 total;
-    Sint32 sfreq;
-    Sint32 ncount;
-    Sint32 tscale;
-    SFTIM_TC tc;
     Sint32 diff;
-    Bool read;
+    Sint32 fps;
+    Sint32 field;
+    Sint32 frames;
+    Sint32 sec;
+    Sint32 min;
+    Sint32 hour;
+    Sint32 type;
+    Sint32 fields;
+    SFTIM_TC tc;
+    Sint32 tscale;
+    Sint32 ncount;
+    Sint32 sfreq;
+    Sint32 total;
+    Sint32 tunit;
 
     if (SFSET_GetCond(sfd, SFD_COND_AUDIO_ON) == 0) {
-        if (tim->ttu1.valid == 0) {
+        SFTIM_TTU *ttu1 = &tim->ttu1;
+        SFTIM_TTU *ttu0 = &tim->ttu0;
+
+        if (ttu1->valid == 0) {
             diff = 0;
         } else {
-            sfmpv_NextTc(&tim->ttu1.tc, &tc);
+            type = ttu1->tc.type;
+            fps = sfmpv_fps_round[type];
+            fields = ttu1->tc.x1c + ttu1->tc.field;
+            frames = ttu1->tc.frm + ttu1->tc.frm2 + 1;
+            frames += fields / 2;
+            field = fields % 2;
+            hour = ttu1->tc.hour;
+            min = ttu1->tc.min;
+            sec = ttu1->tc.sec;
+            sec += frames / fps;
+            frames %= fps;
+            min += sec / 60;
+            sec %= 60;
+            hour += min / 60;
+            min %= 60;
+            if (ttu1->tc.drop != 0 && sec == 0 && min % 10 != 0 && (frames == 0 || frames == 1)) {
+                frames = 2;
+            }
+            tc.type = type;
+            tc.drop = ttu1->tc.drop;
+            tc.hour = hour;
+            tc.min = min;
+            tc.sec = sec;
+            tc.frm = frames;
+            tc.field = field;
             tc.frm2 = 0;
             SFTIM_Tc2Time(&tc, &ncount, &tscale);
-            diff = ncount - tim->ttu0.val;
+            diff = ncount - ttu0->val;
         }
     } else {
         if (sfd->prm.trif_tbl[SFADXT_TR] != &SFD_tr_ad_adxt) {
             total = 0;
             sfreq = 44100;
-            read = TRUE;
-        } else {
-            read = SFCON_ReadTotSmplQue(sfd, &total, &sfreq);
-        }
-        if (read == 0) {
-            diff = -1;
-        } else {
-            tim->x1f0 += total;
-            diff = UTY_MulDiv(tim->x1f0, tim->ttu0.unit, sfreq) - tim->ctime;
-            if (diff < 0) {
-                diff = 0;
-            }
-        }
-        if (diff < 0) {
+        } else if (SFCON_ReadTotSmplQue(sfd, &total, &sfreq) == 0) {
             return -1;
+        }
+        tunit = tim->ttu0.unit;
+        tim->x1f0 += total;
+        diff = UTY_MulDiv(tim->x1f0, tunit, sfreq) - tim->ctime;
+        if (diff < 0) {
+            diff = 0;
         }
     }
     if (diff > 0) {
@@ -1060,39 +1102,54 @@ Sint32 sfmpv_Concat(SFD sfd, SJ sj) {
     return 0;
 }
 
-/* Sets a time (time code, position in the time base less base, unit) from a time code. */
-static inline void sfmpv_SetTtu(SFTIM_TTU *ttu, SFTIM_TC tc, Sint32 base) {
-    Sint32 ncount;
-    Sint32 tscale;
-
-    SFTIM_Tc2Time(&tc, &ncount, &tscale);
-    ttu->tc = tc;
-    ttu->val = ncount - base;
-    ttu->unit = tscale;
-    ttu->valid = 1;
-}
-
 /* Whether the time code of the new GOP does not follow on from that of the previous one: it
  * is not later than the previous time code or is later by at least condition 0x35 seconds. */
 static inline Bool sfmpv_IsTcBreak(SFD sfd) {
     SFTIM_WORK *tim = SFD_TIM(sfd);
+    SFTIM_TTU *ttu1 = &tim->ttu1;
     SFTIM_TC tc;
     Sint32 now;
     Sint32 prev;
     Sint32 tscale;
     Sint32 limit;
+    Bool brk;
 
-    if (tim->ttu1.valid == 0) {
-        return FALSE;
+    if (ttu1->valid == 0) {
+        brk = FALSE;
+    } else {
+        tc = tim->tc;
+        SFTIM_Tc2Time(&tc, &now, &tscale);
+        SFTIM_Tc2Time(&ttu1->tc, &prev, &tscale);
+        limit = tscale * SFSET_GetCond(sfd, 0x35);
+        if (now <= prev) {
+            brk = TRUE;
+        } else if (now >= prev + limit) {
+            brk = TRUE;
+        } else {
+            brk = FALSE;
+        }
     }
-    tc = tim->tc;
-    SFTIM_Tc2Time(&tc, &now, &tscale);
-    SFTIM_Tc2Time(&tim->ttu1.tc, &prev, &tscale);
-    limit = prev + tscale * SFSET_GetCond(sfd, 0x35);
-    if (now > prev && now < limit) {
-        return FALSE;
+    return brk;
+}
+
+/* Sets the current time code once the stream is judged to carry its own times (condition 0x34): a
+ * PTS, no GOP header yet or picture attribute x57 nonzero, or a new GOP whose time code does not
+ * follow on from the last. */
+static inline void sfmpv_ReformTc(SFD sfd, SFMPV_WORK *wk, MPV_PICATR *picatr, Sint64 pts) {
+    Sint32 newgop = wk->newgop;
+    Sint32 stamped;
+
+    stamped = SFSET_GetCond(sfd, 0x34);
+    if (stamped == 0) {
+        if (pts >= 0 || picatr->ngop == 0 || picatr->x57 != 0 ||
+            (newgop != 0 && sfmpv_IsTcBreak(sfd))) {
+            SFSET_SetCond(sfd, 0x34, 1);
+            stamped = 1;
+        }
     }
-    return TRUE;
+    if (stamped == 1) {
+        sfmpv_DoReformTc(sfd, picatr, pts, newgop);
+    }
 }
 
 /* The video header analysis of the seek work, or 0 when no seek work is attached or after a
@@ -1120,91 +1177,85 @@ Sint32 sfmpv_DecodePicAtr(SFD sfd, SJCK *ck, SJ sj, Sint32 mask, Sint32 *result)
     SFMPV_WORK *wk = SFMPV_WK(sfd);
     MPV mpv = wk->mpv;
     MPV_PICATR *picatr = &wk->picatr;
-    SFTIM_WORK *tim;
+    SFTIM_WORK *tim = SFD_TIM(sfd);
+    SFD_VIDINF *vid;
     SFSEE_VHDR *vhdr;
+    Sint32 bufin;
+    SFTIM_TC tc0;
+    SFTIM_TC tc3;
     SFPTS_ENT ent;
-    SFTIM_TC tc;
-    SFTIM_TTU *ttu;
-    void *cbobj;
-    SFMPV_SIZECB sizecb;
-    SFMPV_HDRCB hdrcb;
-    Sint8 *slice;
-    Sint8 *pic;
-    Sint64 pts;
-    Sint64 rawpts;
-    Sint64 delta;
-    Sint32 rate;
-    Sint32 tmpref;
-    Sint32 newgop;
-    Sint32 before;
     Sint32 flow;
     Sint32 err;
-    Sint32 ncount;
-    Sint32 tscale;
-    Sint32 bitrate;
-    Sint32 bufsiz;
-    Sint32 delay;
-    Sint32 delay_bytes;
-    Sint32 stamped;
+    Sint32 ret;
     Sint32 seqhdr;
+    Sint32 ref_tmpref;
+    Sint32 newgop;
+    Sint8 *p;
+    Sint64 rawpts;
+    Sint64 pts;
+    Sint64 base;
+    Sint32 rate;
+    Sint32 tmpref;
     Sint32 n;
+    Sint32 tscale0;
+    Sint32 ncount0;
+    Sint32 tscale;
+    Sint32 ncount;
+    Sint32 delay_bytes;
+    Sint32 delay;
+    Sint32 bufsiz;
+    Sint32 bitrate;
+    Sint32 ringsiz;
+    Sint32 copy;
+    Sint32 len;
+    SFSEE_HDRDAT *dat;
+    SFTIM_TTU *ttu0;
+    SFTIM_TTU *ttu3;
+    SFTIM_TTU *ttu1;
+    SFMPV_SIZECB sizecb;
+    void *sizeobj;
+    SFMPV_HDRCB hdrcb;
+    void *hdrobj;
 
     wk->picusr.len = 0;
     MPV_SetPicUsrBuf(mpv, wk->picusr.dat, wk->picusr.siz);
-    before = SJRBF_GetFlowCnt(sj, 0, 1);
+    flow = SJRBF_GetFlowCnt(sj, 0, 1);
     *result = MPV_DecodePicAtrSj(mpv, sj);
-    flow = SJRBF_GetFlowCnt(sj, 0, 1) - before;
-    switch (*result) {
-    case 0:
-        err = 0;
-        break;
-    case -2:
-        err = flow > 0 ? 0 : SFLIB_SetErr(sfd, -2);
-        break;
-    case -3:
-        err = flow > 0 ? 0 : SFLIB_SetErr(sfd, -3);
-        break;
-    default:
-        err = SFLIB_SetErr(sfd, SFMPV_ERR_PICATR_DEC);
-        break;
-    }
-    SFBUF_AddRtotSj(sfd, sfd->tr[SFMPV_TR].bufin, flow);
-    sfd->plyinf.v_byte += flow;
+    flow = SJRBF_GetFlowCnt(sj, 0, 1) - flow;
+    err = sfmpv_ChkDecRet(sfd, *result, flow, SFMPV_ERR_PICATR_DEC);
+    sfmpv_AddRtot(sfd, flow);
     if (err != 0) {
         return err;
     }
     if (*result == -2) {
         return 0;
     }
-    err = MPV_GetPicAtr(mpv, picatr);
-    *result = err;
-    if (err != 0) {
+    ret = MPV_GetPicAtr(mpv, picatr);
+    *result = ret;
+    if (ret != 0) {
         return SFLIB_SetErr(sfd, SFMPV_ERR_PICATR_GET);
     }
-
     /* a sequence header: a change of the picture size is ignored, and so is a sequence the
      * application's check rejects; the callback and its object are both read with condition 0x5F,
      * as the original does */
     seqhdr = mask & MPV_DLM_SEQ;
     if (seqhdr) {
-        if (sfd->vid.width > 0 &&
-            (sfd->vid.width != picatr->width || sfd->vid.height != picatr->height)) {
+        vid = &sfd->vid;
+        if (vid->width > 0 && (vid->width != picatr->width || vid->height != picatr->height)) {
             *result = -2;
             return 0;
         }
         sizecb = (SFMPV_SIZECB)SFSET_GetCond(sfd, 0x5F);
-        cbobj = (void *)SFSET_GetCond(sfd, 0x5F);
-        if (sizecb != 0 && sizecb(cbobj, picatr->width, picatr->height) != 0) {
+        sizeobj = (void *)SFSET_GetCond(sfd, 0x5F);
+        if (sizecb != 0 && sizecb(sizeobj, picatr->width, picatr->height) != 0) {
             *result = -2;
             return 0;
         }
     }
-
     if (picatr->pic_type == 1) {
         wk->tmpref_adj = 0;
     } else if (sfd->prm.x38 == 3 && wk->ref[1] != 0) {
-        Sint32 ref_tmpref = wk->ref[1]->picatr.temp_ref;
-
+        ref_tmpref = wk->ref[1]->picatr.temp_ref;
         if (picatr->pic_type == 2) {
             if (picatr->temp_ref < ref_tmpref && ref_tmpref < 0x200) {
                 wk->tmpref_adj = 1;
@@ -1222,33 +1273,32 @@ Sint32 sfmpv_DecodePicAtr(SFD sfd, SJCK *ck, SJ sj, Sint32 mask, Sint32 *result)
     } else {
         wk->newgop = 0;
     }
-
     /* the application's header callback gets the bytes up to the first slice */
     if (seqhdr) {
         hdrcb = (SFMPV_HDRCB)SFSET_GetCond(sfd, 0x4D);
-        cbobj = (void *)SFSET_GetCond(sfd, 0x4E);
+        hdrobj = (void *)SFSET_GetCond(sfd, 0x4E);
         if (hdrcb != 0) {
-            slice = MPV_SearchDelim((Sint8 *)ck->data, ck->len, MPV_DLM_SLICE);
-            if (slice != 0) {
-                hdrcb(cbobj, ck->data, (Uint8 *)slice + 4 - ck->data);
+            p = MPV_SearchDelim((Sint8 *)ck->data, ck->len, MPV_DLM_SLICE);
+            if (p != 0) {
+                hdrcb(hdrobj, ck->data, (Uint8 *)p + 4 - ck->data);
             }
         }
     }
-
     /* the PTS recorded for this picture's position in the input gives the picture's time */
-    pic = MPV_SearchDelim((Sint8 *)ck->data, ck->len, MPV_DLM_PIC);
+    p = MPV_SearchDelim((Sint8 *)ck->data, ck->len, MPV_DLM_PIC);
     newgop = wk->newgop;
-    tim = SFD_TIM(sfd);
-    rawpts = -1;
+    bufin = sfd->tr[SFMPV_TR].bufin;
     pts = -1;
-    if (pic != 0) {
-        SFPTS_ReadPtsQue(sfd, sfd->tr[SFMPV_TR].bufin, (Uint32)pic, &ent);
+    rawpts = -1;
+    if (p != 0) {
+        SFPTS_ReadPtsQue(sfd, bufin, (Uint32)p, &ent);
         if (ent.pts >= 0) {
-            rate = SFTIM_prate[picatr->frame_rate];
             tmpref = picatr->temp_ref;
+            rate = SFTIM_prate[picatr->frame_rate];
             if (tim->pts_base < 0) {
-                delta = ent.pts - (Sint64)tmpref * SFMPV_PTS_TICKS_PER_KSEC / rate;
-                tim->pts_base = delta > 0 ? delta : 0;
+                base = ent.pts - (Sint64)tmpref * SFMPV_PTS_TICKS_PER_KSEC / rate;
+                base = base > 0 ? base : 0;
+                tim->pts_base = base;
             }
             pts = ent.pts - tim->pts_base;
             pts = pts > 0 ? pts : 0;
@@ -1266,7 +1316,7 @@ Sint32 sfmpv_DecodePicAtr(SFD sfd, SJCK *ck, SJ sj, Sint32 mask, Sint32 *result)
                 rawpts = ent.pts;
             } else {
                 if (newgop) {
-                    wk->pts_ofst = wk->pts_max + wk->pts_ofst + 1;
+                    wk->pts_ofst += wk->pts_max + 1;
                     wk->pts_max = 0;
                     wk->pts_tmpref = 0;
                 }
@@ -1281,39 +1331,32 @@ Sint32 sfmpv_DecodePicAtr(SFD sfd, SJCK *ck, SJ sj, Sint32 mask, Sint32 *result)
     if ((mask & wk->dlmmask) == 0) {
         return 0;
     }
-
     sfmpv_CalcRepeatField(sfd, picatr, wk->newgop);
-    newgop = wk->newgop;
-
-    /* condition 0x34 is set once the stream is judged to carry its own times: a PTS, no GOP
-     * header yet or picture attribute x57 nonzero, or a new GOP whose time code does
-     * not follow on from the last */
-    stamped = SFSET_GetCond(sfd, 0x34);
-    if (stamped == 0) {
-        if (pts >= 0 || picatr->ngop == 0 || picatr->x57 != 0 ||
-            (newgop != 0 && sfmpv_IsTcBreak(sfd))) {
-            SFSET_SetCond(sfd, 0x34, 1);
-            stamped = 1;
-        }
+    sfmpv_ReformTc(sfd, wk, picatr, pts);
+    ttu0 = &tim->ttu0;
+    if (ttu0->valid == 0) {
+        tc0 = tim->tc;
+        tc0.frm2 = 0;
+        SFTIM_Tc2Time(&tc0, &ncount0, &tscale0);
+        ttu0->tc = tc0;
+        ttu0->val = ncount0;
+        ttu0->unit = tscale0;
+        ttu0->valid = 1;
     }
-    if (stamped == 1) {
-        sfmpv_DoReformTc(sfd, picatr, pts, newgop);
+    ttu1 = &tim->ttu1;
+    ttu3 = &tim->ttu3;
+    tc3 = tim->tc;
+    SFTIM_Tc2Time(&tc3, &ncount, &tscale);
+    ttu3->tc = tc3;
+    ttu3->val = ncount - tim->ttu0.val;
+    ttu3->unit = tscale;
+    ttu3->valid = 1;
+    if (ttu1->val <= ttu3->val) {
+        *ttu1 = *ttu3;
     }
-
-    ttu = &tim->ttu0;
-    if (ttu->valid == 0) {
-        tc = tim->tc;
-        tc.frm2 = 0;
-        sfmpv_SetTtu(ttu, tc, 0);
-    }
-    ttu = &tim->ttu3;
-    sfmpv_SetTtu(ttu, tim->tc, tim->ttu0.val);
-    if (tim->ttu1.val <= ttu->val) {
-        tim->ttu1 = *ttu;
-    }
-
     /* the stream information is taken from the first sequence header */
-    if (sfd->vid.bitrate != 0) {
+    vid = &sfd->vid;
+    if (vid->bitrate != 0) {
         return 0;
     }
     if (MPV_GetBitRate(mpv, &bitrate) != 0) {
@@ -1323,16 +1366,25 @@ Sint32 sfmpv_DecodePicAtr(SFD sfd, SJCK *ck, SJ sj, Sint32 mask, Sint32 *result)
     if (SFSET_GetCond(sfd, 0x3C) == 0) {
         wk->vbvsiz = 0;
     } else {
-        n = SFBUF_GetRingBufSiz(sfd, 1);
+        ringsiz = SFBUF_GetRingBufSiz(sfd, 1);
         if (delay_bytes == -1) {
             delay_bytes = bufsiz;
         }
-        wk->vbvsiz = delay_bytes < n ? delay_bytes : n;
+        if (delay_bytes < ringsiz) {
+            ringsiz = delay_bytes;
+        }
+        wk->vbvsiz = ringsiz;
     }
     vhdr = sfmpv_GetVhdr(sfd);
     if (vhdr != 0 && vhdr->analyzed == 0) {
-        vhdr->hdrlen = ck->len < (Sint32)sizeof(vhdr->hdr) ? ck->len : (Sint32)sizeof(vhdr->hdr);
-        MEM_Copy(vhdr->hdr, ck->data, vhdr->hdrlen);
+        dat = &vhdr->hdr;
+        len = ck->len;
+        copy = sizeof(dat->data);
+        if (len < (Sint32)sizeof(dat->data)) {
+            copy = len;
+        }
+        dat->len = copy;
+        MEM_Copy(dat->data, ck->data, dat->len);
         if (bitrate == SFMPV_BITRATE_VARIABLE) {
             vhdr->ncount = 0;
             vhdr->tscale = 0;
@@ -1343,14 +1395,14 @@ Sint32 sfmpv_DecodePicAtr(SFD sfd, SJCK *ck, SJ sj, Sint32 mask, Sint32 *result)
         vhdr->ttu = tim->ttu0;
         vhdr->analyzed = 1;
     }
-    sfd->vid.width = picatr->width;
-    sfd->vid.height = picatr->height;
-    sfd->vid.mb_width = picatr->mb_width;
-    sfd->vid.mb_height = picatr->mb_height;
-    sfd->vid.picrate = picatr->frame_rate;
-    sfd->vid.bitrate = bitrate;
-    sfd->x92c = bufsiz;
-    return fn_803F5134(sfd, &sfd->vid);
+    vid->width = picatr->width;
+    vid->height = picatr->height;
+    vid->mb_width = picatr->mb_width;
+    vid->mb_height = picatr->mb_height;
+    vid->picrate = picatr->frame_rate;
+    vid->bitrate = bitrate;
+    vid->vbvbufsiz = bufsiz;
+    return fn_803F5134(sfd, vid);
 }
 
 /* The display time of a decoded frame from its time (ttu): the time with the concatenation time
@@ -1372,15 +1424,16 @@ static inline void sfmpv_SetFrmTime(SFTIM_WORK *tim, SFMPV_FRM *frm) {
  * time code's field. newgop clears the table. The repeats a B picture brings are counted for the
  * reference picture that follows it (ref[1]), whose time is worked out again. */
 static void sfmpv_CalcRepeatField(SFD sfd, MPV_PICATR *picatr, Sint32 newgop) {
+    SFMPV_FRM *ref;
     SFMPV_WORK *wk = SFMPV_WK(sfd);
     SFTIM_WORK *tim = SFD_TIM(sfd);
     SFTIM_RFLD *rfld = tim->rfld;
+    Sint32 i;
+    Sint32 idx;
+    Sint32 t;
     Sint32 first;
     Sint32 last;
-    Sint32 idx;
-    Sint32 i;
-    Sint32 prev;
-    Sint32 sum;
+    Sint32 slot;
     Sint32 tscale;
     Sint32 ncount;
 
@@ -1401,13 +1454,14 @@ static void sfmpv_CalcRepeatField(SFD sfd, MPV_PICATR *picatr, Sint32 newgop) {
         rfld[0].acc = -1;
     } else if (picatr->pic_type == 1 || picatr->pic_type == 2) {
         /* the pictures between the previous reference picture and this one have no repeat count */
-        first = wk->ref[1]->picatr.temp_ref;
+        ref = wk->ref[1];
         last = picatr->temp_ref;
+        first = ref->picatr.temp_ref;
         if (last < first) {
             last += 0x400;
         }
-        for (i = first + 1; i < last; i++) {
-            rfld[i % 64].rpt = -1;
+        for (t = first + 1; t < last; t++) {
+            rfld[t % 64].rpt = -1;
         }
     }
 
@@ -1419,9 +1473,9 @@ static void sfmpv_CalcRepeatField(SFD sfd, MPV_PICATR *picatr, Sint32 newgop) {
         rfld[0].acc = 0;
     } else {
         for (i = 0; i < 64; i++) {
-            prev = (idx - i + 63) % 64;
-            if (rfld[prev].rpt != -1) {
-                rfld[idx].acc = rfld[prev].rpt + rfld[prev].acc;
+            slot = (idx - i + 63) % 64;
+            if (rfld[slot].rpt != -1) {
+                rfld[idx].acc = rfld[slot].rpt + rfld[slot].acc;
                 break;
             }
         }
@@ -1429,53 +1483,77 @@ static void sfmpv_CalcRepeatField(SFD sfd, MPV_PICATR *picatr, Sint32 newgop) {
     tim->tc.field = rfld[idx].acc;
 
     if (picatr->pic_type == 3 && rfld[idx].rpt != 0) {
-        sum = rfld[idx].rpt + rfld[idx].acc;
-        idx = wk->ref[1]->picatr.temp_ref % 64;
-        rfld[idx].acc = sum;
-        wk->ref[1]->ttu.tc.field = rfld[idx].acc;
-        SFTIM_Tc2Time(&wk->ref[1]->ttu.tc, &ncount, &tscale);
-        wk->ref[1]->ttu.val = ncount - tim->ttu0.val;
-        wk->ref[1]->ttu.unit = tscale;
-        wk->ref[1]->ttu.valid = 1;
-        if (tim->ttu1.val <= wk->ref[1]->ttu.val) {
-            tim->ttu1 = wk->ref[1]->ttu;
+        slot = wk->ref[1]->picatr.temp_ref % 64;
+        rfld[slot].acc = rfld[idx].rpt + rfld[idx].acc;
+        wk->ref[1]->ttu.tc.field = rfld[slot].acc;
+        ref = wk->ref[1];
+        SFTIM_Tc2Time(&ref->ttu.tc, &ncount, &tscale);
+        ref->ttu.val = ncount - tim->ttu0.val;
+        ref->ttu.unit = tscale;
+        ref->ttu.valid = 1;
+        if (tim->ttu1.val <= ref->ttu.val) {
+            tim->ttu1 = ref->ttu;
         }
         sfmpv_SetFrmTime(tim, wk->ref[1]);
     }
 }
 
-/* Matching workaround: #pragma dont_inline around sfmpv_DoReformTc. The original calls it out of
- * line from sfmpv_DecodePicAtr; without the pragma the compiler expands it there (its one call),
- * which makes sfmpv_DecodePicAtr 827 words long instead of the original's 702 (371 differing words
- * instead of 231). Revisit when the original's source form is known. */
-#pragma dont_inline on
 /* Sets the current time code. With a PTS (newgop set, pts not negative) the time code is derived
  * from it; otherwise the time code continues from the last one (the one after it when a new GOP
  * began) or is zero when there is none yet and no seek work is attached. */
 void sfmpv_DoReformTc(SFD sfd, MPV_PICATR *picatr, Sint64 pts, Sint32 newgop) {
-    SFTIM_WORK *tim = SFD_TIM(sfd);
     Sint32 type = picatr->frame_rate;
     Sint32 drop = picatr->tc_drop;
+    Sint32 fps;
+    Sint32 field;
+    Sint32 frames;
+    Sint32 sec;
+    Sint32 min;
+    Sint32 hour;
+    Sint32 last_type;
+    SFTIM_WORK *tim = SFD_TIM(sfd);
     Sint32 tmpref = picatr->temp_ref;
+    Sint32 fields;
 
     if (newgop != 0 && pts >= 0) {
         sfmpv_Pts2Tc(pts, type, drop, tmpref, &tim->tc);
-        return;
-    }
-    if (tim->ttu1.valid == 0) {
-        if (sfd->see.wk != 0) {
+    } else if (tim->ttu1.valid == 0) {
+        if (sfd->see.wk == 0) {
+            tim->tc.type = type;
+            tim->tc.drop = 0;
+            tim->tc.hour = 0;
+            tim->tc.min = 0;
+            tim->tc.sec = 0;
+            tim->tc.frm = 0;
+        } else {
             return;
         }
-        tim->tc.type = type;
-        tim->tc.drop = 0;
-        tim->tc.hour = 0;
-        tim->tc.min = 0;
-        tim->tc.sec = 0;
-        tim->tc.frm = 0;
-        return;
-    }
-    if (newgop != 0) {
-        sfmpv_NextTc(&tim->ttu1.tc, &tim->tc);
+    } else if (newgop != 0) {
+        last_type = tim->ttu1.tc.type;
+        fps = sfmpv_fps_round[last_type];
+        fields = tim->ttu1.tc.x1c + tim->ttu1.tc.field;
+        frames = tim->ttu1.tc.frm + tim->ttu1.tc.frm2 + 1;
+        frames += fields / 2;
+        field = fields % 2;
+        hour = tim->ttu1.tc.hour;
+        min = tim->ttu1.tc.min;
+        sec = tim->ttu1.tc.sec;
+        sec += frames / fps;
+        frames %= fps;
+        min += sec / 60;
+        sec %= 60;
+        hour += min / 60;
+        min %= 60;
+        if (tim->ttu1.tc.drop != 0 && sec == 0 && min % 10 != 0 && (frames == 0 || frames == 1)) {
+            frames = 2;
+        }
+        tim->tc.type = last_type;
+        tim->tc.drop = tim->ttu1.tc.drop;
+        tim->tc.hour = hour;
+        tim->tc.min = min;
+        tim->tc.sec = sec;
+        tim->tc.frm = frames;
+        tim->tc.field = field;
         tim->rfld[0].acc = tim->tc.field;
         /* As in the original, tmpref is used without the modulo 64 of sfmpv_CalcRepeatField. */
         tim->rfld[tmpref].acc = tim->tc.field;
@@ -1488,36 +1566,40 @@ void sfmpv_DoReformTc(SFD sfd, MPV_PICATR *picatr, Sint64 pts, Sint32 newgop) {
         tim->tc.frm = tim->ttu1.tc.frm;
     }
 }
-#pragma dont_inline off
 
+/* Matching workaround: pool_data off. The original addresses sfmpv_fps_round, sfmpv_conv_29_97 and
+ * sfmpv_conv_59_94 each with its own lis/addi pair; with pooling on, MWCC reaches the three .rodata
+ * tables from one pooled base, and sfmpv_Pts2Tc is 118 instead of 119 words (115 differing by
+ * position; the longest common subsequence leaves 31 of the original's words unmatched). Revisit
+ * when the original unit's compiler settings are known. */
+#pragma pool_data off
 /* The time code of a PTS (90 kHz): the field count at the picture rate less tmpref pictures (the
  * picture's temporal reference), split into hours, minutes, seconds and frames. Drop frame time
  * code at 29.97 and 59.94 Hz leaves out frames at the start of every minute but each tenth (the
  * constants of sfmpv_conv_29_97 and sfmpv_conv_59_94). */
 void sfmpv_Pts2Tc(Sint64 pts, Sint32 type, Sint32 drop, Sint32 tmpref, SFTIM_TC *tc) {
-    Sint32 rate = SFTIM_prate[type];
     Sint32 fps = sfmpv_fps_round[type];
-    const Sint32 *conv;
+    Sint32 rate = SFTIM_prate[type];
     Sint32 fields;
+    const Sint32 *conv;
+    Sint32 rest;
     Sint32 frames;
-    Sint32 hour;
     Sint32 min;
+    Sint32 tenmin;
     Sint32 sec;
     Sint32 frm;
-    Sint32 tenmin;
-    Sint32 rest;
+    Sint32 sec_total;
+    Sint32 min_total;
+    Sint32 hour;
 
     fields = UTY_MulDivRound64(pts, rate * 2, SFMPV_PTS_TICKS_PER_KSEC);
-    tc->field = fields & 1;
     frames = (fields >> 1) - tmpref;
+    tc->field = fields & 1;
     frames = frames > 0 ? frames : 0;
     tc->type = type;
     tc->drop = drop;
     if (drop != 0 && (rate == 29970 || rate == 59940)) {
-        conv = sfmpv_conv_59_94;
-        if (rate == 29970) {
-            conv = sfmpv_conv_29_97;
-        }
+        conv = rate == 29970 ? sfmpv_conv_29_97 : sfmpv_conv_59_94;
         hour = frames / conv[0];
         rest = frames % conv[0];
         tenmin = rest / conv[1];
@@ -1539,20 +1621,21 @@ void sfmpv_Pts2Tc(Sint64 pts, Sint32 type, Sint32 drop, Sint32 tmpref, SFTIM_TC 
                 frm = rest % conv[5];
             }
         }
-        min += tenmin * conv[6];
+        min += conv[6] * tenmin;
     } else {
-        sec = frames / fps;
-        min = sec / 60;
-        hour = min / 60;
+        sec_total = frames / fps;
         frm = frames % fps;
-        sec %= 60;
-        min %= 60;
+        min_total = sec_total / 60;
+        sec = sec_total % 60;
+        hour = min_total / 60;
+        min = min_total % 60;
     }
     tc->hour = hour;
     tc->min = min;
     tc->sec = sec;
     tc->frm = frm;
 }
+#pragma pool_data on
 
 /* Sets a decoded frame to its initial state with its frame buffer. */
 static inline void sfmpv_InitFrm(SFMPV_FRM *frm, void *buf) {
@@ -1647,12 +1730,51 @@ Sint32 fn_803F5134(SFD sfd, SFD_VIDINF *vid) {
     return 0;
 }
 
+/* Advances the picture state (picstat) after the skip decision: a skipped I or P picture puts the
+ * decoder in state 2, a decoded one moves state 2 to 3 and 3 to 5 (5 is the state with all
+ * pictures decoded; inferred from the transitions). A new GOP restarts at 5 when closed_gop is
+ * set, else at 2 when broken_link is set (forced while there is no video start offset and
+ * condition 0x49 is 1). */
+static inline void sfmpv_UpdatePicStat(SFD sfd, MPV_PICATR *picatr, Bool skip) {
+    SFMPV_WORK *wk = SFMPV_WK(sfd);
+    MPV hn = wk->mpv;
+    Sint32 state;
+    Sint32 closed;
+    Sint32 broken;
+
+    state = wk->picstat;
+    if (wk->newgop != 0) {
+        MPV_GetLinkFlg(hn, &closed, &broken);
+        if (closed == 1) {
+            state = 5;
+        } else {
+            if (SFD_TIM(sfd)->vofst.valid == 0 && SFSET_GetCond(sfd, 0x49) == 1) {
+                broken = 1;
+            }
+            if (broken == 1) {
+                state = 2;
+            }
+        }
+    }
+    if (skip == TRUE) {
+        if (picatr->pic_type == 1 || picatr->pic_type == 2) {
+            state = 2;
+        }
+    } else if (state == 2) {
+        state = 3;
+    } else if (state == 3) {
+        state = 5;
+    }
+    wk->picstat = state;
+}
+
 /* Whether the picture to be decoded precedes the position the application asked to seek to: a
  * seek position is set, no video start offset has been taken yet and the picture's time is before
  * it. */
 static inline Bool sfmpv_IsBeforeSeekPos(SFD sfd) {
-    SFTIM_TTU *ttu = &SFD_TIM(sfd)->ttu3;
-    SFTIM_TTU *vofst = &SFD_TIM(sfd)->vofst;
+    SFTIM_WORK *tim = SFD_TIM(sfd);
+    SFTIM_TTU *ttu = &tim->ttu3;
+    SFTIM_TTU *vofst = &tim->vofst;
 
     if (sfd->see.req.pos < 0) {
         return FALSE;
@@ -1684,10 +1806,10 @@ static inline Bool sfmpv_IsPicTypeOff(SFD sfd, Sint32 pic_type) {
     default:
         return TRUE;
     }
-    if (enabled != 0) {
-        return FALSE;
+    if (enabled == 0) {
+        return TRUE;
     }
-    return TRUE;
+    return FALSE;
 }
 
 /* Whether the picture is empty (without coded macroblocks, as MPV_IsEmptyPpic and
@@ -1717,7 +1839,7 @@ static inline Bool sfmpv_IsEmptyPic(SFD sfd, SJCK *ck, Sint32 pic_type) {
 }
 
 /* Whether the picture state calls for skipping this picture type: with picstat 2 the P and B
- * pictures, with picstat 3 the B pictures. */
+ * pictures, with picstat 3 the B pictures; states 4 and 5 skip nothing. */
 static inline Bool sfmpv_IsPicStatSkip(SFD sfd, Sint32 pic_type) {
     Bool skip = FALSE;
 
@@ -1732,6 +1854,13 @@ static inline Bool sfmpv_IsPicStatSkip(SFD sfd, Sint32 pic_type) {
             skip = TRUE;
         }
         break;
+    case 4:
+        skip = FALSE;
+        break;
+    case 5:
+        break;
+    default:
+        break;
     }
     return skip;
 }
@@ -1740,21 +1869,23 @@ static inline Bool sfmpv_IsPicStatSkip(SFD sfd, Sint32 pic_type) {
  * SFD_SetUsrIsSkipFn when set) is behind the clock. Counts the skipped frames in a row. I and P
  * pictures update the time of the next input. */
 static inline Bool sfmpv_IsLate(SFD sfd, Sint32 pic_type) {
-    SFTIM_WORK *tim = SFD_TIM(sfd);
     SFMPV_WORK *wk = SFMPV_WK(sfd);
     Sint32 ftime;
     Sint32 tunit;
     Sint32 ncount;
     Sint32 tscale;
+    SFTIM_ISSKIPFN isskipfn;
+    SFTIM_WORK *tim = SFD_TIM(sfd);
 
     if (tim->vofst.valid == 0) {
         ftime = 0;
     } else {
         ftime = tim->ctime + (tim->ttu3.val - tim->vofst.val);
     }
+    isskipfn = tim->isskipfn;
     tunit = tim->ttu3.unit;
-    if (tim->isskipfn != 0) {
-        return tim->isskipfn(sfd, pic_type, ftime, tunit);
+    if (isskipfn != 0) {
+        return isskipfn(sfd, pic_type, ftime, tunit);
     }
     if (pic_type == 1) {
         SFTIM_UpdateItime(tim, ftime);
@@ -1778,18 +1909,12 @@ static inline Bool sfmpv_IsLate(SFD sfd, Sint32 pic_type) {
 }
 
 /* Decides whether the picture whose first slice is at the head of ck is skipped instead of
- * decoded, and advances the picture state (picstat) to follow: a skipped I or P picture puts the
- * decoder in state 2, a decoded one moves state 2 to 3 and 3 to 5 (5 is the state with all
- * pictures decoded; inferred from the transitions). A new GOP restarts at 5 when closed_gop is
- * set, else at 2 when broken_link is set (forced while there is no video start offset and
- * condition 0x49 is 1). Returns TRUE to skip. */
+ * decoded and advances the picture state (sfmpv_UpdatePicStat). Returns TRUE to skip. */
 Bool sfmpv_IsSkip(SFD sfd, SJCK *ck) {
     SFMPV_WORK *wk = SFMPV_WK(sfd);
+    MPV_PICATR *picatr = &wk->picatr;
     Sint32 pic_type;
     Bool skip;
-    Sint32 state;
-    Sint32 broken;
-    Sint32 closed;
 
     if (SFSET_GetCond(sfd, 0x2F) == 1) {
         return TRUE;
@@ -1797,57 +1922,74 @@ Bool sfmpv_IsSkip(SFD sfd, SJCK *ck) {
     if (SFSET_GetCond(sfd, 0x27) == 1) {
         return FALSE;
     }
-    if (wk->picatr.x58 != 0) {
+    if (picatr->x58 != 0) {
         return wk->skipret;
     }
-    pic_type = wk->picatr.pic_type;
-    if (sfmpv_IsBeforeSeekPos(sfd) || sfmpv_IsPicTypeOff(sfd, pic_type) ||
-        sfmpv_IsEmptyPic(sfd, ck, pic_type) || sfmpv_IsPicStatSkip(sfd, pic_type) ||
-        sfmpv_IsLate(sfd, pic_type)) {
+    pic_type = picatr->pic_type;
+    if (sfmpv_IsBeforeSeekPos(sfd)) {
+        skip = TRUE;
+    } else if (sfmpv_IsPicTypeOff(sfd, pic_type)) {
+        skip = TRUE;
+    } else if (sfmpv_IsEmptyPic(sfd, ck, pic_type)) {
+        skip = TRUE;
+    } else if (sfmpv_IsPicStatSkip(sfd, pic_type)) {
+        skip = TRUE;
+    } else if (sfmpv_IsLate(sfd, pic_type)) {
         skip = TRUE;
     } else {
         skip = FALSE;
     }
-
-    state = wk->picstat;
-    if (wk->newgop != 0) {
-        MPV_GetLinkFlg(wk->mpv, &closed, &broken);
-        if (closed == 1) {
-            state = 5;
-        } else {
-            if (SFD_TIM(sfd)->vofst.valid == 0 && SFSET_GetCond(sfd, 0x49) == 1) {
-                broken = 1;
-            }
-            if (broken == 1) {
-                state = 2;
-            }
-        }
-    }
-    if (skip == TRUE) {
-        if (wk->picatr.pic_type == 1 || wk->picatr.pic_type == 2) {
-            state = 2;
-        }
-    } else if (state == 2) {
-        state = 3;
-    } else if (state == 3) {
-        state = 5;
-    }
-    wk->picstat = state;
+    sfmpv_UpdatePicStat(sfd, picatr, skip);
     return skip;
 }
 
-/* Whether picstat is 2 or 3; with either, sfmpv_DecodeFrm keeps the time code's frm2. The
- * original's lowering of this switch also compares picstat with 4; the case set that produces it is
- * not known. */
-static inline Bool sfmpv_IsPicStat23(SFD sfd) {
-    switch (SFMPV_WK(sfd)->picstat) {
-    case 2:
-        return TRUE;
-    case 3:
-        return TRUE;
-    default:
-        return FALSE;
+/* Fixes the video start offset (vofst) from the GOP time code of the first frame decoded. Unless
+ * picstat is 2 or 3, the time code's frm2 is left out when condition 4 is set. */
+static inline void sfmpv_SetVofst(SFD sfd) {
+    SFTIM_WORK *tim = SFD_TIM(sfd);
+    SFTIM_TTU *ttu0 = &tim->ttu0;
+    SFTIM_TTU *vofst = &tim->vofst;
+    SFTIM_TC tc;
+    Sint32 ncount;
+    Sint32 tscale;
+    Bool keep_frm2;
+    SFTIM_TTU *ttu3 = &tim->ttu3;
+
+    if (vofst->valid == 0) {
+        tc = ttu3->tc;
+        keep_frm2 = FALSE;
+        switch (SFMPV_WK(sfd)->picstat) {
+        case 2:
+            keep_frm2 = TRUE;
+            break;
+        case 3:
+            keep_frm2 = TRUE;
+            break;
+        case 4:
+            keep_frm2 = FALSE;
+            break;
+        case 5:
+            break;
+        default:
+            break;
+        }
+        if (keep_frm2 == FALSE && sfd->cond[4] != 0) {
+            tc.frm2 = 0;
+        }
+        SFTIM_Tc2Time(&tc, &ncount, &tscale);
+        vofst->tc = tc;
+        vofst->val = ncount - ttu0->val;
+        vofst->unit = tscale;
+        vofst->valid = 1;
     }
+}
+
+/* Gives a decoded frame the time of the current picture (ttu3) and its display time. */
+static inline void sfmpv_SetFrmTtu(SFD sfd, SFMPV_FRM *frm) {
+    SFTIM_WORK *tim = SFD_TIM(sfd);
+
+    frm->ttu = tim->ttu3;
+    sfmpv_SetFrmTime(tim, frm);
 }
 
 /* Decodes one picture from the stream joint into a frame: sets up the frame, runs the decoder, adds
@@ -1859,31 +2001,27 @@ Sint32 sfmpv_DecodeFrm(SFD sfd, SJ sj) {
     SFMPV_WORK *wk = SFMPV_WK(sfd);
     MPV mpv = wk->mpv;
     MPV_PICATR *picatr = &wk->picatr;
-    SFMPV_FRM *frm;
     MPV_FRM para;
-    SFTIM_WORK *tim = SFD_TIM(sfd);
+    SFMPV_FRM *frm;
     Sint32 ref_x40;
     Sint32 ref_x44;
-    SFMPV_PICUSR *picusr;
-    SFTIM_TTU *ttu0;
-    SFTIM_TTU *vofst;
-    SFTIM_TC tc;
-    Sint32 tscale;
-    Sint32 ncount;
     Sint64 start;
-    Sint64 elapsed;
     Sint32 flow;
     Sint32 result;
     Sint32 err;
+    SFMPV_PICUSR *picusr;
 
     if (sfmpv_SetFrmPara(sfd, picatr, &para, &frm) != 0) {
         return 0;
     }
-
-    /* the counts of the reference frames a P or B picture is predicted from (the original's lowering
-     * of this switch also compares pic_type with 4; the case set that produces it is not known) */
+    /* the counts of the reference frames a P or B picture is predicted from */
     if (sfd->prm.x38 == 3) {
         switch (wk->picatr.pic_type) {
+        case 1:
+        default:
+            ref_x40 = 0;
+            ref_x44 = 0;
+            break;
         case 2:
             ref_x40 = wk->ref[0]->x40;
             ref_x44 = wk->ref[0]->x44;
@@ -1891,10 +2029,6 @@ Sint32 sfmpv_DecodeFrm(SFD sfd, SJ sj) {
         case 3:
             ref_x40 = wk->ref[0]->x40 + wk->ref[1]->x40;
             ref_x44 = wk->ref[0]->x44 + wk->ref[1]->x44;
-            break;
-        default:
-            ref_x40 = 0;
-            ref_x44 = 0;
             break;
         }
     } else {
@@ -1904,63 +2038,30 @@ Sint32 sfmpv_DecodeFrm(SFD sfd, SJ sj) {
     picusr = frm->picusr;
     memcpy(picusr->buf, wk->picusr.dat, wk->picusr.len);
     picusr->len = wk->picusr.len;
-
-    /* the first frame decoded fixes the video start offset from the GOP time code */
-    ttu0 = &tim->ttu0;
-    vofst = &tim->vofst;
-    if (vofst->valid == 0) {
-        tc = tim->ttu3.tc;
-        if (!sfmpv_IsPicStat23(sfd) && sfd->cond[4] != 0) {
-            tc.frm2 = 0;
-        }
-        SFTIM_Tc2Time(&tc, &ncount, &tscale);
-        vofst->tc = tc;
-        vofst->val = ncount - ttu0->val;
-        vofst->unit = tscale;
-        vofst->valid = 1;
-    }
-
+    sfmpv_SetVofst(sfd);
     start = fn_803FEA5C();
     flow = SJRBF_GetFlowCnt(sj, 0, 1);
     result = MPV_DecodeFrmSj(mpv, sj, &para);
     flow = SJRBF_GetFlowCnt(sj, 0, 1) - flow;
-    elapsed = fn_803FEA5C() - start;
-    SFTMR_AddTsum(&sfd->tsum[picatr->pic_type], elapsed);
+    SFTMR_AddTsum(&sfd->tsum[picatr->pic_type], fn_803FEA5C() - start);
     sfd->err.x0c += para.x28;
     sfd->err.x10 += para.x2c;
-
-    switch (result) {
-    case 0:
-        err = 0;
-        break;
-    case -2:
-        err = flow > 0 ? 0 : SFLIB_SetErr(sfd, -2);
-        break;
-    case -3:
-        err = flow > 0 ? 0 : SFLIB_SetErr(sfd, -3);
-        break;
-    default:
-        err = SFLIB_SetErr(sfd, SFMPV_ERR_DECODE);
-        break;
-    }
-    SFBUF_AddRtotSj(sfd, sfd->tr[SFMPV_TR].bufin, flow);
-    sfd->plyinf.v_byte += flow;
+    err = sfmpv_ChkDecRet(sfd, result, flow, SFMPV_ERR_DECODE);
+    sfmpv_AddRtot(sfd, flow);
     if (err != 0) {
         SFMPVF_FreeFrm(frm);
         return err;
     }
-
     if (flow > 0) {
         SFMPVF_SetGopStat(sfd, 0);
-        frm->ttu = tim->ttu3;
-        sfmpv_SetFrmTime(tim, frm);
+        sfmpv_SetFrmTtu(sfd, frm);
         frm->gopno = wk->nconcat;
-        frm->x40 = ref_x40 + wk->tmpref_adj + para.x28;
+        frm->x40 = para.x28 + ref_x40 + wk->tmpref_adj;
         frm->x44 = para.x2c + ref_x44;
-        if (picatr->x38 == 3 || wk->pendfrm != 0) {
-            wk->pendfrm = 0;
-        } else {
+        if (picatr->x38 != 3 && wk->pendfrm == 0) {
             wk->pendfrm = frm;
+        } else {
+            wk->pendfrm = 0;
         }
         wk->skipret = 0;
         wk->dlmwait = 0;
@@ -1990,6 +2091,10 @@ Sint32 sfmpv_SetFrmPara(SFD sfd, MPV_PICATR *picatr, MPV_FRM *para, SFMPV_FRM **
     Sint32 ypitch;
     Sint32 cpitch;
     Sint32 h16;
+    Sint32 ysize;
+    Sint32 csize;
+    Sint32 i;
+    MPV_RFB *rfbuf;
 
     if (wk->pendfrm != 0) {
         *frm = wk->pendfrm;
@@ -2009,16 +2114,24 @@ Sint32 sfmpv_SetFrmPara(SFD sfd, MPV_PICATR *picatr, MPV_FRM *para, SFMPV_FRM **
             wk->ref[1] = *frm;
         }
         sfmpv_CalcPitch(picatr->width, picatr->height, &ypitch, &cpitch, &h16);
-        sfmpv_LayoutPlanes(&para->rfb[0], wk->ref[0]->buf, ypitch, cpitch, h16);
-        sfmpv_LayoutPlanes(&para->rfb[1], wk->ref[1]->buf, ypitch, cpitch, h16);
+        ysize = h16 * ypitch;
+        csize = h16 / 2 * cpitch;
+        for (i = 0; i < 2; i++) {
+            para->rfb[i].ypitch = ypitch;
+            para->rfb[i].cpitch = cpitch;
+            para->rfb[i].pln[2] = wk->ref[i]->buf;
+            para->rfb[i].pln[0] = para->rfb[i].pln[2] + ysize;
+            para->rfb[i].pln[1] = para->rfb[i].pln[0] + csize;
+        }
     } else {
         if (picatr->pic_type == 1 || picatr->pic_type == 2) {
             wk->refidx[0] ^= 1;
             wk->refidx[1] ^= 1;
             wk->ref[1] = *frm;
         }
-        para->rfb[0] = wk->rfbuf[wk->refidx[0]];
-        para->rfb[1] = wk->rfbuf[wk->refidx[1]];
+        rfbuf = wk->rfbuf;
+        para->rfb[0] = rfbuf[wk->refidx[0]];
+        para->rfb[1] = rfbuf[wk->refidx[1]];
     }
     para->buf = (*frm)->buf;
     para->picatr = &(*frm)->picatr;
@@ -2030,8 +2143,9 @@ Sint32 sfmpv_SetFrmPara(SFD sfd, MPV_PICATR *picatr, MPV_FRM *para, SFMPV_FRM **
 
 /* Matching workaround: #pragma dont_inline around sfmpv_GoDdelim. The original calls it out of
  * line from sfmpv_DecodeOneUnit; without the pragma the compiler expands it there, which changes
- * the frame and most of the code of sfmpv_DecodeOneUnit (504 words against the original's 364, 322
- * differing instead of 170). Revisit when the original's source form of the search is known. */
+ * the frame and most of the code of sfmpv_DecodeOneUnit (512 words against the original's 364, 330
+ * differing by the longest common subsequence instead of none). Revisit when the original's source
+ * form of the search is known. */
 #pragma dont_inline on
 /* Discards the video input up to the next start code of the classes in mask (the start code
  * itself is kept) and counts the bytes: all of them in v_byte, and in v_skip as well when the
@@ -2382,6 +2496,7 @@ done:
 static inline Sint32 sfmpv_AnalyseSeekHdr(SFD sfd, Bool *analysed) {
     SFMPV_WORK *wk = SFMPV_WK(sfd);
     SFSEE_VHDR *hdr;
+    SFSEE_HDRDAT *dat;
     MPV hn;
     SJCK ck;
     Sint32 used;
@@ -2396,8 +2511,9 @@ static inline Sint32 sfmpv_AnalyseSeekHdr(SFD sfd, Bool *analysed) {
     }
     hn = wk->mpv;
     SFD_TIM(sfd)->ttu0 = hdr->ttu;
-    ck.data = hdr->hdr;
-    ck.len = hdr->hdrlen;
+    dat = &hdr->hdr;
+    ck.data = dat->data;
+    ck.len = dat->len;
     if (MPV_DecodePicAtr(hn, &ck, &used) != 0) {
         return SFLIB_SetErr(sfd, SFMPV_ERR_PICATR);
     }

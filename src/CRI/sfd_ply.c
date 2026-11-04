@@ -445,9 +445,9 @@ static SFD sfply_InitHn(SFD_CREPRM *prm, Sint32 x) {
     hn->vid.mb_height = 0;
     hn->vid.bitrate = 0;
     hn->vid.picrate = 0;
-    hn->x924 = 0;
-    hn->x928 = 1;
-    hn->x92c = 0;
+    hn->vid.x18 = 0;
+    hn->vid.x1c = 1;
+    hn->vid.vbvbufsiz = 0;
     hn->numelem_aud = -1;
     hn->numelem_vid = -1;
     hn->numelem_prv = -1;

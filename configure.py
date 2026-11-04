@@ -3265,27 +3265,34 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            # NonMatching: all 39 functions are written and 19 are identical (sfmpv_ChkFatal among
-            # them). With equal sizes, raw words differ in SFMPV_AddRead (2 of 71), SFMPV_Seek
-            # (24 of 93), SFMPV_Destroy (40 of 68), SFMPV_Create (61 of 156),
-            # sfmpv_ExecServerSub (78 of 263), sfmpv_NeedSafeDlmRefresh (34 of 233) and
-            # sfmpv_GetActiveSize (95 of 474). The sizes differ, or the stack frame shifts the
-            # offsets of most words, in these (original / source words, then the larger length
-            # minus the longest common subsequence of words): SFMPV_Stop (4 / 2, 2),
-            # sfmpv_InitInf (228 / 229, 19), sfmpv_SetFrmPara (156 / 155, 36), sfmpv_GoDdelim
-            # (164 / 163, 62), sfmpv_DecodeFrm (324 / 322, 171), sfmpv_CalcRepeatField (308 / 310,
-            # 63), sfmpv_IsSkip (268 / 255, 80), sfmpv_DecodeOneUnit (364 / 356, 170),
-            # sfmpv_Pts2Tc (119 / 118, 94), sfmpv_DoReformTc (148 / 143, 112), sfmpv_Concat
-            # (210 / 204, 120), fn_803F5134 (338 / 353, 236) and sfmpv_DecodePicAtr (702 / 702,
-            # 230; 464 words differ by position). The original SFMPV_Stop loads the driver handle
-            # and compares it with zero without using the result; ours does neither. In
-            # sfmpv_Pts2Tc the original addresses sfmpv_fps_round, sfmpv_conv_59_94 and
-            # sfmpv_conv_29_97 each with its own lis/addi pair, while ours reaches all three from
-            # one pooled .rodata base. The register assignment differs in SFMPV_Destroy,
-            # sfmpv_NeedSafeDlmRefresh and sfmpv_ExecServerSub. Beyond that, the original
+            # NonMatching: all 39 functions are written and 27 are identical. With equal sizes, raw
+            # words differ in SFMPV_AddRead (2 of 71), SFMPV_Destroy (40 of 68), SFMPV_Create
+            # (61 of 156), sfmpv_SetFrmPara (25 of 156), sfmpv_IsSkip (7 of 268) and
+            # sfmpv_ExecServerSub (78 of 263). The sizes differ in these (original / source words,
+            # raw words differing by position, then the larger length minus the longest common
+            # subsequence of words): SFMPV_Stop (4 / 2, 4, 2), sfmpv_InitInf (228 / 229, 145, 19),
+            # sfmpv_GoDdelim (164 / 163, 91, 51), fn_803F5134 (338 / 353, 346, 236),
+            # sfmpv_DecodePicAtr (702 / 699, 495, 97) and sfmpv_Concat (210 / 201, 76, 13). The
+            # original sfmpv_Concat tests the time difference against zero again after the clamp and
+            # compares a status (0, or -1 after a failed sample count read) with -1 before it
+            # discards the end codes; ours returns directly when the sample count cannot be read.
+            # The original SFMPV_Stop loads the driver handle and compares it with zero without
+            # using the result; ours does neither. In SFMPV_AddRead the original loads the used flag
+            # before it computes the frame record's address; ours computes the address first.
+            # sfmpv_SetFrmPara differs in registers and scheduling only (the same instructions): the
+            # registers of the picture width and height and the order of their rounding steps, and
+            # the registers and order of the plane size products and of the load of the first
+            # reference frame's buffer.
+            # sfmpv_IsSkip has r0 and r3 exchanged between picstat and the result of the picture
+            # state test. The original sfmpv_DecodePicAtr loads the work pointer from the handle
+            # again before the PTS lookup and the stream information, and copies the bit rate, the
+            # VBV buffer size and the picture time into further registers; ours keeps one work
+            # pointer there and uses the values where they are. The register assignment differs in
+            # SFMPV_Destroy, SFMPV_Create and sfmpv_ExecServerSub. Beyond that, the original
             # SFMPV_Destroy interleaves an mr, a lis and an addi with the register saves, while
-            # ours places them after the saves, and one compare in sfmpv_ExecServerSub is cmpwi
-            # where the original has cmplwi.
+            # ours places them after the saves, the original SFMPV_Create saves r29 before the
+            # addi of the .bss base where ours saves it after, and one compare in
+            # sfmpv_ExecServerSub is cmpwi where the original has cmplwi.
             # Deferred inlining: the original .bss holds the variables in the reverse of their
             # declaration order (sfmpv_discard_wsiz first, sfmpv_work last), as a deferred compile
             # lays them out; without it they come out in the order of first use (sfmpv_para first)
