@@ -36,10 +36,17 @@ class CharaColliBase {
      * the low 16 bits as the bound of a loop over slot 8. */
     virtual u16 UnkSlot0() = 0;
     /* When the byte at 0x2A is clear, sets it and the byte at 0x28 and clears the byte at 0x2B
-     * (0x800378FC). */
-    virtual void UnkSlot1();
-    /* Copies the byte at 0x2A to 0x2B and clears 0x2A (0x800378E8). */
-    virtual void UnkSlot2();
+     * (0x800378FC, which ignores selector). CharaColliGeneral's implementation (0x800C334C) does
+     * the same for a selector of -1. For another selector it takes the range that slot 9 returns;
+     * when that range's word at 0x20 equals selector and its byte at 0x19 is clear, it clears the
+     * byte at 0x2B, sets the range's byte at 0x19 and calls slot 31. */
+    virtual void UnkSlot1(int selector);
+    /* Copies the byte at 0x2A to 0x2B and clears 0x2A (0x800378E8, which ignores selector).
+     * CharaColliGeneral's implementation (0x800C32B0) does the same for a selector of -1. For
+     * another selector it takes the range that slot 9 returns; when that range's word at 0x20
+     * equals selector and its byte at 0x19 is set, it clears the byte at 0x2B and the range's byte
+     * at 0x19 and calls slot 31. */
+    virtual void UnkSlot2(int selector);
     /* A pointer to the probe's position (name and behaviour inferred from the CityLaser gadget,
      * which subtracts the nearest point of a segment from the vector it points to). */
     virtual const Fn8040Vector3 *GetPosition() = 0;
@@ -83,8 +90,11 @@ class CharaColliBase {
     virtual void UnkSlot17(const Fn8040Vector3 *vector, int selector);
     virtual void UnkSlot18() = 0;
     virtual void UnkSlot19() = 0;
-    /* The ElecBarrier gadget calls it with 0x30302 or 0x30301 (by barrier type) and -1, and
-     * GravityChangeZone with 0x140100 and -1 on its zone model's probe (purpose unknown). */
+    /* The ElecBarrier gadget calls it with 0x30302 or 0x30301 (by barrier type) and -1,
+     * GravityChangeZone with 0x140100 and -1 on its zone model's probe, ElecCircuitColli with 0x202
+     * or 0x40000 and -1, and BombServer with 0x10302 or 0x50100 and -1. ElecCircuitColli and
+     * BombServer create their probes with 0x40000 and 0x50100 as the factories' flags word, so it
+     * may re-apply a flags word (inferred; purpose unknown). */
     virtual void UnkSlot20(int arg0, int arg1) = 0;
     virtual void UnkSlot21() = 0;
     virtual void UnkSlot22() = 0;

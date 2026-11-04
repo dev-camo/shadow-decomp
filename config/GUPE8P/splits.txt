@@ -705,6 +705,15 @@ Game/BombingWall.cpp:
 	.sbss       start:0x805F0A38 end:0x805F0A48
 	.sdata2     start:0x805F99C8 end:0x805F99E8
 
+Game/BombServer.cpp:
+	.text       start:0x80315198 end:0x8031600C
+	.ctors      start:0x804A9FEC end:0x804A9FF0
+	.rodata     start:0x8050C4F0 end:0x8050C5D0
+	.data       start:0x8055BF58 end:0x8055C018
+	.sdata      start:0x805ED0C0 end:0x805ED0E8
+	.sbss       start:0x805F0A48 end:0x805F0A60
+	.sdata2     start:0x805F99E8 end:0x805F9A10
+
 Game/Researcher.cpp:
 	.text       start:0x803187B4 end:0x80319918
 	.ctors      start:0x804A9FF4 end:0x804A9FF8
