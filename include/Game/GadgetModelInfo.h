@@ -4,6 +4,7 @@
 #include "Game/fn_8040_vector_types.h"
 #include "Game/GadgetModelInfoStorage.h"
 #include "Game/UnkBitFlags_80014E04.h"
+#include "Game/UnkHandleBTarget_8015BE64.h"
 #include "Game/fn_804157E8_motion_range.h"
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
@@ -164,7 +165,13 @@ class GadgetModelInfo {
     void fn_801612B8();
     void fn_801612E0();
 
-    /* 0x04 */ u8 field_0x4[0x38]; /* Unrecovered members, including native subobjects. */
+    /* The constructor builds three callback objects at 0x4, 0x10 and 0x1C with the same function,
+     * and the destructor destroys them with the same function. The gadgets bind their collision
+     * handlers to the first (name inferred). */
+    /* 0x04 */ ColliDetectCallback m_collisionCallback;
+    /* 0x10 */ ColliDetectCallback field_0x10;
+    /* 0x1C */ ColliDetectCallback field_0x1C;
+    /* 0x28 */ u8 field_0x28[0x14]; /* Unrecovered members. */
     /* 0x3C */ UnkBitFlags_80014E04 field_0x3C;
     /* 0x40 */ u8 field_0x40[0xC];
     /* 0x4C */ UnkModelPartList field_0x4C;
