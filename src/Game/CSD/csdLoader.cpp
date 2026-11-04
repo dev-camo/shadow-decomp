@@ -28,7 +28,7 @@ static void InterpolateHermite(u32 *out, const Keyframe *first, const Keyframe *
 static void HoldKeyValue(u32 *out, const Keyframe *first, const Keyframe *second, f32 frame);
 static void UpdateEntries(MotionPaletteLayer *layer, int index, const LayerData *source,
                           const LayerMotion *motion, const FontList *fonts,
-                          MotionPaletteEntry *parent, const SceneData *scene, u32 flags, int depth,
+                          MotionPaletteEntry *parent, const SceneData *scene, s32 flags, int depth,
                           f32 frame, f32 frameStep);
 static void UpdateEntry(MotionPaletteEntry *entry, const ElementData *element,
                         const ChannelAnimation *animation, const MotionPaletteEntry *parent,
@@ -582,60 +582,63 @@ void UpdatePalette(MotionPalette *palette, const SceneData *scene, const SceneMo
     }
     palette->lastParent = parent;
 
-    if ((changes & UPDATE_PARENT) ||
-        (!(changes & UPDATE_NONE) && ((changes & UPDATE_VALUES) || palette->field_0x8 == 0))) {
-        s32 parentFlags = 0;
-        if (parent != NULL) {
-            parentFlags = parent->flags;
-            PushMatrix(&parent->matrix);
-        }
-        palette->field_0x8 = 1;
+    /* Nothing needs updating when the cached palette is still current. */
+    if (!(changes & UPDATE_PARENT) &&
+        ((changes & UPDATE_NONE) || (!(changes & UPDATE_VALUES) && palette->field_0x8 != 0))) {
+        return;
+    }
+    s32 parentFlags = 0;
+    if (parent != NULL) {
+        parentFlags = parent->flags;
+        PushMatrix(&parent->matrix);
+    }
+    palette->field_0x8 = 1;
 
-        /* Matching workaround: the two loops differ only in the motion passed on. A single loop
-         * that selects each layer's motion compiles 44 words shorter than the original, which has
-         * both loops. Revisit if UpdatePalette matches in another shape. */
-        if (motion != NULL) {
-            for (int i = 0; i < scene->layerCount; i++) {
-                const LayerData *source = &scene->layers[i];
-                MotionPaletteLayer *layer = &palette->layers[i];
-                s32 rootIndex = source->rootIndex;
+    /* Matching workaround: the two loops differ only in the motion passed on. A single loop
+     * that selects each layer's motion compiles 44 words shorter than the original, which has
+     * both loops. Revisit if the original loop structure is recovered more precisely. */
+    if (motion != NULL) {
+        for (int i = 0; i < scene->layerCount; i++) {
+            const LayerMotion *layerMotion = &motion->layers[i];
+            const LayerData *source = &scene->layers[i];
+            MotionPaletteLayer *layer = &palette->layers[i];
+            s32 rootIndex = source->rootIndex;
 
-                if (rootIndex >= 0) {
-                    if ((changes & UPDATE_PARENT) || (changes & UPDATE_VALUES) ||
-                        (!(changes & UPDATE_NONE) && layer->field_0x8 == 0)) {
-                        layer->field_0x8 = 1;
-                        UpdateEntries(layer, rootIndex, source, &motion->layers[i], fonts, parent,
-                                      scene, changes, 0, frame, frameStep);
-                    }
-                }
-                if (palette->layers[i].field_0x8 == 0) {
-                    palette->field_0x8 = 0;
-                }
-            }
-        } else {
-            for (int i = 0; i < scene->layerCount; i++) {
-                const LayerData *source = &scene->layers[i];
-                MotionPaletteLayer *layer = &palette->layers[i];
-                s32 rootIndex = source->rootIndex;
-
-                if (rootIndex >= 0) {
-                    if ((changes & UPDATE_PARENT) || (changes & UPDATE_VALUES) ||
-                        (!(changes & UPDATE_NONE) && layer->field_0x8 == 0)) {
-                        layer->field_0x8 = 1;
-                        UpdateEntries(layer, rootIndex, source, NULL, fonts, parent, scene, changes,
-                                      0, frame, frameStep);
-                    }
-                }
-                if (palette->layers[i].field_0x8 == 0) {
-                    palette->field_0x8 = 0;
+            if (rootIndex >= 0) {
+                if ((changes & UPDATE_PARENT) || (changes & UPDATE_VALUES) ||
+                    (!(changes & UPDATE_NONE) && layer->field_0x8 == 0)) {
+                    layer->field_0x8 = 1;
+                    UpdateEntries(layer, rootIndex, source, layerMotion, fonts, parent, scene,
+                                  changes, 0, frame, frameStep);
                 }
             }
+            if (palette->layers[i].field_0x8 == 0) {
+                palette->field_0x8 = 0;
+            }
         }
+    } else {
+        for (int i = 0; i < scene->layerCount; i++) {
+            const LayerData *source = &scene->layers[i];
+            MotionPaletteLayer *layer = &palette->layers[i];
+            s32 rootIndex = source->rootIndex;
 
-        if (parent != NULL) {
-            parent->flags = parentFlags;
-            PopMatrix();
+            if (rootIndex >= 0) {
+                if ((changes & UPDATE_PARENT) || (changes & UPDATE_VALUES) ||
+                    (!(changes & UPDATE_NONE) && layer->field_0x8 == 0)) {
+                    layer->field_0x8 = 1;
+                    UpdateEntries(layer, rootIndex, source, NULL, fonts, parent, scene, changes, 0,
+                                  frame, frameStep);
+                }
+            }
+            if (palette->layers[i].field_0x8 == 0) {
+                palette->field_0x8 = 0;
+            }
         }
+    }
+
+    if (parent != NULL) {
+        parent->flags = parentFlags;
+        PopMatrix();
     }
 }
 
@@ -656,7 +659,7 @@ int FindSceneNameIndex(const SceneData *scene, const char *name) {
  * UpdatePalette; depth is the number of ancestors below the palette's parent. */
 static void UpdateEntries(MotionPaletteLayer *layer, int index, const LayerData *source,
                           const LayerMotion *motion, const FontList *fonts,
-                          MotionPaletteEntry *parent, const SceneData *scene, u32 flags, int depth,
+                          MotionPaletteEntry *parent, const SceneData *scene, s32 flags, int depth,
                           f32 frame, f32 frameStep) {
     MotionPaletteEntry *entry = &layer->entries[index];
 
