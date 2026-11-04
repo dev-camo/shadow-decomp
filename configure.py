@@ -2607,6 +2607,10 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
+            # NonMatching: ADX_DecodeSte4AsSte (115 of 152 words differ) and ADX_DecodeSte4AsMono
+            # (137 of 188) have the original's instructions (the same opcode counts and
+            # relocations) in other registers and order; ADX_DecodeSte4AsSte also saves one
+            # callee-saved register more (r18). The other two functions match.
             Object(
                 NonMatching,
                 "CRI/adx_dcd5.c",
