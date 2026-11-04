@@ -5,13 +5,21 @@
  *
  * The file name is the one that holds the conversion table functions in the RE4 GameCube
  * decompilation; the message texts name the sfxcnv_ functions. The messages of functions that the
- * linker removed (an E5022301 work size check, SFX_MakeTblZ32 and SFX_MakeTblZ16) are not
- * reproduced, so this object's .rodata is 0x78 bytes short of the original.
+ * linker removed (an E5022301 work size check, SFX_MakeTblZ32 and SFX_MakeTblZ16) are kept in
+ * .rodata by the two stand-ins below.
  */
 #include <string.h>
 
 #include "CRI/sfx.h"
 #include "CRI/sud.h"
+
+/* Matching workaround: stand-in for the stripped function that checks the size of the conversion
+ * work, which its message names. The body is not the original's. The message stays first in
+ * .rodata; storing the address keeps the reference. Without it the message is missing from
+ * .rodata (measured by compiling without it). Revisit when the stripped code is known. */
+static void sfxcnv_RodataOrderWork(const Char8 **out) {
+    out[0] = "E5022301: cnvfrm work is short.";
+}
 
 /* Whether the layout keeps the picture in the upper half of the frame, so the output is half as
  * high. Inlined into sfxcnv_MakeDstFrm. */
@@ -296,11 +304,15 @@ static inline void sfxcnv_MakeTable(SFX_OBJ *sfx, SFX_SRCFRM *frm, Sint32 tbl) {
     case SFX_TBL_ALP3211:
         SFXA_MakeAlp3211Tbl(sfx->sfxa, frm->frmno, sfx->buf[0]);
         break;
-    case SFX_TBL_USER:
+    case SFX_TBL_USER: {
+        /* the user table, built by the function registered with SFX_SetTblFn */
+        Uint8 *userTable = sfx->buf[0];
+
         if (sfx->tblfn != NULL) {
-            sfx->tblfn(sfx->buf[0]);
+            sfx->tblfn(userTable);
         }
         break;
+    }
     case SFX_TBL_LUMI:
         sfxcnv_MakeLumiTbl(sfx->buf[0]);
         break;
@@ -313,14 +325,20 @@ static inline void sfxcnv_MakeTable(SFX_OBJ *sfx, SFX_SRCFRM *frm, Sint32 tbl) {
     }
 }
 
-/* Converts the frame into dst with the function registered by SFX_SetCnvFn (name inferred). */
-static void sfxcnv_ExecCnvByCbFunc(SFX_OBJ *sfx, SFX_SRCFRM *frm, SFX_FRM *dst, Uint8 *tbl) {
+/* Converts the frame into dst with the function registered by SFX_SetCnvFn (name inferred), passing
+ * buf[0] as the table when usetbl is set. The original reads buf[0] after sfxcnv_MakeCftSrcBuf
+ * returns, so the table pointer is read here rather than passed in. */
+static void sfxcnv_ExecCnvByCbFunc(SFX_OBJ *sfx, SFX_SRCFRM *frm, SFX_FRM *dst, Bool usetbl) {
     SFX_CNVARG arg;
     SFX_FRM src;
 
     memset(&src, 0, sizeof(SFX_FRM));
     sfxcnv_MakeCftSrcBuf(sfx, frm, &src);
-    arg.tbl = tbl;
+    if (usetbl) {
+        arg.tbl = sfx->buf[0];
+    } else {
+        arg.tbl = NULL;
+    }
     arg.work = sfx->work;
     if (sfx->outbuf_height == 0) {
         arg.height = frm->height;
@@ -346,7 +364,7 @@ static void sfxcnv_ExecCnvByCbFunc(SFX_OBJ *sfx, SFX_SRCFRM *frm, SFX_FRM *dst, 
  * inlined converter move from the stack offsets 0xC8 and 0x8 that the original uses to 0x194 and
  * 0x68. */
 static void sfxcnv_ExecCnvWithAlpha(SFX_OBJ *sfx, SFX_SRCFRM *frm, SFX_FRM *dst) {
-    sfxcnv_ExecCnvByCbFunc(sfx, frm, dst, NULL);
+    sfxcnv_ExecCnvByCbFunc(sfx, frm, dst, FALSE);
     sfxcnv_ExecCopyAlphaByCbFunc(sfx, frm, dst);
 }
 
@@ -365,13 +383,13 @@ void sfxcnv_ChkCompoByCbFunc(SFX_OBJ *sfx, SFX_SRCFRM *frm, SFX_FRM *dst) {
     switch (compo) {
     case SFX_COMPO_YCC420PLN:
         if (frm->field_0x90 != 1) {
-            sfxcnv_ExecCnvByCbFunc(sfx, frm, dst, NULL);
+            sfxcnv_ExecCnvByCbFunc(sfx, frm, dst, FALSE);
             break;
         }
         /* fall through */
     case SFX_COMPO_0x1001:
         sfxcnv_MakeTable(sfx, frm, SFX_TBL_USER);
-        sfxcnv_ExecCnvByCbFunc(sfx, frm, dst, sfx->buf[0]);
+        sfxcnv_ExecCnvByCbFunc(sfx, frm, dst, TRUE);
         break;
     case SFX_COMPO_YCC420PLN_UPHALF:
         sfxcnv_MakeTable(sfx, frm, SFX_TBL_LUMI);
@@ -379,17 +397,17 @@ void sfxcnv_ChkCompoByCbFunc(SFX_OBJ *sfx, SFX_SRCFRM *frm, SFX_FRM *dst) {
         break;
     case SFX_COMPO_0x31:
         sfxcnv_MakeTable(sfx, frm, SFX_TBL_ALP_LUMI);
-        sfxcnv_ExecCnvByCbFunc(sfx, frm, dst, sfx->buf[0]);
+        sfxcnv_ExecCnvByCbFunc(sfx, frm, dst, TRUE);
         break;
     case SFX_COMPO_0x41:
     case SFX_COMPO_0x51:
     case SFX_COMPO_0x61:
         tbl = SFX_DecideTableAlph3(sfx, frm);
         sfxcnv_MakeTable(sfx, frm, tbl);
-        sfxcnv_ExecCnvByCbFunc(sfx, frm, dst, sfx->buf[0]);
+        sfxcnv_ExecCnvByCbFunc(sfx, frm, dst, TRUE);
         break;
     case SFX_COMPO_0x101:
-        sfxcnv_ExecCnvByCbFunc(sfx, frm, dst, NULL);
+        sfxcnv_ExecCnvByCbFunc(sfx, frm, dst, FALSE);
         break;
     case SFX_COMPO_0x71:
     case SFX_COMPO_0xF1:
@@ -398,6 +416,16 @@ void sfxcnv_ChkCompoByCbFunc(SFX_OBJ *sfx, SFX_SRCFRM *frm, SFX_FRM *dst) {
         SFXLIB_Error(sfx, frm, "E4111902: sfxcnv_ChkCompoByCbFunc : compo is not support.");
         break;
     }
+}
+
+/* Matching workaround: stand-in for the stripped SFX_MakeTblZ32 and SFX_MakeTblZ16, which their
+ * messages name. The body is not the original's. The messages stay last in .rodata, after the
+ * conversion constant of sfxcnv_ChkCompoByCbFunc; storing the addresses keeps the references.
+ * Without it the messages are missing from .rodata (measured by compiling without it). Revisit
+ * when the stripped code is known. */
+static void sfxcnv_RodataOrderTblZ(const Char8 **out) {
+    out[0] = "E202281: SFX_MakeTblZ32 : zclip is not set.";
+    out[1] = "E202282: SFX_MakeTblZ16 : zclip is not set.";
 }
 
 void SFX_SetTblFn(SFX_OBJ *sfx, SFX_TBLFN fn) {

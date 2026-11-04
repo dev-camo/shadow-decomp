@@ -2372,13 +2372,11 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            # NonMatching: sfxcnv_ChkCompoByCbFunc, 219 of 1065 words with the same opcodes: the
-            # handle and destination registers are exchanged throughout and some locals get other
-            # registers, buf[0] is loaded into a saved register before the converter's frame
-            # record is filled instead of after it, and the .rodata offsets differ by 0x20 because
-            # the messages of functions that the linker removed (an E5022301 work size check,
-            # SFX_MakeTblZ32 and SFX_MakeTblZ16; 0x78 bytes of .rodata) are not reproduced; the
-            # other 10 functions match.
+            # NonMatching: sfxcnv_ChkCompoByCbFunc, 180 of 1065 words, registers only (the same
+            # instructions, order and relocations): sfx and dst are in r29 and r31 instead of r31
+            # and r29, the inlined field-split and table-builder flags take other registers, and
+            # two table-type loads swap r0 and r3 with their flags. The other 10 functions and
+            # .rodata match.
             Object(
                 NonMatching,
                 "CRI/sfx_cnv.c",
