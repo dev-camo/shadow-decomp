@@ -36,8 +36,8 @@ static void mwsffrm_StrippedNumRemainFrm(void) {
 /* Sofdec header callback (SFD_COND_HDRCB_FN): records the colour type, frame count and component
  * layout of the video the header describes.
  *
- * Not matching yet: the code is identical except that the handle and the Sofdec header object
- * exchange registers (17 differing words). */
+ * Not matching yet: the handle and the Sofdec header object have r30 and r31 exchanged, and the
+ * original copies the handle into its register one prologue slot later (17 of 118 words differ). */
 static void mwsffrm_AnalySofdecHeader(void *obj, void *data, Sint32 size) {
     MWPLY mwply = obj;
     SFH sfh;
