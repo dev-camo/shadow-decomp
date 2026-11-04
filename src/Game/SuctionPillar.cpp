@@ -156,6 +156,10 @@ void SuctionPillar::UpdateModelMatrix() {
     /* The original also compares the address of the m_objects array with null (always true). */
     if (m_model.get() != 0 && m_objects != 0) {
         Fn8040Matrix34 matrix;
+        Fn8040Vector3 offset;
+        Fn8040Vector3 offset2;
+        Fn8040Vector3 placed;
+        Fn8040Vector3 placed2;
 
         fn_8040B6F8(&matrix);
         fn_8040B59C(&matrix, &m_charInfo->m_position);
@@ -164,15 +168,13 @@ void SuctionPillar::UpdateModelMatrix() {
         fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
         m_model->fn_801633DC(&matrix);
 
-        Fn8040Vector3 offset(0.0f, 40.0f, 40.0f);
-        Fn8040Vector3 placed;
+        offset.Set(0.0f, 40.0f, 40.0f);
 
         fn_8040B67C(&placed, &matrix, &offset);
         fn_800091D0(&offset, &placed);
         fn_800CCE38(m_objects[0].get(), &offset);
 
-        Fn8040Vector3 offset2(0.0f, 40.0f, -40.0f);
-        Fn8040Vector3 placed2;
+        offset2.Set(0.0f, 40.0f, -40.0f);
 
         fn_8040B67C(&placed2, &matrix, &offset2);
         fn_800091D0(&offset2, &placed2);

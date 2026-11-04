@@ -1757,8 +1757,7 @@ config.libs = [
             Object(NonMatching, "Game/DebugMissionClearCollision.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DarkSpinEntrance.cpp", cflags=cflags_game_cpp),
             # Constructor (22 words) and UpdateBody (6 words): the two startup floats load later
-            # than in the original (const floats with a dynamic initialiser reproduce both loads);
-            # UpdateModelMatrix (8 words): two vector stack slots exchanged (r1+0x14/0x20).
+            # than in the original (const floats with a dynamic initialiser reproduce both loads).
             Object(NonMatching, "Game/SuctionPillar.cpp", cflags=cflags_game_cpp),
             # Every function has identical instruction words and the data matches once the
             # linker-discarded weak and local copies are set aside. Two calls differ only in the
