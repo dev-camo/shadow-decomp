@@ -1,21 +1,13 @@
-/* csdMatrix.cpp (original name from the library's allocation calls): the matrix stack the scene
- * code transforms its entries' matrices with (Matrix.h). Function, variable and helper names are
- * inferred. Definitions are in reverse address order (deferred inlining emits them reversed). */
 #include "Game/CSD/csdBase.h"
 #include "Game/CSD/Matrix.h"
 #include <cmath>
 #include <vector>
-
 namespace Chao {
 namespace CSD {
-
-/* The stack's bottom entry is s_identity. The transformations read the source and write the
- * target (see Matrix.h). */
 static std::vector<Matrix *> *s_pStack;
 static Matrix s_identity;
 static Matrix *s_pSource;
 static Matrix *s_pTarget;
-
 static inline void CopyMatrixValue(MatrixValue *dst, const MatrixValue *src) {
     dst->m[0] = src->m[0];
     dst->m[1] = src->m[1];
@@ -33,9 +25,6 @@ static inline void SetIdentity(f32 *m) {
     m[4] = 1.0f;
     m[5] = 0.0f;
 }
-
-/* Copies the source to the target except for the translations (m[2] and m[5]), unless they are
- * the same matrix. */
 static inline void CopyLinearParts() {
     if (s_pTarget == s_pSource) {
         return;
@@ -66,6 +55,14 @@ void InitMatrixStack() {
     SetMatrixIdentity(&s_identity);
     s_pStack->push_back(&s_identity);
 }
+
+/* csdMatrix.cpp (original name from allocation calls): the scene matrix stack. Function,
+ * variable and helper names are inferred. Definitions use reverse address order for deferred
+ * inlining. The stack starts at s_identity; transformations read s_pSource and write s_pTarget.
+ * CopyLinearParts preserves the translations (m[2] and m[5]) and skips identical matrices.
+ * Matching workaround: keep the two allocation calls on original lines 53 and 54 so __LINE__
+ * preserves their diagnostic metadata. Documentation follows initialization to retain those
+ * positions; revisit if the original source layout is recovered. */
 
 void TermMatrixStack() {
     if (s_pStack != NULL) {

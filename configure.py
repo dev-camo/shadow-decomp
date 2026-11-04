@@ -1484,10 +1484,7 @@ config.libs = [
             # instead of 137. The map helpers emit in a different order, and an extra weak
             # CMemoryAlloc::FreeObject copy is emitted without a reference from this unit.
             Object(NonMatching, "Game/CSD/csdTexList.cpp", cflags=cflags_csd),
-            # Of the 25 original functions, only InitMatrixStack differs: its allocations pass
-            # lines 64 and 65 instead of 53 and 54. Source also emits seven extra weak vector
-            # helpers and the two static doubles of MSL <cmath>'s sqrtf.
-            Object(NonMatching, "Game/CSD/csdMatrix.cpp", cflags=cflags_csd),
+            Object(Matching, "Game/CSD/csdMatrix.cpp", cflags=cflags_csd),
             Object(Matching, "Game/ResourceOneFile.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80014D58.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80014EC0.cpp", cflags=cflags_game_cpp),
