@@ -258,6 +258,15 @@ Game/ElecKyuu.cpp:
 	.sbss       start:0x805F0F50 end:0x805F0F60
 	.sdata2     start:0x805F81B8 end:0x805F81E0
 
+Game/MissionClearCollision.cpp:
+	.text       start:0x80231A20 end:0x80231E8C
+	.ctors      start:0x804AAF10 end:0x804AAF14
+	.rodata     start:0x804F3698 end:0x804F36D8
+	.data       start:0x80548170 end:0x80548258
+	.sdata      start:0x805EAD78 end:0x805EAD98
+	.sbss       start:0x805F0F60 end:0x805F0F70
+	.sdata2     start:0x805F8210 end:0x805F8228
+
 Game/FootingBreak.cpp:
 	.text       start:0x802621DC end:0x80263BC0
 	.rodata     start:0x804F6888 end:0x804F6A30
