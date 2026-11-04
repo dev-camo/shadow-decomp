@@ -246,9 +246,9 @@ cflags_game = [
 ]
 
 # The MSL C, math and C++ library headers. The C++ units built with cflags_game_cpp or cflags_csd,
-# Game/fn_8041116C.cpp and Game/fn_80420724.cpp (for <cmath>) search them in place of include/libc;
-# C game code and the other fn_8040 C++ helpers (cflags_game) keep the C declarations in
-# include/libc.
+# Game/fn_8041116C.cpp and Game/fn_80420724.cpp (for <cmath>) and CRI/dct_ac.c (for MSL's <math.h>)
+# search them in place of include/libc; other C game code and the other fn_8040 C++ helpers
+# (cflags_game) keep the C declarations in include/libc.
 msl_includes = [
     "-i src/PowerPC_EABI_Support",
     "-i src/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Include",
@@ -2350,14 +2350,16 @@ config.libs = [
                     "-use_lmw_stmw on",
                 ],
             ),
-            # NonMatching: DCT_AcInit reaches its four double literals through one pooled .rodata
-            # base (the original loads each with its own lis/lfd pair, and its literal order is
-            # 0.5, int-to-double, 1/sqrt(8), pi/8): 59 words; the other functions match. The .bss
-            # puts dctac_version_dummy before dctac_f_const (first-reference order; the original
-            # stores it last).
+            # Matching workaround: MSL's <math.h> in place of include/libc. MSL's inline sqrtf has
+            # static double constants: they are the first, weak .rodata objects, and with them MWCC
+            # loads DCT_AcInit's double literals each with its own lis/lfd pair instead of through
+            # one pooled .rodata base. include/libc's sqrtf has no static constants (with it
+            # DCT_AcInit differs in 59 of 64 words). Revisit when include/libc/math.h's sqrtf gets
+            # the static constants for every unit that includes it.
             Object(
-                NonMatching,
+                Matching,
                 "CRI/dct_ac.c",
+                cflags=[*cflags_base, *msl_includes],
                 extra_cflags=[
                     "-sdata 0",
                     "-sdata2 0",
