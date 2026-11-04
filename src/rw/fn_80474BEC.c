@@ -190,7 +190,7 @@ void fn_804754F4(Rt2dPath *path, const RwV2d *bezier, RwInt32 depth) {
 
     /* Matching workaround: the depth test is computed as a value before it is branched on.
      * `if (--depth < 0)` compiles to an addic. and a branch on the condition register instead of
-     * the original's sign-bit test, and fn_804754F4 then differs in 232 words instead of 121.
+     * the original's sign-bit test, and fn_804754F4 then differs in 231 words instead of 121.
      * Revisit when the original form of the test is found. */
     depthUsedUp = --depth < 0;
     if (depthUsedUp) {
@@ -219,12 +219,10 @@ void fn_804754F4(Rt2dPath *path, const RwV2d *bezier, RwInt32 depth) {
         return;
     }
 
-    left[0] = bezier[0];
     left[1].x = 0.5f * (bezier[0].x + bezier[1].x);
     left[1].y = 0.5f * (bezier[0].y + bezier[1].y);
     right[2].x = 0.5f * (bezier[2].x + bezier[3].x);
     right[2].y = 0.5f * (bezier[2].y + bezier[3].y);
-    right[3] = bezier[3];
     {
         RwV2d middle;
 
@@ -237,7 +235,9 @@ void fn_804754F4(Rt2dPath *path, const RwV2d *bezier, RwInt32 depth) {
     }
     left[3].x = 0.5f * (left[2].x + right[1].x);
     left[3].y = 0.5f * (left[2].y + right[1].y);
+    left[0] = bezier[0];
     right[0] = left[3];
+    right[3] = bezier[3];
     fn_804754F4(path, left, depth);
     fn_804754F4(path, right, depth);
 }
@@ -284,8 +284,11 @@ Rt2dPath *fn_804758C8(Rt2dPath *flat, const Rt2dPath *path) {
 /* Drops the subpaths that hold a single point, freeing them, and returns the rest */
 Rt2dPath *fn_80475B4C(Rt2dPath *path) {
     if (path != NULL) {
+        RwInt32 numPoints;
+
         path->next = fn_80475B4C(path->next);
-        if (fn_8047E03C(path->points) == 1) {
+        numPoints = fn_8047E03C(path->points);
+        if (numPoints == 1) {
             path = fn_80474BEC(path);
         }
     }

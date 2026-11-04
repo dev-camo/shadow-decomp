@@ -614,6 +614,13 @@ config.libs = [
                 Object(Matching, "rw/fn_80470474.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80470AC4.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80473E9C.c", cflags=cflags_game),
+                # fn_80474C7C and fn_80476830 expand their own recursive call one level deeper than
+                # the original (49 and 39 words; 0x294 and 0x210 bytes against 0x224 and 0x1DC).
+                # fn_80474FF8, fn_80475260 and fn_80476510 differ in register numbers only (16, 10
+                # and 30 words). fn_804754F4 differs in 121 words and is 0x3E0 bytes against the
+                # original 0x3D4: the flatness test's arithmetic is ordered differently, and the
+                # halving loads bezier[0].y and bezier[1] again where the original reuses the
+                # flatness test's loads (19 float loads from bezier against 16).
                 Object(NonMatching, "rw/fn_80474BEC.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80476ABC.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80477344.c", cflags=cflags_game),
