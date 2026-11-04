@@ -1724,6 +1724,7 @@ config.libs = [
             # DrawDebugMarker 10 (the original loads the startup radius before it saves the
             # registers).
             Object(NonMatching, "Game/DebugMissionClearCollision.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/DarkSpinEntrance.cpp", cflags=cflags_game_cpp),
             # Interpolation scheduling, the index-table extent and shared literal ownership differ.
             Object(
                 NonMatching,
