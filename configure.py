@@ -632,6 +632,8 @@ config.libs = [
                 Object(Matching, "rw/fn_8047CCF8.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8047DB10.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8047DC90.c", cflags=cflags_game),
+                # The orthonormalizer (fn_8047E298) retains 21 register-word differences: the
+                # floating-point registers of the axis dot products that pick the pivot pair.
                 Object(NonMatching, "rw/fn_8047E100.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8047FA28.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8048053C.c", cflags=cflags_game),
