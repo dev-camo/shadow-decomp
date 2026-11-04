@@ -7,7 +7,7 @@
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
 #include "Game/UnkBitFlags_80014E04.h"
-#include "Game/UnkObject_801E72DC.h"
+#include "Game/Target.h"
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include <vector>
@@ -63,8 +63,8 @@ class ArkCannon : public Gadget {
     /* 0x30 */ ArkCannonParams m_params;
     /* 0x38 */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
     /* 0x40 */ boost::shared_ptr<GadgetModelInfo> m_model;
-    /* 0x48 */ boost::shared_ptr<UnkObject_801E72DC> m_object;
-    /* 0x50 */ std::vector<boost::shared_ptr<UnkObject_801E72DC> > m_objects;
+    /* 0x48 */ boost::shared_ptr<Target> m_object;
+    /* 0x50 */ std::vector<boost::shared_ptr<Target> > m_objects;
     /* 0x5C */ boost::weak_ptr<CharInfo> m_target; /* the character being aimed at */
     /* 0 waiting, 1 turning, 2 firing, 3 reloading, 4 destroyed (inferred from SetState and
      * UpdateBody). */

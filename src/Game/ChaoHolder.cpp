@@ -12,6 +12,7 @@
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
+#include "Game/Target.h"
 #include "Game/fn_804157E8_motion_control.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/SetAdapterState.h"
@@ -21,7 +22,6 @@
 #include "Game/UnkBitFlags_80014E04.h"
 #include "Game/UnkGadgetOwner_800C9CD0.h"
 #include "Game/UnkManager_800CB69C.h"
-#include "Game/UnkObject_801E72DC.h"
 #include "Game/UnkObject_802B4254.h"
 #include "Game/UnkProbeTarget_800587A0.h"
 #include "Game/UnkSoundManager_80053164.h"
@@ -125,7 +125,7 @@ class Chao {
     /* 0x0C */ Fn8040Vector3 m_center;   /* the owner's position */
     /* 0x18 */ Fn8040Vector3 m_rotation; /* the owner's rotation */
     /* 0x24 */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
-    /* 0x2C */ boost::shared_ptr<UnkObject_801E72DC> m_object;
+    /* 0x2C */ boost::shared_ptr<Target> m_object;
     /* 0x34 */ boost::shared_ptr<UnkObject_802B4254> m_object2;
     /* 0x3C */ boost::shared_ptr<UnkProbeTarget_800587A0> m_probe;
     /* 0x44 */ boost::shared_ptr<GadgetModelInfo> m_model;

@@ -13,10 +13,10 @@
 #include "Game/GadgetTypeInfo.h"
 #include "Game/PlayerCommands.h"
 #include "Game/SharedConstants.h"
+#include "Game/Target.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
 #include "Game/UnkManager_800CB69C.h"
 #include "Game/UnkObject_80169BB0.h"
-#include "Game/UnkObject_801E72DC.h"
 #include "Game/UnkParamCursor_800CBC20.h"
 #include "Game/UnkResource_80012700.h"
 #include "Game/UnkSoundManager_80053164.h"
@@ -153,7 +153,7 @@ class CircusBall : public Gadget {
     /* 0x30 */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
     /* 0x38 */ boost::shared_ptr<GadgetModelInfo> m_model;
     /* 0x40 */ boost::shared_ptr<UnkObject_801695B8> m_handle;
-    /* 0x48 */ boost::shared_ptr<UnkObject_801E72DC> m_object;
+    /* 0x48 */ boost::shared_ptr<Target> m_object;
     /* 0x50 */ UnkResource_80012700 *m_resource;
     /* 0x54 */ CircusBallParams m_params;
     /* 0x64 */ Fn8040Vector3 m_position;

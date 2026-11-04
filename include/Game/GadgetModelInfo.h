@@ -145,6 +145,14 @@ class GadgetModelInfo {
      * object that the node's word at 0x14 points to equals arg0, or an empty pointer (behaviour
      * inferred from its body). */
     boost::weak_ptr<UnkProbeTarget_800587A0> fn_80161614(int arg0);
+    /* Sets a motion control work flag (stMtnControlWorkFlag with 0, 1, 0) of each entry of the
+     * list at 0x58 whose resource record has the word arg0 at 0x18 (behaviour inferred from its
+     * body). */
+    void fn_8016082C(int arg0);
+    /* Returns the attack object that fn_800C4374 gives for the probe of the entry of the list at
+     * 0x64 whose name equals name, or an empty pointer (behaviour inferred from its body). */
+    boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack>
+    fn_80161334(const char *name);
 
     /* 0x04 */ u8 field_0x4[0x38]; /* Unrecovered members, including native subobjects. */
     /* 0x3C */ UnkBitFlags_80014E04 field_0x3C;
@@ -177,6 +185,5 @@ extern "C" {
  * a SetTransparentCommand to fn_8015FDD8. */
 void fn_8015FD10(GadgetModelInfo *model);
 void fn_8015FDD8(GadgetModelInfo *model, float fraction);
-void fn_8016082C(GadgetModelInfo *model, int arg1);
 }
 #endif
