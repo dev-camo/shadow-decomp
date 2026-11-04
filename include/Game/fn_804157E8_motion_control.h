@@ -96,7 +96,7 @@ CHECK_SIZEOF(MotionNodeEntry, 0x20);
  * the pack that the tree is built from (fn_8041B980 starts at the root node of the pack entry and
  * fn_8041BE30 stores each pack node here while it follows the links of the pack nodes); the
  * functions here read its id, and fn_80415BDC compares values[0] with 1 and tests the low three
- * bits of values[1]. */
+ * bits of values[1] (MOTION_NODE_SCALED_TRACK). */
 typedef struct MotionNode {
     /* 0x00 */ unsigned char unknown00[0x0C];
     /* 0x0C */ PackNode *definition;
@@ -232,6 +232,22 @@ CHECK_SIZEOF(MotionVectorTrack, 0xD0);
  * creator fn_8041C854 stores there the pack node whose values[1] selects the tracks it creates,
  * and steps 0xF0 bytes past either curve track node (the node and 0xE0 bytes of data). */
 
+/* The bits of values[1] for which fn_8041C854 creates the track of fn_804204C8 and fn_804202B8
+ * (MotionScaledVectorTrack) and the track of fn_8042043C and fn_80420158
+ * (MotionReflectedVectorTrack). Bit 0x40 takes precedence over the reflected-track bits: it selects
+ * the track of the empty fn_80420438 and fn_8041FF08 instead. */
+#define MOTION_NODE_SCALED_TRACK 0x7
+#define MOTION_NODE_REFLECTED_TRACK 0x38
+
+/* The mirror of a node (names inferred): for a node with bit 0x8000 of values[3], fn_8041C2E0
+ * copies the name of the node, replaces the "l" of its first "_l" with "r" and looks up the node of
+ * that name. In the node's scaled track, and in its reflected track unless either node has bit
+ * 0x40 of values[1], it stores the mirror node (mirrorOptions) and the mirror's corresponding track
+ * node (mirrorTrackNode, whose data follows it), installs fn_804201C0 (scaled) or fn_8041FF0C
+ * (reflected) as the second callback of the track and clears the second callback of the mirror's
+ * track node. Those callbacks use the mirror's track only when the mirror node has a track of the
+ * same kind. */
+
 /* The track of fn_804204C8 and fn_804202B8 (name after fn_804204C8): a factor at 0x10 that
  * scales the vector when it is positive, and the options that fn_804202B8 negates the vector by at
  * 0x14. */
@@ -240,7 +256,8 @@ typedef struct MotionScaledVectorTrack {
     /* 0x0C */ float unknown0C;
     /* 0x10 */ float scale;
     /* 0x14 */ PackNode *options;
-    /* 0x18 */ unsigned char unknown18[8];
+    /* 0x18 */ PackNode *mirrorOptions;
+    /* 0x1C */ MotionTrackNode *mirrorTrackNode;
     /* 0x20 */ MotionKeyCursor curves[3];
 } MotionScaledVectorTrack;
 CHECK_OFFSETOF(MotionScaledVectorTrack, options, 0x14);
@@ -253,7 +270,9 @@ typedef struct MotionReflectedVectorTrack {
     /* 0x00 */ Fn8040Vector3 value;
     /* 0x0C */ float unknown0C;
     /* 0x10 */ PackNode *options;
-    /* 0x14 */ unsigned char unknown14[0xC];
+    /* 0x14 */ PackNode *mirrorOptions;
+    /* 0x18 */ MotionTrackNode *mirrorTrackNode;
+    /* 0x1C */ unsigned char unknown1C[4];
     /* 0x20 */ MotionKeyCursor curves[3];
 } MotionReflectedVectorTrack;
 CHECK_OFFSETOF(MotionReflectedVectorTrack, options, 0x10);
@@ -343,7 +362,9 @@ void fn_8041FED0(MotionOffsetStep *step);
 /* The empty callbacks sit in the track slots, which pass the track data; they ignore it. */
 void fn_8041FD6C(struct MotionTrackData *data);
 void fn_8041FF08(struct MotionTrackData *data);
+void fn_8041FF0C(MotionReflectedVectorTrack *track);
 void fn_80420158(MotionReflectedVectorTrack *track);
+void fn_804201C0(MotionScaledVectorTrack *track);
 void fn_804202B8(MotionScaledVectorTrack *track);
 void fn_80420308(MotionVectorTrack *track);
 void fn_804203AC(MotionVectorTrack *track);
@@ -371,6 +392,19 @@ static inline MotionPlayer *FindPlayer(_stMtnPlayWork *control, int id) {
 /* The matrix on top of the current matrix stack. */
 static inline Fn8040Matrix34 *TopMatrix(void) {
     return &lbl_805F13A8->matrices[lbl_805F13A8->top];
+}
+
+/* Negates the components of a vector as its options say (fn_804202B8 and fn_804201C0). */
+static inline void NegateVector(Fn8040Vector3 *value, const PackNode *options) {
+    if (options->values[3] & MOTION_AXIS_NEGATE_X) {
+        value->x = -value->x;
+    }
+    if (options->values[3] & MOTION_AXIS_NEGATE_Y) {
+        value->y = -value->y;
+    }
+    if (options->values[3] & MOTION_AXIS_NEGATE_Z) {
+        value->z = -value->z;
+    }
 }
 
 #endif
