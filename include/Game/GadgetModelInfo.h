@@ -126,6 +126,9 @@ class GadgetModelInfo {
     /* Returns the motion control of the part with id arg0 (behaviour
      * inferred). */
     boost::weak_ptr<_stMtnPlayWork> fn_801602B4(int arg0);
+    /* Returns whether the table that fn_80162A68 searches has an entry whose id word equals arg0,
+     * or false when there is no object at 0x30 (behaviour inferred from its body). */
+    bool fn_80162EA8(int arg0);
 
     /* 0x04 */ u8 field_0x4[0x38]; /* Unrecovered members, including native subobjects. */
     /* 0x3C */ UnkBitFlags_80014E04 field_0x3C;

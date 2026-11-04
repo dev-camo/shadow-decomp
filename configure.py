@@ -653,6 +653,7 @@ config.libs = [
                 Object(NonMatching, "rw/fn_804A6CDC.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_804A869C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804A90F8.c", cflags=cflags_game),
+                Object(Matching, "Game/SpaceGadget.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/BackDrop.cpp", cflags=cflags_game_cpp),
                 # 34 of 35 functions have identical instructions. The startup function is 12 words
                 # instead of 25: the original builds each of its two vectors in a temporary and

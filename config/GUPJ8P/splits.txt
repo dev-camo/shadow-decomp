@@ -187,6 +187,14 @@ Game/ElecRollHexa.cpp:
 	.sbss       start:0x805F06D8 end:0x805F06E8
 	.sdata2     start:0x805F82D8 end:0x805F8310
 
+Game/SpaceGadget.cpp:
+	.text       start:0x8026AAF0 end:0x8026B7B0
+	.rodata     start:0x804F6968 end:0x804F6A90
+	.data       start:0x8054CCE0 end:0x8054CE18
+	.sdata      start:0x805EAE40 end:0x805EAE68
+	.sbss       start:0x805F0710 end:0x805F0720
+	.sdata2     start:0x805F83A0 end:0x805F83C8
+
 Game/fn_80293AC8.cpp:
 	.text       start:0x80293EC8 end:0x80293F60
 
