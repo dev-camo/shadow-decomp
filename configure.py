@@ -1123,11 +1123,9 @@ config.libs = [
                 ),
                 # SonicUSA::System::Random. Matching workaround: -sdata 0 and -sdata2 0; the target
                 # keeps its doubles in .rodata and its RTTI record and twist table in .data. Revisit
-                # when the original unit's flags are known. NextFloat and
-                # NextFloatInclusive still differ: the target adds the m_state[i + 397] offset to
-                # an index register (lwzx), while this build folds it into the load displacement.
+                # when the original unit's flags are known.
                 Object(
-                    NonMatching,
+                    Matching,
                     "Game/fn_8040EA90.cpp",
                     cflags=cflags_game_cpp,
                     extra_cflags=[

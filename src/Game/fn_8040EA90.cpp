@@ -17,7 +17,8 @@ class Random {
     Random(u32 seed);
     virtual ~Random();
 
-    /* Returns the next float from 0 up to but excluding 1 (name inferred). */
+    /* Returns the next float from 0 up to but excluding 1 before rounding to float; the largest
+     * values round to 1 (name inferred). */
     float NextFloat();
     /* Returns the next float from 0 up to and including 1 (name inferred). */
     float NextFloatInclusive();
@@ -27,10 +28,10 @@ class Random {
     u32 NextInt(u32 count);
 
   private:
-    enum {
-        STATE_SIZE = 624,
-        STATE_SHIFT = 397,
-    };
+    /* Unsigned: the regeneration loop compares its int counter with them unsigned, as the original
+     * does (cmplwi). */
+    static const u32 STATE_SIZE = 624;
+    static const u32 STATE_SHIFT = 397;
 
     /* Returns the next 32 random bits, regenerating the whole state when it is used up. */
     inline u32 NextBits();
@@ -51,7 +52,7 @@ using SonicUSA::System::Random;
 
 u32 Random::NextBits() {
     u32 bits;
-    u32 kk;
+    int kk;
     if (m_index >= STATE_SIZE) {
         for (kk = 0; kk < STATE_SIZE - STATE_SHIFT; kk++) {
             bits = (m_state[kk] & 0x80000000) | (m_state[kk + 1] & 0x7FFFFFFF);
@@ -60,7 +61,7 @@ u32 Random::NextBits() {
         for (; kk < STATE_SIZE - 1; kk++) {
             bits = (m_state[kk] & 0x80000000) | (m_state[kk + 1] & 0x7FFFFFFF);
             m_state[kk] =
-                m_state[kk + (STATE_SHIFT - STATE_SIZE)] ^ (bits >> 1) ^ s_twistMatrix[bits & 1];
+                m_state[kk + STATE_SHIFT - STATE_SIZE] ^ (bits >> 1) ^ s_twistMatrix[bits & 1];
         }
         bits = (m_state[STATE_SIZE - 1] & 0x80000000) | (m_state[0] & 0x7FFFFFFF);
         m_state[STATE_SIZE - 1] = m_state[STATE_SHIFT - 1] ^ (bits >> 1) ^ s_twistMatrix[bits & 1];
