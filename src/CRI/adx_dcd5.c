@@ -10,10 +10,10 @@
  * volatile registers. */
 #include "CRI/adx_dcd.h"
 
-/* Clamps a prediction result to the 16-bit range. Matching workaround: the redundant outer range
- * test. A single if/else-if clamp changes the code of all three decoders (ADX_DecodeMono4 85 to 77
- * instructions, ADX_DecodeSte4AsSte 152 to 136, ADX_DecodeSte4AsMono 188 to 164). Revisit when the
- * original's clamp macro is found. */
+/* Clamps a prediction result to the 16-bit range. The original tests the whole range first and then
+ * each bound (ADX_DecodeMono4 compares the result with 0x7FFF and -0x8000 twice); a single
+ * if/else-if clamp gives shorter code in all three decoders (ADX_DecodeMono4 85 to 77 instructions,
+ * ADX_DecodeSte4AsSte 152 to 136, ADX_DecodeSte4AsMono 188 to 164). */
 #define ADX_CLAMP(v)                                                                               \
     do {                                                                                           \
         if ((v) > 0x7FFF || (v) < -0x8000) {                                                       \
