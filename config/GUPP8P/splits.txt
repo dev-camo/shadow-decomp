@@ -392,6 +392,16 @@ Game/FallRoad.cpp:
 	.sdata      start:0x805EE490 end:0x805EE4B0
 	.sdata2     start:0x805FAD90 end:0x805FADE0
 
+Game/ElecCircuitColli.cpp:
+	.text       start:0x8033C854 end:0x8033D3B8
+	.ctors      start:0x804AB078 end:0x804AB07C
+	.rodata     start:0x80511828 end:0x80511950
+	.data       start:0x8055E6F8 end:0x8055E7C0
+	.bss        start:0x80586840 end:0x80586850
+	.sdata      start:0x805EE730 end:0x805EE768
+	.sbss       start:0x805F1D98 end:0x805F1DA8
+	.sdata2     start:0x805FB0D8 end:0x805FB0F0
+
 Game/CSD/csdMatrix.cpp:
 	.text       start:0x80360664 end:0x80361370
 	.rodata     start:0x80514000 end:0x80514020

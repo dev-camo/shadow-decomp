@@ -22,6 +22,7 @@
 #include "Game/PathCtrl.h"
 #include "Game/SharedConstants.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
+#include "Game/UnkCharInfo_800999C0.h"
 #include "Game/UnkManager_800CB69C.h"
 #include "Game/UnkWorld_80021B08.h"
 #include "Game/fn_8040_vector_types.h"
@@ -70,10 +71,6 @@ CHECK_SIZEOF(Player::ElectricCircuitCommand, 0x20);
 
 } // namespace Player
 
-extern "C" {
-bool fn_800B78B0(const boost::shared_ptr<CharInfo> &charInfo);
-}
-
 /* What the contact callback receives: the gadget's character info and the gadget itself
  * (placeholder name). */
 struct UnkHitContext_801F7E28 {
@@ -81,11 +78,6 @@ struct UnkHitContext_801F7E28 {
     /* 0x08 */ ElecCircuitEntrance *m_owner;
 };
 CHECK_SIZEOF(UnkHitContext_801F7E28, 0xC);
-
-extern "C" void fn_8015AA84(ColliDetectArgs *args,
-                            void (*callback)(boost::shared_ptr<CharInfo> hit,
-                                             UnkHitContext_801F7E28 *context),
-                            UnkHitContext_801F7E28 *context);
 
 class ElecCircuitEntrance : public Gadget {
   public:
@@ -126,7 +118,9 @@ static Fn8040Vector3 lbl_80583B78(0.5f * lbl_805FAD38, 0.0f, 0.0f);
 
 /* The callback that fn_8015AA84 calls for each character info in the collision results (name
  * inferred). */
-static void fn_801F888C(boost::shared_ptr<CharInfo> hit, UnkHitContext_801F7E28 *context) {
+static void fn_801F888C(boost::shared_ptr<CharInfo> hit, void *arg) {
+    UnkHitContext_801F7E28 *context = static_cast<UnkHitContext_801F7E28 *>(arg);
+
     if (hit.get() != 0 && context != 0 && hit->field_0x50 == 1) {
         if (!context->m_owner->field_0x44.expired()) {
             boost::shared_ptr<CharInfo> current(context->m_owner->field_0x44);
