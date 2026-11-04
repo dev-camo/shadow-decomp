@@ -55,7 +55,8 @@ CHECK_SIZEOF(AccelerateInputCommand, 0x20);
 /* The command with the id 0x17. Its constructor (0x801DAB3C) passes 0x17 and 4 to the base
  * constructor and stores a byte, a float and a word. The member names are inferred from the
  * FootingBreak gadget, which passes the float to its model's fn_8015FDD8 when the byte is set
- * and calls fn_8015FD10 otherwise; the word is not used there. */
+ * and calls fn_8015FD10 otherwise; the word is not used there. The FootingRoll gadget makes the
+ * same choice by testing whether the float is below 1 and reads neither the byte nor the word. */
 class SetTransparentCommand : public CharCommand {
   public:
     /* 0x14 */ u8 m_enable;

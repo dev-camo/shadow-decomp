@@ -291,6 +291,14 @@ Game/DarkSpinEntrance.cpp:
 	.sdata      start:0x805EB590 end:0x805EB5B0
 	.sdata2     start:0x805F87E8 end:0x805F8810
 
+Game/FootingRoll.cpp:
+	.text       start:0x8026127C end:0x802621DC
+	.rodata     start:0x804F6708 end:0x804F6888
+	.data       start:0x8054CB68 end:0x8054CD90
+	.sdata      start:0x805EB728 end:0x805EB750
+	.sbss       start:0x805F1118 end:0x805F1128
+	.sdata2     start:0x805F8BC8 end:0x805F8C00
+
 Game/FootingBreak.cpp:
 	.text       start:0x802621DC end:0x80263BC0
 	.rodata     start:0x804F6888 end:0x804F6A30
