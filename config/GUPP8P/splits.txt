@@ -318,6 +318,16 @@ Game/SpaceGadget.cpp:
 Game/fn_80293AC8.cpp:
 	.text       start:0x80293EBC end:0x80293F54
 
+Game/DebugMissionClearCollision.cpp:
+	.text       start:0x802C89C4 end:0x802C904C
+	.ctors      start:0x804AAFE4 end:0x804AAFE8
+	.rodata     start:0x805012E0 end:0x80501350
+	.data       start:0x80558CB8 end:0x80558E08
+	.bss        start:0x80585608 end:0x80585678
+	.sdata      start:0x805ED100 end:0x805ED130
+	.sbss       start:0x805F1658 end:0x805F1688
+	.sdata2     start:0x805F9E28 end:0x805F9E50
+
 Game/EggMeca411.cpp:
 	.text       start:0x802EA910 end:0x802EAF68
 	.ctors      start:0x804AB008 end:0x804AB00C

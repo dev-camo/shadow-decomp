@@ -8,9 +8,9 @@
 class UnkManager_8006D6A8;
 class UnkManager_80109D64;
 
-/* A polymorphic object that the Chao and Cream gadgets look up through fn_800740E4 when they are
- * first touched (placeholder name and layout: only the virtual method at index 7 and the word at
- * 0xC are used). Minimum size: the size check covers only the members used so far. */
+/* A polymorphic object that gadgets look up through fn_800740E4 (placeholder name and layout:
+ * only the virtual method at index 7, the word at 0xC and the byte at 0x14 are used). Minimum
+ * size: the size check covers only the members used so far. */
 class UnkActor_800740E4 {
   public:
     virtual void UnkSlot0() = 0;
@@ -23,21 +23,30 @@ class UnkActor_800740E4 {
     /* Called with 1 and 0 (arguments unknown). */
     virtual void UnkSlot7(int arg0, int arg1) = 0;
 
-    /* Matching workaround: calling this inline as an if condition (possibly negated) leaves the
-     * smart pointer's operator-> out of line, as in the original; a plain field access expands
-     * it in place. The original accessor is unknown. Revisit when it is identified.
+    /* Matching workaround: calling these inline accessors through the smart pointer (Field0xCEquals
+     * as an if condition, possibly negated) leaves the smart pointer's operator-> out of line, as
+     * in the original; a plain field access expands it in place. The original accessors are
+     * unknown. Revisit when they are identified.
      *
-     * Whether the word at 0xC equals value (name inferred; the gadgets test it against 1, its
-     * meaning is unknown). */
+     * Whether the word at 0xC equals value (name inferred; the gadgets test it against 1 and 2,
+     * its meaning is unknown). */
     bool Field0xCEquals(int value) {
         return field_0xC == value;
     }
 
+    /* Stores value in the byte at 0x14 (name inferred; its meaning is unknown). */
+    void SetField0x14(u8 value) {
+        field_0x14 = value;
+    }
+
     /* 0x04 */ u8 field_0x4[0xC - 0x4];
     /* 0x0C */ int field_0xC;
+    /* 0x10 */ u8 field_0x10[0x14 - 0x10];
+    /* 0x14 */ u8 field_0x14; /* meaning unknown; a gadget stores 1 here */
 };
-CHECK_SIZEOF(UnkActor_800740E4, 0x10);
+CHECK_SIZEOF(UnkActor_800740E4, 0x18);
 CHECK_OFFSETOF(UnkActor_800740E4, field_0xC, 0xC);
+CHECK_OFFSETOF(UnkActor_800740E4, field_0x14, 0x14);
 
 extern "C" {
 /* Singleton managers (constructed on first use, as fn_8001C4F8 does) and calls on them whose
