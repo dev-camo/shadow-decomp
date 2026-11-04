@@ -1045,6 +1045,9 @@ config.libs = [
                 Object(Matching, "Game/fn_80425858.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/EffectManager.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/fn_80425860.cpp", cflags=cflags_effect),
+                # Constructor: six register/scheduling words differ (468 bytes in both).
+                # Update retains 60 differing words; the other two bodies have identical
+                # instruction words.
                 Object(NonMatching, "Game/EffectArranger.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/fn_8040D9D8.c"),
                 Object(Matching, "Game/fn_8040D498.c"),
@@ -1652,11 +1655,9 @@ config.libs = [
             Object(Matching, "Game/fn_8042A2D8.cpp", cflags=cflags_effect),
             Object(Matching, "Game/EffectGlobalParam.cpp", cflags=cflags_effect),
             Object(Matching, "Game/EffectLensFlare.cpp", cflags=cflags_effect),
-            # Nine of ten functions identical; the constructor differs in allocation
-            # exception handling and loop code (592 versus 556 bytes).
-            Object(NonMatching, "Game/EffectShimmer.cpp", cflags=cflags_effect),
-            # Six of eight functions identical; Update has six register-word differences; the
-            # constructor is 968 versus 920 bytes, including allocation exception handling.
+            Object(Matching, "Game/EffectShimmer.cpp", cflags=cflags_effect),
+            # Six of eight functions identical; Update has six register-word differences.
+            # The 920-byte constructor differs in two words: one load/store pair changes order.
             Object(NonMatching, "Game/EffectLocus.cpp", cflags=cflags_effect),
             # The vertex builder retains independent-literal addressing, stack and
             # instruction-layout differences (2492 versus 2568 bytes).

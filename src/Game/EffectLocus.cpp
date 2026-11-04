@@ -118,10 +118,14 @@ EffectLocus::EffectLocus(UnkEffectElementData7 *definition, EffectLaunchInfo *in
         m_flags &= ~ELEMENT_ACTIVE;
         return;
     }
-    m_color[0] = definition->field_0x40[1] << MATERIAL_FRACTION_BITS;
-    m_color[1] = definition->field_0x40[2] << MATERIAL_FRACTION_BITS;
-    m_color[2] = definition->field_0x40[3] << MATERIAL_FRACTION_BITS;
-    m_alpha = definition->field_0x40[0] << MATERIAL_FRACTION_BITS;
+    int red = definition->field_0x40[1];
+    m_color[0] = MaterialChannelToFixed(red);
+    int green = definition->field_0x40[2];
+    m_color[1] = MaterialChannelToFixed(green);
+    int blue = definition->field_0x40[3];
+    m_color[2] = MaterialChannelToFixed(blue);
+    int alpha = definition->field_0x40[0];
+    m_alpha = MaterialChannelToFixed(alpha);
     m_topColor[0] = m_topColor[1] = m_topColor[2] = m_topAlpha = MATERIAL_CHANNEL_MAX;
     m_lastColor[0] = m_lastColor[1] = m_lastColor[2] = m_lastAlpha = MATERIAL_CHANNEL_MAX;
 }
