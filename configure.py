@@ -1674,8 +1674,8 @@ config.libs = [
             Object(Matching, "Game/EffectGlobalParam.cpp", cflags=cflags_effect),
             Object(Matching, "Game/EffectLensFlare.cpp", cflags=cflags_effect),
             Object(Matching, "Game/EffectShimmer.cpp", cflags=cflags_effect),
-            # Six of eight functions identical; Update has six register-word differences.
-            # The 920-byte constructor differs in two words: one load/store pair changes order.
+            # Update retains six register-word differences; the other seven bodies have
+            # identical instruction words.
             Object(NonMatching, "Game/EffectLocus.cpp", cflags=cflags_effect),
             # The vertex builder retains independent-literal addressing, stack and
             # instruction-layout differences (2492 versus 2568 bytes).

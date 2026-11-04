@@ -94,8 +94,8 @@ EffectLocus::EffectLocus(UnkEffectElementData7 *definition, EffectLaunchInfo *in
         m_commandPool->m_blockStride * (m_commandPool->m_usedCount + m_commandPool->m_freeCount) +
         sizeof(UnkEffectPool);
     m_command = definition->field_0x50;
-    m_pointCount = 0;
     const UnkCommandData *point = definition->field_0x54;
+    m_pointCount = 0;
     while (point != 0) {
         unsigned int stride;
         if (point->type == COMMAND_LOCUS_POINT) {
