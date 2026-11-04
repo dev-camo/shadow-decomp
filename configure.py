@@ -2680,7 +2680,7 @@ config.libs = [
                 ],
             ),
             Object(
-                NonMatching,
+                Matching,
                 "CRI/adx_mgc.c",
                 extra_cflags=[
                     "-sdata 0",

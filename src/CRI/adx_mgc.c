@@ -6,10 +6,7 @@
  *
  * Structure and the ADXM_* and adxm_* names follow the RE4 GameCube decompilation of the same
  * file. The thread entry points and the SVM callbacks are static here; their names are inferred
- * from the work they do.
- *
- * Not yet matching: ADXM_SetupThrd differs in 2 words, the order of two constant loads
- * (li 0 and li 1) before the flag stores. */
+ * from the work they do. */
 #include <dolphin/os.h>
 #include <dolphin/vi.h>
 
@@ -68,13 +65,16 @@ static OSThread adxm_fs_thread;
 OSThread adxm_safe_thread;
 static Sint32 adxm_cur_prio;
 static Sint32 adxm_set_prio;
-Sint32 adxm_fs_end;
-static Sint32 adxm_fs_act;
-static Sint32 adxm_vsync_end;
-static Sint32 adxm_vsync_act;
-static Sint32 adxm_mwidle_end;
-Sint32 adxm_mwidle_act;
-Sint32 adxm_safe_end;
+/* Each thread runs while its run flag is 1 and sets its end flag when it leaves its loop, so these
+ * are shared with the other threads too. With plain flags ADXM_SetupThrd loads the 0 it stores
+ * before the 1 instead of after it. */
+volatile Sint32 adxm_fs_end;
+static volatile Sint32 adxm_fs_act;
+static volatile Sint32 adxm_vsync_end;
+static volatile Sint32 adxm_vsync_act;
+static volatile Sint32 adxm_mwidle_end;
+volatile Sint32 adxm_mwidle_act;
+volatile Sint32 adxm_safe_end;
 volatile Sint32 adxm_safe_act;
 static Uint8 adxm_stack_mwidle[ADXM_STACK_SIZE];
 Uint8 adxm_stack_fs[ADXM_STACK_SIZE];
