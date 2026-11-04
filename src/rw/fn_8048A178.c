@@ -9,8 +9,7 @@ void fn_8048A178(const RwImage *image, RwFixed x0, RwFixed x1, RwFixed y, RwRGBA
     RwReal width = (RwReal)(x1 - x0) * (1.0f / 65536.0f);
     RwInt32 x = x0 >> 16; /* the first pixel, then each pixel covered completely */
     RwInt32 endX = x1 >> 16;
-    const RwRGBA *pixel =
-        (const RwRGBA *)(image->cpPixels + (image->stride * (y >> 16) + x * sizeof(RwRGBA)));
+    const RwRGBA *pixel = (const RwRGBA *)(image->cpPixels + (y >> 16) * image->stride) + x;
 
     if (x == endX) {
         RwRGBARealFromRwRGBA(result, pixel);

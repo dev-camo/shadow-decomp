@@ -652,6 +652,10 @@ config.libs = [
                 Object(Matching, "rw/fn_80486888.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80487914.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80489B2C.c", cflags=cflags_game),
+                # USA raw differing words: fn_8048A178 16 (eight first-block instructions in
+                # another order: lis, the y shift, a store, two lfd, the compare, fsubs and fmuls;
+                # registers and operands identical), fn_8048A790 40 (non-volatile register
+                # assignment r20-r31 only; its inlined copies in fn_8048A96C match).
                 Object(NonMatching, "rw/fn_8048A178.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8048ADE0.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8048B6AC.c", cflags=cflags_game),
