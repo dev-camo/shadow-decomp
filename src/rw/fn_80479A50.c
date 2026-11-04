@@ -311,7 +311,9 @@ RwChar *fn_8047A518(RwChar *buffer, RwInt32 maxLen, void *fptr) {
     while (i < numRead) {
         if (buffer[i] == '\n') {
             buffer[++i] = '\0';
-            fn_8047A470(file, i - numRead, SEEK_CUR);
+            /* the offset from the end of the read back to just after the newline */
+            i -= numRead;
+            fn_8047A470(file, i, SEEK_CUR);
             return buffer;
         }
         if (buffer[i] == '\r') {

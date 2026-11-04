@@ -609,6 +609,12 @@ config.libs = [
                 Object(NonMatching, "rw/fn_8047832C.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80479040.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80479598.c", cflags=cflags_game),
+                # The line reader (fn_8047A518) is 79 words against the original's 78 (316 bytes
+                # instead of 312). Counting differing words at the same position (and, in
+                # parentheses, rows that differ once the instruction streams are aligned): 76 of 78
+                # (18), because the extra word at 0x08 shifts every later word. maxLen is copied to
+                # r7 because the buffer argument move is scheduled before maxLen - 1, and buffer and
+                # file take r31 and r29 where the original has r29 and r31.
                 Object(NonMatching, "rw/fn_80479A50.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8047A7C8.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8047B720.c", cflags=cflags_game),
