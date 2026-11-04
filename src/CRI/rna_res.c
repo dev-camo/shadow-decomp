@@ -115,6 +115,8 @@ void RNARES_Init(void) {
         n = rnares_nbuf;
         res = rnares_obj;
         ptr = rnares_aram_ptr;
+        /* Matching workaround: i++ in the address preserves the original loop; moving it to
+         * the header changes the generated loop. Revisit if a matching header form is found. */
         for (i = 0; i < n; res++) {
             sum = ptr + i++ * RNARES_BUF_SIZE;
             res->buf = sum >> 1;
