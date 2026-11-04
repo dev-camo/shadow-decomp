@@ -481,13 +481,13 @@ void SFBUF_DestroySj(SFD sfd) {
 }
 
 /* the stream joint of a ring buffer of bsize bytes at adr (xsize of them the wrap area) */
-static Sint32 sfbuf_CreateSj(SFBUF_SUP *sup, Uint32 adr, Sint32 bsize, Sint32 xsize) {
+static Sint32 sfbuf_CreateSj(SFBUF_SUP *sup, void *adr, Sint32 bsize, Sint32 xsize) {
     if (bsize <= 0) {
         return SFLIB_SetErr(0, 0xFF00040C);
     }
     sup->xsize = xsize;
     sup->x14 = 0;
-    sup->sj = SJRBF_Create((void *)adr, bsize, xsize);
+    sup->sj = SJRBF_Create(adr, bsize, xsize);
     if (sup->sj == 0) {
         return SFLIB_SetErr(0, 0xFF00040A);
     }
@@ -495,7 +495,7 @@ static Sint32 sfbuf_CreateSj(SFBUF_SUP *sup, Uint32 adr, Sint32 bsize, Sint32 xs
 }
 
 /* ring buffer of `size` bytes at adr; size 0 leaves the buffer unsupplied */
-static Sint32 sfbuf_InitRing(SFBUF_WORK *wk, Uint32 *adr, Sint32 size, Sint32 xsize) {
+static Sint32 sfbuf_InitRing(SFBUF_WORK *wk, Uint8 **adr, Sint32 size, Sint32 xsize) {
     Sint32 used;
     Sint32 mode;
     SFBUF_SUP sup;
@@ -508,7 +508,7 @@ static Sint32 sfbuf_InitRing(SFBUF_WORK *wk, Uint32 *adr, Sint32 size, Sint32 xs
         used = 1;
         mode = SFBUF_MODE_RING;
         sup.kind = 0;
-        sup.ofst = *adr;
+        sup.ofst = (Uint32)*adr;
         sup.size = size - xsize;
         err = sfbuf_CreateSj(&sup, *adr, sup.size, xsize);
         if (err != 0) {
@@ -527,7 +527,7 @@ static Sint32 sfbuf_InitRing(SFBUF_WORK *wk, Uint32 *adr, Sint32 size, Sint32 xs
 
 /* Vfrm/Aout take the size by pointer and read it twice: `used` before the mode store, the size
  * field after the adr store */
-static void sfbuf_InitVfrm(SFD sfd, SFBUF_WORK *wk, Uint32 *adr, Sint32 *size) {
+static void sfbuf_InitVfrm(SFD sfd, SFBUF_WORK *wk, Uint8 **adr, Sint32 *size) {
     Sint32 i;
     Sint32 used;
 
@@ -538,7 +538,7 @@ static void sfbuf_InitVfrm(SFD sfd, SFBUF_WORK *wk, Uint32 *adr, Sint32 *size) {
     wk->termflg = 0;
     wk->in_tr = SFBUF_TR_NONE;
     wk->out_tr = SFBUF_TR_NONE;
-    wk->u.vfrm.adr = *adr;
+    wk->u.vfrm.adr = (Uint32)*adr;
     wk->u.vfrm.size = *size;
     wk->u.vfrm.x18 = 0;
     wk->u.vfrm.x1c = 0;
@@ -550,7 +550,7 @@ static void sfbuf_InitVfrm(SFD sfd, SFBUF_WORK *wk, Uint32 *adr, Sint32 *size) {
 
 /* Audio output buffer (4/6): records the region and clears the reserve words; used only when a size
  * was given. */
-static void sfbuf_InitAout(SFBUF_WORK *wk, Uint32 *adr, Sint32 *size) {
+static void sfbuf_InitAout(SFBUF_WORK *wk, Uint8 **adr, Sint32 *size) {
     Sint32 i;
     Sint32 used;
 
@@ -561,7 +561,7 @@ static void sfbuf_InitAout(SFBUF_WORK *wk, Uint32 *adr, Sint32 *size) {
     wk->termflg = 0;
     wk->in_tr = SFBUF_TR_NONE;
     wk->out_tr = SFBUF_TR_NONE;
-    wk->u.aout.adr = *adr;
+    wk->u.aout.adr = (Uint32)*adr;
     wk->u.aout.size = *size;
     for (i = 0; i < 7; i++) {
         wk->u.aout.rsv[i] = 0;
@@ -573,14 +573,14 @@ static void sfbuf_InitAout(SFBUF_WORK *wk, Uint32 *adr, Sint32 *size) {
 
 /* Lays the eight buffers out back to back from prm->adr: adr[i] is the start of buffer i. */
 Sint32 SFBUF_InitHn(SFD sfd, SFBUF_WORK *wk, SFBUF_PRM *prm) {
-    Uint32 adr[SFD_BUF_NUM];
+    Uint8 *adr[SFD_BUF_NUM];
     Sint32 xsize;
     Sint32 err;
     Sint32 i;
-    Uint32 *p;
-    Uint32 a;
+    Uint8 **p;
+    Uint8 *a;
 
-    a = prm->adr;
+    a = (Uint8 *)prm->adr;
     p = adr;
     for (i = 0; i < 7; i++) {
         *p++ = a;
