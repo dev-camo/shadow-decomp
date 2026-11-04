@@ -240,17 +240,18 @@ RwBool fn_80493C7C(void *out, void *inOut, RwInt32 numIn) {
 }
 
 /* Sets the render mode: the given one (and pixel format), or the TV format's default */
-void fn_80493C84(GXRenderModeObj *renderMode, RwInt32 pixelFormat) {
+void fn_80493C84(GXRenderModeObj *renderMode, GXPixelFmt pixelFormat) {
     if (renderMode != NULL) {
-        RwInt32 format = pixelFormat;
-        GXRenderModeObj *mode = &lbl_805E3190;
+        GXPixelFmt format;
 
-        lbl_805F164C = mode;
-        *mode = *renderMode;
+        lbl_805E3190 = *renderMode;
+        lbl_805F164C = &lbl_805E3190;
         lbl_805F15EC = TVFORMATCUSTOM;
         /* Antialiasing needs the 16-bit pixel format */
         if (lbl_805F164C->aa) {
             format = GX_PF_RGB565_Z16;
+        } else {
+            format = pixelFormat;
         }
         lbl_805F15E4 = format;
         lbl_805F15E8 = format;
