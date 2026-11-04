@@ -32,9 +32,11 @@ class UnkProbeTarget_800587A0 {
     virtual void UnkSlot12() = 0;
     /* Moves the probe to position (behaviour inferred). */
     virtual void SetPosition(const Fn8040Vector3 *position) = 0;
-    /* Sets the probe's rotation (name inferred from RainEffect, which passes the address of its
-     * rotation vector; the other gadgets do not call this slot). */
-    virtual void SetRotation(const Fn8040Vector3 *rotation) = 0;
+    /* Sets the probe's rotation (name inferred from RainEffect, which passes its rotation vector).
+     * FallRoad passes the address of a vector built in the call; the bytes do not distinguish a
+     * pointer from a reference, and the reference spelling is inferred because it reproduces both
+     * callers (named-local pointer forms differ by 8-9 words in ResetFromOwner). */
+    virtual void SetRotation(const Fn8040Vector3 &rotation) = 0;
     virtual void UnkSlot15() = 0;
     /* Sets the probe's size (name inferred): TornadoCollision passes its radius as x and 0.0f as
      * y and z, GravityChangeCollision the three half extents of its box. Both pass -2 as arg1,
@@ -63,6 +65,9 @@ class UnkProbeTarget_800587A0 {
     /* 0x04 */ u8 field_0x4[0xC - 0x4];
     /* 0x0C */ UnkProbeList_80021FE4 hits;
 };
+/* Mapped prefix only: the original object's complete size is not established (its rotation
+ * methods access fields beyond this prefix). */
+CHECK_SIZEOF(UnkProbeTarget_800587A0, 0x28);
 
 class UnkWorld_80021B08;
 namespace SonicteamUSA {
@@ -116,11 +121,14 @@ boost::shared_ptr<UnkProbeTarget_800587A0> fn_800C7DEC(UnkWorld_80021B08 *world,
 /* Creates an oriented box probe at position with the given half extents and rotation, and returns
  * it (behaviour inferred from the arguments only: RainEffect passes its position, half extents
  * and rotation; arg4 to arg6 and the five trailing arguments are not understood). The half
- * extents are passed by reference to a copy that the caller builds. */
+ * extents, the rotation and arg9 are passed by address; FallRoad builds all three as temporaries
+ * in the call, after the weak pointer argument. The reference spelling is inferred: the bytes do
+ * not distinguish pointers from references, and the reference form reproduces the constructor
+ * (named-local pointer forms differ by 36 words). */
 boost::shared_ptr<UnkProbeTarget_800587A0>
 fn_800C7D04(UnkWorld_80021B08 *world, const Fn8040Vector3 *position,
-            const Fn8040Vector3 &halfExtents, const Fn8040Vector3 *rotation, int arg4, int arg5,
-            int arg6, int arg7, const boost::weak_ptr<CharInfo> &owner, const Fn8040Vector3 *arg9,
+            const Fn8040Vector3 &halfExtents, const Fn8040Vector3 &rotation, int arg4, int arg5,
+            int arg6, int arg7, const boost::weak_ptr<CharInfo> &owner, const Fn8040Vector3 &arg9,
             const Fn8040Vector3 *arg10, int arg11);
 /* Whether the probe touches the sphere (behaviour inferred). It is false for an expired probe and
  * for one whose byte at 0x2A is zero; otherwise it calls the probe's virtual function at vtable

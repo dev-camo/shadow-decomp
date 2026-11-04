@@ -1581,6 +1581,16 @@ config.libs = [
             Object(NonMatching, "Game/ElecRollHexa.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ArkCannon.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EggMeca411.cpp", cflags=cflags_game_cpp),
+            # Every function except UpdateBody, the retained data and all retained relocations
+            # match once the linker-discarded definitions (43 weak copies and nine local ones,
+            # among them a converting constructor, RTTI records and literals) are set aside. Normal
+            # builds link the original object; the source object was linked only as a separate
+            # diagnostic. UpdateBody differs in 7 words, all
+            # register colouring: the landing test's two float loads, its compare and its store
+            # use f0 and f1 the other way round, and the bounce update's subtraction, 0.8 literal
+            # load and multiply-add use f1 and f2 the other way round. Opcodes, relocations and
+            # load/store counts are identical.
+            Object(NonMatching, "Game/FallRoad.cpp", cflags=cflags_game_cpp),
             # First part of a larger original object. The following EggFleet/EggCannon code,
             # including ~EggFleet, is not reconstructed, so checked_delete<EggFleet> is inlined
             # here and the shared metadata remains in the original data.

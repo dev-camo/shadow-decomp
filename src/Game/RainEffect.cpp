@@ -82,8 +82,8 @@ RainEffect::RainEffect(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
 
     Fn8040Vector3 halfExtents(m_params.width, m_params.height, m_params.depth);
 
-    m_probe = fn_800C7D04(fn_80021B08(), &m_position, halfExtents, &m_rotation, 0, 0, 0xE, 0,
-                          boost::weak_ptr<CharInfo>(lbl_805EE698), &lbl_805E07A0, &lbl_805E07B8, 0);
+    m_probe = fn_800C7D04(fn_80021B08(), &m_position, halfExtents, m_rotation, 0, 0, 0xE, 0,
+                          boost::weak_ptr<CharInfo>(lbl_805EE698), lbl_805E07A0, &lbl_805E07B8, 0);
 }
 
 RainEffect::~RainEffect() {
@@ -169,7 +169,7 @@ void RainEffect::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
 void RainEffect::UpdateProbe() {
     m_probe->SetPosition(&m_position);
-    m_probe->SetRotation(&m_rotation);
+    m_probe->SetRotation(m_rotation);
     m_probe->SetSize(m_params.width, -2, m_params.height, m_params.depth);
 }
 

@@ -15,6 +15,7 @@
 #include "Game/SharedConstants.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
 #include "Game/UnkManager_800CB69C.h"
+#include "Game/UnkObject_80169BB0.h"
 #include "Game/UnkObject_801E72DC.h"
 #include "Game/UnkParamCursor_800CBC20.h"
 #include "Game/UnkResource_80012700.h"
@@ -28,7 +29,6 @@
 #include "layout_check.h"
 
 class UnkObject_801695B8;
-class UnkObject_80169BB0;
 
 extern "C" {
 /* Creates the object that the ball keeps at 0x40 (placeholder names; behaviour inferred from the
@@ -72,11 +72,6 @@ extern "C" void fn_8015B004(ColliDetectArgs *args,
                             void (*callback)(boost::shared_ptr<CharInfo> hit,
                                              UnkHitContext_8012F724 *context),
                             UnkHitContext_8012F724 *context);
-
-/* Creates an object of the given kind for target and returns a weak pointer to it (behaviour
- * inferred; the target is not used by the body, and the hit callback discards the result). */
-extern "C" boost::weak_ptr<UnkObject_80169BB0> fn_80169BB0(const boost::weak_ptr<CharInfo> &target,
-                                                           int kind);
 
 /* Launch speeds for the levels 0 to 15; the level in between is interpolated (name inferred). */
 static const float s_launchSpeeds[16] = {150.0f,  300.0f,  450.0f,  600.0f,  750.0f,  900.0f,

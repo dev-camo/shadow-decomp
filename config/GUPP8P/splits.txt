@@ -240,6 +240,13 @@ Game/EggMeca411.cpp:
 	.sdata      start:0x805ED968 end:0x805ED980
 	.sdata2     start:0x805FA390 end:0x805FA3B0
 
+Game/FallRoad.cpp:
+	.text       start:0x8032AD30 end:0x8032B52C
+	.rodata     start:0x8050EBF0 end:0x8050EC18
+	.data       start:0x8055E040 end:0x8055E0F8
+	.sdata      start:0x805EE490 end:0x805EE4B0
+	.sdata2     start:0x805FAD90 end:0x805FADE0
+
 Game/CSD/csdMatrix.cpp:
 	.text       start:0x80360664 end:0x80361370
 	.rodata     start:0x80514000 end:0x80514020
