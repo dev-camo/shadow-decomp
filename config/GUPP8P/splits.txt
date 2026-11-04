@@ -188,6 +188,15 @@ Game/ArkCannon.cpp:
 	.sbss       start:0x805F0EA8 end:0x805F0EC0
 	.sdata2     start:0x805F7F50 end:0x805F7FA0
 
+Game/ElecBarrier.cpp:
+	.text       start:0x80263BC0 end:0x802642A8
+	.ctors      start:0x804AAF64 end:0x804AAF68
+	.rodata     start:0x804F6A30 end:0x804F6A68
+	.data       start:0x8054D000 end:0x8054D0B8
+	.sdata      start:0x805EB788 end:0x805EB7A8
+	.sbss       start:0x805F1138 end:0x805F1148
+	.sdata2     start:0x805F8C38 end:0x805F8C58
+
 Game/ElecRollHexa.cpp:
 	.text       start:0x802674D4 end:0x80268128
 	.rodata     start:0x804F6EE8 end:0x804F7000

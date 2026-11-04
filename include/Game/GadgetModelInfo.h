@@ -19,6 +19,7 @@ class CharaColliAttack;
 } // namespace System
 } // namespace SonicteamUSA
 struct _stMtnPlayWork;
+class UnkProbeTarget_800587A0;
 struct RpClump;
 struct RpAtomic;
 
@@ -129,6 +130,21 @@ class GadgetModelInfo {
     /* Returns whether the table that fn_80162A68 searches has an entry whose id word equals arg0,
      * or false when there is no object at 0x30 (behaviour inferred from its body). */
     bool fn_80162EA8(int arg0);
+    /* Returns the atomic state (the member at 0x1C of a part) of the first part of the list at
+     * 0x4C for which the word at 0x10 of the object that the state's first word points to equals
+     * arg0, or null (behaviour inferred from its body). */
+    UnkModelAtomicState *fn_80162298(int arg0);
+    /* Calls fn_80456C54 with the callback fn_80164014 for the clump of each part of the list at
+     * 0x4C (purpose unknown). */
+    void fn_8016232C();
+    /* Finds the entry with the id arg0 in the table at 0x20 of the object at 0x30 and passes its
+     * index to fn_8016248C, returning that result, or false when there is none (behaviour
+     * inferred from its body). */
+    bool fn_80162424(int arg0);
+    /* Returns the probe of the first node of the list at 0x64 for which the word at 0x14 of the
+     * object that the node's word at 0x14 points to equals arg0, or an empty pointer (behaviour
+     * inferred from its body). */
+    boost::weak_ptr<UnkProbeTarget_800587A0> fn_80161614(int arg0);
 
     /* 0x04 */ u8 field_0x4[0x38]; /* Unrecovered members, including native subobjects. */
     /* 0x3C */ UnkBitFlags_80014E04 field_0x3C;

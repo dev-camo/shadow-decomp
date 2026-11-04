@@ -1572,6 +1572,7 @@ config.libs = [
                 extra_cflags=["-Cpp_exceptions on"],
             ),
             Object(Matching, "Game/fn_801D455C.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/ElecBarrier.cpp", cflags=cflags_game_cpp),
             # Constructor temporary cleanup, rotation registers, and literal order still differ.
             # Constructor temporary cleanup and float literal pool order still differ.
             Object(NonMatching, "Game/ElecSmallCube.cpp", cflags=cflags_game_cpp),

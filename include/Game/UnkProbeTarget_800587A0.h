@@ -11,8 +11,8 @@
  * (fn_800C7C34), the sphere probes (fn_800C7DEC, fn_800C7EA8) and fn_800C7A84. The placeholder
  * name is the one its weak and shared pointers already use; the original class name is not known.
  * Only the layout up to the list of touched objects and the virtual methods that the gadgets
- * call (slots 3, 13, 14, 16 and 26) are mapped; the other slots up to 26 are unknown, and so is the
- * size. */
+ * call (slots 3, 13, 14, 16, 20 and 26) are mapped; the other slots up to 26 are unknown, and so
+ * is the size. */
 class UnkProbeTarget_800587A0 {
   public:
     virtual void UnkSlot0() = 0;
@@ -43,7 +43,9 @@ class UnkProbeTarget_800587A0 {
     virtual void UnkSlot17() = 0;
     virtual void UnkSlot18() = 0;
     virtual void UnkSlot19() = 0;
-    virtual void UnkSlot20() = 0;
+    /* The ElecBarrier gadget calls it with 0x30302 or 0x30301 (by barrier type) and -1 (purpose
+     * unknown). */
+    virtual void UnkSlot20(int arg0, int arg1) = 0;
     virtual void UnkSlot21() = 0;
     virtual void UnkSlot22() = 0;
     virtual void UnkSlot23() = 0;
