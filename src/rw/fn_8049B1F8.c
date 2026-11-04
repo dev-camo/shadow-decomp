@@ -3,8 +3,7 @@
 #include "rw/rwcore.h"
 #include <string.h>
 
-RxExecutionContext lbl_805E3260; /* the pipeline being executed */
-RwFreeList lbl_805E3278;         /* the storage of the pipeline free list */
+RwFreeList lbl_805E3278; /* the storage of the pipeline free list */
 
 RwUInt32 lbl_805EDF48 = 0x1000; /* the size the execution heap is created with */
 RwUInt32 lbl_805EDF4C = 64;     /* the most nodes a pipeline can have */

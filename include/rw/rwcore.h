@@ -1143,6 +1143,9 @@ extern RwInt32 lbl_805F1690; /* engine plugin offset of the pipeline module's gl
 /* the heap pipelines execute with (inferred) */
 extern RxHeap *lbl_805F169C;
 
+/* the context of the pipeline being executed */
+extern RxExecutionContext lbl_805E3260;
+
 /* the pipeline heap (inferred from their use) */
 RxHeap *fn_8049F168(RwUInt32 size);        /* creates a heap of at least size bytes */
 void fn_8049F0CC(RxHeap *heap);            /* destroys it */

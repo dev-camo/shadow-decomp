@@ -1,5 +1,10 @@
-/* RenderWare pipeline library: destroying packets. The original file name is unknown. */
+/* RenderWare pipeline library: the execution context and destroying packets. The original file
+ * name is unknown. The context is defined here because the original .bss places it before the
+ * next file's free list, which that file's own definitions cannot reproduce; which original file
+ * owned it is inferred from that layout, not established. */
 #include "rw/rwcore.h"
+
+RxExecutionContext lbl_805E3260;
 
 /* Destroys a packet: frees the heap data of each of its clusters that has any and empties them,
  * and marks its pipeline's embedded packet unused */
