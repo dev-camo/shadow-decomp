@@ -119,6 +119,15 @@ Game/PowerDeviceNaked.cpp:
 	.sbss       start:0x805EF840 end:0x805EF860
 	.sdata2     start:0x805F4250 end:0x805F42A0
 
+Game/StoneStatue.cpp:
+	.text       start:0x800DC7F4 end:0x800DDB64
+	.ctors      start:0x804AAD70 end:0x804AAD74
+	.rodata     start:0x804B8F18 end:0x804B90A8
+	.data       start:0x80524C20 end:0x80524D70
+	.sdata      start:0x805E6118 end:0x805E6158
+	.sbss       start:0x805EF8C8 end:0x805EF8E0
+	.sdata2     start:0x805F4358 end:0x805F4390
+
 Game/fn_800E59F8.cpp:
 	.text       start:0x800E5DE0 end:0x800E6768
 	.rodata     start:0x804B9918 end:0x804B9978

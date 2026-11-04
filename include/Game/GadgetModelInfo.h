@@ -171,6 +171,10 @@ class GadgetModelInfo {
     /* As fn_8016111C, but calls the third virtual method of those objects (behaviour inferred from
      * its body). */
     void fn_80161230(int arg0, int arg1);
+    /* Clamps arg0 to the model indices (a negative index to the last, an index above the last
+     * to 0), calls fn_80162804 and passes the index and arg1 to fn_80162AD0, then returns the
+     * index (behaviour inferred from its body). */
+    int fn_801625D8(int arg0, int arg1);
 
     /* The constructor builds three callback objects at 0x4, 0x10 and 0x1C with the same function,
      * and the destructor destroys them with the same function. The gadgets bind their collision
