@@ -117,6 +117,16 @@ void CScene::CreatePalette() {
     }
 }
 
+const SceneData *CSceneDataRef::fn_8036679C() const {
+    return m_scene;
+}
+
+void CScene::fn_8036674C() {
+    m_startFrame = fn_8036679C()->field_0xC;
+    m_endFrame = fn_8036679C()->field_0x10;
+    m_frame = m_lastFrame = m_startFrame;
+}
+
 void CScene::SetFrame(f32 frame) {
     m_lastFrame = frame;
     m_frame = frame;

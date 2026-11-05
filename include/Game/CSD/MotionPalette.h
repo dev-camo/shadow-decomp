@@ -161,7 +161,10 @@ CHECK_SIZEOF(Chao::CSD::FrameRange, 0x8);
  * otherwise they use 1.3333. The frame ranges are present only when the version is at least 2. */
 struct SceneData {
     /* 0x00 */ s32 version;
-    /* 0x04 */ u8 field_0x4[0x14];
+    /* 0x04 */ u8 field_0x4[0x8];
+    /* 0x0C */ f32 field_0xC;
+    /* 0x10 */ f32 field_0x10;
+    /* 0x14 */ u8 field_0x14[0x4];
     /* 0x18 */ TextureSize *textureSizes;
     /* 0x1C */ u32 field_0x1C;
     /* 0x20 */ GlyphData *glyphs;
@@ -177,6 +180,8 @@ struct SceneData {
 };
 /* Only the members up to 0x48 are known. */
 CHECK_SIZEOF(Chao::CSD::SceneData, 0x48);
+CHECK_OFFSETOF(Chao::CSD::SceneData, field_0xC, 0xC);
+CHECK_OFFSETOF(Chao::CSD::SceneData, field_0x10, 0x10);
 
 /* A character code and its glyph index, sorted by code. */
 struct FontCharacter {
