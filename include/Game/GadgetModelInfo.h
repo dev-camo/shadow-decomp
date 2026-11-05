@@ -241,4 +241,12 @@ extern "C" {
 void fn_8015FD10(GadgetModelInfo *model);
 void fn_8015FDD8(GadgetModelInfo *model, float fraction);
 }
+
+/* Returns the word at 0xC of the object at 0x30 of the model, or 0 when there is none: the entry
+ * count of the table that fn_80162A68 searches, which walks at most that many entries (behaviour
+ * inferred from the bodies). The Catapult and DamageBlock gadgets use it on a reset whose entry
+ * identifier differs from the current one: they clamp the new value to it minus one, show that
+ * entry and write the value back (their constructors pass the parameter on unclamped). fn_80162A68
+ * compares the entries' identifier words and may not find the value. */
+extern "C" int fn_8015FF44(GadgetModelInfo *model);
 #endif
