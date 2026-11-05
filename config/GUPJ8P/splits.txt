@@ -762,6 +762,14 @@ Game/SecretDisk.cpp:
 	.sbss       start:0x805F0E88 end:0x805F0EA0
 	.sdata2     start:0x805F9B68 end:0x805F9B80
 
+Game/BAMine.cpp:
+	.text       start:0x80300540 end:0x80301A0C
+	.rodata     start:0x8050B770 end:0x8050B958
+	.data       start:0x8055B168 end:0x8055B330
+	.sdata      start:0x805ED310 end:0x805ED358
+	.sbss       start:0x805F0EF0 end:0x805F0F10
+	.sdata2     start:0x805F9CC8 end:0x805F9D10
+
 Game/BAShield.cpp:
 	.text       start:0x80301A0C end:0x803021A4
 	.rodata     start:0x8050B958 end:0x8050B998

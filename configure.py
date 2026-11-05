@@ -1930,6 +1930,7 @@ config.libs = [
             # with fn_800091EC, this build calls the three-float constructor out of line for the
             # temporary and copies it inline.
             Object(NonMatching, "Game/LongSpring.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/BAMine.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),
             # UpdateBody loads the startup float after the store to the offset (6 of 91 words).
             Object(NonMatching, "Game/CloseWall.cpp", cflags=cflags_game_cpp),
