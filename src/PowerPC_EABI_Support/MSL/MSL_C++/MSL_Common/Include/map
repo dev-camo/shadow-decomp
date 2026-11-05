@@ -8,16 +8,10 @@
 #include <utility>
 #include "layout_check.h"
 
-/* The parts of <map> used by the texture-list registry and the enemy bookkeeping maps, built on
- * the library's red-black tree; "tree::insert length error" is the library's message. String-key
- * maps and operations not used by these consumers are not covered. <set> builds on the same tree.
- *
- * find, insert, erase, the tree constructor, __insert_node and __destroy (inline) are defined
- * outside the class. The internal names (__tree, its members and the node and iterator types) are
- * placeholders: the library's names are not recoverable from the game. The three node routines are
- * only declared and keep the fn_ names of the game's own copies, which the program uses; their
- * signatures are inferred from their call sites (the original may define them inline or as
- * templates). */
+/* The recovered parts of <map> use the library's red-black tree; <set> uses the same tree.
+ * "tree::insert length error" is the library's message. Other key types and operations remain
+ * unrecovered. Internal names are placeholders. The three node routines are only declared with
+ * the game's function names; their signatures are inferred from callers. */
 namespace std {
 
 /* A tree node without its value: children, then the parent with the node's colour in bit 0. */
@@ -55,13 +49,17 @@ template <class Key, class Value, class Compare, class Allocator> class __tree {
     };
     typedef allocator<node> node_allocator;
 
-    class iterator {
+    /* Matching workaround: both tree iterators use the standard iterator base to keep implicit
+     * assignments out of line. In USA (GUPE8P), the mutable pointer-copy leaf at 0x8036580C is
+     * called at 0x80366D50, 0x80366EE8 and 0x803677B4. The constant iterator's copy at
+     * 0x80152620 and its caller at 0x801525F0 are also emitted out of line; without the base
+     * both are inlined. Explicit assignments alter the emission order. The library definition
+     * is not recovered; revisit when it is found or another form preserves the calls and order. */
+    class iterator
+        : public std::iterator<bidirectional_iterator_tag, Value, ptrdiff_t, Value *, Value &> {
       public:
         iterator(__tree_node_base *n) : node_(n) {}
         iterator() {}
-        /* Working interpretation of the pointer-copy routine used when a scene resets its
-         * cursor; ordinary copy construction remains implicit. */
-        iterator &operator=(const iterator &x);
         Value *operator->() const {
             return &static_cast<node *>(node_)->value_;
         }
@@ -79,16 +77,7 @@ template <class Key, class Value, class Compare, class Allocator> class __tree {
         __tree_node_base *node_;
     };
 
-    /* The constant iterator that the set's iterator wraps (see <set>).
-     *
-     * Matching workaround: it derives from std::iterator, the library's usual base for its
-     * iterators, only because the set code of the ELEC_BAR gadget has an out-of-line copy
-     * assignment of this iterator (0x80152620 in the USA release). Without the base, this
-     * implicit assignment and the set iterator's one that calls it are both expanded in place and
-     * neither function is emitted. The base is provisional: it reproduces those out-of-line
-     * implicit assignments and the original emission order (explicit out-of-class assignments
-     * reproduce the bodies but move other functions), but no original definition of the iterator
-     * establishes it. Revisit when the library's own definition of its tree iterators is known. */
+    /* The constant iterator that the set's iterator wraps (see <set>). */
     class const_iterator : public std::iterator<bidirectional_iterator_tag, Value, ptrdiff_t,
                                                 const Value *, const Value &> {
       public:
@@ -173,13 +162,6 @@ template <class Key, class Value, class Compare, class Allocator> class __tree {
     __compressed_pair<__tree_end_node, node_allocator> header_;
     __compressed_pair<__tree_node_base *, Compare> begin_;
 };
-
-template <class Key, class Value, class Compare, class Allocator>
-typename __tree<Key, Value, Compare, Allocator>::iterator &
-__tree<Key, Value, Compare, Allocator>::iterator::operator=(const iterator &x) {
-    node_ = x.node_;
-    return *this;
-}
 
 template <class Key, class Value, class Compare, class Allocator>
 __tree<Key, Value, Compare, Allocator>::__tree(const Compare &comp, const Allocator &a)

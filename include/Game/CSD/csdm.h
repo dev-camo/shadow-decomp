@@ -154,7 +154,7 @@ class CNode : public CElementDataRef, public CNodeListenerSource, public CBase {
     virtual CNode *GetSender();
 
     /* Native passes called before the palette update and, when listeners exist, after frame
-     * advancement. Their implementations remain in csdmNode.cpp. */
+     * advancement. They belong to the csdmNode unit and are not sourced yet. */
     void fn_8036A728();
     void fn_8036A954();
 
