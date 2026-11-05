@@ -481,6 +481,13 @@ RpAtomic *fn_80456F0C(RpAtomic *atomic, RpGeometry *geometry, RwUInt32 flags); /
 RpAtomic *fn_80458CBC(RpAtomic *atomic, RwFrame *frame);                       /* set frame */
 RwSphere *fn_804566D0(RpAtomic *atomic); /* the world bounding sphere, updated */
 RpWorld *fn_804622F0(RpAtomic *atomic);  /* the world the atomic is in, or NULL */
+/* brings an atomic's bounding sphere up to date with its morph targets */
+void fn_80456560(RpAtomic *atomic);
+
+/* An atomic's local bounding sphere, updated first if its interpolator marks it dirty */
+#define RpAtomicGetBoundingSphere(atomic)                                                          \
+    ((((atomic)->interpolator.flags & rpINTERPOLATORDIRTYSPHERE) ? fn_80456560(atomic) : (void)0), \
+     &(atomic)->boundingSphere)
 
 /* RpAtomicSetGeometry flags */
 #define rpATOMICSAMEBOUNDINGSPHERE 0x1

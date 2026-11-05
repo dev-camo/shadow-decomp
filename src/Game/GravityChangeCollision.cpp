@@ -66,7 +66,7 @@ GravityChangeCollision::GravityChangeCollision(Task *parent, UnkGadgetOwner_800C
 
     Fn8040Vector3 halfExtents(m_params.sizeX, m_params.sizeY, m_params.sizeZ);
 
-    m_probe = fn_800C7C34(fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), &halfExtents,
+    m_probe = fn_800C7C34(fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), halfExtents,
                           0x140100, 7, 0, &lbl_805E07A0, &lbl_805E07B8, 0);
 }
 

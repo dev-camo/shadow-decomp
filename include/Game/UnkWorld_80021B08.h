@@ -47,10 +47,12 @@ fn_800C7A84(UnkWorld_80021B08 *world, const boost::weak_ptr<CharInfo> &owner, fl
 /* Creates a box probe for the character info that owner refers to, with the given half extents
  * (behaviour inferred from the bytes: it stores the three vectors arg6, halfExtents and arg7 at
  * 0x0, 0xC and 0x18 of a shape and wraps it like the other probes; arg4, arg5, arg6, arg7 and arg9
- * are not understood, and the world argument is unused). */
+ * are not understood, and the world argument is unused). halfExtents as a const reference is
+ * inferred: the ElecCoreWall constructor builds a temporary vector for it after the owner argument
+ * and passes its address, which a pointer to a local would also produce. */
 boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>
 fn_800C7C34(UnkWorld_80021B08 *world, const boost::weak_ptr<CharInfo> &owner,
-            const Fn8040Vector3 *halfExtents, int flags, int arg4, int arg5,
+            const Fn8040Vector3 &halfExtents, int flags, int arg4, int arg5,
             const Fn8040Vector3 *arg6, const Fn8040Vector3 *arg7, int arg9);
 /* Creates a probe sphere of the given radius around the character info that owner refers to, and
  * returns it (behaviour inferred; arg2, arg3, arg4 and arg5 are passed on and not understood). */

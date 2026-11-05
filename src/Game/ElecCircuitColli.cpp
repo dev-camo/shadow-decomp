@@ -57,8 +57,8 @@ ElecCircuitColli::ElecCircuitColli(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
     m_charInfo = fn_8015CB88(0x5A, 4, "ElecCircuitColli");
 
     boost::shared_ptr<CharaColliBase> probe =
-        fn_800C7C34(fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), &lbl_80585778, 0x40000,
-                    10, 0, &lbl_805E07A0, &lbl_805E07B8, 0);
+        fn_800C7C34(fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), lbl_80585778, 0x40000, 10,
+                    0, &lbl_805E07A0, &lbl_805E07B8, 0);
     m_handle = fn_8015B8C4(probe);
 
     m_handle->field_0x0.fn_800F5980(

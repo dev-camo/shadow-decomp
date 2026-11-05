@@ -138,6 +138,8 @@ RwUInt32 fn_80443A54(const RpGeometry *geometry);
 RpAtomic *fn_80443A74(RpAtomic *atomic);
 RpAtomic *fn_80444284(RpAtomic *atomic);
 RpAtomic *fn_804442A4(RpAtomic *atomic, RwInt32 pipelineIndex);
+/* the weight of each target, allocated on first use; NULL if the allocation fails */
+RwReal *fn_804442E4(RpAtomic *atomic);
 RpAtomic *fn_80445CE0(RpAtomic *atomic, RwInt32 pipelineIndex); /* inferred: sets its pipeline */
 
 /* plugin attachment and pipelines */
