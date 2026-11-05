@@ -74,6 +74,12 @@ bool fn_800ABDCC(SonicteamUSA::System::PathCtrl *path);
 void fn_800181BC(SonicteamUSA::System::PathCtrl *path);
 void fn_80018304(SonicteamUSA::System::PathCtrl *path);
 float fn_800183D8(SonicteamUSA::System::PathCtrl *path);
+/* The position at the path's current state: blends the positions of the current point and the
+ * next one by the current fraction (behaviour inferred). */
+Fn8040Vector3 fn_80018634(SonicteamUSA::System::PathCtrl *path);
+/* The rotation angles of the path at its current state, from the current point and fraction
+ * (behaviour inferred; the meaning of the two int arguments is not known). */
+Fn8040Vector3 fn_80018434(SonicteamUSA::System::PathCtrl *path, int arg1, int arg2);
 
 /* External two-vector record read by fn_8001DB08. */
 extern UnkBss_80570B50 lbl_80570B50;

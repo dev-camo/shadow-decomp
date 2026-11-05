@@ -87,12 +87,6 @@ CHECK_SIZEOF(UnkFollowerParams_8000B2C0, 0x30);
 class UnkFollowerManager_80099954;
 
 extern "C" {
-/* Path control functions (behaviour inferred). */
-/* The position where the path starts. */
-Fn8040Vector3 fn_80018634(SonicteamUSA::System::PathCtrl *path);
-/* The rotation angles of the path at its start (the numbers are not understood). */
-Fn8040Vector3 fn_80018434(SonicteamUSA::System::PathCtrl *path, int arg1, int arg2);
-
 /* The follower manager (behaviour inferred). */
 UnkFollowerManager_80099954 *fn_80099954(void);
 /* The parameter type of these two is known to be wrong: the original builds the argument with

@@ -374,6 +374,16 @@ Game/Gong.cpp:
 	.sbss       start:0x805EEF30 end:0x805EEF50
 	.sdata2     start:0x805F42F0 end:0x805F4350
 
+Game/Monster.cpp:
+	.text       start:0x801388C8 end:0x8013A298
+	.ctors      start:0x804A9D60 end:0x804A9D64
+	.rodata     start:0x804BF980 end:0x804BFB70
+	.data       start:0x80528D18 end:0x80528EC8
+	.bss        start:0x805800F8 end:0x80580110
+	.sdata      start:0x805E6038 end:0x805E6090
+	.sbss       start:0x805EEF50 end:0x805EEF78
+	.sdata2     start:0x805F4350 end:0x805F4398
+
 Game/MonsterControl.cpp:
 	.text       start:0x8013A298 end:0x8013ADC4
 	.rodata     start:0x804BFB70 end:0x804BFC78
