@@ -163,6 +163,9 @@ class CScene : public CSceneDataRef {
     f32 GetLastFrame() const;
     void SetFrame(f32 frame);
 
+    /* Initialises the frame range and both frame positions from the attached data. */
+    void fn_8036674C();
+
     /* The speed the frame advances at (name inferred). */
     f32 GetSpeed() const;
     void SetSpeed(f32 speed);

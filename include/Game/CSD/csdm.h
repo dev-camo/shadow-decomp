@@ -52,6 +52,9 @@ class CSceneDataRef {
     /* The scene's aspect ratio (name inferred; 1.3333 for data without one). */
     f32 GetAspect() const;
 
+    /* The attached file data; placement on this data-reference base is inferred. */
+    const SceneData *fn_8036679C() const;
+
     /* 0x04 */ RCPtr<unsigned char> m_ref;
     /* 0x08 */ const SceneData *m_scene;
 };
