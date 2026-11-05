@@ -40,9 +40,10 @@ UnkCharInfoTable_800DDF20 *fn_800DDF20(void);
 /* Returns the first entry of a list of the table's character infos whose word at 0x50 (the
  * constructor argument) equals value, or null when there is none (behaviour inferred). */
 UnkCharInfoNode_801DCB14 *fn_801DCB14(UnkCharInfoTable_800DDF20 *table, int value);
-/* Adds charInfo to the table, and removes it again (behaviour inferred; the Tornado gadget adds
- * its character info when it is constructed and removes it when it is destroyed). fn_801DCD8C
- * returns whether it added it, false when it finds no free entry (inferred). */
+/* Adds charInfo to the table, and removes it again (behaviour inferred; the Tornado and Monster
+ * gadgets add their character info when they are constructed and remove it when they are
+ * destroyed). fn_801DCD8C returns whether it added it, false when it finds no free entry
+ * (inferred; the Monster gadget ignores the result). */
 bool fn_801DCD8C(UnkCharInfoTable_800DDF20 *table, boost::shared_ptr<CharInfo> charInfo);
 void fn_801DCCF4(UnkCharInfoTable_800DDF20 *table, boost::shared_ptr<CharInfo> charInfo);
 }

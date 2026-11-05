@@ -1927,6 +1927,11 @@ config.libs = [
             # reference.
             Object(NonMatching, "Game/RollCircle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/FireRing.cpp", cflags=cflags_game_cpp),
+            # 48 of the 49 functions have identical instructions and relocations. With the
+            # linker-discarded weak and local copies set aside, the whole object differs only in 2
+            # words of the constructor: the order of the two argument moves of its fn_800091D0 call
+            # (measured: a copy function with a const reference source parameter removes them).
+            Object(NonMatching, "Game/Monster.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/MonsterControl.cpp", cflags=cflags_game_cpp),
             # 57 of the 59 functions have identical instruction words and relocation types and are
             # in the original's order. The GongCSD constructor differs in 3 words, the offsets of
