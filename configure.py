@@ -1861,6 +1861,7 @@ config.libs = [
             # copies that the original unit does not have (TNumEdit, CharaColliBase, std::exception,
             # boost::bad_weak_ptr, sp_counted_base, the boost placeholders _2 to _9).
             Object(NonMatching, "Game/Gong.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/ShootingGameManagerTask.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BombingWall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BombServer.cpp", cflags=cflags_game_cpp),
             # 41 of the 42 functions have identical instructions and the data matches once the

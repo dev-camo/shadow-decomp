@@ -248,6 +248,14 @@ Game/MonsterControl.cpp:
 	.sbss       start:0x805EF580 end:0x805EF598
 	.sdata2     start:0x805F49C0 end:0x805F49D8
 
+Game/ShootingGameManagerTask.cpp:
+	.text       start:0x8013D628 end:0x8013DC68
+	.rodata     start:0x804C0750 end:0x804C0770
+	.data       start:0x80529920 end:0x80529940
+	.sdata      start:0x805E6740 end:0x805E6758
+	.sbss       start:0x805EF5C8 end:0x805EF5D0
+	.sdata2     start:0x805F4A58 end:0x805F4A68
+
 Game/ElecSecurityCodeGenerator.cpp:
 	.text       start:0x80157F58 end:0x80158984
 	.rodata     start:0x804C2748 end:0x804C2788

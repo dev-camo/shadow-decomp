@@ -355,6 +355,14 @@ Game/MonsterControl.cpp:
 	.sbss       start:0x805EEF78 end:0x805EEF90
 	.sdata2     start:0x805F4398 end:0x805F43B0
 
+Game/ShootingGameManagerTask.cpp:
+	.text       start:0x8013D280 end:0x8013D8C0
+	.rodata     start:0x804C00B8 end:0x804C00D8
+	.data       start:0x80529280 end:0x805292A0
+	.sdata      start:0x805E6120 end:0x805E6138
+	.sbss       start:0x805EEFC0 end:0x805EEFC8
+	.sdata2     start:0x805F4430 end:0x805F4440
+
 Game/ThreatObjHolder.cpp:
 	.text       start:0x8013EDCC end:0x80140278
 	.ctors      start:0x804A9D64 end:0x804A9D68
