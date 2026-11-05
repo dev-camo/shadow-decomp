@@ -454,6 +454,15 @@ Game/fn_801B1DB0.cpp:
 Game/fn_801D455C.cpp:
 	.text       start:0x801D48C0 end:0x801D4928
 
+Game/ElecCoreProgram.cpp:
+	.text       start:0x801F47B4 end:0x801F67A4
+	.ctors      start:0x804AA438 end:0x804AA43C
+	.rodata     start:0x804EBC00 end:0x804EBE30
+	.data       start:0x80542598 end:0x80542708
+	.sdata      start:0x805E9588 end:0x805E95D8
+	.sbss       start:0x805F00E8 end:0x805F0158
+	.sdata2     start:0x805F6B08 end:0x805F6BD8
+
 Game/ElecFireWall.cpp:
 	.text       start:0x801F68F8 end:0x801F7BD4
 	.ctors      start:0x804AA440 end:0x804AA444

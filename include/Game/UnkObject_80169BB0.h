@@ -46,6 +46,11 @@ boost::weak_ptr<UnkObject_80169BB0> fn_80169AEC(int kind, float arg1,
  * from its body; purpose unknown). The Tornado gadget's towing task passes 7 and -2 and keeps the
  * result. */
 boost::weak_ptr<UnkObject_80169BB0> fn_8034DEE4(int kind, int arg1);
+/* Creates an object of the given kind at position, as fn_8034DD9C does but passing 0 where that
+ * function passes 1 to fn_8034AF24 (behaviour inferred from the two bodies; arg2 is not
+ * understood). The ELEC_CORE gadget passes 9 and -2 at its character info's position when it
+ * breaks and discards the result. */
+boost::weak_ptr<UnkObject_80169BB0> fn_8034DE08(int kind, const Fn8040Vector3 *position, int arg2);
 }
 
 #endif
