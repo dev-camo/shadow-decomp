@@ -1747,6 +1747,16 @@ config.libs = [
             # relocations otherwise), as in SuperComputer's constructor. Writing the call with get()
             # or operator* on either pointer gives the same order.
             Object(NonMatching, "Game/BreakWall.cpp", cflags=cflags_game_cpp),
+            # 35 of the 36 functions have identical instructions and relocations, and the data,
+            # symbols and relocations match once the linker-discarded weak and local copies are set
+            # aside. The launch function (0x80142C88, USA) differs in 19 of its 168 words (raw, in a
+            # USA DOL linked from this source object, a diagnostic only: the build links the
+            # original object): the float-to-int conversion of the level and the int-to-float
+            # conversion of the index get separate 8-byte stack slots where the original reuses
+            # one (frame 0xA0 instead of 0x90, which also moves the register save offsets), and
+            # the level and the difference of the two table entries are held in f3 and f2 instead
+            # of f2 and f3, as in the Spring, CircusBall, DashPanel and DashRing hit callbacks.
+            Object(NonMatching, "Game/Catapult.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DamageBlock.cpp", cflags=cflags_game_cpp),
             # Every function but the constructor has identical instruction words, and the data,
             # symbols and relocations match once the linker-discarded weak and local copies are set

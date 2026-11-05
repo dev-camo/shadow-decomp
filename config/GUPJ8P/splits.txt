@@ -281,6 +281,14 @@ Game/BreakWall.cpp:
 	.sbss       start:0x805EF600 end:0x805EF620
 	.sdata2     start:0x805F4AC8 end:0x805F4B00
 
+Game/Catapult.cpp:
+	.text       start:0x801420E0 end:0x801433F4
+	.rodata     start:0x804C0D18 end:0x804C0E68
+	.data       start:0x80529CC0 end:0x80529E48
+	.sdata      start:0x805E6818 end:0x805E6840
+	.sbss       start:0x805EF620 end:0x805EF638
+	.sdata2     start:0x805F4B00 end:0x805F4B48
+
 Game/DamageBlock.cpp:
 	.text       start:0x801433F4 end:0x80143830
 	.rodata     start:0x804C0E68 end:0x804C0E98

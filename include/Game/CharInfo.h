@@ -53,6 +53,13 @@ class CharInfo {
     void SetField0x5C(s32 value) {
         field_0x5C = value;
     }
+    /* Stores value in the word at 0x50 (name inferred).
+     * Matching workaround: as SetField0x5C, this inline member stands for an unknown original
+     * accessor; the Catapult gadget's command handler calls the operator-> of its character info
+     * pointer out of line where it stores this word. Revisit with SetField0x5C. */
+    void SetField0x50(s32 value) {
+        field_0x50 = value;
+    }
 
     /* 0x3C */ u8 field_0x3C[0x50 - 0x3C];
     /* 0x50 */ s32 field_0x50; /* the constructor's arg0 */
