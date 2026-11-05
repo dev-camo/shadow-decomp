@@ -53,6 +53,9 @@ CHECK_SIZEOF(UnkLayerManager_80046178, 0x6C);
 extern "C" {
 UnkLayerManager_80046178 *fn_80046178(void);
 boost::shared_ptr<UnkLayer_8004DFB0> fn_8004DFB0(Task *parent, const char *name);
+/* Creates a draw layer under parent as fn_8004DFB0 does, without giving its task a name
+ * (behaviour inferred from its body). */
+boost::shared_ptr<UnkLayer_8004DFB0> fn_8004E24C(Task *parent);
 }
 
 #endif

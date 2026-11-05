@@ -264,18 +264,23 @@ class CancelBehaviorCommand : public PlayerCommand {
 CHECK_SIZEOF(Player::CancelBehaviorCommand, 0x14);
 
 /* The command with the id 0x12B (class name from the RTTI of its vtable at 0x80520F74); the
- * destructor and the vtable are elsewhere. The constructor below passes 0x12B and arg4 to the base
- * constructor, copies target to 0x14 and stores the two vector pointers and arg3. It is defined in
- * the class: its only copy (0x8014D730) sits among the functions that the NOBI_KUSA gadget's file
- * instantiates where its hit callback first uses them. That gadget sends it with the point and the
- * angles it carries the character at (meaning inferred from that use). Passing target by value is
- * inferred, as for TouchHangCommand. */
+ * destructor and the vtable are elsewhere. The first constructor below passes 0x12B and arg4 to the
+ * base constructor, copies target to 0x14 and stores the two vector pointers and arg3. It is
+ * defined in the class: its only copy (0x8014D730) sits among the functions that the NOBI_KUSA
+ * gadget's file instantiates where its hit callback first uses them. That gadget sends it with the
+ * point and the angles it carries the character at (meaning inferred from that use). Passing target
+ * by value is inferred, as for TouchHangCommand. The second constructor (0x8009E8D8) passes 0x12B
+ * and arg1 to the base constructor, default-constructs the weak pointer at 0x14, zeroes the words
+ * at 0x1C and 0x20 and stores arg0 at 0x24. The ELEC_LIGHT gadget sends it with 0 and 2 to the
+ * character info it catches and Player::EndExternalControlCommand when it lets it go (meanings
+ * inferred from the names). */
 class StartExternalControlCommand : public PlayerCommand {
   public:
     StartExternalControlCommand(boost::weak_ptr<CharInfo> target, const Fn8040Vector3 *position,
                                 const Fn8040Vector3 *angles, int arg3, int arg4)
         : PlayerCommand(0x12B, arg4), m_target(target), m_position(position), m_angles(angles),
           field_0x24(arg3) {}
+    StartExternalControlCommand(int arg0, int arg1);
     virtual ~StartExternalControlCommand();
 
     /* 0x14 */ boost::weak_ptr<CharInfo> m_target;
@@ -288,7 +293,8 @@ CHECK_SIZEOF(Player::StartExternalControlCommand, 0x28);
 /* The command with the id 0x129 (class name from the RTTI of its vtable at 0x80520FCC). The
  * constructor at 0x8009E880 passes 0x129 and arg2 to the base constructor and stores arg0 at 0x14
  * and the float at 0x18; the bytes do not show where the float stands in the parameter list (it
- * arrives in f1). The NOBI_KUSA gadget sends it with 3, 0.0f and 4 (meanings unknown). */
+ * arrives in f1). The NOBI_KUSA gadget sends it with 3, 0.0f and 4 and the ELEC_LIGHT gadget with
+ * 0x26, 0.0f and 2 (meanings unknown). */
 class SetMotionCommand : public PlayerCommand {
   public:
     SetMotionCommand(int arg0, float arg1, int arg2);
@@ -312,6 +318,27 @@ class EnemyDeadByPlayerCommand : public PlayerCommand {
 CHECK_SIZEOF(EnemyDeadByPlayerCommand, 0x1C);
 
 } // namespace Npc
+
+/* The constructor at 0x8009E614 passes 0x12C as the command id and its argument to the base
+ * constructor; it stores nothing else. */
+class EndExternalControlCommand : public PlayerCommand {
+  public:
+    EndExternalControlCommand(int arg1);
+    virtual ~EndExternalControlCommand();
+};
+CHECK_SIZEOF(Player::EndExternalControlCommand, 0x14);
+
+/* The constructor at 0x8010DFD0 passes 0x10B as the command id and arg1 to the base constructor and
+ * copies the vector to 0x14 (with fn_800091EC). The vector is taken by const reference (inferred):
+ * the ELEC_LIGHT gadget builds it into an argument temporary after the allocation. */
+class HomingJumpCommand : public PlayerCommand {
+  public:
+    HomingJumpCommand(const Fn8040Vector3 &vector, int arg1);
+    virtual ~HomingJumpCommand();
+
+    /* 0x14 */ Fn8040Vector3 m_vector;
+};
+CHECK_SIZEOF(Player::HomingJumpCommand, 0x20);
 
 } // namespace Player
 

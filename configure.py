@@ -1726,6 +1726,15 @@ config.libs = [
             # .rodata+0x230 in the original and .rodata+0x1E4 here) and the .rodata addends of four
             # data relocations (the descriptor name, two RTTI names and s_name).
             Object(NonMatching, "Game/ElecCoreWall.cpp", cflags=cflags_game_cpp),
+            # 83 of the 85 functions have identical instructions and relocations once the weak and
+            # local copies the linker discards are removed. The data matches by contents in an
+            # object-relative comparison that sets those copies and the alignment aside; a
+            # source-enabled link places the unit's data differently (in USA its .data, .rodata and
+            # .sdata take 0x204, 0x3E4 and 0x9C bytes against 0x1EC, 0x2BC and 0x5C). Search
+            # (0x801540F0) differs in 3 words (f2 and f3 swapped for 1 - fraction and 25, and the
+            # operand order of one fmuls) and Sweep (0x80153CE8) in 5 words (f1 and f2 swapped for
+            # the range and the speed product, and the operand order of two fmuls).
+            Object(NonMatching, "Game/ElecSearchLight.cpp", cflags=cflags_game_cpp),
             # Every function except UpdateBody is identical in every word and relocation, and the
             # data matches once the linker-discarded weak copies are set aside. UpdateBody
             # (0x80157F24) is 0x26C bytes against the original's 0x280: for the two positions it

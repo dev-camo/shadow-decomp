@@ -1802,6 +1802,41 @@ typedef struct RwIm3DVertex {
 } RwIm3DVertex;
 CHECK_SIZEOF(RwIm3DVertex, 0x24);
 
+/* Set the position, the normal and the colour of an immediate mode 3D vertex. Each builds the
+ * value in a temporary and assigns it as a whole. For the position and the normal the bytes need
+ * that form: the ELEC_LIGHT gadget's UpdateCone (USA 0x801536F8) loads all three components before
+ * the first store to the vertex, and storing the members one by one makes 55 of its 231 words
+ * differ. The colour is written the same way; storing its members one by one gives the same
+ * instructions there. The temporaries have names reserved for these macros (the _rwIm3DVertex
+ * prefix), so that no caller variable passed as an argument is captured by them. An inline
+ * function instead of the macros changes the caller's frame (0x1B0 bytes instead of UpdateCone's
+ * 0x190). */
+#define RwIm3DVertexSetPos(vert, px, py, pz)                                                       \
+    do {                                                                                           \
+        RwV3d _rwIm3DVertexPos;                                                                    \
+        _rwIm3DVertexPos.x = (px);                                                                 \
+        _rwIm3DVertexPos.y = (py);                                                                 \
+        _rwIm3DVertexPos.z = (pz);                                                                 \
+        (vert)->objVertex = _rwIm3DVertexPos;                                                      \
+    } while (0)
+#define RwIm3DVertexSetNormal(vert, nx, ny, nz)                                                    \
+    do {                                                                                           \
+        RwV3d _rwIm3DVertexNormal;                                                                 \
+        _rwIm3DVertexNormal.x = (nx);                                                              \
+        _rwIm3DVertexNormal.y = (ny);                                                              \
+        _rwIm3DVertexNormal.z = (nz);                                                              \
+        (vert)->objNormal = _rwIm3DVertexNormal;                                                   \
+    } while (0)
+#define RwIm3DVertexSetRGBA(vert, r, g, b, a)                                                      \
+    do {                                                                                           \
+        RwRGBA _rwIm3DVertexColor;                                                                 \
+        _rwIm3DVertexColor.red = (r);                                                              \
+        _rwIm3DVertexColor.green = (g);                                                            \
+        _rwIm3DVertexColor.blue = (b);                                                             \
+        _rwIm3DVertexColor.alpha = (a);                                                            \
+        (vert)->color = _rwIm3DVertexColor;                                                        \
+    } while (0)
+
 typedef RwUInt16 RwImVertexIndex;
 
 /* An immediate mode 2D vertex (0x18 bytes) */
