@@ -2063,10 +2063,7 @@ config.libs = [
             Object(Matching, "Game/ShootingGameManagerTask.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BombingWall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BombServer.cpp", cflags=cflags_game_cpp),
-            # All 42 functions have identical instructions. Not yet proven as a whole object with
-            # the unit linked from source (its local literal names and the list of the weak copies
-            # the linker discards are not checked).
-            Object(NonMatching, "Game/Researcher.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/Researcher.cpp", cflags=cflags_game_cpp),
             # 215 of the 219 functions have identical instructions and relocations once the weak and
             # local copies that the linker discards are removed. The static initialiser differs in 5
             # words: two registers swapped and the three roll velocities addressed from the start of
