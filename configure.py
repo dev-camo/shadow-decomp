@@ -2017,6 +2017,7 @@ config.libs = [
                 cflags=cflags_game_cpp,
                 extra_cflags=["-Cpp_exceptions on"],
             ),
+            Object(Matching, "Game/ShootingGameScore.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_8005A300.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80054DD0.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80096B64.cpp", cflags=cflags_game_cpp),

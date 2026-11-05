@@ -372,6 +372,14 @@ Game/ShootingGameManagerTask.cpp:
 	.sbss       start:0x805EEFC0 end:0x805EEFC8
 	.sdata2     start:0x805F4430 end:0x805F4440
 
+Game/ShootingGameScore.cpp:
+	.text       start:0x8013D8C0 end:0x8013EDCC
+	.rodata     start:0x804C00D8 end:0x804C0200
+	.data       start:0x805292A0 end:0x80529380
+	.sdata      start:0x805E6138 end:0x805E6160
+	.sbss       start:0x805EEFC8 end:0x805EEFD8
+	.sdata2     start:0x805F4440 end:0x805F4470
+
 Game/ThreatObjHolder.cpp:
 	.text       start:0x8013EDCC end:0x80140278
 	.ctors      start:0x804A9D64 end:0x804A9D68
