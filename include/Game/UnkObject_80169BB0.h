@@ -26,7 +26,8 @@ boost::weak_ptr<UnkObject_80169BB0> fn_8034DD24(int kind, float arg1, const Fn80
                                                 int arg3);
 /* Creates an object of the given kind and returns a weak pointer to it (purpose unknown; the
  * second argument is not understood). fn_80169BB0 passes its kind and 0 and returns the result to
- * its caller; GravityChangeZone passes 5 and -2 when a character touches its zone and discards the
+ * its caller; GravityChangeZone passes 5 and -2 when a character touches its zone, and
+ * SpringPanel's hit callback passes 5 and -2 when it launches a character; both discard the
  * result. */
 boost::weak_ptr<UnkObject_80169BB0> fn_8034DF48(int kind, int arg1);
 /* Creates an object of the given kind at position: forwards to fn_8034DD9C with -2 as its last

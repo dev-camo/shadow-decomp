@@ -1775,6 +1775,17 @@ config.libs = [
             # by position.
             Object(NonMatching, "Game/ElecSecurityCodeGenerator.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecBlock.cpp", cflags=cflags_game_cpp),
+            # 54 of the 55 functions have identical words and relocations, and the data matches
+            # once the linker-discarded weak and local copies are set aside, apart from the
+            # writable .sdata2 flag and section-end alignment (a USA DOL linked from
+            # this source object, a diagnostic only, differs from the original in 9 words, all in
+            # the hit callback). The hit callback (0x8015A260, USA) differs in 9 of its 188 words,
+            # positionally at the same size and frame (0xA0): the int-to-float conversion of the
+            # level index uses its own 8-byte stack slot (0x80) where the original reuses the slot
+            # of the float-to-int conversion of the level (0x78), and the level and the difference
+            # of the two table entries are held in f3 and f2 instead of f2 and f3, as in the
+            # Spring and LongSpring hit callbacks.
+            Object(NonMatching, "Game/SpringPanel.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SecurityLaser.cpp", cflags=cflags_game_cpp),
             # Every function but the constructor has identical instructions and relocations, and
             # the data, symbols and relocations match once the linker-discarded weak and local

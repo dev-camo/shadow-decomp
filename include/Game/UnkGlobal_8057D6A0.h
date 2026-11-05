@@ -15,7 +15,8 @@ struct UnkGlobal_8057D6A0 {
     /* 0x28 */ float field_0x28; /* Coaster multiplies it by 540 (meaning unknown) */
     /* 0x2C */ u8 field_0x2C[0x90 - 0x2C];
     /* 0x90 */ u32 field_0x90;
-    /* The ELEC_BAR gadget adds it to the times of its bars' cycles (meaning unknown). */
+    /* The ELEC_BAR gadget adds it to the times of its bars' cycles, and SpringPanel's colour
+     * cycle follows its fractional part (meaning unknown). */
     /* 0x94 */ float field_0x94;
     /* 0x98 */ float field_0x98; /* ElecFan and Fan pass it to cos (meaning unknown) */
     /* 0x9C */ u8 field_0x9C[0xA8 - 0x9C];
