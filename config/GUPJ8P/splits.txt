@@ -211,6 +211,14 @@ Game/Fire.cpp:
 	.sbss       start:0x805EF110 end:0x805EF130
 	.sdata2     start:0x805F3F68 end:0x805F3FB0
 
+Game/Fruit.cpp:
+	.text       start:0x801056B8 end:0x80106678
+	.rodata     start:0x804BB9D0 end:0x804BBB18
+	.data       start:0x805266F0 end:0x805267F0
+	.sdata      start:0x805E5DA0 end:0x805E5DD8
+	.sbss       start:0x805EF130 end:0x805EF140
+	.sdata2     start:0x805F3FB0 end:0x805F3FD0
+
 Game/GoalRing.cpp:
 	.text       start:0x80106678 end:0x8010740C
 	.rodata     start:0x804BBB18 end:0x804BBC38
