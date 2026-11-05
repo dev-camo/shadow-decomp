@@ -115,6 +115,15 @@ class SetAngleCommand : public CharCommand {
 };
 CHECK_SIZEOF(SetAngleCommand, 0x24);
 
+/* The command with the id 0x1D. Its constructor (0x801DA868) takes no arguments and passes 0x1D and
+ * 4 to the base constructor. The LongSpring gadget sends it first to a character it launches. */
+class SpringCommand : public CharCommand {
+  public:
+    SpringCommand();
+    virtual ~SpringCommand();
+};
+CHECK_SIZEOF(SpringCommand, 0x14);
+
 namespace Player {
 
 /* Makes the player ignore input for a time (the first member holds the time; the gadgets that

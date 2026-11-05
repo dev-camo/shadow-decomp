@@ -1772,6 +1772,17 @@ config.libs = [
             # own 8-byte stack slots (the original reuses the float-to-int slot), and the level and
             # the difference of the two table entries are in f3 and f2 instead of f2 and f3.
             Object(NonMatching, "Game/JumpBoard.cpp", cflags=cflags_game_cpp),
+            # The data matches once the linker-discarded weak and local copies are set aside, and
+            # 31 of the 34 functions have the original's words, with the same two callee-symbol
+            # differences as JumpBoard (list1 operator[] and the function1 destructor). The hit
+            # callback (0x80110320) differs in 9 words: the int-to-float conversion of the level
+            # index gets its own stack slot and the level and the table difference are in f3 and
+            # f2 instead of f2 and f3. UpdateModelMatrix (94 words, 104 here) and ResetFromOwner
+            # (139 words, 156 here) differ in the initialisation of their function-local static
+            # vector arrays: the original stores each element's components into a stack temporary
+            # and copies it with fn_800091EC, this build calls the three-float constructor out of
+            # line for the temporary and copies it inline.
+            Object(NonMatching, "Game/LongSpring.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),
             # UpdateBody loads the startup float after the store to the offset (6 of 91 words).
             Object(NonMatching, "Game/CloseWall.cpp", cflags=cflags_game_cpp),
