@@ -75,7 +75,7 @@ class ArkCannon : public Gadget {
     /* 0x70 */ float m_reloadTimer;
     /* 0x74 */ float m_shotTimer;
     /* 0x78 */ u32 m_shotCount;
-    /* 0x7C */ u8 field_0x7C[0x4]; /* unrecovered storage */
+    /* 0x7C */ u8 field_0x7C[0x4]; /* in the allocation size (0x80); no code here touches it */
 };
 CHECK_SIZEOF(ArkCannon, 0x80);
 
