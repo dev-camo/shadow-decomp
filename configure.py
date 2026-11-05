@@ -1897,6 +1897,7 @@ config.libs = [
             # and used as the if condition the constructor matches, and that build passes the
             # whole-object comparison once the linker-discarded weak and local copies are removed.
             Object(NonMatching, "Game/ElecFireWall.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/ElecCristalWall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecKyuu.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/MagmaGuard.cpp", cflags=cflags_game_cpp),
             # The data matches once the linker-discarded weak and local copies are set aside, and
