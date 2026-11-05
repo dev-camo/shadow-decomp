@@ -5,10 +5,13 @@
 #include "layout_check.h"
 
 /* The 0x150-byte object at 0x8057D6A0 in .bss (placeholder name; the original name and type are
- * unknown). More than 400 functions across the game read it. Only the words at 0x28, 0x90, 0x94,
- * 0x98, 0xA8 and 0xAC and the bytes at 0xB2, 0xC1 and 0x125 are mapped. */
+ * unknown). More than 400 functions across the game read it. Only the words at 0x18, 0x28, 0x90,
+ * 0x94, 0x98, 0xA8 and 0xAC and the bytes at 0xB2, 0xC1 and 0x125 are mapped. */
 struct UnkGlobal_8057D6A0 {
-    /* 0x00 */ u8 field_0x0[0x28];
+    /* 0x00 */ u8 field_0x0[0x18];
+    /* RollCircle divides the vector it passes to an attacked object by it (meaning unknown). */
+    /* 0x18 */ float field_0x18;
+    /* 0x1C */ u8 field_0x1C[0x28 - 0x1C];
     /* 0x28 */ float field_0x28; /* Coaster multiplies it by 540 (meaning unknown) */
     /* 0x2C */ u8 field_0x2C[0x90 - 0x2C];
     /* 0x90 */ u32 field_0x90;

@@ -55,6 +55,9 @@ void fn_800C9AD4(UnkGadgetOwner_800C9CD0 *owner);
 void fn_800C985C(UnkGadgetOwner_800C9CD0 *owner);
 /* Stores state in the owner's word at 0x14 (behaviour inferred from its body). */
 void fn_800C9930(UnkGadgetOwner_800C9CD0 *owner, SetAdapterState *state);
+/* Deletes the object in the owner's word at 0x14 through its virtual destructor and clears the
+ * word (behaviour inferred from its body). RollCircle calls it before it stores a new state. */
+void fn_800C9894(UnkGadgetOwner_800C9CD0 *owner);
 /* Sets bit 3 of the word at 0x18 of the record that owner points to, then calls fn_800C9B34
  * (behaviour inferred from its body). ArkCannon calls it when it is destroyed and BombingWall when
  * it breaks. */

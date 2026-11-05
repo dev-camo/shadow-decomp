@@ -1912,6 +1912,26 @@ config.libs = [
             # here and the shared metadata remains in the original data.
             Object(NonMatching, "Game/FleetHolder.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PowerDeviceNaked.cpp", cflags=cflags_game_cpp),
+            # 81 of the original's 95 functions have identical instruction words and relocation
+            # types. In six of them 12 calls (BreakQueued 4, IsQueued 3, Queue, ReadOwner,
+            # ~RollCircle, the constructor 2) go to std::vector<u32>'s members (reserve to its
+            # base's); the original calls copies at 0x800CC35C-0x800CE48C (USA) that are still
+            # unnamed. The std::list constructor is 2 words shorter here (20 against the original's
+            # 22; the original calls the size's allocator accessor before building the node
+            # allocator).
+            # The other 13 are the original's node-guard and pair functions at
+            # 0x800D72B8-0x800D7510, still unnamed in symbols.txt; this object has copies with the
+            # same bytes under the library's names, and insert, which uses them, matches. By
+            # contents, with the linker-discarded weak and local copies set aside, the original's
+            # .rodata, .data (relocation places and other bytes; the original keeps zeros where
+            # discarded weak vtables were), .sdata and .sdata2 contents are all present here; .sbss
+            # has the original's six one-byte objects (the placeholder _1 at 0x805EE7C0 and five
+            # more through the guard's at 0x805EE7D4). The object also defines the boost
+            # placeholders _2 to _9, which a source-enabled link leaves unused, and adds live data
+            # the original unit does not have: the "vector::insert length error" and
+            # "vector::reserve length error" strings, which the std::vector<u32> members that link
+            # selects from this object reference (USA 0x804B7EB0 and 0x804B7ED0 in its map).
+            Object(NonMatching, "Game/RollCircle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/FireRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/MonsterControl.cpp", cflags=cflags_game_cpp),
             # 57 of the 59 functions have identical instruction words and relocation types and are

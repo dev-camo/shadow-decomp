@@ -142,6 +142,9 @@ template <class T, class Allocator> class __vector_obj {
     /* Defined after the class and not inline: the game has an out-of-line copy of each. */
     iterator begin();
     iterator end();
+    bool empty() const {
+        return size_ == 0;
+    }
     void clear();
     void push_back(const value_type &x);
     iterator erase(iterator first, iterator last);
@@ -326,7 +329,8 @@ template <class T, class Allocator = allocator<T> > class vector;
 
 /* A vector of objects. The game has out-of-line copies of begin, end, push_back and clear, which
  * are defined after the class; erase and reserve are inline, as the game's callers call
- * __vector_obj's erase and reserve directly. */
+ * __vector_obj's erase and reserve directly. empty is out of line too: the game's callers call an
+ * out-of-line copy of it (e.g. 0x800CC494). */
 template <class T, class Allocator> class vector : private __vector_obj<T, Allocator> {
     typedef __vector_obj<T, Allocator> base;
 
@@ -336,6 +340,7 @@ template <class T, class Allocator> class vector : private __vector_obj<T, Alloc
 
     iterator begin();
     iterator end();
+    bool empty() const;
     void push_back(const T &x);
     iterator erase(iterator first, iterator last) {
         return base::erase(first, last);
@@ -353,6 +358,9 @@ typename vector<T, Allocator>::iterator vector<T, Allocator>::begin() {
 template <class T, class Allocator>
 typename vector<T, Allocator>::iterator vector<T, Allocator>::end() {
     return base::end();
+}
+template <class T, class Allocator> bool vector<T, Allocator>::empty() const {
+    return base::empty();
 }
 template <class T, class Allocator> void vector<T, Allocator>::push_back(const T &x) {
     base::push_back(x);
