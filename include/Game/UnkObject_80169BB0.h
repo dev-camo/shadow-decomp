@@ -42,6 +42,10 @@ void fn_8034DB60(boost::weak_ptr<UnkObject_80169BB0> &object);
  * character info's position when its health is used up and discards the result. */
 boost::weak_ptr<UnkObject_80169BB0> fn_80169AEC(int kind, float arg1,
                                                 const Fn8040Vector3 *position);
+/* As fn_8034DF48, except that it passes 1 instead of 0 in r7 to fn_8034B0A8 (behaviour inferred
+ * from its body; purpose unknown). The Tornado gadget's towing task passes 7 and -2 and keeps the
+ * result. */
+boost::weak_ptr<UnkObject_80169BB0> fn_8034DEE4(int kind, int arg1);
 }
 
 #endif

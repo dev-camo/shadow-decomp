@@ -11,17 +11,19 @@
  *
  * Every vector of pointers is implemented by one vector of void pointers, through private bases:
  * the GameCube code has, for each pointer type, an out-of-line copy of each member of vector<T *>
- * and of __vector_ptr<T>'s back, push_back, pop_back, constructor and destructor, each calling the
- * next layer. __vector_ptr's reserve is inlined into vector<T *>'s, and __vector_imp's pop_back
- * into __vector_ptr's. The names __vector_ptr and __vector_imp are placeholders: the library's
- * names for these internal classes are not recoverable from the game.
+ * and of __vector_ptr<T>'s begin, end, back, push_back, pop_back, clear, constructor and
+ * destructor, each calling the next layer. __vector_ptr's reserve and erase are inlined into
+ * vector<T *>'s, and __vector_imp's pop_back and clear into __vector_ptr's. The names
+ * __vector_ptr and __vector_imp are placeholders: the library's names for these internal classes
+ * are not recoverable from the game.
  *
  * reserve and insert are only declared: the program uses the game's own void-pointer instances
- * (0x800D15D8 and 0x8006CD9C in the USA release). The game's own push_back (0x8006CB24) is this
- * push_back with end() (0x8006CB68) called out of line, and its destructor (0x80019890) reads the
- * elements through an accessor (0x80019904) that this header does not declare. The Chao::CSD copies
- * inline end() and read the elements directly, so they differ from the game's and are weak
- * duplicates that the link discards. */
+ * (0x800D15D8 and 0x8006CD9C in the USA release; the insert carries its declared name in all
+ * three regions, so push_back's call binds to it). The game's own push_back (0x8006CB24), end()
+ * (0x8006CB68) and begin() (0x8006D008) have this header's instructions; its destructor (0x80019890) reads the
+ * elements through an accessor (0x80019904) that this header does not declare, so the copies of
+ * the destructor that units emit differ from the game's and are weak duplicates that the link
+ * discards. */
 namespace std {
 
 /* The vector implementation: capacity (paired with the allocator), size, then the elements. */
@@ -38,17 +40,24 @@ template <class T, class Allocator> class __vector_imp {
         }
     }
 
+    /* Matching workaround: begin(), end() and back() read the data pointer through the accessor
+     * __data(). The game calls begin() and end() out of line (0x8006D008 and 0x8006CB68 in the USA
+     * release) from push_back, insert, erase and the vector of pointers' begin() and end(), and
+     * with level-1 inlining a function stays out of line only when it calls another inline
+     * function. back() does not call end(): the Chao::CSD copy of back() (0x8035F88C) has end()'s
+     * arithmetic expanded in place. What the original library's members called is not known;
+     * revisit when it is. */
     iterator begin() {
-        return data_;
+        return __data();
     }
     iterator end() {
-        return data_ + size_;
+        return __data() + size_;
     }
     size_type size() const {
         return size_;
     }
     value_type &back() {
-        return *(end() - 1);
+        return *(__data() + size_ - 1);
     }
 
     void reserve(size_type n);
@@ -59,11 +68,17 @@ template <class T, class Allocator> class __vector_imp {
     void pop_back() {
         --size_;
     }
+    /* Defined after the class and not inline: the game has one out-of-line copy (USA 0x800DF450)
+     * after the functions of the Tornado gadget's file, its first user. */
+    iterator erase(iterator position);
     void clear() {
         size_ = 0;
     }
 
   private:
+    T *&__data() {
+        return data_;
+    }
     size_type &__cap() {
         return cap_.first();
     }
@@ -82,7 +97,14 @@ template <class T> class __vector_ptr : private __vector_imp<void *, allocator<v
 
   public:
     typedef size_t size_type;
+    typedef T **iterator;
 
+    iterator begin() {
+        return (iterator)base::begin();
+    }
+    iterator end() {
+        return (iterator)base::end();
+    }
     T *&back() {
         return (T *&)base::back();
     }
@@ -95,6 +117,12 @@ template <class T> class __vector_ptr : private __vector_imp<void *, allocator<v
     }
     void pop_back() {
         base::pop_back();
+    }
+    iterator erase(iterator position) {
+        return (iterator)base::erase((void **)position);
+    }
+    void clear() {
+        base::clear();
     }
 };
 
@@ -131,8 +159,9 @@ template <class T> class __vector_val : private __vector_imp<void *, allocator<v
     }
 };
 
-/* Assignment loops for elements that are objects. Each is an out-of-line function of the game;
- * the names and the two-layer shape (a wrapper calling the loop) are placeholders. */
+/* Assignment loops for elements that are objects (and, for __vector_imp's erase, void pointers).
+ * Each is an out-of-line function of the game; the names and the two-layer shape (a wrapper
+ * calling the loop) are placeholders. */
 template <class T> T *__copy_objects_loop(T *first, T *last, T *result) {
     for (; first < last; ++first, ++result) {
         *result = *first;
@@ -159,6 +188,16 @@ template <class T> void __fill_objects(T *first, size_t count, const T &value) {
     for (; count != 0; ++first, --count) {
         *first = value;
     }
+}
+
+template <class T, class Allocator>
+typename __vector_imp<T, Allocator>::iterator __vector_imp<T, Allocator>::erase(iterator position) {
+    iterator old_end = end();
+    if (old_end - position - 1 != 0) {
+        __copy_objects_loop(position + 1, old_end, position);
+    }
+    --size_;
+    return position;
 }
 
 /* The vector of objects that are not pointers (the CityLaser gadget keeps weak pointers), as far as
@@ -461,7 +500,14 @@ template <class T, class Allocator> class vector<T *, Allocator> : private __vec
 
   public:
     typedef size_t size_type;
+    typedef T **iterator;
 
+    iterator begin() {
+        return base::begin();
+    }
+    iterator end() {
+        return base::end();
+    }
     T *&back() {
         return base::back();
     }
@@ -474,6 +520,12 @@ template <class T, class Allocator> class vector<T *, Allocator> : private __vec
     }
     void pop_back() {
         base::pop_back();
+    }
+    iterator erase(iterator position) {
+        return base::erase(position);
+    }
+    void clear() {
+        base::clear();
     }
 };
 

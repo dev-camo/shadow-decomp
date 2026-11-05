@@ -146,6 +146,15 @@ Game/StoneStatue.cpp:
 	.sbss       start:0x805EF8C8 end:0x805EF8E0
 	.sdata2     start:0x805F4358 end:0x805F4390
 
+Game/Tornado.cpp:
+	.text       start:0x800DDB64 end:0x800DF8D0
+	.rodata     start:0x804B90A8 end:0x804B9250
+	.data       start:0x80524D70 end:0x80525020
+	.bss        start:0x8057EA28 end:0x80580AB8
+	.sdata      start:0x805E6158 end:0x805E61B0
+	.sbss       start:0x805EF8E0 end:0x805EF8E8
+	.sdata2     start:0x805F4390 end:0x805F43D8
+
 Game/CityChaosEmerald.cpp:
 	.text       start:0x800DFF94 end:0x800E0978
 	.rodata     start:0x804B9278 end:0x804B9360

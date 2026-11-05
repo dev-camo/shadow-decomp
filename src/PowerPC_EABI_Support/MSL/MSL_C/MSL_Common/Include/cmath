@@ -24,6 +24,7 @@ int abs(int);
 double acos(double);
 float acosf(float);
 double asin(double);
+float asinf(float);
 double atan(double);
 double atan2(double, double);
 double ceil(double);
@@ -55,6 +56,10 @@ inline long double fabsl(long double x) {
 
 MSL_INLINE float acosf(float x) {
     return acos(x);
+}
+
+MSL_INLINE float asinf(float x) {
+    return asin(x);
 }
 
 MSL_INLINE float atan2f(float y, float x) {
@@ -179,6 +184,10 @@ inline float tanf(float num) {
 
 inline float acos(float num) {
     return ::acosf(num);
+}
+
+inline float asin(float num) {
+    return ::asinf(num);
 }
 
 inline float pow(float x, float y) {

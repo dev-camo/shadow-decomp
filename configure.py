@@ -1975,6 +1975,15 @@ config.libs = [
             # which its static initialiser addresses the three vectors (their type is unknown).
             Object(NonMatching, "Game/PoleHolder.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/StoneStatue.cpp", cflags=cflags_game_cpp),
+            # 55 of the 56 functions have identical instructions and relocation targets, and the
+            # data matches by contents once the copies that the original object lacks (weak copies
+            # the linker discards and the exception classes' local RTTI records) are set aside,
+            # except .sbss, where the original has fn_800DDF20's guard before its pointer and this
+            # object the reverse. fn_800DDF20 comes after the converting shared_ptr constructor
+            # instead of before it (the original's copy looks like the out-of-line copy of an
+            # inline function). Launch differs in 8 words, all stack offsets (the SetAngleCommand
+            # argument and its two rotation results).
+            Object(NonMatching, "Game/Tornado.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CityChaosEmerald.cpp", cflags=cflags_game_cpp),
             # Every function but the static initialiser is identical, and the data matches once
             # the weak copies the linker discards are removed. The static initialiser differs in 2
