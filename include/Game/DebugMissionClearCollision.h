@@ -45,7 +45,7 @@ class DebugMissionClearCollision : public Gadget {
 
     /* 0x30 */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
     /* 0x38 */ DebugMissionClearCollisionParams m_params;
-    /* 0x3C */ u8 field_0x3C[0x4]; /* unrecovered storage */
+    /* 0x3C */ u8 field_0x3C[0x4]; /* in the allocation size (0x40); no code here touches it */
 };
 CHECK_SIZEOF(DebugMissionClearCollision, 0x40);
 

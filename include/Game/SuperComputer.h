@@ -79,7 +79,7 @@ class SetSuperComputer : public Gadget {
      * destruction; each update plays sound 0x7845 while bit 1 is set and 0x785F while bit 0 is
      * clear (inferred). Hides Task::m_flags. */
     /* 0x70 */ UnkBitFlags_80014E04 m_flags;
-    /* 0x74 */ u8 field_0x74[0x4]; /* unrecovered storage */
+    /* 0x74 */ u8 field_0x74[0x4]; /* in the allocation size (0x78); no code here touches it */
 };
 CHECK_SIZEOF(SetSuperComputer, 0x78);
 

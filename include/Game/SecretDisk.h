@@ -46,7 +46,7 @@ class SecretDisk : public Gadget {
     /* 0x48 */ boost::shared_ptr<UnkTarget_80166AF4> m_target;
     /* 0 after construction or a reset, 1 while waiting for a hit, 2 once hit (inferred). */
     /* 0x50 */ s32 m_state;
-    /* 0x54 */ u8 field_0x54[0x4]; /* unrecovered storage */
+    /* 0x54 */ u8 field_0x54[0x4]; /* in the allocation size (0x58); no code here touches it */
 };
 CHECK_SIZEOF(SecretDisk, 0x58);
 
