@@ -11,13 +11,13 @@ class CharInfo;
 class UnkLockonObject_8005FDF4;
 
 /* Commands that gadgets send to character infos (class names from RTTI, with CharCommand or
- * Player::PlayerCommand as their only base). The constructors and destructors are defined
- * elsewhere, together with the vtables, except the constructors of CancelBehaviorCommand and
- * AddWeaponCommand, which gadget files define (see their classes); the argument meanings are
- * inferred from the stores in the constructors.
- * SetPositionCommand, SetVelocityCommand and LaunchCommand pass their last
- * argument to the base constructor as its second argument, and ClrVelocityCommand its only
- * argument; IgnoreInputCommand passes 0. Most callers pass 4 there (0 and 2 also occur). */
+ * Player::PlayerCommand as their only base); WallJumpCommand is sent by the player and received
+ * by gadgets. The constructors and destructors are defined elsewhere, together with the vtables,
+ * except the constructors of CancelBehaviorCommand and AddWeaponCommand, which gadget files define
+ * (see their classes); the argument meanings are inferred from the stores in the constructors.
+ * SetPositionCommand, SetVelocityCommand and LaunchCommand pass their last argument to the base
+ * constructor as its second argument, and ClrVelocityCommand its only argument;
+ * IgnoreInputCommand passes 0. Most callers pass 4 there (0 and 2 also occur). */
 
 /* Moves the character info to a position. */
 class SetPositionCommand : public CharCommand {
@@ -136,6 +136,22 @@ class DeadCommand : public CharCommand {
     virtual ~DeadCommand();
 };
 CHECK_SIZEOF(DeadCommand, 0x14);
+
+/* The command with the id 10. Its constructor (0x801DB71C) passes 10 and 4 to the base
+ * constructor, copies a weak pointer to a character info to 0x14 and a vector to 0x1C. The
+ * player's wall hang behaviour (0x80091F58) sends it with a weak pointer that fn_800920CC builds
+ * from the member at 0x260 of the object its behaviour keeps at 0x4; the BreakWall gadget breaks
+ * when it receives it once cracked and keeps that character info. The vector is not read there. */
+class WallJumpCommand : public CharCommand {
+  public:
+    /* Defined elsewhere (USA 0x801DC5D4): destroys the weak pointer at 0x14 and releases the
+     * command through fn_801D9C64 with size 0x28 (behaviour inferred from the bytes). */
+    virtual ~WallJumpCommand();
+
+    /* 0x14 */ boost::weak_ptr<CharInfo> field_0x14;
+    /* 0x1C */ Fn8040Vector3 field_0x1C;
+};
+CHECK_SIZEOF(WallJumpCommand, 0x28);
 
 namespace Player {
 

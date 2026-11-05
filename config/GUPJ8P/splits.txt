@@ -273,6 +273,14 @@ Game/ShootingGameScore.cpp:
 	.sbss       start:0x805EF5D0 end:0x805EF5E0
 	.sdata2     start:0x805F4A68 end:0x805F4A98
 
+Game/BreakWall.cpp:
+	.text       start:0x80140620 end:0x801420E0
+	.rodata     start:0x804C0AD8 end:0x804C0D18
+	.data       start:0x80529B30 end:0x80529CC0
+	.sdata      start:0x805E67C0 end:0x805E6818
+	.sbss       start:0x805EF600 end:0x805EF620
+	.sdata2     start:0x805F4AC8 end:0x805F4B00
+
 Game/ElecSecurityCodeGenerator.cpp:
 	.text       start:0x80157F58 end:0x80158984
 	.rodata     start:0x804C2748 end:0x804C2788

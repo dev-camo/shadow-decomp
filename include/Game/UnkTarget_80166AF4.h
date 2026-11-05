@@ -5,6 +5,7 @@
 #include "boost/weak_ptr.hpp"
 #include "layout_check.h"
 
+struct RpClump;
 struct UnkModelPart_8015FA78;
 
 /* The 0x10-byte object that fn_80166AF4 creates for gadgets such as BDTrue and CityLaser, with a
@@ -46,6 +47,9 @@ struct UnkWeakHolder_800CC6C8 {
 CHECK_SIZEOF(UnkWeakHolder_800CC6C8, 0x8);
 
 extern "C" boost::shared_ptr<UnkTarget_80166AF4> fn_80166AF4(void);
+/* Allocates an UnkTarget_80166AF4, constructs it with clump (fn_8016780C) and returns it in a
+ * shared pointer (behaviour inferred from its body). */
+extern "C" boost::shared_ptr<UnkTarget_80166AF4> fn_8016690C(RpClump *clump);
 /* The part callback that gadgets pass to GadgetModelInfo::fn_8015FA78 together with an
  * UnkWeakHolder_800CC6C8 as the user data (behaviour inferred). */
 extern "C" UnkModelPart_8015FA78 *fn_80169D00(UnkModelPart_8015FA78 *part, void *userData);
