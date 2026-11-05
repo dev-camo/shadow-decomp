@@ -5,9 +5,9 @@
 #include "Game/EnemyReferer.h"
 #include "layout_check.h"
 
-/* Argument of slot 0xD0 (placeholder name). Its implementation reads a UnkProbeList_80021FE4
- * pointer from the first word; the pointee type and the pointer or reference form are not
- * recovered. */
+/* Argument of slot 0xD0 (placeholder name). Its implementation reads a
+ * SonicteamUSA::System::Collision::CollisionResultList pointer from the first word; this
+ * argument's own type and whether slot 0xD0 takes it by pointer or reference are not recovered. */
 struct Unk801A8258Argument;
 
 /* Original RTTI name. Its vtable replaces all 44 EnemyStatFunc slots, then adds a pure slot (0xB8,

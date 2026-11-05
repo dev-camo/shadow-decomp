@@ -26,6 +26,7 @@
 using SonicteamUSA::System::CharaColli::CharaColliAttack;
 
 using SonicteamUSA::System::CharaColli::AttackCallbackParam;
+using SonicteamUSA::System::Collision::CollisionResultList;
 
 namespace Weapon {
 
@@ -230,7 +231,7 @@ void WeaponStickBaseImpl::SweepAttack() {
         fn_8040CDD0(&segmentEnd, &offset, &start);
         fn_800091D0(&segment.end, &segmentEnd);
 
-        UnkProbeList_80021FE4 *hits =
+        CollisionResultList *hits =
             fn_800C5D74(fn_80021B08(), &segment, field_0x4C, 1, 0, 0, 0, m_attack);
 
         /* The list is deleted without being read. */

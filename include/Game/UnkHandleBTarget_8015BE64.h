@@ -7,7 +7,6 @@
 #include "layout_check.h"
 
 class CharInfo;
-class UnkProbeList_80021FE4;
 class GadgetModelInfo;
 class UnkPair_8015C9DC;
 namespace SonicteamUSA {
@@ -15,6 +14,9 @@ namespace System {
 namespace CharaColli {
 class CharaColliBase;
 } // namespace CharaColli
+namespace Collision {
+class CollisionResultList;
+} // namespace Collision
 } // namespace System
 } // namespace SonicteamUSA
 
@@ -27,7 +29,7 @@ class ColliDetectArgs {
      * (0x8014C108) store the vtable and clear both members in place. */
     ColliDetectArgs() : m_hits(0), field_0x4(0) {}
 
-    /* 0x00 */ UnkProbeList_80021FE4 *m_hits;
+    /* 0x00 */ SonicteamUSA::System::Collision::CollisionResultList *m_hits;
     /* GadgetModelInfo::fn_80162FB0 stores its own address here (0x80163064); fn_8015BE9C and the
      * other known constructions leave it 0. */
     /* 0x04 */ GadgetModelInfo *field_0x4;

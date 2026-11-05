@@ -18,6 +18,8 @@
 #include "boost/function.hpp"
 #include "boost/weak_ptr.hpp"
 
+using SonicteamUSA::System::Collision::CollisionResultList;
+
 /* The radius of the probe sphere (name inferred).
  * Matching workaround: UnkStartupFloat_800E2570 stands in for the original type of this variable.
  * The original sets it with a start-up function in .ctors (a constant float initialiser would be
@@ -56,7 +58,7 @@ void BombServer::UpdateBody(float dt) {
     case 1: {
         /* Set to false when a character info in the probe sphere blocks the round (inferred). */
         bool clear = true;
-        UnkProbeList_80021FE4 *hits = m_probe->GetHits();
+        CollisionResultList *hits = m_probe->GetHits();
 
         if (hits != 0) {
             for (UnkProbeIterator_80027374 iterator(hits->fn_8001EE04());

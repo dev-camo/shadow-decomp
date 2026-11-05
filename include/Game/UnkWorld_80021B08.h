@@ -99,7 +99,7 @@ fn_800C42D0(UnkWorld_80021B08 *world,
             boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> probe);
 /* True when one of the probe hits in the list is a character info whose virtual function at
  * vtable offset 0x24 reports true (behaviour inferred). */
-bool fn_8015D2EC(UnkProbeList_80021FE4 *hits);
+bool fn_8015D2EC(SonicteamUSA::System::Collision::CollisionResultList *hits);
 /* Resets the probe pointer (behaviour inferred; the world argument is unused and the pointer is
  * passed by address). */
 void fn_800C78B0(UnkWorld_80021B08 *world,
@@ -110,9 +110,10 @@ fn_800C4568(UnkWorld_80021B08 *world,
             boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> target);
 /* Tests the attack along the segment and returns a newly allocated list of what it met, or 0
  * (behaviour inferred); arg2 and arg3 are forwarded with unresolved meanings. */
-UnkProbeList_80021FE4 *
+SonicteamUSA::System::Collision::CollisionResultList *
 fn_800C5D74(UnkWorld_80021B08 *world, const UnkSegment_80020A20 *segment, int arg2, int arg3,
-            UnkProbeList_80021FE4 *hits, UnkProbePredicate predicate, void *context,
+            SonicteamUSA::System::Collision::CollisionResultList *hits, UnkProbePredicate predicate,
+            void *context,
             boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack> attack);
 /* Creates a probe for the character info that owner refers to from the loaded collision data
  * collision and returns it (behaviour inferred; arg3 and arg4 are passed on and not understood). */
