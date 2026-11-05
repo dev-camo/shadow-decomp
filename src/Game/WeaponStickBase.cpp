@@ -185,7 +185,10 @@ void WeaponStickBaseImpl::SweepAttack() {
     Fn8040Vector3 start;
     Fn8040Vector3 end;
     /* The differences are built in temporaries and copied, as the original does; it places them
-     * after the named locals, so they are declared after them here. */
+     * after the named locals, so they are declared after them here.
+     * Matching workaround: declaration order chosen for the original's frame slots (declared at
+     * first use, they change 16 of the method's 133 words); revisit when the vector operations
+     * return their results by value (#602), which changes how these temporaries are formed. */
     Fn8040Vector3 startDelta;
     Fn8040Vector3 endDelta;
 
@@ -212,7 +215,9 @@ void WeaponStickBaseImpl::SweepAttack() {
     for (int i = 0; i < count; i++) {
         UnkSegment_80020A20 segment;
         /* The end point's temporaries, in the order the original's frame holds them (it built the
-         * point from nested vector operations). */
+         * point from nested vector operations).
+         * Matching workaround: declaration order chosen for the original's frame slots (in use
+         * order, eight stack offsets change); revisit with the by-value vector operations (#602). */
         Fn8040Vector3 segmentEnd;
         Fn8040Vector3 offset;
         Fn8040Vector3 unit;
