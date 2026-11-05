@@ -263,11 +263,11 @@ void CScene::Resume() {
 }
 
 void CScene::fn_803659DC(MotionEndAction action) {
-    m_endPolicy.m_startAction = action;
+    m_endPolicy.m_endAction = action;
 }
 
 void CScene::fn_803659CC(MotionEndAction action) {
-    m_endPolicy.m_endAction = action;
+    m_endPolicy.m_startAction = action;
 }
 
 CSceneDataRef::CSceneDataRef() {
@@ -279,7 +279,7 @@ CSceneDataRef::~CSceneDataRef() {
 }
 
 CMotionEndPolicy::CMotionEndPolicy()
-    : m_startAction(MOTION_END_HOLD), m_endAction(MOTION_END_HOLD) {}
+    : m_endAction(MOTION_END_WRAP), m_startAction(MOTION_END_WRAP) {}
 
 void CSceneDataRef::Clear() {
     m_ref.Reset(NULL);

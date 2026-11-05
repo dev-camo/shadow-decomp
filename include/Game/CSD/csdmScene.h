@@ -66,16 +66,16 @@ class CProject;
 /* What a scene reports to its listeners (class name and event names inferred from the vtables
  * 0x8055FFB0 and 0x8055FF88: six event slots, each backed by one of the scene's six lists of
  * listeners, and a destructor that releases the listener from the scenes it listens to). The
- * events of the first two slots are the scene's motion reaching its first and its last frame
- * (from CMotionEndPolicy); the other four are empty in every class that is known, and their
+ * first two slots report the end boundary at positive speed and the start boundary at negative
+ * speed (from CMotionEndPolicy); the other four are empty in every class that is known, and their
  * parameters are unknown (their empty bodies do not show them). The listener keeps the scenes it
  * listens to in a container at 0x4, which is not modelled yet. */
 class CSceneListener : public CBase {
   public:
     CSceneListener();
     virtual ~CSceneListener();
-    virtual void OnReachStart(CScene *scene) {}
     virtual void OnReachEnd(CScene *scene) {}
+    virtual void OnReachStart(CScene *scene) {}
     virtual void fn_8036F96C() {}
     virtual void fn_8036F970() {}
     virtual void fn_8036F974() {}
@@ -86,10 +86,10 @@ class CSceneListener : public CBase {
 CHECK_SIZEOF(Chao::CSD::CSceneListener, 0x10);
 
 /* What a scene does when its motion reaches the first or the last frame (names inferred from the
- * handlers; every scene starts with MOTION_END_HOLD for both). */
+ * handlers; every scene starts with MOTION_END_WRAP for both). */
 enum MotionEndAction {
     MOTION_END_PAUSE = 0,   /* pause the scene */
-    MOTION_END_HOLD = 1,    /* set the frame to the one reached */
+    MOTION_END_WRAP = 1,    /* set both frame positions to the opposite boundary */
     MOTION_END_REVERSE = 2, /* reverse the direction of the playback */
     MOTION_END_REMOVE = 3   /* remove the scene from its project */
 };
@@ -98,11 +98,11 @@ enum MotionEndAction {
 class CMotionEndPolicy : public CSceneListener {
   public:
     CMotionEndPolicy();
-    virtual void OnReachStart(CScene *scene);
     virtual void OnReachEnd(CScene *scene);
+    virtual void OnReachStart(CScene *scene);
 
-    /* 0x10 */ MotionEndAction m_startAction;
-    /* 0x14 */ MotionEndAction m_endAction;
+    /* 0x10 */ MotionEndAction m_endAction;
+    /* 0x14 */ MotionEndAction m_startAction;
 };
 CHECK_SIZEOF(Chao::CSD::CMotionEndPolicy, 0x18);
 
