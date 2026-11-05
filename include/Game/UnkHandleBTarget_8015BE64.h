@@ -19,16 +19,22 @@ class CharaColliBase;
 } // namespace SonicteamUSA
 
 /* What a collision callback receives (class name from RTTI; GadgetColliDetectArgs derives from it
- * at offset 0). The constructions at 0x80112B18-0x80112B20 and 0x8015C0A4 store the two members
- * and the vtable at 0x8, and 0x80112C74 is the virtual destructor. */
+ * at offset 0). */
 class ColliDetectArgs {
   public:
+    /* Inline: the constructions at 0x80112AFC-0x80112B20, in GadgetColliDetectArgs's constructor
+     * (0x8015C0A4) and in the Door gadget's IsTouched store the vtable and clear both members in
+     * place. */
+    ColliDetectArgs() : m_hits(0), field_0x4(0) {}
+
     /* 0x00 */ UnkProbeList_80021FE4 *m_hits;
     /* GadgetModelInfo::fn_80162FB0 stores its own address here (0x80163064); fn_8015BE9C and the
      * other known constructions leave it 0. */
     /* 0x04 */ GadgetModelInfo *field_0x4;
     /* 0x08: vtable */
-    virtual ~ColliDetectArgs();
+    /* Inline: GadgetColliDetectArgs's destructor (0x8015C048) and the Door gadget's IsTouched
+     * restore the vtable in place; 0x80112C74 is an out-of-line copy. */
+    virtual ~ColliDetectArgs() {}
 };
 CHECK_OFFSETOF(ColliDetectArgs, m_hits, 0x0);
 CHECK_OFFSETOF(ColliDetectArgs, field_0x4, 0x4);

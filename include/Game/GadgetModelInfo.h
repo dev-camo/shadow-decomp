@@ -196,6 +196,10 @@ class GadgetModelInfo {
     /* Stores arg0 at 0x40 and sets bit 4 of the flags at 0x3C; a negative arg0 stores 0 and sets
      * bit 5 instead (behaviour inferred from its body). */
     void fn_8016268C(float arg0);
+    /* Returns whether the motion control of the part with id arg0 is alive and
+     * stMtnControlWorkFlag(control, 0, 3, 1) is nonzero for it (behaviour inferred from its body;
+     * the DOOR gadget waits on it for the end of its open and close motions). */
+    bool fn_80160040(int arg0);
 
     /* The constructor builds three callback objects at 0x4, 0x10 and 0x1C with the same function,
      * and the destructor destroys them with the same function. The gadgets bind their collision
@@ -247,6 +251,7 @@ void fn_8015FDD8(GadgetModelInfo *model, float fraction);
  * inferred from the bodies). The Catapult and DamageBlock gadgets use it on a reset whose entry
  * identifier differs from the current one: they clamp the new value to it minus one, show that
  * entry and write the value back (their constructors pass the parameter on unclamped). fn_80162A68
- * compares the entries' identifier words and may not find the value. */
+ * compares the entries' identifier words and may not find the value. The DOOR gadget does the same
+ * on a reset with a changed model parameter. */
 extern "C" int fn_8015FF44(GadgetModelInfo *model);
 #endif
