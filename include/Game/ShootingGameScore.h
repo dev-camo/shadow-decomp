@@ -69,8 +69,8 @@ class Score : public Gadget {
     /* 0x58 */ UnkModelAtomicState *m_scoreParts[kScorePartCount];
     /* Bit 0: this panel's attack put the entry into state 1 (inferred). */
     /* 0x98 */ UnkBitFlags_80014E04 m_hitFlags;
-    /* 0x9C */ u8 field_0x9C[0x4]; /* in the allocation size (0xA0); no code here touches it */
 };
+/* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(Score, 0xA0);
 
 } // namespace ShootingGame

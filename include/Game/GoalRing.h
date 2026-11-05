@@ -54,8 +54,8 @@ class GoalRing : public Gadget {
     /* 0x48 */ boost::weak_ptr<Effect::System::EffectElement> m_effect; /* fn_8015D794 id 0x8E */
     /* 0x50 */ boost::weak_ptr<Effect::System::EffectElement> m_colorEffect;
     /* 0x58 */ UnkSoundHandle_801D3DC8 m_sound; /* sound 0xE00D */
-    /* 0x74 */ u8 field_0x74[0x4]; /* in the allocation size (0x78); no code here touches it */
 };
+/* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(GoalRing, 0x78);
 
 } // namespace GoalRing

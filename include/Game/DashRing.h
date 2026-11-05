@@ -52,8 +52,8 @@ class DashRing : public Gadget {
     /* 0x40 */ boost::shared_ptr<UnkObject_801695B8> m_handle;
     /* 0x48 */ DashRingParams m_params;
     /* 0x50 */ UnkSoundHandle_801D3DC8 m_sound;
-    /* 0x6C */ u8 field_0x6C[0x4]; /* in the allocation size (0x70); no code here touches it */
 };
+/* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(DashRing, 0x70);
 
 } // namespace DashRing

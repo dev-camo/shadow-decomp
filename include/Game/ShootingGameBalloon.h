@@ -204,11 +204,11 @@ class BalloonGenerator : public Gadget {
     /* 0x30 */ s32 m_state;
     /* 0x34 */ BalloonGeneratorParams m_params;
     /* 0x58 */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
-    /* 0x60 */ float m_timer;      /* counts down from Sec to the next round */
-    /* 0x64 */ s32 m_burstCount;   /* the DeadCommands received */
-    /* 0x68 */ s32 m_roundCount;   /* the rounds generated */
-    /* 0x6C */ u8 field_0x6C[0x4]; /* in the allocation size (0x70); no code here touches it */
+    /* 0x60 */ float m_timer;    /* counts down from Sec to the next round */
+    /* 0x64 */ s32 m_burstCount; /* the DeadCommands received */
+    /* 0x68 */ s32 m_roundCount; /* the rounds generated */
 };
+/* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(ShootingGame::BalloonGenerator, 0x70);
 
 } // namespace ShootingGame

@@ -61,8 +61,8 @@ class FireRing : public Gadget {
     /* Bit 0: the character touched m_handleA's probe first, bit 1: m_handleB's, bit 2: a
      * character is passing (inferred). */
     /* 0x68 */ UnkBitFlags_80014E04 m_passFlags;
-    /* 0x6C */ u8 field_0x6C[0x4]; /* in the allocation size (0x70); no code here touches it */
 };
+/* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(FireRing, 0x70);
 
 } // namespace FireRing
