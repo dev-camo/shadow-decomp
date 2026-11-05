@@ -966,14 +966,16 @@ config.libs = [
                 # The scene object and the handles it is built from: constructors, destructors, Clear and
                 # Copy of the handles of a scene's data, fonts, motions, palette and entries; the scene's
                 # frame range, speed, pause, motion and palette members and the setters of its root
-                # pattern, and the constructor of the scene's end-of-motion policy (the class whose
-                # handlers are in csdmProject.cpp). 53 of the unit's 195 functions are sourced, and each
-                # has the original's instructions and relocation targets (GetAspect's float literal is a
-                # differently named label of the same value). The other 142 are not sourced: the scene's
+                # pattern, its lazy root-pattern accessor and the constructor of the scene's end-of-motion
+                # policy (the class whose handlers are in csdmProject.cpp). 55 of the unit's 195 functions
+                # are sourced, including the root pattern's deleting destructor. 54 have the original's
+                # instructions and relocation targets (GetAspect's float literal has a different label
+                # of the same value). GetRootPattern differs only in the allocation's source line:
+                # 159 instead of 1124. The other 140 are not sourced: the scene's
                 # Copy, destructor, Update and Draw, the end-of-motion policy's destructor, the
                 # CSceneListener constructor, the container code (lists and trees of listeners and
                 # nodes), the RCPtr instances (for MatrixValue and for the node pointers), the listener
-                # dispatch and the root pattern's allocation. The unit's .rodata and .data
+                # dispatch and the root pattern's setter. The unit's .rodata and .data
                 # are incomplete for the same reason (the strings and the vtables of the unsourced
                 # classes are missing), and it emits weak copies of RCPtr<unsigned char>::Reset, the
                 # RCObject<unsigned char> constructor and vtable and CMemoryAlloc::AllocObject and

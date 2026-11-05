@@ -151,6 +151,17 @@ CMotionPatternRef::~CMotionPatternRef() {
     m_entry = NULL;
 }
 
+CMotionPattern *CScene::GetRootPattern() {
+    if (m_rootPattern != NULL) {
+        return m_rootPattern;
+    }
+
+    CMotionPattern *pattern = CSD_NEW CMotionPattern(GetAspect());
+    SetRootPattern(pattern);
+    delete pattern;
+    return m_rootPattern;
+}
+
 f32 CSceneDataRef::GetAspect() const {
     if (m_scene->version >= 1) {
         return m_scene->aspect;

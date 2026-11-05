@@ -121,9 +121,11 @@ class CScene : public CSceneDataRef {
     f32 GetMotionEnd(const char *name);
     f32 GetMotionEnd(int index) const;
 
-    /* The pattern of the scene's own element, created when first needed (name inferred; its
-     * definition is not sourced yet). */
+    /* The pattern of the scene's own element, created when first needed (name inferred). */
     CMotionPattern *GetRootPattern();
+
+    /* Replaces the root pattern with a copy, or clears it when null (name inferred). */
+    void SetRootPattern(const CMotionPatternRef *pattern);
 
     /* Set the root pattern's hidden flag, translation (in screen units) and scale (names
      * inferred). */
