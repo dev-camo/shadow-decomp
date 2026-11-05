@@ -4,10 +4,7 @@
  * shows the model, owns a probe and an attack object with a bound callback, and keeps its state in
  * a ChaoData that the owner remembers. File name inferred from the class. Method names marked
  * "(name inferred)" are not original. Definitions are in reverse address order (deferred inlining
- * emits functions last-defined first).
- *
- * NonMatching: checked_delete<Chao> is a local symbol where the original's is weak, and the data
- * has records that the original unit does not have (listed in the note in configure.py). */
+ * emits functions last-defined first). */
 #include "Game/CharInfo.h"
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
