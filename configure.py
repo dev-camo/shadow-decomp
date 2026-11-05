@@ -726,13 +726,10 @@ config.libs = [
                 # checked_deleter<Chao> (moving them 8 and 0x1C bytes later); and the
                 # std::exception and sp_counted_base vtables are appended to .data.
                 Object(NonMatching, "Game/ChaoHolder.cpp", cflags=cflags_game_cpp),
-                # 33 of 36 functions are identical in every word and relocation. Two more have
-                # identical words and differ only in the symbol name of one callee: the copies of
-                # boost's list1 operator[] and function1 destructor at 0x800D05D0 and 0x800D0CEC share
-                # their mangled names with copies at other addresses that symbols.txt already names.
-                # The hit callback (0x80130364) differs in 19 words: the float-to-int conversion of
-                # the level and the int-to-float conversion of the index get separate 8-byte stack
-                # slots (the original reuses one; frame 0xB0 instead of 0xA0), and the level and the
+                # 35 of 36 functions are identical in every word and relocation. The hit callback
+                # (0x80130364) differs in 19 words: the float-to-int conversion of the level and
+                # the int-to-float conversion of the index get separate 8-byte stack slots (the
+                # original reuses one; frame 0xB0 instead of 0xA0), and the level and the
                 # difference of the two table entries are held in f3 and f2 instead of f2 and f3.
                 # The object also has a 32-byte local copy of std::swap (called by the weak
                 # boost::function1 swap that the callback assignment instantiates), which the
@@ -846,11 +843,7 @@ config.libs = [
                 # the compiled object's .data and .sbss are 0x104 and 0x2D bytes against the
                 # original's 0xC0 and 0x10. The startup
                 # function is 7 words instead of 16: the original builds the effect direction in a
-                # temporary and copies it with the out-of-line vector copy fn_800091EC. Two calls
-                # differ only in the callee's symbol: the bound call operator's call of boost's
-                # list1 operator[] and the constructor's call of the function1 destructor go to the
-                # copies at 0x800D05D0 and 0x800D0CEC in the original, and to the copies of the same
-                # mangled names that symbols.txt names at 0x800F5238 and 0x800F5B08 here.
+                # temporary and copies it with the out-of-line vector copy fn_800091EC.
                 Object(NonMatching, "Game/GravityChangeZone.cpp", cflags=cflags_game_cpp),
                 # The remaining differences: five allocations pass lower __LINE__ values (one word
                 # each; the original passes 723, 965, 667, 773 and 1046); CopyFirstComponent
@@ -1774,25 +1767,21 @@ config.libs = [
             Object(Matching, "Game/ElecKyuu.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/MagmaGuard.cpp", cflags=cflags_game_cpp),
             # The data matches once the linker-discarded weak and local copies are set aside, and
-            # 33 of the 34 functions have the original's words. Two of them differ only in a
-            # callee's symbol: the bound call operator's call of boost's list1 operator[] and the
-            # constructor's call of the function1 destructor go to the copies at 0x800D05D0 and
-            # 0x800D0CEC in the original and to the copies at 0x800F5238 and 0x800F5B08 here (USA
-            # addresses). The hit callback (0x8010F028) differs in 22 words: the frame is 0xE0
-            # instead of 0xD0 because the two int-to-float conversions of the level index get their
-            # own 8-byte stack slots (the original reuses the float-to-int slot), and the level and
-            # the difference of the two table entries are in f3 and f2 instead of f2 and f3.
+            # 33 of the 34 functions have the original's words. The hit callback (0x8010F028)
+            # differs in 22 words: the frame is 0xE0 instead of 0xD0 because the two int-to-float
+            # conversions of the level index get their own 8-byte stack slots (the original reuses
+            # the float-to-int slot), and the level and the difference of the two table entries
+            # are in f3 and f2 instead of f2 and f3.
             Object(NonMatching, "Game/JumpBoard.cpp", cflags=cflags_game_cpp),
             # The data matches once the linker-discarded weak and local copies are set aside, and
-            # 31 of the 34 functions have the original's words, with the same two callee-symbol
-            # differences as JumpBoard (list1 operator[] and the function1 destructor). The hit
-            # callback (0x80110320) differs in 9 words: the int-to-float conversion of the level
-            # index gets its own stack slot and the level and the table difference are in f3 and
-            # f2 instead of f2 and f3. UpdateModelMatrix (94 words, 104 here) and ResetFromOwner
-            # (139 words, 156 here) differ in the initialisation of their function-local static
-            # vector arrays: the original stores each element's components into a stack temporary
-            # and copies it with fn_800091EC, this build calls the three-float constructor out of
-            # line for the temporary and copies it inline.
+            # 31 of the 34 functions have the original's words. The hit callback (0x80110320)
+            # differs in 9 words: the int-to-float conversion of the level index gets its own
+            # stack slot and the level and the table difference are in f3 and f2 instead of f2
+            # and f3. UpdateModelMatrix (94 words, 104 here) and ResetFromOwner (139 words, 156
+            # here) differ in the initialisation of their function-local static vector arrays:
+            # the original stores each element's components into a stack temporary and copies it
+            # with fn_800091EC, this build calls the three-float constructor out of line for the
+            # temporary and copies it inline.
             Object(NonMatching, "Game/LongSpring.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),
             # UpdateBody loads the startup float after the store to the offset (6 of 91 words).
@@ -1850,26 +1839,23 @@ config.libs = [
             Object(Matching, "Game/FireRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/MonsterControl.cpp", cflags=cflags_game_cpp),
             # 57 of the 59 functions have identical instruction words and relocation types and are
-            # in the original's order; two of them call copies whose symbols differ: the bound
-            # collision callback's call of boost's list1 operator[] and the constructor's calls of
-            # the function1 destructor go to the copies at 0x800D05D0 and 0x800D0CEC (USA addresses)
-            # in the original and to the copies that symbols.txt names at 0x800F5238 and 0x800F5B08
-            # here. The GongCSD constructor differs in 3 words, the offsets of three strings from
-            # the unit's .rodata base: the original's .rodata has two blocks of zero bytes, 0x1C
-            # after the TNumEdit type names and 0xC after the CharaColliBase name, that this object
-            # does not have, which moves "PR0302RINGANM" and "Scene_0000" by 0x28; "csdBase.h" moves
-            # by 0x48, as the 0x20-byte "Not inititalized m_eDealloctor\n" before it in the original
-            # is missing here too. Model 1's hit callback differs in 13 words: the difference
-            # vector, the launch position and the direction take other 12-byte stack slots (the
-            # original's order fits the difference and the turned direction being temporaries of
-            # by-value vector helpers, which the out-parameter declarations of fn_8040CD74 and
-            # fn_8040B67C cannot express; inferred). The original's .rodata also has strings that
-            # this object lacks: "Not inititalized m_eDealloctor\n", "csdRCObject.h" and the type
-            # names of the RCPtr holders of unsigned char, CTexList and CScene, their CFunctorBase,
-            # CBase and CResourceBase<Chao::CSD::Project> (csdRCObject.h declares those template
-            # members without bodies). This object has type records, base lists and weak and local
-            # copies that the original unit does not have (TNumEdit, CharaColliBase, std::exception,
-            # boost::bad_weak_ptr, sp_counted_base, the boost placeholders _2 to _9).
+            # in the original's order. The GongCSD constructor differs in 3 words, the offsets of
+            # three strings from the unit's .rodata base: the original's .rodata has two blocks of
+            # zero bytes, 0x1C after the TNumEdit type names and 0xC after the CharaColliBase name,
+            # that this object does not have, which moves "PR0302RINGANM" and "Scene_0000" by 0x28;
+            # "csdBase.h" moves by 0x48, as the 0x20-byte "Not inititalized m_eDealloctor\n" before
+            # it in the original is missing here too. Model 1's hit callback differs in 13 words:
+            # the difference vector, the launch position and the direction take other 12-byte stack
+            # slots (the original's order fits the difference and the turned direction being
+            # temporaries of by-value vector helpers, which the out-parameter declarations of
+            # fn_8040CD74 and fn_8040B67C cannot express; inferred). The original's .rodata also has
+            # strings that this object lacks: "Not inititalized m_eDealloctor\n", "csdRCObject.h"
+            # and the type names of the RCPtr holders of unsigned char, CTexList and CScene, their
+            # CFunctorBase, CBase and CResourceBase<Chao::CSD::Project> (csdRCObject.h declares
+            # those template members without bodies). This object has type records, base lists and
+            # weak and local copies that the original unit does not have (TNumEdit, CharaColliBase,
+            # std::exception, boost::bad_weak_ptr, sp_counted_base, the boost placeholders _2 to
+            # _9).
             Object(NonMatching, "Game/Gong.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ShootingGameBalloon.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ShootingGameManagerTask.cpp", cflags=cflags_game_cpp),
@@ -1883,16 +1869,7 @@ config.libs = [
             # here takes the slot above them.
             Object(NonMatching, "Game/Researcher.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/StoneStatue.cpp", cflags=cflags_game_cpp),
-            # The data (apart from the unreferenced weak and local copies that the linker strips)
-            # and 27 of the 29 functions match. The other two have identical words and differ only
-            # in a callee's symbol: the bound call operator's call of boost's list1 operator[] and
-            # the constructor's call of the function1 destructor go to the copies at 0x800D05D0 and
-            # 0x800D0CEC in the original and to the copies at 0x800F5238 and 0x800F5B08 here. The
-            # two operator[] copies are 8 bytes each with the same body; the two destructor copies
-            # are 0x48 bytes each and call different symbols. The original copies are unnamed; a
-            # different function1 instantiation for the model callback is one possible explanation
-            # (hypothesis, not established).
-            Object(NonMatching, "Game/CityChaosEmerald.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/CityChaosEmerald.cpp", cflags=cflags_game_cpp),
             # Every function but the static initialiser is identical, and the data matches once
             # the weak copies the linker discards are removed. The static initialiser differs in 2
             # words: the original loads the saved link register before it stores the startup float
@@ -1909,33 +1886,21 @@ config.libs = [
             # Constructor (22 words) and UpdateBody (6 words): the two startup floats load later
             # than in the original (const floats with a dynamic initialiser reproduce both loads).
             Object(NonMatching, "Game/SuctionPillar.cpp", cflags=cflags_game_cpp),
-            # Every function has identical instruction words and the data matches once the
-            # linker-discarded weak and local copies are set aside. Two calls differ only in the
-            # callee's symbol: the bound call operator's call of boost's list1 operator[] and the
-            # constructor's call of the function1 destructor go to the copies at 0x800D05D0 and
-            # 0x800D0CEC (USA addresses) in the original, whose original names are not established,
-            # and to the copies that symbols.txt names at 0x800F5238 and 0x800F5B08 here, in all
-            # three regions. The two operator[] copies have identical 8-byte bodies; the two
-            # 0x48-byte destructor copies call different clear functions (0x800D0D34, 0x800F5B50).
-            Object(NonMatching, "Game/SecretDisk.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/SecretDisk.cpp", cflags=cflags_game_cpp),
             # 32 of 34 functions are identical in every word and relocation. The constructor
             # differs in 23 of its 336 words, all stack offsets (the object's position and the six
             # bound-callback temporaries sit in other slots); the startup function is 11 words
             # instead of 20 (the original copies the effect direction from a temporary with the
             # out-of-line vector copy fn_800091EC).
             Object(NonMatching, "Game/GiantLantern.cpp", cflags=cflags_game_cpp),
-            # 34 of 36 functions have identical words and relocations, and the data matches once
+            # 35 of 36 functions have identical words and relocations, and the data matches once
             # the linker-discarded weak and local copies are set aside. The constructor is 185
             # words in the original and 184 here: in the branch for a stored state of 3, the
             # original loads the com id into r30 before the fn_800CB69C call and zero-extends it
             # with clrlwi for fn_801690D0, where this build loads it into r4 after the call (a
-            # local copy of m_comId moves the load but leaves mr for the clrlwi). The
-            # constructor's call of the function1 destructor and the bound call operator's call of
-            # boost's list1 operator[] also differ in the callee's symbol only: the copies at
-            # 0x800D0CEC and 0x800D05D0 in the original, and those that symbols.txt names at
-            # 0x800F5B08 and 0x800F5238 here (USA addresses).
+            # local copy of m_comId moves the load but leaves mr for the clrlwi).
             Object(NonMatching, "Game/ElecAccessPanel.cpp", cflags=cflags_game_cpp),
-            # 33 of 38 functions have identical words and relocations, and the data matches once
+            # 35 of 38 functions have identical words and relocations, and the data matches once
             # the linker-discarded weak and local copies are set aside. Differences (raw words in
             # a USA DOL linked from this source object, a diagnostic only: the build links the
             # original object): the hit callback 31 of 304, its frame 0x170 instead of 0x160 (the
@@ -1946,21 +1911,15 @@ config.libs = [
             # result of fn_8040F5F4 and pushTemporary), and three calls whose targets swapped
             # places; the CancelBehaviorCommand constructor defined in the file (see its note)
             # follows the converting weak_ptr<CharInfo> constructor instead of preceding it (12
-            # and 13 words); and the constructor's call of the function1 destructor and the bound
-            # call operator's call of boost's list1 operator[] go to the copies that symbols.txt
-            # names at 0x800F5B08 and 0x800F5238 instead of the original's 0x800D0CEC and
-            # 0x800D05D0 (one word each).
+            # and 13 words).
             Object(NonMatching, "Game/DashPanel.cpp", cflags=cflags_game_cpp),
-            # 31 of 34 functions have identical words and relocations, and the data matches once
+            # 33 of 34 functions have identical words and relocations, and the data matches once
             # the linker-discarded weak and local copies are set aside. Differences (raw words in
             # a USA DOL linked from this source object, a diagnostic only: the build links the
             # original object): the hit callback 9 of 220 (the original keeps the float-to-int
             # conversion of the level and the int-to-float conversion of the index in one 8-byte
             # slot, this build gives each its own, and the interpolation holds the level in f3 and
-            # loads the next table entry into f0 where the original uses f2 and f3), and the
-            # constructor's call of the function1 destructor and the bound call operator's call of
-            # boost's list1 operator[] go to the copies that symbols.txt names at 0x800F5B08 and
-            # 0x800F5238 instead of the original's 0x800D0CEC and 0x800D05D0 (one word each).
+            # loads the next table entry into f0 where the original uses f2 and f3).
             Object(NonMatching, "Game/DashRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EnergyCore.cpp", cflags=cflags_game_cpp),
             # 43 of 46 functions have identical words and relocations; the data sections' bytes
@@ -1978,24 +1937,14 @@ config.libs = [
             # transformed offset and the cylinder's difference vector the slots of temporaries
             # made last, where this build declares them as named locals (USA addresses).
             Object(NonMatching, "Game/Fan.cpp", cflags=cflags_game_cpp),
-            # Every function has identical instruction words in the object, and the data matches
-            # once the linker-discarded weak and local copies are set aside. Two calls differ only
-            # in the callee's symbol: the bound call operator's call of boost's list1 operator[] and
-            # the constructor's call of the function1 destructor go to the copies at 0x800D05D0 and
-            # 0x800D0CEC (USA addresses) in the original, and to the copies that symbols.txt names
-            # at 0x800F5238 and 0x800F5B08 here, in all three regions.
-            Object(NonMatching, "Game/GoalRing.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/GoalRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetVehicle.cpp", cflags=cflags_game_cpp),
             # All 66 functions have identical words and relocations, and the data matches the
             # original once the weak copies that the linker discards are removed, but
             # checked_delete<SetWeapon::Arms> is a local symbol here where the original's is weak,
             # as in FallBuildingHolder.cpp.
             Object(NonMatching, "Game/SetWeapon.cpp", cflags=cflags_game_cpp),
-            # 50 of 53 functions are identical in every word and relocation. The bound call
-            # operator of the collision callback and the constructor have identical words but call
-            # boost's list1 operator[] and the function1 destructor through the copies at
-            # 0x800D05D0 and 0x800D0CEC in the original, where this build names the copies that
-            # symbols.txt names at 0x800F5238 and 0x800F5B08 (USA addresses). The hit callback
+            # 52 of 53 functions are identical in every word and relocation. The hit callback
             # (0x801213E8) differs in 13 of its 276 words: the SetAngleCommand argument temporary
             # and directionTemporary sit at 0x30 and 0x3C instead of 0x3C and 0x30 (4 words); the
             # int-to-float conversion of the index uses a second 8-byte stack slot where the
