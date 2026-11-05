@@ -1826,6 +1826,23 @@ config.libs = [
             # original loads m_crashInfo's pointer before m_model's, this build loads them the other
             # way round (the same instructions, registers and relocations otherwise).
             Object(NonMatching, "Game/SuperComputer.cpp", cflags=cflags_game_cpp),
+            # Compared as relocatable objects, all 54 functions have identical instructions and
+            # relocations once one local alias is resolved: the constructor's two relocations of the
+            # 0xC-byte local object at .data+0 name it @2 in the original and the section symbol
+            # ...data.0 here. The .data, .rodata, .sdata and .sbss objects and symbols match once
+            # the linker-discarded weak and local copies are set aside. Linked into USA, Japan and
+            # PAL executables (a diagnostic build only; the normal build links the original object),
+            # 51 of the 54 functions have identical raw words: the original's .sdata2 has the
+            # int-to-float conversion constant (0x805F6540, USA) before UpdateIdle's literals 1/3,
+            # "mat1" and 0.25, where this build places it after them (0x18 bytes of .sdata2 in
+            # another order), so the literals' addresses change 6 of the 126 words of UpdateIdle
+            # (0x801F4C68, USA) and the word that addresses "mat1" in UpdateBreakColors (0x801F4FE4)
+            # and in the constructor (0x801F5D8C). The compiler makes that constant after a
+            # function's other literals, and an out-of-line function with an int-to-float conversion
+            # compiled between ResetFromOwner and UpdateIdle reproduces the original order: the
+            # original most likely compiled such a function there that the executable does not have
+            # (its body is unknown), as in ElecBar.
+            Object(NonMatching, "Game/ElecCoreProgram.cpp", cflags=cflags_game_cpp),
             # 37 of the 38 functions have identical instructions and relocations in USA, Japan and
             # PAL. The constructor is 186 words against the original's 188: the original converts
             # the lock() result with a bool conversion (addic/subfe on the copy constructor's
