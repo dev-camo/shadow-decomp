@@ -38,6 +38,8 @@
 #include "boost/weak_ptr.hpp"
 #include "layout_check.h"
 
+using SonicteamUSA::System::Collision::CollisionResultList;
+
 /* The name the draw layer is created with. */
 static const char *s_layerName = "SetStretchGrass";
 
@@ -275,7 +277,7 @@ void SetStretchGrass::UpdateBody(float dt) {
     }
 
     if (m_probe.get() != 0) {
-        UnkProbeList_80021FE4 *hits = m_probe->GetHits();
+        CollisionResultList *hits = m_probe->GetHits();
 
         if (hits != 0 && hits->field_0x4 > 0) {
             ColliDetectArgs args;

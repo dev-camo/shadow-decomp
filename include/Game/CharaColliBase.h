@@ -116,14 +116,14 @@ class CharaColliBase {
     virtual void UnkSlot31() = 0;
 
     /* The list of the objects the probe touched (name inferred). */
-    UnkProbeList_80021FE4 *GetHits() {
+    Collision::CollisionResultList *GetHits() {
         return &hits;
     }
 
     /* 0x04 */ s16 field_0x4;
     /* 0x06 */ s16 field_0x6;
     /* 0x08 */ float field_0x8; /* not initialised by the constructor; slot 12 returns it */
-    /* 0x0C */ UnkProbeList_80021FE4 hits;
+    /* 0x0C */ Collision::CollisionResultList hits;
     /* 0x28 */ u8 field_0x28;
     /* 0x29 */ u8 field_0x29;
     /* 0x2A */ u8 field_0x2A;

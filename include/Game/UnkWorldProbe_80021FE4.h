@@ -10,8 +10,9 @@
 
 /* The world probe that the TestNakazawa task calls, with placeholder names: fn_80020D40 returns
  * a world object, and fn_80021FE4 asks it for the objects along a line segment, returning a newly
- * allocated list of 0x1C bytes (nullable). The list is a doubly linked list of nodes whose first
- * eight bytes are a weak pointer to the object found; the original class names are unknown. */
+ * allocated CollisionResultList of 0x1C bytes (nullable). The list is a doubly linked list of
+ * nodes whose first eight bytes are a weak pointer to the object found; the original class names
+ * of the world, the nodes and the iterator are unknown. */
 class UnkWorld_80020D40;
 namespace SonicteamUSA {
 namespace System {
@@ -64,11 +65,20 @@ struct UnkProbeIterator_80027374 {
 };
 CHECK_SIZEOF(UnkProbeIterator_80027374, 0x4);
 
-/* The list returned by fn_80021FE4. */
-class UnkProbeList_80021FE4 {
+namespace SonicteamUSA {
+namespace System {
+namespace Collision {
+
+/* The list returned by fn_80021FE4. Its class name comes from the type name
+ * boost::detail::sp_counted_base_impl<SonicteamUSA::System::Collision::CollisionResultList *,
+ * boost::checked_deleter<SonicteamUSA::System::Collision::CollisionResultList>> (0x804B6C90),
+ * which the type info at 0x805E4E20 references. That type info heads the vtable at 0x80522F00,
+ * which the count constructor at 0x800CFF5C installs; the counter's dispose function (0x800D1150)
+ * deletes the list through 0x800CFF34, which calls this class's destructor (0x80026FB4). */
+class CollisionResultList {
   public:
     /* Destroys the nodes (behaviour inferred); delete also frees the list. */
-    ~UnkProbeList_80021FE4();
+    ~CollisionResultList();
     /* The first node and the end marker, which iteration compares against (behaviour inferred). */
     UnkProbeNode_80021FE4 *fn_8001EE04();
     UnkProbeNode_80021FE4 *fn_8001EDEC();
@@ -79,15 +89,20 @@ class UnkProbeList_80021FE4 {
     /* 0x0C */ UnkProbeNode_80021FE4 *end;
     /* 0x10 */ u8 field_0x10[0x1C - 0x10];
 };
-CHECK_SIZEOF(UnkProbeList_80021FE4, 0x1C);
+CHECK_SIZEOF(CollisionResultList, 0x1C);
+
+} // namespace Collision
+} // namespace System
+} // namespace SonicteamUSA
 
 extern "C" {
 /* The single world object, constructed on first use (behaviour inferred). */
 UnkWorld_80020D40 *fn_80020D40(void);
 /* Collects the objects along the segment; flags and the three further arguments are passed on to
  * the world's collision tests (behaviour inferred). */
-UnkProbeList_80021FE4 *fn_80021FE4(UnkWorld_80020D40 *world, const UnkSegment_80020A20 *segment,
-                                   int flags, int arg3, UnkProbePredicate predicate, void *context);
+SonicteamUSA::System::Collision::CollisionResultList *
+fn_80021FE4(UnkWorld_80020D40 *world, const UnkSegment_80020A20 *segment, int flags, int arg3,
+            UnkProbePredicate predicate, void *context);
 /* Tests the segment like fn_80021FE4 but keeps only one newly allocated node: each hit replaces
  * the previous one and shortens the segment to its point, so the result is the hit nearest to the
  * segment's start, or null (behaviour inferred from its body). */
@@ -95,12 +110,13 @@ UnkProbeNode_80021FE4 *fn_80021E24(UnkWorld_80020D40 *world, const UnkSegment_80
                                    int flags, int arg3, UnkProbePredicate predicate, void *context);
 
 /* Collects sphere hits; negativeHits optionally receives negative-distance hits (inferred). */
-UnkProbeList_80021FE4 *fn_80021CA4(UnkWorld_80020D40 *world, const UnkSphere_80021C04 *sphere,
-                                   int flags, int arg3, UnkProbePredicate predicate, void *context,
-                                   UnkProbeList_80021FE4 *negativeHits);
+SonicteamUSA::System::Collision::CollisionResultList *
+fn_80021CA4(UnkWorld_80020D40 *world, const UnkSphere_80021C04 *sphere, int flags, int arg3,
+            UnkProbePredicate predicate, void *context,
+            SonicteamUSA::System::Collision::CollisionResultList *negativeHits);
 Fn8040Vector3 *fn_8001E9C4(UnkProbeHit_8001E9BC *hit);
 int fn_8001E9F0(UnkProbeHit_8001E9BC *hit);
-void fn_8001E9F8(UnkProbeList_80021FE4 *hits);
+void fn_8001E9F8(SonicteamUSA::System::Collision::CollisionResultList *hits);
 u32 fn_80026588(UnkProbeNode_80021FE4 *node);
 Fn8040Vector3 fn_8001E858(UnkWorld_80020D40 *world, UnkProbeHit_8001E9BC *hit,
                           const Fn8040Vector3 *center, float radius);

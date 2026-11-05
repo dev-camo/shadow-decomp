@@ -10,6 +10,7 @@
 #include "layout_check.h"
 
 using SonicteamUSA::System::CharaColli::CharaColliBase;
+using SonicteamUSA::System::Collision::CollisionResultList;
 
 class TestNakazawa : public Task {
   public:
@@ -78,7 +79,7 @@ void TestNakazawa::Update(float dt) {
         fn_800091EC(&lineEnd, &start);
 
         UnkSegment_80020A20 probe(start, end);
-        UnkProbeList_80021FE4 *hits = fn_80021FE4(fn_80020D40(), &probe, 1, 0, 0, 0);
+        CollisionResultList *hits = fn_80021FE4(fn_80020D40(), &probe, 1, 0, 0, 0);
         if (hits != 0) {
             UnkProbeIterator_80027374 iterator(hits->fn_8001EE04());
 

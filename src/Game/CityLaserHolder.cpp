@@ -37,6 +37,7 @@
 #include <vector>
 
 using SonicteamUSA::System::CharaColli::CharaColliBase;
+using SonicteamUSA::System::Collision::CollisionResultList;
 
 class CityLaser;
 class CityLaserHolder;
@@ -223,7 +224,7 @@ void CityLaser::Update(float dt) {
             if (stMtnControlWorkFlag(motion.get(), 0, 3, 1)) {
                 SetState(4);
             } else if (m_probe.get() != 0) {
-                UnkProbeList_80021FE4 *hits = m_probe->GetHits();
+                CollisionResultList *hits = m_probe->GetHits();
 
                 if (hits != 0) {
                     /* Drop the targets that are gone from the list of the ones that already got

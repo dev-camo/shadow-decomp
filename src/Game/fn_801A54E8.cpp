@@ -7,6 +7,8 @@
 #include "Game/EnemyDispFunc.h"
 #include "Game/UnkGlobal_8057D6A0.h"
 
+using SonicteamUSA::System::Collision::CollisionResultList;
+
 bool lbl_805E81D0 = false;
 
 bool fn_801A61D0(const UnkProbeFilterRecord *record);
@@ -22,7 +24,7 @@ unsigned int fn_801A609C(const Fn8040Vector3 *position, float *height, Fn8040Vec
     UnkProbeHit_8001E9BC *hit;
     Fn8040Vector3 end(position->x, position->y - 10000.0f, position->z);
     UnkSegment_80020A20 segment(*position, end);
-    UnkProbeList_80021FE4 *hits = fn_80021FE4(fn_80020D40(), &segment, flags, arg, fn_801A61D0, 0);
+    CollisionResultList *hits = fn_80021FE4(fn_80020D40(), &segment, flags, arg, fn_801A61D0, 0);
     unsigned int result = 0;
     if (hits != 0 && hits->field_0x4 > 0) {
         for (UnkProbeIterator_80027374 it(hits->fn_8001EE04()); it.node != hits->fn_8001EDEC();
@@ -63,7 +65,7 @@ void Unk801A5E50::fn_801A5EA8(const Fn8040Vector3 &position) {
         m_sphere.m_center.y += m_enemy->m_parameter->fn_8019B48C()[3];
     }
     UnkWorld_80020D40 *world = fn_80020D40();
-    UnkProbeList_80021FE4 *hits = fn_80021CA4(world, &m_sphere, 1, 0, 0, 0, 0);
+    CollisionResultList *hits = fn_80021CA4(world, &m_sphere, 1, 0, 0, 0, 0);
     if (hits != 0) {
         fn_8001E9F8(hits);
         for (UnkProbeIterator_80027374 it(hits->fn_8001EE04()); it.node != hits->fn_8001EDEC();

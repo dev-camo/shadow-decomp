@@ -14,6 +14,7 @@
 #include "layout_check.h"
 
 using SonicteamUSA::System::CharaColli::CharaColliBase;
+using SonicteamUSA::System::Collision::CollisionResultList;
 
 class TornadoCollision : public Task {
   public:
@@ -102,7 +103,7 @@ void TornadoCollision::Update(float dt) {
 
 void TornadoCollision::ProcessHits(float) {
     if (m_target.get() != 0) {
-        UnkProbeList_80021FE4 *hits = m_target->GetHits();
+        CollisionResultList *hits = m_target->GetHits();
 
         if (hits != 0) {
             for (UnkProbeIterator_80027374 iterator(hits->fn_8001EE04());
