@@ -36,6 +36,12 @@ class UnkTarget_80166AF4 {
      * (fn_8016847C; behaviour inferred from the bodies; purpose unknown). The DOOR gadget calls it
      * when a key door unlocks. */
     void fn_80166D14();
+    /* For each 0x4C-byte entry whose weak pointer at 0x44 to an Effect::System::EffectElement
+     * can be locked, clear (fn_80166B70) or set (fn_80166C70) bit 3 of the element's word at 0x18
+     * (behaviour inferred from their bodies). The BASwitch gadget calls fn_80166B70 for the part
+     * it shows and fn_80166C70 for the part it hides. */
+    void fn_80166B70();
+    void fn_80166C70();
 
     /* 0x00 */ u8 field_0x0[0x10];
 };

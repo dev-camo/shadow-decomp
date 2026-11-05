@@ -777,6 +777,16 @@ Game/BAShield.cpp:
 	.sdata      start:0x805EDDF8 end:0x805EDE18
 	.sdata2     start:0x805FA770 end:0x805FA790
 
+Game/BASwitch.cpp:
+	.text       start:0x803021B8 end:0x80303CC8
+	.ctors      start:0x804AB034 end:0x804AB038
+	.rodata     start:0x8050C3E8 end:0x8050C5B0
+	.data       start:0x8055BE68 end:0x8055BEE8
+	.bss        start:0x80585D48 end:0x80585D78
+	.sdata      start:0x805EDE18 end:0x805EDE48
+	.sbss       start:0x805F19B0 end:0x805F19D8
+	.sdata2     start:0x805FA790 end:0x805FA7C0
+
 Game/SuctionPillar.cpp:
 	.text       start:0x8030463C end:0x803054B8
 	.ctors      start:0x804AB03C end:0x804AB040

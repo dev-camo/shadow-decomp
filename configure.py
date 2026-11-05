@@ -1932,6 +1932,23 @@ config.libs = [
             Object(NonMatching, "Game/LongSpring.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAMine.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),
+            # 62 of 66 functions are identical in every word and relocation. The three record
+            # lookups fn_80301D04, fn_80301D90 and fn_80301E1C each differ in one word, the id
+            # comparison: the original has cmpw r0,r3 (0x7C001800 at 0x80301D1C, 0x80301DA8 and
+            # 0x80301E34) where the direct comparison of the record's id with the parameter gives
+            # cmpw r3,r0. UpdateBody (0x80302CC4) is 78 words instead of 79: after the state's
+            # comparison with 0 at 0x80302DC4, the original branches twice to 0x80302DDC (blt at
+            # 0x80302DCC, b at 0x80302DD0), the tree of a switch with further empty case labels
+            # whose values are unknown; with the single case 0 the blt is missing and the beq at
+            # 0x80302DC8 branches 8 bytes ahead instead of 0xC. Compared position by position, 13
+            # of the 78 words differ and the original's last word has no counterpart (the beq, then
+            # every word after the missing blt is shifted by one). The data sections match by
+            # contents once alignment is accounted for and the weak and local copies that the
+            # original unit does not have are set aside: as emitted, .data is 0xC0 bytes (0x80 in
+            # the original; it adds three weak vtables and a 12-byte local record) and .rodata
+            # 0x213 (0x1C8), and .sdata2 is writable where the original's is read-only. Normal
+            # builds link the original object.
+            Object(NonMatching, "Game/BASwitch.cpp", cflags=cflags_game_cpp),
             # UpdateBody loads the startup float after the store to the offset (6 of 91 words).
             Object(NonMatching, "Game/CloseWall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DefenseWall.cpp", cflags=cflags_game_cpp),
