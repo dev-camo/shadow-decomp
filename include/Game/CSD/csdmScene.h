@@ -3,10 +3,10 @@
 
 #include "Game/CSD/csdm.h"
 
-/* The classes of csdmScene.cpp, built on the handles of csdm.h (class names and members inferred;
- * this library's GameCube objects carry no run-time type information). Each handle comes with an
- * owning class, as CMotionPaletteRef comes with CMotionPalette: the owning class derives from
- * CBase, so its deleting destructor frees the object through the current allocator. */
+/* The csdmScene.cpp classes use handles from csdm.h (names and members remain working names where
+ * evidence is absent; holder RTTI does not prove direct RTTI for each class). Each handle comes
+ * with an owning class, as CMotionPaletteRef comes with CMotionPalette: it derives from CBase,
+ * whose deleting destructor frees it through the current allocator. */
 namespace Chao {
 namespace CSD {
 

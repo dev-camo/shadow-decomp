@@ -3,8 +3,8 @@
 
 #include "Game/CSD/csdmScene.h"
 
-/* The objects that only csdmNode.cpp uses (CNode is in csdm.h, which CMotionPattern also needs;
- * names inferred, as this library's GameCube objects carry no run-time type information). */
+/* The objects only csdmNode.cpp uses (CNode is in csdm.h, which CMotionPattern also needs;
+ * names remain working names where evidence is absent; holder RTTI does not prove direct class RTTI). */
 namespace Chao {
 namespace CSD {
 
