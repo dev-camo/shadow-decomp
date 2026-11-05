@@ -375,6 +375,15 @@ Game/ElecSearchLight.cpp:
 	.sbss       start:0x805EF748 end:0x805EF788
 	.sdata2     start:0x805F4ED8 end:0x805F4F88
 
+Game/ElecSecurityCode.cpp:
+	.text       start:0x801566BC end:0x80157F58
+	.ctors      start:0x804AA3B8 end:0x804AA3BC
+	.rodata     start:0x804C2584 end:0x804C2748
+	.data       start:0x8052B02C end:0x8052B118
+	.sdata      start:0x805E6AE4 end:0x805E6B20
+	.sbss       start:0x805EF788 end:0x805EF7A0
+	.sdata2     start:0x805F4F88 end:0x805F4FD0
+
 Game/ElecSecurityCodeGenerator.cpp:
 	.text       start:0x80157F58 end:0x80158984
 	.rodata     start:0x804C2748 end:0x804C2788

@@ -1735,6 +1735,35 @@ config.libs = [
             # operand order of one fmuls) and Sweep (0x80153CE8) in 5 words (f1 and f2 swapped for
             # the range and the speed product, and the operand order of two fmuls).
             Object(NonMatching, "Game/ElecSearchLight.cpp", cflags=cflags_game_cpp),
+            # Compared as relocatable objects, with the weak and local copies the linker discards
+            # removed and the local names and the data section alias (@2 against ...data.0)
+            # resolved, 36 of the 37 functions have identical instructions and relocations. In a
+            # diagnostic link of this object (normal builds link the original object), 17 of the 37
+            # functions have identical raw words in each region; fn_80156C78 aside, the others
+            # differ only in address operands, as code and data after it are placed at other
+            # addresses. fn_80156C78 (0x80156C78) is 0x4A8 bytes
+            # against the original's 0x4A4: aligned, 16 of its 297 words differ (274 by position).
+            # Its switch on the state compares 1, 0 and 3 (9 words) where the original compares 2
+            # and 0 and sends every value above 2 to the code after the switch (8 words, as for a
+            # fourth case label leading there; nothing in this file sets a state above 2), and for
+            # both codes a split creates, the original calls operator new before the fn_8040CDA8
+            # and fn_8040CDD0/fn_8040CD74 calls that build the position (they are part of the
+            # argument evaluation), where this build calls it after them (4 words placed after the
+            # 8-word block instead of before it). Compared by contents with the absent copies set
+            # aside, every data object matches except a 0x54-byte block at the start of the
+            # original .data (the RTTI base lists of Player::PlayerCommand and of an unnamed class
+            # derived from it, then 13 zero words) and the CharCommand and Player::PlayerCommand
+            # RTTI records and names it refers to (.sdata 0x14 bytes, .rodata 0x24 bytes): no code
+            # in this file uses commands, and the declarations that emitted them are not
+            # identified. The literal "ElecSecurityCode" that the constructor passes to
+            # fn_8015CB88 (0x80157518/0x80157520) is in another place in .rodata: the original has
+            # it directly after s_targetHeights, before the bind_t type name and "Memory allocation
+            # failure", and this build emits it after those two strings, directly before
+            # "SECURITY.BIN", so the 0xF8 bytes between s_targetHeights and "SECURITY.BIN" hold the
+            # same three strings in another order. Set aside: the TNumEdit subclasses' RTTI records
+            # and names, the weak vtables of std::exception, boost::bad_weak_ptr and sp_counted_base
+            # with their RTTI records and names, and the placeholders _2 to _9.
+            Object(NonMatching, "Game/ElecSecurityCode.cpp", cflags=cflags_game_cpp),
             # Every function except UpdateBody is identical in every word and relocation, and the
             # data matches once the linker-discarded weak copies are set aside. UpdateBody
             # (0x80157F24) is 0x26C bytes against the original's 0x280: for the two positions it
