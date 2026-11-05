@@ -35,16 +35,18 @@ class UnkLayer_8004DFB0 {
 CHECK_SIZEOF(UnkLayer_8004DFB0, 0x28);
 
 /* The 0x6C-byte manager that fn_80046178 returns (placeholder; a static object constructed by
- * fn_801E47FC, which creates tasks and stores them in its words up to 0x68). Its words at 0x8 and
- * 0x28 are the parent tasks that fn_8004DFB0 takes (CircusPole passes the first, ElecFanDraw the
- * second); the rest of the class is not mapped. */
+ * fn_801E47FC, which creates tasks and stores them in its words up to 0x68). Its words at 0x8, 0x28
+ * and 0x38 are the parent tasks that fn_8004DFB0 takes (CircusPole passes the first, ElecFanDraw the
+ * second, the GONG gadget's GongCSD the third); the rest of the class is not mapped. */
 class UnkLayerManager_80046178 {
   public:
     /* 0x00 */ u8 field_0x0[0x8];
     /* 0x08 */ Task *field_0x8;
     /* 0x0C */ u8 field_0xC[0x28 - 0xC];
     /* 0x28 */ Task *field_0x28;
-    /* 0x2C */ u8 field_0x2C[0x6C - 0x2C];
+    /* 0x2C */ u8 field_0x2C[0x38 - 0x2C];
+    /* 0x38 */ Task *field_0x38;
+    /* 0x3C */ u8 field_0x3C[0x6C - 0x3C];
 };
 CHECK_SIZEOF(UnkLayerManager_80046178, 0x6C);
 

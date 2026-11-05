@@ -232,6 +232,14 @@ Game/FireRing.cpp:
 	.sbss       start:0x805EFFB8 end:0x805EFFD8
 	.sdata2     start:0x805F5360 end:0x805F5398
 
+Game/Gong.cpp:
+	.text       start:0x80136EA0 end:0x80138CAC
+	.rodata     start:0x804C0560 end:0x804C0A50
+	.data       start:0x80529D40 end:0x80529E38
+	.sdata      start:0x805E70C0 end:0x805E70F8
+	.sbss       start:0x805EFFD8 end:0x805EFFF8
+	.sdata2     start:0x805F5398 end:0x805F53F8
+
 Game/MonsterControl.cpp:
 	.text       start:0x8013A67C end:0x8013B1A8
 	.rodata     start:0x804C0C40 end:0x804C0D48
