@@ -296,6 +296,14 @@ Game/DamageBlock.cpp:
 	.sdata      start:0x805E6840 end:0x805E6860
 	.sdata2     start:0x805F4B48 end:0x805F4B60
 
+Game/Door.cpp:
+	.text       start:0x80143830 end:0x801458B0
+	.rodata     start:0x804C0E98 end:0x804C10A0
+	.data       start:0x80529F00 end:0x8052A188
+	.sdata      start:0x805E6860 end:0x805E68A8
+	.sbss       start:0x805EF638 end:0x805EF658
+	.sdata2     start:0x805F4B60 end:0x805F4BE0
+
 Game/ElecSecurityCodeGenerator.cpp:
 	.text       start:0x80157F58 end:0x80158984
 	.rodata     start:0x804C2748 end:0x804C2788

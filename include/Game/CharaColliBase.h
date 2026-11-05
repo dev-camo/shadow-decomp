@@ -67,7 +67,11 @@ class CharaColliBase {
     virtual Range::RangeBase *UnkSlot8(int index) = 0;
     /* The range for selector, or 0 when there is none. */
     virtual Range::RangeBase *UnkSlot9(int selector) = 0;
-    virtual void UnkSlot10() = 0;
+    /* Returns the word that UnkSlot20 stores (0x800C0808 returns the word at 0x1C of the object
+     * at 0x5C, where 0x800C0890 stores UnkSlot20's arg0). The Door gadgets pass 0 and hand the
+     * result back to UnkSlot20 with bit 0x100 set or cleared; the signature is inferred from that
+     * call. */
+    virtual int UnkSlot10(int arg0) = 0;
     virtual void UnkSlot11() = 0;
     /* Returns the float at 0x8 (0x80037358). */
     virtual float UnkSlot12();

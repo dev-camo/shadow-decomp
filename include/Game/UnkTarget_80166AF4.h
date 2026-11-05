@@ -32,6 +32,10 @@ class UnkTarget_80166AF4 {
     /* Calls fn_80166D90 on the entries whose word at 0xC equals arg0 (behaviour inferred from
      * its body; purpose unknown). */
     void fn_80166E20(int arg0);
+    /* Calls fn_80166D90 on every entry, then destroys the entries and clears the collection
+     * (fn_8016847C; behaviour inferred from the bodies; purpose unknown). The DOOR gadget calls it
+     * when a key door unlocks. */
+    void fn_80166D14();
 
     /* 0x00 */ u8 field_0x0[0x10];
 };
