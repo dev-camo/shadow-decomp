@@ -942,9 +942,9 @@ config.libs = [
                 # SetScale, root-pattern accessors, fn_8036635C, fn_803663C0 and the end-of-motion policy.
                 # fn_8036674C initialises frame state through the scene-data accessor fn_8036679C.
                 # fn_803659CC and fn_803659DC write the existing motion-end policy action fields.
-                # 81 of the unit's 195 function bodies are represented. 79 have canonical symbol names,
+                # 84 of the unit's 195 function bodies are represented. 81 have canonical symbol names,
                 # including a weak copy of the inline CMotionPattern destructor and RCPtr<CNode>::Reset.
-                # Of these, 74 have the original's instructions; GetRootPattern and SetRootPattern differ
+                # Of these, 75 have the original's instructions; GetRootPattern and SetRootPattern differ
                 # only in their allocation lines (297 vs 1124 and 284 vs 1102, respectively). The
                 # 100-byte fn_8036635C differs in seven instruction words: layer-entry address formation,
                 # registers and scheduling. Two more template bodies are the node holder's constructor
@@ -955,13 +955,18 @@ config.libs = [
                 # CMotionPatternRef::Clear as in the original; this order difference also remains.
                 # The full frame update fn_803669B8 has the original's 0x5C0 bytes; twelve instruction
                 # words differ because its member-pointer constants have different offsets.
-                # The callback-list erase is 0x94 bytes versus 0x90 because allocator.destroy is inlined.
-                # The other 114 bodies are not sourced: the scene's Copy, destructor and Draw,
+                # The callback-list erase now has the original's 0x90 instruction bytes. Its allocator's
+                # destroy body is also represented, under an unpaired name. The callback reference
+                # destructor is 0x18C bytes versus 0x198, and the matrix reference destructor is
+                # 0x178 bytes versus 0x184. Both omit three argument moves, with corresponding
+                # register and branch-displacement differences.
+                # The other 111 bodies are not sourced: the scene's Copy, destructor and Draw,
                 # the end-of-motion policy's destructor, CSceneListener's constructor, the listener and
                 # node containers, remaining RCPtr members and listener dispatch. Unit data is incomplete.
                 # The diagnostic object also emits weak byte-holder Reset, constructor and vtable copies,
                 # CMemoryAlloc::AllocObject and FreeObject, and a weak node-holder constructor and vtable
-                # whose destructor remains external. The original scene object and holder providers are
+                # whose destructor remains external. A weak RCPtr<unsigned char> destructor is
+                # emitted as well. The original scene object and holder providers are
                 # retained by the link; this source object is not selected.
                 Object(NonMatching, "Game/CSD/csdmScene.cpp", cflags=cflags_csd),
                 # The accessors that override the animated values of an element's entry
@@ -981,21 +986,6 @@ config.libs = [
                 # MatrixValue, which the link discards. Its .bss holds the free release policy as
                 # one byte, where the game's symbol spans the 8 bytes up to the next one.
                 Object(NonMatching, "Game/CSD/csdmMotionPattern.cpp", cflags=cflags_csd),
-                # The node of a scene element: the handle of its file data (constructor, destructor,
-                # Clear, Attach and Copy), the accessors that forward to its CMotionPattern (hidden
-                # flag, translation, rotation, scale, pattern, tint, colours and user values), the
-                # channel defaults and the node's copy of the fonts. 32 of the unit's 97 functions are
-                # sourced, and each has the original's instructions and relocation targets
-                # (SetTranslateX, SetTranslateY and SetPattern use a differently named label for their
-                # float literal). The other 65 are not sourced: the node's constructor and destructor,
-                # the loop over a map of other nodes that sets the pattern's values from them, and
-                # the containers and RCPtr instances they need. The unit's .rodata and .data are
-                # incomplete for the same reason, and it emits weak copies of
-                # RCPtr<unsigned char>::Reset, the RCObject<unsigned char> constructor and vtable and
-                # CMemoryAlloc::AllocObject, which the link discards, and a local instance of the
-                # delete-policy Assign (0x1C0 bytes) that only the weak Reset calls (the original
-                # unit has no such function).
-                Object(NonMatching, "Game/CSD/csdmNode.cpp", cflags=cflags_csd),
                 # The project object (CProject: the file data of a project with the texture list and
                 # the fonts its scenes use) and the handlers of the scene's end-of-motion policy.
                 # 18 of the unit's 178 functions are sourced. 14 have the original's instructions:
@@ -1647,6 +1637,23 @@ config.libs = [
             # select the original unit and its existing providers; these links do not include
             # this source object or establish which source weak copies would be discarded.
             Object(NonMatching, "Game/CSD/csdmMotionPalette.cpp", cflags=cflags_csd),
+            # The complete node source, including its constructor, destructor, callbacks, channel
+            # map and owned data. The candidate emits 96 of the 97 native function bodies; the
+            # 12-byte tree iterator arrow is represented by its inlined header definition.
+            # 92 emitted bodies have identical instruction words. The channel-transfer switch is
+            # 0x338 versus 0x2D0: its iterator and reference arrows are expanded, with 159 differing
+            # positional words and 26 extra words. The constructor differs in its allocation line
+            # (45 versus 51). The callback reference destructor is 0x18C versus 0x198, with 82
+            # differing positional words and three omitted argument moves. The callback-list
+            # constructor is 0x50 versus 0x58, with 12 differing positional words: the default
+            # node allocator replaces the original conversion from the value allocator.
+            # Listener removal has identical instructions but calls the void-pointer provider
+            # directly because the typed-list wrapper is inlined. Both member pointers, all three
+            # vtable groups and the literal contents are represented; the switch-table addends
+            # differ, and a weak byte-holder vtable shifts the element-data-reference vtable.
+            # Extra weak reference/container copies and their support data are also emitted.
+            # Normal links retain the original object in every region.
+            Object(NonMatching, "Game/CSD/csdmNode.cpp", cflags=cflags_csd),
             Object(Matching, "Game/fn_80293AC8.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_8004924C.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_8004EDAC.cpp", cflags=cflags_game_cpp),
@@ -2039,14 +2046,14 @@ config.libs = [
             # three strings from the unit's .rodata base: the original's .rodata has two blocks of
             # zero bytes, 0x1C after the TNumEdit type names and 0xC after the CharaColliBase name,
             # that this object does not have, which moves "PR0302RINGANM" and "Scene_0000" by 0x28;
-            # "csdBase.h" moves by 0x48, as the 0x20-byte "Not inititalized m_eDealloctor\n" before
-            # it in the original is missing here too. Model 1's hit callback differs in 13 words:
+            # "csdBase.h" now moves by 0x28 as well: the shared reference destructor emits the
+            # original's 0x20-byte deallocation error string. Model 1's hit callback differs in 13 words:
             # the difference vector, the launch position and the direction take other 12-byte stack
             # slots (the original's order fits the difference and the turned direction being
             # temporaries of by-value vector helpers, which the out-parameter declarations of
             # fn_8040CD74 and fn_8040B67C cannot express; inferred). The original's .rodata also has
-            # strings that this object lacks: "Not inititalized m_eDealloctor\n", "csdRCObject.h"
-            # and the type names of the RCPtr holders of unsigned char, CTexList and CScene, their
+            # strings that this object lacks: "csdRCObject.h" and the type names of the RCPtr holders
+            # of unsigned char, CTexList and CScene, their
             # CFunctorBase, CBase and CResourceBase<Chao::CSD::Project> (csdRCObject.h declares
             # those template members without bodies). This object has type records, base lists and
             # weak and local copies that the original unit does not have (TNumEdit, CharaColliBase,

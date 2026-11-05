@@ -83,6 +83,9 @@ template <class T, class Allocator> class __list_imp {
     size_type size() const {
         return __size();
     }
+    /* Native void-pointer providers; their bodies are not recovered here. */
+    void clear();
+    void remove(const value_type &x);
     void push_back(const value_type &x) {
         insert(end(), x);
     }
@@ -338,6 +341,10 @@ class list<T *, Allocator> : private list<void *, allocator<void *> > {
         T *&operator*() const {
             return (T *&)*i_;
         }
+        iterator &operator++() {
+            ++i_;
+            return *this;
+        }
         iterator operator++(int) {
             iterator tmp(*this);
             ++i_;
@@ -361,7 +368,11 @@ class list<T *, Allocator> : private list<void *, allocator<void *> > {
     iterator end() {
         return iterator(base::end());
     }
+    using base::clear;
     using base::size;
+    void remove(T *const &x) {
+        base::remove((void *const &)x);
+    }
     void push_back(T *const &x) {
         base::push_back((void *const &)x);
     }
