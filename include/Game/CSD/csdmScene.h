@@ -130,6 +130,10 @@ class CScene : public CSceneDataRef {
     /* Returns 1 if any layer's root palette entry has a non-null matrix.sub0, otherwise 0. */
     int fn_8036635C() const;
 
+    /* Assigns the node reference, conditionally rebuilds its owning scene's palette, then drops
+     * the standalone root pattern. */
+    void fn_803663C0(const RCPtr<CNode> &node);
+
     /* Set the root pattern's hidden flag, translation (in screen units) and scale (names
      * inferred). */
     void SetHidden(s32 hidden);
