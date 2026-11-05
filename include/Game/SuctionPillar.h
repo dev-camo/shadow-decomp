@@ -56,7 +56,7 @@ class SuctionPillar : public Gadget {
     /* 0x6C */ float m_rise;                 /* the distance risen so far */
     /* 0x70 */ s32 m_switchId; /* the id of the stage switch that the command sets (inferred) */
     /* 0x74 */ boost::weak_ptr<UnkObject_80169BB0> m_commandObject; /* fn_80169B1C's object */
-    /* 0x7C */ u32 field_0x7C;                                      /* not accessed in this file */
+    /* 0x7C */ u8 field_0x7C[0x4];                                  /* unrecovered storage */
 };
 CHECK_SIZEOF(SuctionPillar, 0x80);
 
