@@ -9,8 +9,8 @@
 
 /* The classes of the csdm* files, the library's object layer over the records of MotionPalette.h.
  * The original headers' names are unknown except csdmProject.h; this header stands in for them.
- * The CNode spelling is present in its reference holder's RTTI. Other class and member names
- * here are inferred from the code. The out-of-line virtual functions are
+ * The CNode spelling is present in its reference holder's RTTI.
+ * Class and member names without native evidence are inferred. Out-of-line virtual functions are
  * defined in csdmScene.cpp, except CMotionPattern's Copy (csdmMotionPattern.cpp, with its vtable),
  * and CElementDataRef's destructor and Copy and CNode's destructor (csdmNode.cpp). CNode's
  * destructor remains unsourced. CMotionPattern's destructor is inline; the game's copy is in
