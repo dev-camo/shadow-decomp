@@ -6,7 +6,7 @@
 
 /* The 0x150-byte object at 0x8057D6A0 in .bss (placeholder name; the original name and type are
  * unknown). More than 400 functions across the game read it. Only the words at 0x18, 0x28, 0x90,
- * 0x94, 0x98, 0xA8 and 0xAC and the bytes at 0xB2, 0xC1 and 0x125 are mapped. */
+ * 0x94, 0x98, 0xA8 and 0xAC and the bytes at 0xB2, 0xC1, 0xC8 and 0x125 are mapped. */
 struct UnkGlobal_8057D6A0 {
     /* 0x00 */ u8 field_0x0[0x18];
     /* RollCircle divides the vector it passes to an attacked object by it (meaning unknown). */
@@ -32,7 +32,12 @@ struct UnkGlobal_8057D6A0 {
     /* CityChaosEmerald and GoalRing (unless its colour is 7) set it to 1 in their collision
      * callbacks (meaning unknown). */
     /* 0xC1 */ u8 field_0xC1;
-    /* 0xC2 */ u8 field_0xC2[0x125 - 0xC2];
+    /* 0xC2 */ u8 field_0xC2[0xC8 - 0xC2];
+    /* While it is set, ElecSecurityCode's update returns true right after its model update (the
+     * model's fn_80162FB0, called only when the model pointer is not null), skipping its state,
+     * model matrix and part updates (meaning unknown). */
+    /* 0xC8 */ u8 field_0xC8;
+    /* 0xC9 */ u8 field_0xC9[0x125 - 0xC9];
     /* The Researcher and ElecAccessPanel gadgets pass 1 to fn_800740E4 when it is set, otherwise 2
      * (meaning unknown). */
     /* 0x125 */ u8 field_0x125;

@@ -63,4 +63,11 @@ inline CharaColliBaseCharInfo *CastToCharaColliBaseCharInfo(CharaColliBase *coll
 } // namespace System
 } // namespace SonicteamUSA
 
+extern "C" {
+/* Returns a copy of the collider's owner, the weak pointer at 0x30 (behaviour inferred from its
+ * body). */
+boost::weak_ptr<CharInfo>
+fn_800586EC(SonicteamUSA::System::CharaColli::CharaColliBaseCharInfo *colli);
+}
+
 #endif

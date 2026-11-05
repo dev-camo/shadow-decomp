@@ -57,7 +57,7 @@ void ElecSecurityCodeGenerator::UpdateBody(float dt) {
             Fn8040Vector2 rotation = fn_8040F760(&direction);
 
             m_codes.push_back(
-                new ElecSecurityCode(m_loadedType, &m_charInfo->m_position, this, &rotation, 0));
+                new ElecSecurityCode(m_loadedType, m_charInfo->m_position, this, rotation, 0));
             m_state = 1;
         }
         break;

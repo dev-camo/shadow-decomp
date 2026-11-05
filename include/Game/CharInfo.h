@@ -16,6 +16,9 @@ class CharInfo {
   public:
     /* 0x00 */ Fn8040Vector3 m_position;
     /* 0x0C */ Fn8040Vector3 m_rotation; /* radians */
+    /* ElecSecurityCode passes field_0x18 and field_0x24 to fn_804103E8 as the velocity and the
+     * acceleration (roles inferred); Meteor stores its movement for the update in field_0x18 and
+     * adds it to the position. */
     /* 0x18 */ Fn8040Vector3 field_0x18;
     /* 0x24 */ Fn8040Vector3 field_0x24;
     /* 0x30 */ s32 field_0x30; /* the rotation order passed to fn_8001E070 (inferred) */
