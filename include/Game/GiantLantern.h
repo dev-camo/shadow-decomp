@@ -34,8 +34,9 @@ class GiantLantern : public Gadget {
 
     /* Copies the owner's position, rotation and com id into the gadget (name inferred). */
     void CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner);
-    /* Passes the character info's position to the effect's base transform (fn_80425E4C) and,
-     * while there is one, places the object s_objectHeight above it (name inferred). */
+    /* Passes the character info's position to the effect's base transform (fn_80425E4C) when the
+     * weak effect reference has not expired and locks to a non-null effect, and, while there is
+     * an object, places it s_objectHeight above that position (name inferred). */
     void UpdatePositions();
     /* The attack object's callback that fn_80096B64 installs (behaviour inferred): an attack for
      * which fn_8015D4E4 is true and whose flag word has bit 0x400 lights the lantern while it is

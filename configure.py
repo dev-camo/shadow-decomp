@@ -2108,10 +2108,7 @@ config.libs = [
             # than in the original (const floats with a dynamic initialiser reproduce both loads).
             Object(NonMatching, "Game/SuctionPillar.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SecretDisk.cpp", cflags=cflags_game_cpp),
-            # All 34 functions have identical instructions. Not yet proven as a whole object with
-            # the unit linked from source (its local literal names and the list of the weak copies
-            # the linker discards are not checked).
-            Object(NonMatching, "Game/GiantLantern.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/GiantLantern.cpp", cflags=cflags_game_cpp),
             # 35 of 36 functions have identical words and relocations, and the data matches once
             # the linker-discarded weak and local copies are set aside. The constructor is 185
             # words in the original and 184 here: in the branch for a stored state of 3, the
