@@ -1843,6 +1843,21 @@ config.libs = [
             # original most likely compiled such a function there that the executable does not have
             # (its body is unknown), as in ElecBar.
             Object(NonMatching, "Game/ElecCoreProgram.cpp", cflags=cflags_game_cpp),
+            # 3 of the 4 functions have identical instructions and relocations in USA, Japan and
+            # PAL, and .rodata matches. The original sets the floats at 0x10 and 0x14 of both
+            # descriptions (1.0 and 5.0, from two .sdata2 literals) in a start-up function
+            # (0x801F65B0, USA) registered in .ctors and has zeros there in .data; this build
+            # initialises them in .data, so it has no start-up function, .ctors slot or .sdata2
+            # data. The two floats are probably one Fn8040Vector2 member (inferred), but MWCC
+            # rejects an aggregate initialiser with a class-typed member, and a constructor for the
+            # whole description initialises every member at start-up, where the original sets only
+            # these two there. Also tried: literal floats and static const float objects are folded
+            # into the static data; elements of a static const float array are initialised at
+            # start-up but loaded through one base register. Const floats declared before and
+            # defined after the descriptions, or inline functions that return the two values,
+            # reproduce the start-up function's loads but have no support in the bytes beyond
+            # forcing that initialisation, so none is used.
+            Object(NonMatching, "Game/fn_801F6488.cpp", cflags=cflags_game_cpp),
             # 37 of the 38 functions have identical instructions and relocations in USA, Japan and
             # PAL. The constructor is 186 words against the original's 188: the original converts
             # the lock() result with a bool conversion (addic/subfe on the copy constructor's

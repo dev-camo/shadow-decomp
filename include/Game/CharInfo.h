@@ -77,6 +77,10 @@ class UnkManager_80074194;
  * from its uses). */
 extern boost::shared_ptr<CharInfo> lbl_805EE698;
 
+/* Another default-constructed shared pointer of the same kind, set up by the start-up function
+ * at 0x801DCABC (behaviour inferred from its uses). */
+extern boost::shared_ptr<CharInfo> lbl_805EF980;
+
 extern "C" {
 /* Returns the manager (behaviour inferred): constructs a function-local static manager on first
  * use, registers its destructor and caches its address in a static pointer. The E3 2005

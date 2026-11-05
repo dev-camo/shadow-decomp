@@ -3,11 +3,15 @@
 
 #include "Game/fn_8040_vector_types.h"
 #include "boost/shared_ptr.hpp"
+#include "boost/weak_ptr.hpp"
 #include "layout_check.h"
 
+class CharInfo;
 class UnkWeaponModel_800631FC;
 
 namespace Weapon {
+
+class WeaponBase;
 
 /* Weapon::Item (class name from RTTI, with no bases): a weapon as an object of the stage, which the
  * weapon type table's records create. Its constructors (0x8005F314, 0x8005F380) store the vtable,
@@ -60,5 +64,34 @@ const char *fn_8005BEEC(int type);
  * has none (the SET_WEAPON gadget sizes the weapon's probe with them). */
 Fn8040Vector2 fn_8005B898(int type);
 }
+
+/* A weapon type's description, which the type table's records point to (placeholder name; the
+ * accessors at 0x8005B84C-0x8005B9D4 and fn_8005BEEC read its members, behaviour inferred from
+ * their bodies). */
+struct UnkWeaponDescription_8005B9D4 {
+    /* 0x00 */ const char *name; /* returned by fn_8005BEEC */
+    /* Creates the weapon that a character carries: fn_8005BBF4 passes its character-info weak
+     * pointer and uses the returned weapon. The gun description at 0x80541E7C has fn_801F3F58
+     * here, which constructs its weapon with that owner (behaviour inferred). */
+    /* 0x04 */ Weapon::WeaponBase *(*field_0x4)(const boost::weak_ptr<CharInfo> &owner);
+    /* 0x08 */ Weapon::Item *(*createItem)(void); /* fn_8005B9D4 creates the type's item with it */
+    /* fn_8005B84C passes its second argument to it; the callers pass a matrix (inferred from the
+     * matrix rotation one of them applies to it first). */
+    /* 0x0C */ void (*field_0xC)(const Fn8040Matrix34 *matrix);
+    /* fn_8005B898 returns this float and the next as a Fn8040Vector2. The pair is probably one
+     * Fn8040Vector2 member (inferred): the GunBattery and BKBattery descriptions get these two
+     * floats from a start-up function and everything else statically. MWCC rejects a brace
+     * initialiser for a struct with a member that has a constructor, and a constructor for the
+     * whole struct would initialise every member at start-up, so the floats stay separate. */
+    /* 0x10 */ float field_0x10;
+    /* 0x14 */ float field_0x14;
+    /* 0x18 */ int field_0x18;   /* returned by fn_8005B9AC */
+    /* 0x1C */ int field_0x1C;   /* returned by fn_8005B984 */
+    /* 0x20 */ int field_0x20;   /* fn_8005B954 returns its low 16 bits */
+    /* 0x24 */ float field_0x24; /* returned by fn_8005B92C */
+    /* 0x28 */ float field_0x28; /* returned by fn_8005B904 */
+    /* 0x2C */ float field_0x2C; /* returned by fn_8005B8DC */
+};
+CHECK_SIZEOF(UnkWeaponDescription_8005B9D4, 0x30);
 
 #endif
