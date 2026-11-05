@@ -14,7 +14,7 @@ class ElecCircuitColli : public Gadget {
     ElecCircuitColli(Task *parent, UnkGadgetOwner_800C9CD0 *owner);
     virtual ~ElecCircuitColli();
     virtual void UpdateBody(float dt);
-    virtual void fn_800CBC1C();
+    virtual void fn_800CBC1C(float);
     virtual void ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner);
 
     /* Creates the gadget under task layer 11 (name inferred). */

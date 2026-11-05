@@ -27,7 +27,7 @@ class ElecFan : public Gadget {
     virtual ~ElecFan();
     virtual void UpdateBody(float dt);
     /* Draws the range of the fan as a debug cylinder (behaviour inferred). */
-    virtual void fn_800CBC1C();
+    virtual void fn_800CBC1C(float);
     virtual void ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner);
 
     /* Allocates the gadget under task layer 11 (name inferred). */

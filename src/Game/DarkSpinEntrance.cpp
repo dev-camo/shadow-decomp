@@ -47,7 +47,7 @@ void DarkSpinEntrance::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     UpdateProbe();
 }
 
-void DarkSpinEntrance::fn_800CBC1C() {
+void DarkSpinEntrance::fn_800CBC1C(float) {
     fn_80258910();
 }
 

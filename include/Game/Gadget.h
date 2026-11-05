@@ -80,7 +80,9 @@ class Gadget : public Task {
     virtual void Update(float dt);
     /* Per-frame work of the concrete gadget (name inferred). */
     virtual void UpdateBody(float dt) = 0;
-    virtual void fn_800CBC1C();
+    /* ElecBar's override passes dt on to its bars' updates; the other known overrides ignore it
+     * (parameter meaning inferred from that use). */
+    virtual void fn_800CBC1C(float dt);
     /* Re-reads the owner's settings (name inferred). */
     virtual void ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) = 0;
     /* True once the owner reports the gadget finished; also sets Task flag 0x01 (name inferred). */

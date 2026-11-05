@@ -132,7 +132,7 @@ void ElecBomb::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     }
 }
 
-void ElecBomb::fn_800CBC1C() {
+void ElecBomb::fn_800CBC1C(float) {
     if (m_model != 0) {
         fn_802E0E84(&m_charInfo->m_position, lbl_805F06D8, 150.0f);
     }

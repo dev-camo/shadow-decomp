@@ -28,7 +28,7 @@ class ElecAccessPanel : public Gadget {
     virtual ~ElecAccessPanel();
     virtual void UpdateBody(float dt);
     /* Calls UpdateModelMatrix, then the model's fn_80162EF4 and fn_8016108C (purpose unknown). */
-    virtual void fn_800CBC1C();
+    virtual void fn_800CBC1C(float);
     virtual void ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner);
 
     /* Creates the gadget under task layer 11 (name inferred). */

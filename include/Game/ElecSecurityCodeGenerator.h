@@ -33,7 +33,7 @@ class ElecSecurityCodeGenerator : public Gadget {
     virtual void UpdateBody(float dt);
     /* Creates the model if there is none yet, places it and draws a debug sphere of the search
      * range (behaviour inferred). */
-    virtual void fn_800CBC1C();
+    virtual void fn_800CBC1C(float);
     virtual void ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner);
 
     /* Creates the generator under task layer 11 (name inferred). */

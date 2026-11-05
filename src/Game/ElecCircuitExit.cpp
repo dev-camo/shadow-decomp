@@ -42,7 +42,7 @@ class ElecCircuitExit : public Gadget {
     ElecCircuitExit(Task *parent, UnkGadgetOwner_800C9CD0 *owner);
     virtual ~ElecCircuitExit();
     virtual void UpdateBody(float dt);
-    virtual void fn_800CBC1C();
+    virtual void fn_800CBC1C(float);
     /* Re-reads the owner's settings (name inferred). */
     virtual void ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner);
 
@@ -83,7 +83,7 @@ void ElecCircuitExit::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     CopyFromOwner(owner);
 }
 
-void ElecCircuitExit::fn_800CBC1C() {
+void ElecCircuitExit::fn_800CBC1C(float) {
     fn_802C8158();
 }
 

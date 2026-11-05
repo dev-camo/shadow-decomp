@@ -154,7 +154,7 @@ void ElecAccessPanel::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     ReadOwner(owner);
 }
 
-void ElecAccessPanel::fn_800CBC1C() {
+void ElecAccessPanel::fn_800CBC1C(float) {
     UpdateModelMatrix();
     if (m_model != 0) {
         m_model->fn_80162EF4();

@@ -49,7 +49,7 @@ class Fan : public Gadget {
     virtual ~Fan();
     virtual void UpdateBody(float dt);
     /* Calls fn_8015BE64 on the handle target when there is one (purpose unknown). */
-    virtual void fn_800CBC1C();
+    virtual void fn_800CBC1C(float);
     virtual void ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner);
 
     /* Create the gadget under task layer 11 for the "FAN" and "FAN STAGE" descriptors (names
