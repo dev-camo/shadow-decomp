@@ -151,6 +151,14 @@ Game/SetVehicle.cpp:
 	.sbss       start:0x805EFDD0 end:0x805EFDD8
 	.sdata2     start:0x805F4EE8 end:0x805F4F08
 
+Game/SetWeapon.cpp:
+	.text       start:0x8011EA18 end:0x80120554
+	.rodata     start:0x804BE6A0 end:0x804BE868
+	.data       start:0x805287F8 end:0x805288F8
+	.sdata      start:0x805E6CB8 end:0x805E6D00
+	.sbss       start:0x805EFDD8 end:0x805EFDF8
+	.sdata2     start:0x805F4F08 end:0x805F4F40
+
 Game/MonsterControl.cpp:
 	.text       start:0x8013A67C end:0x8013B1A8
 	.rodata     start:0x804C0C40 end:0x804C0D48

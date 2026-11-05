@@ -35,8 +35,10 @@ CHECK_SIZEOF(UnkProbeFilterRecord, 0x14);
 typedef bool (*UnkProbePredicate)(const UnkProbeFilterRecord *record);
 
 struct UnkProbeNode_80021FE4 {
-    /* 0x800265A4: the list's destructor calls it for each node, and SecurityLaser.cpp, like most
-     * callers of fn_80021E24, deletes the node that function returns with it. */
+    /* 0x800265A4: releases the hit's objects and the weak pointer; delete also frees the node with
+     * the allocator's own function (behaviour inferred from its body). The list's destructor calls
+     * it for each node, and SecurityLaser.cpp and SetWeapon.cpp, like most callers of fn_80021E24,
+     * delete the node that function returns with it. */
     ~UnkProbeNode_80021FE4();
 
     /* 0x00 */ boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> target;
@@ -86,8 +88,9 @@ UnkWorld_80020D40 *fn_80020D40(void);
  * the world's collision tests (behaviour inferred). */
 UnkProbeList_80021FE4 *fn_80021FE4(UnkWorld_80020D40 *world, const UnkSegment_80020A20 *segment,
                                    int flags, int arg3, UnkProbePredicate predicate, void *context);
-/* Takes the same arguments as fn_80021FE4 and returns one newly allocated node for the objects
- * along the segment, or null (behaviour inferred; how it chooses the node is not understood). */
+/* Tests the segment like fn_80021FE4 but keeps only one newly allocated node: each hit replaces
+ * the previous one and shortens the segment to its point, so the result is the hit nearest to the
+ * segment's start, or null (behaviour inferred from its body). */
 UnkProbeNode_80021FE4 *fn_80021E24(UnkWorld_80020D40 *world, const UnkSegment_80020A20 *segment,
                                    int flags, int arg3, UnkProbePredicate predicate, void *context);
 

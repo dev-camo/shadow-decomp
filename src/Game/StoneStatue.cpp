@@ -11,6 +11,7 @@
 #include "Game/CharaColliAttack.h"
 #include "Game/DebugDisp.h"
 #include "Game/GadgetTypeInfo.h"
+#include "Game/SetWeapon.h"
 #include "Game/UnkEffectParams_8015F0B8.h"
 #include "Game/UnkGadgetOwner_800C9CD0.h"
 #include "Game/UnkResource_80012700.h"
@@ -24,12 +25,6 @@
 
 using SonicteamUSA::System::CharaColli::CharaColliAttack;
 using SonicteamUSA::System::CharaColli::CharaColliBase;
-
-extern "C" {
-/* Called with 0x1F, the position and the rotation of a breaking active statue (purpose unknown;
- * its two other callers also pass a number, a position and a rotation). */
-void fn_8011E938(int arg0, const Fn8040Vector3 *position, const Fn8040Vector3 *rotation);
-}
 
 /* How far below the statue's position (m_charInfo) the range cylinder starts (name inferred from
  * its uses).
