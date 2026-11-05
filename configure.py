@@ -1683,6 +1683,11 @@ config.libs = [
             Object(Matching, "Game/fn_80160B18.cpp", cflags=cflags_game_cpp),
             # Part cleanup retains one extra element-address addi and register differences.
             Object(NonMatching, "Game/fn_80162804.cpp", cflags=cflags_game_cpp),
+            # Only the constructor differs (239 words against 240): the model and crash-information
+            # loads before the first fn_802087D8 call are swapped, and the model pointer is loaded
+            # inline where the original calls the 8-byte accessor fn_800E590C. That accessor is not
+            # emitted, so the source object cannot be linked; normal builds link the original.
+            Object(NonMatching, "Game/BreakableOrnament.cpp", cflags=cflags_game_cpp),
             # The constructor retains inlining differences; UpdateBody lacks one switch branch.
             Object(NonMatching, "Game/fn_800E59F8.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A1FA0.cpp", cflags=cflags_game_cpp),

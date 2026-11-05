@@ -77,7 +77,7 @@ GrindGadget::~GrindGadget() {
 extern "C" void fn_80228348(void) {
     const char *const *file = &s_fileA;
 
-    if (lbl_8057D6A0.field_0xAC == 13) {
+    if (lbl_8057D6A0.field_0xA8.field_0x4 == 13) {
         file = &s_fileB;
     }
     s_file = file;

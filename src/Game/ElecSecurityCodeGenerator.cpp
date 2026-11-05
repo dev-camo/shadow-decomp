@@ -66,7 +66,7 @@ void ElecSecurityCodeGenerator::UpdateBody(float dt) {
             }
 
             if (field_0x3C.get() != 0) {
-                if (lbl_8057D6A0.field_0xA8 == 200) {
+                if (lbl_8057D6A0.field_0xA8.field_0x0 == 200) {
                     fn_8020642C(field_0x3C, 0x31);
                 } else {
                     fn_8020642C(field_0x3C, 0x32);

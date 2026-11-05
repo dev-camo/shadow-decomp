@@ -268,7 +268,7 @@ int Unk801A2AF4::fn_801A2140(int category) {
 }
 
 int fn_801A2064() {
-    switch (lbl_8057D6A0.field_0xA8) {
+    switch (lbl_8057D6A0.field_0xA8.field_0x0) {
     case 500:
     case 503:
         return 0;
@@ -294,8 +294,8 @@ int fn_801A2064() {
 }
 
 bool fn_801A2030() {
-    if (lbl_8057D6A0.field_0xA8 == 300 || lbl_8057D6A0.field_0xA8 == 402 ||
-        lbl_8057D6A0.field_0xA8 == 403) {
+    if (lbl_8057D6A0.field_0xA8.field_0x0 == 300 || lbl_8057D6A0.field_0xA8.field_0x0 == 402 ||
+        lbl_8057D6A0.field_0xA8.field_0x0 == 403) {
         return true;
     }
     return false;

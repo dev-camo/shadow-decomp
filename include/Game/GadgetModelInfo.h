@@ -224,6 +224,17 @@ class GadgetModelInfo {
     /* Returns whether bit 2 of the flags at 0x3C is set (behaviour inferred from its body; the
      * meaning of the bit is unknown). */
     bool fn_801626F4();
+    /* Set bit 7 of the flags at 0x3C and store arg0 at 0x48 when arg0 > 0, otherwise (also for a
+     * NaN) 0.15. fn_8015FC94 also sets bit 8 and clears bit 10; fn_8015FC20 also sets bit 9 and
+     * stores 0 at 0x44 (behaviour inferred from their bodies; the meanings of the bits are
+     * unknown). */
+    void fn_8015FC94(float arg0);
+    void fn_8015FC20(float arg0);
+    /* Returns bit 10 of the flags at 0x3C (behaviour inferred from its body). */
+    bool fn_8015FBF8();
+    /* Sets bit 0 of the word at 0x24 of the first entry of the list at 0x58 whose name (the string
+     * at 0x8 of the entry) equals name (behaviour inferred from its body). */
+    void fn_80160400(const char *name);
 
     /* The constructor builds three callback objects at 0x4, 0x10 and 0x1C with the same function,
      * and the destructor destroys them with the same function. The gadgets bind their collision

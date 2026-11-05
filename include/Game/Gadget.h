@@ -72,6 +72,9 @@ void fn_800C9EB0(UnkGadgetOwner_800C9CD0 *owner, u32 bits);
  * inferred from its body; Coaster compares a distance with it, BombServer passes it to the items
  * it spawns). */
 float fn_800C9938(UnkGadgetOwner_800C9CD0 *owner);
+/* Stores the word at 0x1C of the record that owner points to in *flags (behaviour inferred from
+ * its body). Coaster and BreakableOrnament test bit 0x400000 of it. */
+void fn_800C9E70(UnkGadgetOwner_800C9CD0 *owner, u32 *flags);
 }
 
 /* Gadget (class name from RTTI): a stage object task registered with an owner object. */
@@ -103,5 +106,10 @@ extern "C" void fn_8015A768(Gadget *gadget);
 /* Sets bit 0x20000000 of the word at 0x18 of the owner's record when m_owner is set
  * (behaviour inferred). Original free-function or member spelling is unrecovered. */
 extern "C" void fn_8015A7EC(Gadget *gadget);
+/* Return whether the gadget has an owner (m_owner) and fn_800C9A64 (fn_8015A858) or fn_800C996C
+ * (fn_8015A818) is true for it, the two owner queries that Gadget::IsFinished makes (behaviour
+ * inferred from their bodies). */
+extern "C" bool fn_8015A858(Gadget *gadget);
+extern "C" bool fn_8015A818(Gadget *gadget);
 
 #endif

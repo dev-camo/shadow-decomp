@@ -83,7 +83,7 @@ void CityChaosEmerald::OnCollision(ColliDetectArgs &args) {
 
         fn_80168C48(&m_charInfo->m_position, &direction, 0xC);
         fn_801D560C(fn_80053164(), 0xE017, 0, 0);
-        lbl_8057D6A0.field_0xC1 = 1;
+        lbl_8057D6A0.field_0xA8.field_0x19 = 1;
         fn_8016907C(fn_800CB69C(), m_comId, 1);
         fn_800C9B04(m_owner);
         m_flags |= 1;

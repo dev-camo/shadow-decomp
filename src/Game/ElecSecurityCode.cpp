@@ -107,7 +107,7 @@ bool ElecSecurityCode::fn_80156C78(float dt) {
         m_model->fn_80162FB0(dt);
     }
 
-    if (lbl_8057D6A0.field_0xC8 != 0) {
+    if (lbl_8057D6A0.field_0xA8.field_0x20 != 0) {
         return true;
     }
 

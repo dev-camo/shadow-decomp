@@ -101,8 +101,6 @@ void fn_801CE9F4(UnkFollowerManager_80099954 *manager, boost::shared_ptr<UnkPath
 /* Registers the follower with the manager (the numbers are not understood). */
 void fn_801CEA54(UnkFollowerManager_80099954 *manager, boost::shared_ptr<UnkPathFollower_800096F4>,
                  int arg2, const UnkFollowerParams_8000B2C0 &params, int arg4, int arg5);
-/* Owner query (behaviour inferred): the owner's flag word. */
-void fn_800C9E70(UnkGadgetOwner_800C9CD0 *owner, u32 *flags);
 /* Creates a path follower (behaviour inferred; the numbers are not understood). */
 boost::shared_ptr<UnkPathFollower_800096F4> fn_80009704(int arg0, int arg1);
 /* Sets the start and end of the path that the follower moves along, and its up direction. */
@@ -273,7 +271,7 @@ Coaster::~Coaster() {
 extern "C" void fn_80132BC8(void) {
     fn_8006B474("COASTER.BIN", 1);
     for (int i = 0; i < 5; i++) {
-        if (lbl_8057D6A0.field_0xAC == s_stages[i].stage) {
+        if (lbl_8057D6A0.field_0xA8.field_0x4 == s_stages[i].stage) {
             s_stage = &s_stages[i];
             break;
         }

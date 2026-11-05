@@ -156,7 +156,7 @@ void GoalRing::OnCollision(ColliDetectArgs &args) {
         m_sound.fn_801D455C();
 
         if (m_color != 7) {
-            lbl_8057D6A0.field_0xC1 = 1;
+            lbl_8057D6A0.field_0xA8.field_0x19 = 1;
         }
     }
 }
