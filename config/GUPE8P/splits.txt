@@ -587,6 +587,15 @@ Game/ElecBomb.cpp:
 	.sdata      start:0x805EA6F8 end:0x805EA728
 	.sdata2     start:0x805F7BD0 end:0x805F7C08
 
+Game/ElecCoreWall.cpp:
+	.text       start:0x80264760 end:0x80265EB0
+	.ctors      start:0x804A9F08 end:0x804A9F0C
+	.rodata     start:0x804F59E0 end:0x804F5CF8
+	.data       start:0x8054C030 end:0x8054C100
+	.sdata      start:0x805EA728 end:0x805EA768
+	.sbss       start:0x805F00A0 end:0x805F00C0
+	.sdata2     start:0x805F7C08 end:0x805F7C48
+
 Game/ElecFan.cpp:
 	.text       start:0x80265EB0 end:0x802670E0
 	.rodata     start:0x804F5CF8 end:0x804F5E18

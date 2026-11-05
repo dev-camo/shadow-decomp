@@ -1719,6 +1719,18 @@ config.libs = [
             Object(Matching, "Game/FootingBreak.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecBarrier.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecBomb.cpp", cflags=cflags_game_cpp),
+            # All 49 functions have identical instructions apart from 14 raw differing words, all
+            # immediate offsets into .rodata (6 in the preload hook 0x802647B8, 8 in the
+            # constructor 0x802655E0), and the other sections match once the linker-discarded weak
+            # and local copies are set aside. The original's .rodata has 0x4C bytes this object
+            # does not: an unreferenced 0x40-byte table of floats (0, 0, 0, 0 and three rows of 0,
+            # 0, 0, 1) in front of the TNumEdit names, as in CircusPole, and 12 zero bytes after
+            # the CharaColliBase name. The strings after them sit 0x40 or 0x4C lower here. That
+            # moves those 14 offsets, the targets of the code relocations into that part of .rodata
+            # (they reach the same data, e.g. OnDraw's pair at .text+0x142/0x14A reaches
+            # .rodata+0x230 in the original and .rodata+0x1E4 here) and the .rodata addends of four
+            # data relocations (the descriptor name, two RTTI names and s_name).
+            Object(NonMatching, "Game/ElecCoreWall.cpp", cflags=cflags_game_cpp),
             # Every function except UpdateBody is identical in every word and relocation, and the
             # data matches once the linker-discarded weak copies are set aside. UpdateBody
             # (0x80157F24) is 0x26C bytes against the original's 0x280: for the two positions it

@@ -70,7 +70,6 @@ RwInt32 lbl_805F14B8;  /* camera plugin offset of the clump data */
 RpClump *fn_80456230(RpClump *clump, void *data);
 RpClump *fn_80457630(RpClump *clump, RpLight *light);
 RpClump *fn_80457664(RpClump *clump, RwCamera *camera);
-void fn_80456560(RpAtomic *atomic);
 
 /* free list callbacks that destroy the clumps and atomics still in use when the module closes */
 void fn_80455D0C(void *clump, void *data) {
