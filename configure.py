@@ -965,23 +965,23 @@ config.libs = [
                 Object(NonMatching, "Game/CSD/fn_80364058.cpp", cflags=cflags_csd),
                 # The scene object and the handles it is built from: constructors, destructors, Clear and
                 # Copy of the handles of a scene's data, fonts, motions, palette and entries; the scene's
-                # frame range, speed, pause, motion and palette members, SetHidden, SetTranslation and
-                # SetScale, its lazy root-pattern accessor and the constructor of the scene's end-of-motion
-                # policy (the class whose handlers are in csdmProject.cpp). 55 of the unit's 195 functions
-                # are sourced, including a weak copy of the inline CMotionPattern destructor in csdm.h.
-                # Of these, 54 have the original's instructions and relocation targets (GetAspect's float
-                # literal has a different label of the same value). GetRootPattern differs only in the
-                # allocation's source line: 159 instead of 1124. The other 140 are not sourced: the scene's
-                # Copy, destructor, Update and Draw, the end-of-motion policy's destructor, the
-                # CSceneListener constructor, the container code (lists and trees of listeners and
-                # nodes), the RCPtr instances (for MatrixValue and for the node pointers), the listener
-                # dispatch and SetRootPattern, which replaces the root pattern. The unit's .rodata and .data
-                # are incomplete for the same reason (the strings and the vtables of the unsourced
-                # classes are missing), and it emits weak copies of RCPtr<unsigned char>::Reset, the
-                # RCObject<unsigned char> constructor and vtable and CMemoryAlloc::AllocObject and
-                # FreeObject, which the link discards. It also emits a local instance of the
-                # delete-policy Assign (0x1C0 bytes) that only the weak Reset calls: this unit's form of
-                # the original's fn_803655F8 (0x1E0 bytes), which it does not match yet.
+                # frame range, speed, pause, motion and palette members, SetHidden, SetTranslation,
+                # SetScale, GetRootPattern and SetRootPattern, and the scene's end-of-motion policy.
+                # 59 of the unit's 195 function bodies are represented. 57 have canonical symbol names,
+                # including a weak copy of the inline CMotionPattern destructor and RCPtr<CNode>::Reset.
+                # Of these, 55 have the original's instructions; GetRootPattern and SetRootPattern differ
+                # only in their allocation lines (170 vs 1124 and 153 vs 1102, respectively). The two
+                # additional template bodies are the node holder's constructor (identical instructions,
+                # but a weak vtable copy) and the delete-policy Assign (0x1D4 vs the original's 0x1E0 at
+                # fn_803655F8, with register, scheduling and allocation-line differences). The separate byte-holder
+                # Assign is 0x1C0 bytes; it is not the original node-holder Assign at fn_803655F8.
+                # The other 136 bodies are not sourced: the scene's Copy, destructor, Update and Draw,
+                # the end-of-motion policy's destructor, CSceneListener's constructor, the listener and
+                # node containers, remaining RCPtr members and listener dispatch. Unit data is incomplete.
+                # The diagnostic object also emits weak byte-holder Reset, constructor and vtable copies,
+                # CMemoryAlloc::AllocObject and FreeObject, and a weak node-holder constructor and vtable
+                # whose destructor remains external. The original scene object and holder providers are
+                # retained by the link; this source object is not selected.
                 Object(NonMatching, "Game/CSD/csdmScene.cpp", cflags=cflags_csd),
                 # The accessors that override the animated values of an element's entry
                 # (CMotionPattern), its constructor and Copy, and UpdateTransform. 32 of 32
