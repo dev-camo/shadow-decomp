@@ -175,6 +175,10 @@ class CScene : public CSceneDataRef {
     void Resume();
     void Pause();
 
+    /* Store the two motion-end policy actions (working signatures inferred). */
+    void fn_803659CC(MotionEndAction action);
+    void fn_803659DC(MotionEndAction action);
+
     /* 0x0C */ u8 field_0xC[0x58];
     /* 0x64 */ CSceneMotion *m_motion;
     /* 0x68 */ CFontList *m_fonts;
