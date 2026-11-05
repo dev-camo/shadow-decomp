@@ -10940,7 +10940,7 @@ assign_to<Q35boost3_bi163bind_t<v,Q35boost4_mfi52mf1<v,Q210CircusBall10CircusBal
 __ct<14GadgetCharInfo>__Q25boost19weak_ptr<8CharInfo>FRCQ25boost28shared_ptr<14GadgetCharInfo> = .text:0x80130138; // type:function size:0x40 scope:local
 __dt__Q210CircusBall10CircusBallFv = .text:0x80130178; // type:function size:0x9C
 __ct__Q210CircusBall10CircusBallFP4TaskP23UnkGadgetOwner_800C9CD0 = .text:0x80130214; // type:function size:0x150
-fn_80130364__FQ25boost21shared_ptr<8CharInfo>P22UnkHitContext_8012F724 = .text:0x80130364; // type:function size:0x2F8 scope:local
+fn_80130364__FQ25boost21shared_ptr<8CharInfo>Pv = .text:0x80130364; // type:function size:0x2F8 scope:local
 __ct<8CharInfo>__Q25boost19weak_ptr<8CharInfo>FRCQ25boost21shared_ptr<8CharInfo> = .text:0x8013065C; // type:function size:0x40 scope:local
 addressof<Q35boost3_bi163bind_t<v,Q35boost4_mfi52mf1<v,Q210CircusBall10CircusBall,R15ColliDetectArgs>,Q35boost3_bi71list2<Q35boost3_bi34value<PQ210CircusBall10CircusBall>,Q25boost6arg<1>>>>__5boostFRQ35boost3_bi163bind_t<v,Q35boost4_mfi52mf1<v,Q210CircusBall10CircusBall,R15ColliDetectArgs>,Q35boost3_bi71list2<Q35boost3_bi34value<PQ210CircusBall10CircusBall>,Q25boost6arg<1>>> = .text:0x8013069C; // type:function size:0x4 scope:weak
 bind<v,Q210CircusBall10CircusBall,R15ColliDetectArgs,PQ210CircusBall10CircusBall,Q25boost6arg<1>>__5boostFMQ210CircusBall10CircusBallFPCvPvR15ColliDetectArgs_vPQ210CircusBall10CircusBallQ25boost6arg<1> = .text:0x801306A0; // type:function size:0x7C scope:weak

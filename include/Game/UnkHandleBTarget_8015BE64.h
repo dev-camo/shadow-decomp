@@ -123,15 +123,15 @@ CHECK_OFFSETOF(UnkHandleBTarget_8015BE64, m_flags, 0x2C);
 CHECK_OFFSETOF(UnkHandleBTarget_8015BE64, field_0x34, 0x34);
 CHECK_SIZEOF(UnkHandleBTarget_8015BE64, 0x40);
 
-/* What fn_8015AA84 calls for each character info it takes from the hits (name inferred). context is
- * the pointer the caller passed to fn_8015AA84: fn_8015AA84 forwards it unchanged without reading
- * it (the argument is kept in r29 and passed as r4), so each callback converts it to its own
- * context record. */
+/* What fn_8015AA84 and fn_8015B004 call for each character info they take from the hits (name
+ * inferred). context is the pointer the caller passed to them: both forward it unchanged without
+ * reading it (the argument is kept in r29 and passed as r4), so each callback converts it to its
+ * own context record. */
 typedef void (*ColliHitCallback)(boost::shared_ptr<CharInfo> hit, void *context);
 
 extern "C" {
-/* Calls callback with the character infos taken from the hits of args, passing context through
- * (behaviour inferred). */
+/* Calls callback with the character infos taken from the hits of args whose fn_80078B4C (vtable
+ * offset 0x28) returns true, passing context through (behaviour inferred). */
 void fn_8015AA84(ColliDetectArgs *args, ColliHitCallback callback, void *context);
 /* Wraps a probe in a handle target (behaviour inferred). */
 boost::shared_ptr<UnkHandleBTarget_8015BE64>
@@ -145,6 +145,11 @@ void fn_8015BDC4(UnkHandleBTarget_8015BE64 *target, int arg0, int arg1);
  * (behaviour inferred; the counterpart of fn_8015D2EC in UnkWorld_80021B08.h for the next virtual
  * function, taking the collision callback's arguments). */
 bool fn_8015AC84(ColliDetectArgs &args);
+/* The same as fn_8015AA84 except for the filter: callback runs only for the character infos whose
+ * fn_80078B2C (vtable offset 0x18) returns true, where fn_8015AA84 tests fn_80078B4C (0x28); what
+ * that function reports is not recovered (behaviour inferred; the CircusBall, DashPanel and
+ * DashRing gadgets pass their hit callbacks to it). */
+void fn_8015B004(ColliDetectArgs *args, ColliHitCallback callback, void *context);
 }
 
 #endif
