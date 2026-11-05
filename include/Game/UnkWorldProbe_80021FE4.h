@@ -35,6 +35,20 @@ struct UnkProbeFilterRecord {
 CHECK_SIZEOF(UnkProbeFilterRecord, 0x14);
 typedef bool (*UnkProbePredicate)(const UnkProbeFilterRecord *record);
 
+/* The object that a node refers to at 0x0C (placeholder name; the class is not identified). The
+ * node's destructor calls its vtable slot at 0x2C with 1 (a deleting destructor, inferred) when bit
+ * 0x2 of the node's word at 0x20 is clear, the node's word at 0x10 is 0, the pointer is not null
+ * and the object's word at 0x14 is -1. The word at 0x1C is a flags word: Meteors tests it with the
+ * same bits as a record's flags. It may be the word that CharaColliBase::UnkSlot20 stores at 0x1C
+ * of the object at the probe's 0x5C (inferred). Only that word is declared: the checks cover this
+ * 0x20-byte view, and the size of the complete object is unknown. */
+struct UnkProbeObject_800265A4 {
+    /* 0x00 */ u8 field_0x0[0x1C];
+    /* 0x1C */ u32 flags;
+};
+CHECK_OFFSETOF(UnkProbeObject_800265A4, flags, 0x1C);
+CHECK_SIZEOF(UnkProbeObject_800265A4, 0x20);
+
 struct UnkProbeNode_80021FE4 {
     /* 0x800265A4: releases the hit's objects and the weak pointer; delete also frees the node with
      * the allocator's own function (behaviour inferred from its body). The list's destructor calls
@@ -43,7 +57,12 @@ struct UnkProbeNode_80021FE4 {
     ~UnkProbeNode_80021FE4();
 
     /* 0x00 */ boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> target;
-    /* 0x08 */ u8 field_0x8[0x14 - 0x8];
+    /* 0x08 */ u8 field_0x8[0xC - 0x8];
+    /* 0x0C */ UnkProbeObject_800265A4 *field_0xC;
+    /* 0x10: a non-owning pointer to the object of the weak pointer at 0x00. The node constructor
+     * (0x800C53F0) copies that weak pointer and, unless it has expired, locks it, stores the raw
+     * pointer here and destroys the temporary shared pointer; otherwise it stores 0. */
+    /* 0x10 */ SonicteamUSA::System::CharaColli::CharaColliBase *field_0x10;
     /* 0x14 */ UnkProbeHit_8001E9BC *hit;
     /* 0x18 */ UnkProbeNode_80021FE4 *field_0x18;
     /* 0x1C */ UnkProbeNode_80021FE4 *next;
@@ -114,6 +133,13 @@ SonicteamUSA::System::Collision::CollisionResultList *
 fn_80021CA4(UnkWorld_80020D40 *world, const UnkSphere_80021C04 *sphere, int flags, int arg3,
             UnkProbePredicate predicate, void *context,
             SonicteamUSA::System::Collision::CollisionResultList *negativeHits);
+/* Collects the hits of the sphere moved along motion (behaviour inferred): bits 0 and 1 of flags
+ * select its two tests. Bit 0 runs a loop over 0xA8 entries that passes arg5 and !arg8 to
+ * fn_80021480; bit 1 calls fn_800C4DE0 with arg4 and, when arg8 is set, arg5 (otherwise 0). The
+ * meanings of arg4, arg5 and arg8 are unknown. */
+SonicteamUSA::System::Collision::CollisionResultList *
+fn_80021934(UnkWorld_80020D40 *world, const UnkSphere_80021C04 *sphere, const Fn8040Vector3 *motion,
+            int flags, int arg4, int arg5, UnkProbePredicate predicate, void *context, bool arg8);
 Fn8040Vector3 *fn_8001E9C4(UnkProbeHit_8001E9BC *hit);
 int fn_8001E9F0(UnkProbeHit_8001E9BC *hit);
 void fn_8001E9F8(SonicteamUSA::System::Collision::CollisionResultList *hits);

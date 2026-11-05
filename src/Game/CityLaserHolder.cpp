@@ -15,6 +15,7 @@
  * in configure.py. */
 #include "Game/AngleConversion.h"
 #include "Game/CharInfo.h"
+#include "Game/CommonBomb.h"
 #include "Game/DebugDisp.h"
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
@@ -41,16 +42,6 @@ using SonicteamUSA::System::Collision::CollisionResultList;
 
 class CityLaser;
 class CityLaserHolder;
-
-extern "C" {
-/* Creates a 0x50-byte CommonBomb task (class name from the string its constructor fn_801DDBBC
- * stores as the task's name) under task layer 11 at position (behaviour inferred). arg1 is stored
- * at 0x48 of the task and is a type index into the table of 0xC-byte entries at 0x8053D570; arg2 is
- * stored at 0x4C and is a bit mask that the task tests against the hit character's word at 0x5C
- * (bit 2 for 4, bit 1 for 3, bit 0 for 1 or 6). The laser passes 1 and its config's mask. arg3 is
- * passed on to fn_80054DD0 (meaning unknown). */
-void fn_801DD0BC(const Fn8040Vector3 *position, int arg1, int arg2, float arg3);
-}
 
 /* The height of the segment that goes up from the laser, and the radius around it that the bombs
  * are placed in: each bomb goes to the target's position, moved towards the nearest point of the
