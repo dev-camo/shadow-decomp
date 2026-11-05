@@ -185,10 +185,11 @@ void fn_8040FD8C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *axis, float angle)
 
 /* The closest point of the segment to the point; fraction receives its position along the segment
  * (0 at the start, 1 at the end, outside that range when the point lies beyond an end) unless it
- * is null. A segment too short to have a direction counts as fraction 1. Does not match yet: the
- * original calls fn_800091EC (copy) and fn_8040CDD0 (add) as by-value functions that build the
- * point directly in this function's result slot, which the void (destination, source) prototypes
- * of those helpers cannot express; this build builds it in closest and copies it out (75
+ * is null. A segment too short to have a direction counts as fraction 1. Does not match yet: at
+ * 0x8040FD24-0x8040FD6C the original passes this function's result address in r3 to fn_800091EC
+ * (copy) and fn_8040CDD0 (add), so the point is built directly in the result slot. By-value
+ * returns would explain that, but an explicit destination pointer uses the same arrangement, so
+ * the spelling is a hypothesis; this build builds the point in closest and copies it out (75
  * instructions instead of 69). */
 Fn8040Vector3 fn_8040FC78(float *fraction, const UnkSegment_80020A20 *segment,
                           const Fn8040Vector3 *point) {
