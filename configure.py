@@ -779,20 +779,7 @@ config.libs = [
                 Object(Matching, "Game/ElecCircuitEntrance.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/EscapePlaneRail.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
-                # All 46 functions have identical instructions and are in the original's order,
-                # and the original's data is reproduced at its offsets. The implementation class's
-                # destructor is a global symbol here (a plain out-of-class definition under
-                # auto_inline, which keeps boost::checked_delete out of line and emits the
-                # destructor at its definition) where the original's is weak. Defining it inline,
-                # in the class or after the constructor, makes it weak but emits it at its first
-                # use instead of at its definition, which moves it away from the original's
-                # position. The object also defines a local
-                # boost::checked_delete<CharaColliAttack> (0x24 bytes), which the original unit
-                # does not have (the checked_deleter<CharaColliAttack> call operator is external
-                # there), and appends to .rodata, .data and .sdata the type records, name strings
-                # and vtables of sp_counted_base, std::exception and the CharaColliAttack
-                # sp_counted_base_impl and checked_deleter.
-                Object(NonMatching, "Game/WeaponStickBase.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/WeaponStickBase.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/TestNakazawa.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/BDHologram.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/BDTrue.cpp", cflags=cflags_game_cpp),
@@ -821,11 +808,7 @@ config.libs = [
                 # constructor differ, and 16 small helper functions (the constructor chain, the
                 # accessors, the pair swap) are not reproduced one for one.
                 Object(NonMatching, "Game/CityLaserHolder.cpp", cflags=cflags_game_cpp),
-                # All 48 functions and the data match the original once the weak copies that the
-                # linker discards are removed, and linking this object gives the original
-                # executable, but checked_delete<FallBuilding> is a local symbol here where the
-                # original's is weak, as in CityLaserHolder.cpp.
-                Object(NonMatching, "Game/FallBuildingHolder.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/FallBuildingHolder.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCristalWallSwitch.cpp", cflags=cflags_game_cpp),
                 Object(NonMatching, "Game/ElecCube.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecPillar.cpp", cflags=cflags_game_cpp),
@@ -2003,11 +1986,7 @@ config.libs = [
             Object(NonMatching, "Game/Fan.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/GoalRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetVehicle.cpp", cflags=cflags_game_cpp),
-            # All 66 functions have identical words and relocations, and the data matches the
-            # original once the weak copies that the linker discards are removed, but
-            # checked_delete<SetWeapon::Arms> is a local symbol here where the original's is weak,
-            # as in FallBuildingHolder.cpp.
-            Object(NonMatching, "Game/SetWeapon.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/SetWeapon.cpp", cflags=cflags_game_cpp),
             # 52 of 53 functions are identical in every word and relocation. The hit callback
             # (0x801213E8) differs in 13 of its 276 words: the SetAngleCommand argument temporary
             # and directionTemporary sit at 0x30 and 0x3C instead of 0x3C and 0x30 (4 words); the

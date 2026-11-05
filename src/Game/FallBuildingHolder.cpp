@@ -6,11 +6,7 @@
  * (behaviour inferred). Its FallBuildingData (class name from RTTI, derived from SetAdapterState)
  * is remembered by the owner and tells whether the building has fallen already. File name
  * inferred from the class. Method names marked "(name inferred)" are not original. Definitions
- * are ordered so that deferred inlining emits the functions at their original addresses.
- *
- * NonMatching: every function and the data match the original once the weak copies that the
- * linker discards are removed, but checked_delete<FallBuilding> is a local symbol here where the
- * original's is weak. See the note in configure.py. */
+ * are ordered so that deferred inlining emits the functions at their original addresses. */
 /* TNumEdit.h comes before CharaColliBaseCharInfo.h, in the order their names appear in the unit's
  * .rodata (alphabetical order would reverse them). */
 #include "Game/TNumEdit.h"

@@ -7,12 +7,7 @@
  * emits functions last-defined first).
  *
  * The callbacks are boost::function objects built with boost::bind(&WeaponStickBaseImpl::method,
- * this, _1); their manager, invoker and copy functions come from the boost headers.
- *
- * NonMatching: WeaponStickBaseImpl's destructor is a global symbol where the original's is weak
- * (see the note at the destructor), and this object defines a local
- * boost::checked_delete<CharaColliAttack> and some type records and name strings that the
- * original unit does not have (listed in the note in configure.py). */
+ * this, _1); their manager, invoker and copy functions come from the boost headers. */
 #include "Game/CharInfo.h"
 #include "Game/CharaColliAttack.h"
 #include "Game/UnkBitFlags_80014E04.h"
@@ -121,9 +116,8 @@ WeaponStickBaseImpl::WeaponStickBaseImpl(const boost::weak_ptr<CharInfo> &owner,
  * checked_delete keeps out of line a destructor whose body calls only non-inline functions (the
  * pragma would inline that destructor into it). A destructor found inlined into checked_delete in
  * the original would instead mean that the original used auto_inline here.
- * The original's destructor is a weak symbol, as an inline destructor would be, but this
- * toolchain emits an inline destructor at its first use, after checked_delete, so it is written
- * out of line here and is a global symbol. */
+ * The destructor is defined out of line, as a global symbol: an inline definition would be
+ * emitted at its first use, after checked_delete, away from the original's position. */
 #pragma auto_inline on
 WeaponStickBaseImpl::~WeaponStickBaseImpl() {
     ReleaseAttack();
