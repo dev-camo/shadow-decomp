@@ -716,16 +716,7 @@ config.libs = [
                 # the original's; the accessor of the switch counter is emitted after the template
                 # instances that follow ApplyState here, directly after ApplyState in the original.
                 Object(NonMatching, "Game/CandleStick.cpp", cflags=cflags_game_cpp),
-                # All 52 functions have identical instructions; checked_delete<Chao> is a local
-                # symbol here where the original's is weak. The data differs from the original's
-                # in records the original unit does not have: a weak SetAdapterState vtable (with
-                # its weak destructor) sits at .data 0x128, in front of the base-class list of
-                # sp_counted_base_impl<Chao>'s type record, which moves that list and the
-                # sp_counted_base_impl<Chao> vtable 0xC bytes later; the std::exception type
-                # record (.sdata) and its two name strings (.rodata) come before those of
-                # checked_deleter<Chao> (moving them 8 and 0x1C bytes later); and the
-                # std::exception and sp_counted_base vtables are appended to .data.
-                Object(NonMatching, "Game/ChaoHolder.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/ChaoHolder.cpp", cflags=cflags_game_cpp),
                 # 35 of 36 functions are identical in every word and relocation. The hit callback
                 # (0x80130364) differs in 19 words: the float-to-int conversion of the level and
                 # the int-to-float conversion of the index get separate 8-byte stack slots (the
