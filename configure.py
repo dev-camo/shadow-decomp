@@ -810,11 +810,9 @@ config.libs = [
                 Object(NonMatching, "Game/ElecCube.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecPillar.cpp", cflags=cflags_game_cpp),
                 Object(NonMatching, "Game/GrindGadget.cpp", cflags=cflags_game_cpp),
-                # 11 of 12 functions have identical instructions. UpdateBody differs in 13 words: the
-                # original loads the two startup floats (the hidden distance along the footing's z
-                # axis and the speed) before the stores to the gadget's members, so one load is scheduled
-                # earlier and its register numbers differ in the hidden-height assignments and the
-                # final comparison.
+                # 11 of 12 functions have identical instructions. UpdateBody differs in 8 words, all
+                # register numbers in the case that moves the footing back (the hidden depth and the
+                # height are in f2 and f0 here, f0 and f1 in the original).
                 Object(NonMatching, "Game/PopFooting.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecSmallPillar.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecWakka.cpp", cflags=cflags_game_cpp),
