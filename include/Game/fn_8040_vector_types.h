@@ -188,7 +188,9 @@ float fn_8040D1B4(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 /* Copies source to destination and returns destination (fn_800091D0.c). */
 Fn8040Vector3 *fn_800091D0(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
 void fn_800091EC(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
-void fn_80008E1C(Fn8040Vector3 *vector, float x, float y, float z);
+/* Stores the three components and returns vector (fn_80008E1C.c; many callers in the original
+ * pass the returned address on). */
+Fn8040Vector3 *fn_80008E1C(Fn8040Vector3 *vector, float x, float y, float z);
 /* Matrix helpers of the segment in fn_8040B034.cpp. Their original names are unknown and their
  * descriptions are inferred from the code. */
 /* Copies source to destination. */

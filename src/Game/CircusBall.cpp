@@ -16,6 +16,7 @@
 #include "Game/Target.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
 #include "Game/UnkManager_800CB69C.h"
+#include "Game/UnkObject_801695B8.h"
 #include "Game/UnkObject_80169BB0.h"
 #include "Game/UnkParamCursor_800CBC20.h"
 #include "Game/UnkResource_80012700.h"
@@ -27,18 +28,6 @@
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include "layout_check.h"
-
-class UnkObject_801695B8;
-
-extern "C" {
-/* Creates the object that the ball keeps at 0x40 (placeholder names; behaviour inferred from the
- * calls): fn_801697F0 advances it each frame, fn_801697CC tells whether it has already dealt with
- * the character info, and fn_8016952C releases it. */
-boost::shared_ptr<UnkObject_801695B8> fn_801695B8(void);
-void fn_801697F0(UnkObject_801695B8 *object);
-bool fn_801697CC(UnkObject_801695B8 *object, const boost::weak_ptr<CharInfo> &target);
-void fn_8016952C(boost::shared_ptr<UnkObject_801695B8> &object);
-}
 
 /* The gadget parameters in the order of the descriptor's table below. */
 struct CircusBallParams {
@@ -65,22 +54,17 @@ struct UnkHitContext_8012F724 {
 };
 CHECK_SIZEOF(UnkHitContext_8012F724, 0x1C);
 
-/* Calls callback with context for each character info in the collision results (behaviour
- * inferred). It passes the context to the callback without reading it, so this prototype gives the
- * context this unit's type. */
-extern "C" void fn_8015B004(ColliDetectArgs *args,
-                            void (*callback)(boost::shared_ptr<CharInfo> hit,
-                                             UnkHitContext_8012F724 *context),
-                            UnkHitContext_8012F724 *context);
-
 /* Launch speeds for the levels 0 to 15; the level in between is interpolated (name inferred). */
 static const float s_launchSpeeds[16] = {150.0f,  300.0f,  450.0f,  600.0f,  750.0f,  900.0f,
                                          1050.0f, 1200.0f, 1350.0f, 1500.0f, 1650.0f, 1800.0f,
                                          1950.0f, 2100.0f, 2250.0f, 2400.0f};
 
 /* The callback that fn_8015B004 calls for each character info in the collision results: sends a
- * character that has not been dealt with the commands that take its control and launch it. */
-static void fn_80130364(boost::shared_ptr<CharInfo> hit, UnkHitContext_8012F724 *context) {
+ * character that has not been dealt with the commands that take its control and launch it. arg is
+ * the hit context that OnCollision passes. */
+static void fn_80130364(boost::shared_ptr<CharInfo> hit, void *arg) {
+    UnkHitContext_8012F724 *context = static_cast<UnkHitContext_8012F724 *>(arg);
+
     boost::shared_ptr<GadgetCharInfo> ballInfo = context->m_charInfo.lock();
 
     if (ballInfo.get() == 0) {
