@@ -1759,6 +1759,28 @@ config.libs = [
             Object(NonMatching, "Game/Catapult.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DamageBlock.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Door.cpp", cflags=cflags_game_cpp),
+            # Word by word against the split original object (USA, Japan and PAL alike), with the
+            # linker-discarded weak and local copies set aside: 54 of the 58 functions have
+            # identical words and relocations. The preload hook (0x8014BD6C, USA) and the constructor (0x8014CB98)
+            # differ in 3 words each, all immediate offsets into .rodata: the original's .rodata has
+            # an unreferenced 0x40-byte table of floats (three rows of 1, 0, 0, 0 and one of zeros)
+            # between the TNumEditFloat and CharaColliBaseCharInfo names, and 12 zero bytes after the
+            # CharaColliBase name, which this object does not have (as in ElecCoreWall), so the
+            # strings after them sit 0x40 or 0x4C lower here, which also moves the .rodata addends of
+            # the data relocations to them. UpdateBody (0x8014C108) is 220 words against 221 and
+            # differs in 21 words after alignment: the original loads the character info's pointer
+            # into r30 before the call of fn_8040B67C whose result it then copies there (one more
+            # saved register and one more instruction), and its two transform results sit at 0x14
+            # and 0x8 below the collision arguments at 0x20, where this build puts each right below
+            # its source vector and the collision arguments at 0x8. The hit callback (0x8014D324) differs in 19 of 243 words,
+            # the interpolation of the launch speed as in Spring and DashRing: the int-to-float
+            # conversion of the index gets its own 8-byte stack slot (frame 0xB0 instead of 0xA0)
+            # and the level and the table difference are in f3 and f2 instead of f2 and f3. In
+            # .sdata2 the original places 1.0f after 0.0f (0x805F4744), this build after 0.063f
+            # (first used in the hit callback), so the 12 literals between them sit one slot
+            # earlier. In .data the original keeps the discarded weak vtables between the kept
+            # base-class lists as zero-filled holes, as in Spring.
+            Object(NonMatching, "Game/StretchGrass.cpp", cflags=cflags_game_cpp),
             # Every function but the constructor has identical instruction words, and the data,
             # symbols and relocations match once the linker-discarded weak and local copies are set
             # aside. The constructor (0x8022E698, USA) differs in 6 of its 189 words: for each of its
