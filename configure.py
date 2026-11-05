@@ -1585,10 +1585,7 @@ config.libs = [
             # (USA 0x805F1714; Japan 0x805F1D34; PAL 0x805F27B4); a separate 8-aligned pool
             # cannot start there.
             Object(NonMatching, "Game/fn_8000A950.cpp", cflags=cflags_game_cpp),
-            # A 12-byte weak fabsf copy (identical to fn_8000A9A0) and 16 bytes of unreferenced
-            # weak sqrtf constants from <cmath> are emitted here. The helper's original
-            # ownership and symbol identity remain unrecovered.
-            Object(NonMatching, "Game/fn_8000A980.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_8000A980.cpp", cflags=cflags_game_cpp),
 
             # Tail of a larger original file whose functions own the pool at 0x805FAD50:
             # 1.0f, 0.0f, 0.99999f, 0.5f and 1e-5f are used by fn_8040C3EC, fn_8040C55C,

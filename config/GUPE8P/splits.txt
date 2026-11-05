@@ -29,7 +29,7 @@ Game/fn_8000A950.cpp:
 	.text       start:0x8000A950 end:0x8000A980
 
 Game/fn_8000A980.cpp:
-	.text       start:0x8000A980 end:0x8000A9A0
+	.text       start:0x8000A980 end:0x8000A9AC
 
 Game/fn_8000AAEC.cpp:
 	.text       start:0x8000AAEC end:0x8000AAF4
