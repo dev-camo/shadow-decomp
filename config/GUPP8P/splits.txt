@@ -143,6 +143,14 @@ Game/fn_800E59F8.cpp:
 	.sdata      start:0x805E62B8 end:0x805E62D8
 	.sdata2     start:0x805F4488 end:0x805F44C0
 
+Game/SetVehicle.cpp:
+	.text       start:0x8011E488 end:0x8011EA18
+	.rodata     start:0x804BE658 end:0x804BE6A0
+	.data       start:0x80528740 end:0x805287F8
+	.sdata      start:0x805E6CA0 end:0x805E6CB8
+	.sbss       start:0x805EFDD0 end:0x805EFDD8
+	.sdata2     start:0x805F4EE8 end:0x805F4F08
+
 Game/MonsterControl.cpp:
 	.text       start:0x8013A67C end:0x8013B1A8
 	.rodata     start:0x804C0C40 end:0x804C0D48

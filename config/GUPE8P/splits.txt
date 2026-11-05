@@ -196,6 +196,14 @@ Game/fn_800E59F8.cpp:
 	.sdata      start:0x805E51F8 end:0x805E5218
 	.sdata2     start:0x805F33E0 end:0x805F3418
 
+Game/SetVehicle.cpp:
+	.text       start:0x8011E0A0 end:0x8011E630
+	.rodata     start:0x804BD588 end:0x804BD5D0
+	.data       start:0x80527620 end:0x805276D8
+	.sdata      start:0x805E5BE0 end:0x805E5BF8
+	.sbss       start:0x805EED28 end:0x805EED30
+	.sdata2     start:0x805F3E40 end:0x805F3E60
+
 Game/CandleStick.cpp:
 	.text       start:0x8012C900 end:0x8012DACC
 	.ctors      start:0x804A9D50 end:0x804A9D54
