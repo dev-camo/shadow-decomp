@@ -63,20 +63,12 @@ void FootingRoll::UpdateBody(float dt) {
                                    m_params.moveLengthZ);
 
                 fn_800C9F14(m_owner, &m_charInfo->m_position);
-                /* The forward leg scales through the wrapper fn_800091A4 and the return leg calls
-                 * fn_8040CDA8 directly: the original calls the two forms in the two branches. */
+                /* The forward leg calls the out-of-line copy of operator* (an argument of the
+                 * inline AddVector) and the return leg the scale itself, as the original does. */
                 if (m_moveBack == 0) {
-                    Fn8040Vector3 offset;
-
-                    fn_800091A4(&offset, &move, fraction);
-                    AddVector(&m_charInfo->m_position, offset);
+                    AddVector(&m_charInfo->m_position, move * fraction);
                 } else {
-                    Fn8040Vector3 position;
-                    Fn8040Vector3 offset;
-
-                    fn_8040CDA8(&offset, &move, 1.0f - fraction);
-                    fn_8040CDD0(&position, &m_charInfo->m_position, &offset);
-                    fn_800091D0(&m_charInfo->m_position, &position);
+                    m_charInfo->m_position = m_charInfo->m_position + move * (1.0f - fraction);
                 }
             } else {
                 m_moveTimer = 0.0f;
@@ -148,12 +140,11 @@ void FootingRoll::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     /* Draws debug lines along the move and along the turning axis: the move line in the shared
      * debug colour and the axis line in a colour chosen by the axis (behaviour inferred). */
     Fn8040Vector3 axis;
-    Fn8040Vector3 moveEnd;
-    Fn8040Vector3 move(m_params.moveLengthX, m_params.moveLengthY, m_params.moveLengthZ);
 
-    fn_8040CDD0(&moveEnd, &m_charInfo->m_position, &move);
-
-    UnkSegment_80020A20 moveLine(m_charInfo->m_position, moveEnd);
+    UnkSegment_80020A20 moveLine(m_charInfo->m_position,
+                                 m_charInfo->m_position + Fn8040Vector3(m_params.moveLengthX,
+                                                                        m_params.moveLengthY,
+                                                                        m_params.moveLengthZ));
 
     fn_802E0AA0(moveLine, lbl_805F06D8, 5.0f);
 
@@ -178,21 +169,11 @@ void FootingRoll::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         break;
     }
 
-    Fn8040Vector3 turnedZ;
-    Fn8040Vector3 turnedX;
-    Fn8040Vector3 turnedY;
-    Fn8040Vector3 axisEnd;
-
-    fn_8040D044(&turnedZ, &axis, m_charInfo->m_rotation.z);
-    fn_800091D0(&axis, &turnedZ);
-    fn_8040D118(&turnedX, &axis, m_charInfo->m_rotation.x);
-    fn_800091D0(&axis, &turnedX);
-    fn_8040D0AC(&turnedY, &axis, m_charInfo->m_rotation.y);
-    fn_800091D0(&axis, &turnedY);
+    axis = fn_8040D044(axis, m_charInfo->m_rotation.z);
+    axis = fn_8040D118(axis, m_charInfo->m_rotation.x);
+    axis = fn_8040D0AC(axis, m_charInfo->m_rotation.y);
     fn_8040CE38(&axis, 1000.0f);
-    fn_8040CDD0(&axisEnd, &m_charInfo->m_position, &axis);
-
-    UnkSegment_80020A20 axisLine(m_charInfo->m_position, axisEnd);
+    UnkSegment_80020A20 axisLine(m_charInfo->m_position, m_charInfo->m_position + axis);
 
     fn_802E0AA0(axisLine, color, 2.0f);
 }

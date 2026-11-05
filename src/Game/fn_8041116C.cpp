@@ -155,7 +155,7 @@ void fn_8041157C(Fn8040Vector3 *destination, const Fn8040Matrix34 *matrix,
     output.z = vector->x * matrix->values[2][0] + vector->y * matrix->values[2][1] +
                vector->z * matrix->values[2][2];
 
-    fn_800091D0(destination, &output);
+    *destination = output;
 }
 
 /* The original computes the top matrix inline for both fn_8040BAC4 calls, not through

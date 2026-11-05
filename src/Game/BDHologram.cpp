@@ -107,16 +107,13 @@ void BDHologram::UpdateBody(float dt) {
         break;
     case 1: {
         float triggerDistanceSquared = m_params.distance * m_params.distance;
-        Fn8040Vector3 point;
-        Fn8040Vector3 self;
-        Fn8040Vector3 difference;
 
         Fn8040Vector3 *pointPosition = fn_80010244(fn_80009548(), 0);
-        fn_800091EC(&point, pointPosition);
-        fn_800091EC(&self, &m_charInfo->m_position);
+        Fn8040Vector3 point = *pointPosition;
+        Fn8040Vector3 self = m_charInfo->m_position;
         self.y = 0.0f;
         point.y = 0.0f;
-        fn_8040CD74(&difference, &point, &self);
+        const Fn8040Vector3 &difference = point - self;
 
         if (fn_8040CF2C(&difference) < triggerDistanceSquared) {
             if (m_target.get() != 0) {

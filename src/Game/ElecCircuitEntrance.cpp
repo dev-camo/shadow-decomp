@@ -136,10 +136,9 @@ static void fn_801F888C(boost::shared_ptr<CharInfo> hit, void *arg) {
         }
 
         SonicteamUSA::System::PathCtrl path;
-        Fn8040Vector3 direction;
         int result;
 
-        fn_800091EC(&direction, &lbl_805E07A0);
+        Fn8040Vector3 direction = lbl_805E07A0;
         fn_801F8040(&direction.x, &direction.z, context->m_owner->m_charInfo->m_rotation.y, -1.0f);
 
         if (fn_8001CDA0(fn_8001B494(), &path, 0.0f, context->m_owner->m_charInfo.get(), &direction,
@@ -194,9 +193,7 @@ void ElecCircuitEntrance::fn_801F7F9C() {
     if (field_0x3C.get() != 0) {
         fn_8015BE64(field_0x3C.get());
 
-        Fn8040Vector3 position;
-
-        fn_800091EC(&position, &lbl_805E07A0);
+        Fn8040Vector3 position = lbl_805E07A0;
         fn_801F8040(&position.x, &position.z, m_charInfo->m_rotation.y, -10.0f);
         AddVector(&position, m_charInfo->m_position);
 

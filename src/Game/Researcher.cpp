@@ -5,15 +5,7 @@
  *
  * The character info's command handler is a boost::function object built with
  * boost::bind(&Researcher::OnCommand, this, _1); its manager, invoker and copy functions come from
- * the boost headers.
- *
- * NonMatching: 9 of the constructor's 140 words differ, all stack offsets. The original keeps the
- * sum of the character info's position and the offset in the lowest of the four 12-byte stack
- * slots, below the two temporaries of the command handler statement (the boost::function and the
- * copy of the member function pointer), where a temporary made after them goes; here the named
- * local takes the slot above them. With fn_8040CDD0 declared to return the sum by value and its
- * result bound to a const reference, the constructor compiles to the original's instructions; its
- * current declaration takes a result pointer. */
+ * the boost headers. */
 #include "Game/Researcher.h"
 #include "Game/CharCommandUnit.h"
 #include "Game/CharInfo.h"
@@ -67,9 +59,8 @@ Researcher::Researcher(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
     fn_802B4510(m_object2.get(), 1);
 
     Fn8040Vector3 above(0.0f, s_object2Height.value, 0.0f);
-    Fn8040Vector3 position;
+    const Fn8040Vector3 &position = m_charInfo->m_position + above;
 
-    fn_8040CDD0(&position, &m_charInfo->m_position, &above);
     fn_802B44C8(m_object2.get(), &position);
 
     SetupModel();

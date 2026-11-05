@@ -60,9 +60,7 @@ static void fn_80110320(boost::shared_ptr<CharInfo> hit, void *arg) {
     int nearest = 0;
 
     for (int i = 0; i < 3; i++) {
-        Fn8040Vector3 difference;
-
-        fn_8040CD74(&difference, &hit->m_position, &context->m_launchPoints[i]);
+        const Fn8040Vector3 &difference = hit->m_position - context->m_launchPoints[i];
         float distanceSquared = fn_8040CF2C(&difference);
 
         if (distanceSquared < nearestDistanceSquared) {
@@ -87,11 +85,8 @@ static void fn_80110320(boost::shared_ptr<CharInfo> hit, void *arg) {
     fn_8040B884(&matrix, springInfo->m_rotation.x);
     fn_8040B80C(&matrix, springInfo->m_rotation.z);
 
-    Fn8040Vector3 directionTemporary;
-
     direction.Set(0.0f, 1.0f, 0.0f);
-    fn_8040B67C(&directionTemporary, &matrix, &direction);
-    fn_800091D0(&direction, &directionTemporary);
+    direction = matrix * direction;
     fn_8040CE38(&direction, speed);
 
     hit->fn_801DC980(new SetVelocityCommand(&direction, 4));
@@ -175,13 +170,9 @@ void LongSpring::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         for (int i = 0; i < 3; i++) {
             Fn8040Vector3 start;
             Fn8040Vector3 end;
-            Fn8040Vector3 startTemporary;
-            Fn8040Vector3 endTemporary;
 
-            fn_8040B67C(&startTemporary, &matrix, &s_lineStarts[i]);
-            fn_800091D0(&start, &startTemporary);
-            fn_8040B67C(&endTemporary, &matrix, &s_lineEnds[i]);
-            fn_800091D0(&end, &endTemporary);
+            start = matrix * s_lineStarts[i];
+            end = matrix * s_lineEnds[i];
             fn_802E0B58(UnkSegment_80020A20(start, end), lbl_805F06D8);
         }
     }
@@ -210,10 +201,7 @@ void LongSpring::UpdateModelMatrix() {
                                                         Fn8040Vector3(-20.0f, 10.0f, 10.0f)};
 
         for (int i = 0; i < 3; i++) {
-            Fn8040Vector3 transformed;
-
-            fn_8040B67C(&transformed, &matrix, &s_launchPointOffsets[i]);
-            fn_800091D0(&m_launchPoints[i], &transformed);
+            m_launchPoints[i] = matrix * s_launchPointOffsets[i];
 
             if (m_targets[i].get() != 0) {
                 fn_800CCE38(m_targets[i].get(), &m_launchPoints[i]);

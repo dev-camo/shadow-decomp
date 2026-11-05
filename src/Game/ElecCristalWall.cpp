@@ -109,13 +109,8 @@ void ElecCristalWall::UpdateBody(float dt) {
             m_appearOffset.x = m_appearOffset.y = 0.0f;
             m_appearOffset.z = -75.0f;
 
-            Fn8040Vector3 turnedX;
-            Fn8040Vector3 turnedY;
-
-            fn_8040D118(&turnedX, &m_appearOffset, DegreesToRadians(m_params.appearAngleX));
-            fn_800091D0(&m_appearOffset, &turnedX);
-            fn_8040D0AC(&turnedY, &m_appearOffset, DegreesToRadians(m_params.appearAngleY));
-            fn_800091D0(&m_appearOffset, &turnedY);
+            m_appearOffset = fn_8040D118(m_appearOffset, DegreesToRadians(m_params.appearAngleX));
+            m_appearOffset = fn_8040D0AC(m_appearOffset, DegreesToRadians(m_params.appearAngleY));
 
             fn_800C9F14(m_owner, &m_position);
             fn_8040CFF8(&m_position, &m_appearOffset);
@@ -147,11 +142,9 @@ void ElecCristalWall::UpdateBody(float dt) {
          * appear time, from 1 down to 0. */
         float cosine = std::cos(m_appearTime * lbl_805FAD38 * 0.5f);
         float remaining = cosine * cosine * cosine;
-        Fn8040Vector3 offset;
 
         fn_800C9F14(m_owner, &m_position);
-        fn_800091A4(&offset, &m_appearOffset, remaining);
-        fn_8040CFF8(&m_position, &offset);
+        AddVector(&m_position, m_appearOffset * remaining);
         m_rotation.x = m_appearRotation.x * remaining;
         m_rotation.y = m_appearRotation.y * remaining;
         m_rotation.z = m_appearRotation.z * remaining;
@@ -207,17 +200,10 @@ void ElecCristalWall::fn_800CBC1C(float) {
     m_rotation.x = m_rotation.y = m_rotation.z = 0.0f;
 
     Fn8040Vector3 direction(0.0f, 0.0f, -30.0f);
-    Fn8040Vector3 turnedX;
-    Fn8040Vector3 turnedY;
-    Fn8040Vector3 end;
 
-    fn_8040D118(&turnedX, &direction, DegreesToRadians(m_params.appearAngleX));
-    fn_800091D0(&direction, &turnedX);
-    fn_8040D0AC(&turnedY, &direction, DegreesToRadians(m_params.appearAngleY));
-    fn_800091D0(&direction, &turnedY);
-    fn_8040CDD0(&end, &m_charInfo->m_position, &direction);
-
-    UnkSegment_80020A20 line(m_charInfo->m_position, end);
+    direction = fn_8040D118(direction, DegreesToRadians(m_params.appearAngleX));
+    direction = fn_8040D0AC(direction, DegreesToRadians(m_params.appearAngleY));
+    UnkSegment_80020A20 line(m_charInfo->m_position, m_charInfo->m_position + direction);
 
     fn_802E0AA0(line, lbl_805F06D8, 3.0f);
     if (m_model != 0) {

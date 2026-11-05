@@ -235,13 +235,13 @@ void fn_8040B6F8(Fn8040Matrix34 *matrix) {
     fn_80325384(matrix, &lbl_805E0720);
 }
 
-void fn_8040B67C(Fn8040Vector3 *result, const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector) {
-    result->Set(matrix->values[0][0] * vector->x + matrix->values[0][1] * vector->y +
-                    matrix->values[0][2] * vector->z + matrix->values[0][3],
-                matrix->values[1][0] * vector->x + matrix->values[1][1] * vector->y +
-                    matrix->values[1][2] * vector->z + matrix->values[1][3],
-                matrix->values[2][0] * vector->x + matrix->values[2][1] * vector->y +
-                    matrix->values[2][2] * vector->z + matrix->values[2][3]);
+Fn8040Vector3 fn_8040B67C(const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector) {
+    return Fn8040Vector3(matrix->values[0][0] * vector->x + matrix->values[0][1] * vector->y +
+                             matrix->values[0][2] * vector->z + matrix->values[0][3],
+                         matrix->values[1][0] * vector->x + matrix->values[1][1] * vector->y +
+                             matrix->values[1][2] * vector->z + matrix->values[1][3],
+                         matrix->values[2][0] * vector->x + matrix->values[2][1] * vector->y +
+                             matrix->values[2][2] * vector->z + matrix->values[2][3]);
 }
 
 void fn_8040B618(Fn8040Vector3 *result, const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector) {
@@ -279,23 +279,13 @@ void fn_8040B4D0(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source) {
 
 void fn_8040B33C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *eye, const Fn8040Vector3 *up,
                  const Fn8040Vector3 *target) {
-    Fn8040Vector3 zAxis;
-    Fn8040Vector3 xAxis;
-    Fn8040Vector3 yAxis;
-
-    Fn8040Vector3 toEye;
-    fn_8040CD74(&toEye, eye, target);
-    fn_800091EC(&zAxis, &toEye);
+    Fn8040Vector3 zAxis = *eye - *target;
     fn_8040CE74(&zAxis);
 
-    Fn8040Vector3 xAxisUnnormalized;
-    fn_8040CFB8(&xAxisUnnormalized, up, &zAxis);
-    fn_800091EC(&xAxis, &xAxisUnnormalized);
+    Fn8040Vector3 xAxis = fn_8040CFB8(*up, zAxis);
     fn_8040CE74(&xAxis);
 
-    Fn8040Vector3 yAxisUnnormalized;
-    fn_8040CFB8(&yAxisUnnormalized, &zAxis, &xAxis);
-    fn_800091EC(&yAxis, &yAxisUnnormalized);
+    Fn8040Vector3 yAxis = fn_8040CFB8(zAxis, xAxis);
 
     matrix->Set(xAxis.x, xAxis.y, xAxis.z, -fn_8040CF90(eye, &xAxis), yAxis.x, yAxis.y, yAxis.z,
                 -fn_8040CF90(eye, &yAxis), zAxis.x, zAxis.y, zAxis.z, -fn_8040CF90(eye, &zAxis));

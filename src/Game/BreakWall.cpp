@@ -250,9 +250,7 @@ void BreakWall::StartCrashEffect() {
         const UnkResourceRecord_80208848 *record = m_crashInfo->fn_80208618();
 
         if (record != 0) {
-            Fn8040Vector3 position;
-
-            fn_800091EC(&position, &m_charInfo->m_position);
+            Fn8040Vector3 position = m_charInfo->m_position;
             position.x += record->field_0x10;
             position.y += record->field_0x14;
             position.z += record->field_0x18;
@@ -302,9 +300,7 @@ bool BreakWall::ShowCrackedModel() {
         UnkResourceRecord_80208848 *record = fn_80208888(m_resource, name);
 
         if (record != 0) {
-            Fn8040Vector3 position;
-
-            fn_800091EC(&position, &m_charInfo->m_position);
+            Fn8040Vector3 position = m_charInfo->m_position;
             position.x += record->field_0x10;
             position.y += record->field_0x14;
             position.z += record->field_0x18;

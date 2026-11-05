@@ -71,30 +71,7 @@ static void fn_800FFB70(boost::shared_ptr<CharInfo> hit, void *arg) {
     hit->fn_801DC980(new Player::CancelBehaviorCommand(4));
     hit->fn_801DC980(new ClrVelocityCommand(4));
 
-    /* Matching workaround: the vectors are declared together in this order because the order of
-     * declaration places their stack slots; declaring each at its first use moves them and adds 42
-     * differing words. The local* vectors are given in the panel's own space, and each *Temporary
-     * local receives a transformed vector before it is copied, possibly standing for a by-value
-     * temporary of the original (inferred). Even in this order the result of fn_8040F5F4 and
-     * pushTemporary sit at other offsets than in the original. Revisit when the vector functions
-     * are modelled with by-value results. */
     Fn8040Matrix34 matrix;
-    Fn8040Vector3 position;
-    Fn8040Vector3 front;
-    Fn8040Vector3 top;
-    UnkRotation3 angles;
-    Fn8040Vector3 velocity;
-    Fn8040Vector3 push;
-    Fn8040Vector3 offset;
-    Fn8040Vector3 localOffset;
-    Fn8040Vector3 frontTemporary;
-    Fn8040Vector3 localFront;
-    Fn8040Vector3 topTemporary;
-    Fn8040Vector3 localTop;
-    Fn8040Vector3 pushTemporary;
-    Fn8040Vector3 scaledDirection;
-    Fn8040Vector3 localDirection;
-    Fn8040Vector3 velocityTemporary;
 
     fn_8040C148(&matrix, &lbl_805E0720);
     fn_8040B848(&matrix, panelInfo->m_rotation.y);
@@ -102,8 +79,8 @@ static void fn_800FFB70(boost::shared_ptr<CharInfo> hit, void *arg) {
     fn_8040B80C(&matrix, panelInfo->m_rotation.z);
 
     /* 5 units above the panel along its up direction. */
-    fn_800091EC(&position, &panelInfo->m_position);
-    fn_8040B67C(&offset, &matrix, fn_80008E1C(&localOffset, 0.0f, 5.0f, 0.0f));
+    Fn8040Vector3 position = panelInfo->m_position;
+    const Fn8040Vector3 &offset = matrix * Fn8040Vector3(0.0f, 5.0f, 0.0f);
     fn_8040CFF8(&position, &offset);
     hit->fn_801DC980(new SetPositionCommand(&position, 4));
 
@@ -115,23 +92,14 @@ static void fn_800FFB70(boost::shared_ptr<CharInfo> hit, void *arg) {
         speed += (s_launchSpeeds[index + 1] - speed) * (level - index);
     }
 
-    localFront.Set(0.0f, 0.0f, -1.0f);
-    fn_8040B67C(&frontTemporary, &matrix, &localFront);
-    fn_800091EC(&front, &frontTemporary);
-
-    localTop.Set(0.0f, 1.0f, 0.0f);
-    fn_8040B67C(&topTemporary, &matrix, &localTop);
-    fn_800091EC(&top, &topTemporary);
-
-    angles = fn_8040F5F4(&front, &top, 2);
+    Fn8040Vector3 front = matrix * Fn8040Vector3(0.0f, 0.0f, -1.0f);
+    Fn8040Vector3 top = matrix * Fn8040Vector3(0.0f, 1.0f, 0.0f);
+    UnkRotation3 angles = fn_8040F5F4(&front, &top, 2);
     hit->fn_801DC980(new SetAngleCommand(angles, 2, 4));
 
     /* The launch direction points 3 degrees down from the panel's forward direction. */
-    localDirection.Set(0.0f, -0.052335955f, -0.9986295f);
-    fn_8040CDA8(&scaledDirection, &localDirection, speed);
-    fn_800091EC(&velocity, &scaledDirection);
-    fn_8040B67C(&velocityTemporary, &matrix, &velocity);
-    fn_800091D0(&velocity, &velocityTemporary);
+    Fn8040Vector3 velocity = Fn8040Vector3(0.0f, -0.052335955f, -0.9986295f) * speed;
+    velocity = matrix * velocity;
     hit->fn_801DC980(new SetVelocityCommand(&velocity, 4));
 
     float factor = s_pushFactors[index];
@@ -140,9 +108,8 @@ static void fn_800FFB70(boost::shared_ptr<CharInfo> hit, void *arg) {
         factor += (s_pushFactors[index + 1] - factor) * (context->m_params->level - index);
     }
 
-    push.Set(0.0f, 0.0f, -1.0f);
-    fn_8040B67C(&pushTemporary, &matrix, &push);
-    fn_800091D0(&push, &pushTemporary);
+    Fn8040Vector3 push(0.0f, 0.0f, -1.0f);
+    push = matrix * push;
     fn_8040CE38(&push, factor);
     hit->fn_801DC980(new Player::ActingAccelerateCommand(&push, context->m_params->noControlTime));
     hit->fn_801DC980(new Player::PressGroundCommand(4));
@@ -203,13 +170,9 @@ void DashPanel::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
         Fn8040Vector3 start(0.0f, 0.0f, 0.0f);
         Fn8040Vector3 end(0.0f, 0.0f, -1000000.0f);
-        Fn8040Vector3 startTemporary;
-        Fn8040Vector3 endTemporary;
 
-        fn_8040B67C(&startTemporary, &matrix, &start);
-        fn_800091D0(&start, &startTemporary);
-        fn_8040B67C(&endTemporary, &matrix, &end);
-        fn_800091D0(&end, &endTemporary);
+        start = matrix * start;
+        end = matrix * end;
         fn_802E0B58(UnkSegment_80020A20(start, end), lbl_805F06D8);
     }
 }

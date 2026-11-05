@@ -39,9 +39,8 @@ MissionClearCollision::MissionClearCollision(Task *parent, UnkGadgetOwner_800C9C
         fn_802B4510(m_object.get(), 1);
 
         Fn8040Vector3 offset(0.0f, s_objectHeight.value, 0.0f);
-        Fn8040Vector3 position;
 
-        fn_8040CDD0(&position, &m_charInfo->m_position, &offset);
+        const Fn8040Vector3 &position = m_charInfo->m_position + offset;
         fn_802B44C8(m_object.get(), &position);
     }
 }
@@ -80,11 +79,7 @@ void MissionClearCollision::UpdateBody(float dt) {
     boost::shared_ptr<CharInfo> character = fn_800A8C54(fn_80074194(), 0).lock();
 
     if (character.get() != 0) {
-        Fn8040Vector3 distance;
-        Fn8040Vector3 difference;
-
-        fn_8040CD74(&difference, &character->m_position, &m_charInfo->m_position);
-        fn_800091EC(&distance, &difference);
+        Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
 
         if (fn_8040CF50(&distance) < m_params.radius) {
             boost::shared_ptr<UnkActor_800740E4> actor =

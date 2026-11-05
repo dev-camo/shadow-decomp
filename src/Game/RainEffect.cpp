@@ -183,17 +183,13 @@ void RainEffect::UpdateModelMatrix() {
     float distance = 1.1f;
     Fn8040Matrix34 matrix;
     Fn8040Vector3 matrixPosition;
-    Fn8040Vector3 direction;
-    Fn8040Vector3 toEntryVector;
-    Fn8040Vector3 modelPosition;
 
     fn_8040C148(&matrix, GetEntryMatrix(fn_80009548(), 0));
     fn_8040FAA0(&matrixPosition, &matrix);
-    fn_8040CD74(&toEntryVector, fn_800101F8(fn_80009548(), 0), &matrixPosition);
-    fn_800091EC(&direction, &toEntryVector);
+    Fn8040Vector3 direction = *fn_800101F8(fn_80009548(), 0) - matrixPosition;
     fn_8040CE74(&direction);
     fn_8040CE38(&direction, distance);
-    fn_8040CDD0(&modelPosition, &matrixPosition, &direction);
+    const Fn8040Vector3 &modelPosition = matrixPosition + direction;
     fn_8040FA20(&matrix, &modelPosition);
 
     UnkRecord_8000DCC0 *record = fn_8000DCC0()->field_0x0;

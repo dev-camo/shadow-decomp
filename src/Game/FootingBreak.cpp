@@ -31,19 +31,11 @@
 static void ApplyMove(Fn8040Vector3 *position, const Fn8040Vector3 *start,
                       const Fn8040Vector3 *delta, float time, float duration) {
     if (time >= duration || duration == 0.0f) {
-        Fn8040Vector3 end;
-
-        fn_8040CDD0(&end, start, delta);
-        fn_800091D0(position, &end);
+        *position = *start + *delta;
     } else {
         float phase = time / duration;
         float wave = std::cos(phase * lbl_805FAD38);
-        Fn8040Vector3 moved;
-        Fn8040Vector3 offset;
-
-        fn_8040CDA8(&offset, delta, 0.5f * (1.0f - wave));
-        fn_8040CDD0(&moved, start, &offset);
-        fn_800091D0(position, &moved);
+        *position = *start + *delta * (0.5f * (1.0f - wave));
     }
 }
 
@@ -52,13 +44,13 @@ static void ApplyMove(Fn8040Vector3 *position, const Fn8040Vector3 *start,
 static void ApplyHover(Fn8040Vector3 *position, const Fn8040Vector3 *base, float height, float time,
                        float period) {
     if (fn_8000A950(period)) {
-        fn_800091D0(position, base);
+        *position = *base;
     } else {
         float phase = time / period;
         float wave = std::sin(phase * lbl_805FAD38);
         float offset = 0.5f * (wave * height);
 
-        fn_800091D0(position, base);
+        *position = *base;
         position->y += offset;
     }
 }
@@ -212,9 +204,8 @@ void FootingBreak::UpdateBody(float dt) {
 void FootingBreak::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     FootingBreakParams previous = m_params;
     u8 previousComId = m_comId;
-    Fn8040Vector3 previousPosition;
 
-    fn_800091EC(&previousPosition, &m_charInfo->m_position);
+    Fn8040Vector3 previousPosition = m_charInfo->m_position;
     ReadOwner(owner);
     if (memcmp(&previous, &m_params, sizeof(m_params)) != 0 || previousComId != m_comId ||
         !fn_8000AD08(&previousPosition, &m_charInfo->m_position)) {
@@ -227,19 +218,16 @@ void FootingBreak::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
     /* Draws debug lines along the move and from half the hover length below the position up to
      * the position (behaviour inferred). */
-    Fn8040Vector3 hoverLow;
-    Fn8040Vector3 hoverHigh;
-    Fn8040Vector3 moveEnd;
-    Fn8040Vector3 move(m_params.moveLengthX, m_params.moveLengthY, m_params.moveLengthZ);
 
-    fn_8040CDD0(&moveEnd, &m_charInfo->m_position, &move);
-
-    UnkSegment_80020A20 moveLine(m_charInfo->m_position, moveEnd);
+    UnkSegment_80020A20 moveLine(m_charInfo->m_position,
+                                 m_charInfo->m_position + Fn8040Vector3(m_params.moveLengthX,
+                                                                        m_params.moveLengthY,
+                                                                        m_params.moveLengthZ));
 
     fn_802E0AA0(moveLine, lbl_805F06D8, 5.0f);
 
-    fn_800091EC(&hoverLow, &m_charInfo->m_position);
-    fn_800091EC(&hoverHigh, &m_charInfo->m_position);
+    Fn8040Vector3 hoverLow = m_charInfo->m_position;
+    Fn8040Vector3 hoverHigh = m_charInfo->m_position;
     hoverLow.y -= 0.5f * m_params.hoverLength;
     hoverHigh.y = hoverLow.y + 0.5f * m_params.hoverLength;
 
@@ -303,15 +291,13 @@ void FootingBreak::SetState(int state) {
     case 4: {
         Fn8040Vector3 end;
         Fn8040Vector3 move(m_params.moveLengthX, m_params.moveLengthY, m_params.moveLengthZ);
-        Fn8040Vector3 delta;
 
-        fn_800091D0(&m_moveStart, &m_charInfo->m_position);
+        m_moveStart = m_charInfo->m_position;
         fn_800C9F14(m_owner, &end);
         fn_8040CFF8(&end, &move);
-        fn_8040CD74(&delta, &end, &m_moveStart);
-        fn_800091D0(&m_moveDelta, &delta);
+        m_moveDelta = end - m_moveStart;
         m_timer = 0.0f;
-        fn_800091D0(&m_charInfo2->m_position, &m_charInfo->m_position);
+        m_charInfo2->m_position = m_charInfo->m_position;
         m_charInfo2->m_rotation = m_charInfo->m_rotation;
         break;
     }

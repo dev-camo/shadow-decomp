@@ -353,17 +353,14 @@ void PowerDeviceNaked::UpdateModelMatrix() {
         m_model->fn_801633DC(&matrix);
         m_coreModel->fn_801633DC(&matrix);
 
-        Fn8040Vector3 objectPosition;
-
-        fn_800091EC(&objectPosition, &m_charInfo->m_position);
+        Fn8040Vector3 objectPosition = m_charInfo->m_position;
         objectPosition.y += s_objectHeight.value;
         fn_800CCE38(m_object.get(), &objectPosition);
 
         if (m_object2.get() != 0) {
             Fn8040Vector3 above(0.0f, s_object2Height.value, 0.0f);
-            Fn8040Vector3 object2Position;
 
-            fn_8040CDD0(&object2Position, &above, &m_charInfo->m_position);
+            const Fn8040Vector3 &object2Position = above + m_charInfo->m_position;
             fn_802B44C8(m_object2.get(), &object2Position);
         }
     }

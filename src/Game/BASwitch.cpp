@@ -140,17 +140,13 @@ void BASwitch::UpdateModelMatrix() {
     }
 
     if (m_object2.get() != 0) {
-        Fn8040Vector3 position;
-
-        fn_800091EC(&position, &m_charInfo->m_position);
+        Fn8040Vector3 position = m_charInfo->m_position;
         position.y += s_object2Height;
         fn_802B44C8(m_object2.get(), &position);
     }
 
     if (m_object.get() != 0) {
-        Fn8040Vector3 position;
-
-        fn_800091EC(&position, &m_charInfo->m_position);
+        Fn8040Vector3 position = m_charInfo->m_position;
         position.y += s_objectHeight;
         fn_800CCE38(m_object.get(), &position);
     }

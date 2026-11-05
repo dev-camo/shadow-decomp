@@ -268,9 +268,8 @@ void ElecCoreProgram::UpdateModelMatrix() {
     }
     if (m_object2.get() != 0) {
         Fn8040Vector3 offset(0.0f, 34.0f, 0.0f);
-        Fn8040Vector3 position;
 
-        fn_8040CDD0(&position, &offset, &m_charInfo->m_position);
+        const Fn8040Vector3 &position = offset + m_charInfo->m_position;
         fn_802B44C8(m_object2.get(), &position);
     }
 }

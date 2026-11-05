@@ -48,11 +48,8 @@ void ElecSecurityCodeGenerator::UpdateBody(float dt) {
         if (IsCharInfoInRange()) {
             boost::shared_ptr<CharInfo> nearest =
                 fn_800A8A7C(fn_80074194(), &m_charInfo->m_position).lock();
-            Fn8040Vector3 direction;
-            Fn8040Vector3 difference;
-
-            fn_8000AD64(&difference, &nearest->m_position, &m_charInfo->m_position);
-            fn_8040CEE8(&direction, &difference);
+            const Fn8040Vector3 &direction =
+                fn_8040CEE8(nearest->m_position - m_charInfo->m_position);
 
             Fn8040Vector2 rotation = fn_8040F760(&direction);
 
@@ -143,9 +140,8 @@ bool ElecSecurityCodeGenerator::IsCharInfoInRange() {
 
     if (nearest.get() != 0) {
         float rangeSquared = m_params.range * m_params.range;
-        Fn8040Vector3 offset;
 
-        fn_8040CD74(&offset, &m_charInfo->m_position, &nearest->m_position);
+        const Fn8040Vector3 &offset = m_charInfo->m_position - nearest->m_position;
         return fn_8040CF2C(&offset) <= rangeSquared;
     }
 

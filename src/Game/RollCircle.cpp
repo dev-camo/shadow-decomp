@@ -112,26 +112,13 @@ void RollCircleObj::Reset() {
 }
 
 void RollCircleObj::UpdatePosition() {
-    Fn8040Vector3 offset;
-    Fn8040Vector3 previous;
-    Fn8040Vector3 rotatedTemporary;
-    Fn8040Vector3 tiltedZTemporary;
-    Fn8040Vector3 tiltedXTemporary;
-    Fn8040Vector3 positionTemporary;
-    Fn8040Vector3 movedTemporary;
-
-    fn_8040D0AC(&rotatedTemporary, &m_holder->m_offset, m_angle);
-    fn_800091EC(&offset, &rotatedTemporary);
-    fn_8040D044(&tiltedZTemporary, &offset, m_holder->m_rotation.z);
-    fn_800091D0(&offset, &tiltedZTemporary);
-    fn_8040D118(&tiltedXTemporary, &offset, m_holder->m_rotation.x);
-    fn_800091D0(&offset, &tiltedXTemporary);
-    fn_800091EC(&previous, &m_charInfo->m_position);
-    fn_8040CDD0(&positionTemporary, &m_holder->m_position, &offset);
-    fn_800091D0(&m_charInfo->m_position, &positionTemporary);
+    Fn8040Vector3 offset = fn_8040D0AC(m_holder->m_offset, m_angle);
+    offset = fn_8040D044(offset, m_holder->m_rotation.z);
+    offset = fn_8040D118(offset, m_holder->m_rotation.x);
+    Fn8040Vector3 previous = m_charInfo->m_position;
+    m_charInfo->m_position = m_holder->m_position + offset;
     m_charInfo->m_rotation = m_holder->m_objRotation;
-    fn_8040CD74(&movedTemporary, &m_charInfo->m_position, &previous);
-    fn_800091D0(&m_charInfo->field_0x18, &movedTemporary);
+    m_charInfo->field_0x18 = m_charInfo->m_position - previous;
 }
 
 void RollCircleObj::UpdateModelMatrix() {
@@ -165,7 +152,7 @@ void RollCircleObj::Break() {
 }
 
 void RollCircleObj::fn_800D61C4(AttackCallbackParam &param) {
-    fn_800091D0(&param.field_0x34, &m_charInfo->field_0x18);
+    param.field_0x34 = m_charInfo->field_0x18;
     fn_8040CE38(&param.field_0x34, 1.0f / lbl_8057D6A0.field_0x18);
     param.field_0x4C = fn_8040CF50(&param.field_0x34);
     fn_8040CE74(&param.field_0x34);
@@ -233,11 +220,8 @@ RollCircle::RollCircle(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
 RollCircle::~RollCircle() {}
 
 void RollCircle::UpdateBody(float dt) {
-    Fn8040Vector3 rotated;
-
     BreakQueued();
-    fn_8040D0AC(&rotated, &m_offset, m_params.circleSpeed * dt);
-    fn_800091D0(&m_offset, &rotated);
+    m_offset = fn_8040D0AC(m_offset, m_params.circleSpeed * dt);
     m_objRotation.x += m_params.objAngSpdX * dt;
     m_objRotation.y += m_params.objAngSpdY * dt;
     m_objRotation.z += m_params.objAngSpdZ * dt;
@@ -265,8 +249,6 @@ void RollCircle::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 }
 
 void RollCircle::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
-    Fn8040Vector3 rotated;
-
     fn_800C9F14(owner, &m_position);
     fn_800C9ED4(owner, &m_rotation);
     fn_800C9DBC(owner, &m_params, sizeof(m_params));
@@ -279,8 +261,7 @@ void RollCircle::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
     fn_8040CE60(&m_offset);
     m_offset.z -= m_params.radius;
-    fn_8040D0AC(&rotated, &m_offset, m_rotation.y);
-    fn_800091D0(&m_offset, &rotated);
+    m_offset = fn_8040D0AC(m_offset, m_rotation.y);
     fn_8040E970(&m_objRotation);
 }
 

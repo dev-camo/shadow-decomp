@@ -254,12 +254,12 @@ void fn_804173A8(_stMtnPlayWork *control, const Fn8040Vector3 *position,
         return;
     }
     if (position != 0) {
-        fn_800091D0(&control->vectors[0].value, position);
+        control->vectors[0].value = *position;
     }
     if (rotation == 0) {
         return;
     }
-    fn_800091D0(&control->vectors[1].value, rotation);
+    control->vectors[1].value = *rotation;
 
     fn_8040C204(lbl_805F13A8);
     fn_8040B6F8(TopMatrix());

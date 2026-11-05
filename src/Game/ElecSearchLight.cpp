@@ -204,11 +204,9 @@ void ElecSearchLight::UpdateBody(float dt) {
                     fn_800A8A7C(fn_80074194(), &m_charInfo->m_position));
 
                 if (nearest.get() != 0) {
-                    Fn8040Vector3 offset;
-                    Fn8040Vector3 difference;
+                    Fn8040Vector3 offset = m_charInfo->m_position - nearest->m_position;
 
-                    fn_8040CD74(&difference, &m_charInfo->m_position, &nearest->m_position);
-                    if (fn_8040CF2C(fn_800091EC(&offset, &difference)) > 10000.0f) {
+                    if (fn_8040CF2C(&offset) > 10000.0f) {
                         m_state = 5;
                         m_timer = 0.0f;
                         m_yaw = 0.0f;
@@ -267,11 +265,9 @@ void ElecSearchLight::UpdateBody(float dt) {
                     fn_800A8A7C(fn_80074194(), &m_charInfo->m_position));
 
                 if (nearest.get() != 0) {
-                    Fn8040Vector3 offset;
-                    Fn8040Vector3 difference;
+                    Fn8040Vector3 offset = m_charInfo->m_position - nearest->m_position;
 
-                    fn_8040CD74(&difference, &m_charInfo->m_position, &nearest->m_position);
-                    if (fn_8040CF2C(fn_800091EC(&offset, &difference)) > 10000.0f) {
+                    if (fn_8040CF2C(&offset) > 10000.0f) {
                         m_state = 5;
                         m_timer = 0.0f;
                         m_yaw = 0.0f;
@@ -322,11 +318,7 @@ void ElecSearchLight::UpdateModelMatrix() {
         fn_8040B848(&matrix, m_yaw);
         fn_8040B884(&matrix, m_pitch);
 
-        Fn8040Vector3 end;
-        Fn8040Vector3 beam(0.0f, 0.0f, 10.0f * -m_params.lightLength);
-
-        fn_8040B67C(&end, &matrix, &beam);
-        fn_800091D0(&m_beamEnd, &end);
+        m_beamEnd = matrix * Fn8040Vector3(0.0f, 0.0f, 10.0f * -m_params.lightLength);
         m_model->fn_801633DC(&matrix);
         UpdateCone(&matrix);
     }
@@ -345,16 +337,8 @@ void ElecSearchLight::OnCommand(CharCommand &command) {}
 float ElecSearchLight::GetSegmentDistance(const Fn8040Vector3 *point,
                                           const UnkSegment_80020A20 *segment,
                                           Fn8040Vector3 *closest, float *fraction) {
-    Fn8040Vector3 direction;
-    Fn8040Vector3 offset;
-    Fn8040Vector3 nearest;
-    Fn8040Vector3 difference;
-    Fn8040Vector3 relative;
-
-    fn_8040CD74(&difference, &segment->end, &segment->start);
-    fn_800091EC(&direction, &difference);
-    fn_8040CD74(&relative, point, &segment->start);
-    fn_800091EC(&offset, &relative);
+    Fn8040Vector3 direction = segment->end - segment->start;
+    Fn8040Vector3 offset = *point - segment->start;
 
     float projection = fn_8040CF90(&offset, &direction);
 
@@ -363,7 +347,7 @@ float ElecSearchLight::GetSegmentDistance(const Fn8040Vector3 *point,
 
         if (projection >= lengthSquared) {
             if (closest != 0) {
-                fn_800091D0(closest, &segment->end);
+                *closest = segment->end;
             }
             if (fraction != 0) {
                 *fraction = 0.0f;
@@ -373,14 +357,9 @@ float ElecSearchLight::GetSegmentDistance(const Fn8040Vector3 *point,
 
         projection /= lengthSquared;
 
-        Fn8040Vector3 sum;
-        Fn8040Vector3 scaled;
-
-        fn_8040CDA8(&scaled, &direction, projection);
-        fn_8040CDD0(&sum, &segment->start, &scaled);
-        fn_800091EC(&nearest, &sum);
+        Fn8040Vector3 nearest = segment->start + direction * projection;
         if (closest != 0) {
-            fn_800091D0(closest, &nearest);
+            *closest = nearest;
         }
         if (fraction != 0) {
             *fraction = projection;
@@ -389,7 +368,7 @@ float ElecSearchLight::GetSegmentDistance(const Fn8040Vector3 *point,
     }
 
     if (closest != 0) {
-        fn_800091D0(closest, &segment->start);
+        *closest = segment->start;
     }
     if (fraction != 0) {
         *fraction = 1.0f;
@@ -434,21 +413,8 @@ void ElecSearchLight::Catch(const Fn8040Vector3 *position) {
 }
 
 void ElecSearchLight::PullTarget() {
-    Fn8040Vector3 toLight;
-    Fn8040Vector3 position;
-    Fn8040Vector3 temporary;
-
-    fn_8040CD74(&temporary, &m_charInfo->m_position, &m_target->m_position);
-    fn_800091EC(&toLight, &temporary);
-
-    Fn8040Vector3 sum;
-    Fn8040Vector3 step;
-    Fn8040Vector3 direction;
-
-    fn_8040CEE8(&direction, &toLight);
-    fn_8040CDA8(&step, &direction, 20.0f);
-    fn_8040CDD0(&sum, &m_target->m_position, &step);
-    fn_800091EC(&position, &sum);
+    Fn8040Vector3 toLight = m_charInfo->m_position - m_target->m_position;
+    Fn8040Vector3 position = m_target->m_position + fn_8040CEE8(toLight) * 20.0f;
     m_target->fn_801DC980(new SetPositionCommand(&position, 4));
     fn_801D53C4(fn_80053164(), 0x7230, 0, this, 2, 0, 5);
 
@@ -501,13 +467,8 @@ void ElecSearchLight::StartBreakEffect() {
 }
 
 void ElecSearchLight::TurnToTarget(float dt) {
-    Fn8040Vector3 direction;
-    UnkRotation3 angles;
-    Fn8040Vector3 temporary;
-
-    fn_8040CD74(&temporary, &m_charInfo->m_position, &m_target->m_position);
-    fn_800091EC(&direction, &temporary);
-    angles = lbl_805E07B8;
+    Fn8040Vector3 direction = m_charInfo->m_position - m_target->m_position;
+    UnkRotation3 angles = lbl_805E07B8;
     fn_8003B9E8(&direction, &angles.x, &angles.y);
 
     Fn8040Matrix34 matrix(lbl_805E0720);
@@ -533,42 +494,26 @@ void ElecSearchLight::UpdateCone(const Fn8040Matrix34 *matrix) {
     for (int i = 0; i < 12; i++) {
         Fn8040Vector3 point;
         Fn8040Vector3 normal;
-        Fn8040Vector3 nearPoint;
-        Fn8040Vector3 nearOffset(0.0f, 25.0f, -40.0f);
-
-        fn_8040B67C(&nearPoint, &rotation, &nearOffset);
-        fn_800091D0(&point, &nearPoint);
+        point = rotation * Fn8040Vector3(0.0f, 25.0f, -40.0f);
         RwIm3DVertexSetPos(&m_cone[i * 2], point.x, point.y, point.z);
 
-        Fn8040Vector3 farPoint;
-        Fn8040Vector3 farOffset(0.0f, 50.0f, 10.0f * -m_params.lightLength);
-
-        fn_8040B67C(&farPoint, &rotation, &farOffset);
-        fn_800091D0(&point, &farPoint);
+        point = rotation * Fn8040Vector3(0.0f, 50.0f, 10.0f * -m_params.lightLength);
         RwIm3DVertexSetPos(&m_cone[i * 2 + 1], point.x, point.y, point.z);
 
         Fn8040Vector3 turnedUp;
         Fn8040Vector3 up(0.0f, 1.0f, 0.0f);
 
         fn_8040B618(&turnedUp, &rotation, &up);
-        fn_800091D0(&normal, &turnedUp);
+        normal = turnedUp;
         RwIm3DVertexSetNormal(&m_cone[i * 2], normal.x, normal.y, normal.z);
         RwIm3DVertexSetNormal(&m_cone[i * 2 + 1], normal.x, normal.y, normal.z);
 
         /* The last pair repeats the first one and closes the strip. */
         if (i == 0) {
-            Fn8040Vector3 closingNearPoint;
-            Fn8040Vector3 closingNearOffset(0.0f, 25.0f, -40.0f);
-
-            fn_8040B67C(&closingNearPoint, &rotation, &closingNearOffset);
-            fn_800091D0(&point, &closingNearPoint);
+            point = rotation * Fn8040Vector3(0.0f, 25.0f, -40.0f);
             RwIm3DVertexSetPos(&m_cone[24], point.x, point.y, point.z);
 
-            Fn8040Vector3 closingFarPoint;
-            Fn8040Vector3 closingFarOffset(0.0f, 50.0f, 10.0f * -m_params.lightLength);
-
-            fn_8040B67C(&closingFarPoint, &rotation, &closingFarOffset);
-            fn_800091D0(&point, &closingFarPoint);
+            point = rotation * Fn8040Vector3(0.0f, 50.0f, 10.0f * -m_params.lightLength);
             RwIm3DVertexSetPos(&m_cone[25], point.x, point.y, point.z);
 
             RwIm3DVertexSetNormal(&m_cone[24], normal.x, normal.y, normal.z);

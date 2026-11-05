@@ -107,14 +107,10 @@ void GravityChangeCollision::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
     /* Draws a debug line from the character info's position to the point 50 times the gravity
      * table's vector for the GRAVITY index away in the opposite direction. */
-    Fn8040Vector3 direction;
-    Fn8040Vector3 end;
 
-    fn_800091EC(&direction, fn_80293B60(m_params.gravity));
+    Fn8040Vector3 direction = *fn_80293B60(m_params.gravity);
     fn_8040CE38(&direction, -50.0f);
-    fn_8040CDD0(&end, &m_charInfo->m_position, &direction);
-
-    UnkSegment_80020A20 segment(m_charInfo->m_position, end);
+    UnkSegment_80020A20 segment(m_charInfo->m_position, m_charInfo->m_position + direction);
 
     fn_802E0AA0(segment, UnkDebugColor_802E0E84(0xC0, 0xFF, 0xFF, 0), 1.0f);
 }

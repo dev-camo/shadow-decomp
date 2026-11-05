@@ -83,24 +83,9 @@ static void fn_801213E8(boost::shared_ptr<CharInfo> hit, void *arg) {
     fn_8040B80C(&matrix, springInfo->m_rotation.z);
     fn_8040B884(&matrix, DegreesToRadians(90.0f));
 
-    Fn8040Vector3 upTurned;
-    Fn8040Vector3 forwardTurned;
-    /* Matching workaround: declared with these vectors, not at its first use below: the original
-     * frame has it between forwardTurned and upTemporary, and a declaration at its use moves it
-     * (the hit callback then differs in 32 words instead of 13). Revisit when the vector helpers'
-     * result interface (returned by value or through a pointer) is settled. */
-    Fn8040Vector3 direction;
-    Fn8040Vector3 upTemporary;
-    Fn8040Vector3 up(0.0f, 1.0f, 0.0f);
+    Fn8040Vector3 upTurned = matrix * Fn8040Vector3(0.0f, 1.0f, 0.0f);
 
-    fn_8040B67C(&upTemporary, &matrix, &up);
-    fn_800091EC(&upTurned, &upTemporary);
-
-    Fn8040Vector3 forwardTemporary;
-    Fn8040Vector3 forward(0.0f, 0.0f, -1.0f);
-
-    fn_8040B67C(&forwardTemporary, &matrix, &forward);
-    fn_800091EC(&forwardTurned, &forwardTemporary);
+    Fn8040Vector3 forwardTurned = matrix * Fn8040Vector3(0.0f, 0.0f, -1.0f);
 
     hit->fn_801DC980(new SetAngleCommand(fn_8040F364(&forwardTurned, &upTurned), 2, 4));
 
@@ -119,11 +104,8 @@ static void fn_801213E8(boost::shared_ptr<CharInfo> hit, void *arg) {
     fn_8040B884(&launchMatrix, springInfo->m_rotation.x);
     fn_8040B80C(&launchMatrix, springInfo->m_rotation.z);
 
-    Fn8040Vector3 directionTemporary;
-
-    direction.Set(0.0f, 1.0f, 0.0f);
-    fn_8040B67C(&directionTemporary, &launchMatrix, &direction);
-    fn_800091D0(&direction, &directionTemporary);
+    Fn8040Vector3 direction(0.0f, 1.0f, 0.0f);
+    direction = launchMatrix * direction;
     fn_8040CE38(&direction, speed);
 
     hit->fn_801DC980(new SetVelocityCommand(&direction, 4));
@@ -192,18 +174,14 @@ void Spring::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
          * position, turned by its x and z rotations (behaviour inferred). */
         Fn8040Vector3 start(0.0f, 10.0f, 0.0f);
         Fn8040Vector3 end(0.0f, 1000000.0f, 0.0f);
-        Fn8040Vector3 startTemporary;
-        Fn8040Vector3 endTemporary;
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
         fn_8040B59C(&matrix, &m_charInfo->m_position);
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
         fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
-        fn_8040B67C(&startTemporary, &matrix, &start);
-        fn_800091D0(&start, &startTemporary);
-        fn_8040B67C(&endTemporary, &matrix, &end);
-        fn_800091D0(&end, &endTemporary);
+        start = matrix * start;
+        end = matrix * end;
         fn_802E0B58(UnkSegment_80020A20(start, end), lbl_805F06D8);
     }
 }
@@ -227,10 +205,8 @@ void Spring::UpdateModelMatrix() {
         m_model->fn_801633DC(&matrix);
 
         Fn8040Vector3 top(0.0f, 10.0f, 0.0f);
-        Fn8040Vector3 transformed;
 
-        fn_8040B67C(&transformed, &matrix, &top);
-        fn_800091D0(&m_position, &transformed);
+        m_position = matrix * top;
 
         if (m_object.get() != 0) {
             fn_800CCE38(m_object.get(), &m_position);

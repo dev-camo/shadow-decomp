@@ -142,10 +142,8 @@ static void fn_8014D324(boost::shared_ptr<CharInfo> hit, void *arg) {
         fn_8040B884(&matrix, DegreesToRadians(context->m_params->angle));
 
         Fn8040Vector3 direction(0.0f, 0.0f, 1.0f);
-        Fn8040Vector3 directionTemporary;
 
-        fn_8040B67C(&directionTemporary, &matrix, &direction);
-        fn_800091D0(&direction, &directionTemporary);
+        direction = matrix * direction;
         fn_8040CE38(&direction, speed);
 
         hit->fn_801DC980(new SetVelocityCommand(&direction, 4));
@@ -261,16 +259,12 @@ void SetStretchGrass::UpdateBody(float dt) {
         fn_8040B80C(&matrix, m_state.m_rotation.z);
 
         Fn8040Vector3 tip(0.0f, 0.0f, -50.0f * m_state.m_stretch);
-        Fn8040Vector3 tipTemporary;
 
-        fn_8040B67C(&tipTemporary, &matrix, &tip);
-        fn_800091D0(&m_charInfo->m_position, &tipTemporary);
+        m_charInfo->m_position = matrix * tip;
 
         Fn8040Vector3 launch(0.0f, 0.0f, -50.0f * m_state.m_stretch - 5.0f);
-        Fn8040Vector3 launchTemporary;
 
-        fn_8040B67C(&launchTemporary, &matrix, &launch);
-        fn_800091D0(&m_launchPosition, &launchTemporary);
+        m_launchPosition = matrix * launch;
 
         m_launchAngles = m_state.m_rotation;
         m_launchAngles.y += s_halfTurn;
@@ -314,15 +308,9 @@ void SetStretchGrass::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     fn_8040B80C(&matrix, m_state.m_rotation.z);
     fn_8040B884(&matrix, DegreesToRadians(m_params.angle));
 
-    Fn8040Vector3 startTemporary;
+    start = matrix * start;
 
-    fn_8040B67C(&startTemporary, &matrix, &start);
-    fn_800091D0(&start, &startTemporary);
-
-    Fn8040Vector3 endTemporary;
-
-    fn_8040B67C(&endTemporary, &matrix, &end);
-    fn_800091D0(&end, &endTemporary);
+    end = matrix * end;
     fn_802E0B58(UnkSegment_80020A20(start, end), lbl_805F06D8);
 
     if (m_probe.get() != 0) {
@@ -336,7 +324,7 @@ void SetStretchGrass::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
     fn_800C9DBC(owner, &m_params, sizeof(m_params));
 
     if (m_charInfo.get() != 0) {
-        fn_800091D0(&m_charInfo->m_position, &m_state.m_position);
+        m_charInfo->m_position = m_state.m_position;
         m_charInfo->m_rotation = m_state.m_rotation;
     }
 }

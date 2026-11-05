@@ -66,10 +66,8 @@ static void fn_80142C88(boost::shared_ptr<CharInfo> user, UnkLaunchContext_80142
     fn_8040B80C(&matrix, DegreesToRadians(context->m_params->z));
 
     Fn8040Vector3 direction(0.0f, 1.0f, 0.0f);
-    Fn8040Vector3 directionTemporary;
 
-    fn_8040B67C(&directionTemporary, &matrix, &direction);
-    fn_800091D0(&direction, &directionTemporary);
+    direction = matrix * direction;
     fn_8040CE38(&direction, speed);
 
     user->fn_801DC980(new SetVelocityCommand(&direction, 4));
@@ -193,13 +191,8 @@ void Catapult::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         fn_8040B884(&matrix, DegreesToRadians(m_params.x));
         fn_8040B80C(&matrix, DegreesToRadians(m_params.z));
 
-        Fn8040Vector3 startTemporary;
-        Fn8040Vector3 endTemporary;
-
-        fn_8040B67C(&startTemporary, &matrix, &start);
-        fn_800091D0(&start, &startTemporary);
-        fn_8040B67C(&endTemporary, &matrix, &end);
-        fn_800091D0(&end, &endTemporary);
+        start = matrix * start;
+        end = matrix * end;
         fn_802E0B58(UnkSegment_80020A20(start, end), lbl_805F06D8);
     }
 }

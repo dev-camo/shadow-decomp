@@ -41,12 +41,10 @@ using SonicteamUSA::System::CharaColli::CharaColliAttack;
 static UnkStartupFloat_800E2570 s_rollRadius(30.0f);
 static UnkStartupFloat_800E2570 s_collisionHeight(30.0f);
 
-/* The original's start-up function copies each of these from a temporary with the out-of-line
- * vector copy fn_800091EC; here the constructor stores them in place (see the note in
- * configure.py). */
-Fn8040Vector3 StonePoleFlat::s_rollVelocity(0.0f, 0.0f, 0.0f);
-Fn8040Vector3 StonePoleSlope::s_rollVelocity(0.0f, -14.101201f, 68.6502f);
-Fn8040Vector3 StonePoleAir::s_rollVelocity(0.0f, -707.59344f, 0.0f);
+/* Each is copied from a temporary, as the original's start-up function does. */
+Fn8040Vector3 StonePoleFlat::s_rollVelocity = Fn8040Vector3(0.0f, 0.0f, 0.0f);
+Fn8040Vector3 StonePoleSlope::s_rollVelocity = Fn8040Vector3(0.0f, -14.101201f, 68.6502f);
+Fn8040Vector3 StonePoleAir::s_rollVelocity = Fn8040Vector3(0.0f, -707.59344f, 0.0f);
 
 FallingStone::FallingStone(UnkGadgetOwner_800C9CD0 *owner, StonePole *pole, u32 index)
     : m_index(index), m_pole(pole), m_owner(owner), m_rolledDistance(0.0f) {
@@ -83,13 +81,9 @@ void FallingStone::UpdatePosition(s32 poleState, float dt) {
             fn_800493C4(&m_charInfo->m_rotation, &matrix);
         }
     } else if (m_pole->m_holder->m_params.type != 0) {
-        Fn8040Vector3 move;
-        Fn8040Vector3 turned;
-
-        fn_800091EC(&move, m_pole->GetRollVelocity());
+        Fn8040Vector3 move = *(m_pole->GetRollVelocity());
         fn_8040CE38(&move, dt);
-        fn_8040D0AC(&turned, &move, m_pole->m_charInfo->m_rotation.y);
-        fn_800091D0(&move, &turned);
+        move = fn_8040D0AC(move, m_pole->m_charInfo->m_rotation.y);
         AddVector(&m_charInfo->m_position, move);
 
         float distance = fn_8040CF50(&move);
@@ -217,14 +211,11 @@ void FallingStoneHard::OnStop() {
 }
 
 void FallingStoneHard::SetPushDirection(AttackCallbackParam &param) {
-    fn_800091D0(&param.field_0x34, m_pole->GetRollVelocity());
+    param.field_0x34 = *(m_pole->GetRollVelocity());
     fn_8040CE38(&param.field_0x34, 1.0f);
     param.field_0x4C = fn_8040CF50(&param.field_0x34);
 
-    Fn8040Vector3 turned;
-
-    fn_8040D0AC(&turned, &param.field_0x34, m_pole->m_charInfo->m_rotation.y);
-    fn_800091D0(&param.field_0x34, &turned);
+    param.field_0x34 = fn_8040D0AC(param.field_0x34, m_pole->m_charInfo->m_rotation.y);
     fn_8040CE74(&param.field_0x34);
     param.field_0x50 = 1.0f;
 }
@@ -594,17 +585,11 @@ int StonePole::IsCharacterInRange() {
         return 0;
     }
 
-    Fn8040Vector3 polePosition;
-    Fn8040Vector3 characterPosition;
-    Fn8040Vector3 offset;
-    Fn8040Vector3 offsetTemporary;
-
-    fn_800091EC(&polePosition, &m_charInfo->m_position);
-    fn_800091EC(&characterPosition, &character->m_position);
+    Fn8040Vector3 polePosition = m_charInfo->m_position;
+    Fn8040Vector3 characterPosition = character->m_position;
     polePosition.y = 0.0f;
     characterPosition.y = 0.0f;
-    fn_8040CD74(&offsetTemporary, &characterPosition, &polePosition);
-    fn_800091EC(&offset, &offsetTemporary);
+    Fn8040Vector3 offset = characterPosition - polePosition;
 
     if (fn_8040CF50(&offset) > m_holder->m_params.rangeRadius) {
         return 0;

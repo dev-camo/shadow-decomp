@@ -90,15 +90,11 @@ static void fn_80138338(boost::shared_ptr<CharInfo> hit, void *arg) {
             ratio = 1.0f;
         }
 
-        Fn8040Vector3 hitPosition;
-        Fn8040Vector3 gongPosition;
-        Fn8040Vector3 difference;
-
-        fn_800091EC(&hitPosition, &hit->m_position);
+        Fn8040Vector3 hitPosition = hit->m_position;
         hitPosition.y = 0.0f;
-        fn_800091EC(&gongPosition, &gongInfo->m_position);
+        Fn8040Vector3 gongPosition = gongInfo->m_position;
         gongPosition.y = 0.0f;
-        fn_8040CD74(&difference, &hitPosition, &gongPosition);
+        const Fn8040Vector3 &difference = hitPosition - gongPosition;
 
         float distance = fn_8040CF50(&difference);
         float scale;
@@ -118,9 +114,7 @@ static void fn_80138338(boost::shared_ptr<CharInfo> hit, void *arg) {
         }
     }
 
-    Fn8040Vector3 position;
-
-    fn_800091EC(&position, &context->m_position);
+    Fn8040Vector3 position = context->m_position;
     position.y += 5.0f;
     hit->fn_801DC980(new SetPositionCommand(&position, 4));
 
@@ -132,10 +126,8 @@ static void fn_80138338(boost::shared_ptr<CharInfo> hit, void *arg) {
     fn_8040B80C(&matrix, gongInfo->m_rotation.z);
 
     Fn8040Vector3 direction(0.0f, 1.0f, 0.0f);
-    Fn8040Vector3 directionTemporary;
 
-    fn_8040B67C(&directionTemporary, &matrix, &direction);
-    fn_800091D0(&direction, &directionTemporary);
+    direction = matrix * direction;
     fn_8040CE38(&direction, speed);
     hit->fn_801DC980(new SetVelocityCommand(&direction, 4));
 
@@ -293,7 +285,7 @@ void Gong::OnModel1Collision(ColliDetectArgs &args) {
     context.m_handle = m_handle;
     context.m_charInfo = m_charInfo;
     context.m_params = &m_params;
-    fn_800091D0(&context.m_position, &m_charInfo->m_position);
+    context.m_position = m_charInfo->m_position;
     context.m_hitCount = m_hitCount;
     fn_8015AA84(&args, fn_80138338, &context);
 
@@ -312,7 +304,7 @@ void Gong::OnModel2Collision(ColliDetectArgs &args) {
     context.m_charInfo = m_charInfo;
     context.m_params = &m_params;
     context.m_flags = m_flags;
-    fn_800091D0(&context.m_position, &m_charInfo->m_position);
+    context.m_position = m_charInfo->m_position;
     context.m_position.y += 300.0f;
     fn_8015B004(&args, fn_801380C0, &context);
 

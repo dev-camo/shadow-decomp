@@ -7,7 +7,8 @@
 
 /* The sound handle that fn_801D3DC8 and fn_801D3E58 return (placeholder name; the layout comes from
  * the constructor at 0x8007D770, the assignment at 0x8007D624 and the two functions that fill
- * it). The assignment copies the fields one by one and calls fn_800091D0 for the position. */
+ * it). The assignment copies the fields one by one, the position with the vector's out-of-line
+ * assignment. */
 class UnkSoundHandle_801D3DC8 {
   public:
     UnkSoundHandle_801D3DC8();

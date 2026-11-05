@@ -163,16 +163,12 @@ void SetSuperComputer::UpdateModelMatrix() {
         m_model->fn_801633DC(&matrix);
     }
     if (m_object2.get() != 0) {
-        Fn8040Vector3 object2Position;
-
-        fn_800091EC(&object2Position, &m_charInfo->m_position);
+        Fn8040Vector3 object2Position = m_charInfo->m_position;
         object2Position.y += s_object2Height.value;
         fn_802B44C8(m_object2.get(), &object2Position);
     }
     if (m_object.get() != 0) {
-        Fn8040Vector3 objectPosition;
-
-        fn_800091EC(&objectPosition, &m_charInfo->m_position);
+        Fn8040Vector3 objectPosition = m_charInfo->m_position;
         objectPosition.y += s_objectHeight.value;
         fn_800CCE38(m_object.get(), &objectPosition);
     }

@@ -272,13 +272,9 @@ void ArkCannon::UpdateModelMatrix() {
 
     for (u32 i = 0; it != m_objects.end(); ++i, ++it) {
         Fn8040Vector3 offset(distance, 0.0f, 0.0f);
-        Fn8040Vector3 rotated;
-        Fn8040Vector3 placed;
 
-        fn_8040D044(&rotated, &offset, step * i);
-        fn_800091D0(&offset, &rotated);
-        fn_8040B67C(&placed, &matrix, &offset);
-        fn_800091D0(&offset, &placed);
+        offset = fn_8040D044(offset, step * i);
+        offset = matrix * offset;
         fn_800CCE38(it->get(), &offset);
     }
 }
@@ -288,11 +284,7 @@ bool ArkCannon::IsTargetInRange() {
         fn_800A8A7C(fn_80074194(), &m_charInfo->m_position).lock();
 
     if (nearest.get() != 0) {
-        Fn8040Vector3 distance;
-        Fn8040Vector3 difference;
-
-        fn_8040CD74(&difference, &nearest->m_position, &m_charInfo->m_position);
-        fn_800091EC(&distance, &difference);
+        Fn8040Vector3 distance = nearest->m_position - m_charInfo->m_position;
 
         if (fn_8040CF50(&distance) < m_params.range) {
             return true;
@@ -306,16 +298,12 @@ bool ArkCannon::TurnToTarget(boost::shared_ptr<CharInfo> target, float dt) {
     Fn8040Vector3 up(0.0f, 1.0f, 0.0f);
     Fn8040Vector3 forward(0.0f, 0.0f, -1.0f);
     bool facing = false;
-    Fn8040Vector3 direction;
+    Fn8040Vector3 direction = target->m_position - m_charInfo->m_position;
     UnkRotation3 ownerRotation;
-    Fn8040Vector3 axis;
     Fn8040Matrix34 ownerMatrix;
     Fn8040Matrix34 matrix;
     Fn8040Matrix34 turn;
 
-    Fn8040Vector3 offset;
-    fn_8040CD74(&offset, &target->m_position, &m_charInfo->m_position);
-    fn_800091EC(&direction, &offset);
     fn_8040CE74(&direction);
 
     /* The owner's rotation turns the up direction. */
@@ -326,9 +314,7 @@ bool ArkCannon::TurnToTarget(boost::shared_ptr<CharInfo> target, float dt) {
     fn_8040B884(&ownerMatrix, ownerRotation.x);
     fn_8040B80C(&ownerMatrix, ownerRotation.z);
 
-    Fn8040Vector3 turnedUp;
-    fn_8040B67C(&turnedUp, &ownerMatrix, &up);
-    fn_800091D0(&up, &turnedUp);
+    up = ownerMatrix * up;
 
     /* The cannon's rotation turns the forward direction. */
     fn_8040C148(&matrix, &lbl_805E0720);
@@ -336,9 +322,7 @@ bool ArkCannon::TurnToTarget(boost::shared_ptr<CharInfo> target, float dt) {
     fn_8040B884(&matrix, m_charInfo->m_rotation.x);
     fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
 
-    Fn8040Vector3 turnedForward;
-    fn_8040B67C(&turnedForward, &matrix, &forward);
-    fn_800091D0(&forward, &turnedForward);
+    forward = matrix * forward;
 
     /* Both directions are compared in the plane perpendicular to the up direction. */
     fn_8040F990(0, &forward, &forward, &up);
@@ -357,9 +341,7 @@ bool ArkCannon::TurnToTarget(boost::shared_ptr<CharInfo> target, float dt) {
     }
     angle = fn_800704AC(angle, DegreesToRadians(45.0f * dt));
 
-    Fn8040Vector3 cross;
-    fn_8040CFB8(&cross, &forward, &direction);
-    fn_800091EC(&axis, &cross);
+    Fn8040Vector3 axis = fn_8040CFB8(forward, direction);
     fn_8040CE74(&axis);
 
     Fn8040Matrix34 axisTurn;

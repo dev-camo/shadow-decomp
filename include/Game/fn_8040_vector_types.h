@@ -21,6 +21,14 @@ typedef struct Fn8040Vector3 {
 #ifdef __cplusplus
     Fn8040Vector3() {}
     Fn8040Vector3(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
+    /* Defined out of line (fn_800091D0.cpp). The original calls the copy constructor (0x800091EC)
+     * where a vector is initialised from another, for example in the segment's copy constructor
+     * (0x80021DE4), and the assignment (0x800091D0) where an existing vector is overwritten, for
+     * example in the segment's assignment (0x8002CCF0) and when PopFooting's
+     * UpdateCharInfoPosition stores a transformed result (0x8022BD28). Not every copy goes through
+     * them: fn_800C9F14 copies a position component by component (0x800C9F18-0x800C9F34). */
+    Fn8040Vector3(const Fn8040Vector3 &other);
+    Fn8040Vector3 &operator=(const Fn8040Vector3 &other);
     /* Stores the three components (name inferred): the arguments are evaluated before the first
      * store, as the original does where a vector is assigned in place. */
     void Set(float x_, float y_, float z_) {
@@ -35,11 +43,15 @@ typedef struct Fn8040Vector3 {
 } Fn8040Vector3;
 CHECK_SIZEOF(Fn8040Vector3, 0xC);
 
-/* Rotation angles about the x, y and z axes, in radians (placeholder name; the original type name is
- * unknown). It is a type of its own because the original copies rotations inline (member by member,
- * for example by value to fn_8001DB08 and in the rotation-vector interpolation fn_8040F16C), while it
- * copies positions and directions through the out-of-line functions fn_800091EC and fn_800091D0; the
- * EnergyCoreTask constructor does both, one after the other. */
+/* Three components about the x, y and z axes (placeholder name; the original type name is
+ * unknown). Their unit depends on the use: radians in CharInfo::m_rotation, degrees in
+ * UnkOwnerRecord_800C9D24::rotation (fn_800C9ED4 converts them), angular rates in
+ * UnkMeteorsParams_8021FCE4::m_rotateSpeed. It is a type of its own because the original copies
+ * these values inline, member by member, in places where it copies positions and directions
+ * through the out-of-line copy members of Fn8040Vector3: for example by value to fn_8001DB08,
+ * in the rotation-vector interpolation fn_8040F16C, and in the EnergyCoreTask constructor, which
+ * does both one after the other. This is not universal: fn_804173A8 copies the angles it stores
+ * through the assignment (0x800091D0 at 0x804173E8). */
 typedef struct UnkRotation3 {
 #ifdef __cplusplus
     UnkRotation3() {}
@@ -127,12 +139,15 @@ CHECK_SIZEOF(Fn8040Matrix34, 0x30);
 /* Two points, a line segment from start to end (behaviour inferred from its constructor,
  * fn_80020A20, which copies both, and from the closest-point code in fn_8040F364.cpp; fn_8026DBB8
  * constructs one and passes it to fn_8040FC3C). The default constructor leaves both points as they
- * are and the assignment copies them one after the other; both are called out of line (their
- * copies at 0x80029DA4 and 0x8002CCF0), as the weapon stick does for its array of segments. */
+ * are, and the copy constructor and the assignment copy them one after the other with the vector's
+ * copy constructor and assignment; all three are called out of line (their copies at 0x80029DA4,
+ * 0x80021DE4 and 0x8002CCF0), as the weapon stick does for its array of segments and the debug
+ * marker of DebugMissionClearCollision for the segments it copies. */
 typedef struct UnkSegment_80020A20 {
 #ifdef __cplusplus
     UnkSegment_80020A20();
     UnkSegment_80020A20(const Fn8040Vector3 &start, const Fn8040Vector3 &end);
+    UnkSegment_80020A20(const UnkSegment_80020A20 &other);
     UnkSegment_80020A20 &operator=(const UnkSegment_80020A20 &other);
 #endif
     /* 0x00 */ Fn8040Vector3 start;
@@ -177,7 +192,7 @@ extern Fn8040Vector4 lbl_805E0790;
 float fn_8040CCEC(const Fn8040Vector2 *vector);
 float fn_8040CF50(const Fn8040Vector3 *vector);
 /* Squared length. */
-float fn_8040CF2C(Fn8040Vector3 *vector);
+float fn_8040CF2C(const Fn8040Vector3 *vector);
 /* Squared length of a 4-float vector. */
 float fn_8040CA84(const Fn8040Vector4 *vector);
 /* Stores sin(angle) and cos(angle) through the two pointers. The E3 2005 prototype (G9SJ8P) calls
@@ -189,10 +204,9 @@ void fn_80031568(float *sine, float *cosine, float angle);
 float fn_8040CE74(Fn8040Vector3 *vector);
 /* Dot product (behaviour inferred). */
 float fn_8040CF90(const Fn8040Vector3 *left, const Fn8040Vector3 *right);
-/* result = left x right (behaviour inferred). */
-void fn_8040CFB8(Fn8040Vector3 *result, const Fn8040Vector3 *left, const Fn8040Vector3 *right);
-/* destination = a - b (behaviour inferred). */
-void fn_8040CD74(Fn8040Vector3 *destination, const Fn8040Vector3 *a, const Fn8040Vector3 *b);
+/* Returns a - b by value (behaviour and by-value form inferred). Game code reaches it
+ * through operator- below. */
+Fn8040Vector3 fn_8040CD74(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 /* Subtracts the three components of value in place (behaviour inferred). */
 void fn_8040CE04(Fn8040Vector3 *vector, const Fn8040Vector3 *value);
 /* vector *= scale (behaviour inferred). */
@@ -207,9 +221,6 @@ void fn_8040CFF8(Fn8040Vector3 *result, const Fn8040Vector3 *value);
 float fn_8040D180(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 /* The length of a - b (behaviour inferred). */
 float fn_8040D1B4(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
-/* Both copy source to destination and return destination (fn_800091D0.c). */
-Fn8040Vector3 *fn_800091D0(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
-Fn8040Vector3 *fn_800091EC(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
 /* Stores the three components and returns vector (fn_80008E1C.c; many callers in the original
  * pass the returned address on). */
 Fn8040Vector3 *fn_80008E1C(Fn8040Vector3 *vector, float x, float y, float z);
@@ -245,9 +256,10 @@ void fn_8040B4D0(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Translates the matrix by an offset that the matrix's rotation turns first. */
 void fn_8040B52C(Fn8040Matrix34 *matrix, float x, float y, float z);
 void fn_8040B59C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *offset);
-/* result = the matrix's rotation applied to vector, without and with the translation. */
+/* The matrix's rotation applied to vector, without the translation (stored in result) and with
+ * it (returned by value, inferred; game code reaches it through operator* below). */
 void fn_8040B618(Fn8040Vector3 *result, const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector);
-void fn_8040B67C(Fn8040Vector3 *result, const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector);
+Fn8040Vector3 fn_8040B67C(const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector);
 /* Copy constructor or assignment operator of the matrix class (inferred), out of line (the
  * original has its weak instance at 0x80325384): calls fn_8040C148 and returns destination. */
 Fn8040Matrix34 *fn_80325384(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
@@ -308,13 +320,9 @@ void fn_8040C3EC(Fn8040Vector4 *result, const Fn8040Vector4 *from, const Fn8040V
                  float t);
 /* Copies a 4-float vector (out-of-line copy constructor or assignment; inferred). */
 void fn_801B1DD4(Fn8040Vector4 *destination, const Fn8040Vector4 *source);
-/* Scales the vector: result = vector * factor. A by-value wrapper: it keeps the result pointer and
- * calls fn_8040CDA8. */
-void fn_800091A4(Fn8040Vector3 *result, const Fn8040Vector3 *vector, float factor);
-/* result = left - right (fn_8000AD64, a by-value wrapper that keeps the result pointer and calls
- * fn_8040CD74), and result = left + right (fn_8040CDD0). */
-void fn_8000AD64(Fn8040Vector3 *result, const Fn8040Vector3 *left, const Fn8040Vector3 *right);
-void fn_8040CDD0(Fn8040Vector3 *result, const Fn8040Vector3 *left, const Fn8040Vector3 *right);
+/* Returns left + right by value (behaviour and by-value form inferred). Game code reaches it
+ * through operator+ below. */
+Fn8040Vector3 fn_8040CDD0(const Fn8040Vector3 *left, const Fn8040Vector3 *right);
 /* Wraps an angle in radians into the range -pi to pi (behaviour inferred). */
 float fn_8040E99C(float angle);
 /* Converts a rotation vector to a quaternion, and a quaternion to a rotation vector (behaviour
@@ -326,21 +334,13 @@ UnkRotation3 fn_80410204(const Fn8040Vector4 *quaternion, int order);
  * way round. */
 void fn_8040EFA4(Fn8040Matrix34 *result, Fn8040Matrix34 *from, Fn8040Matrix34 *to, float t);
 UnkRotation3 fn_8040F16C(const UnkRotation3 *from, const UnkRotation3 *to, int order, float t);
-void fn_8040F268(Fn8040Vector3 *result, const Fn8040Vector3 *from, const Fn8040Vector3 *to,
-                 float t);
+Fn8040Vector3 fn_8040F268(const Fn8040Vector3 *from, const Fn8040Vector3 *to, float t);
 float fn_8040F314(float from, float to, float t);
-/* Vector helpers called by fn_8040F364.cpp (descriptions inferred). */
-/* Rotates the vector about the y, x and z axes. */
-void fn_8040D0AC(Fn8040Vector3 *result, const Fn8040Vector3 *vector, float angle);
-void fn_8040D118(Fn8040Vector3 *result, const Fn8040Vector3 *vector, float angle);
-void fn_8040D044(Fn8040Vector3 *result, const Fn8040Vector3 *vector, float angle);
-/* result = the vector scaled to length 1. */
-void fn_8040CEE8(Fn8040Vector3 *result, const Fn8040Vector3 *vector);
-/* result = -vector. */
-void fn_80016284(Fn8040Vector3 *result, const Fn8040Vector3 *vector);
-/* result = vector * factor (fn_800091A4 is a by-value wrapper that calls this). */
-void fn_8040CDA8(Fn8040Vector3 *result, const Fn8040Vector3 *vector, float factor);
-/* By-value scale wrapper; original function name is unknown. */
+/* Returns vector * factor by value (behaviour and by-value form inferred). Game code reaches it
+ * through operator* below. */
+Fn8040Vector3 fn_8040CDA8(const Fn8040Vector3 *vector, float factor);
+/* A second out-of-line by-value wrapper of fn_8040CDA8 with the same body as operator* below; its
+ * original name is unknown. */
 Fn8040Vector3 fn_80093230(const Fn8040Vector3 *vector, float factor);
 /* atan2(y, x) as a float. */
 float fn_80016260(float y, float x);
@@ -387,9 +387,8 @@ void fn_8040FFBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const Unk
                  int order);
 void fn_8040FEBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const UnkRotation3 *rotation,
                  int order);
-/* result = vector rotated by a rotation vector. */
-void fn_80410098(Fn8040Vector3 *result, const Fn8040Vector3 *vector, const UnkRotation3 *rotation,
-                 int order);
+/* Returns the vector rotated by a rotation vector. */
+Fn8040Vector3 fn_80410098(const Fn8040Vector3 *vector, const UnkRotation3 *rotation, int order);
 /* A segment helper outside fn_8040F364.cpp: the distance from point to the closest point of the
  * segment, which it also stores in closest unless that is null (behaviour inferred). */
 float fn_8003C63C(const Fn8040Vector3 *point, const UnkSegment_80020A20 *segment,
@@ -410,6 +409,48 @@ inline Fn8040Matrix34::Fn8040Matrix34(const Fn8040Matrix34 &other) {
     fn_8040C148(this, &other);
 }
 
+/* Vector arithmetic around the cores fn_8040CDD0 (add), fn_8040CD74 (subtract), fn_8040CDA8
+ * (scale) and fn_8040B67C (transform by a matrix), declared to return their results by value
+ * (inferred from the callers' temporaries and stack layout; the code is the same as with a
+ * destination pointer; operator names inferred). The original has out-of-line copies of these
+ * inline functions that keep the hidden result pointer and call the core (USA addresses): the
+ * sum at 0x80093204, the difference at 0x8000AD64, the scaled vector at 0x800091A4 and the
+ * transformed vector at 0x8007E4E8. It calls them where the result is returned (fn_8040F268,
+ * fn_8040FC78) or is the argument of AddVector; nested sums assigned to a vector call the cores
+ * directly (fn_804103E8). The condition that selects the copy is not established. A copy of a
+ * result into a named vector goes through the out-of-line copy constructor. Callers that use a
+ * result in place pass it on or bind it to a const reference, also when they pass its address to
+ * a pointer parameter, so the temporary is used in place without a copy, as in the original. */
+inline Fn8040Vector3 operator+(const Fn8040Vector3 &left, const Fn8040Vector3 &right) {
+    return fn_8040CDD0(&left, &right);
+}
+
+inline Fn8040Vector3 operator-(const Fn8040Vector3 &left, const Fn8040Vector3 &right) {
+    return fn_8040CD74(&left, &right);
+}
+
+inline Fn8040Vector3 operator*(const Fn8040Vector3 &vector, float factor) {
+    return fn_8040CDA8(&vector, factor);
+}
+
+inline Fn8040Vector3 operator*(const Fn8040Matrix34 &matrix, const Fn8040Vector3 &vector) {
+    return fn_8040B67C(&matrix, &vector);
+}
+
+/* Vector operations that return their result by value and take their vectors by const reference
+ * (behaviour, by-value results and references inferred: callers pass temporaries to the
+ * normalisation and the cross product and one passes one to the y rotation; the negation and the
+ * other rotations follow by analogy; the code is that of pointer parameters): the vector scaled
+ * to length 1 (the zero vector when its length is below 1e-6: fn_8040CE74, branch at 0x8040CE90),
+ * left x right, the vector rotated about the y, x and z axes by angle radians, and
+ * -vector. */
+extern "C" Fn8040Vector3 fn_8040CEE8(const Fn8040Vector3 &vector);
+extern "C" Fn8040Vector3 fn_8040CFB8(const Fn8040Vector3 &left, const Fn8040Vector3 &right);
+extern "C" Fn8040Vector3 fn_8040D0AC(const Fn8040Vector3 &vector, float angle);
+extern "C" Fn8040Vector3 fn_8040D118(const Fn8040Vector3 &vector, float angle);
+extern "C" Fn8040Vector3 fn_8040D044(const Fn8040Vector3 &vector, float angle);
+extern "C" Fn8040Vector3 fn_80016284(const Fn8040Vector3 &vector);
+
 /* Returns whether the value is close enough to 0 to count as 0 (behaviour inferred). */
 extern "C" bool fn_8000A950(float value);
 /* Returns fn_8000A950(a - b): whether the two values are close enough to count as equal
@@ -421,8 +462,8 @@ extern "C" bool fn_8000B044(float value);
  * parameters are references: Meteor's calls with literal bounds keep each bound in its own .sdata
  * slot, as the original does. */
 extern "C" const float &fn_80070460(const float &value, const float &low, const float &high);
-/* Whether a - b (from fn_8000AD64) is close to zero: its squared length is below the float at
- * 0x805F1730 (1e-4). */
+/* Whether a - b (computed with the out-of-line copy of operator- at 0x8000AD64) is close to zero:
+ * its squared length is below the float at 0x805F1730 (1e-4). */
 extern "C" bool fn_8000AD08(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 
 /* Whether the point lies between the planes through the segment's ends (behaviour inferred). */

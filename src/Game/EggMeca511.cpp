@@ -76,8 +76,7 @@ void EggMeca511::Init() {
     m_varParam.m_params.field_0x30 = 200.0f;
     m_varParam.field_0x24 = m_varParam.field_0x8;
     m_varParam.field_0x6C = lbl_805F0240;
-    fn_800091D0(&m_varParam.field_0x194,
-                fn_800091D0(&m_varParam.field_0x1A0, &m_varParam.m_charInfo->m_position));
+    m_varParam.field_0x194 = m_varParam.field_0x1A0 = m_varParam.m_charInfo->m_position;
 
     m_varParam.AddCtrlUnit(new EggMecaCtrlUnit_AttackCallback(&m_varParam));
     m_varParam.AddCtrlUnit(new EggMecaCtrlUnit_GetStatus(&m_varParam));

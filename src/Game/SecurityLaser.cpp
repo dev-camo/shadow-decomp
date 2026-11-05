@@ -3,15 +3,7 @@
  *
  * The attack object's two callbacks are boost::function objects built with
  * boost::bind(&SetSecurityLaser::OnAttackCallback0, this, _1) and the same for OnAttackCallback1;
- * their manager, invoker and copy functions come from the boost headers.
- *
- * Matching workaround: in ResetFromOwner and UpdateBeam the original keeps the transformed, negated
- * and summed vectors at lower stack offsets than the named vectors, in the order they are made, as
- * compiler temporaries for results returned by value would be placed (inferred). The vector
- * helpers here return through a result pointer, so those results are named locals declared after
- * the named vectors, and ResetFromOwner assigns move with Set where it was initialised
- * (constructing it at its declaration moves its three loads). Revisit when the vector helpers
- * return their results by value. */
+ * their manager, invoker and copy functions come from the boost headers. */
 /* TNumEdit.h comes before CharaColliBaseCharInfo.h, in the order their names appear in the unit's
  * .rodata (alphabetical order would reverse them). */
 #include "Game/TNumEdit.h"
@@ -93,9 +85,7 @@ SetSecurityLaser::SetSecurityLaser(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
         AttackCallback(boost::bind(&SetSecurityLaser::OnAttackCallback1, this, _1)), 1.0f);
 
     if (m_flags.Test(1)) {
-        Fn8040Vector3 position;
-
-        fn_800091EC(&position, &m_charInfo->m_position);
+        Fn8040Vector3 position = m_charInfo->m_position;
 
         Fn8040Vector3 direction(0.0f, 0.0f, -1.0f);
 
@@ -154,27 +144,15 @@ void SetSecurityLaser::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         /* Draws the beam at its full length and the line along which the gadget moves. */
         Fn8040Vector3 end(0.0f, 0.0f, m_length);
         Fn8040Matrix34 matrix;
-        Fn8040Vector3 move;
-        Fn8040Vector3 back;
-        Fn8040Vector3 lineStart;
-        Fn8040Vector3 lineEnd;
-        Fn8040Vector3 transformed;
-        Fn8040Vector3 negated;
-        Fn8040Vector3 frontSum;
-        Fn8040Vector3 backSum;
 
         fn_8015CEA0(m_charInfo.get(), &matrix);
-        fn_8040B67C(&transformed, &matrix, &end);
-        fn_800091D0(&end, &transformed);
+        end = matrix * end;
         fn_802E0B58(UnkSegment_80020A20(m_charInfo->m_position, end), lbl_805F06D8);
 
-        move.Set(m_moveX, m_moveY, m_moveZ);
-        fn_80016284(&negated, &move);
-        fn_800091EC(&back, &negated);
-        fn_8040CDD0(&frontSum, &m_charInfo->m_position, &move);
-        fn_800091EC(&lineStart, &frontSum);
-        fn_8040CDD0(&backSum, &m_charInfo->m_position, &back);
-        fn_800091EC(&lineEnd, &backSum);
+        Fn8040Vector3 move(m_moveX, m_moveY, m_moveZ);
+        Fn8040Vector3 back = fn_80016284(move);
+        Fn8040Vector3 lineStart = m_charInfo->m_position + move;
+        Fn8040Vector3 lineEnd = m_charInfo->m_position + back;
         fn_802E0B58(UnkSegment_80020A20(lineStart, lineEnd), lbl_805F06D8);
 
         m_model->fn_8016108C();
@@ -189,7 +167,7 @@ void SetSecurityLaser::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
     m_moveTimer = 0.0f;
     m_moveSpeed = (m_moveTime != 0.0f) ? 360.0f / m_moveTime : 0.0f;
-    fn_800091D0(&m_basePosition, &m_charInfo->m_position);
+    m_basePosition = m_charInfo->m_position;
 
     m_rotTimer = 0.0f;
     m_rotSpeed = (m_rotTime != 0.0f) ? 360.0f / m_rotTime : 0.0f;
@@ -254,10 +232,8 @@ void SetSecurityLaser::UpdateModelMatrices() {
         /* An original quirk: the u16 id is compared with -1, so the test always passes. */
         if (m_flags.Test(1) && m_loopSoundId != -1) {
             Fn8040Vector3 position(0.0f, 0.0f, 0.0f);
-            Fn8040Vector3 transformed;
 
-            fn_8040B67C(&transformed, &matrix, &position);
-            fn_800091D0(&position, &transformed);
+            position = matrix * position;
             fn_801D53C4(fn_80053164(), m_loopSoundId, &position, this, 3, 0, 2);
         }
     }
@@ -273,16 +249,12 @@ void SetSecurityLaser::UpdateMotion(float dt) {
         float phase = m_moveSpeed * m_moveTimer;
         Fn8040Vector3 move(m_moveX, m_moveY, m_moveZ);
         float distance = fn_8040CF50(&move);
-        Fn8040Vector3 direction;
-        Fn8040Vector3 position;
 
-        fn_8040CEE8(&direction, &move);
-        fn_800091D0(&move, &direction);
+        move = fn_8040CEE8(move);
         /* fn_8000AB90 converts degrees to radians as DegreesToRadians does; the original calls it
          * here and converts the swing's angles below in place. */
         fn_8040CE38(&move, distance * std::sin(fn_8000AB90(phase)));
-        fn_8040CDD0(&position, &m_basePosition, &move);
-        fn_800091D0(&m_charInfo->m_position, &position);
+        m_charInfo->m_position = m_basePosition + move;
     }
 
     if (m_rotTime > 0.0f) {
@@ -311,9 +283,6 @@ void SetSecurityLaser::UpdateBeam() {
     Fn8040Vector3 start(0.0f, 0.0f, 0.0f);
     Fn8040Vector3 end(0.0f, 0.0f, m_beamLength);
     Fn8040Matrix34 matrix;
-    Fn8040Vector3 hitPosition;
-    Fn8040Vector3 transformedStart;
-    Fn8040Vector3 transformedEnd;
 
     fn_8040B6F8(&matrix);
     fn_8040B52C(&matrix, ltm->pos.x, ltm->pos.y, ltm->pos.z);
@@ -321,10 +290,8 @@ void SetSecurityLaser::UpdateBeam() {
     fn_8040B884(&matrix, m_charInfo->m_rotation.x);
     fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
     fn_8040B848(&matrix, m_angle);
-    fn_8040B67C(&transformedStart, &matrix, &start);
-    fn_800091D0(&start, &transformedStart);
-    fn_8040B67C(&transformedEnd, &matrix, &end);
-    fn_800091D0(&end, &transformedEnd);
+    start = matrix * start;
+    end = matrix * end;
 
     if (m_flags.Test(0)) {
         UnkSegment_80020A20 segment(start, end);
@@ -335,12 +302,10 @@ void SetSecurityLaser::UpdateBeam() {
                 fn_80021E24(fn_80020D40(), &segment, 3, 8, IsNotOwnColli, colli.get());
 
             if (node != 0) {
-                Fn8040Vector3 difference;
-
-                fn_800091EC(&hitPosition, fn_8001E9BC(node->hit));
-                fn_8040CD74(&difference, &start, &hitPosition);
+                Fn8040Vector3 hitPosition = *fn_8001E9BC(node->hit);
+                const Fn8040Vector3 &difference = start - hitPosition;
                 m_beamLength = fn_8040CF50(&difference);
-                fn_800091D0(&end, &hitPosition);
+                end = hitPosition;
                 hit = true;
                 delete node;
             }

@@ -273,9 +273,7 @@ void SetDoor::PlayStateSound(int sound) {
 
         UnkResourceRecord_80208848 *record = fn_80208888(m_resource, name);
         if (record != 0) {
-            Fn8040Vector3 position;
-
-            fn_800091EC(&position, &m_charInfo->m_position);
+            Fn8040Vector3 position = m_charInfo->m_position;
             position.x += record->field_0x10;
             position.y += record->field_0x14;
             position.z += record->field_0x18;
@@ -293,9 +291,7 @@ void SetDoor::PlayStateSound(int sound) {
 
         UnkResourceRecord_80208848 *record = fn_80208888(m_resource, name);
         if (record != 0) {
-            Fn8040Vector3 position;
-
-            fn_800091EC(&position, &m_charInfo->m_position);
+            Fn8040Vector3 position = m_charInfo->m_position;
             position.x += record->field_0x10;
             position.y += record->field_0x14;
             position.z += record->field_0x18;
@@ -313,9 +309,7 @@ void SetDoor::PlayStateSound(int sound) {
 
         UnkResourceRecord_80208848 *record = fn_80208888(m_resource, name);
         if (record != 0) {
-            Fn8040Vector3 position;
-
-            fn_800091EC(&position, &m_charInfo->m_position);
+            Fn8040Vector3 position = m_charInfo->m_position;
             position.x += record->field_0x10;
             position.y += record->field_0x14;
             position.z += record->field_0x18;
@@ -333,9 +327,7 @@ void SetDoor::PlayStateSound(int sound) {
 
         UnkResourceRecord_80208848 *record = fn_80208888(m_resource, name);
         if (record != 0) {
-            Fn8040Vector3 position;
-
-            fn_800091EC(&position, &m_charInfo->m_position);
+            Fn8040Vector3 position = m_charInfo->m_position;
             position.x += record->field_0x10;
             position.y += record->field_0x14;
             position.z += record->field_0x18;

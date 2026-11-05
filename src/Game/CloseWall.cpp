@@ -99,18 +99,12 @@ void SetCloseWall::UpdateBody(float dt) {
         fn_8040B848(&rotation, m_rotation.y);
 
         Fn8040Vector3 axis(1.0f, 0.0f, 0.0f);
-        Fn8040Vector3 rotated;
-        Fn8040Vector3 position;
-        Fn8040Vector3 position2;
 
-        fn_8040B67C(&rotated, &rotation, &axis);
-        fn_800091D0(&axis, &rotated);
+        axis = rotation * axis;
         fn_8040CE38(&axis, m_offset);
 
-        fn_8040CD74(&position, &m_position, &axis);
-        fn_800091D0(&m_charInfo[0]->m_position, &position);
-        fn_8040CDD0(&position2, &m_position, &axis);
-        fn_800091D0(&m_charInfo[1]->m_position, &position2);
+        m_charInfo[0]->m_position = m_position - axis;
+        m_charInfo[1]->m_position = m_position + axis;
 
         fn_801D53C4(fn_80053164(), 0x7849, 0, this, 2, 0, 2);
         break;
@@ -142,18 +136,12 @@ void SetCloseWall::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
     fn_8040B848(&rotation, m_rotation.y);
 
     Fn8040Vector3 axis(1.0f, 0.0f, 0.0f);
-    Fn8040Vector3 rotated;
-    Fn8040Vector3 position;
-    Fn8040Vector3 position2;
 
-    fn_8040B67C(&rotated, &rotation, &axis);
-    fn_800091D0(&axis, &rotated);
+    axis = rotation * axis;
     fn_8040CE38(&axis, m_offset);
 
-    fn_8040CD74(&position, &m_position, &axis);
-    fn_800091D0(&m_charInfo[0]->m_position, &position);
-    fn_8040CDD0(&position2, &m_position, &axis);
-    fn_800091D0(&m_charInfo[1]->m_position, &position2);
+    m_charInfo[0]->m_position = m_position - axis;
+    m_charInfo[1]->m_position = m_position + axis;
 
     m_charInfo[0]->m_rotation = m_rotation;
     m_charInfo[1]->m_rotation = m_rotation;

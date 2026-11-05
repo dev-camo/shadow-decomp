@@ -34,11 +34,10 @@ using SonicteamUSA::System::CharaColli::CharaColliAttack;
 class CandleStick;
 
 /* The two startup vectors: the offset of the effect above the candle stick, and the second
- * argument of fn_80168C48 (names inferred from their uses). The original's startup function builds
- * each one in a temporary and copies it with the out-of-line copy at 0x800091EC (25 instead of 12
- * instructions); here the constructor stores the components in place. */
-static Fn8040Vector3 s_effectOffset(0.0f, 15.0f, 0.0f);
-static Fn8040Vector3 s_effectArgument(0.0f, 1.0f, 0.0f);
+ * argument of fn_80168C48 (names inferred from their uses). Each is copied from a temporary, as
+ * the original's startup function does. */
+static Fn8040Vector3 s_effectOffset = Fn8040Vector3(0.0f, 15.0f, 0.0f);
+static Fn8040Vector3 s_effectArgument = Fn8040Vector3(0.0f, 1.0f, 0.0f);
 
 /* The model file that the broken candle stick shows its break effect from. */
 static const char *s_breakFile = "PR0300CANDLESTICK_BRK.DFF";
@@ -184,9 +183,7 @@ void CandleStick::UpdateBody(float dt) {
     if (m_flags.Test(1)) {
         m_model->fn_80161FC8(1, m_charInfo);
 
-        Fn8040Vector3 effectPosition;
-
-        fn_8040CDD0(&effectPosition, &m_charInfo->m_position, &s_effectOffset);
+        const Fn8040Vector3 &effectPosition = m_charInfo->m_position + s_effectOffset;
         m_effect = fn_80168C48(&effectPosition, &s_effectArgument, 0x19);
         fn_801D54F4(fn_80053164(), 0x7431, &m_charInfo->m_position, 0, 1);
         m_sound = fn_801D3E58(0x7430, &m_charInfo->m_position, this);
@@ -257,9 +254,7 @@ void CandleStick::ApplyState() {
     if (m_data->m_flags.Test(1)) {
         m_model->fn_80161FC8(1, m_charInfo);
 
-        Fn8040Vector3 effectPosition;
-
-        fn_8040CDD0(&effectPosition, &m_charInfo->m_position, &s_effectOffset);
+        const Fn8040Vector3 &effectPosition = m_charInfo->m_position + s_effectOffset;
         m_effect = fn_80168C48(&effectPosition, &s_effectArgument, 0x19);
         m_sound = fn_801D3DC8(0x7430, &m_charInfo->m_position, this);
     }
@@ -291,9 +286,7 @@ void CandleStick::UpdateModelMatrix() {
         boost::shared_ptr<Effect::System::EffectElement> effect(m_effect.lock());
 
         if (effect.get() != 0) {
-            Fn8040Vector3 effectPosition;
-
-            fn_8040CDD0(&effectPosition, &m_charInfo->m_position, &s_effectOffset);
+            const Fn8040Vector3 &effectPosition = m_charInfo->m_position + s_effectOffset;
             fn_80425E4C(effect.get(), &effectPosition);
         }
     }

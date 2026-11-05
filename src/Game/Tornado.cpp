@@ -34,47 +34,18 @@ bool TornadoCharInfo::AttachTarget(int tag, boost::shared_ptr<CharInfo> victim) 
 
 TornadoTowing::TornadoTowing(Task *parent, Tornado *tornado, boost::shared_ptr<CharInfo> charInfo)
     : Task(parent), m_tornado(tornado), m_state(0), m_charInfo(charInfo) {
-    /* Matching workaround: every vector is declared here, in this order, because the order of
-     * declaration places their stack slots; each *Temporary local receives a computed vector
-     * before it is copied, possibly standing for a by-value temporary of the original (inferred).
-     * upForRight and upForLeft hold the same up vector (0, 1, 0), once for each branch, as the
-     * original has two stack slots for it. Revisit when the vector functions are modelled with
-     * by-value results. */
-    Fn8040Vector3 position;
-    Fn8040Vector3 center;
-    Fn8040Vector3 toCenter;
-    Fn8040Vector3 direction;
-    Fn8040Vector3 sideways;
-    Fn8040Vector3 offset;
-    Fn8040Vector3 toCenterTemporary;
-    Fn8040Vector3 directionTemporary;
-    Fn8040Vector3 turnedRightTemporary;
-    Fn8040Vector3 turnedLeftTemporary;
-    Fn8040Vector3 scaledTemporary;
-    Fn8040Vector3 startTemporary;
-    Fn8040Vector3 upForRight;
-    Fn8040Vector3 sidewaysRightTemporary;
-    Fn8040Vector3 upForLeft;
-    Fn8040Vector3 sidewaysLeftTemporary;
-    Fn8040Vector3 sidewaysStartTemporary;
-    Fn8040Vector3 offsetTemporary;
-    Fn8040Vector3 forward;
-    Fn8040Vector3 startAheadTemporary;
-    Fn8040Vector3 directionToStart;
-
     m_name = s_name;
 
     charInfo->fn_801DC980(new Player::IgnoreInputCommand(2, 0));
     charInfo->fn_801DC980(new Player::StreamCommand(true, 4));
     charInfo->fn_801DC980(new Player::InvincibleCommand(true, 4));
 
-    fn_800091D0(&m_position, &charInfo->m_position);
-    fn_800091EC(&position, &m_position);
-    fn_800091EC(&center, &m_tornado->m_charInfo->m_position);
+    m_position = charInfo->m_position;
+    Fn8040Vector3 position = m_position;
+    Fn8040Vector3 center = m_tornado->m_charInfo->m_position;
     position.y = 0.0f;
     center.y = 0.0f;
-    fn_8040CD74(&toCenterTemporary, &center, &position);
-    fn_800091EC(&toCenter, &toCenterTemporary);
+    Fn8040Vector3 toCenter = center - position;
 
     float distance = fn_8040CF50(&toCenter);
 
@@ -85,55 +56,37 @@ TornadoTowing::TornadoTowing(Task *parent, Tornado *tornado, boost::shared_ptr<C
         float cosine = std::cos(angle);
         float tangentLength = cosine * distance;
 
-        fn_8040CEE8(&directionTemporary, &toCenter);
-        fn_800091EC(&direction, &directionTemporary);
+        Fn8040Vector3 direction = fn_8040CEE8(toCenter);
 
         if (m_tornado->m_params.turn != 0) {
-            fn_8040D0AC(&turnedRightTemporary, &direction, angle);
-            fn_800091D0(&direction, &turnedRightTemporary);
+            direction = fn_8040D0AC(direction, angle);
         } else {
-            fn_8040D0AC(&turnedLeftTemporary, &direction, -angle);
-            fn_800091D0(&direction, &turnedLeftTemporary);
+            direction = fn_8040D0AC(direction, -angle);
         }
 
-        fn_8040CDA8(&scaledTemporary, &direction, tangentLength);
-        fn_800091D0(&direction, &scaledTemporary);
-        fn_8040CDD0(&startTemporary, &m_position, &direction);
-        fn_800091D0(&m_start, &startTemporary);
+        direction = direction * tangentLength;
+        m_start = m_position + direction;
         m_start.y = m_tornado->m_charInfo->m_position.y - m_tornado->m_params.cylinderY;
     } else if (distance != 0.0f) {
         /* Inside it the start is the point of the cylinder's surface at right angles to the
          * direction to the centre, on the side that "TURN" selects. */
-        const Fn8040Vector3 *crossResult;
+        Fn8040Vector3 sideways = m_tornado->m_params.turn != 0
+                                     ? fn_8040CFB8(Fn8040Vector3(0.0f, 1.0f, 0.0f), toCenter)
+                                     : fn_8040CFB8(toCenter, Fn8040Vector3(0.0f, 1.0f, 0.0f));
 
-        if (m_tornado->m_params.turn != 0) {
-            upForRight.Set(0.0f, 1.0f, 0.0f);
-            fn_8040CFB8(&sidewaysRightTemporary, &upForRight, &toCenter);
-            crossResult = &sidewaysRightTemporary;
-        } else {
-            upForLeft.Set(0.0f, 1.0f, 0.0f);
-            fn_8040CFB8(&sidewaysLeftTemporary, &toCenter, &upForLeft);
-            crossResult = &sidewaysLeftTemporary;
-        }
-
-        fn_800091EC(&sideways, crossResult);
         fn_8040CE74(&sideways);
         fn_8040CE38(&sideways, m_tornado->m_params.cylinderRadius);
-        fn_8040CDD0(&sidewaysStartTemporary, &sideways, &m_tornado->m_charInfo->m_position);
-        fn_800091D0(&m_start, &sidewaysStartTemporary);
+        m_start = sideways + m_tornado->m_charInfo->m_position;
         m_start.y = m_tornado->m_charInfo->m_position.y - m_tornado->m_params.cylinderY;
     } else {
         /* On the axis the start is the point of the surface in the z direction. */
-        forward.Set(0.0f, 0.0f, 1.0f);
-        fn_8040CDA8(&offsetTemporary, &forward, m_tornado->m_params.cylinderRadius);
-        fn_800091EC(&offset, &offsetTemporary);
-        fn_8040CDD0(&startAheadTemporary, &offset, &m_tornado->m_charInfo->m_position);
-        fn_800091D0(&m_start, &startAheadTemporary);
+        Fn8040Vector3 offset = Fn8040Vector3(0.0f, 0.0f, 1.0f) * m_tornado->m_params.cylinderRadius;
+
+        m_start = offset + m_tornado->m_charInfo->m_position;
         m_start.y = m_tornado->m_charInfo->m_position.y - m_tornado->m_params.cylinderY;
     }
 
-    fn_8040CD74(&directionToStart, &m_start, &m_position);
-    fn_800091D0(&m_direction, &directionToStart);
+    m_direction = m_start - m_position;
     fn_8040CE74(&m_direction);
 
     fn_8000D664(fn_80009548(), 0, -1.0f, 12.0f, 10.0f);
@@ -189,17 +142,8 @@ void TornadoTowing::Update(float dt) {
 }
 
 bool TornadoTowing::MoveToCylinder(boost::shared_ptr<CharInfo> charInfo, float dt) {
-    /* Matching workaround: the vectors are declared here, in this order, because the order of
-     * declaration places their stack slots (declared at their first uses, 5 words differ);
-     * toStartTemporary possibly stands for a by-value temporary of the original (inferred).
-     * Revisit when the vector functions are modelled with by-value results. */
     bool reached = false;
-    Fn8040Vector3 toStart;
-    Fn8040Vector3 toStartTemporary;
-    Fn8040Vector3 move;
-
-    fn_8040CD74(&toStartTemporary, &m_start, &m_position);
-    fn_800091EC(&toStart, &toStartTemporary);
+    Fn8040Vector3 toStart = m_start - m_position;
 
     float step = m_tornado->m_params.turnSpeed * dt;
 
@@ -208,8 +152,7 @@ bool TornadoTowing::MoveToCylinder(boost::shared_ptr<CharInfo> charInfo, float d
         reached = true;
     }
 
-    fn_800091A4(&move, &m_direction, step);
-    AddVector(&m_position, move);
+    AddVector(&m_position, m_direction * step);
     charInfo->fn_801DC980(new SetPositionCommand(&m_position, 4));
     return reached;
 }
@@ -217,25 +160,13 @@ bool TornadoTowing::MoveToCylinder(boost::shared_ptr<CharInfo> charInfo, float d
 bool TornadoTowing::Rise(boost::shared_ptr<CharInfo> charInfo, float dt) {
     bool reached = false;
     float angle = dt * (m_tornado->m_params.turnSpeed / m_tornado->m_params.cylinderRadius);
-    /* Matching workaround: the vectors are declared here, in this order, because the order of
-     * declaration places their stack slots (declared at their first uses, 12 words differ); the
-     * *Temporary locals possibly stand for by-value temporaries of the original (inferred).
-     * Revisit when the vector functions are modelled with by-value results. */
-    Fn8040Vector3 offset;
-    Fn8040Vector3 offsetTemporary;
-    Fn8040Vector3 turnedLeftTemporary;
-    Fn8040Vector3 turnedRightTemporary;
-
-    fn_8040CD74(&offsetTemporary, &m_position, &m_tornado->m_charInfo->m_position);
-    fn_800091EC(&offset, &offsetTemporary);
+    Fn8040Vector3 offset = m_position - m_tornado->m_charInfo->m_position;
     offset.y = 0.0f;
 
     if (m_tornado->m_params.turn == 0) {
-        fn_8040D0AC(&turnedLeftTemporary, &offset, angle);
-        fn_800091D0(&offset, &turnedLeftTemporary);
+        offset = fn_8040D0AC(offset, angle);
     } else {
-        fn_8040D0AC(&turnedRightTemporary, &offset, -angle);
-        fn_800091D0(&offset, &turnedRightTemporary);
+        offset = fn_8040D0AC(offset, -angle);
     }
 
     AddVector(&offset, m_tornado->m_charInfo->m_position);
@@ -245,12 +176,12 @@ bool TornadoTowing::Rise(boost::shared_ptr<CharInfo> charInfo, float dt) {
 
     if (offset.y > top) {
         offset.y = top;
-        fn_800091D0(&m_top, &m_tornado->m_charInfo->m_position);
+        m_top = m_tornado->m_charInfo->m_position;
         reached = true;
         m_top.y += m_tornado->m_params.cylinderY;
     }
 
-    fn_800091D0(&m_position, &offset);
+    m_position = offset;
     charInfo->fn_801DC980(new SetPositionCommand(&m_position, 4));
     return reached;
 }
@@ -258,18 +189,7 @@ bool TornadoTowing::Rise(boost::shared_ptr<CharInfo> charInfo, float dt) {
 bool TornadoTowing::Circle(boost::shared_ptr<CharInfo> charInfo, float dt) {
     float turnStep = m_tornado->m_params.turnSpeed * dt;
     float upStep = m_tornado->m_params.upSpeed * dt;
-    /* Matching workaround: the vectors are declared here, in this order, because the order of
-     * declaration places their stack slots (declared at their first uses, 12 words differ); the
-     * *Temporary locals possibly stand for by-value temporaries of the original (inferred).
-     * Revisit when the vector functions are modelled with by-value results. */
-    Fn8040Vector3 offset;
-    Fn8040Vector3 offsetTemporary;
-    Fn8040Vector3 turnedLeftTemporary;
-    Fn8040Vector3 turnedRightTemporary;
-    Fn8040Vector3 positionTemporary;
-
-    fn_8040CD74(&offsetTemporary, &m_position, &m_top);
-    fn_800091EC(&offset, &offsetTemporary);
+    Fn8040Vector3 offset = m_position - m_top;
     offset.y = 0.0f;
 
     float radius = fn_8040CF50(&offset) - upStep;
@@ -283,16 +203,13 @@ bool TornadoTowing::Circle(boost::shared_ptr<CharInfo> charInfo, float dt) {
     fn_8040CE74(&offset);
 
     if (m_tornado->m_params.turn == 0) {
-        fn_8040D0AC(&turnedLeftTemporary, &offset, angle);
-        fn_800091D0(&offset, &turnedLeftTemporary);
+        offset = fn_8040D0AC(offset, angle);
     } else {
-        fn_8040D0AC(&turnedRightTemporary, &offset, -angle);
-        fn_800091D0(&offset, &turnedRightTemporary);
+        offset = fn_8040D0AC(offset, -angle);
     }
 
     fn_8040CE38(&offset, radius);
-    fn_8040CDD0(&positionTemporary, &m_top, &offset);
-    fn_800091D0(&m_position, &positionTemporary);
+    m_position = m_top + offset;
     charInfo->fn_801DC980(new SetPositionCommand(&m_position, 4));
     return false;
 }
@@ -312,18 +229,9 @@ Player::IgnoreInputCommand::IgnoreInputCommand(int arg0, float seconds)
     : PlayerCommand(0x127, 0), m_seconds(seconds), field_0x18(0), m_arg0(arg0) {}
 
 SetVelocityCommand::SetVelocityCommand(const Fn8040Vector3 *velocity, int arg1)
-    : CharCommand(5, arg1) {
-    fn_800091EC(&m_velocity, velocity);
-}
+    : CharCommand(5, arg1), m_velocity(*velocity) {}
 
 void TornadoTowing::Launch(boost::shared_ptr<CharInfo> charInfo) {
-    /* Matching workaround: velocity is declared before the commands and the two rotation results
-     * after them, because the order of declaration places their stack slots. The original keeps
-     * the rotation results below the SetAngleCommand argument, where temporaries made after it
-     * go; here they take the slots above it (8 words differ, all stack offsets of the argument and
-     * the two results). Revisit when the vector functions are modelled with by-value results. */
-    Fn8040Vector3 velocity;
-
     charInfo->fn_801DC980(new Player::IgnoreInputCommand(3, 0));
     charInfo->fn_801DC980(new Player::InvincibleCommand(false, 4));
     charInfo->fn_801DC980(new Player::IgnoreInputCommand(0, m_tornado->m_params.noControl));
@@ -332,14 +240,9 @@ void TornadoTowing::Launch(boost::shared_ptr<CharInfo> charInfo) {
     charInfo->fn_801DC980(new SetAngleCommand(
         UnkRotation3(0.0f, m_tornado->m_params.launchY - lbl_805FAD38, 0.0f), 2, 4));
 
-    Fn8040Vector3 turnedTemporary;
-    Fn8040Vector3 turnedAgainTemporary;
-
-    velocity.Set(0.0f, 0.0f, 1.0f);
-    fn_8040D118(&turnedTemporary, &velocity, m_tornado->m_params.launchX);
-    fn_800091D0(&velocity, &turnedTemporary);
-    fn_8040D0AC(&turnedAgainTemporary, &velocity, m_tornado->m_params.launchY);
-    fn_800091D0(&velocity, &turnedAgainTemporary);
+    Fn8040Vector3 velocity(0.0f, 0.0f, 1.0f);
+    velocity = fn_8040D118(velocity, m_tornado->m_params.launchX);
+    velocity = fn_8040D0AC(velocity, m_tornado->m_params.launchY);
     fn_8040CE38(&velocity, m_tornado->m_params.launchSpeed);
     charInfo->fn_801DC980(new SetVelocityCommand(&velocity, 4));
     charInfo->fn_801DC980(new Player::StreamCommand(false, 4));
@@ -454,27 +357,17 @@ void Tornado::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
 void Tornado::UpdateModelMatrix() {
     if (m_model.get() != 0) {
-        /* Matching workaround: toPointTemporary is declared after toPoint and angles because the
-         * order of declaration places their stack slots (declared before toPoint, 12 words
-         * differ); it possibly stands for a by-value temporary of the original (inferred). Revisit
-         * when the vector functions are modelled with by-value results. */
-        Fn8040Vector3 position;
-        Fn8040Vector3 toPoint;
-        UnkRotation3 angles;
-        Fn8040Vector3 toPointTemporary;
-        Fn8040Matrix34 matrix;
-
-        fn_800091EC(&position, &m_charInfo->m_position);
+        Fn8040Vector3 position = m_charInfo->m_position;
         position.y -= m_params.cylinderOffsetY;
 
         Fn8040Vector3 *pointPosition = fn_80010244(fn_80009548(), 0);
-        fn_8040CD74(&toPointTemporary, pointPosition, &position);
-        fn_800091EC(&toPoint, &toPointTemporary);
-        angles.Set(0.0f, 0.0f, 0.0f);
+        Fn8040Vector3 toPoint = *pointPosition - position;
+        UnkRotation3 angles(0.0f, 0.0f, 0.0f);
         toPoint.y = 0.0f;
         fn_8040CE74(&toPoint);
         fn_8003B9E8(&toPoint, &angles.x, &angles.y);
 
+        Fn8040Matrix34 matrix;
         fn_8040C148(&matrix, &lbl_805E0720);
         fn_8040B59C(&matrix, &position);
         fn_8040B848(&matrix, angles.y + lbl_805FAD38);
@@ -493,8 +386,9 @@ void Tornado::RemoveTowing(TornadoTowing *towing) {
 
 void Tornado::DrawRange() {
     /* Matching workaround: direction is declared first, and set after the line, because the order
-     * of declaration places the stack slots of direction and rotation. Revisit with the other
-     * vector declarations of this file. */
+     * of declaration places the stack slots of direction and rotation (declared at its use, 13
+     * words differ). Revisit if the debug shapes turn out to take their vectors by reference, so
+     * that the rotation could be a temporary of the call. */
     Fn8040Vector3 direction;
     float pitch = DegreesToRadians(90.0f);
     UnkRotation3 rotation(pitch, 0.0f, 0.0f);
@@ -503,19 +397,13 @@ void Tornado::DrawRange() {
 
     UnkSegment_80020A20 line;
     direction.Set(0.0f, 0.0f, 1.0f);
-    Fn8040Vector3 turnedTemporary;
-    Fn8040Vector3 turnedAgainTemporary;
-    Fn8040Vector3 endTemporary;
 
-    fn_800091D0(&line.start, &m_charInfo->m_position);
+    line.start = m_charInfo->m_position;
     line.start.y += m_params.cylinderY;
-    fn_8040D118(&turnedTemporary, &direction, m_params.launchX);
-    fn_800091D0(&direction, &turnedTemporary);
-    fn_8040D0AC(&turnedAgainTemporary, &direction, m_params.launchY);
-    fn_800091D0(&direction, &turnedAgainTemporary);
+    direction = fn_8040D118(direction, m_params.launchX);
+    direction = fn_8040D0AC(direction, m_params.launchY);
     fn_8040CE38(&direction, 0.1f * m_params.launchSpeed);
-    fn_8040CDD0(&endTemporary, &line.start, &direction);
-    fn_800091D0(&line.end, &endTemporary);
+    line.end = line.start + direction;
     fn_802E0AA0(line, UnkDebugColor_802E0E84(255, 255, 0, 0), 5.0f);
 }
 

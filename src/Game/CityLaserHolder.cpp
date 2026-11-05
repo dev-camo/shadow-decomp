@@ -8,8 +8,7 @@
  * addresses.
  *
  * NonMatching: SetState differs in five words (the order of the stack argument of fn_800C7A84 and
- * the moves around it), Update in five (the stack slot of the result of fn_8040FC3C),
- * checked_delete<CityLaser> is a local symbol where the original's is weak, five std::vector
+ * the moves around it), checked_delete<CityLaser> is a local symbol where the original's is weak, five std::vector
  * instances of weak pointers differ (insert, reserve, swap, the vector destructor and the
  * __vector_obj constructor) and 16 small helpers of the vector are not reproduced; see the notes
  * in configure.py. */
@@ -168,20 +167,12 @@ CityLaser::~CityLaser() {}
 #pragma auto_inline reset
 
 void CityLaser::Update(float dt) {
-    Fn8040Vector3 distance;
-    Fn8040Vector3 point;
-    Fn8040Vector3 clamped;
-    Fn8040Vector3 difference;
-    Fn8040Vector3 top;
-    Fn8040Vector3 fromAxis;
-
     switch (m_state) {
     case 0: {
         boost::shared_ptr<CharInfo> character = fn_800A8B74(fn_80074194(), lbl_805EE588).lock();
 
         if (character.get() != 0) {
-            fn_8040CD74(&difference, &character->m_position, &m_charInfo->m_position);
-            fn_800091EC(&distance, &difference);
+            Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
             if (fn_8040CF50(&distance) < m_holder->m_params.rangeLength) {
                 SetState(1);
             }
@@ -224,8 +215,9 @@ void CityLaser::Update(float dt) {
                                  m_hits.end());
 
                     const Fn8040Vector3 &position = m_charInfo->m_position;
-                    top.Set(position.x, s_hitHeight.value + position.y, position.z);
-                    UnkSegment_80020A20 segment(top, position);
+                    UnkSegment_80020A20 segment(
+                        Fn8040Vector3(position.x, s_hitHeight.value + position.y, position.z),
+                        position);
 
                     for (UnkProbeIterator_80027374 iterator(hits->fn_8001EE04());
                          iterator.node != hits->fn_8001EDEC(); fn_80027374(&iterator, 0)) {
@@ -262,10 +254,8 @@ void CityLaser::Update(float dt) {
                                 }
                                 if (!skip) {
                                     const Fn8040Vector3 *position = target->GetPosition();
-                                    const Fn8040Vector3 &nearest = fn_8040FC3C(&segment, position);
-                                    fn_800091EC(&point, &nearest);
-                                    fn_8040CD74(&fromAxis, position, &point);
-                                    fn_800091EC(&clamped, &fromAxis);
+                                    Fn8040Vector3 point = fn_8040FC3C(&segment, position);
+                                    Fn8040Vector3 clamped = *position - point;
                                     if (fn_8040CF50(&clamped) > s_hitRadius.value) {
                                         fn_8040CE74(&clamped);
                                         fn_8040CE38(&clamped, s_hitRadius.value);
@@ -384,8 +374,6 @@ void CityLaser::DrawRange() {
     UnkRotation3 rotation;
     Fn8040Vector3 hitUp;
     UnkRotation3 hitRotation;
-    Fn8040Vector3 center;
-    Fn8040Vector3 hitCenter;
     float halfLength;
 
     fn_802E0E84(&m_charInfo->m_position, lbl_805F06D8, m_holder->m_params.rangeLength);
@@ -398,7 +386,7 @@ void CityLaser::DrawRange() {
     rotation.x = fn_8000AB90(90.0f);
     rotation.y = 0.0f;
     rotation.z = 0.0f;
-    fn_8040CDD0(&center, &m_charInfo->m_position, &up);
+    const Fn8040Vector3 &center = m_charInfo->m_position + up;
     fn_802E0B7C(&center, &rotation, UnkDebugColor_802E0E84(0xC0, 0xFF, 0xFF, 0), 0, halfLength,
                 s_beamRadius.value);
 
@@ -409,7 +397,7 @@ void CityLaser::DrawRange() {
     hitRotation.x = fn_8000AB90(90.0f);
     hitRotation.y = 0.0f;
     hitRotation.z = 0.0f;
-    fn_8040CDD0(&hitCenter, &m_charInfo->m_position, &hitUp);
+    const Fn8040Vector3 &hitCenter = m_charInfo->m_position + hitUp;
     fn_802E0B7C(&hitCenter, &hitRotation, UnkDebugColor_802E0E84(0x80, 0, 0, 0xFF), 0, halfLength,
                 s_hitRadius.value);
 }

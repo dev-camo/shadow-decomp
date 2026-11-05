@@ -182,12 +182,8 @@ extern "C" void fn_80425C34(Effect::System::EffectElement *effect, float deltaTi
                            effect->m_transform.values[2][3]);
     if ((effect->m_flags & Effect::System::ELEMENT_FLAG_2) != 0) {
         Fn8040Vector3 difference;
-        fn_8040CD74(&difference, &position, &effect->m_previousTranslation);
-        Fn8040Vector3 differenceCopy;
-        fn_800091D0(&differenceCopy, &difference);
-        Fn8040Vector3 velocity;
-        fn_8040CDA8(&velocity, &differenceCopy, 1.0f / deltaTime);
-        fn_800091D0(&effect->m_translationVelocity, &velocity);
+        difference = position - effect->m_previousTranslation;
+        effect->m_translationVelocity = difference * (1.0f / deltaTime);
     }
-    fn_800091D0(&effect->m_previousTranslation, &position);
+    effect->m_previousTranslation = position;
 }

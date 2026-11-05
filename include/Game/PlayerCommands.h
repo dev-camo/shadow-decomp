@@ -232,7 +232,7 @@ class AddWeaponCommand : public PlayerCommand {
 CHECK_SIZEOF(Player::AddWeaponCommand, 0x1C);
 
 /* The constructor at 0x80099BFC passes 0x134 as the command id and 4 to the base constructor,
- * stores the float at 0x14 and copies the vector to 0x18 (with fn_800091EC). The vector is passed
+ * stores the float at 0x14 and copy-constructs the vector at 0x18. The vector is passed
  * by address (the bytes do not show whether as a pointer or a reference; a pointer is declared).
  * The DashPanel and JumpBoard gadgets send it with a direction scaled by a value of their level
  * and their "nocontrol time (sec)" parameter (meanings inferred from that use). */
@@ -332,7 +332,7 @@ class EndExternalControlCommand : public PlayerCommand {
 CHECK_SIZEOF(Player::EndExternalControlCommand, 0x14);
 
 /* The constructor at 0x8010DFD0 passes 0x10B as the command id and arg1 to the base constructor and
- * copies the vector to 0x14 (with fn_800091EC). The vector is taken by const reference (inferred):
+ * copy-constructs the vector at 0x14. The vector is taken by const reference (inferred):
  * the ELEC_LIGHT gadget builds it into an argument temporary after the allocation. */
 class HomingJumpCommand : public PlayerCommand {
   public:
@@ -346,10 +346,10 @@ CHECK_SIZEOF(Player::HomingJumpCommand, 0x20);
 } // namespace Player
 
 /* RideCommand (class name from RTTI, with CharCommand as its only base). Its constructor
- * (0x801DB638) passes id 11 and 4 to the base constructor, copies rider to 0x14 and the vector to
- * 0x1C (with fn_800091EC). The ELEC_BAR gadget's bars keep the character info at 0x14 of the last
- * one they receive as their rider (meanings inferred from that use). Passing rider by const
- * reference is inferred. */
+ * (0x801DB638) passes id 11 and 4 to the base constructor, copies rider to 0x14 and
+ * copy-constructs the vector at 0x1C. The ELEC_BAR gadget's bars keep the character info at 0x14
+ * of the last one they receive as their rider (meanings inferred from that use). Passing rider by
+ * const reference is inferred. */
 class RideCommand : public CharCommand {
   public:
     RideCommand(const boost::weak_ptr<CharInfo> &rider, const Fn8040Vector3 *vector);

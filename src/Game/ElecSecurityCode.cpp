@@ -67,7 +67,7 @@ ElecSecurityCode::ElecSecurityCode(s32 type, const Fn8040Vector3 &position,
     m_partAngles[0] = m_partAngles[1] = m_partAngles[2] = 0.0f;
 
     m_charInfo = fn_8015CB88(0x57, 4, "ElecSecurityCode");
-    fn_800091D0(&m_charInfo->m_position, &position);
+    m_charInfo->m_position = position;
     m_charInfo->m_rotation = UnkRotation3(0.0f, 0.0f, 0.0f);
 
     m_model = new GadgetModelInfo(1, "SECURITY.BIN");
@@ -167,62 +167,26 @@ bool ElecSecurityCode::fn_80156C78(float dt) {
             Fn8040Vector3 direction;
 
             if (nearest.get() != 0) {
-                Fn8040Vector3 away;
+                direction = m_charInfo->m_position - nearest->m_position;
 
-                fn_8040CD74(&away, &m_charInfo->m_position, &nearest->m_position);
-                fn_800091D0(&direction, &away);
-
-                /* Matching workaround: each result vector is declared before the vector it is
-                 * computed from; declared the other way round, the two swap stack offsets.
-                 * Revisit if the vector helpers return by value. */
                 if (direction.x == 0.0f && direction.z == 0.0f) {
-                    Fn8040Vector3 normalised;
-                    Fn8040Vector3 fallback(1.0f, 0.0f, 0.5f);
-
-                    fn_8040CEE8(&normalised, &fallback);
-                    fn_800091D0(&direction, &normalised);
+                    direction = fn_8040CEE8(Fn8040Vector3(1.0f, 0.0f, 0.5f));
                 } else {
-                    Fn8040Vector3 normalised;
-                    Fn8040Vector3 swapped(direction.z, 0.0f, direction.x);
-                    Fn8040Vector3 tilted;
-
-                    fn_8040CEE8(&normalised, &swapped);
-                    fn_800091D0(&direction, &normalised);
-                    fn_8040D118(&tilted, &direction, 0.125f * lbl_805FAD38);
-                    fn_800091D0(&direction, &tilted);
+                    direction = fn_8040CEE8(Fn8040Vector3(direction.z, 0.0f, direction.x));
+                    direction = fn_8040D118(direction, 0.125f * lbl_805FAD38);
                 }
             } else {
                 Fn8040Vector3 fallback(1.0f, 0.0f, 0.0f);
 
-                fn_800091D0(&direction, &fallback);
+                direction = fallback;
             }
 
-            /* Matching workaround: each code's offset and position are scoped to their own block.
-             * The original builds the position as a temporary of the new-expression's argument
-             * (it is computed after operator new returns), which the pointer-based vector helpers
-             * cannot express; the blocks give the two vectors of each code their own stack slots,
-             * as temporaries would have. Declared once for both codes, they shrink the original's
-             * 272-byte stack frame by 16 bytes and move stack offsets throughout the function.
-             * Revisit if the vector helpers return by value. */
-            {
-                Fn8040Vector3 offset;
-                Fn8040Vector3 position;
-
-                fn_8040CDA8(&offset, &direction, 5.0f);
-                fn_8040CDD0(&position, &m_charInfo->m_position, &offset);
-                m_generator->m_codes.push_back(new ElecSecurityCode(
-                    m_type + 1, position, m_generator, fn_8040F760(&direction), 1));
-            }
-
-            {
-                Fn8040Vector3 offset;
-                Fn8040Vector3 position;
-
-                fn_8040CDA8(&offset, &direction, 5.0f);
-                fn_8040CD74(&position, &m_charInfo->m_position, &offset);
-                m_generator->m_codes.push_back(new ElecSecurityCode(
-                    m_type + 1, position, m_generator, fn_8040F760(&direction), 2));
-            }
+            m_generator->m_codes.push_back(
+                new ElecSecurityCode(m_type + 1, m_charInfo->m_position + direction * 5.0f,
+                                     m_generator, fn_8040F760(&direction), 1));
+            m_generator->m_codes.push_back(
+                new ElecSecurityCode(m_type + 1, m_charInfo->m_position - direction * 5.0f,
+                                     m_generator, fn_8040F760(&direction), 2));
 
             m_generator->field_0x3C = nearest;
             return false;
@@ -268,39 +232,23 @@ static bool fn_80156BA8(const UnkProbeFilterRecord *record) {
 void ElecSecurityCode::Chase(float dt) {
     boost::shared_ptr<CharInfo> nearest =
         fn_800A8A7C(fn_80074194(), &m_charInfo->m_position).lock();
-    /* Matching workaround: toNearest and forward are declared before difference, and forward is
-     * set later with Set; declared at their first uses, the three vectors take other stack offsets
-     * (13 words differ). Revisit if the vector helpers return by value. */
-    Fn8040Vector3 toNearest;
-    Fn8040Vector3 forward;
-    Fn8040Vector3 difference;
-
     /* nearest is used without a null test, as in the original. */
-    fn_8040CD74(&difference, &nearest->m_position, &m_charInfo->m_position);
-    fn_800091EC(&toNearest, &difference);
+    Fn8040Vector3 toNearest = nearest->m_position - m_charInfo->m_position;
 
     Fn8040Vector2 rotation = fn_8040F760(&toNearest);
 
     m_rotation.x = fn_8012773C(rotation.x, m_rotation.x, s_turnStep);
     m_rotation.y = fn_8012773C(rotation.y, m_rotation.y, s_turnStep);
 
-    Fn8040Vector3 pitched;
-    Fn8040Vector3 turned;
-
-    forward.Set(0.0f, 0.0f, -1.0f);
-    fn_8040D118(&pitched, &forward, m_rotation.x);
-    fn_800091D0(&forward, &pitched);
-    fn_8040D0AC(&turned, &forward, m_rotation.y);
-    fn_800091D0(&forward, &turned);
+    Fn8040Vector3 forward(0.0f, 0.0f, -1.0f);
+    forward = fn_8040D118(forward, m_rotation.x);
+    forward = fn_8040D0AC(forward, m_rotation.y);
 
     float distanceSquared = fn_8040CF2C(&toNearest);
 
-    fn_800091D0(&m_charInfo->field_0x24, &nearest->field_0x24);
+    m_charInfo->field_0x24 = nearest->field_0x24;
     if (distanceSquared > 0.0f) {
-        Fn8040Vector3 acceleration;
-
-        fn_800091A4(&acceleration, &forward, 50.0f);
-        AddVector(&m_charInfo->field_0x24, acceleration);
+        AddVector(&m_charInfo->field_0x24, forward * 50.0f);
     }
 
     Move(dt);
@@ -309,16 +257,8 @@ void ElecSecurityCode::Chase(float dt) {
 void ElecSecurityCode::MoveApart(float dt) {
     boost::shared_ptr<CharInfo> nearest =
         fn_800A8A7C(fn_80074194(), &m_charInfo->m_position).lock();
-    /* Matching workaround: declaration order and Set as in Chase (13 words differ the same way
-     * with the vectors declared at their first uses). Revisit with Chase, if the vector helpers
-     * return by value. */
-    Fn8040Vector3 toNearest;
-    Fn8040Vector3 forward;
-    Fn8040Vector3 difference;
-
     /* nearest is used without a null test, as in the original. */
-    fn_8040CD74(&difference, &nearest->m_position, &m_charInfo->m_position);
-    fn_800091EC(&toNearest, &difference);
+    Fn8040Vector3 toNearest = nearest->m_position - m_charInfo->m_position;
 
     Fn8040Vector2 rotation = fn_8040F760(&toNearest);
 
@@ -332,32 +272,22 @@ void ElecSecurityCode::MoveApart(float dt) {
     }
     m_rotation = rotation;
 
-    Fn8040Vector3 pitched;
-    Fn8040Vector3 turned;
-
-    forward.Set(0.0f, 0.0f, -1.0f);
-    fn_8040D118(&pitched, &forward, m_rotation.x);
-    fn_800091D0(&forward, &pitched);
-    fn_8040D0AC(&turned, &forward, m_rotation.y);
-    fn_800091D0(&forward, &turned);
+    Fn8040Vector3 forward(0.0f, 0.0f, -1.0f);
+    forward = fn_8040D118(forward, m_rotation.x);
+    forward = fn_8040D0AC(forward, m_rotation.y);
 
     float distanceSquared = fn_8040CF2C(&toNearest);
 
-    fn_800091D0(&m_charInfo->field_0x24, &nearest->field_0x24);
+    m_charInfo->field_0x24 = nearest->field_0x24;
     if (distanceSquared > 0.0f) {
-        Fn8040Vector3 acceleration;
-
-        fn_800091A4(&acceleration, &forward, 75.0f);
-        AddVector(&m_charInfo->field_0x24, acceleration);
+        AddVector(&m_charInfo->field_0x24, forward * 75.0f);
     }
 
     Move(dt);
 }
 
 void ElecSecurityCode::Move(float dt) {
-    Fn8040Vector3 start;
-
-    fn_800091EC(&start, &m_charInfo->m_position);
+    Fn8040Vector3 start = m_charInfo->m_position;
     fn_804103E8(&m_charInfo->m_position, &m_charInfo->field_0x18, &m_charInfo->field_0x24, 3.0f,
                 dt);
 
@@ -395,9 +325,7 @@ void ElecSecurityCode::UpdateModelMatrix() {
     }
 
     if (m_target.get() != 0) {
-        Fn8040Vector3 position;
-
-        fn_800091EC(&position, &m_charInfo->m_position);
+        Fn8040Vector3 position = m_charInfo->m_position;
         position.y += s_targetHeights[m_type];
         fn_800CCE38(m_target.get(), &position);
     }
@@ -456,14 +384,14 @@ void ElecSecurityCode::ShowBreakEffect() {
 }
 
 void ElecSecurityCode::fn_80156344(AttackCallbackParam &param) {
-    fn_800091D0(&param.field_0x34, &m_charInfo->field_0x18);
+    param.field_0x34 = m_charInfo->field_0x18;
     param.field_0x4C = fn_8040CF50(&param.field_0x34);
     fn_8040CE74(&param.field_0x34);
 
     if (param.field_0x4C == 0.0f) {
         Fn8040Vector3 up(0.0f, 1.0f, 0.0f);
 
-        fn_800091D0(&param.field_0x34, &up);
+        param.field_0x34 = up;
         param.field_0x4C = 1.0f;
     }
 }

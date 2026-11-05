@@ -12,25 +12,17 @@
  * by searchHeightOffset. */
 void Unk8018A374::fn_801A69FC(const Fn8040Vector3 &position, const UnkRotation3 &rotation,
                               const UnkEnemySetDataCommon &setData) {
-    Fn8040Vector3 center;
-    Fn8040Vector3 moved;
-    Fn8040Vector3 rotated;
-    Fn8040Vector3 offset;
-
-    fn_800091D0(&field_0x0.field_0xC, &position);
+    field_0x0.field_0xC = position;
     field_0x0.field_0x0.x = position.x;
     field_0x0.field_0x0.z = position.z;
     field_0x0.field_0x18 = setData.moveRange;
     field_0x0.field_0x1C = setData.moveRange * setData.moveRange;
 
     float turn = (setData.searchAngle + 180.0f) * (lbl_805FAD38 / 180.0f);
-    Fn8040Vector3 height(0.0f, setData.searchHeightOffset, 0.0f);
-    offset.Set(0.0f, 0.0f, setData.searchRange);
-    fn_8040D0AC(&rotated, &offset, rotation.y + turn);
-    fn_8040CDD0(&moved, &position, &rotated);
-    fn_8040CDD0(&center, &moved, &height);
+    field_0x20.field_0xC =
+        position + fn_8040D0AC(Fn8040Vector3(0.0f, 0.0f, setData.searchRange), rotation.y + turn) +
+        Fn8040Vector3(0.0f, setData.searchHeightOffset, 0.0f);
 
-    fn_800091D0(&field_0x20.field_0xC, &center);
     field_0x20.field_0x0.x = field_0x20.field_0xC.x;
     field_0x20.field_0x0.z = field_0x20.field_0xC.z;
     field_0x20.field_0x18 = setData.searchWidth;
@@ -67,7 +59,7 @@ bool Unk8018A374::fn_801A68C0(const Fn8040Vector3 &position) {
 
 /* Updates the boundary's full position and its stored horizontal coordinates (inferred). */
 void Unk8018A374::fn_801A687C(const Fn8040Vector3 &position) {
-    fn_800091D0(&field_0x0.field_0xC, &position);
+    field_0x0.field_0xC = position;
     field_0x0.field_0x0.x = position.x;
     field_0x0.field_0x0.z = position.z;
 }

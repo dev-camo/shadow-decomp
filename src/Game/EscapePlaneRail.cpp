@@ -100,11 +100,9 @@ void EscapePlaneRail::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     UpdateModelMatrix();
 
     /* Draws the path of the drop. */
-    Fn8040Vector3 start;
-    Fn8040Vector3 end;
 
-    fn_800091EC(&start, &m_startPosition);
-    fn_800091EC(&end, &start);
+    Fn8040Vector3 start = m_startPosition;
+    Fn8040Vector3 end = start;
     end.y -= m_params.dist;
 
     UnkSegment_80020A20 path(start, end);
@@ -117,7 +115,7 @@ void EscapePlaneRail::CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     fn_800C9ED4(owner, &m_charInfo->m_rotation);
     fn_800C9DBC(owner, &m_params, sizeof(m_params));
     fn_800C9E50(owner, &m_switchId);
-    fn_800091D0(&m_startPosition, &m_charInfo->m_position);
+    m_startPosition = m_charInfo->m_position;
     m_state = 0;
 }
 

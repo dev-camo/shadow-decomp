@@ -89,7 +89,7 @@ void SetDefenseWall::UpdateBody(float dt) {
             m_offset = 0.0f;
         }
 
-        fn_800091D0(&m_charInfo->m_position, &m_position);
+        m_charInfo->m_position = m_position;
         m_charInfo->m_position.y += m_offset;
 
         if (m_offset <= 0.0f) {
@@ -140,10 +140,10 @@ void SetDefenseWall::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
     m_recoveryTime = 0.0f;
     m_offset = s_startOffset;
 
-    fn_800091D0(&m_charInfo->m_position, &m_position);
+    m_charInfo->m_position = m_position;
     m_charInfo->m_position.y += m_offset;
 
-    fn_800091D0(&m_probePosition, &m_position);
+    m_probePosition = m_position;
     m_probeRotation = m_charInfo->m_rotation;
 }
 

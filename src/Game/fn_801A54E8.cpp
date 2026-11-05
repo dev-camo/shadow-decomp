@@ -35,7 +35,7 @@ unsigned int fn_801A609C(const Fn8040Vector3 *position, float *height, Fn8040Vec
                     *height = fn_8001E9BC(hit)->y;
                 }
                 if (normal != 0) {
-                    fn_800091D0(normal, fn_8001E9C4(hit));
+                    *normal = *fn_8001E9C4(hit);
                 }
                 result = fn_80026588(it.node);
                 break;
@@ -50,18 +50,13 @@ void Unk801A5E50::fn_801A5EA8(const Fn8040Vector3 &position) {
     fn_8040CE60(&field_0x14);
     bool touched = false;
     const Fn8040Vector3 &displayPosition = m_enemy->m_display->fn_8019B3DC();
-    Fn8040Vector3 differenceTemporary;
-    fn_8040CD74(&differenceTemporary, &position, &displayPosition);
-    Fn8040Vector3 difference;
-    fn_800091EC(&difference, &differenceTemporary);
+    Fn8040Vector3 difference = position - displayPosition;
     Fn8040Matrix34 *matrix = m_enemy->m_display->fn_8019448C(m_enemy->m_parameter->fn_80192B58());
     if (matrix != 0) {
         const Fn8040Vector3 &translation = fn_8040FB08(matrix);
-        Fn8040Vector3 center;
-        fn_8040CDD0(&center, &translation, &difference);
-        fn_800091D0(&m_sphere.m_center, &center);
+        m_sphere.m_center = translation + difference;
     } else {
-        fn_800091D0(&m_sphere.m_center, fn_8017C690(m_enemy));
+        m_sphere.m_center = *fn_8017C690(m_enemy);
         m_sphere.m_center.y += m_enemy->m_parameter->fn_8019B48C()[3];
     }
     UnkWorld_80020D40 *world = fn_80020D40();
@@ -72,13 +67,10 @@ void Unk801A5E50::fn_801A5EA8(const Fn8040Vector3 &position) {
              fn_80027398(&it)) {
             UnkProbeHit_8001E9BC *hit = it.node->hit;
             if (hit != 0) {
-                Fn8040Vector3 normal;
-                fn_800091EC(&normal, fn_8001E9C4(hit));
+                Fn8040Vector3 normal = *fn_8001E9C4(hit);
                 if (normal.y < 0.5f) {
-                    const Fn8040Vector3 &displacementTemporary =
+                    Fn8040Vector3 displacement =
                         fn_8001E858(world, hit, &m_sphere.m_center, m_sphere.m_radius);
-                    Fn8040Vector3 displacement;
-                    fn_800091EC(&displacement, &displacementTemporary);
                     displacement.y = 0.0f;
                     fn_8040CFF8(&field_0x14, &displacement);
                     touched = true;
@@ -98,18 +90,18 @@ Unk801A5E50::Unk801A5E50() : m_enemy(0) {
 
 void Unk801A5E50::fn_801A5DF0(Enemy *enemy) {
     m_enemy = enemy;
-    fn_800091D0(&m_sphere.m_center, fn_8017C690(m_enemy));
+    m_sphere.m_center = *fn_8017C690(m_enemy);
     m_sphere.m_radius = m_enemy->m_parameter->fn_8019B48C()[0];
 }
 
 EnemyMoveCommon::EnemyMoveCommon() {
     field_0x8.fn_801A5DF0(m_enemy);
-    fn_800091D0(&field_0x2C, fn_8017C690(m_enemy));
+    field_0x2C = *fn_8017C690(m_enemy);
     field_0x38 = 0.0f;
     field_0x3C = -999999.0f;
     field_0x4C = 15;
     Fn8040Vector3 up(0.0f, 1.0f, 0.0f);
-    fn_800091D0(&field_0x40, &up);
+    field_0x40 = up;
     field_0x5C = true;
     field_0x5D = false;
     field_0x5E = false;
@@ -118,7 +110,7 @@ EnemyMoveCommon::EnemyMoveCommon() {
 }
 
 void EnemyMoveCommon::fn_8019B438() {
-    fn_800091D0(&field_0x2C, fn_8017C690(m_enemy));
+    field_0x2C = *fn_8017C690(m_enemy);
     fn_8019B43C(0.0f);
 }
 
@@ -135,18 +127,10 @@ void EnemyMoveCommon::fn_8019B43C(float delta) {
         fn_8040CFF8(fn_80181F0C(m_enemy), &displacement);
     }
     const Fn8040Vector3 &displayDisplacement = m_enemy->m_display->fn_8019B3BC();
-    Fn8040Vector3 movementTemporary;
-    fn_8040CDD0(&movementTemporary, fn_80181F0C(m_enemy), &displayDisplacement);
-    Fn8040Vector3 movement;
-    fn_800091EC(&movement, &movementTemporary);
-    Fn8040Vector3 candidate;
-    fn_8040CDD0(&candidate, fn_8017C690(m_enemy), &movement);
-    fn_800091D0(&field_0x2C, &candidate);
+    Fn8040Vector3 movement = *fn_80181F0C(m_enemy) + displayDisplacement;
+    field_0x2C = *fn_8017C690(m_enemy) + movement;
     if (!m_enemy->m_boundary.fn_801A6944(field_0x2C)) {
-        Fn8040Vector3 fromOriginTemporary;
-        fn_8040CD74(&fromOriginTemporary, &field_0x2C, &m_enemy->field_0x48);
-        Fn8040Vector3 fromOrigin;
-        fn_800091EC(&fromOrigin, &fromOriginTemporary);
+        Fn8040Vector3 fromOrigin = field_0x2C - m_enemy->field_0x48;
         fromOrigin.y = 0.0f;
         fn_8040CE74(&fromOrigin);
         fn_8040CE38(&fromOrigin, fn_8018346C(m_enemy));
@@ -172,13 +156,9 @@ void EnemyMoveCommon::fn_8019B43C(float delta) {
         }
     }
     movement.y -= delta * m_enemy->m_parameter->fn_8019B4E0();
-    Fn8040Vector3 positionTemporary;
-    fn_8040CDD0(&positionTemporary, fn_8017C690(m_enemy), &movement);
-    Fn8040Vector3 probePosition;
-    fn_800091EC(&probePosition, &positionTemporary);
+    Fn8040Vector3 probePosition = *fn_8017C690(m_enemy) + movement;
     probePosition.y += m_enemy->m_parameter->fn_8019B48C()[2];
-    Fn8040Vector3 position;
-    fn_800091EC(&position, &probePosition);
+    Fn8040Vector3 position = probePosition;
     probePosition.y += 10.0f;
     field_0x3C = -999999.0f;
     unsigned int flags = fn_801A609C(&probePosition, &field_0x3C, &field_0x40, 3, 12);
@@ -187,7 +167,7 @@ void EnemyMoveCommon::fn_8019B43C(float delta) {
     } else if (!fn_8019B450()) {
         position.x = fn_8017C690(m_enemy)->x;
         position.z = fn_8017C690(m_enemy)->z;
-        fn_800091D0(&probePosition, &position);
+        probePosition = position;
         field_0x3C = -999999.0f;
         flags = fn_801A609C(&probePosition, &field_0x3C, &field_0x40, 3, 12);
         if (flags != 0) {
@@ -204,9 +184,9 @@ void EnemyMoveCommon::fn_8019B43C(float delta) {
         field_0x5F = false;
     }
     field_0x4C = flags != 0 ? flags >> 28 : 15;
-    fn_800091D0(&field_0x2C, &position);
+    field_0x2C = position;
     if (!m_enemy->m_status->fn_8017B83C()->Test(10)) {
-        fn_800091D0(fn_8017C690(m_enemy), &field_0x2C);
+        *fn_8017C690(m_enemy) = field_0x2C;
     }
     m_enemy->m_display->fn_8017F234(1);
 }
@@ -227,19 +207,16 @@ void EnemyMoveCommon::fn_8019B460() {
     field_0x5D = true;
     field_0x5E = true;
     Fn8040Vector3 direction(0.0f, 0.0f, m_enemy->m_status->fn_8017B780() == 0 ? 1.0f : -1.0f);
-    fn_800091D0(&field_0x50, &direction);
-    Fn8040Vector3 rotated;
-    fn_8040D0AC(&rotated, &field_0x50, fn_8017C684(m_enemy)->y);
-    fn_800091D0(&field_0x50, &rotated);
+    field_0x50 = direction;
+    field_0x50 = fn_8040D0AC(field_0x50, fn_8017C684(m_enemy)->y);
     fn_8040CE38(&field_0x50, m_enemy->m_parameter->fn_8019B4F0()[0]);
     field_0x50.y = m_enemy->m_parameter->fn_8019B4E0() * m_enemy->m_parameter->fn_8019B4F0()[1];
 }
 
 Fn8040Vector3 EnemyMoveCommon::fn_801A54E8(float delta) {
-    Fn8040Vector3 scaled;
-    fn_8040CDA8(&scaled, &field_0x50, delta);
+    const Fn8040Vector3 &scaled = field_0x50 * delta;
     Fn8040Vector3 result;
-    fn_800091D0(&result, &scaled);
+    result = scaled;
 
     float vertical = field_0x50.y - delta * m_enemy->m_parameter->fn_8019B4E0();
     field_0x50.y = vertical;

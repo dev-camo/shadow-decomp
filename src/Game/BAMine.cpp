@@ -98,8 +98,7 @@ void BAMine::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     ReadOwner(owner);
     UpdateModelMatrix();
 
-    Fn8040Vector3 start;
-    fn_800091EC(&start, &m_charInfo->m_position);
+    Fn8040Vector3 start = m_charInfo->m_position;
 
     Fn8040Vector3 end(m_params.x, m_params.y, m_params.z);
     fn_8040CFF8(&end, &start);
@@ -111,7 +110,7 @@ void BAMine::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
     fn_800C9ED4(owner, &m_charInfo->m_rotation);
     fn_800C9DBC(owner, &m_params, sizeof(m_params));
     m_state = STATE_START;
-    fn_800091D0(&m_startPosition, &m_charInfo->m_position);
+    m_startPosition = m_charInfo->m_position;
 
     m_angleSpeed = m_params.second != 0.0f ? 360.0f / m_params.second : 0.0f;
     m_timer = 0.0f;
@@ -165,16 +164,12 @@ void BAMine::UpdateMove(float dt) {
     float angle = m_angleSpeed * m_timer;
     Fn8040Vector3 offset(m_params.x, m_params.y, m_params.z);
     float length = fn_8040CF50(&offset);
-    Fn8040Vector3 direction;
 
-    fn_8040CEE8(&direction, &offset);
-    fn_800091D0(&offset, &direction);
+    offset = fn_8040CEE8(offset);
 
     fn_8040CE38(&offset, 0.5f * length - 0.5f * length * std::cos(fn_8000AB90(angle)));
 
-    Fn8040Vector3 position;
-    fn_8040CDD0(&position, &m_startPosition, &offset);
-    fn_800091D0(&m_charInfo->m_position, &position);
+    m_charInfo->m_position = m_startPosition + offset;
 }
 
 void BAMine::OnAttack(AttackCallbackParam &param) {

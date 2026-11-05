@@ -76,9 +76,7 @@ void SecretDisk::UpdateBody(float dt) {
             actor->UnkSlot7(1, 0);
         }
 
-        Fn8040Vector3 effectPosition;
-
-        fn_800091EC(&effectPosition, &m_charInfo->m_position);
+        Fn8040Vector3 effectPosition = m_charInfo->m_position;
         effectPosition.y += -6.0f;
         fn_80168B38(&effectPosition, &m_charInfo->m_rotation, 0x33);
         fn_801D560C(fn_80053164(), 0xE017, 0, 0);
@@ -113,9 +111,7 @@ void SecretDisk::UpdateModelMatrix() {
         m_model->fn_801633DC(&matrix);
     }
     if (m_object.get() != 0) {
-        Fn8040Vector3 objectPosition;
-
-        fn_800091EC(&objectPosition, &m_charInfo->m_position);
+        Fn8040Vector3 objectPosition = m_charInfo->m_position;
         objectPosition.y += s_objectHeight.value;
         fn_802B44C8(m_object.get(), &objectPosition);
     }

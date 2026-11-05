@@ -1,8 +1,7 @@
 /* Interpolation helpers for matrices, rotation vectors, positions and angles (the unit's original
  * file name is unknown). Function names stay fn_ placeholders; descriptions of behaviour are
  * inferred from the code. Definitions are in reverse address order (deferred inlining emits
- * functions last-defined first). Locals that receive a call's result are declared in the order
- * that gives the original's stack layout. */
+ * functions last-defined first). */
 #include "Game/fn_8040_vector_types.h"
 
 extern "C" {
@@ -15,18 +14,13 @@ float fn_8040F314(float from, float to, float t) {
 }
 
 /* Interpolates a position from one vector to another by t (0 to 1). */
-void fn_8040F268(Fn8040Vector3 *result, const Fn8040Vector3 *from, const Fn8040Vector3 *to,
-                 float t) {
+Fn8040Vector3 fn_8040F268(const Fn8040Vector3 *from, const Fn8040Vector3 *to, float t) {
     if (t <= 0.0f) {
-        fn_800091EC(result, from);
+        return *from;
     } else if (t >= 1.0f) {
-        fn_800091EC(result, to);
+        return *to;
     } else {
-        Fn8040Vector3 step;
-        Fn8040Vector3 difference;
-        fn_8000AD64(&difference, to, from);
-        fn_800091A4(&step, &difference, t);
-        fn_8040CDD0(result, from, &step);
+        return *from + (*to - *from) * t;
     }
 }
 
@@ -40,6 +34,11 @@ UnkRotation3 fn_8040F16C(const UnkRotation3 *from, const UnkRotation3 *to, int o
         return *to;
     }
 
+    /* Matching workaround: the four quaternions are declared together in this order. Declared at
+     * their first uses they take other stack slots: 8 of the function's 63 words differ, all stack
+     * offsets. The temporaries may stand for by-value results of fn_804102F4 copied with the
+     * out-of-line 4-float copy fn_801B1DD4 (inferred). Revisit when the 4-float vector's copy
+     * members and by-value quaternion results are modelled. */
     Fn8040Vector4 fromRotation;
     Fn8040Vector4 toRotation;
     Fn8040Vector4 fromTemporary;
@@ -64,6 +63,9 @@ void fn_8040EFA4(Fn8040Matrix34 *result, Fn8040Matrix34 *from, Fn8040Matrix34 *t
         fn_8040C148(result, to);
     } else {
         Fn8040Matrix34 interpolated;
+        /* Matching workaround: the four quaternions are declared together in this order, as in
+         * fn_8040F16C. Declared at their first uses they take other stack slots: 8 of the
+         * function's 114 words differ, all stack offsets. Revisit with fn_8040F16C's quaternions. */
         Fn8040Vector4 fromRotation;
         Fn8040Vector4 toRotation;
         Fn8040Vector4 fromTemporary;

@@ -11,7 +11,7 @@
 /* The motion control: one original C++ file (its name is unknown) at 0x804157E8-0x80420724 with
  * the pooled float constants at 0x805FAE00-0x805FAE30, the .sbss variables at 0x805F13D0 and the
  * static initializer fn_804206A4. Until all of it matches, the file is built as consecutive units
- * with one source file each: Game/fn_804157E8.cpp, fn_8041583C.c, fn_80415854.c, fn_80416198.cpp,
+ * with one source file each: Game/fn_804157E8.cpp, fn_8041583C.c, fn_80415854.cpp, fn_80416198.cpp,
  * fn_8041FD6C.c, fn_8041FD70.cpp, fn_8041FF08.c, fn_8041FF0C.cpp, fn_804202B8.c, fn_80420308.cpp,
  * fn_80420438.c and fn_8042043C.cpp, so that the units that already match keep their own objects.
  *

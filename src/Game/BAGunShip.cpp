@@ -262,8 +262,7 @@ void BAGunShip::UpdateBody(float dt) {
     case 6: {
         StartCrashEffect();
 
-        Fn8040Vector3 position;
-        fn_800091EC(&position, &m_charInfo->m_position);
+        Fn8040Vector3 position = m_charInfo->m_position;
         UnkRotation3 rotation = m_charInfo->m_rotation;
         Fn8040Vector3 up(0.0f, 1.0f, 0.0f);
         fn_80221BA8(&position, &rotation, &up, 0x10, -1);
@@ -417,16 +416,10 @@ float BAGunShip::Shoot() {
         boost::weak_ptr<CharInfo> character = fn_800A8B74(fn_80074194(), lbl_805EE588);
 
         if (boost::shared_ptr<CharInfo> info = character.lock()) {
-            fn_800091D0(&target, &info->m_position);
+            target = info->m_position;
         }
 
-        /* Matching workaround: direction is declared before difference, which puts difference in
-         * the lower stack slot as in the original; declared in the order of use they swap slots.
-         * Revisit when the by-value vector operations of the original are modelled. */
-        Fn8040Vector3 direction;
-        Fn8040Vector3 difference;
-        fn_8040CD74(&difference, &target, &muzzle);
-        fn_800091EC(&direction, &difference);
+        Fn8040Vector3 direction = target - muzzle;
 
         if (direction.y > 0.0f) {
             direction.y = 0.0f;

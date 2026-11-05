@@ -68,15 +68,10 @@ void TestNakazawa::Update(float dt) {
     } else {
         /* Probes 1000 units straight down from the character info for objects whose weak pointer
          * is still alive. The hit point copied out of the first such object is not used. */
-        Fn8040Vector3 start;
-        Fn8040Vector3 end;
-        Fn8040Vector3 lineEnd;
-        Fn8040Vector3 hitPoint;
-
-        fn_800091EC(&start, &m_charInfo->m_position);
-        fn_800091EC(&end, &start);
+        Fn8040Vector3 start = m_charInfo->m_position;
+        Fn8040Vector3 end = start;
         end.y -= 1000.0f;
-        fn_800091EC(&lineEnd, &start);
+        Fn8040Vector3 lineEnd = start;
 
         UnkSegment_80020A20 probe(start, end);
         CollisionResultList *hits = fn_80021FE4(fn_80020D40(), &probe, 1, 0, 0, 0);
@@ -90,7 +85,7 @@ void TestNakazawa::Update(float dt) {
                     boost::shared_ptr<CharaColliBase> target = fn_800587A0(&node->target).lock();
 
                     if (target.get() != 0) {
-                        fn_800091EC(&hitPoint, fn_8001E9BC(node->hit));
+                        Fn8040Vector3 hitPoint = *fn_8001E9BC(node->hit);
                         break;
                     }
                 }

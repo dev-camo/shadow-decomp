@@ -88,7 +88,7 @@ bool Arms::IsFarFromPlayers(float squaredDistance) {
 }
 
 void Arms::SetTransform(const Fn8040Vector3 *position, UnkRotation3 *rotation) {
-    fn_800091D0(&m_charInfo->m_position, position);
+    m_charInfo->m_position = *position;
     m_charInfo->m_rotation = *rotation;
     UpdateModels();
 }
@@ -106,9 +106,7 @@ void Arms::UpdateModels() {
     }
 
     if (m_item.get() != 0 && !m_flags.Test(1)) {
-        Fn8040Vector3 position;
-
-        fn_800091EC(&position, &m_charInfo->m_position);
+        Fn8040Vector3 position = m_charInfo->m_position;
         position.y += 5.0f;
         m_item->fn_8005F274(&position, &m_charInfo->m_rotation);
     }
@@ -292,12 +290,11 @@ static bool fn_8011EB7C(const UnkProbeFilterRecord *record) {
 }
 
 extern "C" void fn_8011E938(int type, const Fn8040Vector3 *position, UnkRotation3 *rotation) {
-    Fn8040Vector3 ground;
+    Fn8040Vector3 ground = *position;
     Fn8040Vector3 start;
     Fn8040Vector3 end;
 
-    fn_800091EC(&ground, position);
-    fn_800091D0(&start, fn_800091D0(&end, position));
+    start = end = *position;
     end.y -= 1000.0f;
 
     UnkSegment_80020A20 segment(start, end);
@@ -305,7 +302,7 @@ extern "C" void fn_8011E938(int type, const Fn8040Vector3 *position, UnkRotation
 
     if (hit != 0) {
         if (hit->hit != 0) {
-            fn_800091D0(&ground, fn_8001E9BC(hit->hit));
+            ground = *fn_8001E9BC(hit->hit);
         }
         delete hit;
     }

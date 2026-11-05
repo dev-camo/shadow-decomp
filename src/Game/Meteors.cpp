@@ -81,14 +81,10 @@ UnkMeteorsParams_8021FCE4::UnkMeteorsParams_8021FCE4(const MeteorParams &params)
     m_rotateSpeed.y = DegreesToRadians(params.rotateSpeedY);
 
     Fn8040Vector3 forward(0.0f, 0.0f, 1.0f);
-    Fn8040Vector3 turnedX;
-    Fn8040Vector3 turnedY;
 
-    fn_800091D0(&m_direction, &forward);
-    fn_8040D118(&turnedX, &m_direction, DegreesToRadians(params.directionX));
-    fn_800091D0(&m_direction, &turnedX);
-    fn_8040D0AC(&turnedY, &m_direction, DegreesToRadians(params.directionY));
-    fn_800091D0(&m_direction, &turnedY);
+    m_direction = forward;
+    m_direction = fn_8040D118(m_direction, DegreesToRadians(params.directionX));
+    m_direction = fn_8040D0AC(m_direction, DegreesToRadians(params.directionY));
 
     m_lifetime = params.lifetime;
 }
@@ -96,15 +92,13 @@ UnkMeteorsParams_8021FCE4::UnkMeteorsParams_8021FCE4(const MeteorParams &params)
 UnkMeteorsParams_8021FCE4::UnkMeteorsParams_8021FCE4(float range, float moveSpeed,
                                                      const Fn8040Vector3 &direction,
                                                      UnkRotation3 rotateSpeed, float lifetime)
-    : m_range(range), m_moveSpeed(moveSpeed) {
-    fn_800091EC(&m_direction, &direction);
+    : m_range(range), m_moveSpeed(moveSpeed), m_direction(direction) {
     m_rotateSpeed = rotateSpeed;
     m_lifetime = lifetime;
 }
 
 UnkMeteorsParams_8021FCE4::UnkMeteorsParams_8021FCE4(const UnkMeteorsParams_8021FCE4 &other)
-    : m_range(other.m_range), m_moveSpeed(other.m_moveSpeed) {
-    fn_800091EC(&m_direction, &other.m_direction);
+    : m_range(other.m_range), m_moveSpeed(other.m_moveSpeed), m_direction(other.m_direction) {
     m_rotateSpeed = other.m_rotateSpeed;
     m_lifetime = other.m_lifetime;
 }
@@ -116,7 +110,7 @@ Meteors::Meteors(Task *task, const Fn8040Vector3 &position, const UnkRotation3 &
     m_flags.Set(0);
 
     m_charInfo = fn_8015CD90(0x62, 4);
-    fn_800091D0(&m_charInfo->m_position, &position);
+    m_charInfo->m_position = position;
     m_charInfo->m_rotation = rotation;
     m_object = fn_801E72DC(0xA800);
     m_model = fn_8015F800(1, "METEORS.BIN");
@@ -169,14 +163,7 @@ void Meteors::Update(float dt) {
         boost::shared_ptr<CharInfo> nearest(
             fn_800A8A7C(fn_80074194(), &m_charInfo->m_position).lock());
         if (nearest.get() != 0) {
-            /* The original computes the difference into a compiler temporary and then copies it;
-             * the named local stands in for that temporary (the stack-offset residual noted in
-             * configure.py). */
-            Fn8040Vector3 difference;
-            Fn8040Vector3 offset;
-
-            fn_8040CD74(&difference, &nearest->m_position, &m_charInfo->m_position);
-            fn_800091EC(&offset, &difference);
+            Fn8040Vector3 offset = nearest->m_position - m_charInfo->m_position;
             if (fn_8040CF50(&offset) < m_params.m_range) {
                 m_state = 1;
             }
@@ -184,11 +171,7 @@ void Meteors::Update(float dt) {
         break;
     }
     case 1: {
-        /* A named local for the original's compiler temporary, as for the difference above. */
-        Fn8040Vector3 velocity;
-
-        fn_8040CDA8(&velocity, &m_params.m_direction, m_params.m_moveSpeed * dt);
-        fn_800091D0(&m_charInfo->field_0x18, &velocity);
+        m_charInfo->field_0x18 = m_params.m_direction * (m_params.m_moveSpeed * dt);
         AddVector(&m_charInfo->m_position, m_charInfo->field_0x18);
 
         m_timer -= dt;
@@ -229,9 +212,8 @@ void Meteors::Update(float dt) {
             boost::shared_ptr<CharaColliBase> probe(m_model->fn_80161614(0).lock());
             if (probe.get() != 0) {
                 UnkSphere_80021C04 sphere(&m_charInfo->m_position, s_sweepRadius.value);
-                Fn8040Vector3 motion;
 
-                fn_800091EC(&motion, &m_charInfo->field_0x18);
+                Fn8040Vector3 motion = m_charInfo->field_0x18;
                 boost::shared_ptr<CollisionResultList> hits(fn_80021934(
                     fn_80020D40(), &sphere, &motion, 3, 0xF, 0, fn_8021FE5C, probe.get(), false));
                 if (hits.get() != 0) {
@@ -296,15 +278,8 @@ void Meteors::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
         length = 50.0f;
     }
 
-    Fn8040Vector3 path;
-    Fn8040Vector3 scaled;
-    Fn8040Vector3 end;
-
-    fn_8040CDA8(&scaled, &m_params.m_direction, length);
-    fn_800091EC(&path, &scaled);
-    fn_8040CDD0(&end, &m_charInfo->m_position, &path);
-
-    UnkSegment_80020A20 segment(m_charInfo->m_position, end);
+    Fn8040Vector3 path = m_params.m_direction * length;
+    UnkSegment_80020A20 segment(m_charInfo->m_position, m_charInfo->m_position + path);
 
     fn_802E0AA0(segment, UnkDebugColor_802E0E84(0xFF, 0xFF, 0xFF, 0), 10.0f);
 }
@@ -334,7 +309,7 @@ void Meteors::OnCollision(ColliDetectArgs &args) {
 }
 
 void Meteors::fn_8021E4D8(AttackCallbackParam &param) {
-    fn_800091D0(&param.field_0x34, &m_params.m_direction);
+    param.field_0x34 = m_params.m_direction;
     param.field_0x4C = m_params.m_moveSpeed;
     param.field_0x50 = 3.0f;
 }

@@ -22,7 +22,7 @@ Game/fn_80008DA4.c:
 Game/fn_80008E1C.c:
 	.text       start:0x80008E1C end:0x80008E2C
 
-Game/fn_800091D0.c:
+Game/fn_800091D0.cpp:
 	.text       start:0x800091D0 end:0x80009208
 
 Game/fn_8000A950.cpp:
@@ -2869,7 +2869,7 @@ Game/fn_804157E8.cpp:
 Game/fn_8041583C.c:
 	.text       start:0x8041583C end:0x80415854
 
-Game/fn_80415854.c:
+Game/fn_80415854.cpp:
 	extab       start:0x80005D7C end:0x80005DC4
 	extabindex  start:0x80007DF0 end:0x80007E5C
 	.text       start:0x80415854 end:0x80416198

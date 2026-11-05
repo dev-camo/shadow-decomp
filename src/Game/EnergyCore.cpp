@@ -123,7 +123,7 @@ void EnergyCore::Update(float dt) {
 }
 
 void EnergyCore::SetTransform(Fn8040Vector3 *position, UnkRotation3 *rotation) {
-    fn_800091D0(&m_charInfo->m_position, position);
+    m_charInfo->m_position = *position;
     m_charInfo->m_rotation = *rotation;
 
     if (!m_effect.expired()) {
@@ -213,7 +213,7 @@ EnergyCoreTask::EnergyCoreTask(int type, Task *parent, Fn8040Vector3 *position,
                                UnkRotation3 *rotation, float range)
     : Task(parent), m_core(new EnergyCore), m_rotation(0.0f, 0.0f, 0.0f) {
     m_name = s_name;
-    fn_800091D0(&m_position, position);
+    m_position = *position;
     m_rotation = *rotation;
     m_rangeSquared = range * range;
     m_core->SetType(type);
