@@ -331,6 +331,14 @@ Game/Cream.cpp:
 	.sbss       start:0x805EEEF0 end:0x805EEF10
 	.sdata2     start:0x805F4288 end:0x805F42B8
 
+Game/FireRing.cpp:
+	.text       start:0x801352A4 end:0x80136ABC
+	.rodata     start:0x804BF278 end:0x804BF490
+	.data       start:0x80528B20 end:0x80528C20
+	.sdata      start:0x805E5FB8 end:0x805E6000
+	.sbss       start:0x805EEF10 end:0x805EEF30
+	.sdata2     start:0x805F42B8 end:0x805F42F0
+
 Game/MonsterControl.cpp:
 	.text       start:0x8013A298 end:0x8013ADC4
 	.rodata     start:0x804BFB70 end:0x804BFC78
