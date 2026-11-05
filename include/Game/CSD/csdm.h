@@ -3,6 +3,7 @@
 
 #include <dolphin/types.h>
 #include <list>
+#include <map>
 #include "Game/CSD/MotionPalette.h"
 #include "Game/CSD/csdBase.h"
 #include "Game/CSD/csdRCObject.h"
@@ -11,11 +12,11 @@
 /* The classes of the csdm* files, the library's object layer over the records of MotionPalette.h.
  * The original headers' names are unknown except csdmProject.h; this header stands in for them.
  * The CNode spelling is present in its reference holder's RTTI.
- * Class and member names without native evidence are inferred. Out-of-line virtual functions are
- * defined in csdmScene.cpp, except CMotionPattern's Copy (csdmMotionPattern.cpp, with its vtable),
- * and CElementDataRef's destructor and Copy and CNode's destructor (csdmNode.cpp). CNode's
- * destructor remains unsourced. CMotionPattern's destructor is inline; the game's copy is in
- * csdmScene.cpp. Members without a supported meaning keep their offset. */
+ * Class names, member names and declarations without native evidence are inferred. The node,
+ * node-listener source and element-data reference are defined in csdmNode.cpp. The other
+ * out-of-line virtual functions are in csdmScene.cpp, except CMotionPattern's Copy, which is in
+ * csdmMotionPattern.cpp with its vtable. CMotionPattern's destructor is inline; the game's copy
+ * is in csdmScene.cpp. Members without a supported meaning keep their offset. */
 namespace Chao {
 namespace CSD {
 
@@ -122,10 +123,13 @@ class CElementDataRef {
 CHECK_SIZEOF(Chao::CSD::CElementDataRef, 0xC);
 
 class CMotionPattern;
+class CMotionPalette;
 class CFontList;
 class CScene;
 class CNode;
 class CNodeListener;
+class CNodeCallback;
+struct UnkNodePayload_80364C40;
 struct NodeObjects;
 
 /* The node's second base, containing its raw listener pointers (class and method names inferred).
@@ -135,7 +139,12 @@ class CNodeListenerSource {
   public:
     CNodeListenerSource();
     virtual ~CNodeListenerSource() = 0;
-    virtual CNode *GetSender();
+    virtual CNode *GetSender() {
+        return NULL;
+    }
+
+    /* Dispatches the selected member to every persistent listener (signature inferred). */
+    void fn_8036AAC8(void (CNodeListener::*event)(CNode *), CNode *node);
 
     /* Number of persistent listeners; the scene's update uses it to select the final node pass. */
     size_t fn_80366F78();
@@ -150,13 +159,21 @@ CHECK_SIZEOF(Chao::CSD::CNodeListenerSource, 0x10);
  * Only the members that are known have names. */
 class CNode : public CElementDataRef, public CNodeListenerSource, public CBase {
   public:
+    typedef std::list<RCPtr<CNodeCallback> > CallbackList;
+    /* The channel key type is inferred from the channel switch; its original spelling is unknown. */
+    typedef std::map<EntryChannel, RCPtr<CNode> > ChannelMap;
+
+    /* Argument types are inferred from the scene's native node construction. */
+    CNode(ElementData *element, const RCPtr<unsigned char> &ref, CMotionPalette *palette,
+          const ElementRef &elementRef, CScene *scene, const CFontListRef *fonts);
     virtual ~CNode();
     virtual CNode *GetSender();
 
-    /* Native passes called before the palette update and, when listeners exist, after frame
-     * advancement. They belong to the csdmNode unit and are not sourced yet. */
+    /* Passes called before the palette update and, when listeners exist, after frame advancement. */
     void fn_8036A728();
     void fn_8036A954();
+    /* Transfers the selected channel from the referenced node (signature inferred). */
+    void fn_8036A44C(const ChannelMap::iterator &node);
 
     /* The accessors forward to the entry's CMotionPattern (names inferred). The translation is
      * in screen units. */
@@ -196,12 +213,16 @@ class CNode : public CElementDataRef, public CNodeListenerSource, public CBase {
      * the entry dirty (placeholder name: the purpose is not known). */
     void fn_8036A20C();
 
-    /* 0x1C */ u8 field_0x1C[0xC];
+    /* 0x1C */ CallbackList m_callbacks;
     /* 0x28 */ CMotionPattern *m_pattern;
     /* 0x2C */ CFontList *m_fonts;
-    /* 0x30 */ u8 field_0x30[0x4];
+    /* 0x30 */ s32 field_0x30;
     /* 0x34 */ CScene *m_scene;
-    /* 0x38 */ u8 field_0x38[0x18];
+    /* These handles share their native constructor and destructor with CScene+0xC4.
+     * The payload is unrecovered; native deletion calls the global operator delete. */
+    /* 0x38 */ RCPtr<UnkNodePayload_80364C40> field_0x38;
+    /* 0x3C */ RCPtr<UnkNodePayload_80364C40> field_0x3C;
+    /* 0x40 */ ChannelMap m_channels;
     /* 0x50 */ NodeObjects *m_objects;
 };
 CHECK_OFFSETOF(Chao::CSD::CNode, m_element, 0x8);
@@ -210,6 +231,13 @@ CHECK_OFFSETOF(Chao::CSD::CNode, m_fonts, 0x2C);
 CHECK_OFFSETOF(Chao::CSD::CNode, m_scene, 0x34);
 CHECK_OFFSETOF(Chao::CSD::CNode, m_objects, 0x50);
 CHECK_SIZEOF(Chao::CSD::CNode, 0x54);
+CHECK_OFFSETOF(Chao::CSD::CNode, m_callbacks, 0x1C);
+CHECK_OFFSETOF(Chao::CSD::CNode, field_0x38, 0x38);
+CHECK_OFFSETOF(Chao::CSD::CNode, field_0x3C, 0x3C);
+CHECK_OFFSETOF(Chao::CSD::CNode, m_channels, 0x40);
+CHECK_SIZEOF(Chao::CSD::CNode::CallbackList, 0xC);
+CHECK_SIZEOF(Chao::CSD::CNode::ChannelMap, 0x10);
+CHECK_SIZEOF(Chao::CSD::RCPtr<Chao::CSD::UnkNodePayload_80364C40>, 0x4);
 
 /* The defaults a node's element has for a channel, read when neither an override nor a computed
  * value exists (placeholder name: the function is in csdmNode.cpp). */

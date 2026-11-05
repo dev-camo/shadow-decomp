@@ -827,6 +827,11 @@ Game/CSD/csdmMotionPalette.cpp:
 	.text       start:0x80369574 end:0x80369AB8
 	.rodata     start:0x80514220 end:0x80514268
 
+Game/CSD/csdmNode.cpp:
+	.text       start:0x8036B050 end:0x8036CAF4
+	.rodata     start:0x805142D0 end:0x80514308
+	.data       start:0x80560FE0 end:0x80561078
+
 dolphin/PPCArch.c:
 	.text       start:0x80370ADC end:0x80370BF0
 

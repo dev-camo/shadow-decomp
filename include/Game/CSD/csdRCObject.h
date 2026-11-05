@@ -8,8 +8,8 @@
  * the original csdRCObject.h, the file name the game's RCPtr code passes to AllocObject: it has
  * only the members recovered code uses. Reset, Assign and the holder's constructors are defined in
  * the class because the game's copies come out right after their first user (the weak instances of
- * a member defined outside the class come out at the end of the file); SetRelease is the exception
- * (see its definition), and the other members are compiled elsewhere.
+ * a member defined outside the class come out at the end of the file). The destructor and
+ * SetRelease are defined below; the remaining members are compiled elsewhere.
  *
  * The CBase base is inferred: the game's deleting destructor of RCPtr<unsigned char> (0x8003F224
  * in the USA release) frees the pointer through the current allocator's FreeObject, as CBase's
@@ -227,6 +227,51 @@ template <class T> class RCPtr : public CBase {
 
     /* 0x0 */ RCObject<T> *field_0x0;
 };
+
+template <class T> inline RCPtr<T>::~RCPtr() {
+    RCObject<T> *holder = field_0x0;
+
+    if (holder != NULL) {
+        if (--holder->m_refCount == 0) {
+            if (holder->m_pObject != NULL) {
+                switch (holder->m_eDealloctor) {
+                case RELEASE_FREE:
+                    if (holder->m_pObject != NULL) {
+                        Free(holder->m_pObject);
+                        holder->m_pObject = NULL;
+                    }
+                    break;
+                case RELEASE_DELETE:
+                    if (holder->m_pObject != NULL) {
+                        delete holder->m_pObject;
+                        holder->m_pObject = NULL;
+                    }
+                    break;
+                case RELEASE_NONE:
+                    break;
+                case RELEASE_FUNCTION:
+                    holder->m_custom.function(holder->m_pObject);
+                    holder->m_custom.function = NULL;
+                    break;
+                case RELEASE_RELEASER:
+                    if (holder->m_custom.releaser != NULL) {
+                        holder->m_custom.releaser->Release();
+                    }
+                    if (holder->m_custom.releaser != NULL) {
+                        delete holder->m_custom.releaser;
+                        holder->m_custom.releaser = NULL;
+                    }
+                    break;
+                default:
+                    PrintFatalError("Not inititalized m_eDealloctor\n");
+                    break;
+                }
+            }
+            delete holder;
+        }
+        field_0x0 = NULL;
+    }
+}
 
 /* Stores a release function and selects RELEASE_FUNCTION (name inferred).
  *

@@ -1,5 +1,5 @@
 /* csdmNode.cpp (original name from the library's allocation calls): the node of a scene element
- * (csdm.h). Class and function names are inferred. Definitions are in reverse address order
+ * (csdm.h). Names without native evidence are inferred. Definitions are in reverse address order
  * (deferred inlining emits the last definition first). */
 #include <new>
 #include "Game/CSD/csdmNode.h"
@@ -10,14 +10,22 @@
 namespace Chao {
 namespace CSD {
 
+void CNodeListener::fn_8036B9FC(CNode *node) {
+    m_nodes.remove(node);
+}
+
 void CElementDataRef::Copy(const CElementDataRef &other) {
     m_ref = other.m_ref;
     m_element = other.m_element;
 }
 
+CNodeListenerSource::~CNodeListenerSource() {}
+
 CElementDataRef::CElementDataRef() {
     Clear();
 }
+
+CNodeListenerSource::CNodeListenerSource() {}
 
 void CElementDataRef::Clear() {
     m_ref.Reset(NULL);
@@ -30,8 +38,37 @@ void CElementDataRef::Attach(ElementData *element, const RCPtr<unsigned char> &r
     m_element = element;
 }
 
+CNode::CNode(ElementData *element, const RCPtr<unsigned char> &ref, CMotionPalette *palette,
+             const ElementRef &elementRef, CScene *scene, const CFontListRef *fonts)
+    : m_fonts(NULL) {
+    Attach(element, ref);
+    m_objects = static_cast<NodeObjects *>(Alloc(sizeof(NodeObjects), __FILE__, __LINE__));
+    m_pattern = palette->GetPattern(&m_objects->pattern, elementRef);
+    m_pattern->m_aspect = scene->GetAspect();
+    m_pattern->m_node = this;
+    field_0x30 = elementRef.field_0x0;
+    m_scene = scene;
+    if (fonts != NULL) {
+        m_fonts = ::new (&m_objects->fonts) CFontList(*fonts);
+    }
+}
+
 CElementDataRef::~CElementDataRef() {
     m_element = NULL;
+}
+
+CNode::~CNode() {
+    fn_8036AAC8(&CNodeListener::fn_8036B9FC, GetSender());
+    m_listeners.clear();
+    if (m_pattern != NULL) {
+        m_pattern->~CMotionPattern();
+        m_pattern = NULL;
+    }
+    if (m_fonts != NULL) {
+        m_fonts->~CFontList();
+        m_fonts = NULL;
+    }
+    Free(m_objects);
 }
 
 void CNode::fn_8036AEE0(u32 value) {
@@ -107,8 +144,27 @@ void CNode::ClearColor(int corner) {
     m_pattern->ClearColor(corner);
 }
 
+void CNodeListenerSource::fn_8036AAC8(void (CNodeListener::*event)(CNode *), CNode *node) {
+    std::list<CNodeListener *>::iterator listener;
+
+    for (listener = m_listeners.begin(); listener != m_listeners.end(); ++listener) {
+        ((*listener)->*event)(node);
+    }
+}
+
 s32 CNode::GetValue(int index) const {
     return m_pattern->GetValue(index);
+}
+
+void CNode::fn_8036A954() {
+    fn_8036AAC8(&CNodeListener::fn_0xC, this);
+    for (CallbackList::iterator callback = m_callbacks.begin(); callback != m_callbacks.end();) {
+        if (!(*callback)->Invoke(this)) {
+            callback = m_callbacks.erase(callback);
+        } else {
+            ++callback;
+        }
+    }
 }
 
 void CNode::SetFonts(const CFontListRef *fonts) {
@@ -123,6 +179,68 @@ void CNode::SetFonts(const CFontListRef *fonts) {
 
 void CNode::ClearHidden() {
     m_pattern->ClearHidden();
+}
+
+void CNode::fn_8036A728() {
+    for (ChannelMap::iterator node = m_channels.begin(); node != m_channels.end(); ++node) {
+        fn_8036A44C(node);
+    }
+}
+
+void CNode::fn_8036A44C(const ChannelMap::iterator &node) {
+    switch (node->first) {
+    case CHANNEL_HIDDEN:
+        m_pattern->SetHidden(node->second->GetHidden());
+        break;
+    case CHANNEL_TRANSLATE_X:
+        SetTranslateX(node->second->GetTranslateX());
+        break;
+    case CHANNEL_TRANSLATE_Y:
+        SetTranslateY(node->second->GetTranslateY());
+        break;
+    case CHANNEL_ROTATION:
+        m_pattern->SetRotation(node->second->GetRotation());
+        break;
+    case CHANNEL_SCALE_X:
+        m_pattern->SetScaleX(node->second->GetScaleX());
+        break;
+    case CHANNEL_SCALE_Y:
+        m_pattern->SetScaleY(node->second->GetScaleY());
+        break;
+    case CHANNEL_PATTERN: {
+        int first;
+        int second;
+        f32 blend;
+
+        UnpackPatternBlend(&first, &second, &blend, node->second->m_pattern->GetPattern());
+        m_pattern->SetPattern(PackPatternBlend(first, second, blend));
+        break;
+    }
+    case CHANNEL_TINT:
+        m_pattern->SetTint(node->second->GetTint());
+        break;
+    case CHANNEL_COLOR_0:
+        m_pattern->SetColor(0, node->second->GetColor(0));
+        break;
+    case CHANNEL_COLOR_0 + 1:
+        m_pattern->SetColor(1, node->second->GetColor(1));
+        break;
+    case CHANNEL_COLOR_0 + 2:
+        m_pattern->SetColor(2, node->second->GetColor(2));
+        break;
+    case CHANNEL_COLOR_0 + 3:
+        m_pattern->SetColor(3, node->second->GetColor(3));
+        break;
+    case CHANNEL_FIELD_0x30:
+        m_pattern->SetValue(0, node->second->GetValue(0));
+        break;
+    case CHANNEL_FIELD_0x30 + 1:
+        m_pattern->SetValue(1, node->second->GetValue(1));
+        break;
+    case CHANNEL_FIELD_0x30 + 2:
+        m_pattern->SetValue(2, node->second->GetValue(2));
+        break;
+    }
 }
 
 f32 CNode::GetTranslateX() const {
@@ -187,6 +305,10 @@ void CNode::fn_8036A20C() {
     entry->flags &= ~ENTRY_TRANSFORM_SET;
     entry->flags &= ~ENTRY_ALL_CHANNELS_SET;
     MarkEntryDirty(entry);
+}
+
+CNode *CNode::GetSender() {
+    return this;
 }
 
 } // namespace CSD
