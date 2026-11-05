@@ -252,6 +252,10 @@ void fn_8040BEF8(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Applies the three angles of rotation in the axis order selected by order, 0 to 2 (behaviour
  * inferred). */
 void fn_8001E070(Fn8040Matrix34 *matrix, const Fn8040Vector3 *rotation, int order);
+/* Sets the matrix to the rotation by the three angles in the axis order selected by order, 0 to 2,
+ * the same order semantics as fn_8001E070, which multiplies the rotation onto an existing matrix
+ * (behaviour inferred from its body). */
+void fn_800193B8(Fn8040Matrix34 *matrix, const Fn8040Vector3 *rotation, int order);
 /* Matrix helpers below 0x80050000 called by game units (descriptions inferred from the callers). */
 /* result = left * right, applying right first (a by-value wrapper that keeps the result pointer and
  * calls fn_8040B8FC). */

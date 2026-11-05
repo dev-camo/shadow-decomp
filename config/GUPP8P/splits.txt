@@ -489,6 +489,15 @@ Game/ElecFireWall.cpp:
 	.sbss       start:0x805F0BF8 end:0x805F0C08
 	.sdata2     start:0x805F7640 end:0x805F76B0
 
+Game/ElecCristalWall.cpp:
+	.text       start:0x801F8F68 end:0x801FA2AC
+	.ctors      start:0x804AAE68 end:0x804AAE6C
+	.rodata     start:0x804ECB60 end:0x804ECCB0
+	.data       start:0x80543520 end:0x80543630
+	.sdata      start:0x805EA118 end:0x805EA148
+	.sbss       start:0x805F0C18 end:0x805F0C38
+	.sdata2     start:0x805F76F8 end:0x805F7750
+
 Game/ElecSmallCube.cpp:
 	.text       start:0x8021B0C0 end:0x8021C074
 	.rodata     start:0x804F1518 end:0x804F1628
