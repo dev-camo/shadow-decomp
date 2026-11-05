@@ -1,10 +1,10 @@
 /* The BAShield gadget (class name from RTTI; file name inferred from the class). Definitions are in
  * reverse address order (deferred inlining emits functions last-defined first). */
 #include "Game/BAShield.h"
+#include "Game/BASwitch.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/fn_8006_resource_list.h"
-#include "Game/fn_80301F4C.h"
 
 static const char *s_modelFile = "BASHIELD.BIN";
 

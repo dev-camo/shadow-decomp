@@ -212,6 +212,14 @@ class GadgetModelInfo {
      * from their bodies). */
     void fn_80161090(const char *name, int arg1);
     void fn_801611A4(const char *name, int arg1);
+    /* As fn_80160A84, finds the first motion entry of the list at 0x58 whose resource record
+     * (payload word at +0x18) has arg0 in its word at 0x18 and passes the motion arg1 + payload
+     * word at +0x14 - 1 (low 16 bits) to fn_80417568 with the payload's play work (at +0x4); it
+     * then passes the float at 0x4 of what fn_804125F4 returns for that motion to
+     * stMtnRequestCurrentFrame and returns true; returns false when there is no such entry
+     * (behaviour inferred from its body). The BASwitch gadget's constructor uses it where its
+     * toggles use fn_80160A84. */
+    bool fn_801608AC(int arg0, int arg1);
 
     /* The constructor builds three callback objects at 0x4, 0x10 and 0x1C with the same function,
      * and the destructor destroys them with the same function. The gadgets bind their collision
