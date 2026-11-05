@@ -204,6 +204,14 @@ Game/DashPanel.cpp:
 	.sbss       start:0x805EEAC0 end:0x805EEAD0
 	.sdata2     start:0x805F37F8 end:0x805F3838
 
+Game/DashRing.cpp:
+	.text       start:0x80100198 end:0x80101150
+	.rodata     start:0x804BAD80 end:0x804BAEC8
+	.data       start:0x80525A78 end:0x80525B60
+	.sdata      start:0x805E5670 end:0x805E5698
+	.sbss       start:0x805EEAD0 end:0x805EEAE0
+	.sdata2     start:0x805F3838 end:0x805F3870
+
 Game/EnergyCore.cpp:
 	.text       start:0x80101150 end:0x80102218
 	.rodata     start:0x804BAEC8 end:0x804BAFE8
