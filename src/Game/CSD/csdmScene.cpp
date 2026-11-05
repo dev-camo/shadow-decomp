@@ -143,6 +143,10 @@ CMotionPatternRef::CMotionPatternRef() {
     Clear();
 }
 
+CMotionPattern::CMotionPattern(const CMotionPatternRef &other) {
+    Copy(other);
+}
+
 void CScene::SetRootPattern(const CMotionPatternRef *pattern) {
     if (m_rootPattern != NULL) {
         delete m_rootPattern;
@@ -152,10 +156,6 @@ void CScene::SetRootPattern(const CMotionPatternRef *pattern) {
     if (pattern != NULL) {
         m_rootPattern = CSD_NEW CMotionPattern(*pattern);
     }
-}
-
-CMotionPattern::CMotionPattern(const CMotionPatternRef &other) {
-    Copy(other);
 }
 
 CMotionPatternRef::~CMotionPatternRef() {
