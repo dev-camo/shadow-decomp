@@ -34,5 +34,9 @@ extern "C" boost::shared_ptr<GadgetCharInfo> fn_8015CD90(int arg0, int arg1);
 
 /* Creates the command unit at 0x64 when there is none (behaviour inferred). */
 extern "C" void fn_8015CF7C(GadgetCharInfo *info);
+/* Passes target a new Player::GetItemCommand (class name from RTTI) built from arg0, arg1, arg2
+ * and 4, and returns 1 (behaviour inferred; the meaning of the arguments is unknown). The
+ * EnergyCore gadget passes an item id, the integer value of lbl_805F4BF0 and 0. */
+extern "C" int fn_8015F6EC(boost::shared_ptr<CharInfo> target, int arg0, int arg1, int arg2);
 
 #endif

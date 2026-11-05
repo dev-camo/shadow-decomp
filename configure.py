@@ -1878,6 +1878,7 @@ config.libs = [
             # 0x800D0CEC and 0x800D05D0 in the original, and those that symbols.txt names at
             # 0x800F5B08 and 0x800F5238 here (USA addresses).
             Object(NonMatching, "Game/ElecAccessPanel.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/EnergyCore.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetVehicle.cpp", cflags=cflags_game_cpp),
             # All 66 functions have identical words and relocations, and the data matches the
             # original once the weak copies that the linker discards are removed, but

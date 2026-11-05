@@ -107,6 +107,12 @@ boost::weak_ptr<Effect::System::EffectElement> fn_80168B38(const Fn8040Vector3 *
 void fn_80425E4C(Effect::System::EffectElement *effect, const Fn8040Vector3 *position);
 void fn_80425E68(Effect::System::EffectElement *effect, const Fn8040Matrix34 *matrix);
 void fn_80425D94(Effect::System::EffectElement *effect, const Fn8040Vector3 *rotation);
+/* Passes position, direction and id (with 0 before position and after id) to fn_801D2AFC and
+ * returns the effect it creates (behaviour inferred). */
+boost::weak_ptr<Effect::System::EffectElement> fn_8015D7DC(const Fn8040Vector3 *position,
+                                                           const Fn8040Vector3 *direction, int id);
+/* Calls fn_8015D7DC with the direction (0, 1, 0) (behaviour inferred). */
+boost::weak_ptr<Effect::System::EffectElement> fn_8015D794(const Fn8040Vector3 *position, int id);
 }
 
 #endif
