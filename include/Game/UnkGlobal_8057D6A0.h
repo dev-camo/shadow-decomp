@@ -5,14 +5,15 @@
 #include "layout_check.h"
 
 /* The 0x150-byte object at 0x8057D6A0 in .bss (placeholder name; the original name and type are
- * unknown). More than 400 functions across the game read it. Only the words at 0x28, 0x90, 0x98,
- * 0xA8 and 0xAC and the bytes at 0xB2, 0xC1 and 0x125 are mapped. */
+ * unknown). More than 400 functions across the game read it. Only the words at 0x28, 0x90, 0x94,
+ * 0x98, 0xA8 and 0xAC and the bytes at 0xB2, 0xC1 and 0x125 are mapped. */
 struct UnkGlobal_8057D6A0 {
     /* 0x00 */ u8 field_0x0[0x28];
     /* 0x28 */ float field_0x28; /* Coaster multiplies it by 540 (meaning unknown) */
     /* 0x2C */ u8 field_0x2C[0x90 - 0x2C];
     /* 0x90 */ u32 field_0x90;
-    /* 0x94 */ u8 field_0x94[0x98 - 0x94];
+    /* The ELEC_BAR gadget adds it to the times of its bars' cycles (meaning unknown). */
+    /* 0x94 */ float field_0x94;
     /* 0x98 */ float field_0x98; /* ElecFan and Fan pass it to cos (meaning unknown) */
     /* 0x9C */ u8 field_0x9C[0xA8 - 0x9C];
     /* Fan compares it with 0x1F5 (meaning unknown). */

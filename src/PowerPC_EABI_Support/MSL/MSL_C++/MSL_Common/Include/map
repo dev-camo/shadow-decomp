@@ -2,6 +2,7 @@
 #define MSL_MAP_H_
 
 #include <functional>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -9,7 +10,7 @@
 
 /* The parts of <map> used by the texture-list registry and the enemy bookkeeping maps, built on
  * the library's red-black tree; "tree::insert length error" is the library's message. String-key
- * maps and operations not used by these consumers are not covered.
+ * maps and operations not used by these consumers are not covered. <set> builds on the same tree.
  *
  * find, insert, erase, the tree constructor, __insert_node and __destroy (inline) are defined
  * outside the class. The internal names (__tree, its members and the node and iterator types) are
@@ -71,6 +72,36 @@ template <class Key, class Value, class Compare, class Allocator> class __tree {
             return node_ != x.node_;
         }
 
+        __tree_node_base *node_;
+    };
+
+    /* The constant iterator that the set's iterator wraps (see <set>).
+     *
+     * Matching workaround: it derives from std::iterator, the library's usual base for its
+     * iterators, only because the set code of the ELEC_BAR gadget has an out-of-line copy
+     * assignment of this iterator (0x80152620 in the USA release). Without the base, this
+     * implicit assignment and the set iterator's one that calls it are both expanded in place and
+     * neither function is emitted. The base is provisional: it reproduces those out-of-line
+     * implicit assignments and the original emission order (explicit out-of-class assignments
+     * reproduce the bodies but move other functions), but no original definition of the iterator
+     * establishes it. Revisit when the library's own definition of its tree iterators is known. */
+    class const_iterator : public std::iterator<bidirectional_iterator_tag, Value, ptrdiff_t,
+                                                const Value *, const Value &> {
+      public:
+        const_iterator() {}
+        const_iterator(const iterator &x) : node_(x.node_) {}
+        const Value &operator*() const {
+            return static_cast<node *>(node_)->value_;
+        }
+        const_iterator &operator++() {
+            fn_80012E90(node_);
+            return *this;
+        }
+        bool operator!=(const const_iterator &x) const {
+            return node_ != x.node_;
+        }
+
+      private:
         __tree_node_base *node_;
     };
 

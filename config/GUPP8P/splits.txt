@@ -321,6 +321,14 @@ Game/Vine.cpp:
 	.sbss       start:0x805F0188 end:0x805F01C0
 	.sdata2     start:0x805F5830 end:0x805F58D8
 
+Game/ElecBar.cpp:
+	.text       start:0x80150E44 end:0x8015385C
+	.rodata     start:0x804C2AD0 end:0x804C2D00
+	.data       start:0x8052B6A0 end:0x8052B8C0
+	.sdata      start:0x805E74C8 end:0x805E7528
+	.sbss       start:0x805F01C0 end:0x805F01E8
+	.sdata2     start:0x805F58D8 end:0x805F5958
+
 Game/ElecSecurityCodeGenerator.cpp:
 	.text       start:0x80157F94 end:0x801589C0
 	.rodata     start:0x804C3180 end:0x804C31C0

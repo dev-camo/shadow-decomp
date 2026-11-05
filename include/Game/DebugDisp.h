@@ -47,6 +47,12 @@ void fn_802E0D6C(const Fn8040Vector3 *position, const Fn8040Vector3 *rotation, i
  * (behaviour inferred from the 0x28-byte wrapper; the original function name is unknown). */
 void fn_802E0C60(const Fn8040Vector3 *center, const Fn8040Vector3 *rotation, int arg2,
                  float halfLength, float radius);
+/* Forwards to fn_802E0D94 with the colour lbl_805F06D8; that function creates a
+ * SonicteamUSA::System::DebugDispBox (class name from RTTI) and queues it (behaviour inferred). The
+ * ELEC_BAR gadget passes the centre, half sizes and rotation of the box its bars move in; arg3 is 0
+ * there and not understood. */
+void fn_802E0E5C(const Fn8040Vector3 *center, const Fn8040Vector3 *halfSize,
+                 const Fn8040Vector3 *rotation, int arg3);
 }
 
 /* A zero-filled .sbss colour that several gadgets pass when they draw their range (purpose

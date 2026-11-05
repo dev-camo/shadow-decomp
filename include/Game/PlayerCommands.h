@@ -315,4 +315,48 @@ CHECK_SIZEOF(EnemyDeadByPlayerCommand, 0x1C);
 
 } // namespace Player
 
+/* RideCommand (class name from RTTI, with CharCommand as its only base). Its constructor
+ * (0x801DB638) passes id 11 and 4 to the base constructor, copies rider to 0x14 and the vector to
+ * 0x1C (with fn_800091EC). The ELEC_BAR gadget's bars keep the character info at 0x14 of the last
+ * one they receive as their rider (meanings inferred from that use). Passing rider by const
+ * reference is inferred. */
+class RideCommand : public CharCommand {
+  public:
+    RideCommand(const boost::weak_ptr<CharInfo> &rider, const Fn8040Vector3 *vector);
+    virtual ~RideCommand();
+
+    /* 0x14 */ boost::weak_ptr<CharInfo> m_rider;
+    /* 0x1C */ Fn8040Vector3 field_0x1C;
+};
+CHECK_SIZEOF(RideCommand, 0x28);
+
+namespace Player {
+
+/* The command that the ELEC_BAR gadget's bars send to a player whose movement comes near their
+ * line (meaning inferred from that use). The constructor at 0x800F618C passes 0x111 as the command
+ * id and arg2 to the base constructor and copies the two weak pointers to 0x14 and 0x1C. Passing
+ * them by value follows the bars' call, which constructs a temporary for each. */
+class TouchLineCommand : public PlayerCommand {
+  public:
+    TouchLineCommand(boost::weak_ptr<CharInfo> charInfo, boost::weak_ptr<UnkSegment_80020A20> line,
+                     int arg2);
+    virtual ~TouchLineCommand();
+
+    /* 0x14 */ boost::weak_ptr<CharInfo> m_charInfo;
+    /* 0x1C */ boost::weak_ptr<UnkSegment_80020A20> m_line;
+};
+CHECK_SIZEOF(Player::TouchLineCommand, 0x24);
+
+/* The constructor at 0x80079484 passes 0x106 as the command id and its argument to the base
+ * constructor; it stores nothing else. The ELEC_BAR gadget's bars send it with 4 to their rider
+ * when they hide. */
+class StartActionCommand : public PlayerCommand {
+  public:
+    StartActionCommand(int arg1);
+    virtual ~StartActionCommand();
+};
+CHECK_SIZEOF(Player::StartActionCommand, 0x14);
+
+} // namespace Player
+
 #endif
