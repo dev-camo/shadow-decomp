@@ -19,6 +19,17 @@ struct UnkResourceRecord_80208848 {
 };
 CHECK_SIZEOF(UnkResourceRecord_80208848, 0x1C);
 
+/* One entry of the table that a resource keeps at 0x8, with its count at 0xC (placeholder name;
+ * the entries are 0x10 bytes apart and fn_80208900 finds one by name). BreakWall passes the word
+ * at 0x8 to GadgetModelInfo::fn_80162A68 as its first argument. */
+struct UnkResourceEntry_80208900 {
+    /* 0x0 */ const char *name;
+    /* 0x4 */ u8 field_0x4[0x8 - 0x4];
+    /* 0x8 */ s32 field_0x8;
+    /* 0xC */ u8 field_0xC[0x10 - 0xC];
+};
+CHECK_SIZEOF(UnkResourceEntry_80208900, 0x10);
+
 /* The cached resource manager and the payload consumed by fn_80208848/80208888
  * (placeholder names; the original classes are unknown). */
 class UnkResourceManager_800122D4;
@@ -43,6 +54,9 @@ void *fn_80012700(UnkResourceManager_800122D4 *manager, int arg1, const char *na
 UnkResourceRecord_80208848 *fn_80208848(UnkResource_80012700 *resource, int id);
 /* Returns the record whose name equals name (strcmp), or null (behaviour inferred). */
 UnkResourceRecord_80208848 *fn_80208888(UnkResource_80012700 *resource, const char *name);
+/* Returns the entry of the table at 0x8 whose name equals name (strcmp), or null (behaviour
+ * inferred). */
+UnkResourceEntry_80208900 *fn_80208900(UnkResource_80012700 *resource, const char *name);
 }
 
 #endif

@@ -1744,6 +1744,15 @@ config.libs = [
             Object(NonMatching, "Game/ElecSecurityCodeGenerator.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecBlock.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SecurityLaser.cpp", cflags=cflags_game_cpp),
+            # Every function but the constructor has identical instructions and relocations, and
+            # the data, symbols and relocations match once the linker-discarded weak and local
+            # copies are set aside. The constructor (0x801414E4, USA) differs in 2 of its 230
+            # words: for its call of GadgetModelInfo::fn_801629D8 with the crash information's
+            # fn_802087D8 name, the original loads m_crashInfo's pointer before m_model's and this
+            # build loads them the other way round (the same instructions, registers and
+            # relocations otherwise), as in SuperComputer's constructor. Writing the call with get()
+            # or operator* on either pointer gives the same order.
+            Object(NonMatching, "Game/BreakWall.cpp", cflags=cflags_game_cpp),
             # Every function but the constructor has identical instruction words, and the data,
             # symbols and relocations match once the linker-discarded weak and local copies are set
             # aside. The constructor (0x8022E698, USA) differs in 6 of its 189 words: for each of its

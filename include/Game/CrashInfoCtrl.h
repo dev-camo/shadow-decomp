@@ -8,6 +8,7 @@
 
 class UnkResource_80012700;
 struct UnkCrashRecord_802087F4;
+struct UnkResourceRecord_80208848;
 
 /* One 0x40-byte entry of the table that CrashInfoCtrl::fn_802086C0 searches (placeholder name;
  * the table is the pair of words at 0x0 and 0x4 of the resource). Only the members that
@@ -34,6 +35,12 @@ class CrashInfoCtrl {
     const UnkCrashEntry_802086C0 *fn_802086C0() const;
     /* The nullable string at +0x10 of the selected record; constness is inferred. */
     const char *fn_802087A0() const;
+    /* The entry of the resource's table at 0x30 whose name equals the string at 0x1C of the
+     * selected record, or null (behaviour inferred from its body, which searches as
+     * fn_802086C0 does; constness inferred). */
+    const UnkResourceRecord_80208848 *fn_80208618() const;
+    /* The nullable string at +0x14 of the selected record; constness is inferred. */
+    const char *fn_80208784() const;
 
     /* 0x00 */ UnkResource_80012700 *field_0x0;
     /* 0x04 */ const UnkCrashRecord_802087F4 *field_0x4;
