@@ -126,6 +126,17 @@ class SpringCommand : public CharCommand {
 };
 CHECK_SIZEOF(SpringCommand, 0x14);
 
+/* The command with the id 8. Its constructor (0x8009EE8C) only passes 8 and its argument to the
+ * base constructor and sets the vtable; the objects are 0x14 bytes. The PARK_BALLOON balloons send
+ * it, with 4, to their generator's character info when they burst, and the generator counts the
+ * commands with this id. */
+class DeadCommand : public CharCommand {
+  public:
+    DeadCommand(int arg1);
+    virtual ~DeadCommand();
+};
+CHECK_SIZEOF(DeadCommand, 0x14);
+
 namespace Player {
 
 /* Makes the player ignore input for a time (the first member holds the time; the gadgets that
