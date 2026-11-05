@@ -6,10 +6,9 @@
  * Method names marked "(name inferred)" are not original. Definitions are in reverse address
  * order (deferred inlining emits functions last-defined first).
  *
- * NonMatching: 11 of the 12 functions have identical instructions. UpdateBody differs in 13
- * words (counted as raw words of the 125): the original loads the two startup floats before the
- * stores to the gadget's members, so a load is scheduled earlier and the registers of the floats
- * differ in the case that hides the footing and in the final case. */
+ * NonMatching: 11 of the 12 functions have identical instructions. UpdateBody differs in 8 of
+ * its 125 words, all in the case that moves the footing back: the original keeps the hidden depth
+ * in f0 and the height in f1 (here f2 and f0), with the same instructions and order. */
 #include "Game/CharInfo.h"
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
@@ -114,11 +113,13 @@ void SetPopFooting::UpdateBody(float dt) {
     }
 
     switch (m_state) {
-    case 0:
+    case 0: {
+        float hiddenDepth = s_hiddenDepth.value;
         m_timer = m_secBegin;
-        m_height = -s_hiddenDepth.value;
+        m_height = -hiddenDepth;
         m_state = 1;
         break;
+    }
 
     case 1:
         m_timer -= dt;
@@ -146,15 +147,17 @@ void SetPopFooting::UpdateBody(float dt) {
         }
         break;
 
-    case 4:
+    case 4: {
+        float hiddenDepth = s_hiddenDepth.value;
         m_height -= s_speed.value * dt;
-        if (m_height < -s_hiddenDepth.value) {
-            m_height = -s_hiddenDepth.value;
+        if (m_height < -hiddenDepth) {
+            m_height = -hiddenDepth;
             m_state = 1;
             m_timer = m_secBegin;
             m_flags.Reset(0);
         }
         break;
+    }
 
     case 5:
         break;
