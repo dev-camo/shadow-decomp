@@ -97,8 +97,8 @@ class SetSecurityLaser : public Gadget {
     /* Bit 0: the beam stops at an object along it (type 0); bit 1: the effect and the loop
      * sound (types 0 and 2) (inferred). Hides Task::m_flags. */
     /* 0xC0 */ UnkBitFlags_80014E04 m_flags;
-    /* 0xC4 */ u8 field_0xC4[0x4]; /* in the allocation size (0xC8); no code here touches it */
 };
+/* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(SetSecurityLaser, 0xC8);
 
 } // namespace SecurityLaser

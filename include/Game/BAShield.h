@@ -50,8 +50,8 @@ class BAShield : public Gadget {
     /* 0x50 */ s32 m_modelType; /* m_type when the model's parts were last set up (inferred) */
     /* 0x54 */ s32 m_comId;
     /* 0x58 */ UnkBitFlags_80014E04 m_flags; /* bit 0: turned off (inferred) */
-    /* 0x5C */ u8 field_0x5C[0x4]; /* in the allocation size (0x60); no code here touches it */
 };
+/* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(BAShield, 0x60);
 
 } // namespace BAShield

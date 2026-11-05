@@ -59,8 +59,8 @@ class ElecAccessPanel : public Gadget {
     /* 0x44 */ s32 m_state;
     /* 0x48 */ float m_timer;
     /* 0x4C */ boost::shared_ptr<UnkObject_802B4254> m_object;
-    /* 0x54 */ u8 field_0x54[0x4]; /* in the allocation size (0x58); no code here touches it */
 };
+/* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(ElecAccessPanel, 0x58);
 
 #endif

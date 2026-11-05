@@ -87,8 +87,8 @@ class GongCSD : public Task {
     /* 0x30 */ Chao::CSD::CProject *m_project;
     /* 0x34 */ float m_soundTimer;
     /* 0x38 */ UnkBitFlags_80014E04 m_soundFlags; /* bit 0: repeat a sound every 0.2 seconds */
-    /* 0x3C */ u8 field_0x3C[0x4]; /* in the allocation size (0x40); no code here touches it */
 };
+/* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(GongCSD, 0x40);
 
 } // namespace CSD

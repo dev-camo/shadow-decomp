@@ -62,8 +62,8 @@ class SetMagmaGuard : public Gadget {
      * health is used up or the gadget starts destroyed, after which each update plays sound
      * 0x784C (inferred). Hides Task::m_flags. */
     /* 0x60 */ UnkBitFlags_80014E04 m_flags;
-    /* 0x64 */ u8 field_0x64[0x4]; /* in the allocation size (0x68); no code here touches it */
 };
+/* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(SetMagmaGuard, 0x68);
 
 } // namespace MagmaGuard

@@ -70,9 +70,9 @@ class Researcher : public Gadget {
     /* 0x58 */ ResearcherParams m_params;
     /* 0 waiting for the command, 1 after it, 2 fading out, 3 faded out (inferred). */
     /* 0x5C */ s32 m_state;
-    /* 0x60 */ float m_timer;      /* counts down by dt in states 1 to 3 */
-    /* 0x64 */ u8 field_0x64[0x4]; /* in the allocation size (0x68); no code here touches it */
+    /* 0x60 */ float m_timer; /* counts down by dt in states 1 to 3 */
 };
+/* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(Researcher, 0x68);
 
 #endif

@@ -82,8 +82,8 @@ class BreakWall : public Gadget {
     /* 0x60 */ s32 m_state;
     /* 0x64 */ s32 m_loadedModelIndex; /* the model parameter of m_crashInfo */
     /* 0x68 */ float m_health;
-    /* 0x6C */ u8 field_0x6C[0x4]; /* in the allocation size (0x70); no code here touches it */
 };
+/* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(BreakWall, 0x70);
 
 } // namespace BreakWall
