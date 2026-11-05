@@ -223,26 +223,26 @@ class CMotionPattern : public CMotionPatternRef, public CBase {
      * or the element's default, in that order. */
     void SetHidden(s32 hidden);
     void ClearHidden();
-    s32 GetHidden();
+    s32 GetHidden() const;
     void SetTranslation(f32 x, f32 y);
     void SetTranslateX(f32 x);
     void SetTranslateY(f32 y);
     Vector2 GetTranslation();
     void SetRotation(f32 rotation);
-    f32 GetRotation();
+    f32 GetRotation() const;
     void SetScaleX(f32 scaleX);
     void SetScaleY(f32 scaleY);
     Vector2 GetScale();
     void SetPattern(f32 pattern);
-    f32 GetPattern();
+    f32 GetPattern() const;
     void SetTint(const u32 &tint);
     void ClearTint();
-    u32 GetTint();
+    u32 GetTint() const;
     void SetColor(int corner, const u32 &color);
     void ClearColor(int corner);
-    u32 GetColor(int corner);
+    u32 GetColor(int corner) const;
     void SetValue(int index, s32 value);
-    s32 GetValue(int index);
+    s32 GetValue(int index) const;
 
     /* 0x0C */ CNode *m_node;
     /* 0x10 */ f32 m_aspect;
