@@ -966,18 +966,19 @@ config.libs = [
                 # The scene object and the handles it is built from: constructors, destructors, Clear and
                 # Copy of the handles of a scene's data, fonts, motions, palette and entries; the scene's
                 # frame range, speed, pause, motion and palette members, SetHidden, SetTranslation,
-                # SetScale, GetRootPattern and SetRootPattern, and the scene's end-of-motion policy.
-                # 59 of the unit's 195 function bodies are represented. 57 have canonical symbol names,
+                # SetScale, root-pattern accessors, fn_8036635C and the scene's end-of-motion policy.
+                # 60 of the unit's 195 function bodies are represented. 58 have canonical symbol names,
                 # including a weak copy of the inline CMotionPattern destructor and RCPtr<CNode>::Reset.
                 # Of these, 55 have the original's instructions; GetRootPattern and SetRootPattern differ
-                # only in their allocation lines (170 vs 1124 and 157 vs 1102, respectively). The two
-                # additional template bodies are the node holder's constructor (identical instructions,
-                # but a weak vtable copy) and the node holder's delete-policy Assign (0x1D4 vs the
+                # only in their allocation lines (184 vs 1124 and 171 vs 1102, respectively). The
+                # 100-byte fn_8036635C differs in seven instruction words: layer-entry address formation,
+                # registers and scheduling. Two more template bodies are the node holder's constructor
+                # (identical instructions, but a weak vtable copy) and its delete-policy Assign (0x1D4 vs the
                 # original's 0x1E0 at fn_803655F8, with register, scheduling and allocation-line differences).
                 # The separate byte-holder Assign is 0x1C0 bytes; it is not the original node-holder Assign.
                 # RCPtr<CNode>::Reset is emitted just after SetRootPattern, rather than after
                 # CMotionPatternRef::Clear as in the original; this order difference also remains.
-                # The other 136 bodies are not sourced: the scene's Copy, destructor, Update and Draw,
+                # The other 135 bodies are not sourced: the scene's Copy, destructor, Update and Draw,
                 # the end-of-motion policy's destructor, CSceneListener's constructor, the listener and
                 # node containers, remaining RCPtr members and listener dispatch. Unit data is incomplete.
                 # The diagnostic object also emits weak byte-holder Reset, constructor and vtable copies,
