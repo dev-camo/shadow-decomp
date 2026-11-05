@@ -35,13 +35,22 @@ CHECK_SIZEOF(UnkProbeFilterRecord, 0x14);
 typedef bool (*UnkProbePredicate)(const UnkProbeFilterRecord *record);
 
 struct UnkProbeNode_80021FE4 {
+    /* 0x800265A4: the list's destructor calls it for each node, and SecurityLaser.cpp, like most
+     * callers of fn_80021E24, deletes the node that function returns with it. */
+    ~UnkProbeNode_80021FE4();
+
     /* 0x00 */ boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> target;
     /* 0x08 */ u8 field_0x8[0x14 - 0x8];
     /* 0x14 */ UnkProbeHit_8001E9BC *hit;
     /* 0x18 */ UnkProbeNode_80021FE4 *field_0x18;
     /* 0x1C */ UnkProbeNode_80021FE4 *next;
+    /* 0x20: a flag word. The node allocator (0x80026518) stores 0 or 1 here, depending on where
+     * it took the memory. When bit 0x2 is set, the destructor leaves the objects at 0x0C and 0x14
+     * alone (inferred: the node does not own them). What sets that bit is not known. */
+    /* 0x20 */ u32 field_0x20;
 };
-CHECK_SIZEOF(UnkProbeNode_80021FE4, 0x20);
+/* Both producers allocate 0x24 bytes per node (0x80021890, 0x800C5C3C). */
+CHECK_SIZEOF(UnkProbeNode_80021FE4, 0x24);
 
 /* An iterator over the nodes of the list (behaviour inferred). It has a constructor because the
  * postfix step returns the previous value through a hidden pointer, which MWCC does for a class
@@ -76,6 +85,10 @@ UnkWorld_80020D40 *fn_80020D40(void);
 /* Collects the objects along the segment; flags and the three further arguments are passed on to
  * the world's collision tests (behaviour inferred). */
 UnkProbeList_80021FE4 *fn_80021FE4(UnkWorld_80020D40 *world, const UnkSegment_80020A20 *segment,
+                                   int flags, int arg3, UnkProbePredicate predicate, void *context);
+/* Takes the same arguments as fn_80021FE4 and returns one newly allocated node for the objects
+ * along the segment, or null (behaviour inferred; how it chooses the node is not understood). */
+UnkProbeNode_80021FE4 *fn_80021E24(UnkWorld_80020D40 *world, const UnkSegment_80020A20 *segment,
                                    int flags, int arg3, UnkProbePredicate predicate, void *context);
 
 /* Collects sphere hits; negativeHits optionally receives negative-distance hits (inferred). */

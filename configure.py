@@ -1729,6 +1729,7 @@ config.libs = [
             # differ by position.
             Object(NonMatching, "Game/ElecSecurityCodeGenerator.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecBlock.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/SecurityLaser.cpp", cflags=cflags_game_cpp),
             # Every function but the constructor has identical instruction words, and the data,
             # symbols and relocations match once the linker-discarded weak and local copies are set
             # aside. The constructor (0x8022E698, USA) differs in 6 of its 189 words: for each of its
