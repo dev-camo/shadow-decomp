@@ -1144,14 +1144,17 @@ config.libs = [
                 ),
                 # Rotation and segment helpers (Matching workaround: float constants in .rodata,
                 # -sdata2 0; revisit when the original unit's flags are known). fn_8040FC78
-                # (closest point on a segment) still differs: the target calls fn_800091EC (copy;
-                # start or end of the segment) and fn_8040CDD0 (add; the point in between) as
-                # by-value functions that build the point directly in its caller's result slot,
-                # which their void (destination, source) prototypes cannot express. This build
+                # (closest point on a segment) still differs: at 0x8040FD24-0x8040FD6C the target
+                # passes its result address in r3 to fn_800091EC (copy; start or end of the segment)
+                # and fn_8040CDD0 (add; the point in between), so the point is built directly in the
+                # caller's result slot. By-value returns would explain that, but a destination
+                # pointer can produce the same arrangement, so the spelling is a hypothesis. This build
                 # builds the point in a local and copies it out: 75 instructions instead of 69,
-                # with a stack address in place of the result pointer in the three calls. A
-                # result-pointer signature matches fn_8040FC78 but makes its by-value wrapper
-                # fn_8040FC3C differ.
+                # with a stack address in place of the result pointer in the three calls (9
+                # differing words, the larger length minus the exact LCS). A result-pointer
+                # signature matches fn_8040FC78 but makes its by-value wrapper fn_8040FC3C differ.
+                # The other 19 functions have identical instructions. The copy and add interfaces
+                # are not yet settled.
                 Object(
                     NonMatching,
                     "Game/fn_8040F364.cpp",
@@ -1518,8 +1521,13 @@ config.libs = [
             Object(NonMatching, "Game/fn_8000B044.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80016260.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_801B1DB0.cpp", cflags=cflags_game_cpp),
-            # Two adjacent instructions exchange order in each helper: the Y cosine load and
-            # multiply, and the X first component store and subtract. Sizes and call targets agree.
+            # Two adjacent instructions exchange order in each helper (two positional words of 27
+            # and 26): the Y cosine load and multiply, and the X first component store and
+            # subtract. Sizes and call targets agree. Returning the vector by value gives the
+            # original order in both, but its callers in fn_8040F364.cpp then differ: a vector
+            # initialised from the call adds an inline copy, and a const reference bound to it
+            # reorders the argument setup of the following copy call, and the copy interface is
+            # not yet settled.
             Object(
                 NonMatching,
                 "Game/fn_8040D0AC.cpp",
@@ -1851,7 +1859,18 @@ config.libs = [
             # 0x800D0CEC and 0x800D05D0 in the original, and those that symbols.txt names at
             # 0x800F5B08 and 0x800F5238 here (USA addresses).
             Object(NonMatching, "Game/ElecAccessPanel.cpp", cflags=cflags_game_cpp),
-            # Interpolation scheduling, the index-table extent and shared literal ownership differ.
+            # fn_8040C55C's instructions match. fn_8040C3EC (92 words) differs in 15 positional raw
+            # words (19 when relocation targets are compared by section and offset: the shared-pool
+            # loads and the threshold load at +0x90, which refers to .sdata2+0 in the original and
+            # .sdata2+0x18 here): the original loads the dot product's first terms before it copies
+            # from and to into saved registers, and a load and a multiply of the final weighted sum
+            # are exchanged. Returning the quaternion by value gives the original order of the
+            # latter, but the Matching callers in fn_8040EFA4.cpp then differ whether they copy the
+            # result or bind a reference to it (the copy interface is not yet settled). The
+            # functions load 1.0f and 0.0f (fn_8040C55C also 0.5f) from the original's shared
+            # .sdata2 pool, which this unit does not own (4 and 7 load words), and fn_8040C55C's
+            # index table is 12 bytes against the original's 16-byte .rodata extent (its last word
+            # is zero; likely alignment padding).
             Object(
                 NonMatching,
                 "Game/fn_8040C3EC.cpp",
