@@ -201,7 +201,7 @@ void CMotionPattern::ClearHidden() {
     }
 }
 
-s32 CMotionPattern::GetHidden() {
+s32 CMotionPattern::GetHidden() const {
     MotionPaletteEntry *entry = m_entry;
 
     if (entry->overrideMask & (1 << CHANNEL_HIDDEN)) {
@@ -217,7 +217,7 @@ s32 CMotionPattern::GetHidden() {
     return value.integer;
 }
 
-f32 CMotionPattern::GetRotation() {
+f32 CMotionPattern::GetRotation() const {
     MotionPaletteEntry *entry = m_entry;
 
     if (entry->overrideMask & (1 << CHANNEL_ROTATION)) {
@@ -278,7 +278,7 @@ Vector2 CMotionPattern::GetScale() {
     return scale;
 }
 
-u32 CMotionPattern::GetTint() {
+u32 CMotionPattern::GetTint() const {
     MotionPaletteEntry *entry = m_entry;
 
     if (entry->overrideMask & (1 << CHANNEL_TINT)) {
@@ -323,7 +323,7 @@ void CMotionPattern::ClearTint() {
     }
 }
 
-f32 CMotionPattern::GetPattern() {
+f32 CMotionPattern::GetPattern() const {
     MotionPaletteEntry *entry = m_entry;
 
     if (entry->overrideMask & (1 << CHANNEL_PATTERN)) {
@@ -361,11 +361,11 @@ void CMotionPattern::SetPattern(f32 pattern) {
     MarkEntryDirty(entry);
 }
 
-u32 CMotionPattern::GetColor(int corner) {
+u32 CMotionPattern::GetColor(int corner) const {
     MotionPaletteEntry *entry = m_entry;
     u32 bit = (1 << CHANNEL_COLOR_0) << corner;
 
-    if (entry->overrideMask & bit) {
+    if (bit & entry->overrideMask) {
         return entry->overrides[CHANNEL_COLOR_0 + corner].bits;
     }
     if (entry->field_0x140 != 0) {
@@ -409,11 +409,11 @@ void CMotionPattern::ClearColor(int corner) {
     }
 }
 
-s32 CMotionPattern::GetValue(int index) {
+s32 CMotionPattern::GetValue(int index) const {
     MotionPaletteEntry *entry = m_entry;
     u32 bit = (1 << CHANNEL_FIELD_0x30) << index;
 
-    if (entry->overrideMask & bit) {
+    if (bit & entry->overrideMask) {
         return entry->overrides[CHANNEL_FIELD_0x30 + index].integer;
     }
     if (entry->field_0x140 != 0) {

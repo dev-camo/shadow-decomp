@@ -983,15 +983,11 @@ config.libs = [
                 Object(NonMatching, "Game/CSD/csdmScene.cpp", cflags=cflags_csd),
                 # The accessors that override the animated values of an element's entry
                 # (CMotionPattern), its constructor and Copy, and UpdateTransform. 32 of 32
-                # functions are sourced. 9 have identical instructions; 13 differ only in the
+                # functions are sourced. 15 have identical instructions; 13 differ only in the
                 # __LINE__ passed by their allocations (one word each, two in UpdateTransform; the
                 # original's lines run from 54 to 1067 in a file far longer than this one). The
                 # holder Assign for the free and function release policies (112 words, the
-                # original's 115) shows the difference described for csdLoader.cpp. Six getters
-                # (GetHidden, GetRotation, GetTint, GetPattern, GetValue and GetColor) differ in the
-                # order of two prologue instructions (the original loads the entry pointer before it
-                # saves the link register; 2 words each). GetValue and GetColor also swap the
-                # registers of the channel bit and the mask (6 words each in all). GetTranslation
+                # original's 115) shows the difference described for csdLoader.cpp. GetTranslation
                 # and GetScale (49 words, the original's 45) copy their result through the float
                 # registers where the original uses the integer ones. The .rodata holds the same
                 # four strings in a different order (the original has the holder's error text
