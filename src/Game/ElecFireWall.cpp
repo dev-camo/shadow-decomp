@@ -12,6 +12,7 @@
 #include "Game/GadgetAccelerate.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/UnkEffectParams_8015F0B8.h"
+#include "Game/UnkPartFrameSearch.h"
 #include "Game/UnkResource_80012700.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/fn_8006_resource_list.h"
@@ -24,16 +25,6 @@
 
 using SonicteamUSA::System::CharaColli::AttackCallbackParam;
 using SonicteamUSA::System::CharaColli::CharaColliAttack;
-
-/* What UpdatePartFrame passes to fn_8015FA78 as the user data of fn_801F7778: the id of the part
- * to look for and the frame found (placeholder names). */
-struct UnkPartFrameSearch {
-    UnkPartFrameSearch() : id(0), frame(0) {}
-
-    /* 0x0 */ s32 id;
-    /* 0x4 */ RwFrame *frame;
-};
-CHECK_SIZEOF(UnkPartFrameSearch, 0x8);
 
 /* The part callback (placeholder name): stores the frame of the clump of the part whose word at
  * 0x8 equals the searched id and stops the walk once a frame is found (behaviour inferred). */

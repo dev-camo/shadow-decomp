@@ -20,6 +20,7 @@
 #include "Game/SharedConstants.h"
 #include "Game/UnkActor_800740E4.h"
 #include "Game/UnkModelAtomicState.h"
+#include "Game/UnkPartFrameSearch.h"
 #include "Game/UnkObject_80169BB0.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/fn_80109AF8.h"
@@ -34,16 +35,6 @@
 
 using SonicteamUSA::System::CharaColli::AttackCallbackParam;
 using SonicteamUSA::System::CharaColli::CharaColliAttack;
-
-/* What the part searches pass to fn_8015FA78 as the user data of fn_801F6240: the id of the part
- * to look for and the frame found (placeholder names; ElecFireWall has the same record). */
-struct UnkPartFrameSearch {
-    UnkPartFrameSearch() : id(0), frame(0) {}
-
-    /* 0x0 */ s32 id;
-    /* 0x4 */ RwFrame *frame;
-};
-CHECK_SIZEOF(UnkPartFrameSearch, 0x8);
 
 /* The part callback (placeholder name; ElecFireWall's fn_801F7778 has the same body): stores the
  * frame of the clump of the part whose word at 0x8 equals the searched id and stops the walk once
