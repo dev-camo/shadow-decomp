@@ -138,6 +138,9 @@ boost::shared_ptr<UnkHandleBTarget_8015BE64>
 fn_8015B8C4(boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> probe);
 void fn_8015BE64(UnkHandleBTarget_8015BE64 *target);
 void fn_8015BE9C(UnkHandleBTarget_8015BE64 *target, float dt);
+/* Passes the array at 0x34 and an 8-byte pair holding arg0 and arg1 to fn_8015BE00 (purpose
+ * unknown; the Fan gadget passes 1 and 2). */
+void fn_8015BDC4(UnkHandleBTarget_8015BE64 *target, int arg0, int arg1);
 /* True when one of the hits of args belongs to a character info whose fn_80078B4C reports true
  * (behaviour inferred; the counterpart of fn_8015D2EC in UnkWorld_80021B08.h for the next virtual
  * function, taking the collision callback's arguments). */

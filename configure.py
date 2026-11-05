@@ -1879,6 +1879,21 @@ config.libs = [
             # 0x800F5B08 and 0x800F5238 here (USA addresses).
             Object(NonMatching, "Game/ElecAccessPanel.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EnergyCore.cpp", cflags=cflags_game_cpp),
+            # 43 of 46 functions have identical words and relocations; the data sections' bytes
+            # match once the linker-discarded weak and local copies are set aside (whole-object
+            # comparison run with the unit linked from source; only relocations into the .text
+            # after UpdateBody, which is 8 bytes shorter, differ). UpdateBody (0x801036E4) is 142
+            # words in the original and 140 here, 80 raw words differing by position: the original
+            # allocates the AccelerateCommand before it scales the player's vector at 0xE8 into the
+            # argument (fn_8040CDA8 builds the result in the temporary that the constructor
+            # receives), keeping the new command in an additional saved register across that
+            # call (r28-r31 instead of r29-r31), where this build scales into a local first, as in
+            # ElecFan. CreateProbe (0x80102BE4, 21 of 197 words) and
+            # IsInRange (0x80102408, 10 of 103 words) differ in stack offsets only: the original
+            # gives the (1, 1, 1) vector that fn_800091EC copies into the half extents, the box's
+            # transformed offset and the cylinder's difference vector the slots of temporaries
+            # made last, where this build declares them as named locals (USA addresses).
+            Object(NonMatching, "Game/Fan.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetVehicle.cpp", cflags=cflags_game_cpp),
             # All 66 functions have identical words and relocations, and the data matches the
             # original once the weak copies that the linker discards are removed, but
