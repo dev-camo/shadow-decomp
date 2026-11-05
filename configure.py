@@ -2141,11 +2141,7 @@ config.libs = [
             # loads the next table entry into f0 where the original uses f2 and f3).
             Object(NonMatching, "Game/DashRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EnergyCore.cpp", cflags=cflags_game_cpp),
-            # All 46 functions have identical instructions; the function-local statics of
-            # fn_80102328 have other compiler numbers than the names in symbols.txt. Not yet proven
-            # as a whole object with the unit linked from source (its local literal names and the
-            # list of the weak copies the linker discards are not checked).
-            Object(NonMatching, "Game/Fan.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/Fan.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Fire.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Fruit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/GoalRing.cpp", cflags=cflags_game_cpp),

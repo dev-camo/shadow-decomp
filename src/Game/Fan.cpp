@@ -10,10 +10,7 @@
  *
  * The probe's collision callback is a boost::function object built with
  * boost::bind(&Fan::OnCollision, this, _1); its manager, invoker and copy functions come from the
- * boost headers.
- *
- * NonMatching (see configure.py): every function has the original's instructions, but the unit is
- * not yet proven as a whole object. */
+ * boost headers. */
 #include <cmath>
 #include "Game/Fan.h"
 #include "Game/CharInfo.h"
