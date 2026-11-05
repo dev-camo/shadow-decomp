@@ -1894,6 +1894,13 @@ config.libs = [
             # transformed offset and the cylinder's difference vector the slots of temporaries
             # made last, where this build declares them as named locals (USA addresses).
             Object(NonMatching, "Game/Fan.cpp", cflags=cflags_game_cpp),
+            # Every function has identical instruction words in the object, and the data matches
+            # once the linker-discarded weak and local copies are set aside. Two calls differ only
+            # in the callee's symbol: the bound call operator's call of boost's list1 operator[] and
+            # the constructor's call of the function1 destructor go to the copies at 0x800D05D0 and
+            # 0x800D0CEC (USA addresses) in the original, and to the copies that symbols.txt names
+            # at 0x800F5238 and 0x800F5B08 here, in all three regions.
+            Object(NonMatching, "Game/GoalRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetVehicle.cpp", cflags=cflags_game_cpp),
             # All 66 functions have identical words and relocations, and the data matches the
             # original once the weak copies that the linker discards are removed, but

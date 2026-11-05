@@ -15,6 +15,8 @@ class UnkSoundHandle_801D3DC8 {
     UnkSoundHandle_801D3DC8 &operator=(const UnkSoundHandle_801D3DC8 &other);
     /* Stops the sound and clears the handle (behaviour inferred from its body). */
     void fn_801D455C();
+    /* Copies position into field_0xC (behaviour inferred from its body). */
+    void fn_800CCE14(const Fn8040Vector3 *position);
 
     /* 0x00 */ Task *field_0x0; /* the task that owns the sound */
     /* 0x04 */ u16 field_0x4;   /* the sound id */

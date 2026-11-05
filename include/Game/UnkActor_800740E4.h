@@ -60,6 +60,10 @@ void fn_801FAF00(UnkManager_80109D64 *manager, int id, int arg2, int arg3, int a
 /* Stores 1 in the actor's word at 0xC and calls fn_8016B058 with the actor (behaviour inferred
  * from its body). */
 void fn_8016B2A4(UnkActor_800740E4 *actor);
+/* Passes an actor of the manager to fn_8016B2A4 and returns true, or returns false when none
+ * qualifies (behaviour inferred from its body; the selection by the actors' state is not
+ * understood). The GoalRing gadget calls it when a character touches the ring. */
+bool fn_8016DA34(UnkManager_8006D6A8 *manager);
 }
 
 #endif

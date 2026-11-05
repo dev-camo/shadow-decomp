@@ -25,7 +25,8 @@ struct UnkGlobal_8057D6A0 {
     /* When it is set, fn_80169BE4 also tests the vector fn_80010244 returns for index 1. */
     /* 0xB2 */ u8 field_0xB2;
     /* 0xB3 */ u8 field_0xB3[0xC1 - 0xB3];
-    /* CityChaosEmerald sets it to 1 in its collision callback (meaning unknown). */
+    /* CityChaosEmerald and GoalRing (unless its colour is 7) set it to 1 in their collision
+     * callbacks (meaning unknown). */
     /* 0xC1 */ u8 field_0xC1;
     /* 0xC2 */ u8 field_0xC2[0x125 - 0xC2];
     /* The Researcher and ElecAccessPanel gadgets pass 1 to fn_800740E4 when it is set, otherwise 2
