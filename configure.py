@@ -1109,13 +1109,11 @@ config.libs = [
                     extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
                 ),
                 # Rotation and segment helpers (Matching workaround: float constants in .rodata,
-                # -sdata2 0; revisit when the original unit's flags are known). All 20 functions
-                # have identical instructions. The object still differs: its .rodata holds the
-                # double constants and statics of the inline std::sqrt/sqrtf and is 0x38 bytes
-                # where the original's is 0x10 (0.0f, 1.0f, -1.0f), and it emits weak copies of the
-                # inline math functions and of operator* that the linker discards.
+                # -sdata2 0; revisit when the original unit's flags are known; <cmath> leaves the
+                # double constants and statics of the inline std::sqrt/sqrtf and the weak copies
+                # of the inline math functions and of operator*, which the link discards).
                 Object(
-                    NonMatching,
+                    Matching,
                     "Game/fn_8040F364.cpp",
                     cflags=cflags_game_cpp,
                     extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
