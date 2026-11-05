@@ -13,6 +13,9 @@ class Tornado;
  * the constructor argument 0x2A. Only the pointer to the gadget at 0x6C is mapped. */
 class TornadoCharInfo : public GadgetCharInfo {
   public:
+    TornadoCharInfo(Tornado *tornado) : GadgetCharInfo(0x2A), m_tornado(tornado) {}
+    virtual ~TornadoCharInfo();
+
     /* Hands victim to the tornado when tag equals the tornado's tag byte at 0x74, and reports
      * whether it did (behaviour inferred; the original name is unknown). */
     bool AttachTarget(int tag, boost::shared_ptr<CharInfo> victim);

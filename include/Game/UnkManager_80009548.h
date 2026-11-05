@@ -41,6 +41,10 @@ boost::shared_ptr<UnkEntry_8000D0F0> fn_8000D0F0(UnkManager_80009548 *manager, i
  * inferred from its body). RainEffect passes 0 for index and subtracts the translation of the
  * entry's matrix at 0x6C from the vector. */
 Fn8040Vector3 *fn_800101F8(UnkManager_80009548 *manager, int index);
+/* Passes the address of the member at 0xEC of the entry with the given index to fn_8000D578
+ * (behaviour inferred from its body; purpose unknown). The Tornado gadget's towing task calls it
+ * with 0 when it is destroyed, after fn_8000D664 with 0 when it was created. */
+void fn_8000D534(UnkManager_80009548 *manager, int index);
 }
 
 /* The matrix of the entry with the given index (name inferred; an inline function: other code

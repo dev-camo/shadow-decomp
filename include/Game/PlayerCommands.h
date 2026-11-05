@@ -13,9 +13,10 @@ class UnkLockonObject_8005FDF4;
 /* Commands that gadgets send to character infos (class names from RTTI, with CharCommand or
  * Player::PlayerCommand as their only base); WallJumpCommand is sent by the player and received
  * by gadgets. The constructors and destructors are defined elsewhere, together with the vtables,
- * except the constructors of CancelBehaviorCommand and AddWeaponCommand, which gadget files define,
- * and the constructor of Player::StartExternalControlCommand, which is defined in its class here
- * (see the classes); the argument meanings are inferred from the stores in the constructors.
+ * except the constructors of CancelBehaviorCommand, AddWeaponCommand, SetVelocityCommand,
+ * IgnoreInputCommand(int, float) and InvincibleCommand, which gadget files define, and the
+ * constructor of Player::StartExternalControlCommand, which is defined in its class here (see the
+ * classes); the argument meanings are inferred from the stores in the constructors.
  * SetPositionCommand, SetVelocityCommand and LaunchCommand pass their last argument to the base
  * constructor as its second argument, and ClrVelocityCommand its only argument;
  * IgnoreInputCommand passes 0. Most callers pass 4 there (0 and 2 also occur). */
@@ -30,7 +31,8 @@ class SetPositionCommand : public CharCommand {
 };
 CHECK_SIZEOF(SetPositionCommand, 0x20);
 
-/* Sets the velocity of the character info. */
+/* Sets the velocity of the character info. Its constructor is defined in Tornado.cpp, which holds
+ * the copy that the original keeps (see the note there). */
 class SetVelocityCommand : public CharCommand {
   public:
     SetVelocityCommand(const Fn8040Vector3 *velocity, int arg1);
@@ -158,7 +160,8 @@ namespace Player {
 
 /* Makes the player ignore input for a time (the first member holds the time; the gadgets that
  * send it pass a time in seconds). The constructor that takes the time sets the word at 0x18 to 0
- * and stores its integer at 0x1C. */
+ * and stores its integer at 0x1C; it is defined in Tornado.cpp, which holds the copy that the
+ * original keeps (see the note there). */
 class IgnoreInputCommand : public PlayerCommand {
   public:
     IgnoreInputCommand(int arg0, float seconds);
@@ -383,6 +386,20 @@ class StartActionCommand : public PlayerCommand {
     virtual ~StartActionCommand();
 };
 CHECK_SIZEOF(Player::StartActionCommand, 0x14);
+
+/* The command with the id 0x126 (class name from the RTTI of its vtable at 0x80521024); the
+ * destructor and the vtable are elsewhere. The constructor, defined in Tornado.cpp, passes 0x126
+ * and arg1 to the base constructor and stores the bool at 0x14. The Tornado gadget's towing task
+ * sends it with true when it takes a character and with false when it lets it go (meaning
+ * inferred from that use and the class name). */
+class InvincibleCommand : public PlayerCommand {
+  public:
+    InvincibleCommand(bool enable, int arg1);
+    virtual ~InvincibleCommand();
+
+    /* 0x14 */ bool m_enable;
+};
+CHECK_SIZEOF(Player::InvincibleCommand, 0x18);
 
 } // namespace Player
 
