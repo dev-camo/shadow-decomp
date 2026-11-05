@@ -1081,9 +1081,7 @@ config.libs = [
                 # fn_80425860.cpp, so this split is still NonMatching.
                 Object(NonMatching, "Game/EffectManager.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/fn_80425860.cpp", cflags=cflags_effect),
-                # All four bodies have identical instruction words; fn_80426700 RTTI
-                # relocations remain unverified.
-                Object(NonMatching, "Game/EffectArranger.cpp", cflags=cflags_effect),
+                Object(Matching, "Game/EffectArranger.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/fn_8040D9D8.c"),
                 Object(Matching, "Game/fn_8040D498.c"),
                 # 3x4 matrix helpers. Seven of 28 functions still differ (raw differing instruction

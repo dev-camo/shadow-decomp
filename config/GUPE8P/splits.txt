@@ -2569,6 +2569,8 @@ Game/EffectArranger.cpp:
 	extab       start:0x800066D0 end:0x800067F8
 	extabindex  start:0x80008594 end:0x800085C4
 	.text       start:0x8042631C end:0x80426DDC
+	.rodata     start:0x8051AA30 end:0x8051AAB8
+	.data       start:0x8056A3F8 end:0x8056A488
 
 Game/fn_8042A2D8.cpp:
 	extab       start:0x80006CF8 end:0x80006D08
