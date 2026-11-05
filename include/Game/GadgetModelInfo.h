@@ -71,6 +71,9 @@ class GadgetModelInfo {
      * its motion using the shared control and low 16 bits of the payload's word at +0x14
      * (behaviour inferred). */
     bool fn_80160B18(int arg0);
+    /* Stores arg0 at 0x38 and sets bit 0 of the flags at 0x3C (behaviour inferred from its body;
+     * the GONG gadget passes 1.0 before it calls fn_80160B18). */
+    void fn_80161308(float arg0);
     /* Finds the first entry whose id word equals arg0 in a table of the object at 0x30 and
      * returns fn_80160C90's result for its index, or false when there is none (behaviour
      * inferred). */

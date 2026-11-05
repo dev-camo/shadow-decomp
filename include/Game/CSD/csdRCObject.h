@@ -42,10 +42,16 @@ template <class T> class RCPtr : public CBase {
 
     /* The object, or null for a pointer that holds none. */
     T *Get() const {
-        return field_0x0 != NULL ? field_0x0->m_pObject : NULL;
+        if (field_0x0 != NULL) {
+            return field_0x0->m_pObject;
+        }
+        return NULL;
     }
     T *operator->() const {
-        return field_0x0 != NULL ? field_0x0->m_pObject : NULL;
+        if (field_0x0 != NULL) {
+            return field_0x0->m_pObject;
+        }
+        return NULL;
     }
 
     /* Pointers are equal when they share an object holder or hold the same object. The result is
@@ -147,8 +153,8 @@ template <class T> class RCPtr : public CBase {
     /* Shares the other pointer's holder, taking a counted reference (the game's copy constructor
      * of RCPtr<CTexList>, 0x80042270 in the USA release, clears the holder and then takes the
      * reference). It is declared here, after the holder, so that the __LINE__ the holder's
-     * allocation passes does not move and the other CSD objects stay byte-identical; no unit
-     * matches that word either way (the original passes 410). */
+     * allocation passes does not move; no unit matches that word either way (the original passes
+     * 410). */
     RCPtr(const RCPtr &other);
 
     /* The held object. Dereferencing a pointer that holds none reports an error and never

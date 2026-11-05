@@ -129,11 +129,14 @@ CHECK_SIZEOF(SpringCommand, 0x14);
 namespace Player {
 
 /* Makes the player ignore input for a time (the first member holds the time; the gadgets that
- * send it pass a time in seconds. The other two are a word the constructor sets to 0 and the
- * constructor's first argument). */
+ * send it pass a time in seconds). The constructor that takes the time sets the word at 0x18 to 0
+ * and stores its integer at 0x1C. */
 class IgnoreInputCommand : public PlayerCommand {
   public:
     IgnoreInputCommand(int arg0, float seconds);
+    /* The second constructor (0x800774C4) stores arg0 at 0x18 and arg1 at 0x1C and leaves the time
+     * unset (the callers pass 1 to 3 and 0 or 1; meanings unknown). */
+    IgnoreInputCommand(int arg0, int arg1);
     virtual ~IgnoreInputCommand();
 
     /* 0x14 */ float m_seconds;

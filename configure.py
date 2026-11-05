@@ -897,7 +897,7 @@ config.libs = [
                 # word by word through integer registers and addresses some stores differently.
                 # RCPtr::Assign (117 words, the original's 120) differs in 100 (24): the original
                 # keeps the object to release in r4 and copies it to r3 for each call, and the
-                # allocation of the holder passes line 132 of csdRCObject.h where the original
+                # allocation of the holder passes line 138 of csdRCObject.h where the original
                 # passes 410. Reset and the holder's constructor come after RenderState::End, as
                 # in the original; the out-of-line CMemoryAlloc::AllocObject that the holder
                 # allocation emits after them is a weak copy of a function the game has at
@@ -1839,6 +1839,28 @@ config.libs = [
             Object(Matching, "Game/PowerDeviceNaked.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/FireRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/MonsterControl.cpp", cflags=cflags_game_cpp),
+            # 57 of the 59 functions have identical instruction words and relocation types and are
+            # in the original's order; two of them call copies whose symbols differ: the bound
+            # collision callback's call of boost's list1 operator[] and the constructor's calls of
+            # the function1 destructor go to the copies at 0x800D05D0 and 0x800D0CEC (USA addresses)
+            # in the original and to the copies that symbols.txt names at 0x800F5238 and 0x800F5B08
+            # here. The GongCSD constructor differs in 3 words, the offsets of three strings from
+            # the unit's .rodata base: the original's .rodata has two blocks of zero bytes, 0x1C
+            # after the TNumEdit type names and 0xC after the CharaColliBase name, that this object
+            # does not have, which moves "PR0302RINGANM" and "Scene_0000" by 0x28; "csdBase.h" moves
+            # by 0x48, as the 0x20-byte "Not inititalized m_eDealloctor\n" before it in the original
+            # is missing here too. Model 1's hit callback differs in 13 words: the difference
+            # vector, the launch position and the direction take other 12-byte stack slots (the
+            # original's order fits the difference and the turned direction being temporaries of
+            # by-value vector helpers, which the out-parameter declarations of fn_8040CD74 and
+            # fn_8040B67C cannot express; inferred). The original's .rodata also has strings that
+            # this object lacks: "Not inititalized m_eDealloctor\n", "csdRCObject.h" and the type
+            # names of the RCPtr holders of unsigned char, CTexList and CScene, their CFunctorBase,
+            # CBase and CResourceBase<Chao::CSD::Project> (csdRCObject.h declares those template
+            # members without bodies). This object has type records, base lists and weak and local
+            # copies that the original unit does not have (TNumEdit, CharaColliBase, std::exception,
+            # boost::bad_weak_ptr, sp_counted_base, the boost placeholders _2 to _9).
+            Object(NonMatching, "Game/Gong.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BombingWall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BombServer.cpp", cflags=cflags_game_cpp),
             # 41 of the 42 functions have identical instructions and the data matches once the
