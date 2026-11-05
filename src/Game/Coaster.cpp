@@ -184,7 +184,10 @@ class Coaster : public Gadget {
     /* 0x48 */ boost::shared_ptr<GadgetModelInfo> m_model;
     /* 0x50 */ boost::shared_ptr<UnkHandleBTarget_8015BE64> m_handle;
     /* 0x58 */ boost::shared_ptr<UnkTarget_80166AF4> m_target;
-    /* States 0 and 3 wait at the start of the path (3 after a ride that was reversed), 1 moves
+    /* States 0 and 3 wait at the path's current position, which is an end of the path after a
+     * ride: from state 0 the next ride goes forward and from state 3 it goes in reverse. When a
+     * ride in state 1 or 2 arrives, UpdateBody picks 3 when the reverse flag is 0 and 0 otherwise,
+     * but only when the stage record's field_0x14 is zero; otherwise the state stays. 1 moves
      * along the path and commands the character, 2 moves along it without (names inferred). */
     /* 0x60 */ s32 m_state;
     /* 0x64 */ CoasterParams m_params;
@@ -327,11 +330,11 @@ void Coaster::UpdateBody(float dt) {
     switch (m_state) {
     case 0:
     case 3: {
-        /* Waiting: stays at the start of the path. */
+        /* Waiting: stays at the path's current position. */
         GadgetCharInfo *info = m_charInfo.get();
-        const Fn8040Vector3 &start = fn_80018634(m_path.get());
+        const Fn8040Vector3 &current = fn_80018634(m_path.get());
 
-        fn_800091D0(&info->m_position, &start);
+        fn_800091D0(&info->m_position, &current);
         m_rotation = fn_80018434(m_path.get(), 1, 0);
         BuildMatrices();
         break;

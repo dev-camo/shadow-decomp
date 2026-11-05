@@ -179,6 +179,14 @@ void ElecBomb::UpdateModelMatrix() {
     }
 }
 
+/* Matching workaround: the callback returns part both inside the masked branch and at the end.
+ * The original's 23 instruction words need that layout. With one trailing return, 9 words
+ * change: the shift constant 1 goes into r3 after part is saved instead of into r5 before it
+ * (USA 0x80263F40), the field load uses r31 instead of r3, and the masked-out branch can no
+ * longer skip the move of part back into r3 (in the original, r3 still holds part there), so it
+ * targets +0x44 instead of +0x48 and the epilogue order changes. A guard-and-return form gives
+ * 24 words. Revisit when the original form of these part callbacks is found (the ElecSearchLight
+ * callback has the same pattern). */
 static UnkModelPart_8015FA78 *fn_80263F38(UnkModelPart_8015FA78 *part, void *userData) {
     u32 mask = reinterpret_cast<u32>(userData);
 
