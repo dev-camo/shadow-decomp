@@ -110,7 +110,7 @@ CHECK_SIZEOF(Chao::CSD::CMotionEndPolicy, 0x18);
  * the playback of one of its motions. The named members include those that csdmScene.cpp and
  * csdmProject.cpp use and the end-of-motion policy that the scene's constructor builds; the base
  * class that makes the scene a listener source (a second vtable pointer at 0xC), its listener
- * lists and the root pattern are not modelled yet. */
+ * lists are not modelled yet. */
 class CScene : public CSceneDataRef {
   public:
     /* The first and last frame of a motion (by name or by its index in the scene's data); a name
@@ -124,7 +124,7 @@ class CScene : public CSceneDataRef {
     /* The pattern of the scene's own element, created when first needed (name inferred). */
     CMotionPattern *GetRootPattern();
 
-    /* Replaces the root pattern with a copy, or clears it when null (name inferred). */
+    /* Drops the old root, resets the 0x84 reference, then copies non-null pattern (name inferred). */
     void SetRootPattern(const CMotionPatternRef *pattern);
 
     /* Set the root pattern's hidden flag, translation (in screen units) and scale (names
