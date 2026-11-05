@@ -105,6 +105,14 @@ UnkProbeList_80021FE4 *
 fn_800C5D74(UnkWorld_80021B08 *world, const UnkSegment_80020A20 *segment, int arg2, int arg3,
             UnkProbeList_80021FE4 *hits, UnkProbePredicate predicate, void *context,
             boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack> attack);
+/* Creates a probe for the character info that owner refers to from the loaded collision data
+ * collision and returns it (behaviour inferred; arg3 and arg4 are passed on and not understood). */
+boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>
+fn_800C81F4(UnkWorld_80021B08 *world, const boost::weak_ptr<CharInfo> &owner, void *collision,
+            int arg3, int arg4);
+/* Tests the segment from start to end against the world; when it meets something, stores the
+ * point in hit (unless hit is null) and returns true (behaviour inferred from its body). */
+bool fn_8015D61C(Fn8040Vector3 *hit, const Fn8040Vector3 &start, const Fn8040Vector3 &end);
 }
 
 #endif

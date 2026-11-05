@@ -51,6 +51,7 @@
 #include "Game/UnkTarget_80166AF4.h"
 #include "Game/UnkWorldProbe_80021FE4.h"
 #include "Game/fn_8006_resource_list.h"
+#include "Game/fn_8012773C.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"
@@ -86,10 +87,6 @@ CHECK_SIZEOF(UnkFollowerParams_8000B2C0, 0x30);
 class UnkFollowerManager_80099954;
 
 extern "C" {
-/* Float helpers (descriptions inferred from the code that calls them). */
-/* Moves current towards target by at most maxStep (behaviour inferred). */
-float fn_8012773C(float target, float current, float maxStep);
-
 /* Path control functions (behaviour inferred). */
 /* The position where the path starts. */
 Fn8040Vector3 fn_80018634(SonicteamUSA::System::PathCtrl *path);
