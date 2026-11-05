@@ -13,8 +13,8 @@ extern "C" {
  * model files. */
 void fn_8006B474(const char *fileName, int arg1);
 /* The same for an entry that holds the number id, an empty name and 0 in the word that fn_8006B474
- * sets to 1 (behaviour inferred); the SET_WEAPON, DASHPANEL and DASHRING descriptors' load hooks
- * call it. */
+ * sets to 1 (behaviour inferred). The gadgets whose models are loaded with fn_8015F9D8 pass the
+ * same number to both in their descriptors' load hooks. */
 void fn_8006B50C(int id, int arg1);
 
 #ifdef __cplusplus
