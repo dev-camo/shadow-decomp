@@ -1878,6 +1878,7 @@ config.libs = [
             # 0x800D0CEC and 0x800D05D0 in the original, and those that symbols.txt names at
             # 0x800F5B08 and 0x800F5238 here (USA addresses).
             Object(NonMatching, "Game/ElecAccessPanel.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/SetVehicle.cpp", cflags=cflags_game_cpp),
             # fn_8040C55C's instructions match. fn_8040C3EC (92 words) differs in 15 positional raw
             # words (19 when relocation targets are compared by section and offset: the shared-pool
             # loads and the threshold load at +0x90, which refers to .sdata2+0 in the original and
