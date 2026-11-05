@@ -1961,12 +1961,7 @@ config.libs = [
             # removed. __sinit_Meteor_cpp differs in 2 words: the original loads the saved link
             # register before the store of the startup float.
             Object(NonMatching, "Game/Meteor.cpp", cflags=cflags_game_cpp),
-            # Compared as relocatable objects, all 75 functions have identical raw words, and the
-            # data matches by contents once the linker-discarded weak and local copies are set aside
-            # (the original's .data keeps zero-filled holes where five discarded weak vtables were);
-            # the extracted .sdata2 has flags A and the compiled one WA (both linked ELFs have WA).
-            # Not yet proven as a whole object with the unit linked from source.
-            Object(NonMatching, "Game/Meteors.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/Meteors.cpp", cflags=cflags_game_cpp),
             # Constructor temporary cleanup, matrix calls, and literal/weak metadata layout differ.
             Object(NonMatching, "Game/ElecRollHexa.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DefenseShield.cpp", cflags=cflags_game_cpp),
