@@ -522,6 +522,14 @@ Game/Meteors.cpp:
 	.sbss       start:0x805F0378 end:0x805F03A8
 	.sdata2     start:0x805F7370 end:0x805F73B8
 
+Game/DefenseShield.cpp:
+	.text       start:0x802226F8 end:0x802237A4
+	.rodata     start:0x804F1410 end:0x804F1548
+	.data       start:0x80546900 end:0x80546998
+	.sdata      start:0x805EA000 end:0x805EA038
+	.sbss       start:0x805F03D0 end:0x805F03E0
+	.sdata2     start:0x805F7428 end:0x805F7448
+
 Game/ArkCannon.cpp:
 	.text       start:0x80226DA8 end:0x80228494
 	.ctors      start:0x804AA4D4 end:0x804AA4D8

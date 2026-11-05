@@ -390,6 +390,9 @@ inline Fn8040Matrix34::Fn8040Matrix34(const Fn8040Matrix34 &other) {
 
 /* Returns whether the value is close enough to 0 to count as 0 (behaviour inferred). */
 extern "C" bool fn_8000A950(float value);
+/* Returns fn_8000A950(a - b): whether the two values are close enough to count as equal
+ * (behaviour inferred from its body). */
+extern "C" bool fn_801C455C(float a, float b);
 /* True when |value| < 0.0001 (behaviour inferred). */
 extern "C" bool fn_8000B044(float value);
 /* Returns whichever of value, low and high lies in between (a clamp; behaviour inferred). The
