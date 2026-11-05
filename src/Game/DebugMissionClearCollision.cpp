@@ -104,11 +104,7 @@ void DebugMissionClearCollision::UpdateBody(float dt) {
     boost::shared_ptr<CharInfo> character = fn_800A8C54(fn_80074194(), 0).lock();
 
     if (character.get() != 0) {
-        Fn8040Vector3 distance;
-        Fn8040Vector3 difference;
-
-        fn_8040CD74(&difference, &character->m_position, &m_charInfo->m_position);
-        fn_800091EC(&distance, &difference);
+        Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
 
         if (fn_8040CF50(&distance) < s_radius.value) {
             u32 type = m_params.type;
@@ -158,13 +154,9 @@ void DebugMissionClearCollision::DrawDebugMarker() {
 
     for (u32 i = 0; i < 4; i++) {
         UnkSegment_80020A20 line = *s_markLines[i];
-        Fn8040Vector3 start;
-        Fn8040Vector3 end;
 
-        fn_8040B67C(&start, &matrix, &line.start);
-        fn_800091D0(&line.start, &start);
-        fn_8040B67C(&end, &matrix, &line.end);
-        fn_800091D0(&line.end, &end);
+        line.start = matrix * line.start;
+        line.end = matrix * line.end;
         fn_802E0AA0(line, *s_lineColors[m_params.type], s_lineArg.value);
     }
 }

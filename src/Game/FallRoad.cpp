@@ -34,9 +34,9 @@ FallRoad::FallRoad(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(parent
                           boost::weak_ptr<CharInfo>(m_charInfo), Fn8040Vector3(0.0f, -25.0f, 0.0f),
                           &lbl_805E07B8, 0);
 
-    fn_800091D0(&m_position, &m_charInfo->m_position);
+    m_position = m_charInfo->m_position;
     m_position.y += m_height;
-    fn_800091D0(&m_velocity, &lbl_805E07A0);
+    m_velocity = lbl_805E07A0;
     UpdateModelMatrix();
 
     if (m_height == 0.0f) {
@@ -125,7 +125,7 @@ void FallRoad::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     m_probe->SetPosition(&m_charInfo->m_position);
     m_probe->SetRotation(UnkRotation3(0.0f, m_charInfo->m_rotation.y, 0.0f));
 
-    fn_800091D0(&m_position, &m_charInfo->m_position);
+    m_position = m_charInfo->m_position;
     m_position.y += m_height;
     UpdateModelMatrix();
 

@@ -26,17 +26,16 @@
 using SonicteamUSA::System::CharaColli::AttackCallbackParam;
 using SonicteamUSA::System::CharaColli::CharaColliAttack;
 
-/* The direction passed to fn_80168C48 with the effect's position (0, 0, -1). */
-static Fn8040Vector3 s_effectDirection(0.0f, 0.0f, -1.0f);
+/* The direction passed to fn_80168C48 with the effect's position (0, 0, -1), copied from a
+ * temporary as the original's start-up function does. */
+static Fn8040Vector3 s_effectDirection = Fn8040Vector3(0.0f, 0.0f, -1.0f);
 
 /* The height of the object above the character info's position and the value passed to
  * its fn_802B4498 (names inferred from their uses).
  * Matching workaround: UnkStartupFloat_800E2570 stands in for the original type of these
  * variables. The original sets them with a start-up function in .ctors (a constant float
  * initialiser would be emitted as initialised .sdata data instead), and the shared stand-in
- * reproduces those two float stores. The original start-up function (0x80237968, 20 words) also
- * builds and copies the effect direction through fn_800091EC; that part still differs (see the
- * unit's configure.py note). Revisit when the original wrapper type is found. */
+ * reproduces those two float stores. Revisit when the original wrapper type is found. */
 static UnkStartupFloat_800E2570 s_objectHeight(13.0f);
 static UnkStartupFloat_800E2570 s_objectValue(400.0f);
 
@@ -98,9 +97,8 @@ GiantLantern::GiantLantern(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
         fn_802B4510(m_object.get(), 1);
 
         Fn8040Vector3 above(0.0f, s_objectHeight.value, 0.0f);
-        Fn8040Vector3 objectPosition;
 
-        fn_8040CDD0(&objectPosition, &above, &m_charInfo->m_position);
+        const Fn8040Vector3 &objectPosition = above + m_charInfo->m_position;
         fn_802B44C8(m_object.get(), &objectPosition);
 
         boost::shared_ptr<CharaColliAttack> attack(fn_800C42D0(fn_80021B08(), m_probe).lock());
@@ -194,9 +192,8 @@ void GiantLantern::UpdatePositions() {
 
     if (m_object.get() != 0) {
         Fn8040Vector3 above(0.0f, s_objectHeight.value, 0.0f);
-        Fn8040Vector3 objectPosition;
 
-        fn_8040CDD0(&objectPosition, &above, &m_charInfo->m_position);
+        const Fn8040Vector3 &objectPosition = above + m_charInfo->m_position;
         fn_802B44C8(m_object.get(), &objectPosition);
     }
 }
@@ -216,10 +213,7 @@ void GiantLantern::OnAttack(AttackCallbackParam &param) {
 }
 
 void GiantLantern::fn_8023684C(AttackCallbackParam &param) {
-    Fn8040Vector3 direction;
-
-    fn_8040CD74(&direction, &param.field_0x18, &m_charInfo->m_position);
-    fn_800091D0(&param.field_0x34, &direction);
+    param.field_0x34 = param.field_0x18 - m_charInfo->m_position;
     fn_8040CE74(&param.field_0x34);
     param.field_0x4C = 10.0f;
     param.field_0x50 = 1.0f;

@@ -192,8 +192,8 @@ void SetPopFooting::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
     fn_800C9ED4(owner, &m_charInfo->m_rotation);
     fn_800C9DBC(owner, &m_modelIndex, 0xC);
 
-    fn_800091D0(&m_charInfo->m_position, &m_position);
-    fn_800091D0(&m_charInfo2->m_position, &m_charInfo->m_position);
+    m_charInfo->m_position = m_position;
+    m_charInfo2->m_position = m_charInfo->m_position;
     m_charInfo2->m_rotation = m_charInfo->m_rotation;
 
     m_state = 0;
@@ -219,18 +219,14 @@ void SetPopFooting::UpdateModelMatrices() {
 void SetPopFooting::UpdateCharInfoPosition() {
     Fn8040Vector3 offset(0.0f, 0.0f, m_height);
     Fn8040Matrix34 rotation;
-    Fn8040Vector3 rotated;
-    Fn8040Vector3 shifted;
 
     fn_8040B6F8(&rotation);
     fn_8040B848(&rotation, m_charInfo->m_rotation.y);
     fn_8040B884(&rotation, m_charInfo->m_rotation.x);
     fn_8040B80C(&rotation, m_charInfo->m_rotation.z);
-    fn_8040B67C(&rotated, &rotation, &offset);
-    fn_800091D0(&offset, &rotated);
+    offset = rotation * offset;
 
-    fn_8040CDD0(&shifted, &m_position, &offset);
-    fn_800091D0(&m_charInfo->m_position, &shifted);
+    m_charInfo->m_position = m_position + offset;
 }
 
 } // namespace PopFooting

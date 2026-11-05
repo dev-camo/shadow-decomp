@@ -51,9 +51,9 @@ void fn_8041FF0C(MotionReflectedVectorTrack *track) {
 
         MirrorVector(&track->value, options, mirrorOptions);
         MirrorVector(&mirrorTrack->value, mirrorOptions, options);
-        fn_800091D0(&saved, &track->value);
-        fn_800091D0(&track->value, &mirrorTrack->value);
-        fn_800091D0(&mirrorTrack->value, &saved);
+        saved = track->value;
+        track->value = mirrorTrack->value;
+        mirrorTrack->value = saved;
     } else {
         ReflectVector(&track->value, options);
     }
@@ -77,8 +77,8 @@ void fn_804201C0(MotionScaledVectorTrack *track) {
         Fn8040Vector3 saved;
 
         NegateVector(&mirrorTrack->value, mirrorOptions);
-        fn_800091D0(&saved, &track->value);
-        fn_800091D0(&track->value, &mirrorTrack->value);
-        fn_800091D0(&mirrorTrack->value, &saved);
+        saved = track->value;
+        track->value = mirrorTrack->value;
+        mirrorTrack->value = saved;
     }
 }

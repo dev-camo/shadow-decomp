@@ -23,8 +23,9 @@ using SonicteamUSA::System::CharaColli::CharaColliBase;
 
 const char *GravityChangeZone::s_name = "GravityChangeZone";
 
-/* The direction passed to fn_80168C48 with the effect's position (0, 0, -1). */
-static Fn8040Vector3 s_effectDirection(0.0f, 0.0f, -1.0f);
+/* The direction passed to fn_80168C48 with the effect's position (0, 0, -1), copied from a
+ * temporary as the original's start-up function does. */
+static Fn8040Vector3 s_effectDirection = Fn8040Vector3(0.0f, 0.0f, -1.0f);
 
 GravityChangeZone::GravityChangeZone(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
     : Gadget(parent, owner), m_hitFlags(0) {
@@ -120,14 +121,10 @@ void GravityChangeZone::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
     /* Draws a debug line from the character info's position to the point 50 times the gravity
      * table's vector for the GRAVITY index away in the opposite direction. */
-    Fn8040Vector3 direction;
-    Fn8040Vector3 end;
 
-    fn_800091EC(&direction, fn_80293B60(m_params.gravity));
+    Fn8040Vector3 direction = *fn_80293B60(m_params.gravity);
     fn_8040CE38(&direction, -50.0f);
-    fn_8040CDD0(&end, &m_charInfo->m_position, &direction);
-
-    UnkSegment_80020A20 segment(m_charInfo->m_position, end);
+    UnkSegment_80020A20 segment(m_charInfo->m_position, m_charInfo->m_position + direction);
 
     fn_802E0AA0(segment, UnkDebugColor_802E0E84(0xC0, 0xFF, 0xFF, 0), 1.0f);
 }

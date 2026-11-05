@@ -183,7 +183,7 @@ class EggMecaVarParam : public BossVarParam {
     EggMecaVarParam() {
         m_charInfo = boost::shared_ptr<BossCharInfo>(new BossCharInfo(0xAB));
         field_0x24 = 0.0f;
-        fn_800091D0(&field_0x48, &lbl_805E07A0);
+        field_0x48 = lbl_805E07A0;
         field_0x1F8 = 0;
         field_0x1B4 = 0;
         field_0x1B5 = 0;

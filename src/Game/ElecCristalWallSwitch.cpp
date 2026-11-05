@@ -82,9 +82,8 @@ bool ElecCristalWallSwitch::IsCharInfoInRange() {
 
     if (nearest.get() != 0) {
         float rangeSquared = m_range * m_range;
-        Fn8040Vector3 offset;
 
-        fn_8040CD74(&offset, &m_charInfo->m_position, &nearest->m_position);
+        const Fn8040Vector3 &offset = m_charInfo->m_position - nearest->m_position;
         return fn_8040CF2C(&offset) <= rangeSquared;
     }
 

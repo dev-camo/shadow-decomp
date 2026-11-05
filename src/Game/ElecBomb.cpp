@@ -143,9 +143,7 @@ bool ElecBomb::IsCharacterNear() {
 
     character = fn_800A8A7C(fn_80074194(), &m_charInfo->m_position).lock();
     if (character.get() != 0) {
-        Fn8040Vector3 difference;
-
-        fn_8040CD74(&difference, &m_charInfo->m_position, &character->m_position);
+        const Fn8040Vector3 &difference = m_charInfo->m_position - character->m_position;
         if (fn_8040CF2C(&difference) <= 22500.0f) {
             fn_8020642C(character, 0x35);
             return true;
@@ -172,9 +170,8 @@ void ElecBomb::UpdateModelMatrix() {
 
     if (m_object.get() != 0) {
         Fn8040Vector3 above(0.0f, 170.0f, 0.0f);
-        Fn8040Vector3 position;
 
-        fn_8040CDD0(&position, &above, &m_charInfo->m_position);
+        const Fn8040Vector3 &position = above + m_charInfo->m_position;
         fn_802B44C8(m_object.get(), &position);
     }
 }

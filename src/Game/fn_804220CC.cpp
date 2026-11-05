@@ -102,7 +102,7 @@ EffCmdVector2Exec::EffCmdVector2Exec(const UnkCommandData *command, unsigned int
         if (data->relative != 0) {
             fn_8040CFF8(m_target, &m_rate);
         } else {
-            fn_800091D0(m_target, &m_rate);
+            *m_target = m_rate;
         }
         m_target = 0;
     } else {
@@ -132,9 +132,7 @@ bool EffCmdVector2Exec::Update(float deltaTime) {
         }
         return false;
     }
-    Fn8040Vector3 step;
-    fn_800091A4(&step, &m_rate, deltaTime);
-    fn_8040CFF8(m_target, &step);
+    AddVector(m_target, m_rate * deltaTime);
     return true;
 }
 
@@ -160,7 +158,7 @@ EffCmdVector3Exec::EffCmdVector3Exec(const UnkCommandData *command, unsigned int
         if (data->relative != 0) {
             fn_8040CFF8(m_target, &m_rate);
         } else {
-            fn_800091D0(m_target, &m_rate);
+            *m_target = m_rate;
         }
         m_target = 0;
     } else {
@@ -190,9 +188,7 @@ bool EffCmdVector3Exec::Update(float deltaTime) {
         }
         return false;
     }
-    Fn8040Vector3 step;
-    fn_800091A4(&step, &m_rate, deltaTime);
-    fn_8040CFF8(m_target, &step);
+    AddVector(m_target, m_rate * deltaTime);
     return true;
 }
 
@@ -326,7 +322,7 @@ EffCmd3DSclExec::EffCmd3DSclExec(const UnkCommandData *command, unsigned int *fl
             m_target->y *= m_rate.y;
             m_target->z *= m_rate.z;
         } else {
-            fn_800091D0(m_target, &m_rate);
+            *m_target = m_rate;
         }
         m_target = 0;
     } else {
@@ -359,9 +355,7 @@ bool EffCmd3DSclExec::Update(float deltaTime) {
         }
         return false;
     }
-    Fn8040Vector3 step;
-    fn_800091A4(&step, &m_rate, deltaTime);
-    fn_8040CFF8(m_target, &step);
+    AddVector(m_target, m_rate * deltaTime);
     return true;
 }
 
@@ -387,7 +381,7 @@ EffCmd2DSclExec::EffCmd2DSclExec(const UnkCommandData *command, unsigned int *fl
             m_target->x *= m_rate.x;
             m_target->y *= m_rate.y;
         } else {
-            fn_800091D0(m_target, &m_rate);
+            *m_target = m_rate;
         }
         m_target = 0;
     } else {
@@ -419,9 +413,7 @@ bool EffCmd2DSclExec::Update(float deltaTime) {
         }
         return false;
     }
-    Fn8040Vector3 step;
-    fn_800091A4(&step, &m_rate, deltaTime);
-    fn_8040CFF8(m_target, &step);
+    AddVector(m_target, m_rate * deltaTime);
     return true;
 }
 

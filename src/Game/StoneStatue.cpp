@@ -180,17 +180,11 @@ bool StoneStatue::IsCharacterInRange() {
         return false;
     }
 
-    Fn8040Vector3 statuePosition;
-    Fn8040Vector3 characterPosition;
-    Fn8040Vector3 offset;
-    Fn8040Vector3 offsetTemporary;
-
-    fn_800091EC(&statuePosition, &m_charInfo->m_position);
-    fn_800091EC(&characterPosition, &character->m_position);
+    Fn8040Vector3 statuePosition = m_charInfo->m_position;
+    Fn8040Vector3 characterPosition = character->m_position;
     statuePosition.y = 0.0f;
     characterPosition.y = 0.0f;
-    fn_8040CD74(&offsetTemporary, &characterPosition, &statuePosition);
-    fn_800091EC(&offset, &offsetTemporary);
+    Fn8040Vector3 offset = characterPosition - statuePosition;
 
     if (fn_8040CF50(&offset) > m_params.rangeRadius) {
         return false;
@@ -210,27 +204,15 @@ void StoneStatue::TurnToCharacter(float dt) {
         fn_800A8A7C(fn_80074194(), &m_charInfo->m_position).lock();
 
     if (character.get() != 0) {
-        Fn8040Vector3 statuePosition;
-        Fn8040Vector3 characterPosition;
-        Fn8040Vector3 facing;
-        Fn8040Vector3 forward;
-        Fn8040Vector3 axis;
-        Fn8040Vector3 facingTemporary;
-        Fn8040Vector3 turnedTemporary;
-        Fn8040Vector3 axisTemporary;
-
-        fn_800091EC(&statuePosition, &m_charInfo->m_position);
-        fn_800091EC(&characterPosition, &character->m_position);
+        Fn8040Vector3 statuePosition = m_charInfo->m_position;
+        Fn8040Vector3 characterPosition = character->m_position;
         statuePosition.y = 0.0f;
         characterPosition.y = 0.0f;
-        fn_8040CD74(&facingTemporary, &characterPosition, &statuePosition);
-        fn_800091EC(&facing, &facingTemporary);
-        forward.Set(0.0f, 0.0f, 1.0f);
-        fn_8040D0AC(&turnedTemporary, &forward, m_charInfo->m_rotation.y);
-        fn_800091D0(&forward, &turnedTemporary);
+        Fn8040Vector3 facing = characterPosition - statuePosition;
+        Fn8040Vector3 forward(0.0f, 0.0f, 1.0f);
+        forward = fn_8040D0AC(forward, m_charInfo->m_rotation.y);
         fn_8040CE74(&facing);
-        fn_8040CFB8(&axisTemporary, &facing, &forward);
-        fn_800091EC(&axis, &axisTemporary);
+        Fn8040Vector3 axis = fn_8040CFB8(facing, forward);
 
         float angle = fn_8040F8FC(&facing, &forward);
         float maxTurn = dt * DegreesToRadians(40.0f);
@@ -299,9 +281,7 @@ void StoneStatue::Break() {
 }
 
 void StoneStatue::DrawRange() {
-    Fn8040Vector3 center;
-
-    fn_800091EC(&center, &m_charInfo->m_position);
+    Fn8040Vector3 center = m_charInfo->m_position;
     center.y -= s_rangeDepth.value;
 
     float halfHeight = 0.5f * m_params.rangeHeight;

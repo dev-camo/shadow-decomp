@@ -158,16 +158,11 @@ void EffectLocusRW3::fn_80439B18() {
                 Fn8040Vector3 reference(1.0f, 0.0f, 0.0f);
                 Fn8040Matrix34 inverse;
                 fn_8040BEF8(&inverse, &matrix);
-                Fn8040Vector3 directionTemporary;
-                fn_8040B67C(&directionTemporary, &inverse, &cameraPosition);
                 Fn8040Vector3 direction;
-                fn_800091D0(&direction, &directionTemporary);
+                direction = inverse * cameraPosition;
                 direction.z = 0.0f;
                 fn_8040CE74(&direction);
-                Fn8040Vector3 axisTemporary;
-                fn_8040CFB8(&axisTemporary, &reference, &direction);
-                Fn8040Vector3 axis;
-                fn_800091EC(&axis, &axisTemporary);
+                Fn8040Vector3 axis = fn_8040CFB8(reference, direction);
                 if (fn_8040CF50(&axis) > 0.0001f) {
                     fn_8040CE74(&axis);
                     float angle = fn_801B1DB0(fn_8040CF90(&reference, &direction));
@@ -203,9 +198,7 @@ void EffectLocusRW3::fn_80439B18() {
             }
             if (updatePositions) {
                 Fn8040Vector3 position = point->position;
-                Fn8040Vector3 transformed;
-                fn_8040B67C(&transformed, &matrix, &position);
-                fn_800091D0(&position, &transformed);
+                position = matrix * position;
                 m_vertices[vertexIndex].objVertex.x = position.x;
                 m_vertices[vertexIndex].objVertex.y = position.y;
                 m_vertices[vertexIndex].objVertex.z = position.z;

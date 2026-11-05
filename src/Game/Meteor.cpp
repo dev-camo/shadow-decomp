@@ -116,11 +116,7 @@ void Meteor::UpdateBody(float dt) {
         boost::shared_ptr<CharInfo> nearest(
             fn_800A8A7C(fn_80074194(), &m_charInfo->m_position).lock());
         if (nearest.get() != 0) {
-            Fn8040Vector3 difference;
-            Fn8040Vector3 offset;
-
-            fn_8040CD74(&difference, &nearest->m_position, &m_charInfo->m_position);
-            fn_800091EC(&offset, &difference);
+            Fn8040Vector3 offset = nearest->m_position - m_charInfo->m_position;
             if (fn_8040CF50(&offset) < m_params.range) {
                 m_state = 1;
             }
@@ -128,10 +124,7 @@ void Meteor::UpdateBody(float dt) {
         break;
     }
     case 1: {
-        Fn8040Vector3 velocity;
-
-        fn_8040CDA8(&velocity, &m_direction, m_params.moveSpeed * dt);
-        fn_800091D0(&m_charInfo->field_0x18, &velocity);
+        m_charInfo->field_0x18 = m_direction * (m_params.moveSpeed * dt);
         AddVector(&m_charInfo->m_position, m_charInfo->field_0x18);
 
         m_timer -= dt;
@@ -178,14 +171,9 @@ void Meteor::UpdateBody(float dt) {
             Fn8040Matrix34 matrix;
 
             if (fn_80169EF0(&matrix, m_model, 0, s_partIds[i])) {
-                const Fn8040Vector3 &translation = fn_8040FB08(&matrix);
-                Fn8040Vector3 position;
-                Fn8040Vector3 difference;
-                Fn8040Vector3 direction;
+                Fn8040Vector3 position(fn_8040FB08(&matrix));
+                Fn8040Vector3 direction(position - m_charInfo->m_position);
 
-                fn_800091EC(&position, &translation);
-                fn_8040CD74(&difference, &position, &m_charInfo->m_position);
-                fn_800091EC(&direction, &difference);
                 fn_8040CE74(&direction);
 
                 UnkRotation3 angles(0.0f, 0.0f, 0.0f);
@@ -238,15 +226,8 @@ void Meteor::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         length = 100.0f;
     }
 
-    Fn8040Vector3 path;
-    Fn8040Vector3 scaled;
-    Fn8040Vector3 end;
-
-    fn_8040CDA8(&scaled, &m_direction, length);
-    fn_800091EC(&path, &scaled);
-    fn_8040CDD0(&end, &m_charInfo->m_position, &path);
-
-    UnkSegment_80020A20 segment(m_charInfo->m_position, end);
+    Fn8040Vector3 path = m_direction * length;
+    UnkSegment_80020A20 segment(m_charInfo->m_position, m_charInfo->m_position + path);
 
     fn_802E0AA0(segment, UnkDebugColor_802E0E84(0xFF, 0xFF, 0xFF, 0), 10.0f);
 }
@@ -267,14 +248,10 @@ void Meteor::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
     /* The direction: the z axis turned about the x axis, then about the y axis. */
     Fn8040Vector3 forward(0.0f, 0.0f, 1.0f);
-    Fn8040Vector3 turnedX;
-    Fn8040Vector3 turnedY;
 
-    fn_800091D0(&m_direction, &forward);
-    fn_8040D118(&turnedX, &m_direction, m_params.directionX);
-    fn_800091D0(&m_direction, &turnedX);
-    fn_8040D0AC(&turnedY, &m_direction, m_params.directionY);
-    fn_800091D0(&m_direction, &turnedY);
+    m_direction = forward;
+    m_direction = fn_8040D118(m_direction, m_params.directionX);
+    m_direction = fn_8040D0AC(m_direction, m_params.directionY);
 
     m_state = 0;
     m_health = 1.0f;
@@ -293,7 +270,7 @@ void Meteor::UpdateModelMatrix() {
 }
 
 void Meteor::fn_8021CA5C(AttackCallbackParam &param) {
-    fn_800091D0(&param.field_0x34, &m_direction);
+    param.field_0x34 = m_direction;
     param.field_0x4C = m_params.moveSpeed;
     param.field_0x50 = 5.0f;
 }

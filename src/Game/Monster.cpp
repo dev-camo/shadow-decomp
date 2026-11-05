@@ -4,8 +4,7 @@
  * fn_8005AE20 converts metres to the game's units (inferred).
  *
  * NonMatching: the constructor differs in 2 words, the order of the two argument moves of the
- * fn_800091D0 call that copies the path's start position (measured: a copy function with a const
- * reference source parameter removes the difference). */
+ * assignment call that copies the path's start position. */
 #include "Game/Monster.h"
 #include "Game/CharInfo.h"
 #include "Game/GadgetTypeInfo.h"
@@ -69,7 +68,7 @@ Monster::Monster(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
     MonsterCharInfo *info = m_charInfo.get();
     const Fn8040Vector3 &start = fn_80018634(path);
 
-    fn_800091D0(&info->m_position, &start);
+    info->m_position = start;
     m_charInfo->m_rotation = fn_80018434(m_path.get(), 1, 0);
     fn_8040CE60(&m_charInfo->field_0x18);
     fn_801DCD8C(fn_800DDF20(), m_charInfo);
@@ -160,13 +159,8 @@ void Monster::UpdateBody(float dt) {
         boost::shared_ptr<CharInfo> character = fn_800A8B74(fn_80074194(), lbl_805EE588).lock();
 
         if (character.get() != 0) {
-            Fn8040Vector3 local;
+            Fn8040Vector3 local = matrix * character->m_position;
             Fn8040Vector3 position;
-            Fn8040Vector3 localTemporary;
-            Fn8040Vector3 moved;
-
-            fn_8040B67C(&localTemporary, &matrix, &character->m_position);
-            fn_800091EC(&local, &localTemporary);
 
             /* The character's distance along the monster's negative z axis, beyond the depth
              * of s_probeVector (the position is taken into the model's space by the inverted
@@ -206,9 +200,8 @@ void Monster::UpdateBody(float dt) {
 
             fn_8001C91C(fn_8001B494(), m_path.get(), 0, &position, step, &m_charInfo->m_rotation,
                         1);
-            fn_8040CD74(&moved, &position, &m_charInfo->m_position);
-            fn_800091D0(&m_charInfo->field_0x18, &moved);
-            fn_800091D0(&m_charInfo->m_position, &position);
+            m_charInfo->field_0x18 = position - m_charInfo->m_position;
+            m_charInfo->m_position = position;
 
             boost::shared_ptr<_stMtnPlayWork> control = m_model->fn_801602B4(0).lock();
 
@@ -280,11 +273,7 @@ bool Monster::IsFinished() {
             boost::shared_ptr<CharInfo> character = fn_800A8B74(fn_80074194(), lbl_805EE588).lock();
 
             if (character.get() != 0) {
-                Fn8040Vector3 distance;
-                Fn8040Vector3 difference;
-
-                fn_8040CD74(&difference, &character->m_position, &m_charInfo->m_position);
-                fn_800091EC(&distance, &difference);
+                Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
                 if (fn_8040CF50(&distance) > fn_800C9938(m_owner)) {
                     m_flags |= 1;
                     return true;

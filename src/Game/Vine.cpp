@@ -212,27 +212,21 @@ void Vine::UpdateModelMatrix() {
 
         /* The vine's up direction, then the direction to the target. */
         Fn8040Vector3 direction(0.0f, 1.0f, 0.0f);
-        Fn8040Vector3 up;
 
-        fn_8040B67C(&up, &rotation, &direction);
-        fn_800091D0(&direction, &up);
+        direction = rotation * direction;
         if (direction.y < 0.0f) {
-            Fn8040Vector3 offset;
             float yaw;
             float pitch;
 
-            fn_8040CD74(&offset, &m_targetPosition, &m_charInfo->m_position);
-            fn_800091D0(&direction, &offset);
+            direction = m_targetPosition - m_charInfo->m_position;
             fn_8003B9E8(&direction, &pitch, &yaw);
             yaw += s_halfTurn;
             m_charInfo->m_rotation.y = fn_8012773C(yaw, m_charInfo->m_rotation.y, s_turnStep);
         } else {
-            Fn8040Vector3 offset;
             float yaw;
             float pitch;
 
-            fn_8040CD74(&offset, &m_targetPosition, &m_charInfo->m_position);
-            fn_800091D0(&direction, &offset);
+            direction = m_targetPosition - m_charInfo->m_position;
             fn_8003B9E8(&direction, &pitch, &yaw);
             m_charInfo->m_rotation.y = fn_8012773C(yaw, m_charInfo->m_rotation.y, s_turnStep);
         }
@@ -289,12 +283,7 @@ void Vine::ShootFireBall() {
         param.m_position.y = ltm->pos.y;
         param.m_position.z = ltm->pos.z;
 
-        Fn8040Vector3 direction;
-        Fn8040Vector3 offset;
-
-        fn_8040CD74(&offset, &m_targetPosition, &param.m_position);
-        fn_8040CEE8(&direction, &offset);
-        fn_800091D0(&param.m_velocity, &direction);
+        param.m_velocity = fn_8040CEE8(m_targetPosition - param.m_position);
         fn_8040CE38(&param.m_velocity, 3.0f);
         FireBall::Create(param);
         fn_801D54F4(fn_80053164(), 0x7543, &param.m_position, 0, 1);
@@ -310,35 +299,33 @@ bool Vine::UpdateTarget() {
             boost::shared_ptr<CharInfo> info = nearest.lock();
             Fn8040Vector3 infoPosition;
             Fn8040Vector3 position;
-            Fn8040Vector3 offset;
 
-            fn_800091D0(&infoPosition, &info->m_position);
+            infoPosition = info->m_position;
             infoPosition.y = 0.0f;
-            fn_800091D0(&position, &m_charInfo->m_position);
+            position = m_charInfo->m_position;
             position.y = 0.0f;
-            fn_8040CD74(&offset, &infoPosition, &position);
+            const Fn8040Vector3 &offset = infoPosition - position;
             float radiusSq = m_params.radius * m_params.radius;
             if (fn_8040CF2C(&offset) < radiusSq) {
                 m_targetInfo = info;
-                fn_800091D0(&m_targetPosition, &info->m_position);
+                m_targetPosition = info->m_position;
                 return true;
             }
         }
     } else if (boost::shared_ptr<CharInfo> info = m_targetInfo.lock()) {
         Fn8040Vector3 infoPosition;
         Fn8040Vector3 position;
-        Fn8040Vector3 offset;
 
-        fn_800091D0(&infoPosition, &info->m_position);
+        infoPosition = info->m_position;
         infoPosition.y = 0.0f;
-        fn_800091D0(&position, &m_charInfo->m_position);
+        position = m_charInfo->m_position;
         position.y = 0.0f;
-        fn_8040CD74(&offset, &infoPosition, &position);
+        const Fn8040Vector3 &offset = infoPosition - position;
         if (fn_8040CF2C(&offset) > GetLoseDistanceSq()) {
             m_targetInfo.reset();
             return false;
         }
-        fn_800091D0(&m_targetPosition, &info->m_position);
+        m_targetPosition = info->m_position;
         return true;
     }
     return false;
@@ -579,8 +566,8 @@ const char *FireBall::s_name = "FireBall";
 FireBallParam_8014EDBC::FireBallParam_8014EDBC() : m_lifetime(5.0f) {}
 
 FireBallParam_8014EDBC &FireBallParam_8014EDBC::operator=(const FireBallParam_8014EDBC &other) {
-    fn_800091D0(&m_position, &other.m_position);
-    fn_800091D0(&m_velocity, &other.m_velocity);
+    m_position = other.m_position;
+    m_velocity = other.m_velocity;
     m_lifetime = other.m_lifetime;
     return *this;
 }
@@ -591,7 +578,7 @@ FireBall::FireBall(Task *parent, const FireBallParam_8014EDBC &param) : Task(par
     m_clump =
         fn_80457090(static_cast<RpClump *>(fn_80012700(fn_800122D4(), 1, "JG0000FVINEBALL.DFF")));
     m_charInfo = fn_8015CB88(0x46, 4, "FireBall");
-    fn_800091D0(&m_charInfo->m_position, &m_param.m_position);
+    m_charInfo->m_position = m_param.m_position;
     m_target = fn_8016690C(m_clump);
     m_target->fn_80167010(-1);
 
@@ -626,13 +613,10 @@ void FireBall::Update(float dt) {
         break;
     case 1: {
         Fn8040Vector3 hit;
-        Fn8040Vector3 end;
-        Fn8040Vector3 next;
 
-        fn_8040CDD0(&next, &m_charInfo->m_position, &m_param.m_velocity);
-        fn_800091EC(&end, &next);
+        Fn8040Vector3 end = m_charInfo->m_position + m_param.m_velocity;
         if (fn_8015D61C(&hit, m_charInfo->m_position, end)) {
-            fn_800091D0(&m_charInfo->m_position, &hit);
+            m_charInfo->m_position = hit;
             m_state = 2;
         } else {
             AddVector(&m_charInfo->m_position, m_param.m_velocity);
@@ -685,7 +669,7 @@ const char *FireBallBlast::s_name = "FireBallBlast";
 
 FireBallBlast::FireBallBlast(Task *parent, const Fn8040Vector3 *position) : Task(parent) {
     m_name = s_name;
-    fn_800091D0(&m_position, position);
+    m_position = *position;
 
     boost::shared_ptr<CharaColliBase> probe =
         fn_800C7EA8(fn_80021B08(), &m_position, 0x40000, 6, 0,

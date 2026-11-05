@@ -96,9 +96,9 @@ struct UnkBalloonParam_8013B2C0 {
     UnkBalloonParam_8013B2C0()
         : m_speed(0.0f), m_height(0.0f), m_kind(ShootingGame::Kind::B), m_id(-1) {}
 
-    /* Copies the members one by one, the position with fn_800091D0. */
+    /* Copies the members one by one, the position with the vector's out-of-line assignment. */
     UnkBalloonParam_8013B2C0 &operator=(const UnkBalloonParam_8013B2C0 &other) {
-        fn_800091D0(&m_position, &other.m_position);
+        m_position = other.m_position;
         m_speed = other.m_speed;
         m_height = other.m_height;
         m_kind = other.m_kind;

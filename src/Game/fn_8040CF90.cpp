@@ -7,10 +7,9 @@ float fn_8040CF90(const Fn8040Vector3 *left, const Fn8040Vector3 *right) {
     return left->x * right->x + left->y * right->y + left->z * right->z;
 }
 
-void fn_8040CFB8(Fn8040Vector3 *result, const Fn8040Vector3 *left, const Fn8040Vector3 *right) {
-    *result = Fn8040Vector3(left->y * right->z - left->z * right->y,
-                            left->z * right->x - left->x * right->z,
-                            left->x * right->y - left->y * right->x);
+Fn8040Vector3 fn_8040CFB8(const Fn8040Vector3 &left, const Fn8040Vector3 &right) {
+    return Fn8040Vector3(left.y * right.z - left.z * right.y, left.z * right.x - left.x * right.z,
+                         left.x * right.y - left.y * right.x);
 }
 
 void fn_8040CFF8(Fn8040Vector3 *result, const Fn8040Vector3 *value) {

@@ -42,7 +42,7 @@ Balloon::Balloon(Task *parent, const UnkBalloonParam_8013B2C0 &param) : Task(par
     m_name = s_name;
     m_param = param;
     m_charInfo = fn_8015CB88(0x47, 4, "ParkBalloon");
-    fn_800091D0(&m_charInfo->m_position, &m_param.m_position);
+    m_charInfo->m_position = m_param.m_position;
     m_model = fn_8015F800(1, "SHOOTINGGAMEBALLOON.BIN");
     m_model->fn_80162A68(m_param.m_kind, 0);
     m_model->fn_80161FC8(m_param.m_kind, boost::weak_ptr<CharInfo>(m_charInfo));
@@ -101,8 +101,7 @@ void Balloon::Update(float dt) {
             generator->fn_801DC980(new DeadCommand(4));
         }
 
-        Fn8040Vector3 position;
-        fn_800091EC(&position, &m_charInfo->m_position);
+        Fn8040Vector3 position = m_charInfo->m_position;
 
         Fn8040Vector3 up(0.0f, 1.0f, 0.0f);
         fn_80168C48(&position, &up, s_effects[m_param.m_kind]);
@@ -136,9 +135,7 @@ void Balloon::UpdateModelMatrix() {
     m_model->fn_801633DC(&matrix);
 
     if (m_target.get() != 0) {
-        Fn8040Vector3 position;
-
-        fn_800091EC(&position, &m_charInfo->m_position);
+        Fn8040Vector3 position = m_charInfo->m_position;
         position.y += 10.0f;
         fn_800CCE38(m_target.get(), &position);
     }
@@ -223,9 +220,8 @@ void BalloonGenerator::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     rotation.x = 90.0f * (lbl_805FAD38 / 180.0f);
 
     float halfHeight = 0.5f * m_params.height;
-    Fn8040Vector3 center;
 
-    fn_800091EC(&center, &m_charInfo->m_position);
+    Fn8040Vector3 center = m_charInfo->m_position;
     center.y += halfHeight;
     fn_802E0C60(&center, &rotation, 0, halfHeight, m_params.radius);
 }
@@ -277,17 +273,15 @@ void BalloonGenerator::Generate(int count) {
     for (int i = 0; i < count; i++) {
         Fn8040Matrix34 matrix;
         Fn8040Vector3 position(0.0f, 0.0f, m_params.radius);
-        Fn8040Vector3 turned;
 
         fn_8040B6F8(&matrix);
         fn_8040B59C(&matrix, &m_charInfo->m_position);
         fn_8040B848(&matrix, angles->Pop());
-        fn_8040B67C(&turned, &matrix, &position);
-        fn_800091D0(&position, &turned);
+        position = matrix * position;
 
         UnkBalloonParam_8013B2C0 param;
 
-        fn_800091D0(&param.m_position, &position);
+        param.m_position = position;
         param.m_height = m_params.height;
 
         float speedRange = m_params.maxSpeed - m_params.minSpeed;

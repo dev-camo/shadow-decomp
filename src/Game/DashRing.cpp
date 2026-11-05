@@ -62,29 +62,19 @@ static void fn_80100CBC(boost::shared_ptr<CharInfo> hit, void *arg) {
         speed += (s_launchSpeeds[index + 1] - speed) * (level - index);
     }
 
-    /* Matching workaround: the vectors are declared together in this order because the order of
-     * declaration places their stack slots; declaring each at its first use moves them and adds 10
-     * differing words. velocityTemporary receives the transformed vector before it is copied,
-     * possibly standing for a by-value temporary of the original (inferred). Revisit when the
-     * vector functions are modelled with by-value results. */
     Fn8040Matrix34 matrix;
-    Fn8040Vector3 velocity;
-    Fn8040Vector3 up;
-    UnkRotation3 angles;
-    Fn8040Vector3 velocityTemporary;
 
     fn_8040C148(&matrix, &lbl_805E0720);
     fn_8040B848(&matrix, ringInfo->m_rotation.y);
     fn_8040B884(&matrix, ringInfo->m_rotation.x);
     fn_8040B80C(&matrix, ringInfo->m_rotation.z);
 
-    velocity.Set(0.0f, 0.0f, -1.0f);
-    fn_8040B67C(&velocityTemporary, &matrix, &velocity);
-    fn_800091D0(&velocity, &velocityTemporary);
+    Fn8040Vector3 velocity(0.0f, 0.0f, -1.0f);
+    velocity = matrix * velocity;
     fn_8040CE38(&velocity, speed);
 
-    up.Set(0.0f, 1.0f, 0.0f);
-    angles = fn_8040F5F4(&velocity, &up, 2);
+    Fn8040Vector3 up(0.0f, 1.0f, 0.0f);
+    UnkRotation3 angles = fn_8040F5F4(&velocity, &up, 2);
 
     hit->fn_801DC980(new SetAngleCommand(angles, 2, 4));
     hit->fn_801DC980(new SetVelocityCommand(&velocity, 4));
@@ -151,13 +141,9 @@ void DashRing::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
         Fn8040Vector3 start(0.0f, 0.0f, 0.0f);
         Fn8040Vector3 end(0.0f, 0.0f, -1000000.0f);
-        Fn8040Vector3 startTemporary;
-        Fn8040Vector3 endTemporary;
 
-        fn_8040B67C(&startTemporary, &matrix, &start);
-        fn_800091D0(&start, &startTemporary);
-        fn_8040B67C(&endTemporary, &matrix, &end);
-        fn_800091D0(&end, &endTemporary);
+        start = matrix * start;
+        end = matrix * end;
         fn_802E0B58(UnkSegment_80020A20(start, end), lbl_805F06D8);
     }
 }

@@ -74,10 +74,8 @@ void ElecBar::fn_800CBC1C(float dt) {
         (*it)->Update(dt);
     }
 
-    Fn8040Vector3 center;
+    Fn8040Vector3 center = m_position;
     Fn8040Vector3 halfSize;
-
-    fn_800091EC(&center, &m_position);
 
     halfSize.x = 0.5f * (10.0f * m_params.scale);
     if (m_params.type == 0) {
@@ -175,17 +173,12 @@ static void fn_80152164(boost::shared_ptr<CharInfo> hit, void *arg) {
             boost::shared_ptr<UnkSegment_80020A20> line = context->m_line.lock();
 
             if (line.get() != 0) {
-                Fn8040Vector3 first;
-                Fn8040Vector3 second;
-                Fn8040Vector3 span;
-                Fn8040Vector3 difference;
                 float squaredDistance;
 
-                fn_800091EC(&first, &fn_80078CEC(player, 0)->field_0xC);
-                fn_800091EC(&second, &fn_80078CEC(player, 1)->field_0xC);
-                fn_8040CD74(&difference, &first, &second);
-
-                if (fn_8040CF50(fn_800091EC(&span, &difference)) < 0.1f) {
+                Fn8040Vector3 first = fn_80078CEC(player, 0)->field_0xC;
+                Fn8040Vector3 second = fn_80078CEC(player, 1)->field_0xC;
+                Fn8040Vector3 span = first - second;
+                if (fn_8040CF50(&span) < 0.1f) {
                     squaredDistance = fn_8003C660(&first, line.get(), 0);
                 } else {
                     UnkSegment_80020A20 segment(first, second);
@@ -206,7 +199,7 @@ static void fn_80152164(boost::shared_ptr<CharInfo> hit, void *arg) {
 
 ElecBarSub::ElecBarSub(ElecBar *parent) : m_parent(parent) {
     m_charInfo = fn_8015CB88(0x38, 4, "ElecBar");
-    fn_800091D0(&m_charInfo->m_position, &m_parent->m_position);
+    m_charInfo->m_position = m_parent->m_position;
     m_charInfo->m_rotation = m_parent->m_rotation;
 
     m_charInfo->m_commandUnit = boost::shared_ptr<CharCommandUnit>(new CharCommandUnit);
@@ -329,7 +322,7 @@ void ElecBarSub::Update(float dt) {
 }
 
 void ElecBarSub::CopyFromParent() {
-    fn_800091D0(&m_charInfo->m_position, &m_parent->m_position);
+    m_charInfo->m_position = m_parent->m_position;
     m_charInfo->m_rotation = m_parent->m_rotation;
 }
 
@@ -341,11 +334,11 @@ void ElecBarSub::UpdateModelMatrix() {
     if (m_parent->m_params.type == 0) {
         Fn8040Vector3 up(0.0f, m_offset, 0.0f);
 
-        fn_800091D0(&offset, &up);
+        offset = up;
     } else {
         Fn8040Vector3 back(0.0f, 0.0f, -m_offset);
 
-        fn_800091D0(&offset, &back);
+        offset = back;
     }
 
     Fn8040Matrix34 matrix;
@@ -355,27 +348,15 @@ void ElecBarSub::UpdateModelMatrix() {
     fn_8040B848(&matrix, m_charInfo->m_rotation.y);
     fn_8040B59C(&matrix, &offset);
 
-    Fn8040Vector3 startTemporary;
-    Fn8040Vector3 start;
-    Fn8040Vector3 scaledRight;
     Fn8040Vector3 inset(3.75f, 0.0f, 0.0f);
-
-    fn_8040CDA8(&scaledRight, &right, m_parent->m_params.scale);
-    fn_8040CD74(&start, &scaledRight, &inset);
+    const Fn8040Vector3 &start = right * m_parent->m_params.scale - inset;
     UnkSegment_80020A20 *line = m_line.get();
-    fn_8040B67C(&startTemporary, &matrix, &start);
-    fn_800091D0(&line->start, &startTemporary);
+    line->start = matrix * start;
 
-    Fn8040Vector3 endTemporary;
-    Fn8040Vector3 end;
-    Fn8040Vector3 scaledLeft;
     Fn8040Vector3 endInset(3.75f, 0.0f, 0.0f);
-
-    fn_8040CDA8(&scaledLeft, &left, m_parent->m_params.scale);
-    fn_8040CDD0(&end, &scaledLeft, &endInset);
+    const Fn8040Vector3 &end = left * m_parent->m_params.scale + endInset;
     line = m_line.get();
-    fn_8040B67C(&endTemporary, &matrix, &end);
-    fn_800091D0(&line->end, &endTemporary);
+    line->end = matrix * end;
 
     fn_8040B720(&matrix, m_parent->m_params.scale, 0.75f, 0.75f);
     if (m_model != 0) {

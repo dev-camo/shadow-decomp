@@ -94,10 +94,8 @@ static void fn_80130364(boost::shared_ptr<CharInfo> hit, void *arg) {
     fn_8040B884(&matrix, -context->m_params->angle * (lbl_805FAD38 / 180.0f));
 
     Fn8040Vector3 direction(0.0f, 1.0f, 0.0f);
-    Fn8040Vector3 directionTemporary;
 
-    fn_8040B67C(&directionTemporary, &matrix, &direction);
-    fn_800091D0(&direction, &directionTemporary);
+    direction = matrix * direction;
     fn_8040CE38(&direction, speed);
 
     hit->fn_801DC980(new SetVelocityCommand(&direction, 4));
@@ -230,18 +228,14 @@ void CircusBall::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         /* Queues a debug line from the ball along its launch direction (behaviour inferred). */
         Fn8040Vector3 start(0.0f, 0.0f, 0.0f);
         Fn8040Vector3 end(0.0f, 1000000.0f, 0.0f);
-        Fn8040Vector3 startTemporary;
-        Fn8040Vector3 endTemporary;
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
         fn_8040B59C(&matrix, &m_charInfo->m_position);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         fn_8040B884(&matrix, -m_params.angle * (lbl_805FAD38 / 180.0f));
-        fn_8040B67C(&startTemporary, &matrix, &start);
-        fn_800091D0(&start, &startTemporary);
-        fn_8040B67C(&endTemporary, &matrix, &end);
-        fn_800091D0(&end, &endTemporary);
+        start = matrix * start;
+        end = matrix * end;
         fn_802E0B58(UnkSegment_80020A20(start, end), lbl_805F06D8);
     }
 }
@@ -264,10 +258,8 @@ void CircusBall::UpdateModelMatrix() {
         m_model->fn_801633DC(&matrix);
 
         Fn8040Vector3 origin(0.0f, 0.0f, 0.0f);
-        Fn8040Vector3 transformed;
 
-        fn_8040B67C(&transformed, &matrix, &origin);
-        fn_800091D0(&m_position, &transformed);
+        m_position = matrix * origin;
 
         if (m_object.get() != 0) {
             fn_800CCE38(m_object.get(), &m_position);

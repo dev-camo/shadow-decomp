@@ -271,11 +271,7 @@ bool ThreatObj::IsCharacterInRange() {
     boost::shared_ptr<CharInfo> character = fn_800A8B74(fn_80074194(), lbl_805EE588).lock();
 
     if (character.get() != 0) {
-        Fn8040Vector3 distance;
-        Fn8040Vector3 difference;
-
-        fn_8040CD74(&difference, &character->m_position, &m_charInfo->m_position);
-        fn_800091EC(&distance, &difference);
+        Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
 
         if (fn_8040CF50(&distance) < m_holder->m_params.radius) {
             return true;

@@ -86,11 +86,7 @@ void BombingWall::UpdateBody(float dt) {
                 fn_800A8A7C(fn_80074194(), &m_charInfo->m_position).lock();
 
             if (nearest.get() != 0) {
-                Fn8040Vector3 distance;
-                Fn8040Vector3 difference;
-
-                fn_8040CD74(&difference, &nearest->m_position, &m_charInfo->m_position);
-                fn_800091EC(&distance, &difference);
+                Fn8040Vector3 distance = nearest->m_position - m_charInfo->m_position;
 
                 if (fn_8040CF50(&distance) < m_params.range) {
                     m_state = 2;

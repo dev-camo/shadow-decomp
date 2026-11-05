@@ -324,53 +324,30 @@ const ChaoParams *ChaoHolder::GetParams() {
 
 void Chao::ResetPosition() {
     Fn8040Vector3 offset(0.0f, 0.0f, -m_holder->GetParams()->moveRadius);
-    Fn8040Vector3 rotated;
-    Fn8040Vector3 position;
 
-    fn_8040D0AC(&rotated, &offset, m_rotation.y);
-    fn_800091D0(&offset, &rotated);
-    fn_8040CDD0(&position, &m_center, &offset);
-    fn_800091D0(&m_data->m_position, &position);
+    offset = fn_8040D0AC(offset, m_rotation.y);
+    m_data->m_position = m_center + offset;
     m_charInfo->m_rotation.y = m_rotation.y;
 }
 
 void Chao::UpdateMovement(float dt) {
-    Fn8040Vector3 previous;
-    Fn8040Vector3 direction;
-    Fn8040Vector3 heading;
-    Fn8040Vector3 chaoPosition;
-    Fn8040Vector3 characterPosition;
-    Fn8040Vector3 facing;
-    Fn8040Vector3 forward;
-    Fn8040Vector3 axis;
-    Fn8040Vector3 directionTemporary;
-    Fn8040Vector3 rotatedTemporary;
-    Fn8040Vector3 headingTemporary;
-    Fn8040Vector3 moved;
-    Fn8040Vector3 facingTemporary;
-    Fn8040Vector3 turnedTemporary;
-    Fn8040Vector3 axisTemporary;
-
     switch (m_state) {
     case 0:
         if (!fn_8000B044(m_holder->m_params.moveRadius) &&
             !fn_8000B044(m_holder->m_params.moveSpeed)) {
             float angleStep = dt * m_holder->m_params.moveSpeed / m_holder->m_params.moveRadius;
 
-            fn_800091EC(&previous, &m_data->m_position);
-            fn_8040CD74(&directionTemporary, &m_data->m_position, &m_center);
-            fn_800091EC(&direction, &directionTemporary);
+            Fn8040Vector3 previous = m_data->m_position;
+            Fn8040Vector3 direction = m_data->m_position - m_center;
             fn_8040CE74(&direction);
-            fn_8040D0AC(&rotatedTemporary, &direction, angleStep);
-            fn_800091D0(&direction, &rotatedTemporary);
+            direction = fn_8040D0AC(direction, angleStep);
             fn_8040CE38(&direction, m_holder->m_params.moveRadius);
             fn_8040CFF8(&direction, &m_center);
-            fn_8040CD74(&headingTemporary, &direction, &m_data->m_position);
-            fn_800091EC(&heading, &headingTemporary);
+            Fn8040Vector3 heading = direction - m_data->m_position;
             heading.y = 0.0f;
             fn_8040CE74(&heading);
             fn_8003B9E8(&heading, &m_charInfo->m_rotation.x, &m_charInfo->m_rotation.y);
-            fn_800091D0(&m_data->m_position, &direction);
+            m_data->m_position = direction;
 
             boost::shared_ptr<_stMtnPlayWork> control =
                 m_model->fn_801602B4(m_entry->motions[m_state].id).lock();
@@ -381,7 +358,7 @@ void Chao::UpdateMovement(float dt) {
                 if (fn_8000A950(dt)) {
                     speed = 0.0f;
                 } else {
-                    fn_8040CD74(&moved, &previous, &m_data->m_position);
+                    const Fn8040Vector3 &moved = previous - m_data->m_position;
                     speed = fn_8040CF50(&moved) / dt;
                 }
 
@@ -395,18 +372,15 @@ void Chao::UpdateMovement(float dt) {
         boost::shared_ptr<CharInfo> character = fn_800A8B74(fn_80074194(), lbl_805EE588).lock();
 
         if (character.get() != 0) {
-            fn_800091EC(&chaoPosition, &m_data->m_position);
-            fn_800091EC(&characterPosition, &character->m_position);
+            Fn8040Vector3 chaoPosition = m_data->m_position;
+            Fn8040Vector3 characterPosition = character->m_position;
             chaoPosition.y = 0.0f;
             characterPosition.y = 0.0f;
-            fn_8040CD74(&facingTemporary, &characterPosition, &chaoPosition);
-            fn_800091EC(&facing, &facingTemporary);
-            forward.Set(0.0f, 0.0f, 1.0f);
-            fn_8040D0AC(&turnedTemporary, &forward, m_charInfo->m_rotation.y);
-            fn_800091D0(&forward, &turnedTemporary);
+            Fn8040Vector3 facing = characterPosition - chaoPosition;
+            Fn8040Vector3 forward(0.0f, 0.0f, 1.0f);
+            forward = fn_8040D0AC(forward, m_charInfo->m_rotation.y);
             fn_8040CE74(&facing);
-            fn_8040CFB8(&axisTemporary, &facing, &forward);
-            fn_800091EC(&axis, &axisTemporary);
+            Fn8040Vector3 axis = fn_8040CFB8(facing, forward);
 
             float angle = fn_8040F8FC(&facing, &forward);
             float maxTurn = dt * (270.0f * (lbl_805FAD38 / 180.0f));
@@ -427,7 +401,7 @@ void Chao::UpdateMovement(float dt) {
 void Chao::UpdateModelMatrix() {
     Fn8040Matrix34 matrix;
 
-    fn_800091D0(&m_charInfo->m_position, &m_data->m_position);
+    m_charInfo->m_position = m_data->m_position;
     m_charInfo->m_position.y += s_charInfoHeight.value;
 
     fn_8040C148(&matrix, &lbl_805E0720);
@@ -439,9 +413,8 @@ void Chao::UpdateModelMatrix() {
 
     if (m_object2.get() != 0) {
         Fn8040Vector3 above(0.0f, s_object2Height.value, 0.0f);
-        Fn8040Vector3 object2Position;
 
-        fn_8040CDD0(&object2Position, &above, &m_charInfo->m_position);
+        const Fn8040Vector3 &object2Position = above + m_charInfo->m_position;
         fn_802B44C8(m_object2.get(), &object2Position);
     }
 }

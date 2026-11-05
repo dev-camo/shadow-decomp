@@ -91,16 +91,12 @@ void SuctionPillar::UpdateBody(float dt) {
 
             Fn8040Vector3 offset(0.0f, 0.0f, m_rise);
             Fn8040Matrix34 matrix;
-            Fn8040Vector3 position;
-            Fn8040Vector3 rotated;
 
             fn_8040B6F8(&matrix);
             fn_8040B848(&matrix, m_charInfo->m_rotation.y);
             fn_8040B884(&matrix, m_charInfo->m_rotation.x);
             fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
-            fn_8040B67C(&rotated, &matrix, &offset);
-            fn_8040CDD0(&position, &m_basePosition, &rotated);
-            fn_800091D0(&m_charInfo->m_position, &position);
+            m_charInfo->m_position = m_basePosition + matrix * offset;
             UpdateModelMatrix();
         }
         break;
@@ -127,15 +123,9 @@ void SuctionPillar::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
         fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
 
-        Fn8040Vector3 placedStart;
+        start = matrix * start;
 
-        fn_8040B67C(&placedStart, &matrix, &start);
-        fn_800091D0(&start, &placedStart);
-
-        Fn8040Vector3 placedEnd;
-
-        fn_8040B67C(&placedEnd, &matrix, &end);
-        fn_800091D0(&end, &placedEnd);
+        end = matrix * end;
 
         fn_802E0B58(UnkSegment_80020A20(start, end), lbl_805F06D8);
         m_model->fn_8016108C();
@@ -147,7 +137,7 @@ void SuctionPillar::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
     fn_800C9ED4(owner, &m_charInfo->m_rotation);
     fn_800C9E50(owner, &m_switchId);
     m_state = 0;
-    fn_800091D0(&m_basePosition, &m_charInfo->m_position);
+    m_basePosition = m_charInfo->m_position;
     m_flags.Clear();
     m_rise = 0.0f;
 }
@@ -158,8 +148,6 @@ void SuctionPillar::UpdateModelMatrix() {
         Fn8040Matrix34 matrix;
         Fn8040Vector3 offset;
         Fn8040Vector3 offset2;
-        Fn8040Vector3 placed;
-        Fn8040Vector3 placed2;
 
         fn_8040B6F8(&matrix);
         fn_8040B59C(&matrix, &m_charInfo->m_position);
@@ -170,14 +158,12 @@ void SuctionPillar::UpdateModelMatrix() {
 
         offset.Set(0.0f, 40.0f, 40.0f);
 
-        fn_8040B67C(&placed, &matrix, &offset);
-        fn_800091D0(&offset, &placed);
+        offset = matrix * offset;
         fn_800CCE38(m_objects[0].get(), &offset);
 
         offset2.Set(0.0f, 40.0f, -40.0f);
 
-        fn_8040B67C(&placed2, &matrix, &offset2);
-        fn_800091D0(&offset2, &placed2);
+        offset2 = matrix * offset2;
         fn_800CCE38(m_objects[1].get(), &offset2);
     }
 }

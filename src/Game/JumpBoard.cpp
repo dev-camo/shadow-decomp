@@ -59,9 +59,7 @@ static void fn_8010F028(boost::shared_ptr<CharInfo> hit, void *arg) {
 
     hit->fn_801DC980(new ClrVelocityCommand(4));
 
-    Fn8040Vector3 position;
-
-    fn_800091EC(&position, &boardInfo->m_position);
+    Fn8040Vector3 position = boardInfo->m_position;
     position.y += 5.0f;
     hit->fn_801DC980(new SetPositionCommand(&position, 4));
 
@@ -82,11 +80,8 @@ static void fn_8010F028(boost::shared_ptr<CharInfo> hit, void *arg) {
     fn_8040B80C(&matrix, boardInfo->m_rotation.z);
     fn_8040B884(&matrix, context->m_params->angle * (lbl_805FAD38 / 180.0f));
 
-    Fn8040Vector3 directionTemporary;
-
     direction.Set(0.0f, 0.0f, -1.0f);
-    fn_8040B67C(&directionTemporary, &matrix, &direction);
-    fn_800091D0(&direction, &directionTemporary);
+    direction = matrix * direction;
     fn_8040CE38(&direction, speed);
 
     hit->fn_801DC980(new SetVelocityCommand(&direction, 4));
@@ -98,11 +93,8 @@ static void fn_8010F028(boost::shared_ptr<CharInfo> hit, void *arg) {
         scale += (s_accelerationScales[index + 1] - scale) * (context->m_params->level - index);
     }
 
-    Fn8040Vector3 accelerationTemporary;
-
     acceleration.Set(0.0f, 0.0f, -1.0f);
-    fn_8040B67C(&accelerationTemporary, &matrix, &acceleration);
-    fn_800091D0(&acceleration, &accelerationTemporary);
+    acceleration = matrix * acceleration;
     fn_8040CE38(&acceleration, scale);
 
     hit->fn_801DC980(
@@ -166,14 +158,10 @@ void JumpBoard::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
         Fn8040Vector3 start(0.0f, 5.0f, 0.0f);
         Fn8040Vector3 end(0.0f, 5.0f, -1000000.0f);
-        Fn8040Vector3 startTemporary;
-        Fn8040Vector3 endTemporary;
 
         fn_8040B884(&matrix, m_params.angle * (lbl_805FAD38 / 180.0f));
-        fn_8040B67C(&startTemporary, &matrix, &start);
-        fn_800091D0(&start, &startTemporary);
-        fn_8040B67C(&endTemporary, &matrix, &end);
-        fn_800091D0(&end, &endTemporary);
+        start = matrix * start;
+        end = matrix * end;
         fn_802E0B58(UnkSegment_80020A20(start, end), lbl_805F06D8);
     }
 }

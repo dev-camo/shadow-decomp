@@ -10,9 +10,8 @@
  * (counted as words of the original that have no equal in this object): the preload hook (5, the
  * registers of the table pointer and the stage number), SetupPath (2, the order of two argument
  * moves), ResetFromOwner (7, the original calls the smart pointer's operator-> out of line for
- * the character info's yaw) and UpdateBody (14: the stack slots of the path start and direction
- * vectors and of the launch vectors are exchanged, one argument move is scheduled earlier, and
- * the stage pointer is loaded into another register). The fifth, the conversion fn_80131654, has
+ * the character info's yaw) and UpdateBody (6 raw differing words: the order of two argument
+ * moves and the register of the stage pointer). The fifth, the conversion fn_80131654, has
  * no function of that name here. The destructor, UpdateBody and the command handler pass a copy
  * of the follower pointer to fn_801CE9F4 or fn_801CEA54: the original builds that copy with
  * fn_80131654 and destroys it with fn_80009844, so the parameter of those two functions is a
@@ -316,15 +315,8 @@ void Coaster::UpdateBody(float dt) {
     if (!fn_8000B044(m_roll)) {
         m_roll = fn_8012773C(0.0f, m_roll, DegreesToRadians(240.0f * dt));
 
-        /* The roll stays within 90 degrees to either side. Declared first and assigned high
-         * first: initialising the two at their declarations changes the code. */
-        float low;
-        float high;
-
-        high = DegreesToRadians(90.0f);
-        low = DegreesToRadians(-90.0f);
-
-        m_roll = fn_80070460(m_roll, low, high);
+        /* The roll stays within 90 degrees to either side. */
+        m_roll = fn_80070460(m_roll, DegreesToRadians(-90.0f), DegreesToRadians(90.0f));
     }
 
     switch (m_state) {
@@ -334,7 +326,7 @@ void Coaster::UpdateBody(float dt) {
         GadgetCharInfo *info = m_charInfo.get();
         const Fn8040Vector3 &current = fn_80018634(m_path.get());
 
-        fn_800091D0(&info->m_position, &current);
+        info->m_position = current;
         m_rotation = fn_80018434(m_path.get(), 1, 0);
         BuildMatrices();
         break;
@@ -349,8 +341,6 @@ void Coaster::UpdateBody(float dt) {
             fn_801CE9F4(fn_80099954(), m_follower);
 
             Fn8040Vector3 launch;
-            Fn8040Vector3 launchTemporary;
-            Fn8040Vector3 turnedTemporary;
 
             launch.Set(0.0f, 0.0f, -1.0f);
 
@@ -361,10 +351,8 @@ void Coaster::UpdateBody(float dt) {
                 angle += DegreesToRadians(180.0f);
             }
 
-            fn_8040D118(&launchTemporary, &launch, pitch);
-            fn_800091D0(&launch, &launchTemporary);
-            fn_8040D0AC(&turnedTemporary, &launch, angle);
-            fn_800091D0(&launch, &turnedTemporary);
+            launch = fn_8040D118(launch, pitch);
+            launch = fn_8040D0AC(launch, angle);
             fn_8040CE38(&launch, m_params.launchSpeed);
 
             character->fn_801DC980(new Player::IgnoreInputCommand(0, m_params.noControlTime));
@@ -507,17 +495,11 @@ void Coaster::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     /* Draws a debug line from the position along the launch direction (behaviour inferred). */
     Fn8040Vector3 direction(0.0f, 0.0f, -1.0f);
     float yaw = m_charInfo->m_rotation.y;
-    Fn8040Vector3 directionTemporary;
-    Fn8040Vector3 rotatedTemporary;
-    Fn8040Vector3 end;
 
-    fn_8040D118(&directionTemporary, &direction, m_params.launchAngle);
-    fn_800091D0(&direction, &directionTemporary);
-    fn_8040D0AC(&rotatedTemporary, &direction, yaw);
-    fn_800091D0(&direction, &rotatedTemporary);
+    direction = fn_8040D118(direction, m_params.launchAngle);
+    direction = fn_8040D0AC(direction, yaw);
     fn_8040CE38(&direction, 50.0f);
-    fn_8040CDD0(&end, &m_position, &direction);
-    fn_802E0B58(UnkSegment_80020A20(m_position, end), lbl_805F1370);
+    fn_802E0B58(UnkSegment_80020A20(m_position, m_position + direction), lbl_805F1370);
 }
 
 bool Coaster::IsFinished() {
@@ -531,11 +513,7 @@ bool Coaster::IsFinished() {
             boost::shared_ptr<CharInfo> character = fn_800A8B74(fn_80074194(), lbl_805EE588).lock();
 
             if (character.get() != 0) {
-                Fn8040Vector3 distance;
-                Fn8040Vector3 difference;
-
-                fn_8040CD74(&difference, &character->m_position, &m_charInfo->m_position);
-                fn_800091EC(&distance, &difference);
+                Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
                 if (fn_8040CF50(&distance) > fn_800C9938(m_owner)) {
                     m_flags |= 1;
                     return true;
@@ -591,7 +569,7 @@ void Coaster::SetupPath() {
         GadgetCharInfo *info = m_charInfo.get();
         const Fn8040Vector3 &start = fn_80018634(m_path.get());
 
-        fn_800091D0(&info->m_position, &start);
+        info->m_position = start;
 
         m_rotation = fn_80018434(m_path.get(), 1, 0);
     }
@@ -604,8 +582,6 @@ void Coaster::BuildMatrices() {
     UnkRotation3 angles;
     Fn8040Vector3 axis;
     Fn8040Vector3 origin;
-    Fn8040Vector3 axisTemporary;
-    Fn8040Vector3 originTemporary;
     Fn8040Matrix34 rotation;
     Fn8040Matrix34 translation;
     Fn8040Matrix34 rolled;
@@ -631,8 +607,7 @@ void Coaster::BuildMatrices() {
 
     if (!fn_8000B044(m_roll)) {
         axis.Set(0.0f, 0.0f, 1.0f);
-        fn_8040B67C(&axisTemporary, &m_matrix, &axis);
-        fn_800091D0(&axis, &axisTemporary);
+        axis = m_matrix * axis;
         fn_800498A0(&rotation, &axis, m_roll);
         fn_8001E044(&rolled, &rotation, &m_matrix);
         fn_8040C148(&m_matrix, &rolled);
@@ -650,8 +625,7 @@ void Coaster::BuildMatrices() {
     fn_8040C148(&m_matrix2, &moved2);
 
     origin.Set(0.0f, s_stage->field_0x4, 0.0f);
-    fn_8040B67C(&originTemporary, &m_matrix, &origin);
-    fn_800091D0(&m_position, &originTemporary);
+    m_position = m_matrix * origin;
 }
 
 void Coaster::UpdateModelMatrix() {
@@ -669,11 +643,6 @@ void Coaster::OnPathCallback(CameraUpdateEventArgs &args) {
     Fn8040Vector3 end;
     Fn8040Vector3 up;
     Fn8040Vector3 startOffset;
-    Fn8040Vector3 startMoved;
-    Fn8040Vector3 startTemporary;
-    Fn8040Vector3 endMoved;
-    Fn8040Vector3 endTemporary;
-    Fn8040Vector3 upTemporary;
 
     fn_8040C148(&matrix, &lbl_805E0720);
     fn_8040B80C(&matrix, m_rotation.z);
@@ -693,25 +662,15 @@ void Coaster::OnPathCallback(CameraUpdateEventArgs &args) {
     fn_80008E1C(&startOffset, 0.0f, s_stage->field_0x18, s_stage->field_0x1C);
     fn_8040CFF8(&start, &startOffset);
 
-    GadgetCharInfo *startInfo = m_charInfo.get();
-
-    fn_8040B67C(&startTemporary, &matrix, &start);
-    fn_8040CDD0(&startMoved, &startTemporary, &startInfo->m_position);
-    fn_800091D0(&start, &startMoved);
+    start = matrix * start + m_charInfo->m_position;
 
     end.Set(0.0f, s_stage->field_0x4, 0.0f);
     end.y += s_stage->field_0x20;
-    /* A direct m_charInfo->m_position changes the code. */
-    GadgetCharInfo *endInfo = m_charInfo.get();
-
-    fn_8040B67C(&endTemporary, &matrix, &end);
-    fn_8040CDD0(&endMoved, &endTemporary, &endInfo->m_position);
-    fn_800091D0(&end, &endMoved);
+    end = matrix * end + m_charInfo->m_position;
     fn_8000A5D4(m_follower.get(), &start, &end);
 
     up.Set(0.0f, 1.0f, 0.0f);
-    fn_8040B67C(&upTemporary, &matrix, &up);
-    fn_800091D0(&up, &upTemporary);
+    up = matrix * up;
     fn_8000ACE4(m_follower.get(), &up);
 }
 
@@ -790,8 +749,6 @@ void Coaster::OnCommand(CharCommand &command) {
         if (s_stage->field_0x13 && m_timer <= 0.0f && accelerate != 0) {
             Fn8040Matrix34 matrix;
             UnkRotation3 angles;
-            Fn8040Vector3 direction;
-            Fn8040Vector3 directionTemporary;
             /* Built in three statements: a single expression changes the code. */
             float strength = 540.0f;
 
@@ -810,8 +767,7 @@ void Coaster::OnCommand(CharCommand &command) {
             }
             fn_8040BCD4(&matrix);
 
-            fn_8040B67C(&directionTemporary, &matrix, &accelerate->m_vector);
-            fn_800091EC(&direction, &directionTemporary);
+            Fn8040Vector3 direction = matrix * accelerate->m_vector;
             direction.y = 0.0f;
             fn_8040CE74(&direction);
 

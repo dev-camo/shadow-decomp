@@ -12,7 +12,8 @@
  * boost::bind(&Fan::OnCollision, this, _1); its manager, invoker and copy functions come from the
  * boost headers.
  *
- * NonMatching (see configure.py): UpdateBody, CreateProbe and IsInRange differ. */
+ * NonMatching (see configure.py): every function has the original's instructions, but the unit is
+ * not yet proven as a whole object. */
 #include <cmath>
 #include "Game/Fan.h"
 #include "Game/CharInfo.h"
@@ -65,14 +66,12 @@ static void fn_80103D44(boost::shared_ptr<CharInfo> hit, void *arg) {
 
     Fn8040Vector3 acceleration(0.0f, 1.0f, 0.0f);
     Fn8040Matrix34 matrix;
-    Fn8040Vector3 rotated;
 
     fn_8040C148(&matrix, &lbl_805E0720);
     fn_8040B848(&matrix, charInfo->m_rotation.y);
     fn_8040B884(&matrix, charInfo->m_rotation.x);
     fn_8040B80C(&matrix, charInfo->m_rotation.z);
-    fn_8040B67C(&rotated, &matrix, &acceleration);
-    fn_800091D0(&acceleration, &rotated);
+    acceleration = matrix * acceleration;
     fn_8040CE38(&acceleration, context->m_params->power);
 
     if (context->m_params->type == 0) {
@@ -169,9 +168,8 @@ void Fan::UpdateBody(float dt) {
                             dynamic_cast<Player::PlayerBase *>(target.get());
 
                         if (player != 0) {
-                            Fn8040Vector3 acceleration;
-                            fn_8040CDA8(&acceleration, &player->field_0xE8, -30.0f);
-                            player->fn_801DC980(new AccelerateCommand(acceleration, 4));
+                            player->fn_801DC980(
+                                new AccelerateCommand(player->field_0xE8 * -30.0f, 4));
                         }
                     }
                 }
@@ -195,9 +193,9 @@ void Fan::UpdateBody(float dt) {
     case 2:
         /* Matching workaround: an empty case label whose body is unknown. The original's dispatch
          * ends in an unreachable branch (UpdateBody+0x7C, 0x80103760), which is what this empty arm
-         * compiles to. Measured with the original compiler: case 2 gives the original's dispatch
-         * exactly (UpdateBody 140 words); no arm or an empty default drops the branch (139 words);
-         * case 3 gives a different compare sequence (141 words). The gadget never stores 2.
+         * compiles to. Measured: case 2 gives the original's dispatch exactly (UpdateBody 142
+         * words, as in the original); no arm or an empty default drops the branch (141 words);
+         * case 3 gives a different compare sequence (143 words). The gadget never stores 2.
          * Revisit when the third step value's body is found. */
         break;
     }
@@ -330,10 +328,7 @@ void Fan::OnCollision(ColliDetectArgs &args) {
 }
 
 void Fan::CreateProbe() {
-    Fn8040Vector3 halfExtentsTemporary(1.0f, 1.0f, 1.0f);
-    Fn8040Vector3 halfExtents;
-
-    fn_800091EC(&halfExtents, &halfExtentsTemporary);
+    Fn8040Vector3 halfExtents = Fn8040Vector3(1.0f, 1.0f, 1.0f);
 
     boost::shared_ptr<CharaColliBase> probe;
 
@@ -456,7 +451,6 @@ bool Fan::IsInRange(Fn8040Vector3 *position, Fn8040Vector3 *center) {
         Fn8040Vector3 flatCenter(center->x, 0.0f, center->z);
         Fn8040Matrix34 matrix;
         Fn8040Matrix34 inverse;
-        Fn8040Vector3 local;
 
         fn_8040CE04(&offset, &flatCenter);
         fn_8040B6F8(&matrix);
@@ -464,8 +458,7 @@ bool Fan::IsInRange(Fn8040Vector3 *position, Fn8040Vector3 *center) {
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
         fn_8040BEF8(&inverse, &matrix);
         fn_8040C148(&matrix, &inverse);
-        fn_8040B67C(&local, &matrix, &offset);
-        fn_800091D0(&offset, &local);
+        offset = matrix * offset;
 
         float halfWidth = 7.5f + m_params.x;
         float halfDepth = 7.5f + m_params.z;
@@ -479,9 +472,8 @@ bool Fan::IsInRange(Fn8040Vector3 *position, Fn8040Vector3 *center) {
     case 0: {
         Fn8040Vector3 flatPosition(position->x, 0.0f, position->z);
         Fn8040Vector3 flatCenter(center->x, 0.0f, center->z);
-        Fn8040Vector3 offset;
 
-        fn_8040CD74(&offset, &flatPosition, &flatCenter);
+        const Fn8040Vector3 &offset = flatPosition - flatCenter;
 
         if (fn_8040CF50(&offset) <= 7.5f + m_params.x) {
             inRange = true;

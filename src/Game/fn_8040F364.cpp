@@ -3,8 +3,7 @@
  * projection of a vector, the closest point on a segment, axis-angle matrices, and the conversions
  * between rotation vectors, matrices and quaternions. Function names stay fn_ placeholders;
  * descriptions of behaviour are inferred from the code. Definitions are in reverse address order
- * (deferred inlining emits functions last-defined first). Locals that receive a call's result are
- * declared in the order that gives the original's stack layout. */
+ * (deferred inlining emits functions last-defined first). */
 #include <cmath>
 
 #include "Game/SharedConstants.h"
@@ -50,15 +49,9 @@ UnkRotation3 fn_80410204(const Fn8040Vector4 *quaternion, int order) {
     case 2: {
         Fn8040Vector3 rotatedUp;
         Fn8040Vector3 rotatedForward;
-        Fn8040Vector3 upTemporary;
-        Fn8040Vector3 up(0.0f, 1.0f, 0.0f);
-        fn_8040B67C(&upTemporary, &matrix, &up);
-        fn_800091D0(&rotatedUp, &upTemporary);
+        rotatedUp = matrix * Fn8040Vector3(0.0f, 1.0f, 0.0f);
 
-        Fn8040Vector3 forwardTemporary;
-        Fn8040Vector3 forward(0.0f, 0.0f, -1.0f);
-        fn_8040B67C(&forwardTemporary, &matrix, &forward);
-        fn_800091D0(&rotatedForward, &forwardTemporary);
+        rotatedForward = matrix * Fn8040Vector3(0.0f, 0.0f, -1.0f);
 
         return fn_8040F364(&rotatedForward, &rotatedUp);
     }
@@ -69,51 +62,31 @@ UnkRotation3 fn_80410204(const Fn8040Vector4 *quaternion, int order) {
     return UnkRotation3(0.0f, 0.0f, 0.0f);
 }
 
-void fn_80410098(Fn8040Vector3 *result, const Fn8040Vector3 *vector, const UnkRotation3 *rotation,
-                 int order) {
-    Fn8040Vector3 rotated;
-    fn_800091EC(&rotated, vector);
+Fn8040Vector3 fn_80410098(const Fn8040Vector3 *vector, const UnkRotation3 *rotation, int order) {
+    Fn8040Vector3 rotated = *vector;
 
     switch (order) {
     case 0: {
-        Fn8040Vector3 aroundX;
-        fn_8040D118(&aroundX, &rotated, rotation->x);
-        fn_800091D0(&rotated, &aroundX);
-        Fn8040Vector3 aroundY;
-        fn_8040D0AC(&aroundY, &rotated, rotation->y);
-        fn_800091D0(&rotated, &aroundY);
-        Fn8040Vector3 aroundZ;
-        fn_8040D044(&aroundZ, &rotated, rotation->z);
-        fn_800091D0(&rotated, &aroundZ);
+        rotated = fn_8040D118(rotated, rotation->x);
+        rotated = fn_8040D0AC(rotated, rotation->y);
+        rotated = fn_8040D044(rotated, rotation->z);
         break;
     }
     case 1: {
-        Fn8040Vector3 aroundY;
-        fn_8040D0AC(&aroundY, &rotated, rotation->y);
-        fn_800091D0(&rotated, &aroundY);
-        Fn8040Vector3 aroundX;
-        fn_8040D118(&aroundX, &rotated, rotation->x);
-        fn_800091D0(&rotated, &aroundX);
-        Fn8040Vector3 aroundZ;
-        fn_8040D044(&aroundZ, &rotated, rotation->z);
-        fn_800091D0(&rotated, &aroundZ);
+        rotated = fn_8040D0AC(rotated, rotation->y);
+        rotated = fn_8040D118(rotated, rotation->x);
+        rotated = fn_8040D044(rotated, rotation->z);
         break;
     }
     case 2: {
-        Fn8040Vector3 aroundZ;
-        fn_8040D044(&aroundZ, &rotated, rotation->z);
-        fn_800091D0(&rotated, &aroundZ);
-        Fn8040Vector3 aroundX;
-        fn_8040D118(&aroundX, &rotated, rotation->x);
-        fn_800091D0(&rotated, &aroundX);
-        Fn8040Vector3 aroundY;
-        fn_8040D0AC(&aroundY, &rotated, rotation->y);
-        fn_800091D0(&rotated, &aroundY);
+        rotated = fn_8040D044(rotated, rotation->z);
+        rotated = fn_8040D118(rotated, rotation->x);
+        rotated = fn_8040D0AC(rotated, rotation->y);
         break;
     }
     }
 
-    fn_800091EC(result, &rotated);
+    return rotated;
 }
 
 void fn_8040FFBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const UnkRotation3 *rotation,
@@ -185,23 +158,11 @@ void fn_8040FD8C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *axis, float angle)
 
 /* The closest point of the segment to the point; fraction receives its position along the segment
  * (0 at the start, 1 at the end, outside that range when the point lies beyond an end) unless it
- * is null. A segment too short to have a direction counts as fraction 1. Does not match yet: at
- * 0x8040FD24-0x8040FD6C the original passes this function's result address in r3 to fn_800091EC
- * (copy) and fn_8040CDD0 (add), so the point is built directly in the result slot. By-value
- * returns would explain that, but an explicit destination pointer uses the same arrangement, so
- * the spelling is a hypothesis; this build builds the point in closest and copies it out (75
- * instructions instead of 69). */
+ * is null. A segment too short to have a direction counts as fraction 1. */
 Fn8040Vector3 fn_8040FC78(float *fraction, const UnkSegment_80020A20 *segment,
                           const Fn8040Vector3 *point) {
-    Fn8040Vector3 closest;
-    Fn8040Vector3 direction;
-    Fn8040Vector3 toPoint;
-    Fn8040Vector3 directionTemporary;
-    Fn8040Vector3 toPointTemporary;
-    fn_8040CD74(&directionTemporary, &segment->end, &segment->start);
-    fn_800091EC(&direction, &directionTemporary);
-    fn_8040CD74(&toPointTemporary, point, &segment->start);
-    fn_800091EC(&toPoint, &toPointTemporary);
+    Fn8040Vector3 direction(segment->end - segment->start);
+    Fn8040Vector3 toPoint(*point - segment->start);
 
     float lengthSquared = fn_8040CF2C(&direction);
     float t = fn_8000A950(lengthSquared) ? 1.0f : fn_8040CF90(&direction, &toPoint) / lengthSquared;
@@ -210,15 +171,12 @@ Fn8040Vector3 fn_8040FC78(float *fraction, const UnkSegment_80020A20 *segment,
     }
 
     if (t < 0.0f) {
-        fn_800091EC(&closest, &segment->start);
+        return segment->start;
     } else if (t > 1.0f) {
-        fn_800091EC(&closest, &segment->end);
+        return segment->end;
     } else {
-        Fn8040Vector3 offset;
-        fn_800091A4(&offset, &direction, t);
-        fn_8040CDD0(&closest, &segment->start, &offset);
+        return segment->start + direction * t;
     }
-    return closest;
 }
 
 Fn8040Vector3 fn_8040FC3C(const UnkSegment_80020A20 *segment, const Fn8040Vector3 *point) {
@@ -226,19 +184,14 @@ Fn8040Vector3 fn_8040FC3C(const UnkSegment_80020A20 *segment, const Fn8040Vector
 }
 
 bool fn_8040FB88(const UnkSegment_80020A20 *segment, const Fn8040Vector3 *point) {
-    Fn8040Vector3 direction;
-    Fn8040Vector3 directionTemporary;
-    fn_8040CD74(&directionTemporary, &segment->end, &segment->start);
-    fn_800091EC(&direction, &directionTemporary);
+    Fn8040Vector3 direction = segment->end - segment->start;
 
-    Fn8040Vector3 fromStart;
-    fn_8040CD74(&fromStart, point, &segment->start);
+    const Fn8040Vector3 &fromStart = *point - segment->start;
     if (fn_8040CF90(&fromStart, &direction) < 0.0f) {
         return false;
     }
 
-    Fn8040Vector3 fromEnd;
-    fn_8040CD74(&fromEnd, point, &segment->end);
+    const Fn8040Vector3 &fromEnd = *point - segment->end;
     if (fn_8040CF90(&fromEnd, &direction) > 0.0f) {
         return false;
     }
@@ -264,31 +217,20 @@ void fn_8040FA20(Fn8040Matrix34 *matrix, const Fn8040Vector3 *translation) {
 
 void fn_8040F990(Fn8040Vector3 *parallel, Fn8040Vector3 *perpendicular, const Fn8040Vector3 *vector,
                  const Fn8040Vector3 *onto) {
-    Fn8040Vector3 projection;
-    Fn8040Vector3 projectionTemporary;
     float length = fn_8040CF90(vector, onto);
-    fn_8040CDA8(&projectionTemporary, onto, length);
-    fn_800091EC(&projection, &projectionTemporary);
+    Fn8040Vector3 projection = *onto * length;
 
     if (perpendicular) {
-        Fn8040Vector3 remainder;
-        fn_8040CD74(&remainder, vector, &projection);
-        fn_800091D0(perpendicular, &remainder);
+        *perpendicular = *vector - projection;
     }
     if (parallel) {
-        fn_800091D0(parallel, &projection);
+        *parallel = projection;
     }
 }
 
 float fn_8040F8FC(const Fn8040Vector3 *a, const Fn8040Vector3 *b) {
-    Fn8040Vector3 normalizedA;
-    Fn8040Vector3 normalizedB;
-    Fn8040Vector3 aTemporary;
-    Fn8040Vector3 bTemporary;
-    fn_8040CEE8(&aTemporary, a);
-    fn_800091EC(&normalizedA, &aTemporary);
-    fn_8040CEE8(&bTemporary, b);
-    fn_800091EC(&normalizedB, &bTemporary);
+    Fn8040Vector3 normalizedA = fn_8040CEE8(*a);
+    Fn8040Vector3 normalizedB = fn_8040CEE8(*b);
 
     float cosine = fn_8040CF90(&normalizedA, &normalizedB);
     if (cosine > 1.0f) {
@@ -363,13 +305,9 @@ UnkRotation3 fn_8040F450(const Fn8040Vector3 *forward, const Fn8040Vector3 *up) 
     Fn8040Vector3 cross;
     Fn8040Vector3 upCopy;
     Fn8040Vector3 negatedForward;
-    Fn8040Vector3 crossTemporary;
-    Fn8040Vector3 negatedForwardTemporary;
-    fn_8040CFB8(&crossTemporary, forward, up);
-    fn_800091D0(&cross, &crossTemporary);
-    fn_800091D0(&upCopy, up);
-    fn_80016284(&negatedForwardTemporary, forward);
-    fn_800091D0(&negatedForward, &negatedForwardTemporary);
+    cross = fn_8040CFB8(*forward, *up);
+    upCopy = *up;
+    negatedForward = fn_80016284(*forward);
 
     rotation.z = fn_80016260(cross.y, cross.x);
     float sine;
@@ -399,13 +337,8 @@ UnkRotation3 fn_8040F364(const Fn8040Vector3 *forward, const Fn8040Vector3 *up) 
     float yaw = fn_80016260(-forward->x, -forward->z);
     float pitch = fn_80016260(forward->y, horizontalLength);
 
-    Fn8040Vector3 rotatedUp;
-    Fn8040Vector3 yawTemporary;
-    Fn8040Vector3 pitchTemporary;
-    fn_8040D0AC(&yawTemporary, up, -yaw);
-    fn_800091EC(&rotatedUp, &yawTemporary);
-    fn_8040D118(&pitchTemporary, &rotatedUp, -pitch);
-    fn_800091D0(&rotatedUp, &pitchTemporary);
+    Fn8040Vector3 rotatedUp = fn_8040D0AC(*up, -yaw);
+    rotatedUp = fn_8040D118(rotatedUp, -pitch);
     float roll = fn_80016260(-rotatedUp.x, rotatedUp.y);
 
     rotation.x = pitch;

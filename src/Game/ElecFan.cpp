@@ -64,10 +64,7 @@ void ElecFan::UpdateBody(float dt) {
     boost::shared_ptr<CharInfo> target = m_target.lock();
 
     if (target.get() != 0 && fn_800B7938(target)) {
-        Fn8040Vector3 offsetTemporary;
-        fn_8040CD74(&offsetTemporary, &target->m_position, &m_charInfo->m_position);
-        Fn8040Vector3 offset;
-        fn_800091EC(&offset, &offsetTemporary);
+        Fn8040Vector3 offset = target->m_position - m_charInfo->m_position;
 
         if (offset.x * offset.x + offset.z * offset.z > m_params.radius * m_params.radius ||
             ((offset.y < 0.0f || m_params.height < offset.y) && fn_800B7AD0(target))) {
@@ -77,9 +74,7 @@ void ElecFan::UpdateBody(float dt) {
             Player::PlayerBase *player = dynamic_cast<Player::PlayerBase *>(target.get());
 
             if (player != 0) {
-                Fn8040Vector3 acceleration;
-                fn_8040CDA8(&acceleration, &player->field_0xE8, -30.0f);
-                target->fn_801DC980(new AccelerateCommand(acceleration, 4));
+                target->fn_801DC980(new AccelerateCommand(player->field_0xE8 * -30.0f, 4));
             }
         }
     }
@@ -102,13 +97,12 @@ void ElecFan::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 }
 
 void ElecFan::fn_800CBC1C(float) {
-    Fn8040Vector3 center;
     Fn8040Vector3 offset;
     UnkRotation3 rotation;
 
     rotation.Set(0.5f * lbl_805FAD38, 0.0f, 0.0f);
     offset.Set(0.0f, 0.5f * m_params.height, 0.0f);
-    fn_8040CDD0(&center, &m_charInfo->m_position, &offset);
+    const Fn8040Vector3 &center = m_charInfo->m_position + offset;
     fn_802E0C60(&center, &rotation, 0, 0.5f * m_params.height, m_params.radius);
 }
 
@@ -153,8 +147,7 @@ void ElecFan::BlowCharacter() {
             }
 
             if (!m_state.Test(0)) {
-                Fn8040Vector3 segmentEnd;
-                fn_800091EC(&segmentEnd, &target->m_position);
+                Fn8040Vector3 segmentEnd = target->m_position;
                 segmentEnd.y += m_params.height;
 
                 UnkSegment_80020A20 segment(target->m_position, segmentEnd);
@@ -195,11 +188,8 @@ const char *ElecFanDraw::s_name = "ElecFanDraw";
 
 ElecFanDraw::ElecFanDraw(Task *parent, Fn8040Vector3 position, float angle, float radius,
                          float halfHeight)
-    : Task(parent) {
-    m_radius = radius;
-    m_halfHeight = halfHeight;
-    fn_800091EC(&m_position, &position);
-    m_angle = angle;
+    : Task(parent), m_radius(radius), m_halfHeight(halfHeight), m_position(position),
+      m_angle(angle) {
     m_name = s_name;
     m_clump = static_cast<RpClump *>(fn_80012700(fn_800122D4(), 1, "DE0403DENSIRYUU.DFF"));
     m_layer = fn_8004DFB0(fn_80046178()->field_0x28, "ElecFan");

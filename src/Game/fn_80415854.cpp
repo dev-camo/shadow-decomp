@@ -204,21 +204,21 @@ void fn_80415DBC(_stMtnPlayWork *control, Fn8040Vector3 *vector) {
     if (control == 0 || vector == 0) {
         return;
     }
-    fn_800091D0(vector, &control->vectors[5].value);
+    *vector = control->vectors[5].value;
 }
 
 void fn_80415DF8(_stMtnPlayWork *control, Fn8040Vector3 *vector) {
     if (control == 0 || vector == 0) {
         return;
     }
-    fn_800091D0(vector, &control->vectors[1].value);
+    *vector = control->vectors[1].value;
 }
 
 void fn_80415E34(_stMtnPlayWork *control, Fn8040Vector3 *vector) {
     if (control == 0 || vector == 0) {
         return;
     }
-    fn_800091D0(vector, &control->vectors[0].value);
+    *vector = control->vectors[0].value;
 }
 
 /* The transform of the node with an id in the tree of a control, or null (fn_8041D31C). */

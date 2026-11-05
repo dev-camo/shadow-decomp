@@ -61,8 +61,6 @@ void DarkSpinEntrance::fn_80258910() {
 
         Fn8040Matrix34 matrix;
         Fn8040Matrix34 translation;
-        Fn8040Vector3 position;
-        Fn8040Vector3 point;
 
         MakeTranslationMatrix(&translation, m_charInfo->m_position);
         fn_8040C148(&matrix, &translation);
@@ -70,10 +68,7 @@ void DarkSpinEntrance::fn_80258910() {
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
         fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
 
-        Fn8040Vector3 offset(0.0f, 0.0f, 0.5f * -m_radius);
-
-        fn_8040B67C(&point, &matrix, &offset);
-        fn_800091EC(&position, &point);
+        Fn8040Vector3 position = matrix * Fn8040Vector3(0.0f, 0.0f, 0.5f * -m_radius);
         fn_802E0D6C(&position, &m_charInfo->m_rotation, 2, 0.5f * m_radius, 1.25f);
     }
 }

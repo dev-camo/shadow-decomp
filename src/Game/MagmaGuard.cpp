@@ -159,9 +159,7 @@ void SetMagmaGuard::UpdateModelMatrix() {
         m_model->fn_801633DC(&matrix);
     }
     if (m_object2.get() != 0) {
-        Fn8040Vector3 object2Position;
-
-        fn_800091EC(&object2Position, &m_charInfo->m_position);
+        Fn8040Vector3 object2Position = m_charInfo->m_position;
         object2Position.y += s_object2Height.value;
         fn_802B44C8(m_object2.get(), &object2Position);
     }

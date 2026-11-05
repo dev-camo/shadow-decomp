@@ -84,9 +84,8 @@ DefenseSystem::DefenseSystem(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
     fn_802B4510(m_object2.get(), 1);
 
     Fn8040Vector3 above(0.0f, s_object2Height, 0.0f);
-    Fn8040Vector3 object2Position;
 
-    fn_8040CDD0(&object2Position, &above, &m_charInfo->m_position);
+    const Fn8040Vector3 &object2Position = above + m_charInfo->m_position;
     fn_802B44C8(m_object2.get(), &object2Position);
 
     m_model = fn_8015F800(1, "DEFENSESYSTEM.BIN");
@@ -212,13 +211,9 @@ void DefenseSystem::UpdateModelMatrix() {
 
     for (u32 i = 0; it != m_objects.end(); ++i, ++it) {
         Fn8040Vector3 offset(0.0f, s_objectDistance, 0.0f);
-        Fn8040Vector3 rotated;
-        Fn8040Vector3 placed;
 
-        fn_8040D044(&rotated, &offset, step * i);
-        fn_800091D0(&offset, &rotated);
-        fn_8040B67C(&placed, &matrix, &offset);
-        fn_800091D0(&offset, &placed);
+        offset = fn_8040D044(offset, step * i);
+        offset = matrix * offset;
         fn_800CCE38(it->get(), &offset);
     }
 }

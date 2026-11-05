@@ -151,7 +151,7 @@ CHECK_SIZEOF(Vine, 0xB0);
 
 /* What a fire ball is created with (placeholder name; the binary does not name it). The
  * constructor only sets the lifetime, and the assignment copies the members one by one, the
- * vectors with fn_800091D0. */
+ * vectors with their out-of-line assignment. */
 struct FireBallParam_8014EDBC {
     FireBallParam_8014EDBC();
     FireBallParam_8014EDBC &operator=(const FireBallParam_8014EDBC &other);

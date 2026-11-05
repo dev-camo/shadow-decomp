@@ -176,27 +176,13 @@ void WeaponStickBaseImpl::EndAttack() {
 
 void WeaponStickBaseImpl::SetLine(const Fn8040Vector3 &start, const Fn8040Vector3 &end) {
     m_lines[1] = m_lines[0];
-    fn_800091D0(&m_lines[0].start, &start);
-    fn_800091D0(&m_lines[0].end, &end);
+    m_lines[0].start = start;
+    m_lines[0].end = end;
 }
 
 void WeaponStickBaseImpl::SweepAttack() {
-    Fn8040Vector3 startMove;
-    Fn8040Vector3 endMove;
-    Fn8040Vector3 start;
-    Fn8040Vector3 end;
-    /* The differences are built in temporaries and copied, as the original does; it places them
-     * after the named locals, so they are declared after them here.
-     * Matching workaround: declaration order chosen for the original's frame slots (declared at
-     * first use, they change 16 of the method's 133 words); revisit when the vector operations
-     * return their results by value (#602), which changes how these temporaries are formed. */
-    Fn8040Vector3 startDelta;
-    Fn8040Vector3 endDelta;
-
-    fn_8040CD74(&startDelta, &m_lines[0].start, &m_lines[1].start);
-    fn_800091EC(&startMove, &startDelta);
-    fn_8040CD74(&endDelta, &m_lines[0].end, &m_lines[1].end);
-    fn_800091EC(&endMove, &endDelta);
+    Fn8040Vector3 startMove = m_lines[0].start - m_lines[1].start;
+    Fn8040Vector3 endMove = m_lines[0].end - m_lines[1].end;
 
     /* The whole movements are scaled in place to one step's movement once the count is known. */
     int count = (int)(fn_8040CF50(&endMove) / s_sweepStep.value) + 1;
@@ -210,26 +196,14 @@ void WeaponStickBaseImpl::SweepAttack() {
     float segmentLength = fn_8040D1B4(&m_lines[1].end, &m_lines[1].start);
     float lengthStep = fraction * (length - segmentLength);
 
-    fn_800091EC(&start, &m_lines[1].start);
-    fn_800091EC(&end, &m_lines[1].end);
+    Fn8040Vector3 start = m_lines[1].start;
+    Fn8040Vector3 end = m_lines[1].end;
 
     for (int i = 0; i < count; i++) {
         UnkSegment_80020A20 segment;
-        /* The end point's temporaries, in the order the original's frame holds them (it built the
-         * point from nested vector operations).
-         * Matching workaround: declaration order chosen for the original's frame slots (in use
-         * order, eight stack offsets change); revisit with the by-value vector operations (#602). */
-        Fn8040Vector3 segmentEnd;
-        Fn8040Vector3 offset;
-        Fn8040Vector3 unit;
-        Fn8040Vector3 direction;
 
-        fn_800091D0(&segment.start, &start);
-        fn_8040CD74(&direction, &end, &start);
-        fn_8040CEE8(&unit, &direction);
-        fn_8040CDA8(&offset, &unit, segmentLength);
-        fn_8040CDD0(&segmentEnd, &offset, &start);
-        fn_800091D0(&segment.end, &segmentEnd);
+        segment.start = start;
+        segment.end = fn_8040CEE8(end - start) * segmentLength + start;
 
         CollisionResultList *hits =
             fn_800C5D74(fn_80021B08(), &segment, field_0x4C, 1, 0, 0, 0, m_attack);
@@ -269,10 +243,7 @@ void WeaponStickBaseImpl::fn_80067B7C(AttackCallbackParam &param) {
     boost::shared_ptr<CharInfo> charInfo(param.field_0x0.lock()->m_owner.lock());
 
     if (charInfo.get() != 0) {
-        Fn8040Vector3 offset;
-
-        fn_8040CD74(&offset, &param.field_0x18, &charInfo->m_position);
-        fn_800091D0(&param.field_0x34, &offset);
+        param.field_0x34 = param.field_0x18 - charInfo->m_position;
     }
 }
 

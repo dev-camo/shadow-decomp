@@ -221,7 +221,7 @@ void Cream::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
     fn_800C9F14(owner, &m_position);
     fn_800C9ED4(owner, &m_charInfo->m_rotation);
     fn_800C9E60(owner, &m_tag);
-    fn_800091D0(&m_charInfo->m_position, &m_position);
+    m_charInfo->m_position = m_position;
     m_charInfo->m_position.y += s_charInfoHeight.value;
 }
 
@@ -237,9 +237,8 @@ void Cream::UpdateModelMatrix() {
 
     if (m_object2.get() != 0) {
         Fn8040Vector3 above(0.0f, s_object2Height.value, 0.0f);
-        Fn8040Vector3 object2Position;
 
-        fn_8040CDD0(&object2Position, &above, &m_charInfo->m_position);
+        const Fn8040Vector3 &object2Position = above + m_charInfo->m_position;
         fn_802B44C8(m_object2.get(), &object2Position);
     }
 }
