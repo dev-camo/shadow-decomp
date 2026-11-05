@@ -57,4 +57,10 @@ extern UnkDebugColor_802E0E84 lbl_805F06D8;
  * unknown); the Coaster gadget draws its debug line with it. */
 extern UnkDebugColor_802E0E84 lbl_805F1370;
 
+/* .sbss colours that the same startup code sets to the bytes FF 00 00 00 (lbl_805F1360) and
+ * FF FF 00 00 (lbl_805F137C) (purpose unknown); the SHOOTING_PANEL gadget copies them and
+ * lbl_805F1370 into its score parts. */
+extern UnkDebugColor_802E0E84 lbl_805F1360;
+extern UnkDebugColor_802E0E84 lbl_805F137C;
+
 #endif

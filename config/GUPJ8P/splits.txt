@@ -265,6 +265,14 @@ Game/ShootingGameManagerTask.cpp:
 	.sbss       start:0x805EF5C8 end:0x805EF5D0
 	.sdata2     start:0x805F4A58 end:0x805F4A68
 
+Game/ShootingGameScore.cpp:
+	.text       start:0x8013DC68 end:0x8013F174
+	.rodata     start:0x804C0770 end:0x804C0898
+	.data       start:0x80529940 end:0x80529A20
+	.sdata      start:0x805E6758 end:0x805E6780
+	.sbss       start:0x805EF5D0 end:0x805EF5E0
+	.sdata2     start:0x805F4A68 end:0x805F4A98
+
 Game/ElecSecurityCodeGenerator.cpp:
 	.text       start:0x80157F58 end:0x80158984
 	.rodata     start:0x804C2748 end:0x804C2788
