@@ -942,10 +942,10 @@ config.libs = [
                 # SetScale, root-pattern accessors, fn_8036635C, fn_803663C0 and the end-of-motion policy.
                 # fn_8036674C initialises frame state through the scene-data accessor fn_8036679C.
                 # fn_803659CC and fn_803659DC write the existing motion-end policy action fields.
-                # 65 of the unit's 195 function bodies are represented. 63 have canonical symbol names,
+                # 81 of the unit's 195 function bodies are represented. 79 have canonical symbol names,
                 # including a weak copy of the inline CMotionPattern destructor and RCPtr<CNode>::Reset.
-                # Of these, 60 have the original's instructions; GetRootPattern and SetRootPattern differ
-                # only in their allocation lines (205 vs 1124 and 192 vs 1102, respectively). The
+                # Of these, 74 have the original's instructions; GetRootPattern and SetRootPattern differ
+                # only in their allocation lines (297 vs 1124 and 284 vs 1102, respectively). The
                 # 100-byte fn_8036635C differs in seven instruction words: layer-entry address formation,
                 # registers and scheduling. Two more template bodies are the node holder's constructor
                 # (identical instructions, but a weak vtable copy) and its delete-policy Assign (0x1D4 vs the
@@ -953,7 +953,10 @@ config.libs = [
                 # The separate byte-holder Assign is 0x1C0 bytes; it is not the original node-holder Assign.
                 # RCPtr<CNode>::Reset is emitted just after SetRootPattern, rather than after
                 # CMotionPatternRef::Clear as in the original; this order difference also remains.
-                # The other 130 bodies are not sourced: the scene's Copy, destructor, Update and Draw,
+                # The full frame update fn_803669B8 has the original's 0x5C0 bytes; twelve instruction
+                # words differ because its member-pointer constants have different offsets.
+                # The callback-list erase is 0x94 bytes versus 0x90 because allocator.destroy is inlined.
+                # The other 114 bodies are not sourced: the scene's Copy, destructor and Draw,
                 # the end-of-motion policy's destructor, CSceneListener's constructor, the listener and
                 # node containers, remaining RCPtr members and listener dispatch. Unit data is incomplete.
                 # The diagnostic object also emits weak byte-holder Reset, constructor and vtable copies,
