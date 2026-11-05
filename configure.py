@@ -1747,6 +1747,7 @@ config.libs = [
             # relocations otherwise), as in SuperComputer's constructor. Writing the call with get()
             # or operator* on either pointer gives the same order.
             Object(NonMatching, "Game/BreakWall.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/DamageBlock.cpp", cflags=cflags_game_cpp),
             # Every function but the constructor has identical instruction words, and the data,
             # symbols and relocations match once the linker-discarded weak and local copies are set
             # aside. The constructor (0x8022E698, USA) differs in 6 of its 189 words: for each of its

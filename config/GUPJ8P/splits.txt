@@ -281,6 +281,13 @@ Game/BreakWall.cpp:
 	.sbss       start:0x805EF600 end:0x805EF620
 	.sdata2     start:0x805F4AC8 end:0x805F4B00
 
+Game/DamageBlock.cpp:
+	.text       start:0x801433F4 end:0x80143830
+	.rodata     start:0x804C0E68 end:0x804C0E98
+	.data       start:0x80529E48 end:0x80529F00
+	.sdata      start:0x805E6840 end:0x805E6860
+	.sdata2     start:0x805F4B48 end:0x805F4B60
+
 Game/ElecSecurityCodeGenerator.cpp:
 	.text       start:0x80157F58 end:0x80158984
 	.rodata     start:0x804C2748 end:0x804C2788
