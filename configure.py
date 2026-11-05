@@ -1699,9 +1699,6 @@ config.libs = [
             # seven zero alignment bytes, where this unit emits a 9-byte array.
             Object(NonMatching, "Game/fn_801A6588.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_801A687C.cpp", cflags=cflags_game_cpp),
-            # The instruction sequence matches; zero-literal ownership remains shared with
-            # fn_801A68C0 and fn_801A69FC (which also reads lbl_805F5824).
-            Object(NonMatching, "Game/fn_801A6944.cpp", cflags=cflags_game_cpp),
             Object(
                 Matching,
                 "Game/fn_8040D180.cpp",
