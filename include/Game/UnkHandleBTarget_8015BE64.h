@@ -34,8 +34,30 @@ CHECK_OFFSETOF(ColliDetectArgs, m_hits, 0x0);
 CHECK_OFFSETOF(ColliDetectArgs, field_0x4, 0x4);
 CHECK_SIZEOF(ColliDetectArgs, 0xC);
 
+/* GadgetModelInfo's collision callbacks (fn_80162FB0 calls them with a ColliDetectArgs it builds
+ * on its stack). */
 typedef boost::function1<void, ColliDetectArgs &> ColliDetectCallback;
 CHECK_SIZEOF(ColliDetectCallback, 0xC);
+
+/* What the handle target passes to its callbacks (class name from RTTI, whose base list names
+ * ColliDetectArgs at offset 0). fn_8015BE9C builds one on its stack: the constructor (0x8015C0A4)
+ * stores the base's vtable, clears both members and stores the class's own vtable (0x8052AF0C),
+ * and 0x8015C048 is the virtual destructor. Neither touches a byte past the base, so no member of
+ * its own is assumed (inferred). */
+class GadgetColliDetectArgs : public ColliDetectArgs {
+  public:
+    virtual ~GadgetColliDetectArgs();
+};
+CHECK_SIZEOF(GadgetColliDetectArgs, 0xC);
+
+/* The handle target's callbacks, a separate instantiation from ColliDetectCallback: the original
+ * has two copies of function1's members (the call operator at 0x801656F0 and 0x8015CB14, the
+ * destructor at 0x800D0CEC and 0x800F5B08) and of the list1 subscript of the bound calls
+ * (0x800D05D0 and 0x800F5238). GadgetModelInfo and the gadgets that set its callbacks use the
+ * first copies, the handle target and the gadgets that set its callbacks the second, and
+ * fn_8015BE9C, which calls the handle target's callbacks, passes them a GadgetColliDetectArgs. */
+typedef boost::function1<void, GadgetColliDetectArgs &> GadgetColliDetectCallback;
+CHECK_SIZEOF(GadgetColliDetectCallback, 0xC);
 
 /* The class of the handle target's callback members (placeholder name: the binary does not name
  * it). Its constructor (0x8015C378) only runs function1's default constructor, and its destructor
@@ -48,9 +70,9 @@ class UnkCallbackSlot_800F5980 {
 
     /* Assigns callback to the member and returns the slot (behaviour inferred: it calls function1's
      * assignment with the slot as this). */
-    UnkCallbackSlot_800F5980 &fn_800F5980(const ColliDetectCallback &callback);
+    UnkCallbackSlot_800F5980 &fn_800F5980(const GadgetColliDetectCallback &callback);
 
-    /* 0x00 */ ColliDetectCallback m_callback;
+    /* 0x00 */ GadgetColliDetectCallback m_callback;
 };
 CHECK_SIZEOF(UnkCallbackSlot_800F5980, 0xC);
 

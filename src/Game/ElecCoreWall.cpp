@@ -82,9 +82,9 @@ ElecCoreWall::ElecCoreWall(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadge
     m_handle = fn_8015B8C4(probe);
 
     m_handle->field_0x0.fn_800F5980(
-        ColliDetectCallback(boost::bind(&ElecCoreWall::OnCollision, this, _1)));
+        GadgetColliDetectCallback(boost::bind(&ElecCoreWall::OnCollision, this, _1)));
     m_handle->field_0x18.fn_800F5980(
-        ColliDetectCallback(boost::bind(&ElecCoreWall::OnCollisionEnd, this, _1)));
+        GadgetColliDetectCallback(boost::bind(&ElecCoreWall::OnCollisionEnd, this, _1)));
 
     CopyFromOwner(m_owner);
     m_timer = 0.0f;

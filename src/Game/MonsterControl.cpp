@@ -30,7 +30,7 @@ MonsterControl::MonsterControl(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
     m_handle = fn_8015B8C4(probe);
 
     m_handle->field_0x0.fn_800F5980(
-        ColliDetectCallback(boost::bind(&MonsterControl::OnCollision, this, _1)));
+        GadgetColliDetectCallback(boost::bind(&MonsterControl::OnCollision, this, _1)));
     m_handle->ClearFlags(2);
 }
 

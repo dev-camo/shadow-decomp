@@ -354,7 +354,8 @@ void Fan::CreateProbe() {
     }
 
     m_handle = fn_8015B8C4(probe);
-    m_handle->field_0x0.fn_800F5980(ColliDetectCallback(boost::bind(&Fan::OnCollision, this, _1)));
+    m_handle->field_0x0.fn_800F5980(
+        GadgetColliDetectCallback(boost::bind(&Fan::OnCollision, this, _1)));
 
     m_handle->m_probe->SetSize(m_params.x, -2, m_params.y, m_params.z);
 
