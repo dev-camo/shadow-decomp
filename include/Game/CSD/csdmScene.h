@@ -174,7 +174,7 @@ class CScene : public CSceneDataRef {
     /* 0x78 */ f32 m_speed;
     /* 0x7C */ f32 m_startFrame;
     /* 0x80 */ f32 m_endFrame;
-    /* 0x84 */ u8 field_0x84[0x4];
+    /* 0x84 */ RCPtr<CNode> field_0x84;
     /* 0x88 */ CMotionPattern *m_rootPattern;
     /* 0x8C */ s32 m_paused;
     /* 0x90 */ CMotionEndPolicy m_endPolicy;
@@ -188,6 +188,8 @@ class CScene : public CSceneDataRef {
 };
 CHECK_OFFSETOF(Chao::CSD::CScene, m_motion, 0x64);
 CHECK_OFFSETOF(Chao::CSD::CScene, m_endFrame, 0x80);
+CHECK_OFFSETOF(Chao::CSD::CScene, field_0x84, 0x84);
+CHECK_OFFSETOF(Chao::CSD::CScene, m_rootPattern, 0x88);
 CHECK_OFFSETOF(Chao::CSD::CScene, m_paused, 0x8C);
 CHECK_OFFSETOF(Chao::CSD::CScene, m_endPolicy, 0x90);
 CHECK_OFFSETOF(Chao::CSD::CScene, m_motionIndex, 0xA8);

@@ -9,12 +9,12 @@
 
 /* The classes of the csdm* files, the library's object layer over the records of MotionPalette.h.
  * The original headers' names are unknown except csdmProject.h; this header stands in for them.
- * The game's code carries no run-time type information for these classes, so every class and
- * member name here is inferred from what the code does. The out-of-line virtual functions are
- * defined in csdmScene.cpp, except CMotionPattern's Copy, which is in csdmMotionPattern.cpp with
- * the class's vtable, and CElementDataRef's destructor and Copy, which are in csdmNode.cpp.
- * CMotionPattern's destructor is inline; the game's copy of it is the one in csdmScene.cpp.
- * Members without a supported meaning keep their offset. */
+ * The CNode spelling is present in its reference holder's RTTI. Other class and member names
+ * here are inferred from the code. The out-of-line virtual functions are
+ * defined in csdmScene.cpp, except CMotionPattern's Copy (csdmMotionPattern.cpp, with its vtable),
+ * and CElementDataRef's destructor and Copy and CNode's destructor (csdmNode.cpp). CNode's
+ * destructor remains unsourced. CMotionPattern's destructor is inline; the game's copy is in
+ * csdmScene.cpp. Members without a supported meaning keep their offset. */
 namespace Chao {
 namespace CSD {
 
@@ -122,12 +122,14 @@ class CFontList;
 class CScene;
 struct NodeObjects;
 
-/* The node an element belongs to (class name inferred from csdmNode.cpp): it holds the element's
- * file data and the CMotionPattern of the element's entry, and forwards the accessors to it. The
+/* The node an element belongs to (class name from its reference holder's RTTI): it holds the
+ * element's file data and the CMotionPattern of its entry, and forwards the accessors to it. The
  * conversions between the node's coordinates and the entry's are those of the screen (Screen.h).
  * Only the members that are known have names. */
 class CNode : public CElementDataRef {
   public:
+    virtual ~CNode();
+
     /* The accessors forward to the entry's CMotionPattern (names inferred). The translation is
      * in screen units. */
     void SetHidden(s32 hidden);
