@@ -204,6 +204,14 @@ Game/EnergyCore.cpp:
 	.sbss       start:0x805EEAE0 end:0x805EEAF0
 	.sdata2     start:0x805F3870 end:0x805F38A0
 
+Game/Fan.cpp:
+	.text       start:0x80102218 end:0x80103FE0
+	.rodata     start:0x804BAFE8 end:0x804BB170
+	.data       start:0x80525C40 end:0x80525EB0
+	.sdata      start:0x805E56C8 end:0x805E5738
+	.sbss       start:0x805EEAF0 end:0x805EEB08
+	.sdata2     start:0x805F38A0 end:0x805F3940
+
 Game/SetVehicle.cpp:
 	.text       start:0x8011E0A0 end:0x8011E630
 	.rodata     start:0x804BD588 end:0x804BD5D0

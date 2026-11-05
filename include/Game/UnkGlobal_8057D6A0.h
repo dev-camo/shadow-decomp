@@ -13,8 +13,9 @@ struct UnkGlobal_8057D6A0 {
     /* 0x2C */ u8 field_0x2C[0x90 - 0x2C];
     /* 0x90 */ u32 field_0x90;
     /* 0x94 */ u8 field_0x94[0x98 - 0x94];
-    /* 0x98 */ float field_0x98; /* ElecFan passes it to cos (meaning unknown) */
+    /* 0x98 */ float field_0x98; /* ElecFan and Fan pass it to cos (meaning unknown) */
     /* 0x9C */ u8 field_0x9C[0xA8 - 0x9C];
+    /* Fan compares it with 0x1F5 (meaning unknown). */
     /* 0xA8 */ s32 field_0xA8;
     /* ThreatObjHolder compares it with 9 to pick its model table, FallBuildingHolder's hookA
      * with 12 and 5 to limit the building type, and GrindGadget's hookA with 13 to pick
