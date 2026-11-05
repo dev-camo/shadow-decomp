@@ -192,7 +192,7 @@ void SetDefenseWall::SetupProbe() {
     m_handle = fn_8015B8C4(probe);
 
     m_handle->field_0x0.fn_800F5980(
-        ColliDetectCallback(boost::bind(&SetDefenseWall::OnCollision, this, _1)));
+        GadgetColliDetectCallback(boost::bind(&SetDefenseWall::OnCollision, this, _1)));
 }
 
 void SetDefenseWall::StartCrashEffect() {

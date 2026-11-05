@@ -76,7 +76,7 @@ FireRing::FireRing(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(parent
 
         m_handleA = fn_8015B8C4(probe);
         m_handleA->field_0x0.fn_800F5980(
-            ColliDetectCallback(boost::bind(&FireRing::OnHitA, this, _1)));
+            GadgetColliDetectCallback(boost::bind(&FireRing::OnHitA, this, _1)));
     }
 
     {
@@ -88,7 +88,7 @@ FireRing::FireRing(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(parent
 
         m_handleB = fn_8015B8C4(probe);
         m_handleB->field_0x0.fn_800F5980(
-            ColliDetectCallback(boost::bind(&FireRing::OnHitB, this, _1)));
+            GadgetColliDetectCallback(boost::bind(&FireRing::OnHitB, this, _1)));
     }
 
     UpdateModelMatrix();

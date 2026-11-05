@@ -255,7 +255,7 @@ Coaster::Coaster(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
 
         m_handle = fn_8015B8C4(probe);
         m_handle->field_0x0.fn_800F5980(
-            ColliDetectCallback(boost::bind(&Coaster::OnCollision, this, _1)));
+            GadgetColliDetectCallback(boost::bind(&Coaster::OnCollision, this, _1)));
     }
     m_object = fn_801E7128(boost::weak_ptr<CharInfo>(m_charInfo), 0x2000);
     UpdateModelMatrix();

@@ -168,9 +168,9 @@ ElecCircuitEntrance::ElecCircuitEntrance(Task *parent, UnkGadgetOwner_800C9CD0 *
     field_0x3C = fn_8015B8C4(probe);
 
     field_0x3C->field_0x0.fn_800F5980(
-        ColliDetectCallback(boost::bind(&ElecCircuitEntrance::fn_801F7E28, this, _1)));
+        GadgetColliDetectCallback(boost::bind(&ElecCircuitEntrance::fn_801F7E28, this, _1)));
     field_0x3C->field_0x18.fn_800F5980(
-        ColliDetectCallback(boost::bind(&ElecCircuitEntrance::fn_801F7D80, this, _1)));
+        GadgetColliDetectCallback(boost::bind(&ElecCircuitEntrance::fn_801F7D80, this, _1)));
 
     field_0x3C->ClearFlags(2);
     CopyFromOwner(m_owner);

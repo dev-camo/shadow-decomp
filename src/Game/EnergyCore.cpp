@@ -104,7 +104,7 @@ EnergyCore::EnergyCore() {
     m_handle = fn_8015B8C4(probe);
 
     m_handle->field_0x0.fn_800F5980(
-        ColliDetectCallback(boost::bind(&EnergyCore::OnCollision, this, _1)));
+        GadgetColliDetectCallback(boost::bind(&EnergyCore::OnCollision, this, _1)));
 }
 
 /* Matching workaround: auto_inline around this destructor. The original keeps checked_delete<T>

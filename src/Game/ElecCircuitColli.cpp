@@ -62,9 +62,9 @@ ElecCircuitColli::ElecCircuitColli(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
     m_handle = fn_8015B8C4(probe);
 
     m_handle->field_0x0.fn_800F5980(
-        ColliDetectCallback(boost::bind(&ElecCircuitColli::OnCollision, this, _1)));
+        GadgetColliDetectCallback(boost::bind(&ElecCircuitColli::OnCollision, this, _1)));
     m_handle->field_0x18.fn_800F5980(
-        ColliDetectCallback(boost::bind(&ElecCircuitColli::OnCollisionEnd, this, _1)));
+        GadgetColliDetectCallback(boost::bind(&ElecCircuitColli::OnCollisionEnd, this, _1)));
 
     m_handle->ClearFlags(2);
     CopyFromOwner(m_owner);
