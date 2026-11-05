@@ -191,6 +191,15 @@ Game/JumpBoard.cpp:
 	.sbss       start:0x805EFC88 end:0x805EFC98
 	.sdata2     start:0x805F4B68 end:0x805F4BA8
 
+Game/LongSpring.cpp:
+	.text       start:0x8010F8F0 end:0x80110BA4
+	.rodata     start:0x804BD458 end:0x804BD5A8
+	.data       start:0x80527908 end:0x805279F0
+	.bss        start:0x80580B50 end:0x80580BC0
+	.sdata      start:0x805E69F8 end:0x805E6A20
+	.sbss       start:0x805EFC98 end:0x805EFCA8
+	.sdata2     start:0x805F4BA8 end:0x805F4BF0
+
 Game/SetVehicle.cpp:
 	.text       start:0x8011E488 end:0x8011EA18
 	.rodata     start:0x804BE658 end:0x804BE6A0
