@@ -216,6 +216,14 @@ Game/FallBuildingHolder.cpp:
 	.sbss       start:0x805EE870 end:0x805EE888
 	.sdata2     start:0x805F3398 end:0x805F33B0
 
+Game/BreakableOrnament.cpp:
+	.text       start:0x800E3EE8 end:0x800E59F8
+	.rodata     start:0x804B86D8 end:0x804B8848
+	.data       start:0x805242D8 end:0x805243C8
+	.sdata      start:0x805E51D0 end:0x805E51F8
+	.sbss       start:0x805EE888 end:0x805EE898
+	.sdata2     start:0x805F33B0 end:0x805F33E0
+
 Game/fn_800E59F8.cpp:
 	.text       start:0x800E59F8 end:0x800E6380
 	.rodata     start:0x804B8848 end:0x804B88A8

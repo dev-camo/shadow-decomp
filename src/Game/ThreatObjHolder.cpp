@@ -336,7 +336,7 @@ ThreatObjHolder::~ThreatObjHolder() {}
 
 extern "C" void fn_8013F274(void) {
     fn_8006B474("THREATOBJ.BIN", 1);
-    ThreatObjHolder::s_modelTable = &s_modelTables[lbl_8057D6A0.field_0xAC != 9 ? 1 : 0];
+    ThreatObjHolder::s_modelTable = &s_modelTables[lbl_8057D6A0.field_0xA8.field_0x4 != 9 ? 1 : 0];
 }
 
 extern "C" void fn_8013F268(void) {

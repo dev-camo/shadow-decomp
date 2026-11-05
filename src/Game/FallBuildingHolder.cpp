@@ -416,9 +416,9 @@ FallBuildingHolder::~FallBuildingHolder() {}
 /* Chooses the highest allowed type from the word at 0xAC of the global at 0x8057D6A0 (1 when it
  * is 12, 2 when it is 5, otherwise 0) and loads the model. */
 extern "C" void fn_800E292C(void) {
-    if (lbl_8057D6A0.field_0xAC == 12) {
+    if (lbl_8057D6A0.field_0xA8.field_0x4 == 12) {
         s_maxType = 1;
-    } else if (lbl_8057D6A0.field_0xAC == 5) {
+    } else if (lbl_8057D6A0.field_0xA8.field_0x4 == 5) {
         s_maxType = 2;
     } else {
         s_maxType = 0;

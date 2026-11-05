@@ -32,8 +32,8 @@ using SonicteamUSA::System::CharaColli::AttackCallbackParam;
 using SonicteamUSA::System::CharaColli::CharaColliAttack;
 
 /* The id that UpdateBody passes to fn_800740E4 and the two break models; the load hook selects the
- * A10500 files when lbl_8057D6A0.field_0xAC is 17 and the A10503 files otherwise (member names
- * inferred, the file members' from the file names). */
+ * A10500 files when lbl_8057D6A0.field_0xA8.field_0x4 is 17 and the A10503 files otherwise (member
+ * names inferred, the file members' from the file names). */
 struct DefenseSystemBreakModels {
     /* 0x0 */ int actorId;
     /* 0x4 */ const char *brkFile;    /* shown on entering the damaged state */
@@ -104,7 +104,7 @@ DefenseSystem::~DefenseSystem() {
 }
 
 extern "C" void fn_8022440C(void) {
-    if (lbl_8057D6A0.field_0xAC == 17) {
+    if (lbl_8057D6A0.field_0xA8.field_0x4 == 17) {
         s_breakModels = &s_breakModelsA10500;
     } else {
         s_breakModels = &s_breakModelsA10503;

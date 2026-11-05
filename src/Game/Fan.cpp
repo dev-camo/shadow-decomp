@@ -271,7 +271,7 @@ void Fan::CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         m_charInfo->m_rotation.x = 90.0f * (lbl_805FAD38 / 180.0f);
     }
 
-    if (m_params.type == 1 && lbl_8057D6A0.field_0xA8 == 0x1F5) {
+    if (m_params.type == 1 && lbl_8057D6A0.field_0xA8.field_0x0 == 0x1F5) {
         m_state.Set(4);
     }
 }
