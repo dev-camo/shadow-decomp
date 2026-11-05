@@ -16,6 +16,7 @@ CHECK_SIZEOF(CharCommandHandler, 0xC);
  * vtable (after the destructor) is not explained. */
 class CharCommandUnit {
   public:
+    CharCommandUnit();
     virtual ~CharCommandUnit();
 
     /* The command manager's dispatch loop (fn_801DA204) calls it with each queued command; the

@@ -1879,6 +1879,11 @@ config.libs = [
             # 0x800F5B08 and 0x800F5238 here (USA addresses).
             Object(NonMatching, "Game/ElecAccessPanel.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetVehicle.cpp", cflags=cflags_game_cpp),
+            # All 66 functions have identical words and relocations, and the data matches the
+            # original once the weak copies that the linker discards are removed, but
+            # checked_delete<SetWeapon::Arms> is a local symbol here where the original's is weak,
+            # as in FallBuildingHolder.cpp.
+            Object(NonMatching, "Game/SetWeapon.cpp", cflags=cflags_game_cpp),
             # fn_8040C55C's instructions match. fn_8040C3EC (92 words) differs in 15 positional raw
             # words (19 when relocation targets are compared by section and offset: the shared-pool
             # loads and the threshold load at +0x90, which refers to .sdata2+0 in the original and

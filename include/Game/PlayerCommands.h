@@ -7,6 +7,9 @@
 #include <dolphin/types.h>
 #include "layout_check.h"
 
+class CharInfo;
+class UnkLockonObject_8005FDF4;
+
 /* Commands that gadgets send to character infos (class names from RTTI, with CharCommand or
  * Player::PlayerCommand as their only base). The constructors and destructors are defined
  * elsewhere, together with the vtables; the argument meanings are inferred from the stores in
@@ -79,6 +82,22 @@ class AccelerateCommand : public CharCommand {
 };
 CHECK_SIZEOF(AccelerateCommand, 0x20);
 
+/* The command with the id 0xD: its constructors (0x801DB41C and 0x801DB480) pass 0xD and 4 to the
+ * base constructor and copy a weak pointer to a character info to 0x14; the first copies its
+ * second argument to the weak pointer at 0x1C, the second leaves that one empty. The creators
+ * allocate 0x24 bytes. The SET_WEAPON gadget's weapon hands itself to that character info (name
+ * inferred: the character that uses the target). */
+class UseCommand : public CharCommand {
+  public:
+    /* Defined elsewhere (0x801DC484): destroys the weak pointers at 0x1C and 0x14 and releases
+     * the command through fn_801D9C64 with the size 0x24 (behaviour inferred from the bytes). */
+    virtual ~UseCommand();
+
+    /* 0x14 */ boost::weak_ptr<CharInfo> m_user;
+    /* 0x1C */ boost::weak_ptr<UnkLockonObject_8005FDF4> field_0x1C;
+};
+CHECK_SIZEOF(UseCommand, 0x24);
+
 namespace Player {
 
 /* Makes the player ignore input for a time (the first member holds the time; the gadgets that
@@ -135,6 +154,20 @@ class TouchHangCommand : public PlayerCommand {
     /* 0x24 */ int field_0x24;
 };
 CHECK_SIZEOF(Player::TouchHangCommand, 0x28);
+
+/* The command that the SET_WEAPON gadget sends to the character that takes its weapon (id 0x11A).
+ * The constructor (0x8011F478, in the SET_WEAPON gadget's file) passes 0x11A and arg2 to the base
+ * constructor and stores the weapon type and arg1 (the weapon item's word at 0xC, meaning unknown);
+ * the destructor and the vtable are elsewhere. */
+class AddWeaponCommand : public PlayerCommand {
+  public:
+    AddWeaponCommand(int weaponType, int arg1, int arg2);
+    virtual ~AddWeaponCommand();
+
+    /* 0x14 */ int m_weaponType;
+    /* 0x18 */ int field_0x18;
+};
+CHECK_SIZEOF(Player::AddWeaponCommand, 0x1C);
 
 namespace Npc {
 

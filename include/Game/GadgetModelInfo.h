@@ -205,6 +205,9 @@ CHECK_SIZEOF(GadgetModelInfo, 0x74);
 /* Loads the model file fileName into a new GadgetModelInfo owned by the returned pointer (behaviour
  * inferred; arg0 is the first argument of the GadgetModelInfo constructor, always 1 in callers). */
 extern "C" boost::shared_ptr<GadgetModelInfo> fn_8015F800(int arg0, const char *fileName);
+/* The same with the constructor at 0x80163F7C, which takes the number of a model instead of a file
+ * name (behaviour inferred; the SET_WEAPON gadget passes 0 and 0xDF). */
+extern "C" boost::shared_ptr<GadgetModelInfo> fn_8015F9D8(int arg0, int id);
 
 /* Returns the word at 0x0 of the object at 0x34 of the model, or null when there is none: a name
  * (behaviour inferred from the ball, which looks it up with fn_80208888). */
