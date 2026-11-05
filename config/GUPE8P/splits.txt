@@ -155,6 +155,16 @@ Game/RollCircle.cpp:
 	.sbss       start:0x805EE7C0 end:0x805EE7D8
 	.sdata2     start:0x805F3230 end:0x805F3268
 
+Game/PoleHolder.cpp:
+	.text       start:0x800D762C end:0x800DC40C
+	.ctors      start:0x804A9D0C end:0x804A9D10
+	.rodata     start:0x804B7690 end:0x804B7E48
+	.data       start:0x805235F0 end:0x80523B00
+	.bss        start:0x8057D840 end:0x8057D8A0
+	.sdata      start:0x805E4F78 end:0x805E5058
+	.sbss       start:0x805EE7D8 end:0x805EE820
+	.sdata2     start:0x805F3268 end:0x805F32B0
+
 Game/StoneStatue.cpp:
 	.text       start:0x800DC40C end:0x800DD77C
 	.ctors      start:0x804A9D10 end:0x804A9D14

@@ -260,6 +260,8 @@ void fn_8001E044(Fn8040Matrix34 *result, const Fn8040Matrix34 *left, const Fn804
  * order the rotation vector of a character info uses (fn_800493C4). */
 void fn_800494F8(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix);
 void fn_800493C4(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix);
+/* Stores the matrix's translation (its fourth column) in translation (behaviour from its body). */
+void fn_80049690(Fn8040Vector3 *translation, const Fn8040Matrix34 *matrix);
 /* Matrix-to-angle sibling with a different rotation order (description inferred). */
 void fn_80049290(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix);
 /* Blends angles using the wrapped difference and relative weights (description inferred). */

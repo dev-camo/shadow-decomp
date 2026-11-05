@@ -181,6 +181,9 @@ template <class T1, class T2> class __compressed_pair : public __compressed_pair
     __compressed_pair(T1 x) : base(x) {}
     __compressed_pair(const T2 &y, T1 x) : base(y, x) {}
     __compressed_pair(const T2 &y) : base(y) {}
+    /* Declared: the game copies the node holder's pointer pair with an out-of-line call (0x800DC23C
+     * in the USA release), which an implicit copy would do in place. */
+    __compressed_pair(const __compressed_pair &x) : base(x) {}
 };
 
 /* A pair whose second member is a reference: both are members, the reference first, so the layout

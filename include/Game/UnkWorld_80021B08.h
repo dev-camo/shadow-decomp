@@ -119,6 +119,14 @@ fn_800C5D74(UnkWorld_80021B08 *world, const UnkSegment_80020A20 *segment, int ar
 boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>
 fn_800C81F4(UnkWorld_80021B08 *world, const boost::weak_ptr<CharInfo> &owner, void *collision,
             int arg3, int arg4);
+/* Builds one of two probe objects (100 or 108 bytes, chosen by the word at 0x14 of the loaded
+ * collision data collision) at position and rotation for the character info that owner refers
+ * to, registers it with the world and returns it (behaviour inferred; arg4, arg5 and arg6 are
+ * passed on and not understood). */
+boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>
+fn_800C86A8(UnkWorld_80021B08 *world, void *collision, const Fn8040Vector3 *position,
+            const Fn8040Vector3 *rotation, int arg4, u16 arg5, int arg6,
+            const boost::weak_ptr<CharInfo> &owner);
 /* Tests the segment from start to end against the world; when it meets something, stores the
  * point in hit (unless hit is null) and returns true (behaviour inferred from its body). */
 bool fn_8015D61C(Fn8040Vector3 *hit, const Fn8040Vector3 &start, const Fn8040Vector3 &end);

@@ -4,9 +4,10 @@
 #include <algorithm>
 #include <memory>
 
-/* The parts of <vector> that the game uses so far: the vector of pointers (the Chao::CSD code) and
- * the vector of objects (__vector_obj below, for the CityLaser gadget's weak pointers). Their
- * messages ("vector::reserve length error", "vector::insert length error") are the library's.
+/* The parts of <vector> that the game uses so far: the vector of pointers (the Chao::CSD code), the
+ * vector of unsigned long values (__vector_val below) and the vector of objects (__vector_obj
+ * below, for the CityLaser gadget's weak pointers). Their messages ("vector::reserve length
+ * error", "vector::insert length error") are the library's.
  *
  * Every vector of pointers is implemented by one vector of void pointers, through private bases:
  * the GameCube code has, for each pointer type, an out-of-line copy of each member of vector<T *>
@@ -37,8 +38,14 @@ template <class T, class Allocator> class __vector_imp {
         }
     }
 
+    iterator begin() {
+        return data_;
+    }
     iterator end() {
         return data_ + size_;
+    }
+    size_type size() const {
+        return size_;
     }
     value_type &back() {
         return *(end() - 1);
@@ -51,6 +58,9 @@ template <class T, class Allocator> class __vector_imp {
     }
     void pop_back() {
         --size_;
+    }
+    void clear() {
+        size_ = 0;
     }
 
   private:
@@ -85,6 +95,39 @@ template <class T> class __vector_ptr : private __vector_imp<void *, allocator<v
     }
     void pop_back() {
         base::pop_back();
+    }
+};
+
+/* A vector of unsigned long values stored as void pointers, in the way of __vector_ptr: the game
+ * has an out-of-line copy of each member of vector<unsigned long> and of this layer, each calling
+ * the next layer (in the USA release 0x800CC35C-0x800CE4BC, used by the index vectors of the
+ * EGG_FLEET and STONE_POLE gadgets). That the library implements this vector with the void-pointer
+ * vector, as it does for pointers, is inferred from those copies, which call the void-pointer
+ * vector's members; the name __vector_val is a placeholder. */
+template <class T> class __vector_val : private __vector_imp<void *, allocator<void *> > {
+    typedef __vector_imp<void *, allocator<void *> > base;
+
+  public:
+    typedef size_t size_type;
+    typedef T *iterator;
+
+    iterator begin() {
+        return (iterator)base::begin();
+    }
+    iterator end() {
+        return (iterator)base::end();
+    }
+    bool empty() const {
+        return base::size() == 0;
+    }
+    void clear() {
+        base::clear();
+    }
+    void reserve(size_type n) {
+        base::reserve(n);
+    }
+    void push_back(const T &x) {
+        base::push_back((void *const &)x);
     }
 };
 
@@ -142,15 +185,15 @@ template <class T, class Allocator> class __vector_obj {
     /* Defined after the class and not inline: the game has an out-of-line copy of each. */
     iterator begin();
     iterator end();
-    bool empty() const {
-        return size_ == 0;
-    }
     void clear();
     void push_back(const value_type &x);
     iterator erase(iterator first, iterator last);
 
     void reserve(size_type n);
     void insert(iterator position, size_type n, const value_type &x);
+    bool empty() const {
+        return size_ == 0;
+    }
 
     void swap(__vector_obj &other) {
         if (this != &other) {
@@ -329,8 +372,7 @@ template <class T, class Allocator = allocator<T> > class vector;
 
 /* A vector of objects. The game has out-of-line copies of begin, end, push_back and clear, which
  * are defined after the class; erase and reserve are inline, as the game's callers call
- * __vector_obj's erase and reserve directly. empty is out of line too: the game's callers call an
- * out-of-line copy of it (e.g. 0x800CC494). */
+ * __vector_obj's erase and reserve directly. */
 template <class T, class Allocator> class vector : private __vector_obj<T, Allocator> {
     typedef __vector_obj<T, Allocator> base;
 
@@ -340,7 +382,9 @@ template <class T, class Allocator> class vector : private __vector_obj<T, Alloc
 
     iterator begin();
     iterator end();
-    bool empty() const;
+    bool empty() const {
+        return base::empty();
+    }
     void push_back(const T &x);
     iterator erase(iterator first, iterator last) {
         return base::erase(first, last);
@@ -359,9 +403,6 @@ template <class T, class Allocator>
 typename vector<T, Allocator>::iterator vector<T, Allocator>::end() {
     return base::end();
 }
-template <class T, class Allocator> bool vector<T, Allocator>::empty() const {
-    return base::empty();
-}
 template <class T, class Allocator> void vector<T, Allocator>::push_back(const T &x) {
     base::push_back(x);
 }
@@ -369,7 +410,53 @@ template <class T, class Allocator> void vector<T, Allocator>::clear() {
     base::clear();
 }
 
+/* Only the default allocator is supported by the vector of unsigned long values (placeholder
+ * name): it stores its values through the void-pointer vector and its default allocator, so any
+ * other allocator leaves the type below undefined and fails to compile instead of being ignored. */
+template <class Allocator> struct __vector_val_default_allocator;
+template <> struct __vector_val_default_allocator<allocator<unsigned long> > {
+    typedef int type;
+};
+
+template <class Allocator>
+class vector<unsigned long, Allocator> : private __vector_val<unsigned long> {
+    typedef typename __vector_val_default_allocator<Allocator>::type default_allocator_only;
+    typedef __vector_val<unsigned long> base;
+
+  public:
+    typedef size_t size_type;
+    typedef unsigned long *iterator;
+
+    iterator begin() {
+        return base::begin();
+    }
+    iterator end() {
+        return base::end();
+    }
+    bool empty() const {
+        return base::empty();
+    }
+    void clear() {
+        base::clear();
+    }
+    void reserve(size_type n) {
+        base::reserve(n);
+    }
+    void push_back(const unsigned long &x) {
+        base::push_back(x);
+    }
+};
+
+/* Only the default allocator is supported by the vectors of pointers: they store their values
+ * through the void-pointer vector and its default allocator, so any other allocator leaves the
+ * type below undefined and fails to compile instead of being ignored. */
+template <class Allocator, class T> struct __vector_ptr_default_allocator;
+template <class T> struct __vector_ptr_default_allocator<allocator<T *>, T> {
+    typedef int type;
+};
+
 template <class T, class Allocator> class vector<T *, Allocator> : private __vector_ptr<T> {
+    typedef typename __vector_ptr_default_allocator<Allocator, T>::type default_allocator_only;
     typedef __vector_ptr<T> base;
 
   public:
