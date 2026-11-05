@@ -444,6 +444,15 @@ Game/EggMeca411.cpp:
 	.sdata      start:0x805ECEC8 end:0x805ECEE0
 	.sdata2     start:0x805F9930 end:0x805F9950
 
+Game/EggMeca310.cpp:
+	.text       start:0x802EAF54 end:0x802EB578
+	.ctors      start:0x804AA5EC end:0x804AA5F0
+	.rodata     start:0x80508188 end:0x805081F0
+	.data       start:0x8055A030 end:0x8055A158
+	.bss        start:0x80585180 end:0x805851A0
+	.sdata      start:0x805ECEE0 end:0x805ECEF8
+	.sdata2     start:0x805F9950 end:0x805F9970
+
 Game/SecretDisk.cpp:
 	.text       start:0x802FA34C end:0x802FAF24
 	.ctors      start:0x804AA60C end:0x804AA610
