@@ -124,7 +124,12 @@ void EffectLocusRW3::fn_80439B18() {
     lastColor.green = ((m_lastColor[1] >> System::MATERIAL_FRACTION_BITS) & 0xFF) / 255.0f;
     lastColor.blue = ((m_lastColor[2] >> System::MATERIAL_FRACTION_BITS) & 0xFF) / 255.0f;
     lastColor.alpha = ((m_lastAlpha >> System::MATERIAL_FRACTION_BITS) & 0xFF) / 255.0f;
-    RwRGBAReal color = lastColor;
+    static const RwRGBAReal zeroColor = {0.0f, 0.0f, 0.0f, 0.0f};
+    RwRGBAReal color = zeroColor;
+    color.red = lastColor.red;
+    color.green = lastColor.green;
+    color.blue = lastColor.blue;
+    color.alpha = lastColor.alpha;
     int row = 0;
     System::EffectLocusExecUnit *unit = m_head;
     while (unit != 0) {
