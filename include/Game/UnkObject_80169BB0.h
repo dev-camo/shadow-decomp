@@ -12,8 +12,8 @@ class UnkObject_80169BB0;
 
 extern "C" {
 /* Creates an object of the given kind for target and returns a weak pointer to it (behaviour
- * inferred; the target is not used by the body, and CircusBall's hit callback discards the
- * result). */
+ * inferred; the target is not used by the body, and the hit callbacks of CircusBall, DashPanel
+ * and DashRing discard the result). */
 boost::weak_ptr<UnkObject_80169BB0> fn_80169BB0(const boost::weak_ptr<CharInfo> &target, int kind);
 /* Creates an object of the given kind at position and returns a weak pointer to it (behaviour
  * inferred: the kind also selects the value that fn_8034DAF0 returns for it, and both are passed

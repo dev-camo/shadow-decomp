@@ -1894,6 +1894,17 @@ config.libs = [
             # names at 0x800F5B08 and 0x800F5238 instead of the original's 0x800D0CEC and
             # 0x800D05D0 (one word each).
             Object(NonMatching, "Game/DashPanel.cpp", cflags=cflags_game_cpp),
+            # 31 of 34 functions have identical words and relocations, and the data matches once
+            # the linker-discarded weak and local copies are set aside. Differences (raw words in
+            # a USA DOL linked from this source object, a diagnostic only: the build links the
+            # original object): the hit callback 9 of 220 (the original keeps the float-to-int
+            # conversion of the level and the int-to-float conversion of the index in one 8-byte
+            # slot, this build gives each its own, and the interpolation holds the level in f3 and
+            # loads the next table entry into f0 where the original uses f2 and f3), and the
+            # constructor's call of the function1 destructor and the bound call operator's call of
+            # boost's list1 operator[] go to the copies that symbols.txt names at 0x800F5B08 and
+            # 0x800F5238 instead of the original's 0x800D0CEC and 0x800D05D0 (one word each).
+            Object(NonMatching, "Game/DashRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EnergyCore.cpp", cflags=cflags_game_cpp),
             # 43 of 46 functions have identical words and relocations; the data sections' bytes
             # match once the linker-discarded weak and local copies are set aside (whole-object
