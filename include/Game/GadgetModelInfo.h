@@ -213,9 +213,10 @@ CHECK_SIZEOF(GadgetModelInfo, 0x74);
  * inferred; arg0 is the first argument of the GadgetModelInfo constructor: most callers pass 1,
  * GoalRing passes 0 and Fan passes 0 or 1 depending on its form). */
 extern "C" boost::shared_ptr<GadgetModelInfo> fn_8015F800(int arg0, const char *fileName);
-/* The same with the constructor at 0x80163F7C, which takes the number of a model instead of a file
- * name (behaviour inferred; the SET_WEAPON gadget passes 0 and 0xDF, the DashPanel and DashRing
- * gadgets 0 and their model numbers). */
+/* As fn_8015F800, but the model comes from the resource with the number id (behaviour inferred: a
+ * second GadgetModelInfo constructor at 0x80163F7C builds the model and passes arg0 and id to
+ * fn_8001277C where the file-name constructor passes arg0 and the name to fn_80012700). The
+ * callers pass 0 and a model number (0xDF for the SET_WEAPON gadget). */
 extern "C" boost::shared_ptr<GadgetModelInfo> fn_8015F9D8(int arg0, int id);
 
 /* Returns the word at 0x0 of the object at 0x34 of the model, or null when there is none: a name

@@ -236,6 +236,14 @@ Game/GoalRing.cpp:
 	.sbss       start:0x805EEB38 end:0x805EEB48
 	.sdata2     start:0x805F39A8 end:0x805F39C8
 
+Game/JumpBoard.cpp:
+	.text       start:0x8010E514 end:0x8010F508
+	.rodata     start:0x804BC1F8 end:0x804BC388
+	.data       start:0x805266D8 end:0x805267E8
+	.sdata      start:0x805E5910 end:0x805E5938
+	.sbss       start:0x805EEBE0 end:0x805EEBF0
+	.sdata2     start:0x805F3AC0 end:0x805F3B00
+
 Game/SetVehicle.cpp:
 	.text       start:0x8011E0A0 end:0x8011E630
 	.rodata     start:0x804BD588 end:0x804BD5D0

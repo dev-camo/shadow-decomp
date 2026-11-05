@@ -1762,6 +1762,16 @@ config.libs = [
             Object(NonMatching, "Game/ElecFireWall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecKyuu.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/MagmaGuard.cpp", cflags=cflags_game_cpp),
+            # The data matches once the linker-discarded weak and local copies are set aside, and
+            # 33 of the 34 functions have the original's words. Two of them differ only in a
+            # callee's symbol: the bound call operator's call of boost's list1 operator[] and the
+            # constructor's call of the function1 destructor go to the copies at 0x800D05D0 and
+            # 0x800D0CEC in the original and to the copies at 0x800F5238 and 0x800F5B08 here (USA
+            # addresses). The hit callback (0x8010F028) differs in 22 words: the frame is 0xE0
+            # instead of 0xD0 because the two int-to-float conversions of the level index get their
+            # own 8-byte stack slots (the original reuses the float-to-int slot), and the level and
+            # the difference of the two table entries are in f3 and f2 instead of f2 and f3.
+            Object(NonMatching, "Game/JumpBoard.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),
             # UpdateBody loads the startup float after the store to the offset (6 of 91 words).
             Object(NonMatching, "Game/CloseWall.cpp", cflags=cflags_game_cpp),

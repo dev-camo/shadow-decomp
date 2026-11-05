@@ -189,8 +189,8 @@ CHECK_SIZEOF(Player::AddWeaponCommand, 0x1C);
 /* The constructor at 0x80099BFC passes 0x134 as the command id and 4 to the base constructor,
  * stores the float at 0x14 and copies the vector to 0x18 (with fn_800091EC). The vector is passed
  * by address (the bytes do not show whether as a pointer or a reference; a pointer is declared).
- * The DashPanel gadget sends it with a direction scaled by a value of its level and its
- * "nocontrol time (sec)" parameter (meanings inferred from that use). */
+ * The DashPanel and JumpBoard gadgets send it with a direction scaled by a value of their level
+ * and their "nocontrol time (sec)" parameter (meanings inferred from that use). */
 class ActingAccelerateCommand : public PlayerCommand {
   public:
     ActingAccelerateCommand(const Fn8040Vector3 *vector, float seconds);
