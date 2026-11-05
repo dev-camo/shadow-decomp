@@ -134,6 +134,20 @@ f32 CScene::GetMotionEnd() const {
     return m_endFrame;
 }
 
+int CScene::fn_8036635C() const {
+    const SceneData *scene = m_scene;
+    const MotionPalette *palette = m_palette->m_palette;
+
+    for (int i = 0; i < palette->layerCount; i++) {
+        int rootIndex = scene->layers[i].rootIndex;
+
+        if (palette->layers[i].entries[rootIndex].matrix.sub0 != NULL) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void CMotionPatternRef::Clear() {
     m_ref.Reset(NULL);
     m_entry = NULL;

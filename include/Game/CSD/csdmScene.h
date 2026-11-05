@@ -127,6 +127,9 @@ class CScene : public CSceneDataRef {
     /* Drops the old root, resets the 0x84 reference, then copies non-null pattern (name inferred). */
     void SetRootPattern(const CMotionPatternRef *pattern);
 
+    /* Returns 1 if any layer's root palette entry has a non-null matrix.sub0, otherwise 0. */
+    int fn_8036635C() const;
+
     /* Set the root pattern's hidden flag, translation (in screen units) and scale (names
      * inferred). */
     void SetHidden(s32 hidden);
