@@ -188,11 +188,11 @@ void Meteor::UpdateBody(float dt) {
                 fn_800091EC(&direction, &difference);
                 fn_8040CE74(&direction);
 
-                Fn8040Vector3 angles(0.0f, 0.0f, 0.0f);
+                UnkRotation3 angles(0.0f, 0.0f, 0.0f);
                 fn_800494F8(&angles, &matrix);
 
-                Fn8040Vector3 rotateSpeed(m_params.rotateSpeedX, m_params.rotateSpeedY,
-                                          m_params.rotateSpeedZ);
+                UnkRotation3 rotateSpeed(m_params.rotateSpeedX, m_params.rotateSpeedY,
+                                         m_params.rotateSpeedZ);
                 UnkMeteorsParams_8021FCE4 params(0.0f, lbl_805EFD5C.value, direction, rotateSpeed,
                                                  3.0f);
                 new MeteorsTask(fn_801EB304(fn_8001C4F8(), 11), position, angles, params, 1);

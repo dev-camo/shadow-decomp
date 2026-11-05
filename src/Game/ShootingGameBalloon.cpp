@@ -219,7 +219,7 @@ void BalloonGenerator::UpdateBody(float dt) {
 void BalloonGenerator::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     ReadOwner(owner);
 
-    Fn8040Vector3 rotation(0.0f, 0.0f, 0.0f);
+    UnkRotation3 rotation(0.0f, 0.0f, 0.0f);
     rotation.x = 90.0f * (lbl_805FAD38 / 180.0f);
 
     float halfHeight = 0.5f * m_params.height;

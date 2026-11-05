@@ -10,7 +10,7 @@
  * receives arg3 (behaviour inferred from the body and the helper at 0x8010735C; owner is passed to
  * the HealingUnit's constructor and arg3 is not understood). The BombServer gadget is the only
  * caller. */
-extern "C" void fn_801072C4(const Fn8040Vector3 *position, const Fn8040Vector3 *rotation,
+extern "C" void fn_801072C4(const Fn8040Vector3 *position, const UnkRotation3 *rotation,
                             const boost::weak_ptr<CharInfo> &owner, float arg3);
 
 #endif

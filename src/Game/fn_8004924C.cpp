@@ -5,7 +5,7 @@
 
 extern "C" {
 
-void fn_800494F8(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix) {
+void fn_800494F8(UnkRotation3 *angles, const Fn8040Matrix34 *matrix) {
     float sine;
     float cosine;
     float initialAngle = fn_80016260(matrix->values[0][2], matrix->values[2][2]);
@@ -29,7 +29,7 @@ void fn_800494F8(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix) {
                             matrix->values[0][0] * cosine - matrix->values[2][0] * sine);
 }
 
-void fn_800493C4(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix) {
+void fn_800493C4(UnkRotation3 *angles, const Fn8040Matrix34 *matrix) {
     float sine;
     float cosine;
     float initialAngle = fn_80016260(-matrix->values[0][1], matrix->values[1][1]);
@@ -53,7 +53,7 @@ void fn_800493C4(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix) {
                             matrix->values[0][0] * cosine + matrix->values[1][0] * sine);
 }
 
-void fn_80049290(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix) {
+void fn_80049290(UnkRotation3 *angles, const Fn8040Matrix34 *matrix) {
     float sine;
     float cosine;
     float initialAngle = fn_80016260(matrix->values[1][0], matrix->values[0][0]);

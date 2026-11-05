@@ -120,7 +120,7 @@ void FruitTask::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
     m_state = STATE_RESET;
 }
 
-void FruitTask::UpdateModelMatrix(const Fn8040Vector3 *position, const Fn8040Vector3 *rotation) {
+void FruitTask::UpdateModelMatrix(const Fn8040Vector3 *position, const UnkRotation3 *rotation) {
     if (m_model.get() != 0) {
         Fn8040Matrix34 matrix;
 

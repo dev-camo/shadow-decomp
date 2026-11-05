@@ -182,7 +182,7 @@ void Vine::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         m_models[0]->fn_80162EF4();
         m_models[0]->fn_8016108C();
 
-        Fn8040Vector3 rotation(0.0f, 0.0f, 0.0f);
+        UnkRotation3 rotation(0.0f, 0.0f, 0.0f);
 
         rotation.x = DegreesToRadians(90.0f);
         fn_802E0C60(&m_charInfo->m_position, &rotation, 0, 5.0f, m_params.radius);

@@ -102,7 +102,7 @@ boost::weak_ptr<Effect::System::EffectElement> fn_80168C48(const Fn8040Vector3 *
 /* Creates effect id from the global launch info at position with rotation, and clears
  * ELEMENT_FLAG_4 (behaviour inferred). */
 boost::weak_ptr<Effect::System::EffectElement> fn_80168B38(const Fn8040Vector3 *position,
-                                                           const Fn8040Vector3 *rotation, int id);
+                                                           const UnkRotation3 *rotation, int id);
 /* These helpers write the base transform (names remain unknown). */
 void fn_80425E4C(Effect::System::EffectElement *effect, const Fn8040Vector3 *position);
 void fn_80425E68(Effect::System::EffectElement *effect, const Fn8040Matrix34 *matrix);
@@ -111,7 +111,7 @@ void fn_80425D94(Effect::System::EffectElement *effect, const Fn8040Vector3 *rot
  * other arguments (behaviour inferred from its body; the GoalRing gadget creates its colour effect
  * with it, passing its position, its rotation and an effect id). */
 boost::weak_ptr<Effect::System::EffectElement> fn_801D2B38(int arg0, const Fn8040Vector3 *position,
-                                                           const Fn8040Vector3 *rotation, int id,
+                                                           const UnkRotation3 *rotation, int id,
                                                            int arg4);
 /* Passes position, direction and id (with 0 before position and after id) to fn_801D2AFC and
  * returns the effect it creates (behaviour inferred). */

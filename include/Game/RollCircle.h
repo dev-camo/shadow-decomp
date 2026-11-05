@@ -118,13 +118,13 @@ class RollCircle : public Gadget {
     static const char *s_name;
 
     /* 0x30 */ Fn8040Vector3 m_position;
-    /* 0x3C */ Fn8040Vector3 m_rotation;
+    /* 0x3C */ UnkRotation3 m_rotation;
     /* The offset of the object with angle 0 from the position; the update turns it about the y axis
      * at the circle speed. */
     /* 0x48 */ Fn8040Vector3 m_offset;
     /* The rotation that every object's character info takes; the update turns it at the objects'
      * angular speeds. */
-    /* 0x54 */ Fn8040Vector3 m_objRotation;
+    /* 0x54 */ UnkRotation3 m_objRotation;
     /* 0x60 */ RollCircleParams m_params;
     /* 0x7C */ ObjList m_objs;
     /* The indices of the objects queued for breaking. */

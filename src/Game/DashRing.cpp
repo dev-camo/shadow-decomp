@@ -70,7 +70,7 @@ static void fn_80100CBC(boost::shared_ptr<CharInfo> hit, void *arg) {
     Fn8040Matrix34 matrix;
     Fn8040Vector3 velocity;
     Fn8040Vector3 up;
-    Fn8040Vector3 angles;
+    UnkRotation3 angles;
     Fn8040Vector3 velocityTemporary;
 
     fn_8040C148(&matrix, &lbl_805E0720);

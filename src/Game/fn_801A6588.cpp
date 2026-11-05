@@ -15,7 +15,7 @@ UnkPathData_8001DB08 *Unk801A6844::fn_801A6790(int index) const {
         fn_8001277C(fn_800122D4(), 6, resourceIndices[index]));
 }
 
-void Unk801A6844::fn_801A6688(const Fn8040Vector3 *position, const Fn8040Vector3 &rotation,
+void Unk801A6844::fn_801A6688(const Fn8040Vector3 *position, const UnkRotation3 &rotation,
                               int resourceIndex, bool selectLocalRecord, int reversed) {
     fn_801A6648();
     UnkCollision_8001B494 *collision = fn_8001B494();
@@ -39,7 +39,7 @@ void Unk801A6844::fn_801A6648() {
     }
 }
 
-bool Unk801A6844::fn_801A6588(float distance, Fn8040Vector3 *position, Fn8040Vector3 *rotation) {
+bool Unk801A6844::fn_801A6588(float distance, Fn8040Vector3 *position, UnkRotation3 *rotation) {
     bool result = false;
     if (fn_800ABDCC(&m_path)) {
         if (field_0x5C == 0) {

@@ -330,7 +330,7 @@ void TornadoTowing::Launch(boost::shared_ptr<CharInfo> charInfo) {
     charInfo->fn_801DC980(new ClrVelocityCommand(4));
     charInfo->fn_801DC980(new SetPositionCommand(&m_top, 4));
     charInfo->fn_801DC980(new SetAngleCommand(
-        Fn8040Vector3(0.0f, m_tornado->m_params.launchY - lbl_805FAD38, 0.0f), 2, 4));
+        UnkRotation3(0.0f, m_tornado->m_params.launchY - lbl_805FAD38, 0.0f), 2, 4));
 
     Fn8040Vector3 turnedTemporary;
     Fn8040Vector3 turnedAgainTemporary;
@@ -460,7 +460,7 @@ void Tornado::UpdateModelMatrix() {
          * when the vector functions are modelled with by-value results. */
         Fn8040Vector3 position;
         Fn8040Vector3 toPoint;
-        Fn8040Vector3 angles;
+        UnkRotation3 angles;
         Fn8040Vector3 toPointTemporary;
         Fn8040Matrix34 matrix;
 
@@ -497,7 +497,7 @@ void Tornado::DrawRange() {
      * vector declarations of this file. */
     Fn8040Vector3 direction;
     float pitch = DegreesToRadians(90.0f);
-    Fn8040Vector3 rotation(pitch, 0.0f, 0.0f);
+    UnkRotation3 rotation(pitch, 0.0f, 0.0f);
 
     fn_802E0C60(&m_charInfo->m_position, &rotation, 0, m_params.cylinderY, m_params.cylinderRadius);
 

@@ -43,7 +43,7 @@ fn_800C7EA8(UnkWorld_80021B08 *world, const Fn8040Vector3 *position, int flags, 
 boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>
 fn_800C7A84(UnkWorld_80021B08 *world, const boost::weak_ptr<CharInfo> &owner, float arg2,
             float arg3, int arg4, int arg5, int arg6, const Fn8040Vector3 *arg7,
-            const Fn8040Vector3 *arg8, int arg9);
+            const UnkRotation3 *arg8, int arg9);
 /* Creates a box probe for the character info that owner refers to, with the given half extents
  * (behaviour inferred from the bytes: it stores the three vectors arg6, halfExtents and arg7 at
  * 0x0, 0xC and 0x18 of a shape and wraps it like the other probes; arg4, arg5, arg6, arg7 and arg9
@@ -53,7 +53,7 @@ fn_800C7A84(UnkWorld_80021B08 *world, const boost::weak_ptr<CharInfo> &owner, fl
 boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>
 fn_800C7C34(UnkWorld_80021B08 *world, const boost::weak_ptr<CharInfo> &owner,
             const Fn8040Vector3 &halfExtents, int flags, int arg4, int arg5,
-            const Fn8040Vector3 *arg6, const Fn8040Vector3 *arg7, int arg9);
+            const Fn8040Vector3 *arg6, const UnkRotation3 *arg7, int arg9);
 /* Creates a probe for the character info that owner refers to from a shape that fn_80030A5C builds
  * from position, rotation, arg7 and the three floats (behaviour inferred; the ELEC_BAR gadget
  * passes half its bar length, 2 and 0.5 as the floats, the zero vector lbl_805E07A0 as position and
@@ -61,7 +61,7 @@ fn_800C7C34(UnkWorld_80021B08 *world, const boost::weak_ptr<CharInfo> &owner,
  * passed on and not understood. */
 boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>
 fn_800C78D4(UnkWorld_80021B08 *world, const boost::weak_ptr<CharInfo> &owner, int flags, int arg4,
-            u16 arg5, const Fn8040Vector3 *position, const Fn8040Vector3 &rotation, int arg7,
+            u16 arg5, const Fn8040Vector3 *position, const UnkRotation3 &rotation, int arg7,
             float arg8, float arg9, float arg10);
 /* Creates a probe sphere of the given radius around the character info that owner refers to, and
  * returns it (behaviour inferred; arg2, arg3, arg4 and arg5 are passed on and not understood). */
@@ -77,9 +77,9 @@ fn_800C7DEC(UnkWorld_80021B08 *world, const boost::weak_ptr<CharInfo> &owner, in
  * (named-local pointer forms differ by 36 words). */
 boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>
 fn_800C7D04(UnkWorld_80021B08 *world, const Fn8040Vector3 *position,
-            const Fn8040Vector3 &halfExtents, const Fn8040Vector3 &rotation, int arg4, int arg5,
+            const Fn8040Vector3 &halfExtents, const UnkRotation3 &rotation, int arg4, int arg5,
             int arg6, int arg7, const boost::weak_ptr<CharInfo> &owner, const Fn8040Vector3 &arg9,
-            const Fn8040Vector3 *arg10, int arg11);
+            const UnkRotation3 *arg10, int arg11);
 /* Whether the probe touches the sphere (behaviour inferred). It is false for an expired probe and
  * for one whose byte at 0x2A is zero; otherwise it calls the probe's virtual function at vtable
  * offset 0x7C without arguments and returns whether the one at offset 0x68 returns nonzero, called
@@ -126,7 +126,7 @@ fn_800C81F4(UnkWorld_80021B08 *world, const boost::weak_ptr<CharInfo> &owner, vo
  * passed on and not understood). */
 boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>
 fn_800C86A8(UnkWorld_80021B08 *world, void *collision, const Fn8040Vector3 *position,
-            const Fn8040Vector3 *rotation, int arg4, u16 arg5, int arg6,
+            const UnkRotation3 *rotation, int arg4, u16 arg5, int arg6,
             const boost::weak_ptr<CharInfo> &owner);
 /* Tests the segment from start to end against the world; when it meets something, stores the
  * point in hit (unless hit is null) and returns true (behaviour inferred from its body). */

@@ -30,7 +30,7 @@ UnkManager_80009548 *fn_80009548(void);
 /* Behaviour inferred from the CityLaser gadget's call only: three floats and an integer (0). */
 void fn_8000D664(UnkManager_80009548 *manager, int arg1, float arg2, float arg3, float arg4);
 /* Returns a vector that the BDTrue gadget uses as angles (behaviour inferred). */
-Fn8040Vector3 fn_80109B80(UnkManager_80009548 *manager, int arg1);
+UnkRotation3 fn_80109B80(UnkManager_80009548 *manager, int arg1);
 /* Returns the address of the vector 0x8 bytes into the entry with the given index (behaviour
  * inferred from its body). BDHologram and RainEffect pass 0 for index. */
 Fn8040Vector3 *fn_80010244(UnkManager_80009548 *manager, int index);

@@ -218,7 +218,7 @@ ElecBarSub::ElecBarSub(ElecBar *parent) : m_parent(parent) {
     m_model->fn_8016239C("mat1");
     m_model->fn_8016239C("mat2");
 
-    Fn8040Vector3 rotation(0.0f, 0.5f * lbl_805FAD38, 0.0f);
+    UnkRotation3 rotation(0.0f, 0.5f * lbl_805FAD38, 0.0f);
     boost::shared_ptr<CharaColliBase> probe = fn_800C78D4(
         fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), 0x40000, 10, 0, &lbl_805E07A0,
         rotation, 0, 0.5f * (10.0f * m_parent->m_params.scale), 2.0f, 0.5f);

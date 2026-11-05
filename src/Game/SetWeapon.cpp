@@ -87,7 +87,7 @@ bool Arms::IsFarFromPlayers(float squaredDistance) {
     return fn_80169BE4(&m_charInfo->m_position, squaredDistance);
 }
 
-void Arms::SetTransform(const Fn8040Vector3 *position, Fn8040Vector3 *rotation) {
+void Arms::SetTransform(const Fn8040Vector3 *position, UnkRotation3 *rotation) {
     fn_800091D0(&m_charInfo->m_position, position);
     m_charInfo->m_rotation = *rotation;
     UpdateModels();
@@ -291,7 +291,7 @@ static bool fn_8011EB7C(const UnkProbeFilterRecord *record) {
     return record->flags & 1;
 }
 
-extern "C" void fn_8011E938(int type, const Fn8040Vector3 *position, Fn8040Vector3 *rotation) {
+extern "C" void fn_8011E938(int type, const Fn8040Vector3 *position, UnkRotation3 *rotation) {
     Fn8040Vector3 ground;
     Fn8040Vector3 start;
     Fn8040Vector3 end;
@@ -327,7 +327,7 @@ extern "C" void fn_8011E938(int type, const Fn8040Vector3 *position, Fn8040Vecto
 
 extern "C" void fn_8011E630(const boost::shared_ptr<Weapon::Item> &item,
                             const Fn8040Vector3 *position, const Fn8040Vector3 *direction) {
-    Fn8040Vector3 rotation(0.0f, 0.0f, 0.0f);
+    UnkRotation3 rotation(0.0f, 0.0f, 0.0f);
 
     fn_8003B8F4(direction, &rotation.x, &rotation.z);
 

@@ -45,7 +45,7 @@ class MonsterControl : public Gadget {
     static const char *s_name;
 
     /* 0x30 */ Fn8040Vector3 m_position;
-    /* 0x3C */ Fn8040Vector3 m_rotation;
+    /* 0x3C */ UnkRotation3 m_rotation;
     /* 0x48 */ MonsterControlParams m_params;
     /* 0x58 */ boost::shared_ptr<UnkHandleBTarget_8015BE64> m_handle;
 };

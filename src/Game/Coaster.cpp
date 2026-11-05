@@ -193,12 +193,12 @@ class Coaster : public Gadget {
     /* 0x64 */ CoasterParams m_params;
     /* 0x78 */ s32 m_reversed; /* 1 when the ride goes the other way (inferred) */
     /* The rotation angles of the path, set from fn_80018434 and by the path move. */
-    /* 0x7C */ Fn8040Vector3 m_rotation;
+    /* 0x7C */ UnkRotation3 m_rotation;
     /* 0x88 */ Fn8040Matrix34 m_matrix;
     /* 0xB8 */ Fn8040Matrix34 m_matrix2; /* the matrix turned by pi when reversed */
     /* 0xE8 */ Fn8040Vector3 m_position;
-    /* 0xF4 */ Fn8040Vector3 m_angles; /* the angles of m_matrix2 (inferred) */
-    /* 0x100 */ float m_roll;          /* an angle about the z axis that returns to 0 (inferred) */
+    /* 0xF4 */ UnkRotation3 m_angles; /* the angles of m_matrix2 (inferred) */
+    /* 0x100 */ float m_roll;         /* an angle about the z axis that returns to 0 (inferred) */
     /* 0x104 */ float m_timer; /* set to 0.4 when a ride starts and counted down (inferred) */
     /* 0x108 */ UnkSoundHandle_801D3DC8 m_sound;
     /* 0x124 */ u8 m_fading; /* set by an owner flag; fades the model in over 0.6 s (inferred) */
@@ -601,7 +601,7 @@ void Coaster::SetupPath() {
 }
 
 void Coaster::BuildMatrices() {
-    Fn8040Vector3 angles;
+    UnkRotation3 angles;
     Fn8040Vector3 axis;
     Fn8040Vector3 origin;
     Fn8040Vector3 axisTemporary;
@@ -664,7 +664,7 @@ void Coaster::UpdateModelMatrix() {
 
 void Coaster::OnPathCallback(CameraUpdateEventArgs &args) {
     Fn8040Matrix34 matrix;
-    Fn8040Vector3 angles;
+    UnkRotation3 angles;
     Fn8040Vector3 start;
     Fn8040Vector3 end;
     Fn8040Vector3 up;
@@ -789,7 +789,7 @@ void Coaster::OnCommand(CharCommand &command) {
 
         if (s_stage->field_0x13 && m_timer <= 0.0f && accelerate != 0) {
             Fn8040Matrix34 matrix;
-            Fn8040Vector3 angles;
+            UnkRotation3 angles;
             Fn8040Vector3 direction;
             Fn8040Vector3 directionTemporary;
             /* Built in three statements: a single expression changes the code. */

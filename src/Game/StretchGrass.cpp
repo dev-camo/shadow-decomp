@@ -62,7 +62,7 @@ struct UnkHitContext_8014C108 {
     /* 0x08 */ const StretchGrass::StretchGrassParams *m_params;
     /* 0x0C */ StretchGrass::StretchGrassState *m_state;
     /* 0x10 */ const Fn8040Vector3 *m_launchPosition;
-    /* 0x14 */ const Fn8040Vector3 *m_launchAngles;
+    /* 0x14 */ const UnkRotation3 *m_launchAngles;
 };
 CHECK_SIZEOF(UnkHitContext_8014C108, 0x18);
 

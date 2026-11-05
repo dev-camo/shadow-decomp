@@ -24,7 +24,7 @@ class VehicleTask : public Task {
     /* Stores value in field_0x30. */
     void fn_801B5D1C(float value);
     /* Passes position and rotation to a virtual function of the vehicle. */
-    void fn_801B5D24(const Fn8040Vector3 *position, const Fn8040Vector3 *rotation);
+    void fn_801B5D24(const Fn8040Vector3 *position, const UnkRotation3 *rotation);
     /* Returns the result of another virtual function of the vehicle. */
     bool fn_801B5AA4();
     /* Returns true unless the weak pointer at 0x80 of the vehicle has expired. */

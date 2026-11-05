@@ -11,7 +11,7 @@ class SetAdapterState;
  * The full original extent is unknown. */
 struct UnkOwnerRecord_800C9D24 {
     /* 0x00 */ Fn8040Vector3 position;
-    /* 0x0C */ Fn8040Vector3 rotation;
+    /* 0x0C */ UnkRotation3 rotation; /* degrees; fn_800C9ED4 converts them to radians */
     /* 0x18 */ u32 flags;
     /* 0x1C */ u8 field_0x1C[4];
     /* 0x20 */ u16 kind;

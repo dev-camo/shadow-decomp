@@ -12,7 +12,7 @@
 
 extern "C" {
 
-void fn_804102F4(Fn8040Vector4 *quaternion, const Fn8040Vector3 *rotation, int order) {
+void fn_804102F4(Fn8040Vector4 *quaternion, const UnkRotation3 *rotation, int order) {
     Fn8040Matrix34 matrix;
     fn_8040C148(&matrix, &lbl_805E0720);
 
@@ -40,7 +40,7 @@ void fn_804102F4(Fn8040Vector4 *quaternion, const Fn8040Vector3 *rotation, int o
 }
 
 /* Every order except 2 gives the zero vector; cases 0 and 1 are empty in the original. */
-Fn8040Vector3 fn_80410204(const Fn8040Vector4 *quaternion, int order) {
+UnkRotation3 fn_80410204(const Fn8040Vector4 *quaternion, int order) {
     Fn8040Matrix34 matrix;
     Fn8040Matrix34 matrixTemporary;
     fn_8040B228(&matrixTemporary, quaternion);
@@ -66,10 +66,10 @@ Fn8040Vector3 fn_80410204(const Fn8040Vector4 *quaternion, int order) {
     case 1:
         break;
     }
-    return Fn8040Vector3(0.0f, 0.0f, 0.0f);
+    return UnkRotation3(0.0f, 0.0f, 0.0f);
 }
 
-void fn_80410098(Fn8040Vector3 *result, const Fn8040Vector3 *vector, const Fn8040Vector3 *rotation,
+void fn_80410098(Fn8040Vector3 *result, const Fn8040Vector3 *vector, const UnkRotation3 *rotation,
                  int order) {
     Fn8040Vector3 rotated;
     fn_800091EC(&rotated, vector);
@@ -116,8 +116,8 @@ void fn_80410098(Fn8040Vector3 *result, const Fn8040Vector3 *vector, const Fn804
     fn_800091EC(result, &rotated);
 }
 
-void fn_8040FFBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix,
-                 const Fn8040Vector3 *rotation, int order) {
+void fn_8040FFBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const UnkRotation3 *rotation,
+                 int order) {
     Fn8040Matrix34 rotated;
     fn_8040C148(&rotated, matrix);
 
@@ -142,8 +142,8 @@ void fn_8040FFBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix,
     fn_8040C148(result, &rotated);
 }
 
-void fn_8040FEBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix,
-                 const Fn8040Vector3 *rotation, int order) {
+void fn_8040FEBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const UnkRotation3 *rotation,
+                 int order) {
     Fn8040Matrix34 rotated;
     fn_8040C148(&rotated, matrix);
 
@@ -299,8 +299,8 @@ float fn_8040F8FC(const Fn8040Vector3 *a, const Fn8040Vector3 *b) {
     return fn_801B1DB0(cosine);
 }
 
-Fn8040Vector3 fn_8040F7F8(const Fn8040Vector3 *direction) {
-    Fn8040Vector3 rotation;
+UnkRotation3 fn_8040F7F8(const Fn8040Vector3 *direction) {
+    UnkRotation3 rotation;
     rotation.y = fn_80016260(direction->x, direction->z);
     float reference;
     if (fn_8000A980(direction->x) > fn_8000A980(direction->z)) {
@@ -347,19 +347,19 @@ Fn8040Vector2 fn_8040F664(const Fn8040Vector3 *direction) {
     return rotation;
 }
 
-Fn8040Vector3 fn_8040F5F4(const Fn8040Vector3 *forward, const Fn8040Vector3 *up, int order) {
+UnkRotation3 fn_8040F5F4(const Fn8040Vector3 *forward, const Fn8040Vector3 *up, int order) {
     switch (order) {
     case 0:
         return fn_8040F450(forward, up);
     case 2:
         return fn_8040F364(forward, up);
     default:
-        return Fn8040Vector3(0.0f, 0.0f, 0.0f);
+        return UnkRotation3(0.0f, 0.0f, 0.0f);
     }
 }
 
-Fn8040Vector3 fn_8040F450(const Fn8040Vector3 *forward, const Fn8040Vector3 *up) {
-    Fn8040Vector3 rotation;
+UnkRotation3 fn_8040F450(const Fn8040Vector3 *forward, const Fn8040Vector3 *up) {
+    UnkRotation3 rotation;
     Fn8040Vector3 cross;
     Fn8040Vector3 upCopy;
     Fn8040Vector3 negatedForward;
@@ -393,8 +393,8 @@ Fn8040Vector3 fn_8040F450(const Fn8040Vector3 *forward, const Fn8040Vector3 *up)
     return rotation;
 }
 
-Fn8040Vector3 fn_8040F364(const Fn8040Vector3 *forward, const Fn8040Vector3 *up) {
-    Fn8040Vector3 rotation;
+UnkRotation3 fn_8040F364(const Fn8040Vector3 *forward, const Fn8040Vector3 *up) {
+    UnkRotation3 rotation;
     float horizontalLength = std::sqrt(forward->x * forward->x + forward->z * forward->z);
     float yaw = fn_80016260(-forward->x, -forward->z);
     float pitch = fn_80016260(forward->y, horizontalLength);

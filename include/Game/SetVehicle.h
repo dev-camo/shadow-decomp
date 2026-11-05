@@ -58,7 +58,7 @@ class SetVehicleTask : public Gadget {
     /* 0x30 */ Vehicle::VehicleTask *m_vehicle;
     /* 0x34 */ s32 m_vehicleType; /* the "Vehicle" parameter */
     /* 0x38 */ Fn8040Vector3 m_position;
-    /* 0x44 */ Fn8040Vector3 m_rotation;
+    /* 0x44 */ UnkRotation3 m_rotation;
     /* Built for m_position; the vehicle is not created while fn_80039EDC is true for it. */
     /* 0x50 */ boost::shared_ptr<UnkIdList_8003A154> m_idList;
     /* Set once a vehicle of an available type has been created, or when the constructor's com id

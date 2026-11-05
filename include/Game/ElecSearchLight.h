@@ -69,7 +69,7 @@ class ElecSearchLight : public Gadget {
     /* Takes m_target out of control and places it at position, facing the beam (state 2). */
     void Catch(const Fn8040Vector3 *position);
     /* Stores the angles of the beam's direction (the model rotation turned half a turn about y). */
-    void GetBeamAngles(Fn8040Vector3 *angles);
+    void GetBeamAngles(UnkRotation3 *angles);
     /* Pulls m_target 20 units towards the light; within 50 units it lets the target go with a
      * jump and enters state 3. */
     void PullTarget();

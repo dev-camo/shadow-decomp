@@ -120,8 +120,8 @@ class Chao {
     /* 0x00 */ ChaoHolder *m_holder;
     /* 0x04 */ const ChaoModelEntry *m_entry;
     /* 0x08 */ ChaoData *m_data;
-    /* 0x0C */ Fn8040Vector3 m_center;   /* the owner's position */
-    /* 0x18 */ Fn8040Vector3 m_rotation; /* the owner's rotation */
+    /* 0x0C */ Fn8040Vector3 m_center;  /* the owner's position */
+    /* 0x18 */ UnkRotation3 m_rotation; /* the owner's rotation */
     /* 0x24 */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
     /* 0x2C */ boost::shared_ptr<Target> m_object;
     /* 0x34 */ boost::shared_ptr<UnkObject_802B4254> m_object2;

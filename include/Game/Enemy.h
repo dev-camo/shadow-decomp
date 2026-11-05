@@ -86,7 +86,7 @@ CHECK_SIZEOF(Enemy, 0x100);
  * Pointer/reference and const qualifiers are inferred at this declaration boundary. */
 extern "C" {
 int fn_801A642C(const Enemy *enemy);
-Fn8040Vector3 *fn_8017C684(Enemy *enemy);
+UnkRotation3 *fn_8017C684(Enemy *enemy);
 Fn8040Vector3 *fn_8017C690(Enemy *enemy);
 Fn8040Vector3 *fn_80181F0C(Enemy *enemy);
 float fn_8018346C(const Enemy *enemy);

@@ -78,7 +78,7 @@ class SetDefenseWall : public Gadget {
     /* 0x64 */ Fn8040Vector3 m_position;
     /* 0x70 */ float m_offset; /* the height of the character info above m_position */
     /* 0x74 */ Fn8040Vector3 m_probePosition;
-    /* 0x80 */ Fn8040Vector3 m_probeRotation;
+    /* 0x80 */ UnkRotation3 m_probeRotation;
 };
 CHECK_SIZEOF(SetDefenseWall, 0x90);
 

@@ -15,7 +15,7 @@ using SonicteamUSA::System::CharaColli::CharaColliBase;
 const char *DarkSpinEntrance::s_name = "DarkSpinEntrance";
 
 /* Three angles (in radians) built at startup; the constructor passes them to fn_800C7A84. */
-static Fn8040Vector3 lbl_80584068(0.5f * lbl_805FAD38, 0.0f, 0.0f);
+static UnkRotation3 lbl_80584068(0.5f * lbl_805FAD38, 0.0f, 0.0f);
 
 DarkSpinEntrance::DarkSpinEntrance(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
     : Gadget(parent, owner) {

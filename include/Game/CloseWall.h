@@ -52,7 +52,7 @@ class SetCloseWall : public Gadget {
     /* 0 on creation, 1 waiting for the command, 2 closing, 3 closed (inferred). */
     /* 0x58 */ s32 m_state;
     /* 0x5C */ Fn8040Vector3 m_position;
-    /* 0x68 */ Fn8040Vector3 m_rotation;
+    /* 0x68 */ UnkRotation3 m_rotation;
     /* 0x74 */ float m_offset; /* the distance of each wall from m_position */
 };
 CHECK_SIZEOF(SetCloseWall, 0x78);

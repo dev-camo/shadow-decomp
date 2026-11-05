@@ -32,7 +32,7 @@ void fn_8040F268(Fn8040Vector3 *result, const Fn8040Vector3 *from, const Fn8040V
 
 /* Interpolates a rotation vector from one to another by t (0 to 1), through quaternions of the
  * given rotation order. */
-Fn8040Vector3 fn_8040F16C(const Fn8040Vector3 *from, const Fn8040Vector3 *to, int order, float t) {
+UnkRotation3 fn_8040F16C(const UnkRotation3 *from, const UnkRotation3 *to, int order, float t) {
     if (t <= 0.0f) {
         return *from;
     }

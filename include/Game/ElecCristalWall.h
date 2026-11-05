@@ -82,12 +82,12 @@ class ElecCristalWall : public Gadget {
     /* 0x54 */ s32 m_health;       /* 6 after construction */
     /* (0, 0, -75) turned about the x and y axes by the "AppearAngle" parameters */
     /* 0x58 */ Fn8040Vector3 m_appearOffset;
-    /* 0x64 */ Fn8040Vector3 m_appearRotation; /* pi or -pi about each axis, at random */
+    /* 0x64 */ UnkRotation3 m_appearRotation; /* pi or -pi about each axis, at random */
     /* The constructor sets 0, 1 or 2 for those results of fn_8040EA90(3) and leaves it unchanged
      * when the helper returns 3, which it can when its float rounds to 1. */
     /* 0x70 */ s32 m_rotationOrder;
     /* 0x74 */ Fn8040Vector3 m_position;
-    /* 0x80 */ Fn8040Vector3 m_rotation;
+    /* 0x80 */ UnkRotation3 m_rotation;
     /* Counts down after a flash; the health colour is applied while it is 0. */
     /* 0x8C */ float m_flashTime;
 };

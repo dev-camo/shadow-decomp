@@ -110,7 +110,7 @@ void StoneStatue::UpdateBody(float dt) {
         }
 
         if (m_tracking) {
-            Fn8040Vector3 previousRotation = m_charInfo->m_rotation;
+            UnkRotation3 previousRotation = m_charInfo->m_rotation;
 
             TurnToCharacter(dt);
 
@@ -308,7 +308,7 @@ void StoneStatue::DrawRange() {
 
     center.y += halfHeight;
 
-    Fn8040Vector3 rotation(0.5f * lbl_805FAD38, 0.0f, 0.0f);
+    UnkRotation3 rotation(0.5f * lbl_805FAD38, 0.0f, 0.0f);
 
     fn_802E0C60(&center, &rotation, 0, halfHeight, m_params.rangeRadius);
 }

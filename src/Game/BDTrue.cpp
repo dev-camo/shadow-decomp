@@ -106,7 +106,7 @@ void BDTrue::CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
 void BDTrue::UpdateModelMatrix() {
     if (m_model.get() != 0) {
-        Fn8040Vector3 angles = fn_80109B80(fn_80009548(), 0);
+        UnkRotation3 angles = fn_80109B80(fn_80009548(), 0);
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);

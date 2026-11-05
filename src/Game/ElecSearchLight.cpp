@@ -422,7 +422,7 @@ void ElecSearchLight::Search() {
 }
 
 void ElecSearchLight::Catch(const Fn8040Vector3 *position) {
-    Fn8040Vector3 angles(0.0f, 0.0f, 0.0f);
+    UnkRotation3 angles(0.0f, 0.0f, 0.0f);
 
     GetBeamAngles(&angles);
     m_target->fn_801DC980(new ClrVelocityCommand(4));
@@ -460,7 +460,7 @@ void ElecSearchLight::PullTarget() {
     }
 }
 
-void ElecSearchLight::GetBeamAngles(Fn8040Vector3 *angles) {
+void ElecSearchLight::GetBeamAngles(UnkRotation3 *angles) {
     Fn8040Matrix34 matrix(lbl_805E0720);
 
     fn_8040B848(&matrix, m_charInfo->m_rotation.y);
@@ -502,7 +502,7 @@ void ElecSearchLight::StartBreakEffect() {
 
 void ElecSearchLight::TurnToTarget(float dt) {
     Fn8040Vector3 direction;
-    Fn8040Vector3 angles;
+    UnkRotation3 angles;
     Fn8040Vector3 temporary;
 
     fn_8040CD74(&temporary, &m_charInfo->m_position, &m_target->m_position);

@@ -95,7 +95,7 @@ UnkMeteorsParams_8021FCE4::UnkMeteorsParams_8021FCE4(const MeteorParams &params)
 
 UnkMeteorsParams_8021FCE4::UnkMeteorsParams_8021FCE4(float range, float moveSpeed,
                                                      const Fn8040Vector3 &direction,
-                                                     Fn8040Vector3 rotateSpeed, float lifetime)
+                                                     UnkRotation3 rotateSpeed, float lifetime)
     : m_range(range), m_moveSpeed(moveSpeed) {
     fn_800091EC(&m_direction, &direction);
     m_rotateSpeed = rotateSpeed;
@@ -109,7 +109,7 @@ UnkMeteorsParams_8021FCE4::UnkMeteorsParams_8021FCE4(const UnkMeteorsParams_8021
     m_lifetime = other.m_lifetime;
 }
 
-Meteors::Meteors(Task *task, const Fn8040Vector3 &position, const Fn8040Vector3 &rotation,
+Meteors::Meteors(Task *task, const Fn8040Vector3 &position, const UnkRotation3 &rotation,
                  const UnkMeteorsParams_8021FCE4 &params, int state)
     : m_task(task), m_state(state), m_params(params), m_flags(0), m_timer(params.m_lifetime),
       m_health(1.0f) {
@@ -363,7 +363,7 @@ void Meteors::OnAttack(AttackCallbackParam &param) {
 
 const char *MeteorsTask::s_name = "MeteorsTask";
 
-MeteorsTask::MeteorsTask(Task *parent, const Fn8040Vector3 &position, const Fn8040Vector3 &rotation,
+MeteorsTask::MeteorsTask(Task *parent, const Fn8040Vector3 &position, const UnkRotation3 &rotation,
                          const UnkMeteorsParams_8021FCE4 &params, int state)
     : Task(parent) {
     m_name = s_name;
@@ -437,7 +437,7 @@ void MeteorsHolder::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
 void MeteorsHolder::CreateMeteors(UnkGadgetOwner_800C9CD0 *owner) {
     Fn8040Vector3 position;
-    Fn8040Vector3 rotation(0.0f, 0.0f, 0.0f);
+    UnkRotation3 rotation(0.0f, 0.0f, 0.0f);
 
     fn_800C9F14(owner, &position);
     fn_800C9ED4(owner, &rotation);
