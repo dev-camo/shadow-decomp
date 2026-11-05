@@ -426,6 +426,15 @@ Game/ElecBlock.cpp:
 	.sdata      start:0x805E75E0 end:0x805E7608
 	.sdata2     start:0x805F5A70 end:0x805F5AD0
 
+Game/SpringPanel.cpp:
+	.text       start:0x801593A4 end:0x8015AB4C
+	.ctors      start:0x804AADE0 end:0x804AADE4
+	.rodata     start:0x804C32C8 end:0x804C3500
+	.data       start:0x8052BE48 end:0x8052BFF0
+	.sdata      start:0x805E7608 end:0x805E7658
+	.sbss       start:0x805F0248 end:0x805F0278
+	.sdata2     start:0x805F5AD0 end:0x805F5B18
+
 Game/fn_80160B18.cpp:
 	.text       start:0x80160EFC end:0x80160F84
 
