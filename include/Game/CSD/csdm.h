@@ -2,6 +2,7 @@
 #define GAME_CSD_CSDM_H
 
 #include <dolphin/types.h>
+#include <list>
 #include "Game/CSD/MotionPalette.h"
 #include "Game/CSD/csdBase.h"
 #include "Game/CSD/csdRCObject.h"
@@ -123,15 +124,39 @@ CHECK_SIZEOF(Chao::CSD::CElementDataRef, 0xC);
 class CMotionPattern;
 class CFontList;
 class CScene;
+class CNode;
+class CNodeListener;
 struct NodeObjects;
+
+/* The node's second base, containing its raw listener pointers (class and method names inferred).
+ * The native constructor and destructor own the list; GetSender returns null in the base and
+ * the node in CNode. The pure destructor has a native definition used by CNode's destructor. */
+class CNodeListenerSource {
+  public:
+    CNodeListenerSource();
+    virtual ~CNodeListenerSource() = 0;
+    virtual CNode *GetSender();
+
+    /* Number of persistent listeners; the scene's update uses it to select the final node pass. */
+    size_t fn_80366F78();
+
+    /* 0x04 */ std::list<CNodeListener *> m_listeners;
+};
+CHECK_SIZEOF(Chao::CSD::CNodeListenerSource, 0x10);
 
 /* The node an element belongs to (class name from its reference holder's RTTI): it holds the
  * element's file data and the CMotionPattern of its entry, and forwards the accessors to it. The
  * conversions between the node's coordinates and the entry's are those of the screen (Screen.h).
  * Only the members that are known have names. */
-class CNode : public CElementDataRef {
+class CNode : public CElementDataRef, public CNodeListenerSource, public CBase {
   public:
     virtual ~CNode();
+    virtual CNode *GetSender();
+
+    /* Native passes called before the palette update and, when listeners exist, after frame
+     * advancement. Their implementations remain in csdmNode.cpp. */
+    void fn_8036A728();
+    void fn_8036A954();
 
     /* The accessors forward to the entry's CMotionPattern (names inferred). The translation is
      * in screen units. */
@@ -171,7 +196,7 @@ class CNode : public CElementDataRef {
      * the entry dirty (placeholder name: the purpose is not known). */
     void fn_8036A20C();
 
-    /* 0x0C */ u8 field_0xC[0x1C];
+    /* 0x1C */ u8 field_0x1C[0xC];
     /* 0x28 */ CMotionPattern *m_pattern;
     /* 0x2C */ CFontList *m_fonts;
     /* 0x30 */ u8 field_0x30[0x4];

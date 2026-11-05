@@ -58,6 +58,10 @@ template <class Key, class Value, class Compare, class Allocator> class __tree {
     class iterator {
       public:
         iterator(__tree_node_base *n) : node_(n) {}
+        iterator() {}
+        /* Working interpretation of the pointer-copy routine used when a scene resets its
+         * cursor; ordinary copy construction remains implicit. */
+        iterator &operator=(const iterator &x);
         Value *operator->() const {
             return &static_cast<node *>(node_)->value_;
         }
@@ -169,6 +173,13 @@ template <class Key, class Value, class Compare, class Allocator> class __tree {
     __compressed_pair<__tree_end_node, node_allocator> header_;
     __compressed_pair<__tree_node_base *, Compare> begin_;
 };
+
+template <class Key, class Value, class Compare, class Allocator>
+typename __tree<Key, Value, Compare, Allocator>::iterator &
+__tree<Key, Value, Compare, Allocator>::iterator::operator=(const iterator &x) {
+    node_ = x.node_;
+    return *this;
+}
 
 template <class Key, class Value, class Compare, class Allocator>
 __tree<Key, Value, Compare, Allocator>::__tree(const Compare &comp, const Allocator &a)

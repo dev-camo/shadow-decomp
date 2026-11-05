@@ -117,6 +117,98 @@ void CScene::CreatePalette() {
     }
 }
 
+void CScene::fn_803669B8(f32 step) {
+    if (m_scene == NULL) {
+        return;
+    }
+
+    fn_80365478(&CSceneListener::fn_8036F96C, this);
+    for (CallbackList::iterator callback = m_beforeUpdateCallbacks.begin();
+         callback != m_beforeUpdateCallbacks.end();) {
+        if (!(*callback)->Invoke(this)) {
+            callback = m_beforeUpdateCallbacks.erase(callback);
+        } else {
+            ++callback;
+        }
+    }
+
+    if (m_lastFrame >= m_endFrame && m_speed > 0.0f) {
+        m_endPolicy.OnReachEnd(this);
+        fn_80365478(&CSceneListener::OnReachEnd, this);
+        for (CallbackList::iterator callback = m_endCallbacks.begin();
+             callback != m_endCallbacks.end();) {
+            if (!(*callback)->Invoke(this)) {
+                callback = m_endCallbacks.erase(callback);
+            } else {
+                ++callback;
+            }
+        }
+    }
+
+    if (m_lastFrame <= m_startFrame && m_speed < 0.0f) {
+        m_endPolicy.OnReachStart(this);
+        fn_80365478(&CSceneListener::OnReachStart, this);
+        for (CallbackList::iterator callback = m_startCallbacks.begin();
+             callback != m_startCallbacks.end();) {
+            if (!(*callback)->Invoke(this)) {
+                callback = m_startCallbacks.erase(callback);
+            } else {
+                ++callback;
+            }
+        }
+    }
+
+    const SceneMotion *motion = NULL;
+    if (m_motion != NULL) {
+        motion = m_motion->m_motion;
+    }
+
+    MotionPaletteEntry *parent = NULL;
+    if (field_0x84.Get() != NULL) {
+        parent = field_0x84->m_pattern->m_entry;
+    } else if (m_rootPattern != NULL) {
+        m_rootPattern->UpdateTransform();
+        parent = m_rootPattern->m_entry;
+    }
+
+    const FontList *fonts = NULL;
+    if (m_fonts != NULL) {
+        fonts = m_fonts->m_fonts;
+    }
+
+    NodeMap::iterator node;
+    for (node = m_nodes.begin(); node != m_nodes.end(); ++node) {
+        node->second->fn_8036A728();
+    }
+    UpdatePalette(m_palette->m_palette, m_scene, motion, m_frame, fonts, parent);
+
+    fn_80365478(&CSceneListener::fn_8036F970, this);
+    for (CallbackList::iterator callback = m_afterUpdateCallbacks.begin();
+         callback != m_afterUpdateCallbacks.end();) {
+        if (!(*callback)->Invoke(this)) {
+            callback = m_afterUpdateCallbacks.erase(callback);
+        } else {
+            ++callback;
+        }
+    }
+
+    if (m_paused == 0) {
+        m_lastFrame = m_frame;
+        m_frame += step * (m_speed * m_scene->field_0x8);
+        if (m_frame > m_endFrame) {
+            m_frame = m_endFrame;
+        } else if (m_frame < m_startFrame) {
+            m_frame = m_startFrame;
+        }
+    }
+
+    for (node = m_nodes.begin(); node != m_nodes.end(); ++node) {
+        if (node->second->fn_80366F78() != 0) {
+            node->second->fn_8036A954();
+        }
+    }
+}
+
 const SceneData *CSceneDataRef::fn_8036679C() const {
     return m_scene;
 }
