@@ -18,7 +18,7 @@ class ElecCristalWallSwitch : public Gadget {
     ElecCristalWallSwitch(Task *parent, UnkGadgetOwner_800C9CD0 *owner);
     virtual ~ElecCristalWallSwitch();
     virtual void UpdateBody(float dt);
-    virtual void fn_800CBC1C();
+    virtual void fn_800CBC1C(float);
     virtual void ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner);
 
     /* Creates the switch under task layer 11 (name inferred). */
@@ -62,7 +62,7 @@ void ElecCristalWallSwitch::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     CopyFromOwner(owner);
 }
 
-void ElecCristalWallSwitch::fn_800CBC1C() {
+void ElecCristalWallSwitch::fn_800CBC1C(float) {
     DrawDebugRange();
 }
 

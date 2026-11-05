@@ -247,7 +247,7 @@ void Fan::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     }
 }
 
-void Fan::fn_800CBC1C() {
+void Fan::fn_800CBC1C(float) {
     if (m_handle.get() != 0) {
         fn_8015BE64(m_handle.get());
     }

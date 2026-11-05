@@ -30,7 +30,7 @@ class ElecBomb : public Gadget {
     virtual void UpdateBody(float dt);
     /* Draws a debug sphere of radius 150 at the character info when there is a model (behaviour
      * inferred). */
-    virtual void fn_800CBC1C();
+    virtual void fn_800CBC1C(float);
     virtual void ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner);
 
     /* Creates the gadget under task layer 11 (name inferred). */

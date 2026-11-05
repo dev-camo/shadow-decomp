@@ -80,7 +80,7 @@ void ElecCircuitColli::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     CopyFromOwner(owner);
 }
 
-void ElecCircuitColli::fn_800CBC1C() {
+void ElecCircuitColli::fn_800CBC1C(float) {
     fn_8033BC78();
 }
 

@@ -101,7 +101,7 @@ void ElecFan::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     CopyFromOwner(owner);
 }
 
-void ElecFan::fn_800CBC1C() {
+void ElecFan::fn_800CBC1C(float) {
     Fn8040Vector3 center;
     Fn8040Vector3 offset;
     Fn8040Vector3 rotation;

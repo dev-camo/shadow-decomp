@@ -108,7 +108,7 @@ void ElecSecurityCodeGenerator::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     }
 }
 
-void ElecSecurityCodeGenerator::fn_800CBC1C() {
+void ElecSecurityCodeGenerator::fn_800CBC1C(float) {
     if (m_model == 0) {
         m_model = new GadgetModelInfo(1, "SECURITY.BIN");
         m_loadedType = m_params.type;
