@@ -214,7 +214,8 @@ CHECK_SIZEOF(GadgetModelInfo, 0x74);
  * GoalRing passes 0 and Fan passes 0 or 1 depending on its form). */
 extern "C" boost::shared_ptr<GadgetModelInfo> fn_8015F800(int arg0, const char *fileName);
 /* The same with the constructor at 0x80163F7C, which takes the number of a model instead of a file
- * name (behaviour inferred; the SET_WEAPON gadget passes 0 and 0xDF). */
+ * name (behaviour inferred; the SET_WEAPON gadget passes 0 and 0xDF, the DashPanel and DashRing
+ * gadgets 0 and their model numbers). */
 extern "C" boost::shared_ptr<GadgetModelInfo> fn_8015F9D8(int arg0, int id);
 
 /* Returns the word at 0x0 of the object at 0x34 of the model, or null when there is none: a name

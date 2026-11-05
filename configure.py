@@ -1878,6 +1878,22 @@ config.libs = [
             # 0x800D0CEC and 0x800D05D0 in the original, and those that symbols.txt names at
             # 0x800F5B08 and 0x800F5238 here (USA addresses).
             Object(NonMatching, "Game/ElecAccessPanel.cpp", cflags=cflags_game_cpp),
+            # 33 of 38 functions have identical words and relocations, and the data matches once
+            # the linker-discarded weak and local copies are set aside. Differences (raw words in
+            # a USA DOL linked from this source object, a diagnostic only: the build links the
+            # original object): the hit callback 31 of 304, its frame 0x170 instead of 0x160 (the
+            # original keeps the float-to-int conversion of the level and both int-to-float
+            # conversions of the index in one 8-byte slot, this build gives each its own), the
+            # first interpolation holding the level in f3 and loading the next table entry into
+            # f0 where the original uses f2 and f3, two vectors at other stack offsets (the
+            # result of fn_8040F5F4 and pushTemporary), and three calls whose targets swapped
+            # places; the CancelBehaviorCommand constructor defined in the file (see its note)
+            # follows the converting weak_ptr<CharInfo> constructor instead of preceding it (12
+            # and 13 words); and the constructor's call of the function1 destructor and the bound
+            # call operator's call of boost's list1 operator[] go to the copies that symbols.txt
+            # names at 0x800F5B08 and 0x800F5238 instead of the original's 0x800D0CEC and
+            # 0x800D05D0 (one word each).
+            Object(NonMatching, "Game/DashPanel.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EnergyCore.cpp", cflags=cflags_game_cpp),
             # 43 of 46 functions have identical words and relocations; the data sections' bytes
             # match once the linker-discarded weak and local copies are set aside (whole-object
