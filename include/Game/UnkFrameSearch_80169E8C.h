@@ -8,7 +8,9 @@
 /* The user data of the part callback fn_80169E8C (placeholder names). For a part with a clump, the
  * callback looks up the frame with the given id below the clump's frame (fn_80038E84) and stores
  * the result in frame; it returns null once a frame is found and the part otherwise (behaviour
- * inferred). The callers zero both members and then set the id. */
+ * inferred). The callers zero both members and then set the id. UnkPartFrameSearch has the same
+ * layout but another meaning: the ELEC_FIREWALL and ELEC_CORE callbacks compare its id with the
+ * part's word at 0x8. */
 struct UnkFrameSearch_80169E8C {
     UnkFrameSearch_80169E8C() : id(0), frame(0) {}
 
