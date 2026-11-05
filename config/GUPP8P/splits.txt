@@ -452,10 +452,8 @@ Game/fn_801A6588.cpp:
 	.sdata2     start:0x805F68C0 end:0x805F68C8
 
 Game/fn_801A687C.cpp:
-	.text       start:0x801A6C38 end:0x801A6C7C
-
-Game/fn_801A6944.cpp:
-	.text       start:0x801A6D00 end:0x801A6D5C
+	.text       start:0x801A6C38 end:0x801A6EB8
+	.sdata2     start:0x805F68C8 end:0x805F68D0
 
 Game/fn_801B1DB0.cpp:
 	.text       start:0x801B2150 end:0x801B2174
