@@ -846,6 +846,16 @@ Game/GiantLantern.cpp:
 	.sbss       start:0x805EFED0 end:0x805EFEE8
 	.sdata2     start:0x805F7280 end:0x805F72B0
 
+Game/GravityChangeSwitch.cpp:
+	.text       start:0x8024697C end:0x802476A8
+	.ctors      start:0x804A9ED8 end:0x804A9EDC
+	.rodata     start:0x804F3BD8 end:0x804F3CC8
+	.data       start:0x805488A8 end:0x80548968
+	.bss        start:0x80583E48 end:0x80583E58
+	.sdata      start:0x805EA130 end:0x805EA158
+	.sbss       start:0x805EFF60 end:0x805EFF70
+	.sdata2     start:0x805F7478 end:0x805F74A0
+
 Game/GravityChangeCollision.cpp:
 	.text       start:0x802476A8 end:0x80247B24
 	.rodata     start:0x804F3CC8 end:0x804F3D08
