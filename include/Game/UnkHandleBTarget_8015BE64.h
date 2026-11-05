@@ -133,6 +133,10 @@ extern "C" {
 /* Calls callback with the character infos taken from the hits of args whose fn_80078B4C (vtable
  * offset 0x28) returns true, passing context through (behaviour inferred). */
 void fn_8015AA84(ColliDetectArgs *args, ColliHitCallback callback, void *context);
+/* Calls callback with each character info taken from the hits of args whose fn_80078B44 reports
+ * true, passing context through (behaviour inferred; fn_8015AA84 makes the same walk with
+ * fn_80078B4C). */
+void fn_8015AE44(ColliDetectArgs *args, ColliHitCallback callback, void *context);
 /* Wraps a probe in a handle target (behaviour inferred). */
 boost::shared_ptr<UnkHandleBTarget_8015BE64>
 fn_8015B8C4(boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> probe);

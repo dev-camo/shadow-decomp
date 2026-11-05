@@ -18,6 +18,9 @@ class UnkBitFlags_80014E04 {
     void Set(int bit);
     bool Test(int bit) const;
     void Reset(int bit);
+    /* Copies the bits (0x8000B21C; the FireRing gadget assigns a flags object made with the value
+     * constructor through it). */
+    UnkBitFlags_80014E04 &operator=(const UnkBitFlags_80014E04 &other);
 
     /* 0x0 */ u32 m_bits;
 };
