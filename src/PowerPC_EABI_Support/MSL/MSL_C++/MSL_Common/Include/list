@@ -5,7 +5,7 @@
 #include "layout_check.h"
 
 /* The parts of <list> that the game uses so far: the list of pointers (the ElecSecurityCode list of
- * the ELEC_SECURITY gadget).
+ * the ELEC_SECURITY gadget) and the list of objects (see __list_obj_imp below).
  *
  * Every list of pointers is implemented by the list of void pointers, through a private base, as
  * the vectors of pointers are: the GameCube code has, for each pointer type, an out-of-line copy
@@ -37,7 +37,8 @@ CHECK_SIZEOF(std::__list_node<void *>, 0xC);
 /* The list implementation: the size (paired with the node allocator), then the sentinel node
  * (paired with the allocator). The pairing is inferred: the game's constructor of the size pair
  * (0x8001BE90) is a separate function from the identical one of the vector's size pair
- * (0x80019AA0), so the two pairs have different types. */
+ * (0x80019AA0), so the two pairs have different types. __list_obj_imp below pairs them the other
+ * way round; which pairing is right for this list is unresolved. */
 template <class T, class Allocator> class __list_imp {
     typedef __list_node<T> node;
     typedef allocator<node> node_allocator;
@@ -90,6 +91,11 @@ template <class T, class Allocator> class __list_imp {
     iterator erase(iterator first, iterator last);
 
   private:
+    /* Not copyable: a copy of the sentinel's links would leave the copy pointing into this list's
+     * nodes. Declared and left undefined: no copy of a list of pointers is known in the game. */
+    __list_imp(const __list_imp &);
+    __list_imp &operator=(const __list_imp &);
+
     __list_node_base *__tail() {
         return &tail_.first();
     }
@@ -124,6 +130,191 @@ typename __list_imp<T, Allocator>::iterator __list_imp<T, Allocator>::erase(iter
 }
 
 template <class T, class Allocator = allocator<T> > class list;
+
+/* The implementation of the lists of objects (the falling stones of the STONE_POLE gadget). It is a
+ * template of its own rather than __list_imp because the program's void-pointer list members stay
+ * declarations: the original ElecSecurityCodeGenerator object has no copy of the void-pointer
+ * insert (its .rodata lacks insert's "Memory allocation failure" message), and the compiler still
+ * instantiates a member that a header defines for void * when it is declared as an explicit
+ * specialisation. The layout is __list_imp's. The value allocator is paired with the size and the
+ * node allocator with the sentinel node, as in the tree of <map>: erase destroys values through
+ * the allocator at 0x0 and frees nodes through the one at 0x4, and insert allocates nodes through
+ * the one at 0x4. The names __list_obj_imp and __list_obj are placeholders. */
+/* Only the default allocator is supported by the list of objects for now (placeholder name): its
+ * node allocator is default-constructed, which is only correct for a stateless allocator. Any
+ * other allocator leaves the type below undefined and fails to compile. */
+template <class Allocator, class T> struct __list_obj_default_allocator;
+template <class T> struct __list_obj_default_allocator<allocator<T>, T> {
+    typedef int type;
+};
+
+template <class T, class Allocator> class __list_obj_imp {
+    typedef typename __list_obj_default_allocator<Allocator, T>::type default_allocator_only;
+    typedef __list_node<T> node;
+    typedef typename Allocator::template rebind<node>::other node_allocator;
+
+  public:
+    typedef T value_type;
+    typedef size_t size_type;
+
+    class iterator {
+      public:
+        iterator() {}
+        iterator(__list_node_base *n) : node_(n) {}
+        /* User-declared: the game passes the iterators that begin and end return straight on as
+         * by-value arguments. With the implicit copy constructor each one is first copied to a
+         * second stack slot (clear and the destructor then take 0x30-byte frames instead of the
+         * game's 0x20). */
+        iterator(const iterator &x) : node_(x.node_) {}
+
+        T &operator*() const {
+            return static_cast<node *>(node_)->data_;
+        }
+        T *operator->() const {
+            return &static_cast<node *>(node_)->data_;
+        }
+        iterator &operator++() {
+            node_ = node_->next_;
+            return *this;
+        }
+        iterator operator++(int) {
+            iterator tmp(*this);
+            node_ = node_->next_;
+            return tmp;
+        }
+        bool operator==(const iterator &other) const {
+            return node_ == other.node_;
+        }
+        bool operator!=(const iterator &other) const {
+            return node_ != other.node_;
+        }
+
+      private:
+        friend class __list_obj_imp;
+
+        __list_node_base *node_;
+    };
+
+    __list_obj_imp();
+    ~__list_obj_imp() {
+        erase(begin(), end());
+    }
+
+    iterator begin() {
+        return iterator(__tail()->next_);
+    }
+    iterator end() {
+        return iterator(__tail());
+    }
+    bool empty() const {
+        return __size() == 0;
+    }
+    void clear() {
+        erase(begin(), end());
+    }
+    void push_back(const value_type &x) {
+        insert(end(), x);
+    }
+    iterator insert(iterator position, const value_type &x);
+    iterator erase(iterator position);
+    iterator erase(iterator first, iterator last);
+
+  private:
+    /* Not copyable: a copy of the sentinel's links would leave the copy pointing into this list's
+     * nodes. Declared and left undefined: no copy of a list of objects is known in the game. */
+    __list_obj_imp(const __list_obj_imp &);
+    __list_obj_imp &operator=(const __list_obj_imp &);
+
+    __list_node_base *__tail() {
+        return &tail_.first();
+    }
+    size_type &__size() {
+        return size_.first();
+    }
+    const size_type &__size() const {
+        return size_.first();
+    }
+    Allocator &__alloc() {
+        return size_.second();
+    }
+    node_allocator &__node_alloc() {
+        return tail_.second();
+    }
+
+    __compressed_pair<size_type, Allocator> size_;
+    __compressed_pair<__list_node_base, node_allocator> tail_;
+};
+
+/* The game's copy (0x800DC2B0 in the USA release) also calls __alloc() before it constructs
+ * tail_, two instructions more than here: it builds the node allocator from the value allocator
+ * with the allocator's converting constructor, which the allocator of <memory> has no declaration
+ * of yet. Adding it is left to a change of its own, since it renumbers the compiler's @N labels in
+ * many files that include <memory> (93 objects measured). Until then the node allocator, the value allocator rebound to
+ * the node type, is default-constructed rather than converted, and only the default allocator is
+ * accepted (see __list_obj_default_allocator). */
+template <class T, class Allocator>
+__list_obj_imp<T, Allocator>::__list_obj_imp() : size_(0), tail_(node_allocator()) {
+    __list_node_base *t = __tail();
+    t->prev_ = t->next_ = t;
+}
+
+template <class T, class Allocator>
+typename __list_obj_imp<T, Allocator>::iterator
+__list_obj_imp<T, Allocator>::insert(iterator position, const value_type &x) {
+    __node_holder<node, node_allocator, __constant_size<1> > hold(__node_alloc().allocate(1),
+                                                                  __node_alloc());
+    __alloc().construct(&hold->data_, x);
+
+    node *n = hold.release();
+    __list_node_base *p = position.node_;
+    p->prev_->next_ = n;
+    n->prev_ = p->prev_;
+    p->prev_ = n;
+    n->next_ = p;
+    ++__size();
+    return iterator(n);
+}
+
+template <class T, class Allocator>
+typename __list_obj_imp<T, Allocator>::iterator
+__list_obj_imp<T, Allocator>::erase(iterator position) {
+    __list_node_base *n = position.node_;
+    ++position;
+    n->prev_->next_ = n->next_;
+    n->next_->prev_ = n->prev_;
+    __alloc().destroy(&static_cast<node *>(n)->data_);
+    __node_alloc().deallocate(static_cast<node *>(n), 1);
+    --__size();
+    return position;
+}
+
+template <class T, class Allocator>
+typename __list_obj_imp<T, Allocator>::iterator __list_obj_imp<T, Allocator>::erase(iterator first,
+                                                                                    iterator last) {
+    if (first == last) {
+        return last;
+    }
+    __list_node_base *f = first.node_;
+    __list_node_base *l = last.node_->prev_;
+    f->prev_->next_ = l->next_;
+    l->next_->prev_ = f->prev_;
+    while (first != last) {
+        __alloc().destroy(&*first);
+        __list_node_base *n = first.node_;
+        ++first;
+        __node_alloc().deallocate(static_cast<node *>(n), 1);
+        --__size();
+    }
+    return last;
+}
+
+/* The layer between a list of objects and its implementation: the game's code has three levels of
+ * destructors for these lists (the list's, this layer's and __list_obj_imp's), as for the lists
+ * of pointers (list<T *>, list<void *> and __list_imp). */
+template <class T, class Allocator> class __list_obj : public __list_obj_imp<T, Allocator> {};
+
+/* A list of objects. */
+template <class T, class Allocator> class list : public __list_obj<T, Allocator> {};
 
 /* The list of void pointers that implements every list of pointers. */
 template <class Allocator> class list<void *, Allocator> : public __list_imp<void *, Allocator> {};

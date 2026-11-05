@@ -183,6 +183,82 @@ template <class T1, class T2> class __compressed_pair : public __compressed_pair
     __compressed_pair(const T2 &y) : base(y) {}
 };
 
+/* A pair whose second member is a reference: both are members, the reference first, so the layout
+ * is the one the general pair has with its second member as a base (used by __node_holder). */
+template <class T1, class T2> class __compressed_pair_imp<T1, T2 &> {
+  public:
+    __compressed_pair_imp(T2 &y, const T1 &x) : second_(y), first_(x) {}
+
+    T1 &first() {
+        return first_;
+    }
+    T2 &second() {
+        return second_;
+    }
+
+  private:
+    T2 &second_;
+    T1 first_;
+};
+
+template <class T1, class T2>
+class __compressed_pair<T1, T2 &> : public __compressed_pair_imp<T1, T2 &> {
+    typedef __compressed_pair_imp<T1, T2 &> base;
+
+  public:
+    __compressed_pair(T2 &y, const T1 &x) : base(y, x) {}
+};
+
+/* An empty type that converts to the constant N (placeholder name; see __node_holder). */
+template <size_t N> struct __constant_size {
+    operator size_t() const {
+        return N;
+    }
+};
+
+/* Owns objects allocated from a, which it deallocates unless they are released (placeholder name;
+ * the insert of the lists of objects holds its new node in one). The allocator reference and the
+ * pointer with its count are kept in nested pairs, in the layout of the game's copies (0x800DBF24
+ * to 0x800DC258 in the USA release): the reference at 0x0, the pointer at 0x4. */
+template <class T, class Allocator, class Size> class __node_holder {
+    typedef __compressed_pair<T *, Size> pointer_pair;
+
+  public:
+    __node_holder(T *p, Allocator &a, Size n = Size()) : pair_(a, pointer_pair(n, p)) {}
+    ~__node_holder() {
+        if (get() != 0) {
+            alloc().deallocate(get(), size());
+        }
+    }
+
+    T *get() {
+        return pair_.first().first();
+    }
+    T *operator->() {
+        return get();
+    }
+    T *release() {
+        T *p = get();
+        pair_.first().first() = 0;
+        return p;
+    }
+
+  private:
+    /* Not copyable: a copy would deallocate the same objects a second time. Declared and left
+     * undefined: no copy of a node holder is known in the game. */
+    __node_holder(const __node_holder &);
+    __node_holder &operator=(const __node_holder &);
+
+    Allocator &alloc() {
+        return pair_.second();
+    }
+    size_t size() {
+        return pair_.first().second();
+    }
+
+    __compressed_pair<pointer_pair, Allocator &> pair_;
+};
+
 } // namespace std
 
 #endif
