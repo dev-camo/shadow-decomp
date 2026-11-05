@@ -420,6 +420,15 @@ Game/Door.cpp:
 	.sbss       start:0x805EF030 end:0x805EF050
 	.sdata2     start:0x805F4538 end:0x805F45B8
 
+Game/StretchGrass.cpp:
+	.text       start:0x8014BD14 end:0x8014DA54
+	.ctors      start:0x804A9D70 end:0x804A9D74
+	.rodata     start:0x804C1168 end:0x804C1588
+	.data       start:0x8052A1B8 end:0x8052A3E8
+	.sdata      start:0x805E6358 end:0x805E63A8
+	.sbss       start:0x805EF0B8 end:0x805EF0E0
+	.sdata2     start:0x805F4708 end:0x805F4788
+
 Game/ElecSecurityCodeGenerator.cpp:
 	.text       start:0x80157BB0 end:0x801585DC
 	.rodata     start:0x804C20B0 end:0x804C20F0

@@ -13,8 +13,9 @@ class UnkLockonObject_8005FDF4;
 /* Commands that gadgets send to character infos (class names from RTTI, with CharCommand or
  * Player::PlayerCommand as their only base); WallJumpCommand is sent by the player and received
  * by gadgets. The constructors and destructors are defined elsewhere, together with the vtables,
- * except the constructors of CancelBehaviorCommand and AddWeaponCommand, which gadget files define
- * (see their classes); the argument meanings are inferred from the stores in the constructors.
+ * except the constructors of CancelBehaviorCommand and AddWeaponCommand, which gadget files define,
+ * and the constructor of Player::StartExternalControlCommand, which is defined in its class here
+ * (see the classes); the argument meanings are inferred from the stores in the constructors.
  * SetPositionCommand, SetVelocityCommand and LaunchCommand pass their last argument to the base
  * constructor as its second argument, and ClrVelocityCommand its only argument;
  * IgnoreInputCommand passes 0. Most callers pass 4 there (0 and 2 also occur). */
@@ -261,6 +262,42 @@ class CancelBehaviorCommand : public PlayerCommand {
     virtual ~CancelBehaviorCommand();
 };
 CHECK_SIZEOF(Player::CancelBehaviorCommand, 0x14);
+
+/* The command with the id 0x12B (class name from the RTTI of its vtable at 0x80520F74); the
+ * destructor and the vtable are elsewhere. The constructor below passes 0x12B and arg4 to the base
+ * constructor, copies target to 0x14 and stores the two vector pointers and arg3. It is defined in
+ * the class: its only copy (0x8014D730) sits among the functions that the NOBI_KUSA gadget's file
+ * instantiates where its hit callback first uses them. That gadget sends it with the point and the
+ * angles it carries the character at (meaning inferred from that use). Passing target by value is
+ * inferred, as for TouchHangCommand. */
+class StartExternalControlCommand : public PlayerCommand {
+  public:
+    StartExternalControlCommand(boost::weak_ptr<CharInfo> target, const Fn8040Vector3 *position,
+                                const Fn8040Vector3 *angles, int arg3, int arg4)
+        : PlayerCommand(0x12B, arg4), m_target(target), m_position(position), m_angles(angles),
+          field_0x24(arg3) {}
+    virtual ~StartExternalControlCommand();
+
+    /* 0x14 */ boost::weak_ptr<CharInfo> m_target;
+    /* 0x1C */ const Fn8040Vector3 *m_position;
+    /* 0x20 */ const Fn8040Vector3 *m_angles;
+    /* 0x24 */ int field_0x24;
+};
+CHECK_SIZEOF(Player::StartExternalControlCommand, 0x28);
+
+/* The command with the id 0x129 (class name from the RTTI of its vtable at 0x80520FCC). The
+ * constructor at 0x8009E880 passes 0x129 and arg2 to the base constructor and stores arg0 at 0x14
+ * and the float at 0x18; the bytes do not show where the float stands in the parameter list (it
+ * arrives in f1). The NOBI_KUSA gadget sends it with 3, 0.0f and 4 (meanings unknown). */
+class SetMotionCommand : public PlayerCommand {
+  public:
+    SetMotionCommand(int arg0, float arg1, int arg2);
+    virtual ~SetMotionCommand();
+
+    /* 0x14 */ int field_0x14;
+    /* 0x18 */ float field_0x18;
+};
+CHECK_SIZEOF(Player::SetMotionCommand, 0x1C);
 
 namespace Npc {
 

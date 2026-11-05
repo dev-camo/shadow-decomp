@@ -18,4 +18,8 @@ extern "C" void fn_80037B84(RpClump *clump, const RwRGBA *color);
  * passes its morph time fraction. */
 extern "C" void fn_800379E8(RpClump *clump, float value);
 
+/* Clears the lighting flag (0x20, rpGEOMETRYLIGHT) of the geometry of each atomic of clump
+ * (behaviour inferred from its atomic callback at 0x80038B44). */
+extern "C" void fn_80038B18(RpClump *clump);
+
 #endif

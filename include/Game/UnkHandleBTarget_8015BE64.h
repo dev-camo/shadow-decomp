@@ -23,8 +23,8 @@ class CharaColliBase;
 class ColliDetectArgs {
   public:
     /* Inline: the constructions at 0x80112AFC-0x80112B20, in GadgetColliDetectArgs's constructor
-     * (0x8015C0A4) and in the Door gadget's IsTouched store the vtable and clear both members in
-     * place. */
+     * (0x8015C0A4), in the Door gadget's IsTouched and in the NOBI_KUSA gadget's UpdateBody
+     * (0x8014C108) store the vtable and clear both members in place. */
     ColliDetectArgs() : m_hits(0), field_0x4(0) {}
 
     /* 0x00 */ UnkProbeList_80021FE4 *m_hits;
@@ -32,8 +32,9 @@ class ColliDetectArgs {
      * other known constructions leave it 0. */
     /* 0x04 */ GadgetModelInfo *field_0x4;
     /* 0x08: vtable */
-    /* Inline: GadgetColliDetectArgs's destructor (0x8015C048) and the Door gadget's IsTouched
-     * restore the vtable in place; 0x80112C74 is an out-of-line copy. */
+    /* Inline: GadgetColliDetectArgs's destructor (0x8015C048), the Door gadget's IsTouched and
+     * the NOBI_KUSA gadget's UpdateBody (at the end of the scope) restore the vtable in place;
+     * 0x80112C74 is an out-of-line copy. */
     virtual ~ColliDetectArgs() {}
 };
 CHECK_OFFSETOF(ColliDetectArgs, m_hits, 0x0);
