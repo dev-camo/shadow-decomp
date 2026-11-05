@@ -262,6 +262,14 @@ void CScene::Resume() {
     m_paused = 0;
 }
 
+void CScene::fn_803659DC(MotionEndAction action) {
+    m_endPolicy.m_startAction = action;
+}
+
+void CScene::fn_803659CC(MotionEndAction action) {
+    m_endPolicy.m_endAction = action;
+}
+
 CSceneDataRef::CSceneDataRef() {
     Clear();
 }
