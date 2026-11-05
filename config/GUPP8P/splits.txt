@@ -159,6 +159,14 @@ Game/Fan.cpp:
 	.sbss       start:0x805EFB98 end:0x805EFBB0
 	.sdata2     start:0x805F4948 end:0x805F49E8
 
+Game/GoalRing.cpp:
+	.text       start:0x801066B4 end:0x80107448
+	.rodata     start:0x804BC550 end:0x804BC670
+	.data       start:0x80527270 end:0x80527330
+	.sdata      start:0x805E6878 end:0x805E68A0
+	.sbss       start:0x805EFBE0 end:0x805EFBF0
+	.sdata2     start:0x805F4A50 end:0x805F4A70
+
 Game/SetVehicle.cpp:
 	.text       start:0x8011E488 end:0x8011EA18
 	.rodata     start:0x804BE658 end:0x804BE6A0

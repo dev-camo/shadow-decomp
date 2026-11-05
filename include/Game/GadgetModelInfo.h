@@ -152,6 +152,13 @@ class GadgetModelInfo {
      * list at 0x58 whose resource record has the word arg0 at 0x18 (behaviour inferred from its
      * body). */
     void fn_8016082C(int arg0);
+    /* As fn_8016082C, for each entry of the list at 0x58 whose name (the string at 0x8 of the
+     * entry) equals name (behaviour inferred from its body). */
+    void fn_801607A8(const char *name);
+    /* Finds the first entry of the list at 0x58 whose name equals name and passes its motion
+     * control (0xC) and the low 16 bits of its word at 0x1C to fn_80417568, returning whether
+     * there was one (behaviour inferred from its body). */
+    bool fn_801609F8(const char *name);
     /* Returns the attack object that fn_800C4374 gives for the probe of the entry of the list at
      * 0x64 whose name equals name, or an empty pointer (behaviour inferred from its body). */
     boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack>
@@ -203,7 +210,8 @@ class GadgetModelInfo {
 CHECK_SIZEOF(GadgetModelInfo, 0x74);
 
 /* Loads the model file fileName into a new GadgetModelInfo owned by the returned pointer (behaviour
- * inferred; arg0 is the first argument of the GadgetModelInfo constructor, always 1 in callers). */
+ * inferred; arg0 is the first argument of the GadgetModelInfo constructor: most callers pass 1,
+ * GoalRing passes 0 and Fan passes 0 or 1 depending on its form). */
 extern "C" boost::shared_ptr<GadgetModelInfo> fn_8015F800(int arg0, const char *fileName);
 /* The same with the constructor at 0x80163F7C, which takes the number of a model instead of a file
  * name (behaviour inferred; the SET_WEAPON gadget passes 0 and 0xDF). */
