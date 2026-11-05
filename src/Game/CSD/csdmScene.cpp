@@ -134,6 +134,17 @@ f32 CScene::GetMotionEnd() const {
     return m_endFrame;
 }
 
+void CScene::fn_803663C0(const RCPtr<CNode> &node) {
+    field_0x84 = node;
+    if (field_0x84.Get() != NULL && fn_8036635C()) {
+        field_0x84->fn_8036A20C();
+    }
+    if (m_rootPattern != NULL) {
+        delete m_rootPattern;
+        m_rootPattern = NULL;
+    }
+}
+
 int CScene::fn_8036635C() const {
     const SceneData *scene = m_scene;
     const MotionPalette *palette = m_palette->m_palette;
