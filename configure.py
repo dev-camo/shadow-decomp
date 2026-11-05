@@ -1172,13 +1172,14 @@ config.libs = [
                 # The library code at 0x80410630-0x8042166C is built with one flag set (-O4,s,
                 # -use_lmw_stmw on, -str reuse,readonly, -inline auto,level=1), taken as the
                 # library's own build settings rather than per-unit workarounds. Game/fn_80410630.c,
-                # Game/fn_8041116C.cpp, Game/fn_80411714.c, Game/fn_80413B30.c, Game/fn_804157E8.c,
-                # Game/fn_8041583C.c, Game/fn_80415854.c and the later NonMatching pieces of the
-                # control of motions (Game/fn_80416198.cpp, fn_8041FD70.cpp, fn_8041FF0C.cpp,
-                # fn_80420308.cpp and fn_8042043C.cpp) and the later units from Game/fn_80420724.cpp
-                # to Game/fn_804211CC.c carry it. Game/fn_804110EC.c, Game/fn_804202B8.c and the
-                # empty functions Game/fn_8041FD6C.c, Game/fn_8041FF08.c and Game/fn_80420438.c
-                # omit it: their objects are identical with or without it.
+                # Game/fn_8041116C.cpp, Game/fn_80411714.c, Game/fn_80413B30.c,
+                # Game/fn_804157E8.cpp, Game/fn_8041583C.c, Game/fn_80415854.c and the later
+                # NonMatching pieces of the control of motions (Game/fn_80416198.cpp,
+                # fn_8041FD70.cpp, fn_8041FF0C.cpp, fn_80420308.cpp and fn_8042043C.cpp) and the
+                # later units from Game/fn_80420724.cpp to Game/fn_804211CC.c carry it.
+                # Game/fn_804110EC.c, Game/fn_804202B8.c and the empty functions Game/fn_8041FD6C.c,
+                # Game/fn_8041FF08.c and Game/fn_80420438.c omit it: their objects are identical
+                # with or without it.
                 # Loader of packs of named nodes. Inlining is automatic but one level deep: the
                 # recursive node functions expand once, as in the original (with unlimited depth
                 # fn_80410C7C grows from 0xC4 to 0x304 bytes).
@@ -1196,7 +1197,7 @@ config.libs = [
                 # Replaceable memory functions of the library code at 0x80410630-0x8042166C.
                 Object(Matching, "Game/fn_804110EC.c", extra_cflags=["-Cpp_exceptions on"]),
                 Object(Matching, "Game/fn_8040DB6C.c"),
-                # The middle piece of the control of motions (see Game/fn_804157E8.c
+                # The middle piece of the control of motions (see Game/fn_804157E8.cpp
                 # below); it takes the same flags as the other two pieces.
                 Object(
                     Matching,
@@ -1276,14 +1277,19 @@ config.libs = [
                 # see Game/fn_804157E8_motion_control.h) that do not match yet, kept as separate
                 # units around the Matching pieces Game/fn_8041583C.c, fn_8041FD6C.c,
                 # fn_8041FF08.c, fn_804202B8.c and fn_80420438.c until the whole file matches. The
-                # flags follow the neighbouring library code. Game/fn_804157E8.c cannot link yet:
-                # it owns the file's first .sdata2 constant, which unsourced code of the same file
-                # references by name. Game/fn_804157E8.c and fn_80415854.c stay the C units they
-                # were; the pieces added with the newly written functions are C++, the language of
-                # the file (it has a static initializer).
+                # flags follow the neighbouring library code. The pieces that do not match yet are
+                # C++, the language of the file (it has a static initializer), except fn_80415854.c,
+                # which stays C only because it was written as C: built as C++ its code, data and
+                # relocations are the same. Game/fn_804157E8.cpp has the original's .text and
+                # exception tables, and its .sdata and .sbss hold the original's variables at the
+                # original offsets (the original's sections end with 4 more bytes of alignment
+                # padding; a C compile gives the .sbss variables in reverse definition order). It
+                # cannot link yet: it owns the file's first .sdata2 constant (0x805FAE00, 0.0f),
+                # which fn_80415854.c, fn_80416198.cpp and fn_8042043C.cpp read by name, and here
+                # it is a local literal.
                 Object(
                     NonMatching,
-                    "Game/fn_804157E8.c",
+                    "Game/fn_804157E8.cpp",
                     extra_cflags=[
                         "-Cpp_exceptions on",
                         "-O4,s",
@@ -1292,6 +1298,17 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
+                # The .text bytes of thirteen of the fourteen functions and the exception tables
+                # are identical to the original; fn_80415EA4 differs in one word (li r30,0 where the
+                # original copies mr r30,r28 before its player loop). Not complete: the original reads 0.0f from the file's first
+                # pooled constant 0x805FAE00 (Game/fn_804157E8.cpp), and other pieces of the file
+                # read this unit's 0x805FAE04 (fn_80416198.cpp) and 0x805FAE08 (fn_80416198.cpp,
+                # fn_80420308.cpp, fn_8042043C.cpp) by name. Here 0.0f is a literal of this unit, so
+                # .sdata2 is 0xC bytes (0.0f, the epsilon, 1.0f) instead of 0x8, and 16 relocations
+                # name other targets: the ten 0.0f loads of fn_80415854, fn_80415A18 and the three
+                # stMtnRequestBlend functions, and the four epsilon and two 1.0f loads, whose
+                # literals sit 4 bytes further on. Revisit when the pieces of the file are merged
+                # into one unit.
                 Object(
                     NonMatching,
                     "Game/fn_80415854.c",
@@ -1379,7 +1396,7 @@ config.libs = [
                 # fn_8042043C, fn_804204C8, fn_80420590 and fn_8042062C have the original's
                 # instructions, but the 0.0f of fn_804204C8 and the 1.0f of fn_80420590 are local
                 # literals here, while the original reads them from the file's shared .sdata2 pool
-                # (0x805FAE00 in Game/fn_804157E8.c and 0x805FAE08 in Game/fn_80415854.c). The
+                # (0x805FAE00 in Game/fn_804157E8.cpp and 0x805FAE08 in Game/fn_80415854.c). The
                 # static initializer fn_804206A4 (0x80 bytes) is missing: it constructs nine
                 # matrices and four 0xC-byte objects (constructor fn_80028BA0) in lbl_805E12E0, which
                 # is in the .bss of Game/fn_80416198.cpp. Revisit when the pieces of the file are
