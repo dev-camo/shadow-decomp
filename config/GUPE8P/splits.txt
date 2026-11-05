@@ -665,6 +665,16 @@ Game/TestNakazawa.cpp:
 	.sdata      start:0x805EC598 end:0x805EC5B0
 	.sdata2     start:0x805F90D0 end:0x805F90E0
 
+Game/EggMeca511.cpp:
+	.text       start:0x802E9700 end:0x802EA398
+	.ctors      start:0x804A9FA4 end:0x804A9FA8
+	.rodata     start:0x805079F8 end:0x80507A80
+	.data       start:0x80559740 end:0x80559880
+	.bss        start:0x80584B18 end:0x80584B38
+	.sdata      start:0x805EC890 end:0x805EC8B8
+	.sbss       start:0x805F0770 end:0x805F0778
+	.sdata2     start:0x805F9258 end:0x805F9308
+
 Game/EggMeca411.cpp:
 	.text       start:0x802EA398 end:0x802EA9F0
 	.ctors      start:0x804A9FA8 end:0x804A9FAC

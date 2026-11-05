@@ -2,10 +2,16 @@
 #define GAME_EGGMECACTRLUNIT_H
 
 #include "Game/BossCtrlUnit.h"
+#include "Game/EggMecaVarParam.h"
 #include <dolphin/types.h>
+#include "boost/weak_ptr.hpp"
 #include "layout_check.h"
 
-class EggMecaVarParam;
+namespace Effect {
+namespace System {
+class EffectElement;
+}
+} // namespace Effect
 
 /* The control units of the Egg Mecha bosses (class names and bases from RTTI; see BossCtrlUnit.h).
  * The constructors pass their parameter to every base and keep it at 0x8 as well. EggMecaCtrlUnit
@@ -37,9 +43,14 @@ class EggMecaCtrlUnit_GetStatus : public EggMecaCtrlUnit {
 };
 CHECK_SIZEOF(EggMecaCtrlUnit_GetStatus, 0x1C);
 
+/* The constructors of this unit and of EggMecaCtrlUnit_CheckMotionAttribute are inline: every Egg
+ * Mecha boss unit emits its own copies, and the linker keeps those of the EGG_MECA_0511 unit
+ * (0x802E9CB4 and 0x802E9C08), which lie in that unit's code between Init and the descriptor's
+ * empty hook. */
 class EggMecaModeCtrlUnit : public EggMecaCtrlUnit, public BossModeCtrlUnit {
   public:
-    EggMecaModeCtrlUnit(EggMecaVarParam *param);
+    EggMecaModeCtrlUnit(EggMecaVarParam *param)
+        : BossCtrlUnit(param), EggMecaCtrlUnit(param), BossModeCtrlUnit(param) {}
     virtual ~EggMecaModeCtrlUnit();
     virtual bool Update(float arg);
     virtual BossCtrlUnit *CreateUnit(int mode);
@@ -57,7 +68,8 @@ CHECK_SIZEOF(EggMecaCtrlUnit_Move, 0x1C);
 class EggMecaCtrlUnit_CheckMotionAttribute : public EggMecaCtrlUnit,
                                              public BossCtrlUnit_CheckMotionAttribute {
   public:
-    EggMecaCtrlUnit_CheckMotionAttribute(EggMecaVarParam *param);
+    EggMecaCtrlUnit_CheckMotionAttribute(EggMecaVarParam *param)
+        : BossCtrlUnit(param), EggMecaCtrlUnit(param), BossCtrlUnit_CheckMotionAttribute(param) {}
     virtual ~EggMecaCtrlUnit_CheckMotionAttribute();
     virtual bool Update(float arg);
     /* Stores the payload of event 0x5000 at EggMecaVarParam::field_0x21C. */
@@ -115,6 +127,22 @@ class EggMecaCtrlUnit_IronBall : public EggMecaCtrlUnit {
     /* 0x0C */ u8 field_0xC[0x64 - 0xC]; /* unknown */
 };
 CHECK_SIZEOF(EggMecaCtrlUnit_IronBall, 0x74);
+
+/* The constructor (0x802A339C) keeps index at 0x78 and resets the pair of words of the variables
+ * at 0x234 and 0x23C that index selects (behaviour inferred). */
+class EggMecaCtrlUnit_Laser : public EggMecaCtrlUnit {
+  public:
+    EggMecaCtrlUnit_Laser(EggMecaVarParam *param, int index);
+    virtual ~EggMecaCtrlUnit_Laser();
+    virtual bool Update(float arg);
+
+    /* 0x0C */ u8 field_0xC[0x68 - 0xC]; /* unknown */
+    /* 0x68 */ boost::weak_ptr<Effect::System::EffectElement> field_0x68;
+    /* 0x70 */ boost::weak_ptr<Effect::System::EffectElement> field_0x70;
+    /* 0x78 */ s32 m_index;                /* the constructor's index (name inferred) */
+    /* 0x7C */ u8 field_0x7C[0x84 - 0x7C]; /* unknown */
+};
+CHECK_SIZEOF(EggMecaCtrlUnit_Laser, 0x94);
 
 class EggMecaCtrlUnit_RollUpper : public EggMecaCtrlUnit {
   public:

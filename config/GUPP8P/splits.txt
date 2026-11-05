@@ -425,6 +425,16 @@ Game/DebugMissionClearCollision.cpp:
 	.sbss       start:0x805F1658 end:0x805F1688
 	.sdata2     start:0x805F9E28 end:0x805F9E50
 
+Game/EggMeca511.cpp:
+	.text       start:0x802E9C78 end:0x802EA910
+	.ctors      start:0x804AB004 end:0x804AB008
+	.rodata     start:0x80508AE8 end:0x80508B70
+	.data       start:0x8055A848 end:0x8055A988
+	.bss        start:0x80585B80 end:0x80585BA0
+	.sdata      start:0x805ED940 end:0x805ED968
+	.sbss       start:0x805F1818 end:0x805F1820
+	.sdata2     start:0x805FA2E0 end:0x805FA390
+
 Game/EggMeca411.cpp:
 	.text       start:0x802EA910 end:0x802EAF68
 	.ctors      start:0x804AB008 end:0x804AB00C

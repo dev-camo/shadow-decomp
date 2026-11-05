@@ -74,7 +74,9 @@ CHECK_SIZEOF(UnkBossParamTable, 0x20);
 class BossVarParam {
   public:
     BossVarParam();
-    virtual ~BossVarParam();
+    /* Inline (the copy the linker keeps is 0x80232440), which is why the boss units emit
+     * BossVarParam's RTTI name ahead of the derived class's. */
+    virtual ~BossVarParam() {}
 
     /* Wraps unit in a shared pointer and adds it to the control unit list at 0x68 (behaviour and
      * name inferred). */
