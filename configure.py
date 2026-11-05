@@ -1781,6 +1781,28 @@ config.libs = [
             # earlier. In .data the original keeps the discarded weak vtables between the kept
             # base-class lists as zero-filled holes, as in Spring.
             Object(NonMatching, "Game/StretchGrass.cpp", cflags=cflags_game_cpp),
+            # 91 of the 96 functions have identical instruction words and relocations in USA, Japan
+            # and PAL. The original's .rodata has two blocks that this object lacks, of unknown
+            # source: after the TNumEdit type names, three 16-byte groups that each start with
+            # 1.0f followed by 16 zero bytes (the 1.0f groups follow the TNumEdit names in four
+            # other files' .rodata too), and 12 zero bytes after the CharaColliBase type name.
+            # They move the later strings by 0x4C, so the FireBall constructor differs in the 3
+            # words that address its strings from the unit's .rodata base. The MotionSequenceModule
+            # destructor (inline: EnemyMotionSequenceModule's destructor at 0x8018EAA4 expands it)
+            # is emitted after ~Vine here and between UpdateSequences and SetupSequences in the
+            # original, which moves the functions in between by 0x48 bytes. UpdateTarget differs in
+            # 8 words, all stack offsets: the original places the first branch's difference vector
+            # below the second branch's position copies, as a temporary of a by-value subtraction
+            # would be (inferred), which the out-parameter fn_8040CD74 cannot express. ~Vine
+            # differs in 8 raw words: the original sets the loop counter to zero and copies it to the
+            # offset and to the stored null; this build loads zero into the offset and the counter
+            # separately and copies the offset's zero to the null. In GetLoseDistanceSq (2 words)
+            # the original loads the radius before the 10.0f constant. UpdateClumpPosition is 19
+            # words against the original's 23 (13 of 24 aligned rows differ: 12 of the original's
+            # words and 8 of this build's): the original calls the smart pointer's operator-> out of
+            # line for the character info's position, keeping the object in the saved r31; this
+            # build loads the pointer inline and saves no register.
+            Object(NonMatching, "Game/Vine.cpp", cflags=cflags_game_cpp),
             # Every function but the constructor has identical instruction words, and the data,
             # symbols and relocations match once the linker-discarded weak and local copies are set
             # aside. The constructor (0x8022E698, USA) differs in 6 of its 189 words: for each of its

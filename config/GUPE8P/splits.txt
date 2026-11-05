@@ -429,6 +429,14 @@ Game/StretchGrass.cpp:
 	.sbss       start:0x805EF0B8 end:0x805EF0E0
 	.sdata2     start:0x805F4708 end:0x805F4788
 
+Game/Vine.cpp:
+	.text       start:0x8014DA54 end:0x80150A60
+	.rodata     start:0x804C1588 end:0x804C1A00
+	.data       start:0x8052A3E8 end:0x8052A580
+	.sdata      start:0x805E63A8 end:0x805E6408
+	.sbss       start:0x805EF0E0 end:0x805EF118
+	.sdata2     start:0x805F4788 end:0x805F4830
+
 Game/ElecSecurityCodeGenerator.cpp:
 	.text       start:0x80157BB0 end:0x801585DC
 	.rodata     start:0x804C20B0 end:0x804C20F0

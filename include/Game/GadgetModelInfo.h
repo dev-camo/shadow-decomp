@@ -200,6 +200,15 @@ class GadgetModelInfo {
      * stMtnControlWorkFlag(control, 0, 3, 1) is nonzero for it (behaviour inferred from its body;
      * the DOOR gadget waits on it for the end of its open and close motions). */
     bool fn_80160040(int arg0);
+    /* Returns the word at 0x1C of the first entry of the list at 0x58 whose name equals name, or 0
+     * (behaviour inferred from its body). */
+    s32 fn_80160124(const char *name);
+    /* For each entry of the list at 0x64 whose name (the string at 0x8 of the entry) equals name,
+     * pass arg1 to the second (fn_80161090) or the third (fn_801611A4) virtual method of the
+     * entry's object at 0xC, as fn_8016111C and fn_80161230 do for a part id (behaviour inferred
+     * from their bodies). */
+    void fn_80161090(const char *name, int arg1);
+    void fn_801611A4(const char *name, int arg1);
 
     /* The constructor builds three callback objects at 0x4, 0x10 and 0x1C with the same function,
      * and the destructor destroys them with the same function. The gadgets bind their collision
