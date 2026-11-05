@@ -37,7 +37,10 @@ extern "C" boost::shared_ptr<GadgetCharInfo> fn_8015CD90(int arg0, int arg1);
 extern "C" void fn_8015CF7C(GadgetCharInfo *info);
 /* Passes target a new Player::GetItemCommand (class name from RTTI) built from arg0, arg1, arg2
  * and 4, and returns 1 (behaviour inferred; the meaning of the arguments is unknown). The
- * EnergyCore gadget passes an item id, the integer value of lbl_805F4BF0 and 0. */
+ * EnergyCore gadget passes an item id, the integer value of lbl_805F4BF0 and 0. The command (id
+ * 0x11B, constructor at 0x8015F760) goes to the character info's fn_801DC980 and keeps arg0 and
+ * arg1 as words and arg2 as a byte; the shooting game table passes 0, an amount that depends on
+ * the entry's count and can be negative (meaning unknown), and 0. */
 extern "C" int fn_8015F6EC(boost::shared_ptr<CharInfo> target, int arg0, int arg1, int arg2);
 
 #endif
