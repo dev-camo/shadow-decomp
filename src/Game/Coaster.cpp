@@ -22,7 +22,11 @@
  * templates differ in layout from the original's, and the object has additional weak template
  * instances and the RTTI records of the headers' casts. */
 /* TNumEdit.h comes before CharaColliBaseCharInfo.h, in the order their names appear in the unit's
- * .rodata (alphabetical order would reverse them). */
+ * .rodata (alphabetical order would reverse them): the unit's .rodata (USA 0x804BECC0) starts with
+ * those type names, and its .data (0x80528868) starts with their four RTTI base lists (+0x00,
+ * +0x0C, +0x18, +0x24).
+ * Matching workaround: the headers' stand-in inline functions (see TNumEdit.h) emit those records;
+ * revisit when the original inline functions or their real callers are recovered. */
 #include "Game/TNumEdit.h"
 #include "Game/CharaColliBaseCharInfo.h"
 #include "Game/CameraModeUser.h"
