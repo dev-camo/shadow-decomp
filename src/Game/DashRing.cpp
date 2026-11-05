@@ -86,7 +86,7 @@ static void fn_80100CBC(boost::shared_ptr<CharInfo> hit, void *arg) {
     up.Set(0.0f, 1.0f, 0.0f);
     angles = fn_8040F5F4(&velocity, &up, 2);
 
-    hit->fn_801DC980(new SetAngleCommand(&angles, 2, 4));
+    hit->fn_801DC980(new SetAngleCommand(angles, 2, 4));
     hit->fn_801DC980(new SetVelocityCommand(&velocity, 4));
     hit->fn_801DC980(new Player::LaunchCommand(0, 4));
 

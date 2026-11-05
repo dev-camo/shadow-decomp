@@ -124,7 +124,7 @@ static void fn_800FFB70(boost::shared_ptr<CharInfo> hit, void *arg) {
     fn_800091EC(&top, &topTemporary);
 
     angles = fn_8040F5F4(&front, &top, 2);
-    hit->fn_801DC980(new SetAngleCommand(&angles, 2, 4));
+    hit->fn_801DC980(new SetAngleCommand(angles, 2, 4));
 
     /* The launch direction points 3 degrees down from the panel's forward direction. */
     localDirection.Set(0.0f, -0.052335955f, -0.9986295f);

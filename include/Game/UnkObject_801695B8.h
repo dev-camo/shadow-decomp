@@ -6,9 +6,9 @@
 #include "boost/weak_ptr.hpp"
 
 /* The object that fn_801695B8 creates and returns in a shared pointer (placeholder name; the
- * original class is unknown). The CircusBall, DashPanel, DashRing, JumpBoard and LongSpring gadgets
- * keep one, advance it each frame, ask it whether a character info has already been dealt with and
- * release it in their destructors (behaviour inferred from the calls). */
+ * original class is unknown). The CircusBall, DashPanel, DashRing, JumpBoard, LongSpring and Spring
+ * gadgets keep one, advance it each frame, ask it whether a character info has already been dealt
+ * with and release it in their destructors (behaviour inferred from the calls). */
 class UnkObject_801695B8;
 
 extern "C" {

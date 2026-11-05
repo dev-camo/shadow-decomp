@@ -148,7 +148,7 @@ bool fn_8015AC84(ColliDetectArgs &args);
 /* The same as fn_8015AA84 except for the filter: callback runs only for the character infos whose
  * fn_80078B2C (vtable offset 0x18) returns true, where fn_8015AA84 tests fn_80078B4C (0x28); what
  * that function reports is not recovered (behaviour inferred; the CircusBall, DashPanel, DashRing,
- * JumpBoard and LongSpring gadgets pass their hit callbacks to it). */
+ * JumpBoard, LongSpring and Spring gadgets pass their hit callbacks to it). */
 void fn_8015B004(ColliDetectArgs *args, ColliHitCallback callback, void *context);
 }
 
