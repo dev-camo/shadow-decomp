@@ -2118,6 +2118,7 @@ config.libs = [
             Object(NonMatching, "Game/SuctionPillar.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SecretDisk.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/GiantLantern.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/GravityChangeSwitch.cpp", cflags=cflags_game_cpp),
             # 35 of 36 functions have identical words and relocations, and the data matches once
             # the linker-discarded weak and local copies are set aside. The constructor is 185
             # words in the original and 184 here: in the branch for a stored state of 3, the
