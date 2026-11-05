@@ -12,8 +12,10 @@ class UnkLockonObject_8005FDF4;
 
 /* Commands that gadgets send to character infos (class names from RTTI, with CharCommand or
  * Player::PlayerCommand as their only base). The constructors and destructors are defined
- * elsewhere, together with the vtables; the argument meanings are inferred from the stores in
- * the constructors. SetPositionCommand, SetVelocityCommand and LaunchCommand pass their last
+ * elsewhere, together with the vtables, except the constructors of CancelBehaviorCommand and
+ * AddWeaponCommand, which gadget files define (see their classes); the argument meanings are
+ * inferred from the stores in the constructors.
+ * SetPositionCommand, SetVelocityCommand and LaunchCommand pass their last
  * argument to the base constructor as its second argument, and ClrVelocityCommand its only
  * argument; IgnoreInputCommand passes 0. Most callers pass 4 there (0 and 2 also occur). */
 
@@ -98,6 +100,21 @@ class UseCommand : public CharCommand {
 };
 CHECK_SIZEOF(UseCommand, 0x24);
 
+/* Sets the rotation of the character info (inferred from the name): the constructor at
+ * 0x800B81F8 passes 3 as the command id and its last argument to the base constructor, copies the
+ * vector to 0x14 and stores order at 0x20. The vector is passed by address (the bytes do not show
+ * whether as a pointer or a reference; a pointer is declared). The DashPanel and DashRing gadgets
+ * pass the angles that fn_8040F5F4 returns for order 2, and 2. */
+class SetAngleCommand : public CharCommand {
+  public:
+    SetAngleCommand(const Fn8040Vector3 *angles, int order, int arg1);
+    virtual ~SetAngleCommand();
+
+    /* 0x14 */ Fn8040Vector3 m_angles;
+    /* 0x20 */ int m_order;
+};
+CHECK_SIZEOF(SetAngleCommand, 0x24);
+
 namespace Player {
 
 /* Makes the player ignore input for a time (the first member holds the time; the gadgets that
@@ -168,6 +185,40 @@ class AddWeaponCommand : public PlayerCommand {
     /* 0x18 */ int field_0x18;
 };
 CHECK_SIZEOF(Player::AddWeaponCommand, 0x1C);
+
+/* The constructor at 0x80099BFC passes 0x134 as the command id and 4 to the base constructor,
+ * stores the float at 0x14 and copies the vector to 0x18 (with fn_800091EC). The vector is passed
+ * by address (the bytes do not show whether as a pointer or a reference; a pointer is declared).
+ * The DashPanel gadget sends it with a direction scaled by a value of its level and its
+ * "nocontrol time (sec)" parameter (meanings inferred from that use). */
+class ActingAccelerateCommand : public PlayerCommand {
+  public:
+    ActingAccelerateCommand(const Fn8040Vector3 *vector, float seconds);
+    virtual ~ActingAccelerateCommand();
+
+    /* 0x14 */ float m_seconds;
+    /* 0x18 */ Fn8040Vector3 m_vector;
+};
+CHECK_SIZEOF(Player::ActingAccelerateCommand, 0x24);
+
+/* The constructor at 0x8009A1E0 passes 0x12E as the command id and its argument to the base
+ * constructor; it stores nothing else. */
+class PressGroundCommand : public PlayerCommand {
+  public:
+    PressGroundCommand(int arg1);
+    virtual ~PressGroundCommand();
+};
+CHECK_SIZEOF(Player::PressGroundCommand, 0x14);
+
+/* The command with the id 0x101. Its destructor (0x8009DBB4) and vtable are defined elsewhere; the
+ * constructor passes 0x101 and its argument to the base constructor and is defined in
+ * DashPanel.cpp, which holds the copy that the original keeps (see the note there). */
+class CancelBehaviorCommand : public PlayerCommand {
+  public:
+    CancelBehaviorCommand(int arg1);
+    virtual ~CancelBehaviorCommand();
+};
+CHECK_SIZEOF(Player::CancelBehaviorCommand, 0x14);
 
 namespace Npc {
 
