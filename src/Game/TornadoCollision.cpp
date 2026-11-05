@@ -2,7 +2,7 @@
  * sphere (gadget parameter "Radius") at the owner's position and offers every character it
  * touches to the tornado character infos. File name inferred from the class. Method names marked
  * "(name inferred)" are not original. Definitions are in reverse address order (deferred inlining
- * emits functions last-defined first). NonMatching: ProcessHits is one branch short. */
+ * emits functions last-defined first). */
 #include "Game/CharInfo.h"
 #include "Game/Gadget.h"
 #include "Game/GadgetTypeInfo.h"
@@ -117,11 +117,10 @@ void TornadoCollision::ProcessHits(float) {
                      * bit set at 0xA8 is set. */
                     if (charInfo->field_0x5C == 1 || charInfo->field_0x5C == 2) {
                         if (charInfo->field_0x50 == 1) {
-                            /* Where this scope begins, the original has a second branch on the
-                             * same comparison of the word at 0x50, which skips the cast check and
-                             * goes to AddToTornado; that branch is this unit's only difference.
-                             * The cast pointer is released before AddToTornado. */
-                            {
+                            /* The original tests the word at 0x50 a second time here: after the
+                             * branch of the test above, it branches again on the same comparison,
+                             * around the cast check to AddToTornado. */
+                            if (charInfo->field_0x50 == 1) {
                                 boost::shared_ptr<UnkCharInfo_800999C0> derived =
                                     boost::static_pointer_cast<UnkCharInfo_800999C0>(charInfo);
 

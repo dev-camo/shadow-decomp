@@ -782,11 +782,7 @@ config.libs = [
                 # into Create, and a global one keeps its statics local to the unit.
                 Object(NonMatching, "Game/RainEffect.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/GravitySignBoard.cpp", cflags=cflags_game_cpp),
-                # Every function, the data and all relocations match except ProcessHits, which is
-                # one word short: the original branches twice on one comparison of the word at 0x50
-                # of the character info (the second branch skips the cast check), and the single
-                # natural test compiles to one branch fewer.
-                Object(NonMatching, "Game/TornadoCollision.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/TornadoCollision.cpp", cflags=cflags_game_cpp),
                 # 55 of the 78 functions have identical instructions; 44 of them also have identical
                 # relocation symbol names, the others refer to symbols that keep placeholder names.
                 # checked_delete<CityLaser> is a local symbol here where the original's is weak.
