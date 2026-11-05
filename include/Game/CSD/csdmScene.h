@@ -109,7 +109,7 @@ class CMotionEndPolicy : public CSceneListener {
 };
 CHECK_SIZEOF(Chao::CSD::CMotionEndPolicy, 0x18);
 
-/* The scene's second base and its raw listener list (class and method names inferred). The native
+/* The scene's second base and raw listener list (class and method names inferred). The native
  * destructor releases the list; its pure virtual declaration supplies the derived destructor slot. */
 class CSceneListenerSource {
   public:
@@ -124,7 +124,8 @@ class CSceneListenerSource {
 };
 CHECK_SIZEOF(Chao::CSD::CSceneListenerSource, 0x10);
 
-/* The callback interface held by the scene's reference-counted lists (class name inferred).
+/* The callback interface held by the scene's reference-counted lists
+ * (class and method names inferred).
  * The update calls the first virtual slot and removes callbacks returning false; the native
  * reference release invokes the deleting destructor in the following slot. Only this virtual
  * interface is recovered; the declaration is not used to allocate or copy callback objects. */
@@ -236,8 +237,8 @@ class CScene : public CSceneDataRef, public CSceneListenerSource, public CBase {
     /* 0x28 */ CallbackList m_startCallbacks;
     /* 0x34 */ CallbackList m_beforeUpdateCallbacks;
     /* 0x40 */ CallbackList m_afterUpdateCallbacks;
-    /* 0x4C */ CallbackList field_0x4C;
-    /* 0x58 */ CallbackList field_0x58;
+    /* 0x4C */ CallbackList m_beforeDrawCallbacks;
+    /* 0x58 */ CallbackList m_afterDrawCallbacks;
     /* 0x64 */ CSceneMotion *m_motion;
     /* 0x68 */ CFontList *m_fonts;
     /* 0x6C */ CMotionPalette *m_palette;
