@@ -248,6 +248,15 @@ Game/MonsterControl.cpp:
 	.sbss       start:0x805F0020 end:0x805F0038
 	.sdata2     start:0x805F5440 end:0x805F5458
 
+Game/ShootingGameBalloon.cpp:
+	.text       start:0x8013B1A8 end:0x8013D664
+	.rodata     start:0x804C0D48 end:0x804C1188
+	.data       start:0x8052A120 end:0x8052A3A0
+	.bss        start:0x805811D0 end:0x80581210
+	.sdata      start:0x805E7178 end:0x805E71E0
+	.sbss       start:0x805F0038 end:0x805F0068
+	.sdata2     start:0x805F5458 end:0x805F54D8
+
 Game/ShootingGameManagerTask.cpp:
 	.text       start:0x8013D664 end:0x8013DCA4
 	.rodata     start:0x804C1188 end:0x804C11A8
