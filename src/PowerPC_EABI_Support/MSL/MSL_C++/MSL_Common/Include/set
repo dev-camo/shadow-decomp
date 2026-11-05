@@ -1,0 +1,71 @@
+#ifndef MSL_SET_H_
+#define MSL_SET_H_
+
+#include <map>
+
+/* The parts of <set> that the game uses so far: the set of ElecBarSub pointers of the ELEC_BAR
+ * gadget. The set keeps its values in the red-black tree of <map> (__tree, with the value as its
+ * own key).
+ *
+ * The set's iterator wraps the tree's constant iterator. The GameCube code has an out-of-line copy
+ * of each member of this iterator that the gadget uses (its default constructor and the one from
+ * the tree iterator, operator*, the postfix operator++ and operator!=, each calling the tree
+ * iterator's inline member, the compiler-generated copy constructor, and the compiler-generated
+ * assignment, which calls the tree iterator's out-of-line one) and of the set's begin, end and
+ * insert, which convert the tree's iterators to it. */
+namespace std {
+
+template <class Key, class Compare = less<Key>, class Allocator = allocator<Key> > class set {
+    typedef __tree<Key, Key, Compare, Allocator> tree_type;
+    typedef typename tree_type::iterator tree_iterator;
+    typedef typename tree_type::const_iterator tree_const_iterator;
+
+  public:
+    typedef Key key_type;
+    typedef Key value_type;
+
+    class iterator {
+      public:
+        iterator() {}
+        iterator(const tree_iterator &i) : i_(i) {}
+
+        const value_type &operator*() const {
+            return *i_;
+        }
+        iterator operator++(int) {
+            iterator tmp(*this);
+            ++i_;
+            return tmp;
+        }
+
+        friend bool operator!=(const iterator &x, const iterator &y) {
+            return x.i_ != y.i_;
+        }
+
+      private:
+        tree_const_iterator i_;
+    };
+
+    set() : tree_(Compare(), Allocator()) {}
+
+    iterator begin() {
+        return iterator(tree_.begin());
+    }
+    iterator end() {
+        return iterator(tree_.end());
+    }
+    pair<iterator, bool> insert(const value_type &x) {
+        pair<tree_iterator, bool> result = tree_.insert(x);
+        return pair<iterator, bool>(iterator(result.first), result.second);
+    }
+    void clear() {
+        tree_.clear();
+    }
+
+  private:
+    tree_type tree_;
+};
+
+} // namespace std
+
+#endif

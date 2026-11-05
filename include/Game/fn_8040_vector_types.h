@@ -397,6 +397,16 @@ extern "C" bool fn_8000AD08(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 /* Whether the point lies between the planes through the segment's ends (behaviour inferred). */
 extern "C" bool fn_8040FB88(const UnkSegment_80020A20 *segment, const Fn8040Vector3 *point);
 
+/* The squared distance from point to the segment; when closest is not null it receives the
+ * segment's point nearest to point (behaviour inferred). */
+extern "C" float fn_8003C660(const Fn8040Vector3 *point, const UnkSegment_80020A20 *segment,
+                             Fn8040Vector3 *closest);
+/* The squared distance between two segments (behaviour inferred). closestA and closestB are
+ * passed on to fn_8003BC14 with the segments' normalised directions; the ELEC_BAR gadget passes
+ * null for both, and what they receive otherwise is inferred from the name only. */
+extern "C" float fn_8003C4C4(const UnkSegment_80020A20 *a, const UnkSegment_80020A20 *b,
+                             Fn8040Vector3 *closestA, Fn8040Vector3 *closestB);
+
 /* Matching workaround: MakeTranslationMatrix and AddVector are inline wrappers so that a smart
  * pointer's operator-> supplying the vector is called out of line, as in the original; that
  * happens for an argument of an inline call, whereas a direct call to the function expands it in

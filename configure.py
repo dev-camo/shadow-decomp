@@ -1803,6 +1803,14 @@ config.libs = [
             # line for the character info's position, keeping the object in the saved r31; this
             # build loads the pointer inline and saves no register.
             Object(NonMatching, "Game/Vine.cpp", cflags=cflags_game_cpp),
+            # All 106 functions have identical instructions and relocations, and the .data, .rodata
+            # and .sdata objects match once the linker-discarded weak and local copies are set aside.
+            # Two placement differences remain: the tree's __destroy and the allocator helpers it
+            # calls follow the tree's destructor here instead of coming first among the tree members
+            # at the end of the code, where clear also comes before insert in the original (the map
+            # units show the same placement); and the int-to-float constant of .sdata2 follows
+            # ElecBarSub::Update's literals instead of preceding ElecBarSub::UpdateModelMatrix's.
+            Object(NonMatching, "Game/ElecBar.cpp", cflags=cflags_game_cpp),
             # Every function but the constructor has identical instruction words, and the data,
             # symbols and relocations match once the linker-discarded weak and local copies are set
             # aside. The constructor (0x8022E698, USA) differs in 6 of its 189 words: for each of its

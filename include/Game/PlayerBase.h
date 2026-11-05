@@ -73,4 +73,21 @@ CHECK_SIZEOF(PlayerBase, 0x290);
 
 } // namespace Player
 
+/* A 0x70-byte record of the ring that the pointer at 0x250 of a Player::PlayerBase refers to
+ * (records at its +0x4, newest index at its +0x8, 0x78 records of 0x70 bytes; placeholder name).
+ * Only the vector at 0xC is mapped: the ELEC_BAR gadget takes the vectors of the two newest
+ * records as the ends of a segment of the player's movement (inferred). */
+struct UnkPlayerRecord_80078CEC {
+    /* 0x00 */ u8 field_0x0[0xC];
+    /* 0x0C */ Fn8040Vector3 field_0xC;
+    /* 0x18 */ u8 field_0x18[0x70 - 0x18];
+};
+CHECK_SIZEOF(UnkPlayerRecord_80078CEC, 0x70);
+
+/* Returns the record index places before the newest one in the ring that the pointer at 0x250 of
+ * player refers to (behaviour inferred). fn_800A82C8 subtracts index from the ring's newest index
+ * and adds 120 (0x78) once if the result is negative, so only indices 0 to 119 are supported; the
+ * ELEC_BAR gadget passes 0 and 1. */
+extern "C" UnkPlayerRecord_80078CEC *fn_80078CEC(Player::PlayerBase *player, int index);
+
 #endif
