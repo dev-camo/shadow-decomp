@@ -1,7 +1,6 @@
 #ifndef GAME_UNKSOUNDHANDLE_801D3DC8_H
 #define GAME_UNKSOUNDHANDLE_801D3DC8_H
 
-#include "Game/Task.h"
 #include "Game/fn_8040_vector_types.h"
 #include <dolphin/types.h>
 #include "layout_check.h"
@@ -18,8 +17,9 @@ class UnkSoundHandle_801D3DC8 {
     /* Copies position into field_0xC (behaviour inferred from its body). */
     void fn_800CCE14(const Fn8040Vector3 *position);
 
-    /* 0x00 */ Task *field_0x0; /* the task that owns the sound */
-    /* 0x04 */ u16 field_0x4;   /* the sound id */
+    /* The object that owns the sound: a task, or a falling stone of the STONE_POLE gadget. */
+    /* 0x00 */ void *field_0x0;
+    /* 0x04 */ u16 field_0x4; /* the sound id */
     /* 0x06 */ u16 field_0x6;
     /* 0x08 */ u16 field_0x8;
     /* 0x0A */ u8 field_0xA;
@@ -32,11 +32,11 @@ CHECK_SIZEOF(UnkSoundHandle_801D3DC8, 0x1C);
 extern "C" {
 /* Starts the sound id; the first one follows position (the pointer is kept), the second one
  * copies it (behaviour inferred from their bodies). owner is stored in the handle. */
-UnkSoundHandle_801D3DC8 fn_801D3DC8(u16 id, const Fn8040Vector3 *position, Task *owner);
-UnkSoundHandle_801D3DC8 fn_801D3E58(u16 id, const Fn8040Vector3 *position, Task *owner);
+UnkSoundHandle_801D3DC8 fn_801D3DC8(u16 id, const Fn8040Vector3 *position, void *owner);
+UnkSoundHandle_801D3DC8 fn_801D3E58(u16 id, const Fn8040Vector3 *position, void *owner);
 /* Starts the sound id without a position (behaviour inferred from the arguments only; owner is
  * stored in the handle). */
-UnkSoundHandle_801D3DC8 fn_801D3EF0(u16 id, Task *owner);
+UnkSoundHandle_801D3DC8 fn_801D3EF0(u16 id, void *owner);
 }
 
 #endif

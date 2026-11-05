@@ -113,6 +113,9 @@ class GadgetModelInfo {
     void fn_8016271C();
     void fn_80162790();
     void fn_80160480(int arg0);
+    /* Clears bit 0 of the flag word of the first motion entry whose id is arg0, which fn_80160480
+     * sets (behaviour from its body). */
+    void fn_80160384(int arg0);
     /* Attaches a character info to the part with id arg0 and returns whether that succeeded:
      * false when the info has expired or no entry has that id, otherwise the result of
      * fn_80162084 (behaviour and result type inferred). */

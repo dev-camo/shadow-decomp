@@ -1912,25 +1912,19 @@ config.libs = [
             # here and the shared metadata remains in the original data.
             Object(NonMatching, "Game/FleetHolder.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PowerDeviceNaked.cpp", cflags=cflags_game_cpp),
-            # 81 of the original's 95 functions have identical instruction words and relocation
-            # types. In six of them 12 calls (BreakQueued 4, IsQueued 3, Queue, ReadOwner,
-            # ~RollCircle, the constructor 2) go to std::vector<u32>'s members (reserve to its
-            # base's); the original calls copies at 0x800CC35C-0x800CE48C (USA) that are still
-            # unnamed. The std::list constructor is 2 words shorter here (20 against the original's
-            # 22; the original calls the size's allocator accessor before building the node
-            # allocator).
-            # The other 13 are the original's node-guard and pair functions at
-            # 0x800D72B8-0x800D7510, still unnamed in symbols.txt; this object has copies with the
-            # same bytes under the library's names, and insert, which uses them, matches. By
-            # contents, with the linker-discarded weak and local copies set aside, the original's
-            # .rodata, .data (relocation places and other bytes; the original keeps zeros where
-            # discarded weak vtables were), .sdata and .sdata2 contents are all present here; .sbss
-            # has the original's six one-byte objects (the placeholder _1 at 0x805EE7C0 and five
-            # more through the guard's at 0x805EE7D4). The object also defines the boost
-            # placeholders _2 to _9, which a source-enabled link leaves unused, and adds live data
-            # the original unit does not have: the "vector::insert length error" and
-            # "vector::reserve length error" strings, which the std::vector<u32> members that link
-            # selects from this object reference (USA 0x804B7EB0 and 0x804B7ED0 in its map).
+            # 94 of the original's 95 functions have identical instruction words and relocation
+            # types; their calls to std::vector<u32>'s members go to the named copies at
+            # 0x800CC35C-0x800CE48C (USA), and insert holds the new node in a node holder whose 13
+            # functions (0x800D72B8-0x800D7510) the original has too. The std::list constructor is
+            # 2 words short (the original calls the size's allocator accessor before building the
+            # node allocator; see the note in <list>). By contents, with the linker-discarded weak
+            # and local copies set aside, all of the original's .rodata, .data (relocation places
+            # and other bytes; the original keeps zeros where discarded weak vtables were), .sdata
+            # and .sdata2 contents are present, and insert addresses a 1-byte .sbss object as the
+            # original's does (0x805EE7D4). The object also defines the boost placeholders _2 to
+            # _9, which a source-enabled link leaves unused, and, when such a link selects this
+            # object's std::vector<u32> members, adds the vector length-error strings they
+            # reference.
             Object(NonMatching, "Game/RollCircle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/FireRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/MonsterControl.cpp", cflags=cflags_game_cpp),
@@ -1964,6 +1958,22 @@ config.libs = [
             # (a by-value vector sum reproduces it, see the note in the source); the named local
             # here takes the slot above them.
             Object(NonMatching, "Game/Researcher.cpp", cflags=cflags_game_cpp),
+            # 215 of the 219 functions have identical instructions and relocations once the weak
+            # and local copies that the linker discards are removed. The static initialiser is 38
+            # words in the original against 22 here: the original copies the three roll velocities
+            # from temporaries with the out-of-line vector copy fn_800091EC, which this source
+            # builds in place. The constructor of the stone list's implementation differs in 14
+            # words (22 against 20): the original also calls __alloc() to build the node
+            # allocator (see the note in <list>). StonePole::CreateStones (5 words) and
+            # StonePole::Update (3 words) load a stone kind from the step table differently: the
+            # original adds the step offset to the holder's address and loads at 0x50 from it,
+            # this source adds 0x50 to the offset and uses an indexed load (in CreateStones the
+            # argument set-up around it is also ordered differently). 60 raw differing words. The data match by contents (the original object's absent copies set aside)
+            # with two differences: .sdata2 holds 0.0001 before 1 and 70 in the original and
+            # after them here (3 words in a different order; the cause is not established), and
+            # the original's .bss starts with 0x3C bytes that no code references, relative to
+            # which its static initialiser addresses the three vectors (their type is unknown).
+            Object(NonMatching, "Game/PoleHolder.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/StoneStatue.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CityChaosEmerald.cpp", cflags=cflags_game_cpp),
             # Every function but the static initialiser is identical, and the data matches once

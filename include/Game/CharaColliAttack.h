@@ -33,7 +33,7 @@ class AttackCallbackParam {
     /* 0x4C */ float field_0x4C;
     /* 0x50 */ float field_0x50; /* ThreatObj subtracts it from its health; GiantLantern stores 1 */
     /* Bit 0 makes the stick count a hit; ThreatObj stores 1, 3 or 8, the Chao 1 or 8,
-     * FallBuilding 1 or 5. */
+     * FallBuilding 1 or 5, PoleHolder's pole and stones 1 or 3. */
     /* 0x54 */ u32 field_0x54;
 };
 /* Checks only the recovered view; the complete native extent remains unknown. */
