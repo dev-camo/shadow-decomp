@@ -2175,6 +2175,7 @@ config.libs = [
             # transformed offset and the cylinder's difference vector the slots of temporaries
             # made last, where this build declares them as named locals (USA addresses).
             Object(NonMatching, "Game/Fan.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/Fire.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/GoalRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetVehicle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetWeapon.cpp", cflags=cflags_game_cpp),
