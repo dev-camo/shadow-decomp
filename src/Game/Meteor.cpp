@@ -5,8 +5,10 @@
  * up its health (behaviour inferred). File name inferred from the class. Method names marked
  * "(name inferred)" are not original. Definitions are in reverse address order (deferred inlining
  * emits functions last-defined first). */
-/* TNumEdit.h comes before CharaColliBaseCharInfo.h, in the order their names appear in the unit's
- * .rodata (alphabetical order would reverse them). */
+/* Matching workaround: TNumEdit.h and CharaColliBaseCharInfo.h are included for the RTTI data that
+ * their never-called stand-in functions emit (see TNumEdit.h); this file uses neither class.
+ * TNumEdit.h comes first, in the order their names appear in the unit's .rodata (alphabetical order
+ * would reverse them). Revisit when the original inline functions behind that data are found. */
 #include "Game/TNumEdit.h"
 #include "Game/CharaColliBaseCharInfo.h"
 #include "Game/AngleConversion.h"
@@ -39,7 +41,7 @@ static const s32 s_partIds[3] = {1, 2, 3};
 static UnkDebugColor_802E0E84 s_startColor(0xFF, 0x4B, 0x1B, 0x1B);
 static UnkDebugColor_802E0E84 s_endColor(0xFF, 0xFF, 0x73, 0x00);
 
-/* The second argument of the fragments' settings (meaning unknown).
+/* The fragments' move speed (meaning inferred from Meteors' use of the setting).
  * Matching workaround: UnkStartupFloat_800E2570 stands in for the original type of this variable.
  * The original's start-up function in .ctors (0x8021DD64) loads the value and stores it to this
  * .sbss word (0x805EFD5C); a constant float initialiser would be emitted as initialised .sdata data

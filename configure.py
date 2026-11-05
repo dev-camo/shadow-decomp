@@ -1942,6 +1942,22 @@ config.libs = [
             # in 2 words: the original loads the saved link register before the store of the
             # startup float.
             Object(NonMatching, "Game/Meteor.cpp", cflags=cflags_game_cpp),
+            # Compared as relocatable objects, 74 of the 75 functions have identical raw words, and
+            # the data matches by contents once the linker-discarded weak and local copies are set
+            # aside (the original's .data keeps zero-filled holes where five discarded weak vtables
+            # were); the extracted .sdata2 has flags A and the compiled one WA (both linked ELFs
+            # have WA). Meteors::Update (0x8021E734) differs in 10 of its 355 words, all stack
+            # offsets: the original keeps the difference to the nearest character and the velocity
+            # step in compiler temporaries below the named vectors, where this source declares them
+            # as named locals (computing them as by-value results reproduces the original's frame
+            # and leaves 2 words of argument order). Normal builds link the original object. A
+            # diagnostic link of this object (the unit switched to Matching) keeps every section
+            # boundary of the original in USA, Japan and PAL: the linker keeps the original's
+            # vtable of the CollisionResultList count (named in symbols.txt) instead of the
+            # compiled weak copy, so the compiled RTTI name and records that copy refers to are
+            # left out, and the linked main.dol differs from the original only in Update's 10 words
+            # in each region.
+            Object(NonMatching, "Game/Meteors.cpp", cflags=cflags_game_cpp),
             # Constructor temporary cleanup, matrix calls, and literal/weak metadata layout differ.
             Object(NonMatching, "Game/ElecRollHexa.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ArkCannon.cpp", cflags=cflags_game_cpp),
