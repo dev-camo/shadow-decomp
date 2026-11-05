@@ -1961,6 +1961,31 @@ config.libs = [
             # Constructor temporary cleanup, matrix calls, and literal/weak metadata layout differ.
             Object(NonMatching, "Game/ElecRollHexa.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DefenseShield.cpp", cflags=cflags_game_cpp),
+            # 45 of the 73 functions have identical instructions and relocations once the weak and
+            # local copies the linker discards are removed and local symbols are paired by the data
+            # they refer to: the names differ (OnAttack loads the .sdata2 float that the original
+            # calls lbl_805F6E30 and this object @500) and so can the raw offsets, since this object
+            # adds data (ChangeState's lbl_8054631C at .data 0x0C is @336 at 0x3C here). The
+            # constructor (0x80224558) differs in 44 words, register numbers only: the original
+            # keeps this in r31, the owner in r28, the loop counter in r29 and 0x10000 in r30, where
+            # this build uses r28, r29, r30 and r31.
+            # fn_8022440C differs in 3 words, the offsets of the two break-model records and the
+            # model file name from the unit's .rodata base: the original's .rodata has two blocks of
+            # zero bytes, 0x1C after the TNumEdit type names and 0xC after the CharaColliBase name,
+            # that this object does not have. The other 26 belong to the std::vector of
+            # boost::shared_ptr<Target> instance: insert, swap and reserve differ in size and
+            # structure (the original calls small helpers that this build does not emit, among
+            # them one returning the capacity and one returning 0x1FFFFFFF, where this build calls
+            # __alloc, __cap and its own __vector_obj constructor and swap), the vector destructor
+            # is 0x4C bytes here against the original's 0x50, the vector constructor, the
+            # __vector_obj destructor and clear call helpers this build does not emit, and 19 small
+            # helper functions (constructor chain, accessors, pair swap) have no counterpart here.
+            # Compared by contents with the absent copies set aside, the data matches except for
+            # the two zero blocks in .rodata; this object also has RTTI records and base lists that
+            # the original unit does not have (TNumEdit, CharaColliBase), weak vtables
+            # (SetAdapterState, std::exception, boost::bad_weak_ptr, sp_counted_base) with their
+            # RTTI records, and the boost placeholders _2 to _9.
+            Object(NonMatching, "Game/DefenseSystem.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ArkCannon.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EggMeca511.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EggMeca411.cpp", cflags=cflags_game_cpp),

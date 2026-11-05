@@ -530,6 +530,15 @@ Game/DefenseShield.cpp:
 	.sbss       start:0x805F0E70 end:0x805F0E80
 	.sdata2     start:0x805F7E88 end:0x805F7EA8
 
+Game/DefenseSystem.cpp:
+	.text       start:0x80223798 end:0x8022564C
+	.ctors      start:0x804AAEE4 end:0x804AAEE8
+	.rodata     start:0x804F1F80 end:0x804F22A0
+	.data       start:0x80547418 end:0x805474B0
+	.sdata      start:0x805EAAD8 end:0x805EAB10
+	.sbss       start:0x805F0E80 end:0x805F0EA0
+	.sdata2     start:0x805F7EA8 end:0x805F7EF0
+
 Game/ArkCannon.cpp:
 	.text       start:0x80226D9C end:0x80228488
 	.ctors      start:0x804AAEF4 end:0x804AAEF8
