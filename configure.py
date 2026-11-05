@@ -1023,7 +1023,7 @@ config.libs = [
                 # The project object (CProject: the file data of a project with the texture list and
                 # the fonts its scenes use) and the handlers of the scene's end-of-motion policy.
                 # 18 of the unit's 178 functions are sourced. 14 have the original's instructions:
-                # the policy's OnReachStart and OnReachEnd, the four empty events of CSceneListener,
+                # the policy's OnReachEnd and OnReachStart, the four empty events of CSceneListener,
                 # CProject::Load, GetTexList and SetTexList, the CFontList constructor and
                 # CFontListRef::Attach used for the project's fonts, and the free-policy
                 # CResourceBase::Attach, RCPtr<unsigned char>::Reset and RCObject constructor.

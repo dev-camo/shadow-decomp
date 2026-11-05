@@ -14,12 +14,12 @@ namespace CSD {
  * four characters of the type. */
 #define NO_TEXLIST_MESSAGE "[%c%c%c%c]を処理するテクスチャシステムが見つかりません。\n"
 
-void CMotionEndPolicy::OnReachStart(CScene *scene) {
-    switch (m_startAction) {
+void CMotionEndPolicy::OnReachEnd(CScene *scene) {
+    switch (m_endAction) {
     case MOTION_END_PAUSE:
         scene->Pause();
         break;
-    case MOTION_END_HOLD:
+    case MOTION_END_WRAP:
         scene->SetFrame(scene->GetMotionStart());
         break;
     case MOTION_END_REVERSE:
@@ -31,12 +31,12 @@ void CMotionEndPolicy::OnReachStart(CScene *scene) {
     }
 }
 
-void CMotionEndPolicy::OnReachEnd(CScene *scene) {
-    switch (m_endAction) {
+void CMotionEndPolicy::OnReachStart(CScene *scene) {
+    switch (m_startAction) {
     case MOTION_END_PAUSE:
         scene->Pause();
         break;
-    case MOTION_END_HOLD:
+    case MOTION_END_WRAP:
         scene->SetFrame(scene->GetMotionEnd());
         break;
     case MOTION_END_REVERSE:
