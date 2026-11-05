@@ -13,6 +13,7 @@
  * instances of weak pointers differ (insert, reserve, swap, the vector destructor and the
  * __vector_obj constructor) and 16 small helpers of the vector are not reproduced; see the notes
  * in configure.py. */
+#include "Game/AngleConversion.h"
 #include "Game/CharInfo.h"
 #include "Game/DebugDisp.h"
 #include "Game/Gadget.h"
@@ -48,8 +49,6 @@ extern "C" {
  * (bit 2 for 4, bit 1 for 3, bit 0 for 1 or 6). The laser passes 1 and its config's mask. arg3 is
  * passed on to fn_80054DD0 (meaning unknown). */
 void fn_801DD0BC(const Fn8040Vector3 *position, int arg1, int arg2, float arg3);
-/* Degrees to radians. */
-float fn_8000AB90(float degrees);
 }
 
 /* The height of the segment that goes up from the laser, and the radius around it that the bombs
