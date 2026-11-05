@@ -20,7 +20,9 @@ struct UnkMotionEventPayload_802A5A20;
  * out of line. */
 
 /* The 0x120-byte block of settings at 0x74 of EggMecaVarParam (placeholder name; the meanings of
- * the values are unknown). The Egg Mecha units' Init functions change field_0x30 and field_0x34. */
+ * the values are unknown). The Egg Mecha units' Init functions change field_0x30; those of
+ * EggMeca310 and EggMeca411 also change field_0x34, and that of EggMeca511 field_0x110 and
+ * field_0x114. */
 struct UnkEggMecaParams_802E9FF0 {
     UnkEggMecaParams_802E9FF0() {
         field_0x0 = 120.0f;
@@ -223,8 +225,8 @@ class EggMecaVarParam : public BossVarParam {
     /* 0x220 */ s32 field_0x220;
     /* 0x224 */ s32 field_0x224;
     /* 0x228 */ u8 field_0x228[0x234 - 0x228];
-    /* Pairs indexed with the same index (0x802A345C), given to the two units that use them as 0
-     * and 1 (0x802E9AE8, 0x802E9B20). */
+    /* One entry of each per EggMecaCtrlUnit_Laser, selected by its constructor's index argument
+     * (the constructor resets both, 0x802A345C). EggMeca511's Init creates lasers 0 and 1. */
     /* 0x234 */ s32 field_0x234[2];
     /* 0x23C */ s32 field_0x23C[2];
     /* 0x244 */ float field_0x244;

@@ -1791,6 +1791,7 @@ config.libs = [
             # Constructor temporary cleanup, matrix calls, and literal/weak metadata layout differ.
             Object(NonMatching, "Game/ElecRollHexa.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ArkCannon.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/EggMeca511.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EggMeca411.cpp", cflags=cflags_game_cpp),
             # Every function except UpdateBody, the retained data and all retained relocations
             # match once the linker-discarded definitions (43 weak copies and nine local ones,
