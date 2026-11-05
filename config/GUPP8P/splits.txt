@@ -216,6 +216,14 @@ Game/SetWeapon.cpp:
 	.sbss       start:0x805EFDD8 end:0x805EFDF8
 	.sdata2     start:0x805F4F08 end:0x805F4F40
 
+Game/Spring.cpp:
+	.text       start:0x80120554 end:0x80121E14
+	.rodata     start:0x804BE868 end:0x804BEAA0
+	.data       start:0x805288F8 end:0x80528AA0
+	.sdata      start:0x805E6D00 end:0x805E6D50
+	.sbss       start:0x805EFDF8 end:0x805EFE18
+	.sdata2     start:0x805F4F40 end:0x805F4FA0
+
 Game/MonsterControl.cpp:
 	.text       start:0x8013A67C end:0x8013B1A8
 	.rodata     start:0x804C0C40 end:0x804C0D48

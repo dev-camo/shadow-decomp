@@ -1955,6 +1955,24 @@ config.libs = [
             # checked_delete<SetWeapon::Arms> is a local symbol here where the original's is weak,
             # as in FallBuildingHolder.cpp.
             Object(NonMatching, "Game/SetWeapon.cpp", cflags=cflags_game_cpp),
+            # 50 of 53 functions are identical in every word and relocation. The bound call
+            # operator of the collision callback and the constructor have identical words but call
+            # boost's list1 operator[] and the function1 destructor through the copies at
+            # 0x800D05D0 and 0x800D0CEC in the original, where this build names the copies that
+            # symbols.txt names at 0x800F5238 and 0x800F5B08 (USA addresses). The hit callback
+            # (0x801213E8) differs in 13 of its 276 words: the SetAngleCommand argument temporary
+            # and directionTemporary sit at 0x30 and 0x3C instead of 0x3C and 0x30 (4 words); the
+            # int-to-float conversion of the index uses a second 8-byte stack slot where the
+            # original reuses the slot of the float-to-int conversion of the level, and the level
+            # and the difference of the two table entries are held in f3 and f2 instead of f2 and
+            # f3 (9 words). The weak vtables of bad_weak_ptr, sp_counted_base_impl for
+            # CharCommandUnit, std::exception, std::bad_alloc and sp_counted_base lie between kept
+            # base-class lists in .data; the original keeps their 0x60 bytes as zero-filled holes.
+            # Linked in place of the original object, this object's sp_counted_base_impl vtable,
+            # functions and type record for CharCommandUnit and its checked_deleter type record and
+            # name are kept, so .rodata is 0x2BC and .sdata 0x5C against the original's 0x238 and
+            # 0x50; the other data match when those copies are set aside.
+            Object(NonMatching, "Game/Spring.cpp", cflags=cflags_game_cpp),
             # fn_8040C55C's instructions match. fn_8040C3EC (92 words) differs in 15 positional raw
             # words (19 when relocation targets are compared by section and offset: the shared-pool
             # loads and the threshold load at +0x90, which refers to .sdata2+0 in the original and

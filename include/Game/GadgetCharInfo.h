@@ -20,7 +20,8 @@ class GadgetCharInfo : public CharInfo {
      * otherwise deletes it (behaviour inferred from its body). */
     virtual void fn_801DC980(CharCommand *command);
 
-    /* 0x64 */ boost::shared_ptr<CharCommandUnit> m_commandUnit; /* created by fn_8015CF7C */
+    /* Created by fn_8015CF7C or, in Spring, by the gadget's constructor. */
+    /* 0x64 */ boost::shared_ptr<CharCommandUnit> m_commandUnit;
 };
 CHECK_SIZEOF(GadgetCharInfo, 0x6C);
 

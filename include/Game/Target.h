@@ -25,14 +25,18 @@ class Target {
     /* Matching workaround: these inline members stand for an unknown original accessor. Called as
      * a statement, an inline member leaves the smart pointer's operator-> out of line, as the
      * original does (its copy is at 0x8006092C; most of its callers read the word at 0x30 through
-     * it); a plain field access expands the operator in place. Other callers in the game set,
-     * clear and test several bits of this word (inferred), so the members take a mask. Revisit
-     * when the original accessor is identified. Names inferred from what they do. */
+     * it); a plain field access expands the operator in place. TestFlags is the same stand-in for
+     * a test used as the whole condition of an if. Other callers in the game set, clear and test
+     * several bits of this word (inferred), so the members take a mask. Revisit when the original
+     * accessor is identified. Names inferred from what they do. */
     void SetFlags(u32 mask) {
         m_flags |= mask;
     }
     void ClearFlags(u32 mask) {
         m_flags &= ~mask;
+    }
+    bool TestFlags(u32 mask) const {
+        return (m_flags & mask) != 0;
     }
     /* Matching workaround: the same kind of stand-in for the float at 0x20, which SuctionPillar's
      * constructor and the code at 0x80104E20 store through an out-of-line operator->; a direct
@@ -59,12 +63,12 @@ CHECK_OFFSETOF(Target, m_flags, 0x30);
 
 extern "C" {
 /* Creates the object (the meaning of the argument is unknown; the Chao and Cream gadgets pass
- * 0x2000, CircusBall 0x400 and PowerDeviceNaked 0x2800). */
+ * 0x2000, CircusBall and Spring 0x400 and PowerDeviceNaked 0x2800). */
 boost::shared_ptr<Target> fn_801E72DC(int arg0);
 /* Copies position into the object's position at 0x8 (behaviour inferred from its body). */
 void fn_800CCE38(Target *object, const Fn8040Vector3 *position);
-/* Hands the shared pointer on to fn_8008A1B0 (purpose unknown; CircusBall calls it from its
- * destructor). */
+/* Hands the shared pointer on to fn_8008A1B0 (purpose unknown; CircusBall and Spring call it
+ * from their destructors). */
 void fn_801E7108(boost::shared_ptr<Target> &object);
 /* Creates an object for the character info (the number is not understood; Coaster passes 0x2000,
  * ArkCannon 0xA400 and 0x8800, and BombingWall 0xA000). */

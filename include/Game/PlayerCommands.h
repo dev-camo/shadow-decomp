@@ -102,12 +102,13 @@ CHECK_SIZEOF(UseCommand, 0x24);
 
 /* Sets the rotation of the character info (inferred from the name): the constructor at
  * 0x800B81F8 passes 3 as the command id and its last argument to the base constructor, copies the
- * vector to 0x14 and stores order at 0x20. The vector is passed by address (the bytes do not show
- * whether as a pointer or a reference; a pointer is declared). The DashPanel and DashRing gadgets
- * pass the angles that fn_8040F5F4 returns for order 2, and 2. */
+ * vector to 0x14 and stores order at 0x20. The vector is taken by const reference (inferred): the
+ * Spring gadget builds it into an argument temporary after the allocation, from fn_8040F364's
+ * result. The DashPanel and DashRing gadgets pass the angles that fn_8040F5F4 returns for order 2,
+ * and 2, and the Spring gadget passes 2 as well. */
 class SetAngleCommand : public CharCommand {
   public:
-    SetAngleCommand(const Fn8040Vector3 *angles, int order, int arg1);
+    SetAngleCommand(const Fn8040Vector3 &angles, int order, int arg1);
     virtual ~SetAngleCommand();
 
     /* 0x14 */ Fn8040Vector3 m_angles;
@@ -116,7 +117,8 @@ class SetAngleCommand : public CharCommand {
 CHECK_SIZEOF(SetAngleCommand, 0x24);
 
 /* The command with the id 0x1D. Its constructor (0x801DA868) takes no arguments and passes 0x1D and
- * 4 to the base constructor. The LongSpring gadget sends it first to a character it launches. */
+ * 4 to the base constructor. The LongSpring and Spring gadgets send it first to a character they
+ * launch. */
 class SpringCommand : public CharCommand {
   public:
     SpringCommand();
@@ -221,7 +223,8 @@ CHECK_SIZEOF(Player::PressGroundCommand, 0x14);
 
 /* The command with the id 0x101. Its destructor (0x8009DBB4) and vtable are defined elsewhere; the
  * constructor passes 0x101 and its argument to the base constructor and is defined in
- * DashPanel.cpp, which holds the copy that the original keeps (see the note there). */
+ * DashPanel.cpp, which holds the copy that the original keeps (see the note there). The Spring
+ * gadget sends it with 4 to the character it launches. */
 class CancelBehaviorCommand : public PlayerCommand {
   public:
     CancelBehaviorCommand(int arg1);
