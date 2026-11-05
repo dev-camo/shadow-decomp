@@ -801,6 +801,12 @@ config.libs = [
                 Object(NonMatching, "Game/CityLaserHolder.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/FallBuildingHolder.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecCristalWallSwitch.cpp", cflags=cflags_game_cpp),
+                # All 11 functions have identical instructions, and the whole object matches once
+                # the 14 weak and local copies the linker discards are set aside, except the order
+                # of the nine floats in .sdata2 (0x18-0x38): the original pools 70.0f, 1.0f, 0.1f,
+                # 0.6f, 0.0f, 0.3f, 0.7f, 1.2f, 1.5f; this build pools 0.3f, 0.7f, 1.2f, 1.0f,
+                # 1.5f, 0.0f, 0.1f, 0.6f, 70.0f (UpdateRotation's order of first use), so the
+                # .sdata2 relocations of the functions point at other offsets.
                 Object(NonMatching, "Game/ElecCube.cpp", cflags=cflags_game_cpp),
                 Object(Matching, "Game/ElecPillar.cpp", cflags=cflags_game_cpp),
                 Object(NonMatching, "Game/GrindGadget.cpp", cflags=cflags_game_cpp),
@@ -1048,7 +1054,17 @@ config.libs = [
                 Object(Matching, "Game/fn_80425858.cpp", cflags=cflags_effect),
                 # All six method bodies have identical instruction words and named relocation
                 # targets. Live local template copies have their original providers in
-                # fn_80425860.cpp, so this split is still NonMatching.
+                # fn_80425860.cpp, so this split is still NonMatching. Linked as a whole object
+                # (which first needs a name for 0x803A1754, the function the shared_count
+                # constructor calls after __throw, here __end__catch), it still keeps a local
+                # 0x18-byte boost operator== copy for shared_ptr<EffectElement> that the
+                # original calls at 0x80426224 and extab and extabindex records for the template
+                # copies. The object also emits .rodata and .data (the type records, name strings
+                # and vtables of the boost template copies), but the linked image keeps none of
+                # them. Of its .bss it keeps one byte, the object that the local
+                # shared_ptr<EffectElement> constructor copies into its checked_deleter argument;
+                # the original's counterpart is lbl_805E1500. Revisit when fn_80425860.cpp can be
+                # merged into this unit.
                 Object(NonMatching, "Game/EffectManager.cpp", cflags=cflags_effect),
                 Object(NonMatching, "Game/fn_80425860.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/EffectArranger.cpp", cflags=cflags_effect),
@@ -1523,6 +1539,11 @@ config.libs = [
                 cflags=cflags_game,
                 extra_cflags=["-Cpp_exceptions on"],
             ),
+            # The next three functions have identical instructions; each reads floats outside
+            # its split that other functions also read (0x805F1AF8; 0x805F1C80 and 0x805F1C84;
+            # 0x805F18E8), where these one-function units keep local copies.
+            # fn_8003B9E8 and fn_800498A0 also emit weak std::sin, std::cos and sqrtf constant
+            # copies, which the linker discards.
             Object(NonMatching, "Game/fn_8003B9E8.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_800498A0.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_8001E070.cpp", cflags=cflags_game_cpp),
@@ -1668,7 +1689,11 @@ config.libs = [
             Object(NonMatching, "Game/fn_801A4430.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A54E8.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A61E4.cpp", cflags=cflags_game_cpp),
-            # All six function bodies match; float literal order and readonly-span layout differ.
+            # All six function bodies match. The two .sdata2 floats are pooled in the opposite
+            # order (the original's first, 0x805F5818, is the one read at unit offsets 0x150 and
+            # 0x2D4), and symbols.txt gives lbl_804CC828 a size of 0x10: the original's bytes are
+            # the nine-byte initializer of fn_801A6790's resourceIndices[9] (02 to 0A) followed by
+            # seven zero alignment bytes, where this unit emits a 9-byte array.
             Object(NonMatching, "Game/fn_801A6588.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_801A687C.cpp", cflags=cflags_game_cpp),
             # The instruction sequence matches; zero-literal ownership remains shared with
@@ -1864,7 +1889,11 @@ config.libs = [
             Object(NonMatching, "Game/FallRoad.cpp", cflags=cflags_game_cpp),
             # All 60 functions have identical instructions and the data bytes match, but the 0.0f
             # and 120.0f literals are pooled in the opposite order, and the vtable relocations
-            # name functions of other units whose symbols still have address names.
+            # name functions of other units whose symbols still have address names. 104 names
+            # stay unresolved: 101 function references from the vtables (methods of
+            # EnemyStatusCommon, EnemyDispCommon, EnemyBaseAI, TEnemySetBase and others) and three
+            # vtables that instructions reference (__vt__11EnemyBaseAI, __vt__13BkWingSmallAI and
+            # __vt__13FlyerCommonAI), so the unit does not link.
             Object(NonMatching, "Game/BkWingSmall.cpp", cflags=cflags_game_cpp),
             # First part of a larger original object. The following EggFleet/EggCannon code,
             # including ~EggFleet, is not reconstructed, so checked_delete<EggFleet> is inlined
