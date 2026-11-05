@@ -16,19 +16,19 @@ class EnergyCore;
  * m_rangeSquared; behaviour inferred). Member and method names are inferred. */
 class EnergyCoreTask : public Task {
   public:
-    EnergyCoreTask(int type, Task *parent, Fn8040Vector3 *position, Fn8040Vector3 *rotation,
+    EnergyCoreTask(int type, Task *parent, Fn8040Vector3 *position, UnkRotation3 *rotation,
                    float range);
     virtual ~EnergyCoreTask();
     virtual void Update(float dt);
 
     /* Creates the task under task layer 11 (name inferred). */
-    static void Create(int type, Fn8040Vector3 *position, Fn8040Vector3 *rotation, float range);
+    static void Create(int type, Fn8040Vector3 *position, UnkRotation3 *rotation, float range);
 
     static const char *s_name;
 
     /* 0x28 */ boost::scoped_ptr<EnergyCore> m_core;
     /* 0x2C */ Fn8040Vector3 m_position;
-    /* 0x38 */ Fn8040Vector3 m_rotation;
+    /* 0x38 */ UnkRotation3 m_rotation;
     /* 0x44 */ float m_rangeSquared; /* the square of the constructor's range */
 };
 CHECK_SIZEOF(EnergyCoreTask, 0x48);
@@ -63,7 +63,7 @@ class SetEnergyCoreTask : public Gadget {
 
     /* 0x30 */ boost::scoped_ptr<EnergyCore> m_core;
     /* 0x34 */ Fn8040Vector3 m_position;
-    /* 0x40 */ Fn8040Vector3 m_rotation;
+    /* 0x40 */ UnkRotation3 m_rotation;
     /* 0x4C */ s32 m_type; /* the parameter "type": selects the core's effect and item */
 };
 CHECK_SIZEOF(SetEnergyCoreTask, 0x50);

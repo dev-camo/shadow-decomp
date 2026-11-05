@@ -307,7 +307,7 @@ bool ArkCannon::TurnToTarget(boost::shared_ptr<CharInfo> target, float dt) {
     Fn8040Vector3 forward(0.0f, 0.0f, -1.0f);
     bool facing = false;
     Fn8040Vector3 direction;
-    Fn8040Vector3 ownerRotation;
+    UnkRotation3 ownerRotation;
     Fn8040Vector3 axis;
     Fn8040Matrix34 ownerMatrix;
     Fn8040Matrix34 matrix;

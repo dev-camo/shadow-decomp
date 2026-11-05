@@ -9,7 +9,7 @@
  * position and rotation to it, and creates a task under task layer 11 for it that receives arg3
  * (behaviour inferred from the body; owner is passed to the Bomb's constructor and arg3 is not
  * understood). The BombServer gadget is the only caller. */
-extern "C" void fn_800EDA3C(const Fn8040Vector3 *position, const Fn8040Vector3 *rotation,
+extern "C" void fn_800EDA3C(const Fn8040Vector3 *position, const UnkRotation3 *rotation,
                             const boost::weak_ptr<CharInfo> &owner, float arg3);
 
 #endif

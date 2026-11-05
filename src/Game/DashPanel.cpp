@@ -82,7 +82,7 @@ static void fn_800FFB70(boost::shared_ptr<CharInfo> hit, void *arg) {
     Fn8040Vector3 position;
     Fn8040Vector3 front;
     Fn8040Vector3 top;
-    Fn8040Vector3 angles;
+    UnkRotation3 angles;
     Fn8040Vector3 velocity;
     Fn8040Vector3 push;
     Fn8040Vector3 offset;

@@ -344,7 +344,7 @@ void Fan::CreateProbe() {
         break;
     case 0: {
         /* The original stores all three components twice: zero, then the angles. */
-        Fn8040Vector3 rotation(0.0f, 0.0f, 0.0f);
+        UnkRotation3 rotation(0.0f, 0.0f, 0.0f);
 
         rotation.Set(90.0f * (lbl_805FAD38 / 180.0f), 0.0f, 0.0f);
         probe = fn_800C7A84(fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), 1.0f, 1.0f,

@@ -50,14 +50,14 @@ bool fn_8001C7B4(UnkCollision_8001B494 *collision, SonicteamUSA::System::PathCtr
                  s32 pathNo);
 /* Moves position along the path by distance and returns whether the end was reached. */
 bool fn_8001C91C(UnkCollision_8001B494 *collision, SonicteamUSA::System::PathCtrl *path,
-                 s32 reversed, Fn8040Vector3 *position, float distance, Fn8040Vector3 *rotation,
+                 s32 reversed, Fn8040Vector3 *position, float distance, UnkRotation3 *rotation,
                  int flag);
 /* Sets up path from resource at position and rotation (behaviour inferred). Argument 4 is passed
  * to fn_8001E070 as its third argument, like CharInfo::field_0x30 (rotation order, inferred),
  * which is what the GrindGadget passes; argument 6 is read as two groups of three floats (at
  * 0x0-0x8 and 0xC-0x14) and also passed on (the GrindGadget passes lbl_80570B50). */
 void fn_8001DB08(UnkCollision_8001B494 *collision, UnkPathData_8001DB08 *resource,
-                 const Fn8040Vector3 *position, Fn8040Vector3 rotation, int arg4,
+                 const Fn8040Vector3 *position, UnkRotation3 rotation, int arg4,
                  SonicteamUSA::System::PathCtrl *path, const UnkBss_80570B50 &arg6);
 /* Releases path (behaviour inferred from its body: it passes objects derived from the path to
  * release functions). The collision argument is unused. */
@@ -79,7 +79,7 @@ float fn_800183D8(SonicteamUSA::System::PathCtrl *path);
 Fn8040Vector3 fn_80018634(SonicteamUSA::System::PathCtrl *path);
 /* The rotation angles of the path at its current state, from the current point and fraction
  * (behaviour inferred; the meaning of the two int arguments is not known). */
-Fn8040Vector3 fn_80018434(SonicteamUSA::System::PathCtrl *path, int arg1, int arg2);
+UnkRotation3 fn_80018434(SonicteamUSA::System::PathCtrl *path, int arg1, int arg2);
 
 /* External two-vector record read by fn_8001DB08. */
 extern UnkBss_80570B50 lbl_80570B50;

@@ -69,7 +69,7 @@ FireRing::FireRing(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(parent
 
     {
         Fn8040Vector3 offset(0.0f, 0.0f, 14.0f);
-        Fn8040Vector3 rotation = lbl_805E07B8;
+        UnkRotation3 rotation = lbl_805E07B8;
         boost::shared_ptr<CharaColliBase> probe =
             fn_800C7A84(fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), 3.0f, 18.0f, 0x80000,
                         10, 0, &offset, &rotation, 1);
@@ -81,7 +81,7 @@ FireRing::FireRing(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(parent
 
     {
         Fn8040Vector3 offset(0.0f, 0.0f, -14.0f);
-        Fn8040Vector3 rotation = lbl_805E07B8;
+        UnkRotation3 rotation = lbl_805E07B8;
         boost::shared_ptr<CharaColliBase> probe =
             fn_800C7A84(fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), 3.0f, 18.0f, 0x80000,
                         10, 0, &offset, &rotation, 1);

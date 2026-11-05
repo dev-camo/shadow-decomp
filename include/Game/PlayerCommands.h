@@ -111,10 +111,10 @@ CHECK_SIZEOF(UseCommand, 0x24);
  * and 2, and the Spring gadget passes 2 as well. */
 class SetAngleCommand : public CharCommand {
   public:
-    SetAngleCommand(const Fn8040Vector3 &angles, int order, int arg1);
+    SetAngleCommand(const UnkRotation3 &angles, int order, int arg1);
     virtual ~SetAngleCommand();
 
-    /* 0x14 */ Fn8040Vector3 m_angles;
+    /* 0x14 */ UnkRotation3 m_angles;
     /* 0x20 */ int m_order;
 };
 CHECK_SIZEOF(SetAngleCommand, 0x24);
@@ -207,12 +207,12 @@ CHECK_SIZEOF(Player::StreamCommand, 0x18);
 class TouchHangCommand : public PlayerCommand {
   public:
     TouchHangCommand(boost::weak_ptr<CharInfo> target, const Fn8040Vector3 *position,
-                     const Fn8040Vector3 *angles, int arg3, int arg4);
+                     const UnkRotation3 *angles, int arg3, int arg4);
     virtual ~TouchHangCommand();
 
     /* 0x14 */ boost::weak_ptr<CharInfo> m_target;
     /* 0x1C */ const Fn8040Vector3 *field_0x1C;
-    /* 0x20 */ const Fn8040Vector3 *field_0x20;
+    /* 0x20 */ const UnkRotation3 *field_0x20;
     /* 0x24 */ int field_0x24;
 };
 CHECK_SIZEOF(Player::TouchHangCommand, 0x28);
@@ -280,7 +280,7 @@ CHECK_SIZEOF(Player::CancelBehaviorCommand, 0x14);
 class StartExternalControlCommand : public PlayerCommand {
   public:
     StartExternalControlCommand(boost::weak_ptr<CharInfo> target, const Fn8040Vector3 *position,
-                                const Fn8040Vector3 *angles, int arg3, int arg4)
+                                const UnkRotation3 *angles, int arg3, int arg4)
         : PlayerCommand(0x12B, arg4), m_target(target), m_position(position), m_angles(angles),
           field_0x24(arg3) {}
     StartExternalControlCommand(int arg0, int arg1);
@@ -288,7 +288,7 @@ class StartExternalControlCommand : public PlayerCommand {
 
     /* 0x14 */ boost::weak_ptr<CharInfo> m_target;
     /* 0x1C */ const Fn8040Vector3 *m_position;
-    /* 0x20 */ const Fn8040Vector3 *m_angles;
+    /* 0x20 */ const UnkRotation3 *m_angles;
     /* 0x24 */ int field_0x24;
 };
 CHECK_SIZEOF(Player::StartExternalControlCommand, 0x28);

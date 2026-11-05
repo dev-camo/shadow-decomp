@@ -114,7 +114,7 @@ CHECK_SIZEOF(ElecCircuitEntrance, 0x50);
 const char *ElecCircuitEntrance::s_name = "ElecCircuitEntrance";
 
 /* Three angles (in radians) built at startup; the constructor passes them to fn_800C7A84. */
-static Fn8040Vector3 lbl_80583B78(0.5f * lbl_805FAD38, 0.0f, 0.0f);
+static UnkRotation3 lbl_80583B78(0.5f * lbl_805FAD38, 0.0f, 0.0f);
 
 /* The callback that fn_8015AA84 calls for each character info in the collision results (name
  * inferred). */
@@ -204,7 +204,7 @@ void ElecCircuitEntrance::fn_801F7F9C() {
          * operator-> is called out of line, which the original does not do. Revisit if the
          * original's expression form is found. */
         float angle = m_charInfo->m_rotation.y;
-        Fn8040Vector3 rotation(0.0f, angle, 0.0f);
+        UnkRotation3 rotation(0.0f, angle, 0.0f);
 
         fn_802E0D6C(&position, &rotation, 0, 10.0f, 3.75f);
     }

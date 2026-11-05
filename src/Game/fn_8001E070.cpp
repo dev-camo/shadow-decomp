@@ -1,7 +1,7 @@
 /* Rotation-order helper (behaviour inferred; original name and filename unknown). */
 #include "Game/fn_8040_vector_types.h"
 
-extern "C" void fn_8001E070(Fn8040Matrix34 *matrix, const Fn8040Vector3 *rotation, int order) {
+extern "C" void fn_8001E070(Fn8040Matrix34 *matrix, const UnkRotation3 *rotation, int order) {
     switch (order) {
     case 0:
         if (rotation->z != 0.0f) {

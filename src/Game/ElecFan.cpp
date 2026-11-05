@@ -104,7 +104,7 @@ void ElecFan::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 void ElecFan::fn_800CBC1C(float) {
     Fn8040Vector3 center;
     Fn8040Vector3 offset;
-    Fn8040Vector3 rotation;
+    UnkRotation3 rotation;
 
     rotation.Set(0.5f * lbl_805FAD38, 0.0f, 0.0f);
     offset.Set(0.0f, 0.5f * m_params.height, 0.0f);

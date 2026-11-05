@@ -48,7 +48,7 @@ class EnemyDispFunc {
     virtual void fn_80188E0C(float);                      // 0x30
     virtual float fn_8019B3FC();                          // 0x34
     // 0x38; the second vector is taken by value: BkWingSmallBase copies it before the call.
-    virtual void fn_8019B404(const Fn8040Vector3 &, Fn8040Vector3);
+    virtual void fn_8019B404(const Fn8040Vector3 &, UnkRotation3);
     virtual void fn_8017F234(bool);                              // 0x3C
     virtual void fn_8019B408(const Unk801A4430Event &event);     // 0x40
     virtual bool fn_8019B40C(UnkEnemyDispEvent_8019B40C *event); // 0x44

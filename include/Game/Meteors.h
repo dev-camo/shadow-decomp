@@ -26,14 +26,14 @@ struct UnkMeteorsParams_8021FCE4 {
      * builds the object at its first argument and returns that address. */
     explicit UnkMeteorsParams_8021FCE4(const MeteorParams &params);
     UnkMeteorsParams_8021FCE4(float range, float moveSpeed, const Fn8040Vector3 &direction,
-                              Fn8040Vector3 rotateSpeed, float lifetime);
+                              UnkRotation3 rotateSpeed, float lifetime);
     UnkMeteorsParams_8021FCE4(const UnkMeteorsParams_8021FCE4 &other);
 
     /* 0x00 */ float m_range;     /* a character within it starts a waiting Meteors moving */
     /* 0x04 */ float m_moveSpeed; /* per second along m_direction */
     /* 0x08 */ Fn8040Vector3 m_direction;
-    /* 0x14 */ Fn8040Vector3 m_rotateSpeed; /* radians per second about x, y and z */
-    /* 0x20 */ float m_lifetime;            /* seconds of movement before it breaks up */
+    /* 0x14 */ UnkRotation3 m_rotateSpeed; /* radians per second about x, y and z */
+    /* 0x20 */ float m_lifetime;           /* seconds of movement before it breaks up */
 };
 CHECK_SIZEOF(UnkMeteorsParams_8021FCE4, 0x24);
 
@@ -45,7 +45,7 @@ CHECK_SIZEOF(UnkMeteorsParams_8021FCE4, 0x24);
  * marked "(name inferred)" are not original. */
 class Meteors {
   public:
-    Meteors(Task *task, const Fn8040Vector3 &position, const Fn8040Vector3 &rotation,
+    Meteors(Task *task, const Fn8040Vector3 &position, const UnkRotation3 &rotation,
             const UnkMeteorsParams_8021FCE4 &params, int state);
     ~Meteors();
 
@@ -89,7 +89,7 @@ CHECK_SIZEOF(Meteors, 0x58);
  * state (Meteor passes 1, so its fragments move at once). */
 class MeteorsTask : public Task {
   public:
-    MeteorsTask(Task *parent, const Fn8040Vector3 &position, const Fn8040Vector3 &rotation,
+    MeteorsTask(Task *parent, const Fn8040Vector3 &position, const UnkRotation3 &rotation,
                 const UnkMeteorsParams_8021FCE4 &params, int state);
     virtual ~MeteorsTask();
     virtual void Update(float dt);

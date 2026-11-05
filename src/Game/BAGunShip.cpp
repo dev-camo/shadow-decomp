@@ -73,7 +73,7 @@ BAGunShip::BAGunShip(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(pare
 
     {
         Fn8040Vector3 offset(0.0f, 0.0f, 0.0f);
-        Fn8040Vector3 rotation(fn_8000AB90(90.0f), 0.0f, 0.0f);
+        UnkRotation3 rotation(fn_8000AB90(90.0f), 0.0f, 0.0f);
         boost::shared_ptr<CharaColliBase> probe =
             fn_800C7A84(fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), m_params.height,
                         m_params.radius, 0x40100, 10, 0, &offset, &rotation, 0);
@@ -264,7 +264,7 @@ void BAGunShip::UpdateBody(float dt) {
 
         Fn8040Vector3 position;
         fn_800091EC(&position, &m_charInfo->m_position);
-        Fn8040Vector3 rotation = m_charInfo->m_rotation;
+        UnkRotation3 rotation = m_charInfo->m_rotation;
         Fn8040Vector3 up(0.0f, 1.0f, 0.0f);
         fn_80221BA8(&position, &rotation, &up, 0x10, -1);
 

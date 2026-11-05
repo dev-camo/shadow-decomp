@@ -61,7 +61,7 @@ class RainEffect : public Gadget {
     static const char *s_name;
 
     /* 0x30 */ Fn8040Vector3 m_position;
-    /* 0x3C */ Fn8040Vector3 m_rotation;
+    /* 0x3C */ UnkRotation3 m_rotation;
     /* 0x48 */ boost::shared_ptr<CharaColliBase> m_probe;
     /* 0x50 */ boost::shared_ptr<GadgetModelInfo> m_model;
     /* The names of the members below are inferred. */

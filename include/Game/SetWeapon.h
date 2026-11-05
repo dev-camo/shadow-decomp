@@ -29,7 +29,7 @@ class Arms {
     /* Moves the character info and updates the models (name inferred). rotation is not const:
      * the original loads each of its components only after storing the previous one, as this
      * compiler does when the stores may change the source. */
-    void SetTransform(const Fn8040Vector3 *position, Fn8040Vector3 *rotation);
+    void SetTransform(const Fn8040Vector3 *position, UnkRotation3 *rotation);
     /* Places the model at the character info, and the item 5 units above it unless bit 1 of
      * m_flags is set (name inferred). */
     void UpdateModels();
@@ -120,7 +120,7 @@ void fn_8011E630(const boost::shared_ptr<Weapon::Item> &item, const Fn8040Vector
  * (behaviour inferred; the original name is unknown). A breaking active stone statue passes 0x1F,
  * its position and its rotation; fn_80122580 calls it twice as well (0x80122900 and 0x8012296C).
  * rotation is passed on to Arms::SetTransform. */
-void fn_8011E938(int type, const Fn8040Vector3 *position, Fn8040Vector3 *rotation);
+void fn_8011E938(int type, const Fn8040Vector3 *position, UnkRotation3 *rotation);
 }
 
 #endif

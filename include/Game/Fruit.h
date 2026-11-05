@@ -36,7 +36,7 @@ class FruitTask : public Gadget {
     void ReadOwner(UnkGadgetOwner_800C9CD0 *owner);
     /* Places the model, when there is one, at position, turned by the y, x and z angles of
      * rotation (name inferred). */
-    void UpdateModelMatrix(const Fn8040Vector3 *position, const Fn8040Vector3 *rotation);
+    void UpdateModelMatrix(const Fn8040Vector3 *position, const UnkRotation3 *rotation);
     /* The callback in the first callback member (0x10) of part 0's attack object (name
      * inferred; FallingStoneHard's OnHit sits in the third member, 0x28): in STATE_WAITING,
      * switches the state to STATE_HIT; in any other state it does nothing. */

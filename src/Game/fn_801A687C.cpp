@@ -10,7 +10,7 @@
  * radius moveRange around the position, and the cylinder of radius searchWidth placed searchRange
  * from it at the angle rotation.y plus searchAngle + 180 degrees (converted to radians), raised
  * by searchHeightOffset. */
-void Unk8018A374::fn_801A69FC(const Fn8040Vector3 &position, const Fn8040Vector3 &rotation,
+void Unk8018A374::fn_801A69FC(const Fn8040Vector3 &position, const UnkRotation3 &rotation,
                               const UnkEnemySetDataCommon &setData) {
     Fn8040Vector3 center;
     Fn8040Vector3 moved;

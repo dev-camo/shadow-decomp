@@ -37,7 +37,7 @@ class Item {
     void fn_8005F09C();
     /* Passes position and rotation to fn_800632E8 of the model, then a constant to
      * fn_800632A0. */
-    void fn_8005F274(const Fn8040Vector3 *position, const Fn8040Vector3 *rotation);
+    void fn_8005F274(const Fn8040Vector3 *position, const UnkRotation3 *rotation);
 
     /* The weapon model object that the functions at 0x800631D0-0x80063484 work on, as at 0x1C of
      * Weapon::WeaponBase (type inferred from those functions; it is null when not created). */

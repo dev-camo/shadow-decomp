@@ -23,6 +23,6 @@ class GadgetModelInfo;
  * (0x8033F12C-0x8033F138) and position and rotation to the virtual calls, so the bytes do not
  * determine the parameter types, pointer or reference spellings or const qualifiers. */
 extern "C" void fn_8033F0F8(CharCommand *command, const boost::shared_ptr<GadgetModelInfo> &model,
-                            int arg2, const Fn8040Vector3 *position, const Fn8040Vector3 *rotation);
+                            int arg2, const Fn8040Vector3 *position, const UnkRotation3 *rotation);
 
 #endif

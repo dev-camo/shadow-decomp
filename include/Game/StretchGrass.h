@@ -53,8 +53,8 @@ struct StretchGrassState {
     /* 0x04 */ float m_stretch; /* scales the offset of the tip (by -50 along z) */
     /* 0x08 */ float m_speed;   /* the stretching speed */
     /* 0x0C */ Fn8040Vector3 m_position;
-    /* 0x18 */ Fn8040Vector3 m_rotation; /* radians */
-    /* 0x24 */ float m_timer;            /* counts the "charge" time down while the grass is held */
+    /* 0x18 */ UnkRotation3 m_rotation; /* radians */
+    /* 0x24 */ float m_timer;           /* counts the "charge" time down while the grass is held */
     /* Cleared when a character starts the stretch, set when the grass launches it or receives
      * command id 0xC; while it is set the grass stops holding and launches nobody else. */
     /* 0x28 */ u8 field_0x28;
@@ -106,7 +106,7 @@ class SetStretchGrass : public Gadget {
     /* 0x9C */ boost::shared_ptr<UnkLayer_8004DFB0> m_layer;
     /* The point and the angles the character is carried at: 5 beyond the tip, facing back. */
     /* 0xA4 */ Fn8040Vector3 m_launchPosition;
-    /* 0xB0 */ Fn8040Vector3 m_launchAngles;
+    /* 0xB0 */ UnkRotation3 m_launchAngles;
 };
 /* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(SetStretchGrass, 0xC0);

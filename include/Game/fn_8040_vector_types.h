@@ -35,6 +35,28 @@ typedef struct Fn8040Vector3 {
 } Fn8040Vector3;
 CHECK_SIZEOF(Fn8040Vector3, 0xC);
 
+/* Rotation angles about the x, y and z axes, in radians (placeholder name; the original type name is
+ * unknown). It is a type of its own because the original copies rotations inline (member by member,
+ * for example by value to fn_8001DB08 and in the rotation-vector interpolation fn_8040F16C), while it
+ * copies positions and directions through the out-of-line functions fn_800091EC and fn_800091D0; the
+ * EnergyCoreTask constructor does both, one after the other. */
+typedef struct UnkRotation3 {
+#ifdef __cplusplus
+    UnkRotation3() {}
+    UnkRotation3(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
+    /* Stores the three components (name inferred), as Fn8040Vector3::Set does. */
+    void Set(float x_, float y_, float z_) {
+        x = x_;
+        y = y_;
+        z = z_;
+    }
+#endif
+    /* 0x00 */ float x;
+    /* 0x04 */ float y;
+    /* 0x08 */ float z;
+} UnkRotation3;
+CHECK_SIZEOF(UnkRotation3, 0xC);
+
 /* 4-float vector; the matrix helpers read a rotation quaternion (x, y, z, w) from it. */
 typedef struct Fn8040Vector4 {
 #ifdef __cplusplus
@@ -141,7 +163,7 @@ extern float lbl_805FAD84;
 extern Fn8040Vector3 lbl_805E07A0;
 /* A zero vector that the startup code at 0x8040EA64 stores (together with a 2D one at 0x805E07B0);
  * the GravityChangeCollision gadget passes it to the box probe factory fn_800C7C34. */
-extern Fn8040Vector3 lbl_805E07B8;
+extern UnkRotation3 lbl_805E07B8;
 
 /* Four-component globals constructed by fn_8040CAF8.cpp. lbl_805E0790 = (0, 0, 0, 1)
  * is copied through fn_8007A34C at 0x801B0574 and 0x801B06B4; use as an identity rotation is
@@ -178,7 +200,7 @@ void fn_8040CE38(Fn8040Vector3 *vector, float scale);
 /* Sets all three components to the 3D clear value lbl_805FAD80 (behaviour inferred). */
 void fn_8040CE60(Fn8040Vector3 *vector);
 /* Zeroes the vector (behaviour inferred). */
-void fn_8040E970(Fn8040Vector3 *vector);
+void fn_8040E970(UnkRotation3 *vector);
 /* result += value (behaviour inferred). */
 void fn_8040CFF8(Fn8040Vector3 *result, const Fn8040Vector3 *value);
 /* Squared distance between two 3D vectors (behaviour inferred). */
@@ -251,23 +273,23 @@ void fn_8040BCD4(Fn8040Matrix34 *matrix);
 void fn_8040BEF8(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Applies the three angles of rotation in the axis order selected by order, 0 to 2 (behaviour
  * inferred). */
-void fn_8001E070(Fn8040Matrix34 *matrix, const Fn8040Vector3 *rotation, int order);
+void fn_8001E070(Fn8040Matrix34 *matrix, const UnkRotation3 *rotation, int order);
 /* Sets the matrix to the rotation by the three angles in the axis order selected by order, 0 to 2,
  * the same order semantics as fn_8001E070, which multiplies the rotation onto an existing matrix
  * (behaviour inferred from its body). */
-void fn_800193B8(Fn8040Matrix34 *matrix, const Fn8040Vector3 *rotation, int order);
+void fn_800193B8(Fn8040Matrix34 *matrix, const UnkRotation3 *rotation, int order);
 /* Matrix helpers below 0x80050000 called by game units (descriptions inferred from the callers). */
 /* result = left * right, applying right first (a by-value wrapper that keeps the result pointer and
  * calls fn_8040B8FC). */
 void fn_8001E044(Fn8040Matrix34 *result, const Fn8040Matrix34 *left, const Fn8040Matrix34 *right);
 /* Stores the angles of the matrix's rotation in angles (fn_800494F8), and the same angles in the
  * order the rotation vector of a character info uses (fn_800493C4). */
-void fn_800494F8(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix);
-void fn_800493C4(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix);
+void fn_800494F8(UnkRotation3 *angles, const Fn8040Matrix34 *matrix);
+void fn_800493C4(UnkRotation3 *angles, const Fn8040Matrix34 *matrix);
 /* Stores the matrix's translation (its fourth column) in translation (behaviour from its body). */
 void fn_80049690(Fn8040Vector3 *translation, const Fn8040Matrix34 *matrix);
 /* Matrix-to-angle sibling with a different rotation order (description inferred). */
-void fn_80049290(Fn8040Vector3 *angles, const Fn8040Matrix34 *matrix);
+void fn_80049290(UnkRotation3 *angles, const Fn8040Matrix34 *matrix);
 /* Blends angles using the wrapped difference and relative weights (description inferred). */
 float fn_8004924C(float from, float to, float a, float b);
 /* Builds the matrix that rotates by angle about axis. */
@@ -297,13 +319,13 @@ void fn_8040CDD0(Fn8040Vector3 *result, const Fn8040Vector3 *left, const Fn8040V
 float fn_8040E99C(float angle);
 /* Converts a rotation vector to a quaternion, and a quaternion to a rotation vector (behaviour
  * inferred; the second returns the zero vector for every order except 2). */
-void fn_804102F4(Fn8040Vector4 *quaternion, const Fn8040Vector3 *rotation, int order);
-Fn8040Vector3 fn_80410204(const Fn8040Vector4 *quaternion, int order);
+void fn_804102F4(Fn8040Vector4 *quaternion, const UnkRotation3 *rotation, int order);
+UnkRotation3 fn_80410204(const Fn8040Vector4 *quaternion, int order);
 /* Interpolation of the segment in fn_8040EFA4.cpp: matrices through quaternions with a linear
  * translation, rotation vectors through quaternions, positions linearly, and angles the shorter
  * way round. */
 void fn_8040EFA4(Fn8040Matrix34 *result, Fn8040Matrix34 *from, Fn8040Matrix34 *to, float t);
-Fn8040Vector3 fn_8040F16C(const Fn8040Vector3 *from, const Fn8040Vector3 *to, int order, float t);
+UnkRotation3 fn_8040F16C(const UnkRotation3 *from, const UnkRotation3 *to, int order, float t);
 void fn_8040F268(Fn8040Vector3 *result, const Fn8040Vector3 *from, const Fn8040Vector3 *to,
                  float t);
 float fn_8040F314(float from, float to, float t);
@@ -331,14 +353,14 @@ float fn_801B1DB0(float value);
 /* Rotation vector of a forward and an up direction, in order 2 (fn_8040F364) and order 0
  * (fn_8040F450), and the one of them that order selects (fn_8040F5F4; any other order gives the
  * zero vector). They return the vector by value. */
-Fn8040Vector3 fn_8040F364(const Fn8040Vector3 *forward, const Fn8040Vector3 *up);
-Fn8040Vector3 fn_8040F450(const Fn8040Vector3 *forward, const Fn8040Vector3 *up);
-Fn8040Vector3 fn_8040F5F4(const Fn8040Vector3 *forward, const Fn8040Vector3 *up, int order);
+UnkRotation3 fn_8040F364(const Fn8040Vector3 *forward, const Fn8040Vector3 *up);
+UnkRotation3 fn_8040F450(const Fn8040Vector3 *forward, const Fn8040Vector3 *up);
+UnkRotation3 fn_8040F5F4(const Fn8040Vector3 *forward, const Fn8040Vector3 *up, int order);
 /* Pitch and yaw of a direction, by two conventions (fn_8040F664, fn_8040F760), and the first of
  * them with a zero roll added (fn_8040F7F8). */
 Fn8040Vector2 fn_8040F664(const Fn8040Vector3 *direction);
 Fn8040Vector2 fn_8040F760(const Fn8040Vector3 *direction);
-Fn8040Vector3 fn_8040F7F8(const Fn8040Vector3 *direction);
+UnkRotation3 fn_8040F7F8(const Fn8040Vector3 *direction);
 /* Stores the pitch and the yaw of a direction (behaviour inferred from its body, which takes
  * atan2 of the x and z components and corrects the quadrant). */
 void fn_8003B9E8(const Fn8040Vector3 *direction, float *pitch, float *yaw);
@@ -361,12 +383,12 @@ Fn8040Vector3 fn_8040FC78(float *fraction, const UnkSegment_80020A20 *segment,
 /* Builds the matrix that rotates by angle about the axis. */
 void fn_8040FD8C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *axis, float angle);
 /* result = matrix rotated by a rotation vector, and by its inverse (fn_8040FEBC). */
-void fn_8040FFBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix,
-                 const Fn8040Vector3 *rotation, int order);
-void fn_8040FEBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix,
-                 const Fn8040Vector3 *rotation, int order);
+void fn_8040FFBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const UnkRotation3 *rotation,
+                 int order);
+void fn_8040FEBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const UnkRotation3 *rotation,
+                 int order);
 /* result = vector rotated by a rotation vector. */
-void fn_80410098(Fn8040Vector3 *result, const Fn8040Vector3 *vector, const Fn8040Vector3 *rotation,
+void fn_80410098(Fn8040Vector3 *result, const Fn8040Vector3 *vector, const UnkRotation3 *rotation,
                  int order);
 /* A segment helper outside fn_8040F364.cpp: the distance from point to the closest point of the
  * segment, which it also stores in closest unless that is null (behaviour inferred). */

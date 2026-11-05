@@ -338,7 +338,7 @@ void CityLaser::SetState(int state) {
 
         float halfLength = 0.5f * s_beamLength.value;
         Fn8040Vector3 offset(0.0f, halfLength, 0.0f);
-        Fn8040Vector3 rotation(fn_8000AB90(90.0f), 0.0f, 0.0f);
+        UnkRotation3 rotation(fn_8000AB90(90.0f), 0.0f, 0.0f);
 
         m_probe = fn_800C7A84(fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), halfLength,
                               s_beamRadius.value, 0x40000, 15, 0, &offset, &rotation, 0);
@@ -381,9 +381,9 @@ void CityLaser::UpdateModelMatrix() {
 
 void CityLaser::DrawRange() {
     Fn8040Vector3 up;
-    Fn8040Vector3 rotation;
+    UnkRotation3 rotation;
     Fn8040Vector3 hitUp;
-    Fn8040Vector3 hitRotation;
+    UnkRotation3 hitRotation;
     Fn8040Vector3 center;
     Fn8040Vector3 hitCenter;
     float halfLength;

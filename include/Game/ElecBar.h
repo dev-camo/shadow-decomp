@@ -120,7 +120,7 @@ class ElecBar : public Gadget {
     /* 0x64 */ float m_period;   /* "moving second" plus "hiding second" */
     /* 0x68 */ s32 m_barCount;   /* the number of bars created */
     /* 0x6C */ Fn8040Vector3 m_position;
-    /* 0x78 */ Fn8040Vector3 m_rotation;
+    /* 0x78 */ UnkRotation3 m_rotation;
 };
 /* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(ElecBar, 0x88);

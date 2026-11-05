@@ -44,9 +44,9 @@ class ElecCube : public Gadget {
     /* 0x30 */ float m_scale; /* the "Scale" parameter */
     /* 0x34 */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
     /* 0x3C */ GadgetModelInfo *m_model;
-    /* 0x40 */ float m_timer;                /* time into the current turn (inferred) */
-    /* 0x44 */ Fn8040Vector3 m_rotationFrom; /* names inferred */
-    /* 0x50 */ Fn8040Vector3 m_rotationTo;
+    /* 0x40 */ float m_timer;               /* time into the current turn (inferred) */
+    /* 0x44 */ UnkRotation3 m_rotationFrom; /* names inferred */
+    /* 0x50 */ UnkRotation3 m_rotationTo;
     /* 0x5C */ u32 field_0x5C;
 };
 CHECK_SIZEOF(ElecCube, 0x60);

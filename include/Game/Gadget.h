@@ -18,7 +18,7 @@ u16 fn_800C9D24(UnkGadgetOwner_800C9CD0 *owner);
 /* Copy the owner's position, its rotation converted from degrees to radians, and its byte at
  * +0x22 (behaviour inferred). */
 void fn_800C9F14(UnkGadgetOwner_800C9CD0 *owner, Fn8040Vector3 *position);
-void fn_800C9ED4(UnkGadgetOwner_800C9CD0 *owner, Fn8040Vector3 *rotation);
+void fn_800C9ED4(UnkGadgetOwner_800C9CD0 *owner, UnkRotation3 *rotation);
 /* CandleStick's parameter SAME_COMID_SWITCH_NUM suggests that the byte at +0x22 is the com id
  * (CandleStick.cpp stores it as m_comId). */
 void fn_800C9E60(UnkGadgetOwner_800C9CD0 *owner, u8 *value);

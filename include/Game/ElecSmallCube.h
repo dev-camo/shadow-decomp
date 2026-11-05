@@ -28,8 +28,8 @@ class ElecSmallCube : public Gadget {
     /* 0x38 */ GadgetModelInfo *m_model;
     /* 0x3C */ int field_0x3C;
     /* 0x40 */ float m_timer;
-    /* 0x44 */ Fn8040Vector3 m_rotationFrom;
-    /* 0x50 */ Fn8040Vector3 m_rotationTo;
+    /* 0x44 */ UnkRotation3 m_rotationFrom;
+    /* 0x50 */ UnkRotation3 m_rotationTo;
     /* Unclassified storage in the original 0x60-byte allocation; no accesses are identified. */
     /* 0x5C */ unsigned char field_0x5C[4];
 

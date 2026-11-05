@@ -68,7 +68,7 @@ ElecSecurityCode::ElecSecurityCode(s32 type, const Fn8040Vector3 &position,
 
     m_charInfo = fn_8015CB88(0x57, 4, "ElecSecurityCode");
     fn_800091D0(&m_charInfo->m_position, &position);
-    m_charInfo->m_rotation = Fn8040Vector3(0.0f, 0.0f, 0.0f);
+    m_charInfo->m_rotation = UnkRotation3(0.0f, 0.0f, 0.0f);
 
     m_model = new GadgetModelInfo(1, "SECURITY.BIN");
     m_model->fn_80162A68(m_type, 0);

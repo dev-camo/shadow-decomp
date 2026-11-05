@@ -81,7 +81,7 @@ class CharaColliBase {
      * FallRoad passes the address of a vector built in the call; the bytes do not distinguish a
      * pointer from a reference, and the reference spelling is inferred because it reproduces both
      * callers (named-local pointer forms differ by 8-9 words in ResetFromOwner). */
-    virtual void SetRotation(const Fn8040Vector3 &rotation) = 0;
+    virtual void SetRotation(const UnkRotation3 &rotation) = 0;
     virtual void UnkSlot15() = 0;
     /* Sets the probe's size (name inferred): TornadoCollision passes its radius as x and 0.0f as
      * y and z, GravityChangeCollision the three half extents of its box. Both pass -2 as arg1,

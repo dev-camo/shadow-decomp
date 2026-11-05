@@ -28,7 +28,7 @@ class EnemyDispCommon : public virtual EnemyReferer, public EnemyDispFunc {
     virtual Fn8040Vector3 fn_8019B3DC();
     virtual void fn_80188E0C(float);
     virtual float fn_8019B3FC();
-    virtual void fn_8019B404(const Fn8040Vector3 &, Fn8040Vector3);
+    virtual void fn_8019B404(const Fn8040Vector3 &, UnkRotation3);
     virtual void fn_8017F234(bool);
     virtual void fn_8019B408(const Unk801A4430Event &event);
     virtual bool fn_8019B40C(UnkEnemyDispEvent_8019B40C *event);

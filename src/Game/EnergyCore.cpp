@@ -50,7 +50,7 @@ class EnergyCore {
     /* Places the character info and the effect (name inferred). The vectors are not const: the
      * original copies the rotation component by component, each load after the previous store,
      * which a const source would let the compiler reorder. */
-    void SetTransform(Fn8040Vector3 *position, Fn8040Vector3 *rotation);
+    void SetTransform(Fn8040Vector3 *position, UnkRotation3 *rotation);
     /* Stores the type and starts the type's effect at the character info (name inferred). */
     void SetType(int type);
     /* Calls fn_8015BE64 on the handle target (purpose unknown). */
@@ -122,7 +122,7 @@ void EnergyCore::Update(float dt) {
     fn_8015BE9C(m_handle.get(), dt);
 }
 
-void EnergyCore::SetTransform(Fn8040Vector3 *position, Fn8040Vector3 *rotation) {
+void EnergyCore::SetTransform(Fn8040Vector3 *position, UnkRotation3 *rotation) {
     fn_800091D0(&m_charInfo->m_position, position);
     m_charInfo->m_rotation = *rotation;
 
@@ -210,7 +210,7 @@ void SetEnergyCoreTask::UpdateTransform() {
 }
 
 EnergyCoreTask::EnergyCoreTask(int type, Task *parent, Fn8040Vector3 *position,
-                               Fn8040Vector3 *rotation, float range)
+                               UnkRotation3 *rotation, float range)
     : Task(parent), m_core(new EnergyCore), m_rotation(0.0f, 0.0f, 0.0f) {
     m_name = s_name;
     fn_800091D0(&m_position, position);
@@ -234,7 +234,7 @@ void EnergyCoreTask::Update(float dt) {
     }
 }
 
-void EnergyCoreTask::Create(int type, Fn8040Vector3 *position, Fn8040Vector3 *rotation,
+void EnergyCoreTask::Create(int type, Fn8040Vector3 *position, UnkRotation3 *rotation,
                             float range) {
     Task *parent = fn_801EB304(fn_8001C4F8(), 11);
 

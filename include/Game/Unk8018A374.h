@@ -40,7 +40,7 @@ struct Unk8018A374 {
      * table: BK_CHAOS's table at 0x80555D78 has MaxLife at 0x18, and BkChaosTask reaches
      * 0x801A7328 from 0x802B07B0. Reference and const qualifiers inferred: the callers pass
      * addresses. */
-    void fn_801A69FC(const Fn8040Vector3 &position, const Fn8040Vector3 &rotation,
+    void fn_801A69FC(const Fn8040Vector3 &position, const UnkRotation3 &rotation,
                      const UnkEnemySetDataCommon &setData);
 
     /* 0x00 */ Unk8018A3D0 field_0x0;
