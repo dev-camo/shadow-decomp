@@ -15,8 +15,9 @@ class GadgetModelInfo;
  * position and rotation and, among other calls, passes the shared pointer to the constructor of a
  * new 0x30-byte object (0x80237C90).
  *
- * Callers: the BAMine gadget's command handler and the functions at 0x800EEAF8 and 0x801080F8 pass
- * arg2 0, 0 and 1 and release their own model pointer right after the call.
+ * Callers: the BAMine gadget's command handler, the function at 0x800EEAF8 and
+ * HealingUnit::OnCommand pass arg2 0, 0 and 1 and release their own model pointer right after the
+ * call.
  *
  * Behaviour inferred from the body; the original name is unknown. The signature is inferred too:
  * the function forwards command, the model's address and arg2 to the constructor unchanged
