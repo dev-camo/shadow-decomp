@@ -500,11 +500,7 @@ void ElecSearchLight::UpdateCone(const Fn8040Matrix34 *matrix) {
         point = rotation * Fn8040Vector3(0.0f, 50.0f, 10.0f * -m_params.lightLength);
         RwIm3DVertexSetPos(&m_cone[i * 2 + 1], point.x, point.y, point.z);
 
-        Fn8040Vector3 turnedUp;
-        Fn8040Vector3 up(0.0f, 1.0f, 0.0f);
-
-        fn_8040B618(&turnedUp, &rotation, &up);
-        normal = turnedUp;
+        normal = fn_8040B618(rotation, Fn8040Vector3(0.0f, 1.0f, 0.0f));
         RwIm3DVertexSetNormal(&m_cone[i * 2], normal.x, normal.y, normal.z);
         RwIm3DVertexSetNormal(&m_cone[i * 2 + 1], normal.x, normal.y, normal.z);
 

@@ -256,9 +256,8 @@ void fn_8040B4D0(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Translates the matrix by an offset that the matrix's rotation turns first. */
 void fn_8040B52C(Fn8040Matrix34 *matrix, float x, float y, float z);
 void fn_8040B59C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *offset);
-/* The matrix's rotation applied to vector, without the translation (stored in result) and with
- * it (returned by value, inferred; game code reaches it through operator* below). */
-void fn_8040B618(Fn8040Vector3 *result, const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector);
+/* The matrix applied to vector, with the translation, returned by value (inferred; game code
+ * reaches it through operator* below; fn_8040B618 below applies only the rotation). */
 Fn8040Vector3 fn_8040B67C(const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector);
 /* Copy constructor or assignment operator of the matrix class (inferred), out of line (the
  * original has its weak instance at 0x80325384): calls fn_8040C148 and returns destination. */
@@ -450,6 +449,12 @@ extern "C" Fn8040Vector3 fn_8040D0AC(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_8040D118(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_8040D044(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_80016284(const Fn8040Vector3 &vector);
+
+/* The matrix's rotation applied to vector, without the translation, returned by value
+ * (inferred). The const references are inferred too: the ELEC_SEARCHLIGHT gadget builds the
+ * vector in a stack slot below the result's, where this compiler places an argument temporary
+ * made before the result (USA (GUPE8P) 0x80153828). */
+extern "C" Fn8040Vector3 fn_8040B618(const Fn8040Matrix34 &matrix, const Fn8040Vector3 &vector);
 
 /* Scales the matrix's three rotation columns by the components of scale. The reference is
  * inferred (the code is that of a pointer parameter): the WEIGHT gadget passes a temporary scale
