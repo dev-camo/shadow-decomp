@@ -365,8 +365,11 @@ class NpcCommand : public CharCommand {
 };
 CHECK_SIZEOF(NpcCommand, 0x14);
 
-/* Class and base names come from RTTI; argument meanings are inferred by callers. */
-class EnemyDeadByPlayerCommand : public PlayerCommand {
+/* Player::Npc::EnemyDeadByPlayerCommand (class name from RTTI, with Player::Npc::NpcCommand as its
+ * base). Its constructor (0x80072FF4) passes 0x403 and 4 to the base constructor and stores arg0
+ * at 0x14 and arg1 at 0x18 (parameter types inferred; argument meanings inferred from the
+ * callers). */
+class EnemyDeadByPlayerCommand : public NpcCommand {
   public:
     EnemyDeadByPlayerCommand(int arg0, int arg1);
     virtual ~EnemyDeadByPlayerCommand();
