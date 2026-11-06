@@ -2,11 +2,12 @@
  * descriptor is "ENERGY_CORE"): an energy core placed as a gadget and one created at run time. Both
  * own an EnergyCore::EnergyCore (named after the class in the bound callback's RTTI string), which
  * holds a sphere probe of radius 10 around its character info and an effect (0xAD or 0xB1 by type).
- * When a character touches the probe, the core passes item 7 or 8 (by type) to fn_8015F6EC for it
- * once and marks itself touched; its owner then ends, the placed one after playing effect 0x2A1 or
- * 0x2A5 (by type) at its position (behaviour inferred). File name inferred from
- * the namespace. Method names marked "(name inferred)" are not original. Definitions are in reverse
- * address order (deferred inlining emits functions last-defined first).
+ * For the first character info in the probe's hits that passes fn_8015AA84's virtual test, the
+ * core requests item 7 or 8 (by type) through fn_8015F6EC once and marks itself touched whatever
+ * the request's result; its owner then ends, the placed one after playing effect 0x2A1 or 0x2A5
+ * (by type) at its position (behaviour inferred). File name inferred from the namespace. Method
+ * names marked "(name inferred)" are not original. Definitions are in reverse address order
+ * (deferred inlining emits functions last-defined first).
  *
  * The probe's collision callback is a boost::function object built with
  * boost::bind(&EnergyCore::OnCollision, this, _1); its manager, invoker and copy functions come
@@ -57,11 +58,13 @@ class EnergyCore {
     void fn_801018C8();
     /* Ends the effect (name inferred). */
     void StopEffect();
-    /* The handle target's callback while its probe has hits: passes each character in the hits to
-     * fn_801020B0 and marks the core touched when one of them was given the item (name inferred). */
+    /* The handle target's callback while its probe has hits: passes the hits to fn_8015AA84 with
+     * fn_801020B0 and sets bit 0 of m_flags (touched) once the callback has requested an item for
+     * one of them; whether the item was delivered is not checked (name inferred). */
     void OnCollision(ColliDetectArgs &args);
 
-    /* Whether a character has touched the core (name inferred). */
+    /* Whether bit 0 of m_flags is set, that is, whether a hit has led to an item request (name
+     * inferred). */
     bool IsTouched() const {
         return m_flags.Test(0);
     }
@@ -70,7 +73,7 @@ class EnergyCore {
     /* 0x08 */ boost::shared_ptr<UnkHandleBTarget_8015BE64> m_handle;
     /* 0x10 */ boost::weak_ptr<Effect::System::EffectElement> m_effect;
     /* 0x18 */ s32 m_type;
-    /* 0x1C */ UnkBitFlags_80014E04 m_flags; /* bit 0 once a character has touched the core */
+    /* 0x1C */ UnkBitFlags_80014E04 m_flags; /* bit 0 once a hit has led to an item request */
 };
 CHECK_SIZEOF(EnergyCore, 0x20);
 
@@ -80,12 +83,13 @@ struct UnkHitContext_801016FC {
 
     /* 0x0 */ boost::weak_ptr<GadgetCharInfo> m_charInfo;
     /* 0x8 */ s32 m_type;
-    /* 0xC */ bool m_given; /* set once the item has been given */
+    /* 0xC */ bool m_given; /* set after the first item request, whatever its result */
 };
 CHECK_SIZEOF(UnkHitContext_801016FC, 0x10);
 
-/* The callback that fn_8015AA84 calls for each character info in the hits: gives the first one the
- * type's item (behaviour inferred). */
+/* The callback that fn_8015AA84 calls for the character infos in the hits that pass its virtual
+ * test (USA 0x8015ABA4): requests the type's item for the first one through fn_8015F6EC and then
+ * sets m_given without checking the result (behaviour inferred). */
 static void fn_801020B0(boost::shared_ptr<CharInfo> hit, void *arg) {
     UnkHitContext_801016FC *context = static_cast<UnkHitContext_801016FC *>(arg);
 
