@@ -7,6 +7,7 @@
 #include "layout_check.h"
 
 class CharInfo;
+class Task;
 struct RpClump;
 
 /* A 0x5C-byte parameter block, constructed in many places in the game (placeholder name; the
@@ -17,7 +18,7 @@ struct RpClump;
 struct UnkEffectParams_8015F0B8 {
     UnkEffectParams_8015F0B8(const boost::shared_ptr<CharInfo> &charInfo, int kind);
 
-    /* 0x00 */ u8 field_0x0[0x4];
+    /* 0x00 */ Task *field_0x0;         /* the constructor stores fn_801EB304(fn_8001C4F8(), 11) */
     /* 0x04 */ Fn8040Vector3 field_0x4; /* the constructor copies the character info's position */
     /* The constructor copies the character info's rotation here. */
     /* 0x10 */ Fn8040Vector3 field_0x10;
