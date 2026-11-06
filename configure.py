@@ -372,7 +372,7 @@ cflags_sdk = [
 # OSArena.c's OSAllocFromArenaHi is in the os object, but the game never calls it and the
 # linker drops it. The other SDK libraries with version strings are the Apr 2004 builds
 # (Apr 5, VI Apr 7), which revision 0 corresponds to: its OS build string is Apr 5 2004
-# 04:13:58, from the same build run, although the dolsdk2004 Makefile labels it Apr 20 2004.
+# 04:13:58, from the same build run.
 # Revision 1 is the May 21 2004 patch.
 cflags_sdk_rev2 = [flag for flag in cflags_sdk if flag != "-DSDK_REVISION=0"] + ["-DSDK_REVISION=2"]
 
