@@ -6,18 +6,12 @@
  * stage. File name inferred from the class. Method names marked "(name inferred)" are not original.
  * Definitions are in reverse address order (deferred inlining emits functions last-defined first).
  *
- * NonMatching: 80 of the 85 functions have identical instructions. Four differ in a few words
+ * NonMatching: 81 of the 85 functions have identical instructions. Four differ in a few words
  * (counted as words of the original that have no equal in this object): the preload hook (5, the
  * registers of the table pointer and the stage number), SetupPath (2, the order of two argument
  * moves), ResetFromOwner (7, the original calls the smart pointer's operator-> out of line for
  * the character info's yaw) and UpdateBody (6 raw differing words: the order of two argument
- * moves and the register of the stage pointer). The fifth, the conversion fn_80131654, has
- * no function of that name here. The destructor, UpdateBody and the command handler pass a copy
- * of the follower pointer to fn_801CE9F4 or fn_801CEA54: the original builds that copy with
- * fn_80131654 and destroys it with fn_80009844, so the parameter of those two functions is a
- * shared pointer of another, unknown type, and each copy differs in two relocation targets (this
- * object calls the copy constructor and the destructor of the member's type; the copy constructor
- * it emits has the bytes of fn_80131654). The RTTI and vtable records of the boost and std
+ * moves and the register of the stage pointer). The RTTI and vtable records of the boost and std
  * templates differ in layout from the original's, and the object has additional weak template
  * instances and the RTTI records of the headers' casts. */
 /* TNumEdit.h comes before CharaColliBaseCharInfo.h, in the order their names appear in the unit's
@@ -65,16 +59,8 @@
 
 using SonicteamUSA::System::CharaColli::CharaColliBase;
 
-typedef boost::function1<void, CameraUpdateEventArgs &> PathCallback;
-
-/* The path follower (placeholder name; the original class is unknown). The coaster keeps one in a
- * shared pointer, sets the start and end of its path and registers it with the manager that
- * fn_80099954 returns. The callback at 0xC4 is called with camera update event arguments. */
-class UnkPathFollower_800096F4 {
-  public:
-    /* 0x00 */ u8 field_0x0[0xC4];
-    /* 0xC4 */ PathCallback m_callback;
-};
+using SonicteamUSA::System::Camera::CameraMode;
+using SonicteamUSA::System::Camera::CameraModeUser;
 
 /* A value that the constructor at 0x8000B2C0 builds from a float for the registration of the
  * follower (placeholder name; the original class is unknown). */
@@ -92,21 +78,17 @@ class UnkFollowerManager_80099954;
 extern "C" {
 /* The follower manager (behaviour inferred). */
 UnkFollowerManager_80099954 *fn_80099954(void);
-/* The parameter type of these two is known to be wrong: the original builds the argument with
- * the conversion at 0x80131654 and destroys it with fn_80009844, not with the copy constructor and
- * destructor of shared_ptr<UnkPathFollower_800096F4>, so it is a shared pointer of another type,
- * which is not known. */
+/* These two take a shared_ptr<CameraMode>: the callers build the argument with its converting
+ * constructor (0x80131654) and destroy it with its destructor (0x80009844, which fn_80009704 also
+ * calls on the CameraMode pointer it converts). */
 /* Releases the follower from the manager. */
-void fn_801CE9F4(UnkFollowerManager_80099954 *manager, boost::shared_ptr<UnkPathFollower_800096F4>);
+void fn_801CE9F4(UnkFollowerManager_80099954 *manager, boost::shared_ptr<CameraMode>);
 /* Registers the follower with the manager (the numbers are not understood). */
-void fn_801CEA54(UnkFollowerManager_80099954 *manager, boost::shared_ptr<UnkPathFollower_800096F4>,
-                 int arg2, const UnkFollowerParams_8000B2C0 &params, int arg4, int arg5);
-/* Creates a path follower (behaviour inferred; the numbers are not understood). */
-boost::shared_ptr<UnkPathFollower_800096F4> fn_80009704(int arg0, int arg1);
+void fn_801CEA54(UnkFollowerManager_80099954 *manager, boost::shared_ptr<CameraMode>, int arg2,
+                 const UnkFollowerParams_8000B2C0 &params, int arg4, int arg5);
 /* Sets the start and end of the path that the follower moves along, and its up direction. */
-void fn_8000A5D4(UnkPathFollower_800096F4 *follower, const Fn8040Vector3 *start,
-                 const Fn8040Vector3 *end);
-void fn_8000ACE4(UnkPathFollower_800096F4 *follower, const Fn8040Vector3 *up);
+void fn_8000A5D4(CameraModeUser *follower, const Fn8040Vector3 *start, const Fn8040Vector3 *end);
+void fn_8000ACE4(CameraModeUser *follower, const Fn8040Vector3 *up);
 }
 
 /* One row of the table of stage settings (name inferred). The meaning of most members is not
@@ -200,7 +182,7 @@ class Coaster : public Gadget {
     /* 0x108 */ UnkSoundHandle_801D3DC8 m_sound;
     /* 0x124 */ u8 m_fading; /* set by an owner flag; fades the model in over 0.6 s (inferred) */
     /* 0x128 */ float m_fadeTime;
-    /* 0x12C */ boost::shared_ptr<UnkPathFollower_800096F4> m_follower;
+    /* 0x12C */ boost::shared_ptr<CameraModeUser> m_follower;
     /* 0x134 */ u32 field_0x134; /* not accessed here; the object is 0x138 bytes */
 };
 CHECK_SIZEOF(Coaster, 0x138);
@@ -228,7 +210,7 @@ Coaster::Coaster(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
       m_angles(0.0f, 0.0f, 0.0f) {
     m_name = s_name;
     m_follower = fn_80009704(0, 0);
-    m_follower->m_callback = PathCallback(boost::bind(&Coaster::OnPathCallback, this, _1));
+    m_follower->m_callback = CameraUpdateCallback(boost::bind(&Coaster::OnPathCallback, this, _1));
 
     m_charInfo = fn_8015CD90(0x43, 4);
     m_charInfo->field_0x30 = 1;
