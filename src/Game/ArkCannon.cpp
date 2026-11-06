@@ -10,6 +10,7 @@
 #include "Game/SharedConstants.h"
 #include "Game/AngleConversion.h"
 #include "Game/UnkEffectParams_8015F0B8.h"
+#include "Game/UnkParams_80051D10.h"
 #include "Game/UnkResource_80012700.h"
 #include "Game/UnkStartupFloat_800E2570.h"
 #include "Game/fn_8006_resource_list.h"
@@ -41,28 +42,6 @@ class UnkCharacter_80095388 {
 };
 /* Checks only the recovered view; the complete native extent remains unknown. */
 CHECK_SIZEOF(UnkCharacter_80095388, 0x250);
-
-/* The 0x48-byte block that the constructor at 0x80051D10 builds (placeholder name; the original
- * class is unknown). The constructor copies the owner and the lock-on target, stores the
- * translation of the matrix at 0x10, the matrix's rotation applied to a constant vector at 0x1C, a
- * copy of arg4 at 0x28 and arg2 at 0x34 (behaviour inferred); the destructor is at 0x8005C410. */
-class UnkParams_80051D10 {
-  public:
-    UnkParams_80051D10(const boost::weak_ptr<CharInfo> &owner,
-                       const boost::shared_ptr<Weapon::LockonTarget> &target, int arg2,
-                       const Fn8040Matrix34 *matrix, const Fn8040Vector3 *arg4);
-    ~UnkParams_80051D10();
-
-    /* 0x00 */ boost::weak_ptr<CharInfo> m_owner;
-    /* 0x08 */ boost::shared_ptr<Weapon::LockonTarget> m_target;
-    /* 0x10 */ Fn8040Vector3 field_0x10;
-    /* 0x1C */ Fn8040Vector3 field_0x1C;
-    /* 0x28 */ Fn8040Vector3 field_0x28;
-    /* 0x34 */ int field_0x34;
-    /* An object that fn_80051EB4 constructs and fn_80051DBC destroys (type unknown). */
-    /* 0x38 */ u8 field_0x38[0x10];
-};
-CHECK_SIZEOF(UnkParams_80051D10, 0x48);
 
 /* The object that the callback at 0xC of UnkFactory_8051DDC8 returns (placeholder name; the
  * original class is unknown). fn_80051B58 constructs it when there is no callback. */

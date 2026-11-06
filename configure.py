@@ -1933,6 +1933,7 @@ config.libs = [
             # with fn_800091EC, this build calls the three-float constructor out of line for the
             # temporary and copies it inline.
             Object(NonMatching, "Game/LongSpring.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/BAGunShip.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAMine.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),
             # 62 of 66 functions are identical in every word and relocation. The three record
