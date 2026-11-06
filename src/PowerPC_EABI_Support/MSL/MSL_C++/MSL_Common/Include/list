@@ -371,6 +371,7 @@ class list<T *, Allocator> : private list<void *, allocator<void *> > {
     using base::clear;
     using base::size;
     void remove(T *const &x) {
+        /* The pointer-list layer relies on MWCC's shared typed/void-pointer representation. */
         base::remove((void *const &)x);
     }
     void push_back(T *const &x) {
