@@ -2147,7 +2147,21 @@ config.libs = [
             # loads the next table entry into f0 where the original uses f2 and f3).
             Object(NonMatching, "Game/DashRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EnergyCore.cpp", cflags=cflags_game_cpp),
-            Object(Matching, "Game/Fan.cpp", cflags=cflags_game_cpp),
+            # 45 of 46 functions have identical words and relocation targets, and the data
+            # matches once the linker-discarded weak and local copies are set aside. UpdateBody
+            # (0x801036E4) is 141 words instead of 142: the original's dispatch on m_step compares
+            # with 1 and 0 and is followed by a branch that nothing reaches (b at 0x80103760,
+            # UpdateBody+0x7C). The branch is unexplained: a further case label is one possible
+            # cause, but nothing stores a value other than 0 or 1, so the source has the two cases
+            # and no such label. Compared position by position, 114 of the 141 words differ and
+            # the original's last word has no counterpart; with the missing branch set aside,
+            # only the four dispatch branches before it differ (beq, bge, bge and b at 0x8010374C,
+            # 0x80103750, 0x80103758 and 0x8010375C, each 4 bytes shorter). The four
+            # section-relative relocations to functions after UpdateBody (in CreateStage, Create,
+            # CreateProbe and the vtable) have the same targets with addends 4 lower, and the
+            # function-local static of the parameter label callback and its guard are numbered
+            # s_form$601 and init$602 here (s_form$602 and init$603 in symbols.txt).
+            Object(NonMatching, "Game/Fan.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Fire.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Fruit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/GoalRing.cpp", cflags=cflags_game_cpp),
