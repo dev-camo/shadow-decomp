@@ -1992,6 +1992,7 @@ config.libs = [
             # targets .text+0x2198 in the original and .text+0x2194 here). The original's .sdata2
             # is allocatable (A, 0x2) and this object's writable and allocatable (WA, 0x3).
             Object(NonMatching, "Game/Balloon.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/BlastBreak.cpp", cflags=cflags_game_cpp),
             # 62 of 66 functions are identical in every word and relocation. The three record
             # lookups fn_80301D04, fn_80301D90 and fn_80301E1C each differ in one word, the id
             # comparison: the original has cmpw r0,r3 (0x7C001800 at 0x80301D1C, 0x80301DA8 and
