@@ -146,6 +146,9 @@ void Fan::UpdateBody(float dt) {
 
     UpdateRunning(dt);
 
+    /* The original's dispatch compares m_step with 1 and 0 and is followed by a branch that
+     * nothing reaches (0x80103760). That branch is unexplained: a further case label would
+     * produce it, but the gadget only stores 0 and 1 (see configure.py). */
     switch (m_step) {
     case 0:
         m_step = 1;
@@ -187,14 +190,6 @@ void Fan::UpdateBody(float dt) {
         }
         break;
     }
-    case 2:
-        /* Matching workaround: an empty case label whose body is unknown. The original's dispatch
-         * ends in an unreachable branch (UpdateBody+0x7C, 0x80103760), which is what this empty arm
-         * compiles to. Measured: case 2 gives the original's dispatch exactly (UpdateBody 142
-         * words, as in the original); no arm or an empty default drops the branch (141 words);
-         * case 3 gives a different compare sequence (143 words). The gadget never stores 2.
-         * Revisit when the third step value's body is found. */
-        break;
     }
 
     UpdateModelMatrix();
