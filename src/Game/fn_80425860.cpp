@@ -177,7 +177,7 @@ extern "C" void fn_80425C34(Effect::System::EffectElement *effect, float deltaTi
     fn_8040B80C(&effect->m_transform, effect->m_rotation.z);
     fn_8040B848(&effect->m_transform, effect->m_rotation.y);
     fn_8040B884(&effect->m_transform, effect->m_rotation.x);
-    fn_8040B790(&effect->m_transform, &effect->m_scale);
+    fn_8040B790(&effect->m_transform, effect->m_scale);
     Fn8040Vector3 position(effect->m_transform.values[0][3], effect->m_transform.values[1][3],
                            effect->m_transform.values[2][3]);
     if ((effect->m_flags & Effect::System::ELEMENT_FLAG_2) != 0) {

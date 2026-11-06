@@ -369,7 +369,7 @@ void EffectLocus::fn_8042B938(float deltaTime) {
             scale.x = previousWeight * scale.x + t * currentScaleX;
             scale.y = previousWeight * scale.y + t * currentScaleY;
             scale.z = previousWeight * scale.z + t * currentScaleZ;
-            fn_8040B790(&unit->m_transform, &scale);
+            fn_8040B790(&unit->m_transform, scale);
             m_accumulatedTime -= m_interval;
             unit->m_age = m_accumulatedTime;
         }
