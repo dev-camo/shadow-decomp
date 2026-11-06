@@ -212,9 +212,9 @@ ElecBarSub::ElecBarSub(ElecBar *parent) : m_parent(parent) {
     m_model->fn_8016239C("mat2");
 
     UnkRotation3 rotation(0.0f, 0.5f * lbl_805FAD38, 0.0f);
-    boost::shared_ptr<CharaColliBase> probe = fn_800C78D4(
-        fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), 0x40000, 10, 0, &lbl_805E07A0,
-        rotation, 0, 0.5f * (10.0f * m_parent->m_params.scale), 2.0f, 0.5f);
+    boost::shared_ptr<CharaColliBase> probe =
+        fn_800C78D4(fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), 0x40000, 10, 0,
+                    &lbl_805E07A0, rotation, 0, 0.5f * (10.0f * m_parent->m_params.scale), 2.0f);
     m_handle = fn_8015B8C4(probe);
     m_handle->field_0x0.fn_800F5980(
         GadgetColliDetectCallback(boost::bind(&ElecBarSub::OnCollision, this, _1)));
