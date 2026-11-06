@@ -16,7 +16,7 @@
 #include "Game/PlayerCommands.h"
 #include "Game/SharedConstants.h"
 #include "Game/Task.h"
-#include "Game/UnkCharInfo_800999C0.h"
+#include "Game/Player.h"
 #include "Game/UnkGlobal_8057D6A0.h"
 #include "Game/UnkModelAtomicState.h"
 #include "Game/UnkParamCursor_800CBC20.h"

@@ -8,7 +8,7 @@
 #include "Game/GadgetTypeInfo.h"
 #include "Game/TornadoCharInfo.h"
 #include "Game/UnkCharInfoTable_800DDF20.h"
-#include "Game/UnkCharInfo_800999C0.h"
+#include "Game/Player.h"
 #include "Game/UnkWorld_80021B08.h"
 #include "Game/UnkWorldProbe_80021FE4.h"
 #include "layout_check.h"
@@ -122,8 +122,8 @@ void TornadoCollision::ProcessHits(float) {
                              * goes to AddToTornado; that branch is this unit's only difference.
                              * The cast pointer is released before AddToTornado. */
                             {
-                                boost::shared_ptr<UnkCharInfo_800999C0> derived =
-                                    boost::static_pointer_cast<UnkCharInfo_800999C0>(charInfo);
+                                boost::shared_ptr<Player::Player> derived =
+                                    boost::static_pointer_cast<Player::Player>(charInfo);
 
                                 if (fn_8006CD78(&derived->field_0xA8, 0x14)) {
                                     continue;

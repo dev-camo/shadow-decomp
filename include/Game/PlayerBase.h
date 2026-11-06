@@ -9,8 +9,8 @@
 
 class CharCommand;
 
-/* The object that a PlayerBase subclass shares through the slot fn_80073604 (placeholder; the class
- * at 0x805200AC returns a copy of its shared pointer at 0x290). */
+/* The object that a PlayerBase subclass shares through the slot fn_80073604 (placeholder; Player::Player,
+ * vtable 0x805200AC, returns a copy of its shared pointer at 0x290). */
 class UnkPlayerShared_80076D24;
 
 namespace Player {

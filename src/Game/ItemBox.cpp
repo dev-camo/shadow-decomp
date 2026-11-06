@@ -17,7 +17,7 @@
 #include "Game/EffectElement.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/PlayerCommands.h"
-#include "Game/UnkCharInfo_800999C0.h"
+#include "Game/Player.h"
 #include "Game/UnkManager_80009548.h"
 #include "Game/UnkParamCursor_800CBC20.h"
 #include "Game/UnkResource_80012700.h"

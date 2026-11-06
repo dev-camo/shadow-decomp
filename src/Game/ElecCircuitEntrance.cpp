@@ -22,7 +22,7 @@
 #include "Game/PathCtrl.h"
 #include "Game/SharedConstants.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
-#include "Game/UnkCharInfo_800999C0.h"
+#include "Game/Player.h"
 #include "Game/UnkManager_800CB69C.h"
 #include "Game/UnkWorld_80021B08.h"
 #include "Game/fn_8040_vector_types.h"
@@ -67,7 +67,7 @@ class ElectricCircuitCommand : public PlayerCommand {
     /* 0x14 */ UnkHandle_800ABCE8 m_handle;
     /* 0x1C */ bool m_flag;
 };
-CHECK_SIZEOF(Player::ElectricCircuitCommand, 0x20);
+CHECK_SIZEOF(ElectricCircuitCommand, 0x20);
 
 } // namespace Player
 

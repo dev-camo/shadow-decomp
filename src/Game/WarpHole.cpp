@@ -148,8 +148,8 @@ void SetWarpHole::OnCommand(CharCommand &command) {
                 FindPartner(user, &search);
 
                 if (search.m_found) {
-                    boost::shared_ptr<UnkCharInfo_800999C0> player =
-                        boost::dynamic_pointer_cast<UnkCharInfo_800999C0>(user);
+                    boost::shared_ptr<Player::Player> player =
+                        boost::dynamic_pointer_cast<Player::Player>(user);
 
                     if (player.get() != 0) {
                         ManagerTask::Create(search.m_position, player, m_comId);
@@ -172,7 +172,7 @@ void UnkWarpTable_80129504::fn_80129E10() {
 const char *ManagerTask::s_name = "ManagerTask";
 
 ManagerTask::ManagerTask(Task *parent, const Fn8040Vector3 &position,
-                         const boost::shared_ptr<UnkCharInfo_800999C0> &user, int comId)
+                         const boost::shared_ptr<Player::Player> &user, int comId)
     : Task(parent) {
     m_name = s_name;
     m_position = position;
@@ -233,7 +233,7 @@ void ManagerTask::Update(float dt) {
         break;
     case 1:
         if (fn_80044254()->field_0x14 == 1) {
-            boost::shared_ptr<UnkCharInfo_800999C0> user = m_user.lock();
+            boost::shared_ptr<Player::Player> user = m_user.lock();
 
             if (user.get() != 0) {
                 fn_800B8000(m_user, &m_position, &user->m_rotation);
@@ -261,7 +261,7 @@ void ManagerTask::Update(float dt) {
         m_counter++;
         break;
     case 3: {
-        boost::shared_ptr<UnkCharInfo_800999C0> user = m_user.lock();
+        boost::shared_ptr<Player::Player> user = m_user.lock();
         UnkObject_8003A52C *object = lbl_8051CE88[0];
 
         /* Matching workaround: the original evaluates both tests and combines them with a bitwise
@@ -297,12 +297,12 @@ void ManagerTask::Update(float dt) {
 }
 
 void ManagerTask::Create(const Fn8040Vector3 &position,
-                         const boost::shared_ptr<UnkCharInfo_800999C0> &user, int comId) {
+                         const boost::shared_ptr<Player::Player> &user, int comId) {
     new ManagerTask(fn_801EB304(fn_8001C4F8(), 11), position, user, comId);
 }
 
 void ManagerTask::Create(const Fn8040Vector3 &position,
-                         const boost::shared_ptr<UnkCharInfo_800999C0> &user) {
+                         const boost::shared_ptr<Player::Player> &user) {
     Create(position, user, -1);
 }
 

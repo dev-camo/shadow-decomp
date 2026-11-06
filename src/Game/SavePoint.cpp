@@ -19,7 +19,7 @@
 #include "Game/GadgetTypeInfo.h"
 #include "Game/SavePointSelect.h"
 #include "Game/UnkActor_800740E4.h"
-#include "Game/UnkCharInfo_800999C0.h"
+#include "Game/Player.h"
 #include "Game/UnkGlobal_8057D6A0.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
 #include "Game/UnkManager_8006D6A8.h"
@@ -301,8 +301,8 @@ void SavePoint::OnSelect(SavePointSelect::Args &args) {
         boost::weak_ptr<CharInfo> player = fn_800A8B74(fn_80074194(), lbl_805EE588);
 
         if (boost::shared_ptr<CharInfo> info = player.lock()) {
-            boost::shared_ptr<UnkCharInfo_800999C0> target =
-                boost::dynamic_pointer_cast<UnkCharInfo_800999C0>(info);
+            boost::shared_ptr<Player::Player> target =
+                boost::dynamic_pointer_cast<Player::Player>(info);
 
             WarpHole::ManagerTask::Create(position, target);
         }
