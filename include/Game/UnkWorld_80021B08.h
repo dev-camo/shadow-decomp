@@ -101,6 +101,11 @@ fn_800C42D0(UnkWorld_80021B08 *world,
 /* True when one of the probe hits in the list is a character info whose virtual function at
  * vtable offset 0x24 reports true (behaviour inferred). */
 bool fn_8015D2EC(SonicteamUSA::System::Collision::CollisionResultList *hits);
+/* The same walk as fn_8015D2EC with another filter: true when one of the probe hits in the list
+ * belongs to a character info that still exists (its weak pointer locks) and whose fn_80078B2C
+ * (vtable offset 0x18) reports true; false for a null list or when no hit does (behaviour and the
+ * bool result inferred: the callers test the low byte). */
+bool fn_8015D3E8(SonicteamUSA::System::Collision::CollisionResultList *hits);
 /* Resets the probe pointer (behaviour inferred; the world argument is unused and the pointer is
  * passed by address). */
 void fn_800C78B0(UnkWorld_80021B08 *world,

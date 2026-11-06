@@ -322,6 +322,14 @@ Game/SecretKey.cpp:
 	.sbss       start:0x805EFDA0 end:0x805EFDB0
 	.sdata2     start:0x805F4DE0 end:0x805F4DF8
 
+Game/SetCollision.cpp:
+	.text       start:0x8011CF3C end:0x8011E024
+	.rodata     start:0x804BE478 end:0x804BE640
+	.data       start:0x80528350 end:0x80528610
+	.sdata      start:0x805E6C48 end:0x805E6C80
+	.sbss       start:0x805EFDB0 end:0x805EFDD0
+	.sdata2     start:0x805F4DF8 end:0x805F4EB0
+
 Game/SetVehicle.cpp:
 	.text       start:0x8011E488 end:0x8011EA18
 	.rodata     start:0x804BE658 end:0x804BE6A0
