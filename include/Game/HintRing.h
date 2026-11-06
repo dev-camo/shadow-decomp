@@ -94,8 +94,9 @@ class SetHintRing : public Gadget {
     /* 0x48 */ boost::shared_ptr<UnkLayer_8004DFB0> m_layer;
     /* 0x50 */ SetHintRingParams m_params;
     /* 0 after ReadOwner, 1 idle (the flag and model updates run), 2 from a collision that passes
-     * the bit 4 and 5 tests until fn_801FAAC8 returns true for the message id; entered also when
-     * no message was requested (message id 0). */
+     * the bit 4 and 5 tests; entered also when no message was requested (message id 0). UpdateBody
+     * moves state 2 to 1 when fn_801FAAC8 returns true for the message id; ReadOwner (also through
+     * ResetFromOwner) sets 0 from any state. */
     /* 0x64 */ s32 m_state;
     /* 0 from ReadOwner and before each request, then fn_801FAF00's result when one is made. */
     /* 0x68 */ s32 m_messageId;
