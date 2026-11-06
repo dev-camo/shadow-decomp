@@ -53,6 +53,10 @@ void fn_802E0C60(const Fn8040Vector3 *center, const UnkRotation3 *rotation, int 
  * there and not understood. */
 void fn_802E0E5C(const Fn8040Vector3 *center, const Fn8040Vector3 *halfSize,
                  const UnkRotation3 *rotation, int arg3);
+/* Draws three lines through center with fn_802E0B58 and the colour lbl_805F06D8, along the x, the
+ * y and the z axis, each from center - halfLength to center + halfLength on its axis (behaviour
+ * inferred from its body; the const pointer spelling is inferred). */
+void fn_8015F5D8(const Fn8040Vector3 *center, float halfLength);
 }
 
 /* A zero-filled .sbss colour that several gadgets pass when they draw their range (purpose

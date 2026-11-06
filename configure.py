@@ -1974,6 +1974,7 @@ config.libs = [
             Object(Matching, "Game/Meteors.cpp", cflags=cflags_game_cpp),
             # Constructor temporary cleanup, matrix calls, and literal/weak metadata layout differ.
             Object(NonMatching, "Game/ElecRollHexa.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/WatchCamera.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DefenseShield.cpp", cflags=cflags_game_cpp),
             # 45 of the 73 functions have identical instructions and relocations once the weak and
             # local copies the linker discards are removed and local symbols are paired by the data

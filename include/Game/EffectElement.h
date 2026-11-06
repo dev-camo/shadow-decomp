@@ -61,6 +61,9 @@ class EffectElement {
     void SetMatrixSource(const Fn8040Matrix34 *matrix) {
         m_matrixSource = matrix;
     }
+    void SetTranslationSource(const Fn8040Vector3 *translation) {
+        m_translationSource = translation;
+    }
 
     /* 0x04 */ unsigned char field_0x4;
     /* 0x05 */ signed char field_0x5;
