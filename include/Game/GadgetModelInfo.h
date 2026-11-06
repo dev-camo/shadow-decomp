@@ -49,6 +49,9 @@ CHECK_SIZEOF(UnkModelPart_8015FA78, 0xC);
 class GadgetModelInfo {
   public:
     GadgetModelInfo(int arg0, const char *fileName);
+    /* The constructor that takes the model from the resource with the number id (USA (GUPE8P)
+     * 0x80163F7C; behaviour and parameter types inferred, see fn_8015F9D8 below). */
+    GadgetModelInfo(int arg0, int id);
     virtual ~GadgetModelInfo();
 
     /* Finds a model entry by name and forwards its index and arg1 to fn_80162AD0
