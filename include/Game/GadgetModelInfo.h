@@ -220,6 +220,9 @@ class GadgetModelInfo {
      * (behaviour inferred from its body). The BASwitch gadget's constructor uses it where its
      * toggles use fn_80160A84. */
     bool fn_801608AC(int arg0, int arg1);
+    /* Returns whether bit 2 of the flags at 0x3C is set (behaviour inferred from its body; the
+     * meaning of the bit is unknown). */
+    bool fn_801626F4();
 
     /* The constructor builds three callback objects at 0x4, 0x10 and 0x1C with the same function,
      * and the destructor destroys them with the same function. The gadgets bind their collision

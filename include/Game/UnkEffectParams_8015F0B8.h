@@ -19,7 +19,9 @@ struct UnkEffectParams_8015F0B8 {
 
     /* 0x00 */ u8 field_0x0[0x4];
     /* 0x04 */ Fn8040Vector3 field_0x4; /* the constructor copies the character info's position */
-    /* 0x10 */ u8 field_0x10[0x34 - 0x10];
+    /* The constructor copies the character info's rotation here. */
+    /* 0x10 */ Fn8040Vector3 field_0x10;
+    /* 0x1C */ u8 field_0x1C[0x34 - 0x1C];
     /* 0x34 */ float field_0x34;
     /* 0x38 */ u8 field_0x38[0x40 - 0x38];
     /* 0x40 */ float field_0x40;

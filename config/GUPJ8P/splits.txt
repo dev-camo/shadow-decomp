@@ -779,6 +779,15 @@ Game/SecretDisk.cpp:
 	.sbss       start:0x805F0E88 end:0x805F0EA0
 	.sdata2     start:0x805F9B68 end:0x805F9B80
 
+Game/BAGunShip.cpp:
+	.text       start:0x802FE77C end:0x80300540
+	.ctors      start:0x804AA610 end:0x804AA614
+	.rodata     start:0x8050B510 end:0x8050B770
+	.data       start:0x8055AEC8 end:0x8055B168
+	.sdata      start:0x805ED2B8 end:0x805ED310
+	.sbss       start:0x805F0ED0 end:0x805F0EF0
+	.sdata2     start:0x805F9C60 end:0x805F9CC8
+
 Game/BAMine.cpp:
 	.text       start:0x80300540 end:0x80301A0C
 	.rodata     start:0x8050B770 end:0x8050B958
