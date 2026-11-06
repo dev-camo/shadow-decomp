@@ -284,6 +284,14 @@ Game/Switch.cpp:
 	.sbss       start:0x805EFE38 end:0x805EFE58
 	.sdata2     start:0x805F4FE8 end:0x805F5018
 
+Game/TargetSwitch.cpp:
+	.text       start:0x80124984 end:0x8012590C
+	.rodata     start:0x804BEDB8 end:0x804BEED8
+	.data       start:0x80528D08 end:0x80528E90
+	.sdata      start:0x805E6DC0 end:0x805E6DE8
+	.sbss       start:0x805EFE58 end:0x805EFE68
+	.sdata2     start:0x805F5018 end:0x805F5098
+
 Game/FireRing.cpp:
 	.text       start:0x80135688 end:0x80136EA0
 	.rodata     start:0x804C0348 end:0x804C0560

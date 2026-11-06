@@ -2182,6 +2182,17 @@ config.libs = [
             # aside.
             Object(NonMatching, "Game/Spring.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Switch.cpp", cflags=cflags_game_cpp),
+            # All 31 functions have identical instructions, and the other sections match by
+            # contents with the discarded weak and local copies set aside (50 weak, 18 local).
+            # .sdata2 holds the same literals in another order: the original has 180.0f
+            # (UpdateBody's angle limit) at +0x64, before 360.0f, 4 bytes of padding and the
+            # int-to-float constant (0x80 bytes); this object creates 180.0f after them (+0x70,
+            # no padding, 0x7C bytes), so the loads of those three constants and of "col" and
+            # "mtn" (CopyFromOwner, UpdateBody, constructor) have other offsets. The original order
+            # fits an out-of-line copy of an inline degrees-to-radians function (the body at
+            # 0x8000AB90) emitted after UpdatePosition and discarded by the linker, where this
+            # source calls fn_8000AB90 as an external function (inferred).
+            Object(NonMatching, "Game/TargetSwitch.cpp", cflags=cflags_game_cpp),
             # fn_8040C55C's instructions match. fn_8040C3EC (92 words) differs in 15 positional raw
             # words (19 when relocation targets are compared by section and offset: the shared-pool
             # loads and the threshold load at +0x90, which refers to .sdata2+0 in the original and
