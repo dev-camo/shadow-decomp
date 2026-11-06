@@ -2189,6 +2189,42 @@ config.libs = [
             # operator->'s 8), and the later sections (.ctors, .rodata, .data, .sdata, .sbss,
             # .sdata2) 0x20 bytes later.
             Object(NonMatching, "Game/Container.cpp", cflags=cflags_game_cpp),
+            # Relocatable comparison with the split original object (local names paired by
+            # position), the same in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P): 134 of its 139
+            # functions have identical instruction words and relocation targets when each body is
+            # paired with its counterpart (the original's 0x58-byte fn_800F0404 with this build's
+            # function1 copy assignment, which is equal). The differences are Bomb::Update, the
+            # absent GetPosition copy and 0x30-byte function below, Initialize's call target and
+            # function1's swap. Paired by symbol name only, 135 compare equal, because the
+            # 0x30-byte function and this build's copy assignment share a name.
+            # - Bomb::Update (USA 0x800EF098) is 226 words against 220: the original calls the
+            #   out-of-line copy of ContainerBehavior::GetPosition (0x800EF448) with the m_behavior
+            #   and m_charInfo pointers loaded inline; this build inlines GetPosition and calls the
+            #   smart pointers' operator-> out of line for its arguments, as in Game/Container.cpp.
+            #   Positional: 140 of the 220 paired words differ (132 raw words and 8 relocation
+            #   targets under equal words) and 6 build words are unpaired; aligned (instructions
+            #   matched up): 6 pairs differ (the 2 loads, the call target and 3 branches across the
+            #   extra words), no word is only in the original and 6 only in this build. The
+            #   GetPosition copy is therefore absent from this object.
+            # - The 0x30-byte function at 0x800F03D4 is absent: the original's Initialize calls it
+            #   to store the grab position handler, and it calls that boost::function1's copy
+            #   assignment (0x800F0404) and returns its first argument; this build's Initialize
+            #   calls the copy assignment directly (symbols.txt gives the 0x30-byte function the
+            #   copy assignment's name, as at 0x80054E28 and 0x800729B0 for two other function1
+            #   types, so the relocation names agree). Initialize's words are identical, but its
+            #   call targets the copy assignment's body instead of the 0x30-byte function.
+            # - That function1's swap (0x800F045C) has identical words, but its call resolves to
+            #   this object's local copy of std::swap<boost::detail::function::any_pointer> (an
+            #   inline template in this build's <utility>) where the original calls the shared
+            #   copy at 0x80019164.
+            # Data, compared object by object with the 95 compiled copies that are absent from the
+            # original split set aside (67 weak and 2 local functions, 4 weak vtables, 8 .rodata, 6
+            # .sdata and 8 .sbss locals), and with them the weak
+            # shared_ptr<ContainerBehavior>::operator-> (8 bytes), also absent from it, which only
+            # this build's Update calls: every original object matches in bytes and relocation
+            # targets except the state jump table, whose entries for the states after STATE_WAITING
+            # point 0x18 bytes later into Update.
+            Object(NonMatching, "Game/Bomb.cpp", cflags=cflags_game_cpp),
             # Every function but the static initialiser is identical, and the data matches once
             # the weak copies the linker discards are removed. The static initialiser differs in 2
             # words: the original loads the saved link register before it stores the startup float

@@ -15,7 +15,9 @@
  * The seven callers that pass 0 for arg0 (the calls at USA 0x800EE8DC, 0x800F7028, 0x800FA110,
  * 0x800FD424, 0x80107FD8, 0x80278448 and 0x80292BE4) all call fn_80021B08 first and discard its
  * result, then load the arguments in the same order, which suggests a shared inline wrapper that is
- * not recovered. */
+ * not recovered. The recovered callers among them (Bomb::Bomb::UpdateMotion at 0x800EE8DC,
+ * Container::ContainerNormal::UpdateMotion at 0x800F7028 and HealingUnit::HealingUnit::UpdateMotion
+ * at 0x80107FD8) write the getter call as its own statement. */
 extern "C" bool fn_801BFC28(void *arg0, Fn8040Vector3 *position, const Fn8040Vector3 *movement,
                             UnkBitFlags_80014E04 *flags, int arg4, float radius);
 
