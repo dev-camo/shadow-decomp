@@ -304,6 +304,13 @@ Game/SavePoint.cpp:
 	.sbss       start:0x805EF290 end:0x805EF2D8
 	.sdata2     start:0x805F4298 end:0x805F42B8
 
+Game/SetCharacter.cpp:
+	.text       start:0x80119D98 end:0x8011A1AC
+	.rodata     start:0x804BD678 end:0x804BD6D8
+	.data       start:0x80527640 end:0x80527720
+	.sdata      start:0x805E6100 end:0x805E6118
+	.sdata2     start:0x805F42B8 end:0x805F42D0
+
 Game/SecretDoor.cpp:
 	.text       start:0x8011B97C end:0x8011C150
 	.ctors      start:0x804AA37C end:0x804AA380

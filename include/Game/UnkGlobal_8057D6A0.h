@@ -14,7 +14,10 @@ struct UnkRecord_802039C8 {
      * with 12 and 5 to limit the building type, and GrindGadget's hookA with 13 to pick
      * its PTB file. */
     /* 0x04 */ s32 field_0x4;
-    /* 0x08 */ u8 field_0x8[0xA - 0x8];
+    /* 0x08 */ u8 field_0x8;
+    /* When the SET_CHARACTOR gadget places a character whose fn_80073708 returns false, it also
+     * calls fn_80073838 on it if this byte is non-zero (meaning unknown). */
+    /* 0x09 */ u8 field_0x9;
     /* When it is set, fn_80169BE4 also tests the vector fn_80010244 returns for index 1. */
     /* 0x0A */ u8 field_0xA;
     /* 0x0B */ u8 field_0xB[0x19 - 0xB];

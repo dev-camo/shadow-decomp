@@ -2270,6 +2270,7 @@ config.libs = [
             # take 0x80 and 0x20 bytes, as in the split. .sdata2 is writable in the compiled
             # object where the split's is read-only.
             Object(NonMatching, "Game/SavePoint.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/SetCharacter.cpp", cflags=cflags_game_cpp),
             # 12 of the 13 functions are identical in every word and relocation. The data contents
             # and relocations match once the 44 linker-discarded copies (9 local, 35 weak) are set
             # aside, with these differences in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P): the

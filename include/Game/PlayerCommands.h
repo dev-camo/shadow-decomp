@@ -10,12 +10,12 @@
 class CharInfo;
 class Target;
 
-/* Commands that gadgets send to character infos (class names from RTTI, with CharCommand or
- * Player::PlayerCommand as their only base); WallJumpCommand is sent by the player and received
- * by gadgets. The constructors and destructors are defined elsewhere, together with the vtables,
- * except the constructors of CancelBehaviorCommand, AddWeaponCommand, SetVelocityCommand,
- * IgnoreInputCommand(int, float), InvincibleCommand, SwitchCommand and Player::HomingJumpCommand
- * (ItemBox.cpp), which gadget files define, and the constructors of
+/* Commands that gadgets send to character infos (class names from RTTI, with CharCommand,
+ * Player::PlayerCommand or Player::Npc::NpcCommand as their only base); WallJumpCommand is sent by
+ * the player and received by gadgets. The constructors and destructors are defined elsewhere,
+ * together with the vtables, except the constructors of CancelBehaviorCommand, AddWeaponCommand,
+ * SetVelocityCommand, IgnoreInputCommand(int, float), InvincibleCommand, SwitchCommand and
+ * Player::HomingJumpCommand (ItemBox.cpp), which gadget files define, and the constructors of
  * Player::StartExternalControlCommand and Player::TouchHangCommand, which are defined in their
  * classes here (see the classes); the argument meanings are inferred from the stores in the
  * constructors.
@@ -353,6 +353,18 @@ CHECK_SIZEOF(SetMotionCommand, 0x1C);
 
 namespace Npc {
 
+/* Player::Npc::NpcCommand (class name from RTTI, with CharCommand as its only base). Its
+ * constructor (0x800734E4) passes both arguments on to CharCommand's and sets its vtable. It
+ * passes id on without the clrlwi that an int parameter compiles to (Player::PlayerCommand's
+ * constructor at 0x8006EE30 has one), so id is u16 like CharCommand's; the type of arg1 is
+ * inferred. */
+class NpcCommand : public CharCommand {
+  public:
+    NpcCommand(u16 id, int arg1);
+    virtual ~NpcCommand();
+};
+CHECK_SIZEOF(NpcCommand, 0x14);
+
 /* Class and base names come from RTTI; argument meanings are inferred by callers. */
 class EnemyDeadByPlayerCommand : public PlayerCommand {
   public:
@@ -362,6 +374,19 @@ class EnemyDeadByPlayerCommand : public PlayerCommand {
     /* 0x18 */ int field_0x18;
 };
 CHECK_SIZEOF(EnemyDeadByPlayerCommand, 0x1C);
+
+/* Player::Npc::ShowCommand (class name from RTTI, with Player::Npc::NpcCommand as its base). Its
+ * constructor (0x800732D0) passes 0x402 and arg1 to the base constructor and stores arg0 at 0x14
+ * (parameter types inferred). The SET_CHARACTOR gadget sends it with 0 and 4 (meanings
+ * unknown). */
+class ShowCommand : public NpcCommand {
+  public:
+    ShowCommand(int arg0, int arg1);
+    virtual ~ShowCommand();
+
+    /* 0x14 */ int field_0x14;
+};
+CHECK_SIZEOF(ShowCommand, 0x18);
 
 } // namespace Npc
 
