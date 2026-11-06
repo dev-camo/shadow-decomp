@@ -2222,6 +2222,26 @@ config.libs = [
             # in BreakWall's and SuperComputer's constructors.
             Object(NonMatching, "Game/Stick.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/TurnOver.cpp", cflags=cflags_game_cpp),
+            # 51 of 54 functions are identical in every word and relocation in USA, Japan and PAL.
+            # The data contents and relocations match once the 86 linker-discarded copies (26 local,
+            # 60 weak) are set aside, with two differences in every region: the original's .sdata2
+            # is allocatable (A, flags 0x2) and the compiled one writable and allocatable (WA, 0x3),
+            # and the compiled sections end without the original's alignment padding (.sdata2 0x1B
+            # bytes against 0x20). Three functions keep their length but differ in register use or
+            # order (positional: word i against word i; aligned: instructions matched up):
+            # - SetWarpHole::UpdateBody (0x8012A1F8, 40 words): the original loads m_comId into a
+            #   second saved register before it calls GetInstance (0x8012A24C) and saves r30-r31
+            #   with stmw/lmw; compiled, the load comes after the call and the function saves only
+            #   r31, so the this register differs in every member access: 13 words differ by
+            #   position; aligned, 9 pairs differ and 2 words are only in each.
+            # - The ManagerTask destructor (0x80129B50, 52 words; 51 in Japan and PAL): the original
+            #   loads the 1 for field_0x30 of the fn_800BADE8 object after that call (0x80129BD8);
+            #   compiled, it is loaded into a saved register before the call: 5 words differ by
+            #   position; aligned, 1 pair differs and 2 words are only in each.
+            # - ManagerTask::Update (0x80129640, 214 words): the same store at its start, made when
+            #   fn_802E5810 is false (0x80129668): 3 words differ by position; aligned, 1 pair
+            #   differs and 1 word is only in each.
+            Object(NonMatching, "Game/WarpHole.cpp", cflags=cflags_game_cpp),
             # fn_8040C55C's instructions match. fn_8040C3EC (92 words) differs in 15 positional raw
             # words (19 when relocation targets are compared by section and offset: the shared-pool
             # loads and the threshold load at +0x90, which refers to .sdata2+0 in the original and
