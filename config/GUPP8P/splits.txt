@@ -638,6 +638,15 @@ Game/ElecAccessPanel.cpp:
 	.sbss       start:0x805F1028 end:0x805F1040
 	.sdata2     start:0x805F8578 end:0x805F85A0
 
+Game/RailSwitch.cpp:
+	.text       start:0x80257D34 end:0x80258BE0
+	.ctors      start:0x804AAF54 end:0x804AAF58
+	.rodata     start:0x804F5DA8 end:0x804F5EE8
+	.data       start:0x8054AED0 end:0x8054AF90
+	.sdata      start:0x805EB568 end:0x805EB590
+	.sbss       start:0x805F1098 end:0x805F10B0
+	.sdata2     start:0x805F87B8 end:0x805F87E8
+
 Game/DarkSpinEntrance.cpp:
 	.text       start:0x80258BE0 end:0x802590CC
 	.ctors      start:0x804AAF58 end:0x804AAF5C

@@ -14,9 +14,9 @@ class UnkLockonObject_8005FDF4;
  * Player::PlayerCommand as their only base); WallJumpCommand is sent by the player and received
  * by gadgets. The constructors and destructors are defined elsewhere, together with the vtables,
  * except the constructors of CancelBehaviorCommand, AddWeaponCommand, SetVelocityCommand,
- * IgnoreInputCommand(int, float) and InvincibleCommand, which gadget files define, and the
- * constructor of Player::StartExternalControlCommand, which is defined in its class here (see the
- * classes); the argument meanings are inferred from the stores in the constructors.
+ * IgnoreInputCommand(int, float), InvincibleCommand and SwitchCommand, which gadget files define,
+ * and the constructor of Player::StartExternalControlCommand, which is defined in its class here
+ * (see the classes); the argument meanings are inferred from the stores in the constructors.
  * SetPositionCommand, SetVelocityCommand and LaunchCommand pass their last argument to the base
  * constructor as its second argument, and ClrVelocityCommand its only argument;
  * IgnoreInputCommand passes 0. Most callers pass 4 there (0 and 2 also occur). */
@@ -402,5 +402,21 @@ class InvincibleCommand : public PlayerCommand {
 CHECK_SIZEOF(Player::InvincibleCommand, 0x18);
 
 } // namespace Player
+
+/* SwitchCommand (class name from the RTTI of its vtable at 0x8053D404, with CharCommand as its
+ * only base); the destructor and the vtable are elsewhere. The constructor, defined in
+ * RailSwitch.cpp, passes 9 and 4 to the base constructor and stores its argument at 0x14. The RAIL
+ * SWITCH gadget allocates one with its "route" parameter and passes it to a character info (a null
+ * pointer when the allocation fails); the command handler fn_8025E9C0 uses the word at 0x14 as an
+ * index into the table at 0x8054B8E0 under the conditions given in Game/UnkRailRoute_8054B8E0.h
+ * (the member name is inferred from these uses). */
+class SwitchCommand : public CharCommand {
+  public:
+    SwitchCommand(s32 route);
+    virtual ~SwitchCommand();
+
+    /* 0x14 */ s32 m_route;
+};
+CHECK_SIZEOF(SwitchCommand, 0x18);
 
 #endif
