@@ -52,7 +52,7 @@ class ElecAccessPanel : public Gadget {
     /* 0x30 */ GadgetModelInfo *m_model;
     /* 0x34 */ boost::shared_ptr<GadgetCharInfo> m_charInfo;
     /* 0x3C */ u8 m_comId;         /* the owner's com id (fn_800C9E60) */
-    /* 0x40 */ u8 field_0x40[0x4]; /* in the allocation size (0x58); no code here touches it */
+    /* 0x3D */ u8 field_0x3D[0x4]; /* in the allocation size (0x58); no code here touches it */
     /* State 0 waits for a hit, state 1 calls the model's fn_80161880 and moves to state 2, state
      * 2 fades the "mat" colour over half a second of m_timer and state 3 passes sound 0x7249 to
      * fn_801D53C4 every frame (inferred). */
@@ -60,6 +60,7 @@ class ElecAccessPanel : public Gadget {
     /* 0x48 */ float m_timer;
     /* 0x4C */ boost::shared_ptr<UnkObject_802B4254> m_object;
 };
+CHECK_OFFSETOF(ElecAccessPanel, field_0x3D, 0x3D);
 /* This layout uses 4 bytes of tail padding from Task's 8-byte alignment. */
 CHECK_SIZEOF(ElecAccessPanel, 0x58);
 
