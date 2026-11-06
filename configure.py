@@ -1722,7 +1722,7 @@ config.libs = [
             # .rodata+0x230 in the original and .rodata+0x1E4 here) and the .rodata addends of four
             # data relocations (the descriptor name, two RTTI names and s_name).
             Object(NonMatching, "Game/ElecCoreWall.cpp", cflags=cflags_game_cpp),
-            # 81 of the 85 functions have identical instructions and relocations once the weak and
+            # 82 of the 85 functions have identical instructions and relocations once the weak and
             # local copies the linker discards are removed. The data matches by contents in an
             # object-relative comparison that sets those copies and the alignment aside; a
             # source-enabled link places the unit's data differently (in USA its .data, .rodata and
@@ -1732,9 +1732,7 @@ config.libs = [
             # the range and the speed product, and the operand order of two fmuls). UpdateBody is
             # two instructions longer (182 raw words differ by position): twice the original passes
             # the result of a copy constructor straight to fn_8040CF2C, where this build copies
-            # into a local and passes its address. UpdateCone differs in 18 words, all stack
-            # offsets: the original makes the up vector of the rotation-only transform
-            # (fn_8040B618) after its result, as a temporary would be.
+            # into a local and passes its address.
             Object(NonMatching, "Game/ElecSearchLight.cpp", cflags=cflags_game_cpp),
             # Compared as relocatable objects, with the weak and local copies the linker discards
             # removed and the local names and the data section alias (@2 against ...data.0)
