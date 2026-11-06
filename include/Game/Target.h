@@ -67,8 +67,8 @@ extern "C" {
 boost::shared_ptr<Target> fn_801E72DC(int arg0);
 /* Copies position into the object's position at 0x8 (behaviour inferred from its body). */
 void fn_800CCE38(Target *object, const Fn8040Vector3 *position);
-/* Hands the shared pointer on to fn_8008A1B0 (purpose unknown; CircusBall and Spring call it
- * from their destructors). */
+/* Resets the shared pointer (its body only calls shared_ptr<Target>::reset; CircusBall and Spring
+ * call it from their destructors). */
 void fn_801E7108(boost::shared_ptr<Target> &object);
 /* Creates an object for the character info (the number is not understood; Coaster passes 0x2000,
  * ArkCannon 0xA400 and 0x8800, and BombingWall 0xA000). */
