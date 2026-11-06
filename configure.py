@@ -859,7 +859,7 @@ config.libs = [
                 # change layout word by word through integer registers and addresses some stores
                 # differently. RCPtr::Assign (117 words, the original's 120) differs in 100 (24):
                 # the original keeps the object to release in r4 and copies it to r3 for each call,
-                # and the allocation of the holder passes line 135 of csdRCObject.h where the
+                # and the allocation of the holder passes line 138 of csdRCObject.h where the
                 # original passes 410. Reset and the holder's constructor come after
                 # RenderState::End, as in the original; the out-of-line CMemoryAlloc::AllocObject
                 # that the holder allocation emits after them is a weak copy of a function the game
@@ -947,35 +947,6 @@ config.libs = [
                 # native bytes. Normal links use the original object; the extra copies are not
                 # selected by those links.
                 Object(NonMatching, "Game/CSD/csdmMotionPattern.cpp", cflags=cflags_csd),
-                # The project object (CProject: the file data of a project with the texture list and
-                # the fonts its scenes use) and the handlers of the scene's end-of-motion policy. 18
-                # of the unit's 178 functions are sourced. 14 have the original's instructions: the
-                # policy's OnReachEnd and OnReachStart, the four empty events of CSceneListener,
-                # CProject::Load, GetTexList and SetTexList, the CFontList constructor and
-                # CFontListRef::Attach used for the project's fonts, and the free-policy
-                # CResourceBase::Attach, RCPtr<unsigned char>::Reset and RCObject constructor. Copy
-                # and CProject::Attach differ in one word each, the __LINE__ of their allocations
-                # (the original passes 83 and, in csdmProject.h, 197; this source is far shorter
-                # than the original files). LoadFile (161 words, the original's 162) differs in 122
-                # (7) words: the __LINE__ of its two Alloc calls (the original passes 134 and 161),
-                # the first strrchr, whose result the original compares before copying it (cmplwi,
-                # mr) where ours emits one mr., and three branch displacements before it. The
-                # free-policy Assign (112 words, the original's 115) differs in 95 (22) words,
-                # including branch displacements, and shows the difference described for
-                # csdLoader.cpp. The functions are defined in reverse address order, except
-                # CFontListRef::Attach: the original has it between the CFontList constructor and
-                # CResourceBase::Attach, after Load, where ours comes before Load. The other 160
-                # functions are not sourced: the containers (the maps of scenes by name and by draw
-                # order and the lists of scenes waiting to be added or removed, with their
-                # iterators), the project's destructor, SetFonts, Update and Draw, the creation of
-                # scenes (the CScene constructor included) and the listener base class. The unit's
-                # .rodata and .data are incomplete for the same reason. It emits weak copies of the
-                # free-policy RCObject vtable, of CMemoryAlloc::AllocObject and FreeObject and of
-                # CMotionEndPolicy's destructor (the original's is in csdmScene.cpp). Byte and
-                # CTexList holder/CFunctorBase destructors and tables are also weak copies. The
-                # partial source .data is 92 bytes versus 104 native bytes; this does not recover
-                # the missing project tables. Normal links use the original object.
-                Object(NonMatching, "Game/CSD/csdmProject.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/fn_80008D48.c"),
                 Object(Matching, "Game/fn_80008DA4.c"),
                 Object(Matching, "Game/fn_80008E1C.c"),
@@ -1602,21 +1573,21 @@ config.libs = [
             # 12 source bytes versus the original 16-byte extent including trailing alignment.
             Object(NonMatching, "Game/CSD/csdMotionPalette.cpp", cflags=cflags_csd),
             # Scene objects, playback, node lookup and non-owning listeners. Of the 195 native
-            # bodies, this source emits 164 identified counterparts. The 150 instruction-identical
+            # bodies, this source emits 166 identified counterparts. The 153 instruction-identical
             # bodies include two tree methods that call the key comparator instead of distinct
-            # value_compare wrappers. Five destructor models remain provisional, and seven
+            # value_compare wrappers. Five destructor models remain provisional, and five
             # operations are expanded in headers. Remaining helpers are external to this object;
             # five are emitted by Node. Unidentified callback/functor tables keep placeholders.
             # The nested CFunctorBase name comes from the original name pool; its association with
             # the holder's +0x0C pointer and CBase inheritance remain inferred. Matching deleting
             # instructions and table/destructor references alone do not identify fn_80367FB4,
             # fn_80364BE4, fn_80365F28, lbl_8055FE98 or lbl_8055FEA8 in USA (GUPE8P).
-            # Fourteen bodies differ in allocation lines, release argument moves, pooled constants,
-            # inlined pair copies and iterator accessors, return-object stores or the final repeated
+            # Thirteen bodies differ in allocation lines, release argument moves, pooled constants,
+            # iterator accessors, return-object stores or the final repeated
             # motion-index copy. The scene initialization allocation passes source line 128 rather
             # than native 173; root-pattern allocations pass 489/476 rather than 1124/1102.
             # Definitions with established native identities follow descending addresses; callback
-            # destructor placement is provisional. Among the 164 paired bodies, 129
+            # destructor placement is provisional. Among the 166 paired bodies, 129
             # retain native relative order. Generated helpers still differ: map traversal helpers
             # precede the font-handle copy constructor, while callback-list and map/reference
             # destruction helpers follow the scene destructor instead of their earlier native
@@ -1625,12 +1596,14 @@ config.libs = [
             # assignment/holder helpers follow CMotionPattern's copy constructor as in the original.
             # The first 0x58 .data bytes and 0x4C .rodata bytes match with their relocations; this
             # includes the member-pointer constants used by the now-identical frame update.
+            # Node lookup emits both 64-byte pair constructors and has the original 372-byte size;
+            # its remaining instruction difference is allocation line 423 versus native 974.
             # Source .data is 448 bytes versus 464 native bytes. One unused direct member pointer
             # is unemitted; two native 28-byte zero ranges remain unclassified. The provisional
             # callback-holder table has a four-byte native zero tail. Read-only data is 130 bytes
             # before alignment versus 136 native bytes. The one-byte policy object does not identify
             # the remaining seven native BSS bytes. Extra weak reference/functor copies remain.
-            # A source link with Node still lacks the emitted constructor helpers fn_80364F30
+            # A source link with Node, without Project, lacks the constructor helpers fn_80364F30
             # and fn_8036528C. Normal links retain the original Scene object in every region.
             Object(NonMatching, "Game/CSD/csdmScene.cpp", cflags=cflags_csd),
             # The complete node source, including its constructor, destructor, callbacks, channel
@@ -1662,6 +1635,77 @@ config.libs = [
             # emitted. The source object's .data is 292 bytes versus 152 native bytes, before link
             # selection of weak copies.
             Object(NonMatching, "Game/CSD/csdmNode.cpp", cflags=cflags_csd),
+            # Project resources, scene/collection creation, named and ordered indexes, queued
+            # changes and listener cleanup. USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P) each
+            # have 169 emitted counterparts for 178 native functions; 151 instruction streams
+            # are identical. Nine iterator and comparator operations have no separate
+            # emitted copy. Five of the 151 bodies make seven calls to SceneNameCompare where the
+            # original calls distinct value_compare wrappers (USA functions 8036E5F4, 8036E6CC,
+            # 8036EDA4, 8036F580 and 8036F688). For example, 8036E5F4+0x48 calls native 8036E678;
+            # the source calls the key comparator directly.
+            # In 8036D0BC and 8036F4F0, three calls also use local weak const-key pair destructors
+            # instead of the original external definitions at 800418A4 and 80041B70 in USA.
+            #
+            # Differing bodies: USA addresses identify the corresponding functions in all regions.
+            # Sizes and positional counts below agree in each region. Different words are counted
+            # at equal positions in the overlap; tail words are unpaired by length, not an aligned
+            # instruction-edit distance. Allocation lines, inlining and stack/register choices
+            # remain. In fn_8036C8E0, the original constructs a null RCPtr<CScene>, compares the
+            # two held objects with independent null checks, then destroys the temporary before
+            # branching. This source tests scene.Get() against null and omits those two calls.
+            # Definitions follow descending established original addresses. Of the 169 paired
+            # bodies, 111 retain original relative order; generated helper order still differs.
+            # USA address  Native bytes  Source bytes  Different words  Native tail  Source tail
+            # 8036BCAC        312           312               1            0            0
+            # 8036BE04        480           468              97            3            0
+            # 8036C0C4        388           388               1            0            0
+            # 8036C318         84            84               3            0            0
+            # 8036C46C        248           248               1            0            0
+            # 8036C8E0        412           348              67           16            0
+            # 8036D054        104           136              22            0            8
+            # 8036D2FC        276           276               1            0            0
+            # 8036D448        180           180               1            0            0
+            # 8036D598        200           200               1            0            0
+            # 8036DD44        212           212               1            0            0
+            # 8036DF18        460           448              92            3            0
+            # 8036E114        648           644             121            1            0
+            # 8036E3A8        176           176               1            0            0
+            # 8036E458        308           320              47            0            3
+            # 8036ECF0        176           176               1            0            0
+            # 8036EE74        176           176               1            0            0
+            # 8036F470        128           128               4            0            0
+            #
+            # The source keeps weak copies of the SceneList-handle destructor, raw Scene-pointer
+            # reset, Node-handle, callback-list and scene-node-map constructors, and the begin/end
+            # pairs for the removal and order-change lists. The original callback-list and
+            # scene-node-map constructors belong to Scene; the other seven definitions are outside
+            # these CSD files. For example, original removal processing at 8036C3AC calls external
+            # list begin/end at 8003EB64/8003EB28 in USA; this source keeps local weak copies.
+            # The SceneList release helper is also kept here: 316 source bytes versus 328 at
+            # native 80042B10 in USA, with release-argument moves still differing. The implicit
+            # CSceneList destructor emits a 92-byte weak copy; the linked definition remains
+            # the original external one at 80042CB4 in USA.
+            #
+            # Weak copies include the nested holder CFunctorBase destructors and tables for byte,
+            # Scene, SceneList, CTexList, CNode, SceneCallback and UnkNodePayload references.
+            # The pointer association and CBase inheritance remain inferred as in csdRCObject.h;
+            # these emitted names do not identify the unnamed native tables. Holder allocations
+            # pass line 138, including the explicit DeleteRelease Reset overload.
+            # Inline reference-copy constructors emit weak copies that call operator=. The linked
+            # game-file constructors instead call the counted-reference helpers directly and
+            # remain selected; the unselected weak copies retain that call-target difference.
+            # The combined source link includes this file's real CScene constructor, which emits
+            # the scene-node-map and callback-list constructor helpers needed by Scene/Node.
+            # Strings, table slots and policy values are represented; pooling, order, alignment
+            # and table selection differ. The combined scene/node/project source link has a
+            # 120-byte Project-to-next-object data interval, including six alignment bytes after
+            # its 114-byte named extent, versus the native 104-byte span. Two locally kept
+            # 12-byte holder tables have native definitions outside Project. BSS contains seven
+            # one-byte empty-object temporaries at four-byte strides. After their 28-byte slot
+            # span, alignment to the following 32-byte-aligned OS.c BSS adds 12 bytes in USA and
+            # four in Japan/PAL.
+            # The normal link retains the original project object.
+            Object(NonMatching, "Game/CSD/csdmProject.cpp", cflags=cflags_csd),
             Object(Matching, "Game/fn_80293AC8.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_8004924C.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_8004EDAC.cpp", cflags=cflags_game_cpp),

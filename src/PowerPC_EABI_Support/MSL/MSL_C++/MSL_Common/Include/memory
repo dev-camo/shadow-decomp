@@ -145,7 +145,7 @@ template <class T> class allocator {
         ::operator delete(p);
     }
     void construct(pointer p, const T &value) {
-        new (static_cast<void *>(p)) T(value);
+        ::new (static_cast<void *>(p)) T(value);
     }
     void destroy(pointer p) {
         p->~T();

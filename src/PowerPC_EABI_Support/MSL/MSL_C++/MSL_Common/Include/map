@@ -125,6 +125,12 @@ template <class Key, class Value, class Compare, class Allocator> class __tree {
     }
 
     iterator find(const Key &k);
+    iterator lower_bound(const Key &k);
+    iterator upper_bound(const Key &k);
+    pair<iterator, iterator> equal_range(const Key &k) {
+        return make_pair(lower_bound(k), upper_bound(k));
+    }
+    iterator insert_equal(const Value &v);
     Value &__find_or_insert(const Key &k);
     void clear();
 
@@ -303,6 +309,59 @@ __tree<Key, Value, Compare, Allocator>::find(const Key &k) {
     return iterator(y);
 }
 
+template <class Key, class Value, class Compare, class Allocator>
+typename __tree<Key, Value, Compare, Allocator>::iterator
+__tree<Key, Value, Compare, Allocator>::lower_bound(const Key &k) {
+    __tree_node_base *x = root();
+    __tree_node_base *y = end_node();
+    while (x != 0) {
+        if (!comp()(static_cast<node *>(x)->value_, k)) {
+            y = x;
+            x = x->left_;
+        } else {
+            x = x->right_;
+        }
+    }
+    return iterator(y);
+}
+
+template <class Key, class Value, class Compare, class Allocator>
+typename __tree<Key, Value, Compare, Allocator>::iterator
+__tree<Key, Value, Compare, Allocator>::upper_bound(const Key &k) {
+    __tree_node_base *x = root();
+    __tree_node_base *y = end_node();
+    while (x != 0) {
+        if (comp()(k, static_cast<node *>(x)->value_)) {
+            y = x;
+            x = x->left_;
+        } else {
+            x = x->right_;
+        }
+    }
+    return iterator(y);
+}
+
+template <class Key, class Value, class Compare, class Allocator>
+typename __tree<Key, Value, Compare, Allocator>::iterator
+__tree<Key, Value, Compare, Allocator>::insert_equal(const Value &v) {
+    __tree_node_base *parent = end_node();
+    __tree_node_base *x = root();
+    bool left = true;
+    bool leftmost = true;
+    while (x != 0) {
+        parent = x;
+        if (comp()(v, static_cast<node *>(x)->value_)) {
+            x = x->left_;
+            left = true;
+        } else {
+            x = x->right_;
+            left = false;
+            leftmost = false;
+        }
+    }
+    return iterator(__insert_node(parent, left, leftmost, v));
+}
+
 template <class Key, class T, class Compare = less<Key>,
           class Allocator = allocator<pair<const Key, T> > >
 class map {
@@ -355,6 +414,61 @@ class map {
     }
     pair<iterator, bool> insert(const value_type &v) {
         return tree_.insert(v);
+    }
+    void erase(iterator position) {
+        tree_.erase(position);
+    }
+
+  private:
+    tree_type tree_;
+};
+
+template <class Key, class T, class Compare = less<Key>,
+          class Allocator = allocator<pair<const Key, T> > >
+class multimap {
+  public:
+    typedef Key key_type;
+    typedef T mapped_type;
+    typedef pair<const Key, T> value_type;
+
+    /* Orders values by key; lookup and bounds compare a key and a value in either order. */
+    class value_compare {
+      public:
+        value_compare() {}
+
+        bool operator()(const value_type &x, const value_type &y) const {
+            return comp_(x.first, y.first);
+        }
+        bool operator()(const key_type &x, const value_type &y) const {
+            return comp_(x, y.first);
+        }
+        bool operator()(const value_type &x, const key_type &y) const {
+            return comp_(x.first, y);
+        }
+
+      private:
+        Compare comp_;
+    };
+
+  private:
+    typedef __tree<key_type, value_type, value_compare, Allocator> tree_type;
+
+  public:
+    typedef typename tree_type::iterator iterator;
+
+    multimap() : tree_(value_compare(), Allocator()) {}
+
+    iterator begin() {
+        return tree_.begin();
+    }
+    iterator end() {
+        return tree_.end();
+    }
+    iterator insert(const value_type &v) {
+        return tree_.insert_equal(v);
+    }
+    pair<iterator, iterator> equal_range(const key_type &k) {
+        return tree_.equal_range(k);
     }
     void erase(iterator position) {
         tree_.erase(position);

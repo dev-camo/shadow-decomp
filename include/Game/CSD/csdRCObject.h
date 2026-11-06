@@ -75,8 +75,11 @@ template <class T> class RCPtr : public CBase {
         return *this;
     }
 
-    /* Replace the held object by object, released with Free or by a function (names inferred).
+    /* Replace the held object using the explicit release policy (names inferred).
      * Unlike Reset(T *), they return nothing. */
+    void Reset(T *object, DeleteRelease release) {
+        Assign(object, release);
+    }
     void Reset(T *object, FreeRelease release) {
         Assign(object, release);
     }
@@ -157,10 +160,10 @@ template <class T> class RCPtr : public CBase {
 
     /* Shares the other pointer's holder, taking a counted reference (the game's copy constructor
      * of RCPtr<CTexList>, 0x80042270 in the USA release, clears the holder and then takes the
-     * reference). It is declared here, after the holder, so that the __LINE__ the holder's
-     * allocation passes does not move; no unit matches that word either way (the original passes
-     * 410). */
-    RCPtr(const RCPtr &other);
+     * reference). */
+    RCPtr(const RCPtr &other) : field_0x0(NULL) {
+        *this = other;
+    }
 
     /* The held object. Dereferencing a pointer that holds none reports an error and never
      * returns (the text is the library's; name inferred). */
