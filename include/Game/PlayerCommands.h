@@ -433,10 +433,11 @@ CHECK_SIZEOF(RideCommand, 0x28);
 
 namespace Player {
 
-/* The command that the ELEC_BAR gadget's bars send to a player whose movement comes near their
- * line (meaning inferred from that use). The constructor at 0x800F618C passes 0x111 as the command
- * id and arg2 to the base constructor and copies the two weak pointers to 0x14 and 0x1C. Passing
- * them by value follows the bars' call, which constructs a temporary for each. */
+/* The command that the ELEC_BAR gadget's bars and the CATCHSTICK gadget send to a player whose
+ * movement comes near their line (meaning inferred from those uses). The constructor at 0x800F618C
+ * (defined in CatchStick.cpp) passes 0x111 as the command id and arg2 to the base constructor and
+ * copies the two weak pointers to 0x14 and 0x1C. Passing them by value follows the bars' call,
+ * which constructs a temporary for each. */
 class TouchLineCommand : public PlayerCommand {
   public:
     TouchLineCommand(boost::weak_ptr<CharInfo> charInfo, boost::weak_ptr<UnkSegment_80020A20> line,

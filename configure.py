@@ -2427,6 +2427,44 @@ config.libs = [
             # list, the std::exception RTTI record and its name sit lower here (.data 0x2B0, .sdata
             # 0x54 and .rodata 0x25B bytes against 0x2E8, 0x68 and 0x280).
             Object(NonMatching, "Game/Weight.cpp", cflags=cflags_game_cpp),
+            # Relocatable comparison (local names resolved), the same in USA (GUPE8P), Japan
+            # (GUPJ8P) and PAL (GUPP8P): 69 of the 71 functions of the original split have identical
+            # instruction words, and all but function1<void, GadgetColliDetectArgs &>::swap have the
+            # original's relocation targets.
+            # - The hit callback (USA 0x800F5FAC) is 121 words against 120: it reloads the span's
+            #   address for fn_8040CF50, where the original passes on the pointer that the span's
+            #   copy constructor returns (as in ElecBar's hit callback). Positional (word i against
+            #   word i): 73 of the 120 common words differ and 1 build word is unpaired; aligned
+            #   (instructions matched up): 4 pairs differ (branches past the extra word), no word is
+            #   only in the original and 1 only in this build.
+            # - CatchStick::UpdateLine (USA 0x800F4CE4) is 60 words against 61: the original loads
+            #   m_line into r31 before each matrix-vector product (0x800F4D84 and 0x800F4DA4), so it
+            #   keeps this in r30 and saves r30-r31 with stmw/lmw; through the matrix-vector
+            #   operator*, the compiled code loads m_line from this (r31) after each product and
+            #   saves only r31. Positional: 27 of the 60 common words differ and 1 original word is
+            #   unpaired; aligned: 9 paired-differing, 3 original-only and 2 source-only words.
+            # - The swap calls a 32-byte local copy of std::swap<any_pointer> in this object, where
+            #   the original calls the kept copy at 0x80019164 (1 relocation target; the local copy
+            #   is build-only, and a source-enabled link keeps it).
+            # - The function order differs in two places (see the note in the source): fn_800F5980
+            #   and the four function1<void, GadgetColliDetectArgs &> members it calls (0x188 bytes)
+            #   follow the constructor's other out-of-line functions instead of coming after the
+            #   sp_counted_base_impl constructor, and the TouchLineCommand constructor follows the
+            #   weak_ptr<CharInfo> conversion after the hit callback instead of preceding it.
+            # Data, compared by contents with the 94 copies that a source-enabled link discards set
+            # aside (61 weak and 2 local functions; 5 weak vtables in .data, which the original
+            # keeps as zero-filled holes; 10 .rodata, 8 .sdata and 8 .sbss locals): every original
+            # object matches in bytes, relocations and place except the last two .rodata strings,
+            # the RTTI names of the segment's sp_counted_base_impl and checked_deleter. The original
+            # names the segment class Sonicteam::System::Geometry::Line (0x84 and 0x3A bytes), where
+            # UnkSegment_80020A20 gives 0x68 and 0x2C, so .rodata is 0x2C bytes shorter and the
+            # checked_deleter type record's name pointer moves with it. The sp_counted_base_impl
+            # vtable names the original's functions, which sit at other .text offsets because of the
+            # moves above. The compiled .data, .sdata, .sbss and .sdata2 end without the original's
+            # alignment padding (0x1C4 against 0x1C8, 0x74 against 0x78, 0x21 against 0x28, 0x34
+            # against 0x38), and .sdata2 is writable in the compiled object where the split's is
+            # read-only.
+            Object(NonMatching, "Game/CatchStick.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_8005A300.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80054DD0.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80096B64.cpp", cflags=cflags_game_cpp),
