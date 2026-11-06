@@ -292,6 +292,16 @@ Game/TargetSwitch.cpp:
 	.sbss       start:0x805EFE58 end:0x805EFE68
 	.sdata2     start:0x805F5018 end:0x805F5098
 
+Game/Weight.cpp:
+	.text       start:0x8012AF6C end:0x8012CCE4
+	.ctors      start:0x804AADAC end:0x804AADB0
+	.rodata     start:0x804BF3F8 end:0x804BF678
+	.data       start:0x80529280 end:0x80529568
+	.bss        start:0x80581068 end:0x80581160
+	.sdata      start:0x805E6E90 end:0x805E6EF8
+	.sbss       start:0x805EFED8 end:0x805EFEF8
+	.sdata2     start:0x805F5170 end:0x805F51E8
+
 Game/FireRing.cpp:
 	.text       start:0x80135688 end:0x80136EA0
 	.rodata     start:0x804C0348 end:0x804C0560

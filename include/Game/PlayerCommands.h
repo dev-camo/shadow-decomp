@@ -419,4 +419,20 @@ class SwitchCommand : public CharCommand {
 };
 CHECK_SIZEOF(SwitchCommand, 0x18);
 
+/* DamageCommand (class name from the RTTI of its vtable at 0x8053D44C, with CharCommand as its
+ * only base); the destructor and the vtable are elsewhere. The constructor at 0x801DB864 passes 7
+ * as the command id and arg1 to the base constructor, stores the float at 0x14 and copy-constructs
+ * the zero vector lbl_805E07A0 at 0x18. The float arrives in f1, so the bytes do not
+ * show where it stands in the parameter list (order inferred). The WEIGHT gadget sends it with
+ * 1.0f and 4 to the characters it catches (meanings inferred from that use and the class name). */
+class DamageCommand : public CharCommand {
+  public:
+    DamageCommand(float arg0, int arg1);
+    virtual ~DamageCommand();
+
+    /* 0x14 */ float field_0x14;
+    /* 0x18 */ Fn8040Vector3 field_0x18;
+};
+CHECK_SIZEOF(DamageCommand, 0x24);
+
 #endif
