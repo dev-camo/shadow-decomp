@@ -11,6 +11,9 @@ extern "C" {
 UnkManager_8006F754 *fn_8006F754();
 int fn_800747E0(UnkManager_8006F754 *manager);
 boost::weak_ptr<CharInfo> fn_8007488C(UnkManager_8006F754 *manager, int id);
+/* Passes the object of each entry of the manager's list to fn_800739E0 (behaviour inferred from
+ * its body). */
+void fn_80074AEC(UnkManager_8006F754 *manager);
 }
 
 #endif

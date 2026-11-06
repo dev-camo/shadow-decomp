@@ -13,6 +13,9 @@ extern "C" {
 /* Owner lists indexed by the byte id; original names are unknown. */
 UnkOwnerManager_800C9B84 *fn_800C9B84();
 UnkGadgetOwner_800C9CD0 *fn_800CB560(UnkOwnerManager_800C9B84 *manager, int id);
+/* Passes the manager's word at 0x0 to fn_800CA098 when it is not null (behaviour from its body;
+ * the SAVEPOINT gadget calls it when it saves). */
+void fn_800CB508(UnkOwnerManager_800C9B84 *manager);
 /* Returns the unsigned 16-bit kind stored in the owner's record. */
 u16 fn_800C9D24(UnkGadgetOwner_800C9CD0 *owner);
 /* Copy the owner's position, its rotation converted from degrees to radians, and its byte at

@@ -347,6 +347,16 @@ Game/Rocket.cpp:
 	.sbss       start:0x805EEC58 end:0x805EEC88
 	.sdata2     start:0x805F3C10 end:0x805F3C70
 
+Game/SavePoint.cpp:
+	.text       start:0x801173F0 end:0x801199EC
+	.ctors      start:0x804A9D38 end:0x804A9D3C
+	.rodata     start:0x804BCCD0 end:0x804BCFE0
+	.data       start:0x80526DF0 end:0x80526FA0
+	.bss        start:0x8057FB00 end:0x8057FB80
+	.sdata      start:0x805E5A70 end:0x805E5AE0
+	.sbss       start:0x805EEC88 end:0x805EECD0
+	.sdata2     start:0x805F3C70 end:0x805F3C90
+
 Game/SecretDoor.cpp:
 	.text       start:0x8011B5D0 end:0x8011BDA4
 	.ctors      start:0x804A9D3C end:0x804A9D40

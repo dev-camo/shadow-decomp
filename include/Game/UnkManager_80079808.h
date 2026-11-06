@@ -4,6 +4,9 @@
 #include <dolphin/types.h>
 #include "layout_check.h"
 
+struct Fn8040Vector3;
+struct UnkRotation3;
+
 /* The state at 0x70C of the object that fn_80079808 returns (placeholder name; the original class
  * is unknown). fn_8016F0CC reads it as 0xC-byte entries of three words; only the two entries that
  * its guard loop walks are mapped and the size is not known. */
@@ -21,11 +24,13 @@ class UnkCounters_8016F5B8 {
 };
 CHECK_SIZEOF(UnkCounters_8016F5B8, 0x18);
 
-/* An entry of the table of 0x4C-byte entries at 0x728 (placeholder name; only the member the
- * attack callback of FallBuildingHolder uses is mapped). */
+/* An entry of the table of 0x4C-byte entries at 0x728 (placeholder name). Only two members are
+ * mapped: the word at 0x28 that fn_8016F280 returns (the SAVEPOINT gadget reads it for entry 0)
+ * and the counters at 0x2C that the attack callback of FallBuildingHolder uses. */
 class UnkEntry_80178B5C {
   public:
-    /* 0x00 */ u8 field_0x0[0x2C];
+    /* 0x00 */ u8 field_0x0[0x28];
+    /* 0x28 */ s32 field_0x28; /* fn_8016F280 returns it */
     /* 0x2C */ UnkCounters_8016F5B8 field_0x2C;
     /* 0x44 */ u8 field_0x44[0x4C - 0x44];
 };
@@ -66,6 +71,23 @@ void fn_8016F5B8(UnkCounters_8016F5B8 *counters, int index, int amount);
 /* Stores the word at 0x90 of the global at 0x8057D6A0 in *value (behaviour inferred from its
  * body). */
 void fn_803357F4(u32 *value);
+/* Returns the word that value points to (behaviour from its body). The SAVEPOINT gadget passes
+ * the word at 0x28 of entry 0 of the table at 0x728. */
+s32 fn_8016F280(const s32 *value);
+/* Returns the vector of entry index of row row (behaviour from its body). The rows start at 0xC
+ * of the manager, 0x380 bytes apart, and hold 32 entries of 0x1C bytes; an entry holds a vector at
+ * 0x0, three rotation floats at 0xC and a flag byte at 0x18. */
+Fn8040Vector3 *fn_8016F344(UnkManager_80079808 *manager, int index, int row);
+/* Returns how many of the 32 entries of the first row have their flag byte set (behaviour from its
+ * body). */
+int fn_8016F3A0(UnkManager_80079808 *manager);
+/* Returns 0 when index is 32 or more. Otherwise stores the word at 0x90 and the float at 0x94 of
+ * lbl_8057D6A0 at 0x4 and 0x8, stores the vector, the three floats of rotation and a set flag
+ * byte in entry index of both rows, raises the word at 0x0 to index when it is lower, and returns 1
+ * (behaviour inferred from its body; the second row's copy also changes the vector's x by an
+ * amount computed from the row number). */
+int fn_8016F3D4(UnkManager_80079808 *manager, const Fn8040Vector3 *position,
+                const UnkRotation3 *rotation, int index);
 }
 
 #endif

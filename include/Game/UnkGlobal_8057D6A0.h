@@ -42,7 +42,11 @@ struct UnkGlobal_8057D6A0 {
     /* 0x18 */ float field_0x18;
     /* 0x1C */ u8 field_0x1C[0x28 - 0x1C];
     /* 0x28 */ float field_0x28; /* Coaster multiplies it by 540 (meaning unknown) */
-    /* 0x2C */ u8 field_0x2C[0x90 - 0x2C];
+    /* 0x2C */ u8 field_0x2C[0x84 - 0x2C];
+    /* While it is set, the SAVEPOINT gadget's CanSave returns false and its PauseWatch task clears
+     * the gadget's flags 0 and 1; fn_801E2EDC clears it (meaning unknown). */
+    /* 0x84 */ u8 field_0x84;
+    /* 0x85 */ u8 field_0x85[0x90 - 0x85];
     /* 0x90 */ u32 field_0x90;
     /* The ELEC_BAR gadget adds it to the times of its bars' cycles, and SpringPanel's colour
      * cycle follows its fractional part (meaning unknown). */

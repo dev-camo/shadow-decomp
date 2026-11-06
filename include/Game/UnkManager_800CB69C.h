@@ -20,6 +20,9 @@ void fn_8016907C(UnkManager_800CB69C *manager, int id, u32 state);
 /* Sets the state of entry id; ignored when there is no table or id is outside 0-255 (behaviour
  * inferred). */
 void fn_801690D0(UnkManager_800CB69C *manager, int id, u32 state);
+/* Sets bit 1 of the flag word of every entry whose bit 0 is set; does nothing when there is no
+ * table (behaviour from its body). */
+void fn_801690F8(UnkManager_800CB69C *manager);
 }
 
 #endif
