@@ -955,9 +955,10 @@ config.libs = [
                 # CMotionPatternRef::Clear as in the original; this order difference also remains.
                 # The full frame update fn_803669B8 has the original's 0x5C0 bytes; twelve instruction
                 # words differ because its member-pointer constants have different offsets.
-                # The callback-list erase now has the original's 0x90 instruction bytes. Its allocator's
-                # destroy body is also represented, under an unpaired name. The callback reference
-                # destructor is 0x18C bytes versus 0x198, and the matrix reference destructor is
+                # The callback-list erase has the original's 0x90 instruction bytes. Its allocator's
+                # destroy body is represented, but the native USA copy keeps the placeholder
+                # fn_80367D3C. The callback-reference destructor is 0x18C bytes versus 0x198;
+                # the matrix-reference destructor is
                 # 0x178 bytes versus 0x184. Both omit three argument moves, with corresponding
                 # register and branch-displacement differences.
                 # The other 111 bodies are not sourced: the scene's Copy, destructor and Draw,
@@ -1641,17 +1642,27 @@ config.libs = [
             # map and owned data. The candidate emits 96 of the 97 native function bodies; the
             # 12-byte tree iterator arrow is represented by its inlined header definition.
             # 92 emitted bodies have identical instruction words. The channel-transfer switch is
-            # 0x338 versus 0x2D0: its iterator and reference arrows are expanded, with 159 differing
-            # positional words and 26 extra words. The constructor differs in its allocation line
-            # (45 versus 51). The callback reference destructor is 0x18C versus 0x198, with 82
+            # 0x338 versus 0x2D0, with 159 differing positional words and 26 extra words. The original
+            # translate-X/Y cases read the pair directly; the other 13 call outlined iterator and
+            # reference arrows. This build expands the arrows in all 15 cases.
+            # The constructor differs in its allocation line (45 versus 51).
+            # The callback reference destructor is 0x18C versus 0x198, with 82
             # differing positional words and three omitted argument moves. The callback-list
             # constructor is 0x50 versus 0x58, with 12 differing positional words: the default
             # node allocator replaces the original conversion from the value allocator.
-            # Listener removal has identical instructions but calls the void-pointer provider
-            # directly because the typed-list wrapper is inlined. Both member pointers, all three
-            # vtable groups and the literal contents are represented; the switch-table addends
-            # differ, and a weak byte-holder vtable shifts the element-data-reference vtable.
-            # Extra weak reference/container copies and their support data are also emitted.
+            # Both member pointers, all three vtable groups and the literal contents are represented.
+            # The switch-table addends differ, and a weak byte-holder vtable shifts the
+            # element-data-reference vtable.
+            # Function order also differs: the map destruction group (__destroy, deallocate,
+            # __node_alloc, allocator destroy and __alloc) follows the tree destructor, ahead of
+            # root(), instead of following fn_8036B9FC. The pair destructor moves into that group
+            # from its original position before ClearHidden. The element-data-reference
+            # destructor follows root(), rather than the node destructor. Map and callback-list
+            # constructors precede Attach/Clear instead of following them. fn_8036B9FC follows Copy
+            # instead of the callback compressed-pair constructors. The two adjustment thunks are
+            # reversed: GetSender precedes the destructor.
+            # Extra weak reference/container copies and their support data are also emitted. A local,
+            # non-weak 0x1C0 delete-policy Assign is reached only by the weak RCPtr<unsigned char>::Reset.
             # Normal links retain the original object in every region.
             Object(NonMatching, "Game/CSD/csdmNode.cpp", cflags=cflags_csd),
             Object(Matching, "Game/fn_80293AC8.cpp", cflags=cflags_game_cpp),
@@ -2046,7 +2057,7 @@ config.libs = [
             # three strings from the unit's .rodata base: the original's .rodata has two blocks of
             # zero bytes, 0x1C after the TNumEdit type names and 0xC after the CharaColliBase name,
             # that this object does not have, which moves "PR0302RINGANM" and "Scene_0000" by 0x28;
-            # "csdBase.h" now moves by 0x28 as well: the shared reference destructor emits the
+            # "csdBase.h" is also 0x28 earlier: the shared reference destructor emits the
             # original's 0x20-byte deallocation error string. Model 1's hit callback differs in 13 words:
             # the difference vector, the launch position and the direction take other 12-byte stack
             # slots (the original's order fits the difference and the turned direction being
@@ -2058,7 +2069,8 @@ config.libs = [
             # those template members without bodies). This object has type records, base lists and
             # weak and local copies that the original unit does not have (TNumEdit, CharaColliBase,
             # std::exception, boost::bad_weak_ptr, sp_counted_base, the boost placeholders _2 to
-            # _9).
+            # _9). It also emits weak copies of the 0x18C RCPtr<CScene> destructor and
+            # CMemoryAlloc::FreeObject.
             Object(NonMatching, "Game/Gong.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ShootingGameBalloon.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ShootingGameManagerTask.cpp", cflags=cflags_game_cpp),
