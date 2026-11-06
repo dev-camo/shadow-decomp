@@ -51,6 +51,10 @@ boost::weak_ptr<UnkObject_80169BB0> fn_8034DEE4(int kind, int arg1);
  * understood). The ELEC_CORE gadget passes 9 and -2 at its character info's position when it
  * breaks and discards the result. */
 boost::weak_ptr<UnkObject_80169BB0> fn_8034DE08(int kind, const Fn8040Vector3 *position, int arg2);
+/* Attempts to create an object of the given kind at position: forwards to fn_8034DE08 with -2 as
+ * its last argument (behaviour inferred from the 0x30-byte wrapper). The RAIL SWITCH gadget passes
+ * 9 at its character info's position when an attack toggles it and discards the result. */
+boost::weak_ptr<UnkObject_80169BB0> fn_80169B80(int kind, const Fn8040Vector3 *position);
 }
 
 #endif

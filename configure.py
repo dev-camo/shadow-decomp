@@ -2141,6 +2141,7 @@ config.libs = [
             # DrawDebugMarker 10 (the original loads the startup radius before it saves the
             # registers).
             Object(NonMatching, "Game/DebugMissionClearCollision.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/RailSwitch.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DarkSpinEntrance.cpp", cflags=cflags_game_cpp),
             # Constructor (22 words) and UpdateBody (6 words): the two startup floats load later
             # than in the original (const floats with a dynamic initialiser reproduce both loads).
