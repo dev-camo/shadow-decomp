@@ -67,6 +67,11 @@ template <class Key, class Value, class Compare, class Allocator> class __tree {
             fn_80012E90(node_);
             return *this;
         }
+        iterator operator++(int) {
+            iterator previous(*this);
+            fn_80012E90(node_);
+            return previous;
+        }
         bool operator==(const iterator &x) const {
             return node_ == x.node_;
         }

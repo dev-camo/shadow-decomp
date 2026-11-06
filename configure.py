@@ -1617,15 +1617,15 @@ config.libs = [
             # The complete node source, including its constructor, destructor, callbacks, channel
             # map and owned data. The candidate emits 96 of the 97 native function bodies; the
             # 12-byte tree iterator arrow is represented by its inlined header definition.
-            # 92 emitted bodies have identical instruction words. The channel-transfer switch is
+            # 93 emitted bodies have identical instruction words. The channel-transfer switch is
             # 0x338 versus 0x2D0, with 159 differing positional words and 26 extra words. The original
             # translate-X/Y cases read the pair directly; the other 13 call outlined iterator and
             # reference arrows. This build expands the arrows in all 15 cases.
             # The constructor differs in its allocation line (45 versus 51).
             # The callback reference destructor is 0x18C versus 0x198, with 82
-            # differing positional words and three omitted argument moves. The callback-list
-            # constructor is 0x50 versus 0x58, with 12 differing positional words: the default
-            # node allocator replaces the original conversion from the value allocator.
+            # differing positional words and three omitted argument moves. The object also emits
+            # a 0x20-byte weak typed-pointer remove copy; its native definition is in Scene
+            # at 0x803655D0 in USA (GUPE8P).
             # Both member pointers, all three vtable groups and the literal contents are represented.
             # The switch-table addends differ, and a weak byte-holder vtable shifts the
             # element-data-reference vtable.
@@ -2029,19 +2029,13 @@ config.libs = [
             # here and the shared metadata remains in the original data.
             Object(NonMatching, "Game/FleetHolder.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PowerDeviceNaked.cpp", cflags=cflags_game_cpp),
-            # 94 of the original's 95 functions have identical instruction words and relocation
-            # types; their calls to std::vector<u32>'s members go to the named copies at
-            # 0x800CC35C-0x800CE48C (USA), and insert holds the new node in a node holder whose 13
-            # functions (0x800D72B8-0x800D7510) the original has too. The std::list constructor is
-            # 2 words short (the original calls the size's allocator accessor before building the
-            # node allocator; see the note in <list>). By contents, with the linker-discarded weak
-            # and local copies set aside, all of the original's .rodata, .data (relocation places
-            # and other bytes; the original keeps zeros where discarded weak vtables were), .sdata
-            # and .sdata2 contents are present, and insert addresses a 1-byte .sbss object as the
-            # original's does (0x805EE7D4). The object also defines the boost placeholders _2 to
-            # _9, which a source-enabled link leaves unused, and, when such a link selects this
-            # object's std::vector<u32> members, adds the vector length-error strings they
-            # reference.
+            # All 95 functions have identical instruction words and relocation types. Selecting
+            # this source produces the original DOL in all three regions, but ELF validation still
+            # requires native zero-filled .data labels absent from the final symbol table. In USA
+            # (GUPE8P), lbl_80523550 spans 12 zero bytes: the source's weak SetAdapterState vtable
+            # is selected elsewhere, leaving the same zero hole without a symbol at that address.
+            # The data-symbol and discarded-copy correspondence is not fully verified, so the unit
+            # retains its original-object fallback.
             Object(NonMatching, "Game/RollCircle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/FireRing.cpp", cflags=cflags_game_cpp),
             # 48 of the 49 functions have identical instructions and relocations. With the
@@ -2071,17 +2065,16 @@ config.libs = [
             Object(Matching, "Game/BombingWall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BombServer.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Researcher.cpp", cflags=cflags_game_cpp),
-            # 215 of the 219 functions have identical instructions and relocations once the weak and
+            # 216 of the 219 functions have identical instructions and relocations once the weak and
             # local copies that the linker discards are removed. The static initialiser differs in 5
             # words: two registers swapped and the three roll velocities addressed from the start of
-            # .bss here, 0x3C bytes after it in the original (see below). The constructor of the
-            # stone list's implementation differs in 14 words (22 against 20): the original also
-            # calls __alloc() to build the node allocator (see the note in <list>).
+            # .bss here, 0x3C bytes after it in the original (see below).
             # StonePole::CreateStones (5 words) and StonePole::Update (3 words) load a stone kind
             # from the step table differently: the original adds the step offset to the holder's
             # address and loads at 0x50 from it, this source adds 0x50 to the offset and uses an
             # indexed load (in CreateStones the argument set-up around it is also ordered
-            # differently). 27 raw differing words. The data match by contents (the original
+            # differently). These three bodies have 13 differing positional words in total.
+            # The data match by contents (the original
             # object's absent copies set aside) with two differences: .sdata2 holds 0.0001 before 1
             # and 70 in the original and after them here (3 words in a different order; the cause is
             # not established), and the original's .bss starts with 0x3C bytes that no code
