@@ -67,6 +67,11 @@ class VacuumObject {
     Fn8040Vector3 fn_802382B0();
     /* Returns the rotation that fn_80238268 stores (behaviour inferred from its body). */
     UnkRotation3 fn_80238248();
+    /* Returns 1 minus the length of the vector at 0x48 of the object at 0x4 divided by that
+     * object's float at 0x68 (behaviour from its body; the meaning of both values is unknown; the
+     * member form is inferred from its use of the object at 0x4, the float result from the
+     * caller's use of f1). Balloon::VacuumBalloon clamps it to [0, 1] to shrink its model. */
+    float fn_8023800C();
 
     /* The constructor's 0x84-byte object. A scoped_ptr: VacuumObject's destructor destroys it with
      * 0x802383B4, which passes the pointer to boost's checked_delete (0x80238400), and some of
@@ -93,5 +98,10 @@ extern "C" {
  * and hands the result to VacuumObject's constructor. */
 int fn_80237EDC(VacuumCommand *command);
 }
+
+/* The float 3.5 at the start of the .sdata2 of VacuumObject's file (purpose unknown). The BALLOON
+ * gadget divides it by 15 for the scale its VacuumBalloon shrinks to; the static initialisers at
+ * 0x80254E64, 0x802F6320 and 0x8033FB8C (.ctors entries) read it too. */
+extern const float lbl_805F72B0;
 
 #endif
