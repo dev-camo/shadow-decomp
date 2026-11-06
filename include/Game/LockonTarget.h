@@ -5,9 +5,7 @@
 #include <dolphin/types.h>
 #include "layout_check.h"
 
-/* The object that a lock-on target's weak pointer refers to (placeholder name: the original class
- * is unknown). */
-class UnkLockonObject_8005FDF4;
+class Target;
 
 namespace Weapon {
 
@@ -22,13 +20,14 @@ class LockonTarget {
     LockonTarget();
     ~LockonTarget();
 
-    /* Assigns object to field_0x0 (behaviour inferred from its body). */
-    void fn_80061054(const boost::weak_ptr<UnkLockonObject_8005FDF4> &object);
+    /* Assigns object to field_0x0 (behaviour inferred from its body; the const reference is
+     * inferred, as the bytes do not distinguish it from a pointer). */
+    void fn_80061054(const boost::weak_ptr<Target> &object);
     /* Creates the Weapon::LockonMark task (fn_80061E68), which stores itself in field_0x8
      * (behaviour inferred). */
     void fn_80060F70();
 
-    /* 0x0 */ boost::weak_ptr<UnkLockonObject_8005FDF4> field_0x0;
+    /* 0x0 */ boost::weak_ptr<Target> field_0x0;
     /* The mark that fn_80060F70 creates stores itself here; the constructor clears it. */
     /* 0x8 */ LockonMark *field_0x8;
 };

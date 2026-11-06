@@ -23,12 +23,11 @@ using SonicteamUSA::System::CharaColli::AttackCallbackParam;
 using SonicteamUSA::System::CharaColli::CharaColliAttack;
 
 /* The object at 0x24C of the character (placeholder name; the original class is unknown).
- * fn_80206574 returns a weak pointer to the UnkLockonObject_8005FDF4 that it holds at 0xC (see
- * LockonTarget.h). */
+ * fn_80206574 returns a weak pointer to the Target that it holds at 0xC (see LockonTarget.h). */
 class UnkTargetSource_80206574 {
   public:
     /* Returns a weak pointer built from the member at 0xC (fn_80206598; behaviour inferred). */
-    boost::weak_ptr<UnkLockonObject_8005FDF4> fn_80206574();
+    boost::weak_ptr<Target> fn_80206574();
 };
 
 /* The object that fn_80095388 returns (placeholder name; the original class is unknown). Only the
