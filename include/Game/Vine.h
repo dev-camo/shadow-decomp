@@ -5,7 +5,6 @@
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
-#include "Game/LockonTarget.h"
 #include "Game/Target.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
 #include "Game/UnkTarget_80166AF4.h"
@@ -140,7 +139,7 @@ class Vine : public Gadget {
     /* 0x8C */ MotionSequenceModule *m_sequences[2];
     /* 0x94 */ boost::weak_ptr<CharInfo> m_targetInfo;
     /* Constructed and destroyed with the gadget; no code here reads or writes it. */
-    /* 0x9C */ boost::weak_ptr<UnkLockonObject_8005FDF4> field_0x9C;
+    /* 0x9C */ boost::weak_ptr<Target> field_0x9C;
     /* 0xA4 */ s32 m_state;
     /* 0 when a state is entered, 1 once it has started; the state functions also have an empty
      * case for 2, which nothing here sets. */
