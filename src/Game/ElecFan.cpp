@@ -14,7 +14,7 @@
 #include "Game/PlayerBase.h"
 #include "Game/PlayerCommands.h"
 #include "Game/SharedConstants.h"
-#include "Game/UnkCharInfo_800999C0.h"
+#include "Game/Player.h"
 #include "Game/UnkGlobal_8057D6A0.h"
 #include "Game/UnkManager_800CB69C.h"
 #include "Game/UnkResource_80012700.h"

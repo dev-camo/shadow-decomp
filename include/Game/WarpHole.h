@@ -7,7 +7,7 @@
 #include "Game/GadgetCharInfo.h"
 #include "Game/Task.h"
 #include "Game/UnkBitFlags_80014E04.h"
-#include "Game/UnkCharInfo_800999C0.h"
+#include "Game/Player.h"
 #include "Game/UnkHandleBTarget_8015BE64.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/shared_ptr.hpp"
@@ -55,7 +55,7 @@ class ManagerTask : public Task {
      * passes the object of fn_800BADE8 to fn_801E2F28 and fn_801E2EDC and clears its field_0x30,
      * and clears bit 1 of m_warpFlags. It calls through user without testing it. */
     ManagerTask(Task *parent, const Fn8040Vector3 &position,
-                const boost::shared_ptr<UnkCharInfo_800999C0> &user, int comId);
+                const boost::shared_ptr<Player::Player> &user, int comId);
     /* Clears the table entry when bit 0 of m_warpFlags is set; unless the word at 0x8 of
      * fn_80074470's manager is 6, passes false to fn_80203970 when fn_802E5810 is true (USA) or
      * when fn_80342284 does not return 1 (Japan and PAL); then sets field_0x30 of the object of
@@ -86,14 +86,14 @@ class ManagerTask : public Task {
      * passes -1 as the com id, so that the task uses no entry of the table. The position and the
      * user are taken by reference (inferred: the bytes pass addresses). */
     static void Create(const Fn8040Vector3 &position,
-                       const boost::shared_ptr<UnkCharInfo_800999C0> &user);
-    static void Create(const Fn8040Vector3 &position,
-                       const boost::shared_ptr<UnkCharInfo_800999C0> &user, int comId);
+                       const boost::shared_ptr<Player::Player> &user);
+    static void Create(const Fn8040Vector3 &position, const boost::shared_ptr<Player::Player> &user,
+                       int comId);
 
     static const char *s_name;
 
     /* 0x28 */ Fn8040Vector3 m_position; /* where the character is placed */
-    /* 0x34 */ boost::weak_ptr<UnkCharInfo_800999C0> m_user;
+    /* 0x34 */ boost::weak_ptr<Player::Player> m_user;
     /* The com id whose table entry the task sets when it is 0 or more. */
     /* 0x3C */ s32 m_comId;
     /* Counts the updates in state 2; state 1 sets it to 0, the constructor leaves it unset. */
@@ -125,7 +125,7 @@ CHECK_SIZEOF(WarpHole::UnkPartnerSearch_8012A028, 0x24);
  * hole with effect 0xE1 and a sphere probe of radius 20 (through a handle target) at the owner's
  * position. On a UseCommand (command id 0xD) in state 3, when its user still exists, it looks for
  * another owner of kind 0x1F with the same com id and, when it finds one and the user's character
- * info casts (dynamic_cast) to UnkCharInfo_800999C0, creates a ManagerTask that moves the user to
+ * info casts (dynamic_cast) to Player::Player, creates a ManagerTask that moves the user to
  * that owner's position (behaviour inferred). Member names and the names of the non-virtual
  * methods are inferred. */
 class SetWarpHole : public Gadget {

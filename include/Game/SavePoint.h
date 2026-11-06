@@ -59,7 +59,7 @@ class SavePoint : public Gadget {
     /* The SavePointSelectTask's first callback. When the argument's word is not -1, it copies the
      * vector that fn_8016F344 returns for that index in row 0 and, when the character info that
      * fn_800A8B74 returns for lbl_805EE588 is alive, passes the vector and that info cast to
-     * UnkCharInfo_800999C0 (an empty pointer when the cast fails) to WarpHole::ManagerTask::Create,
+     * Player::Player (an empty pointer when the cast fails) to WarpHole::ManagerTask::Create,
      * which creates a task that moves that character to the vector. The cast result is not
      * checked: the call at 0x80117738 receives it as it is, and when the task's allocation succeeds
      * its constructor dereferences it (0x80129D28): when the cast has failed, that dereferences

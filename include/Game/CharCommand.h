@@ -34,7 +34,7 @@ class PlayerCommand : public CharCommand {
     PlayerCommand(int id, int arg1);
     virtual ~PlayerCommand();
 };
-CHECK_SIZEOF(Player::PlayerCommand, 0x14);
+CHECK_SIZEOF(PlayerCommand, 0x14);
 
 } // namespace Player
 

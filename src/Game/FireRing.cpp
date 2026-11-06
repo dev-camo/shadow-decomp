@@ -13,7 +13,7 @@
 #include "Game/FireRing.h"
 #include "Game/CharInfo.h"
 #include "Game/GadgetTypeInfo.h"
-#include "Game/UnkCharInfo_800999C0.h"
+#include "Game/Player.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/UnkWorld_80021B08.h"
 #include "Game/fn_80136B5C.h"

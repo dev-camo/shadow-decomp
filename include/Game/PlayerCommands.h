@@ -212,7 +212,7 @@ class IgnoreInputCommand : public PlayerCommand {
     /* 0x18 */ u32 field_0x18;
     /* 0x1C */ int m_arg0;
 };
-CHECK_SIZEOF(Player::IgnoreInputCommand, 0x20);
+CHECK_SIZEOF(IgnoreInputCommand, 0x20);
 
 /* Launches the player (the first argument is stored at 0x14; its meaning is unknown). */
 class LaunchCommand : public PlayerCommand {
@@ -222,7 +222,7 @@ class LaunchCommand : public PlayerCommand {
 
     /* 0x14 */ int m_arg0;
 };
-CHECK_SIZEOF(Player::LaunchCommand, 0x18);
+CHECK_SIZEOF(LaunchCommand, 0x18);
 
 /* The constructor at 0x8009AD8C passes 0x122 as the command id and stores arg0 at 0x14, widened
  * to a word. The ElecFan gadget sends it with true when it starts to blow a character info and
@@ -234,7 +234,7 @@ class StreamCommand : public PlayerCommand {
 
     /* 0x14 */ int m_arg0;
 };
-CHECK_SIZEOF(Player::StreamCommand, 0x18);
+CHECK_SIZEOF(StreamCommand, 0x18);
 
 /* The command that the Coaster gadget sends to the character it carries. The constructor
  * passes 0x112 as the command id and arg4 as the base constructor's second argument, stores a
@@ -258,7 +258,7 @@ class TouchHangCommand : public PlayerCommand {
     /* 0x20 */ const UnkRotation3 *field_0x20;
     /* 0x24 */ int field_0x24;
 };
-CHECK_SIZEOF(Player::TouchHangCommand, 0x28);
+CHECK_SIZEOF(TouchHangCommand, 0x28);
 
 /* The command that the SET_WEAPON gadget sends to the character that takes its weapon (id 0x11A).
  * The constructor (0x8011F478, in the SET_WEAPON gadget's file) passes 0x11A and arg2 to the base
@@ -272,7 +272,7 @@ class AddWeaponCommand : public PlayerCommand {
     /* 0x14 */ int m_weaponType;
     /* 0x18 */ int field_0x18;
 };
-CHECK_SIZEOF(Player::AddWeaponCommand, 0x1C);
+CHECK_SIZEOF(AddWeaponCommand, 0x1C);
 
 /* The constructor at 0x80099BFC passes 0x134 as the command id and 4 to the base constructor,
  * stores the float at 0x14 and copy-constructs the vector at 0x18. The vector is passed
@@ -287,7 +287,7 @@ class ActingAccelerateCommand : public PlayerCommand {
     /* 0x14 */ float m_seconds;
     /* 0x18 */ Fn8040Vector3 m_vector;
 };
-CHECK_SIZEOF(Player::ActingAccelerateCommand, 0x24);
+CHECK_SIZEOF(ActingAccelerateCommand, 0x24);
 
 /* The constructor at 0x8009A1E0 passes 0x12E as the command id and its argument to the base
  * constructor; it stores nothing else. */
@@ -296,7 +296,7 @@ class PressGroundCommand : public PlayerCommand {
     PressGroundCommand(int arg1);
     virtual ~PressGroundCommand();
 };
-CHECK_SIZEOF(Player::PressGroundCommand, 0x14);
+CHECK_SIZEOF(PressGroundCommand, 0x14);
 
 /* The command with the id 0x101. Its destructor (0x8009DBB4) and vtable are defined elsewhere; the
  * constructor passes 0x101 and its argument to the base constructor and is defined in
@@ -307,7 +307,7 @@ class CancelBehaviorCommand : public PlayerCommand {
     CancelBehaviorCommand(int arg1);
     virtual ~CancelBehaviorCommand();
 };
-CHECK_SIZEOF(Player::CancelBehaviorCommand, 0x14);
+CHECK_SIZEOF(CancelBehaviorCommand, 0x14);
 
 /* The command with the id 0x12B (class name from the RTTI of its vtable at 0x80520F74); the
  * destructor and the vtable are elsewhere. The first constructor below passes 0x12B and arg4 to the
@@ -334,7 +334,7 @@ class StartExternalControlCommand : public PlayerCommand {
     /* 0x20 */ const UnkRotation3 *m_angles;
     /* 0x24 */ int field_0x24;
 };
-CHECK_SIZEOF(Player::StartExternalControlCommand, 0x28);
+CHECK_SIZEOF(StartExternalControlCommand, 0x28);
 
 /* The command with the id 0x129 (class name from the RTTI of its vtable at 0x80520FCC). The
  * constructor at 0x8009E880 passes 0x129 and arg2 to the base constructor and stores arg0 at 0x14
@@ -349,7 +349,7 @@ class SetMotionCommand : public PlayerCommand {
     /* 0x14 */ int field_0x14;
     /* 0x18 */ float field_0x18;
 };
-CHECK_SIZEOF(Player::SetMotionCommand, 0x1C);
+CHECK_SIZEOF(SetMotionCommand, 0x1C);
 
 namespace Npc {
 
@@ -372,7 +372,7 @@ class EndExternalControlCommand : public PlayerCommand {
     EndExternalControlCommand(int arg1);
     virtual ~EndExternalControlCommand();
 };
-CHECK_SIZEOF(Player::EndExternalControlCommand, 0x14);
+CHECK_SIZEOF(EndExternalControlCommand, 0x14);
 
 /* The constructor at 0x8010DFD0 passes 0x10B as the command id and arg1 to the base constructor and
  * copy-constructs the vector at 0x14. The vector is taken by const reference (inferred):
@@ -384,7 +384,7 @@ class HomingJumpCommand : public PlayerCommand {
 
     /* 0x14 */ Fn8040Vector3 m_vector;
 };
-CHECK_SIZEOF(Player::HomingJumpCommand, 0x20);
+CHECK_SIZEOF(HomingJumpCommand, 0x20);
 
 } // namespace Player
 
@@ -418,7 +418,7 @@ class TouchLineCommand : public PlayerCommand {
     /* 0x14 */ boost::weak_ptr<CharInfo> m_charInfo;
     /* 0x1C */ boost::weak_ptr<UnkSegment_80020A20> m_line;
 };
-CHECK_SIZEOF(Player::TouchLineCommand, 0x24);
+CHECK_SIZEOF(TouchLineCommand, 0x24);
 
 /* The constructor at 0x80079484 passes 0x106 as the command id and its argument to the base
  * constructor; it stores nothing else. The ELEC_BAR gadget's bars send it with 4 to their rider
@@ -428,7 +428,7 @@ class StartActionCommand : public PlayerCommand {
     StartActionCommand(int arg1);
     virtual ~StartActionCommand();
 };
-CHECK_SIZEOF(Player::StartActionCommand, 0x14);
+CHECK_SIZEOF(StartActionCommand, 0x14);
 
 /* The command with the id 0x126 (class name from the RTTI of its vtable at 0x80521024); the
  * destructor and the vtable are elsewhere. The constructor, defined in Tornado.cpp, passes 0x126
@@ -442,7 +442,7 @@ class InvincibleCommand : public PlayerCommand {
 
     /* 0x14 */ bool m_enable;
 };
-CHECK_SIZEOF(Player::InvincibleCommand, 0x18);
+CHECK_SIZEOF(InvincibleCommand, 0x18);
 
 } // namespace Player
 

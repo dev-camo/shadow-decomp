@@ -16,7 +16,7 @@
 #include "Game/ElecCircuitColli.h"
 #include "Game/CharInfo.h"
 #include "Game/GadgetTypeInfo.h"
-#include "Game/UnkCharInfo_800999C0.h"
+#include "Game/Player.h"
 #include "Game/UnkWorld_80021B08.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/bind.hpp"
