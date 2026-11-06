@@ -972,6 +972,14 @@ Game/ElecRollHexa.cpp:
 	.sbss       start:0x805F00D0 end:0x805F00E0
 	.sdata2     start:0x805F7CB0 end:0x805F7CE8
 
+Game/WatchCamera.cpp:
+	.text       start:0x80267D34 end:0x8026A6F0
+	.rodata     start:0x804F5F30 end:0x804F62D0
+	.data       start:0x8054C310 end:0x8054C658
+	.sdata      start:0x805EA7D8 end:0x805EA830
+	.sbss       start:0x805F00E0 end:0x805F0108
+	.sdata2     start:0x805F7CE8 end:0x805F7D78
+
 Game/SpaceGadget.cpp:
 	.text       start:0x8026A6F0 end:0x8026B3B0
 	.rodata     start:0x804F62D0 end:0x804F63F8

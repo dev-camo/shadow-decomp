@@ -106,6 +106,13 @@ extern "C" {
 /* Creates a camera mode user (behaviour inferred: fn_8026F6A4 creates a camera mode, which is
  * converted with a dynamic cast; the numbers are not understood). */
 boost::shared_ptr<SonicteamUSA::System::Camera::CameraModeUser> fn_80009704(int arg0, int arg1);
+/* Pass the camera mode to fn_8000A5D4 with a new first point and the mode's own vector at 0xC as
+ * the second (fn_8000DB78), or with the mode's own vector at 0x0 as the first point and a new
+ * second (fn_8000DB50) (behaviour from their bodies; the const pointer spellings are inferred).
+ * The WATCH CAMERA gadget passes its position to the first and the point it looks at to the
+ * second. */
+void fn_8000DB78(SonicteamUSA::System::Camera::CameraModeUser *mode, const Fn8040Vector3 *start);
+void fn_8000DB50(SonicteamUSA::System::Camera::CameraModeUser *mode, const Fn8040Vector3 *end);
 }
 
 #endif
