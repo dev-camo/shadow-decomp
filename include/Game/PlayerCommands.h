@@ -15,9 +15,10 @@ class UnkLockonObject_8005FDF4;
  * by gadgets. The constructors and destructors are defined elsewhere, together with the vtables,
  * except the constructors of CancelBehaviorCommand, AddWeaponCommand, SetVelocityCommand,
  * IgnoreInputCommand(int, float), InvincibleCommand, SwitchCommand and Player::HomingJumpCommand
- * (ItemBox.cpp), which gadget files define, and the constructor of
- * Player::StartExternalControlCommand, which is defined in its class here (see the classes); the
- * argument meanings are inferred from the stores in the constructors.
+ * (ItemBox.cpp), which gadget files define, and the constructors of
+ * Player::StartExternalControlCommand and Player::TouchHangCommand, which are defined in their
+ * classes here (see the classes); the argument meanings are inferred from the stores in the
+ * constructors.
  * SetPositionCommand, SetVelocityCommand and LaunchCommand pass their last argument to the base
  * constructor as its second argument, and ClrVelocityCommand its only argument;
  * IgnoreInputCommand passes 0. Most callers pass 4 there (0 and 2 also occur). */
@@ -95,6 +96,9 @@ CHECK_SIZEOF(AccelerateCommand, 0x20);
  * inferred: the character that uses the target). */
 class UseCommand : public CharCommand {
   public:
+    /* The second constructor (0x801DB480; the const reference is inferred). The ROCKET gadget's
+     * rocket sends it to its base's character info with its own character info as user. */
+    UseCommand(const boost::weak_ptr<CharInfo> &user);
     /* Defined elsewhere (0x801DC484): destroys the weak pointers at 0x1C and 0x14 and releases
      * the command through fn_801D9C64 with the size 0x24 (behaviour inferred from the bytes). */
     virtual ~UseCommand();
@@ -224,16 +228,21 @@ class StreamCommand : public PlayerCommand {
 };
 CHECK_SIZEOF(Player::StreamCommand, 0x18);
 
-/* The command that the Coaster gadget sends to the character it carries. The constructor at
- * 0x80115B70 passes 0x112 as the command id, stores a copy of target at 0x14, the two vector
- * pointers at 0x1C and 0x20 and arg3 at 0x24; the meaning of the vectors and numbers is not
- * known (the Coaster gadget passes its position and the angles of its turned matrix). Passing
- * target by value is inferred: the constructor only copies it and the caller destroys the
+/* The command that the Coaster gadget sends to the character it carries. The constructor
+ * passes 0x112 as the command id and arg4 as the base constructor's second argument, stores a
+ * copy of target at 0x14, the two vector pointers at 0x1C and 0x20 and arg3 at 0x24; the meaning
+ * of the vectors and numbers is not known (the Coaster gadget passes its position and the angles
+ * of its turned matrix). The constructor is defined in the class: its only copy (0x80115B70) is
+ * emitted after the ROCKET gadget's collision callback, the last function in that file to
+ * construct one; the Coaster and UD_REEL gadgets, which come later in the link, call that copy.
+ * Passing target by value is inferred: the constructor only copies it and the caller destroys the
  * temporary, which a const reference would also produce. */
 class TouchHangCommand : public PlayerCommand {
   public:
     TouchHangCommand(boost::weak_ptr<CharInfo> target, const Fn8040Vector3 *position,
-                     const UnkRotation3 *angles, int arg3, int arg4);
+                     const UnkRotation3 *angles, int arg3, int arg4)
+        : PlayerCommand(0x112, arg4), m_target(target), field_0x1C(position), field_0x20(angles),
+          field_0x24(arg3) {}
     virtual ~TouchHangCommand();
 
     /* 0x14 */ boost::weak_ptr<CharInfo> m_target;
@@ -480,5 +489,21 @@ class ScoreCommand : public CharCommand {
     /* 0x24 */ int field_0x24;
 };
 CHECK_SIZEOF(ScoreCommand, 0x28);
+
+/* ReadyCommand (class name from the RTTI of its vtable at 0x8053D350, with CharCommand as its
+ * only base). Its constructor (0x801DB3C0) passes id 0xE and 4 to the base constructor and copies
+ * a weak pointer to a character info to 0x14; the objects are 0x1C bytes. The ROCKET gadget's
+ * rocket sends it to its base's character info, with its own character info, when its flight
+ * ends (a base in its launched state then builds the next rocket; meaning of the name inferred
+ * from that use). The const reference is inferred. */
+class ReadyCommand : public CharCommand {
+  public:
+    ReadyCommand(const boost::weak_ptr<CharInfo> &sender);
+    /* Defined elsewhere (0x801DC418). */
+    virtual ~ReadyCommand();
+
+    /* 0x14 */ boost::weak_ptr<CharInfo> m_sender;
+};
+CHECK_SIZEOF(ReadyCommand, 0x1C);
 
 #endif
