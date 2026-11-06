@@ -601,4 +601,34 @@ class RecoverCommand : public CharCommand {
 };
 CHECK_SIZEOF(RecoverCommand, 0x20);
 
+/* BindCommand (class name from the RTTI of its vtable at 0x8053D1A0, with CharCommand as its only
+ * base); the constructor, the destructor and the vtable are elsewhere. The constructor
+ * (0x801DA984) passes id 0x1A and 4 to the base constructor and copies a weak pointer to a
+ * character info to 0x14; the CAGE gadget allocates 0x1C bytes and passes its own character
+ * info. The const reference and the member name are inferred. */
+class BindCommand : public CharCommand {
+  public:
+    BindCommand(const boost::weak_ptr<CharInfo> &sender);
+    /* Defined elsewhere (0x801DBF9C). */
+    virtual ~BindCommand();
+
+    /* 0x14 */ boost::weak_ptr<CharInfo> m_sender;
+};
+CHECK_SIZEOF(BindCommand, 0x1C);
+
+/* ReleaseCommand (class name from the RTTI of its vtable at 0x8053D17C, with CharCommand as its
+ * only base); the constructor, the destructor and the vtable are elsewhere. The constructor
+ * (0x801DA928) passes id 0x1B and 4 to the base constructor and copies a weak pointer to a
+ * character info to 0x14; the CAGE gadget allocates 0x1C bytes and passes its own character
+ * info. The const reference and the member name are inferred. */
+class ReleaseCommand : public CharCommand {
+  public:
+    ReleaseCommand(const boost::weak_ptr<CharInfo> &sender);
+    /* Defined elsewhere (0x801DBF30). */
+    virtual ~ReleaseCommand();
+
+    /* 0x14 */ boost::weak_ptr<CharInfo> m_sender;
+};
+CHECK_SIZEOF(ReleaseCommand, 0x1C);
+
 #endif

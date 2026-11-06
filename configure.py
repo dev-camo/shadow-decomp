@@ -1687,6 +1687,9 @@ config.libs = [
             # The constructor retains inlining differences; UpdateBody lacks one switch branch.
             Object(NonMatching, "Game/fn_800E59F8.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BreakObj.cpp", cflags=cflags_game_cpp),
+            # UpdateBody lacks one branch of the state switch: the original's compare tree has an
+            # extra blt.
+            Object(NonMatching, "Game/Cage.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A1FA0.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A35AC.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A4430.cpp", cflags=cflags_game_cpp),

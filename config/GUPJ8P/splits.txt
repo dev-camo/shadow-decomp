@@ -195,6 +195,16 @@ Game/BreakObj.cpp:
 	.sbss       start:0x805EEF68 end:0x805EEF78
 	.sdata2     start:0x805F3BC0 end:0x805F3BE8
 
+Game/Cage.cpp:
+	.text       start:0x800F2578 end:0x800F3830
+	.ctors      start:0x804AA364 end:0x804AA368
+	.rodata     start:0x804BA028 end:0x804BA0F0
+	.data       start:0x80525598 end:0x805256D0
+	.bss        start:0x80580078 end:0x805800A0
+	.sdata      start:0x805E5A58 end:0x805E5A80
+	.sbss       start:0x805EEF78 end:0x805EEF88
+	.sdata2     start:0x805F3BE8 end:0x805F3C40
+
 Game/CatchStick.cpp:
 	.text       start:0x800F4EB0 end:0x800F687C
 	.rodata     start:0x804BA340 end:0x804BA608
