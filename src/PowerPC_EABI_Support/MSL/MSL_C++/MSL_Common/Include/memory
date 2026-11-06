@@ -128,6 +128,7 @@ template <class T> class allocator {
     typedef T *pointer;
 
     allocator() {}
+    template <class U> allocator(const allocator<U> &) {}
 
     template <class U> struct rebind {
         typedef allocator<U> other;

@@ -143,9 +143,8 @@ template <class T, class Allocator = allocator<T> > class list;
  * node allocator with the sentinel node, as in the tree of <map>: erase destroys values through
  * the allocator at 0x0 and frees nodes through the one at 0x4, and insert allocates nodes through
  * the one at 0x4. The names __list_obj_imp and __list_obj are placeholders. */
-/* Only the default allocator is supported by the list of objects for now (placeholder name): its
- * node allocator is default-constructed, which is only correct for a stateless allocator. Any
- * other allocator leaves the type below undefined and fails to compile. */
+/* Only the default allocator is supported by the list of objects for now. Other allocators leave
+ * the type below undefined; their layout and state propagation have not been recovered. */
 template <class Allocator, class T> struct __list_obj_default_allocator;
 template <class T> struct __list_obj_default_allocator<allocator<T>, T> {
     typedef int type;
@@ -248,15 +247,9 @@ template <class T, class Allocator> class __list_obj_imp {
     __compressed_pair<__list_node_base, node_allocator> tail_;
 };
 
-/* The game's copy (0x800DC2B0 in the USA release) also calls __alloc() before it constructs
- * tail_, two instructions more than here: it builds the node allocator from the value allocator
- * with the allocator's converting constructor, which the allocator of <memory> has no declaration
- * of yet. Adding it is left to a change of its own, since it renumbers the compiler's @N labels in
- * many files that include <memory> (93 objects measured). Until then the node allocator, the value allocator rebound to
- * the node type, is default-constructed rather than converted, and only the default allocator is
- * accepted (see __list_obj_default_allocator). */
+/* The node allocator is converted from the value allocator before the sentinel is initialized. */
 template <class T, class Allocator>
-__list_obj_imp<T, Allocator>::__list_obj_imp() : size_(0), tail_(node_allocator()) {
+__list_obj_imp<T, Allocator>::__list_obj_imp() : size_(0), tail_(node_allocator(__alloc())) {
     __list_node_base *t = __tail();
     t->prev_ = t->next_ = t;
 }
@@ -378,6 +371,11 @@ class list<T *, Allocator> : private list<void *, allocator<void *> > {
         return iterator(base::erase(position));
     }
 };
+
+/* Out of class to retain the typed call and separate copy seen in the original. */
+template <class T, class Allocator> void list<T *, Allocator>::remove(T *const &x) {
+    base::remove(x);
+}
 
 } // namespace std
 
