@@ -178,6 +178,14 @@ Game/fn_800E59F8.cpp:
 	.sdata      start:0x805E5818 end:0x805E5838
 	.sdata2     start:0x805F3A08 end:0x805F3A40
 
+Game/BreakObj.cpp:
+	.text       start:0x800F16F8 end:0x800F2578
+	.rodata     start:0x804B9F20 end:0x804BA028
+	.data       start:0x805254C8 end:0x80525598
+	.sdata      start:0x805E5A30 end:0x805E5A58
+	.sbss       start:0x805EEF68 end:0x805EEF78
+	.sdata2     start:0x805F3BC0 end:0x805F3BE8
+
 Game/DashPanel.cpp:
 	.text       start:0x800FF39C end:0x80100544
 	.rodata     start:0x804BB288 end:0x804BB418
