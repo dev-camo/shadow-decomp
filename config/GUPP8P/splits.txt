@@ -844,6 +844,11 @@ Game/CSD/csdMatrix.cpp:
 	.rodata     start:0x80514000 end:0x80514020
 	.bss        start:0x80586A20 end:0x80586A50
 
+Game/CSD/csdMotionPalette.cpp:
+	.text       start:0x80361430 end:0x80362580
+	.rodata     start:0x80514020 end:0x80514050
+	.bss        start:0x80586A58 end:0x80586A68
+
 Game/CSD/csdTexList.cpp:
 	.text       start:0x80362D78 end:0x80363A1C
 	.rodata     start:0x80514068 end:0x805140B0

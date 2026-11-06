@@ -195,12 +195,11 @@ static inline int IsShiftJisLeadByte(u8 c) {
     return folded >= 0xA1 && folded <= 0xD5;
 }
 
-/* Matching workaround: use separate lis/lfs pairs for 0.0f, -1000000.0f and 16.0f, and lis/addi
- * for the file-name string, instead of one pooled .rodata base. This reduces differing
- * instruction words from 333 to 328; the other function bodies and data are unchanged.
- * The original InitPalette pools its .bss state at offsets 0/4/8, so file-level pooling
- * was enabled. Why these .rodata literals are unpooled remains unknown. Revisit when
- * that cause is recovered. */
+/* Matching workaround: keep this function's literal addresses independent, as in the original.
+ * The compiler otherwise pools 0.0f, -1000000.0f, 16.0f and the filename under one .rodata base.
+ * InitPalette's original .bss accesses share a base at offsets 0/4/8, so file-level pooling
+ * remains enabled. Why this function's .rodata is unpooled is unknown; revisit when the
+ * original literal-access or inline-helper form is recovered. */
 #pragma pool_data off
 
 static void BuildTextEntry(MotionPaletteEntry *entry, const ElementData *element,
@@ -251,10 +250,10 @@ static void BuildTextEntry(MotionPaletteEntry *entry, const ElementData *element
 
     /* Per character: four vertices, four drawing vertices and a texture index. */
     u8 *block = static_cast<u8 *>(
-        Alloc(length * sizeof(s32) + length * 8 * sizeof(Vertex), __FILE__, __LINE__));
+        Alloc(length * sizeof(s32) + length * (8 * sizeof(Vertex)), __FILE__, __LINE__));
     entry->vertices = reinterpret_cast<Vertex *>(block);
-    entry->drawVertices = reinterpret_cast<Vertex *>(block + length * 4 * sizeof(Vertex));
-    entry->textures = reinterpret_cast<s32 *>(block + length * 8 * sizeof(Vertex));
+    entry->drawVertices = reinterpret_cast<Vertex *>(block + length * (4 * sizeof(Vertex)));
+    entry->textures = reinterpret_cast<s32 *>(block + length * (8 * sizeof(Vertex)));
     entry->ownsVertices = 1;
 
     Vertex *vertices = entry->vertices;
@@ -486,8 +485,8 @@ int CountPaletteMatrices(MotionPalette *palette, const SceneData *scene) {
     return matrixCount;
 }
 
-static inline void MarkMatrixUsers(MotionPaletteLayer *layer, int index, const LayerData *src,
-                                   MotionPaletteEntry *parent);
+static void MarkMatrixUsers(MotionPaletteLayer *layer, int index, const LayerData *src,
+                            MotionPaletteEntry *parent);
 
 static void MarkLayerMatrixUsers(MotionPaletteLayer *layer, const LayerData *src) {
     if (src->rootIndex >= 0) {
@@ -496,9 +495,14 @@ static void MarkLayerMatrixUsers(MotionPaletteLayer *layer, const LayerData *src
 }
 
 /* Marks the entries that need extra matrices, and their ancestors, with a non-null sub0 so that
- * CountPaletteMatrices can size the pool. */
-static inline void MarkMatrixUsers(MotionPaletteLayer *layer, int index, const LayerData *src,
-                                   MotionPaletteEntry *parent) {
+ * CountPaletteMatrices can size the pool.
+ *
+ * Matching workaround: auto_inline expands the recursion once and keeps the out-of-line body
+ * at its definition, before MarkLayerMatrixUsers. The original is 0x1F0 bytes; a plain static
+ * definition emits 0xD0. Revisit when the original's inline helpers are found. */
+#pragma auto_inline on
+static void MarkMatrixUsers(MotionPaletteLayer *layer, int index, const LayerData *src,
+                            MotionPaletteEntry *parent) {
     MotionPaletteEntry *entry = &layer->entries[index];
     u32 flags = src->elements[index]->flags;
 
@@ -516,6 +520,8 @@ static inline void MarkMatrixUsers(MotionPaletteLayer *layer, int index, const L
         MarkMatrixUsers(layer, src->links[index].next, src, parent);
     }
 }
+
+#pragma auto_inline reset
 
 void SetMatrixPool(MatrixValue *pool, int count) {
     s_pMatrixPool = pool;

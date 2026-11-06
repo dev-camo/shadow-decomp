@@ -879,14 +879,6 @@ config.libs = [
                 Object(Matching, "Game/CSD/fn_80361738.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361A24.cpp", cflags=cflags_csd),
                 Object(Matching, "Game/CSD/fn_80361CF8.cpp", cflags=cflags_csd),
-                # BuildTextEntry uses the original independent literal addresses, but retains
-                # register/control differences and allocation line metadata (original line 442).
-                # InitPalette still uses a pooled .rodata base and lower allocation line than 234;
-                # disabling pooling there also loses the original pooled .bss addressing.
-                # Every other function present has matching instruction words.
-                # MarkMatrixUsers also comes after its caller MarkLayerMatrixUsers, where the
-                # original has it before.
-                Object(NonMatching, "Game/CSD/csdMotionPalette.cpp", cflags=cflags_csd),
                 # Matching workaround: -inline auto for this unit only (the rest of the library uses
                 # -inline noauto). The texture array's constructor (0xA0 bytes) and destructor (0x54
                 # bytes) are emitted out of line and also expanded in CTexListRW::Load and in the
@@ -1636,6 +1628,17 @@ config.libs = [
             # select the original unit and its existing providers; these links do not include
             # this source object or establish which source weak copies would be discarded.
             Object(NonMatching, "Game/CSD/csdmMotionPalette.cpp", cflags=cflags_csd),
+            # All 25 functions and their owned data are represented. The 23 other functions have
+            # identical instruction words and relocation targets; BuildTextEntry and InitPalette
+            # remain NonMatching. BuildTextEntry is 0x540 bytes versus 0x564, with 316 differing
+            # overlapping instruction words and nine unpaired native words. InitPalette is 0x190
+            # versus 0x19C, with 99 differing overlapping words and three unpaired native words.
+            # The differences include control/register choices, allocation lines and InitPalette's
+            # pooled read-only-data addressing. The original allocation lines are 442 and 234.
+            # The scoped recursive expansion keeps MarkMatrixUsers in its original position.
+            # Read-only data matches all 48 bytes; the three BSS words retain their offsets, with
+            # 12 source bytes versus the original 16-byte extent including trailing alignment.
+            Object(NonMatching, "Game/CSD/csdMotionPalette.cpp", cflags=cflags_csd),
             # The complete node source, including its constructor, destructor, callbacks, channel
             # map and owned data. The candidate emits 96 of the 97 native function bodies; the
             # 12-byte tree iterator arrow is represented by its inlined header definition.
