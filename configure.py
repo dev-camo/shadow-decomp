@@ -2215,6 +2215,32 @@ config.libs = [
             #   further relocation-target difference. Aligned: 0 paired-differing, 6 original-only,
             #   6 source-only words.
             Object(NonMatching, "Game/ItemBox.cpp", cflags=cflags_game_cpp),
+            # 63 of the 66 functions of the original split object have identical words and
+            # relocations (USA, Japan and PAL alike). Counts: positional = word i against word i;
+            # aligned = instructions matched up, as paired-differing, original-only and
+            # source-only words.
+            # - UpdateBody (0x80113C3C), 109 words against 110: the original's dispatch on m_state
+            #   compares with 2 (beq, then bge past the switch), then with 0, and ends with a branch
+            #   nothing reaches, the compare tree MWCC builds for the case values 0, 1, 2 and 3.
+            #   Nothing in the file stores 3 in m_state, so the source has only the three cases.
+            #   Positional: 99 of the first 109 words differ and this build has 1 more; aligned: 7
+            #   paired-differing, 0 original-only, 1 source-only.
+            # - CollectTouchedRings (0x80112AF4), 96 words against 92: the original passes
+            #   IsTouched a bool built with branches (li 0, then li 1 when Test(2) returns true) and
+            #   kept in r28, so it saves r28-r31, where this build passes the result in place and
+            #   saves r29-r31. Positional: 59 of the first 92 words differ and the original has 4
+            #   more; aligned: 8 paired-differing, 4 original-only, 0 source-only.
+            # - OnCommand (0x801124E8), 226 words against 227: for command 0x14 this build computes
+            #   the address of the command's m_target once before the loop and keeps it in a saved
+            #   register, so it saves r26-r31 and counts in r26, where the original adds 0x14 inside
+            #   the loop (0x80112548), saves r27-r31 and counts in r27. Positional: 217 of the first
+            #   226 words differ and this build has 1 more; aligned: 11 paired-differing, 1
+            #   original-only, 2 source-only.
+            # Data: once the linker-discarded weak and local copies are set aside, .rodata, .data,
+            # .sdata, .sbss and .sdata2 match the original by contents, up to section-end
+            # alignment; the original's .sdata2 is allocatable (A, 0x2) and this object's writable
+            # and allocatable (WA, 0x3).
+            Object(NonMatching, "Game/Ring.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Rocket.cpp", cflags=cflags_game_cpp),
             # 12 of the 13 functions are identical in every word and relocation. The data contents
             # and relocations match once the 44 linker-discarded copies (9 local, 35 weak) are set

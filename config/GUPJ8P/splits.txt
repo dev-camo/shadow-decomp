@@ -278,6 +278,14 @@ Game/PoisonGas.cpp:
 	.sbss       start:0x805EF208 end:0x805EF238
 	.sdata2     start:0x805F4170 end:0x805F41A8
 
+Game/Ring.cpp:
+	.text       start:0x80112488 end:0x80114C88
+	.rodata     start:0x804BCE28 end:0x804BD078
+	.data       start:0x80527110 end:0x80527350
+	.sdata      start:0x805E5FD0 end:0x805E6038
+	.sbss       start:0x805EF238 end:0x805EF260
+	.sdata2     start:0x805F41A8 end:0x805F4238
+
 Game/Rocket.cpp:
 	.text       start:0x80114C88 end:0x8011779C
 	.rodata     start:0x804BD078 end:0x804BD368

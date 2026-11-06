@@ -33,6 +33,12 @@ bool fn_801D560C(UnkSoundManager_80053164 *manager, u16 id, int arg2, int arg3);
  * and sign-extends it when it passes it (the width is otherwise unknown). */
 bool fn_801D53C4(UnkSoundManager_80053164 *manager, u16 id, const Fn8040Vector3 *position,
                  const void *owner, u16 arg4, int arg5, s16 arg6);
+/* Plays sound 0xE00B through fn_801D5B74 and returns whether it started (behaviour inferred; the
+ * RING gadget calls it when a ring is collected). It returns false without playing while the
+ * float at 0x18 of manager is greater than the float at 0x805F5DD8, and when fn_801D5B74 returns
+ * null; otherwise it sets that float to the float at 0x805F5DDC and gives the sound a byte from a
+ * two-entry table at 0x8053CE14, taking the entries in turn. */
+bool fn_801D5300(UnkSoundManager_80053164 *manager);
 }
 
 #endif

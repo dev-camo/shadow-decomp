@@ -8,7 +8,7 @@
 #include "layout_check.h"
 
 class CharInfo;
-class UnkLockonObject_8005FDF4;
+class Target;
 
 /* Commands that gadgets send to character infos (class names from RTTI, with CharCommand or
  * Player::PlayerCommand as their only base); WallJumpCommand is sent by the player and received
@@ -104,7 +104,10 @@ class UseCommand : public CharCommand {
     virtual ~UseCommand();
 
     /* 0x14 */ boost::weak_ptr<CharInfo> m_user;
-    /* 0x1C */ boost::weak_ptr<UnkLockonObject_8005FDF4> field_0x1C;
+    /* The RING gadget locks it with the lock at 0x80057778, whose shared pointers are Target
+     * pointers (it constructs them with Target's shared_ptr constructors), and compares the result
+     * with its rings' targets. */
+    /* 0x1C */ boost::weak_ptr<Target> field_0x1C;
 };
 CHECK_SIZEOF(UseCommand, 0x24);
 
@@ -164,16 +167,21 @@ CHECK_SIZEOF(WallJumpCommand, 0x28);
 /* VacuumCommand (class name from RTTI, with CharCommand as its only base): the command with the id
  * 0x14. Its constructor (0x801DB0D8) passes 0x14 and 4 to the base constructor, copies its first
  * two arguments to the weak pointers at 0x14 and 0x1C, default-constructs the weak pointer at 0x24
- * and stores its third argument at 0x2C; the creators allocate 0x30 bytes. The ITEM_BOX gadget and
- * VacuumObject's constructor (0x80238424), which reads the members at 0x1C, 0x24 and 0x2C, take
- * it. */
+ * and stores its third argument at 0x2C; the creators allocate 0x30 bytes. The other constructor
+ * (0x801DB004, which fn_8034085C calls at 0x80340984) also copies a weak pointer to 0x14, but
+ * leaves the weak pointer at 0x1C empty, copies a weak pointer to a character info to 0x24 and
+ * stores 1 at 0x2C. The ITEM_BOX gadget and VacuumObject's constructor (0x80238424), which reads
+ * the members at 0x1C, 0x24 and 0x2C, take it; the RING gadget locks the weak pointer at 0x14 and
+ * collects the first of its rings with bit 1 set whose target equals the locked pointer. */
 class VacuumCommand : public CharCommand {
   public:
     /* Defined elsewhere (USA 0x801DC178). */
     virtual ~VacuumCommand();
 
-    /* Copied with 0x8005FDB4, which copies UseCommand's field_0x1C. */
-    /* 0x14 */ boost::weak_ptr<UnkLockonObject_8005FDF4> field_0x14;
+    /* Copied with 0x8005FDB4, which copies UseCommand's field_0x1C. Holds a Target: it is locked
+     * with the lock at 0x80057778 (see UseCommand::field_0x1C). Name inferred: the target being
+     * vacuumed. */
+    /* 0x14 */ boost::weak_ptr<Target> m_target;
     /* A weak pointer (copied with 0x801DB14C) whose pointee type is not established. */
     /* 0x1C */ u8 field_0x1C[0x24 - 0x1C];
     /* 0x24 */ boost::weak_ptr<CharInfo> field_0x24;

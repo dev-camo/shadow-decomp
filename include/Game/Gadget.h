@@ -78,6 +78,10 @@ void fn_800C9E70(UnkGadgetOwner_800C9CD0 *owner, u32 *flags);
 /* Returns whether every bit of bits is set in the word at 0x18 of the record that owner points to
  * (behaviour and spellings inferred from its body; the SECRETDOOR gadget tests bit 0x400000). */
 bool fn_800C9E80(UnkGadgetOwner_800C9CD0 *owner, u32 bits);
+/* True when neither bit 16 nor bit 0 of the word at 0x18 of the record that owner points to is
+ * set (behaviour from its body; purpose unknown). The RING gadget's destructor leaves the owner's
+ * state alone while it is true. */
+bool fn_800C9870(UnkGadgetOwner_800C9CD0 *owner);
 }
 
 /* Gadget (class name from RTTI): a stage object task registered with an owner object. */
@@ -114,5 +118,7 @@ extern "C" void fn_8015A7EC(Gadget *gadget);
  * inferred from their bodies). */
 extern "C" bool fn_8015A858(Gadget *gadget);
 extern "C" bool fn_8015A818(Gadget *gadget);
+/* Passes the gadget's owner (m_owner) to fn_800C9AD4 when there is one (behaviour inferred). */
+extern "C" void fn_8015A7C0(Gadget *gadget);
 
 #endif
