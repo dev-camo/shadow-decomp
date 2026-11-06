@@ -2242,6 +2242,36 @@ config.libs = [
             # and allocatable (WA, 0x3).
             Object(NonMatching, "Game/Ring.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Rocket.cpp", cflags=cflags_game_cpp),
+            # 100 of the 104 functions are identical in every word and relocation target (local
+            # names resolved). The four others, compared word by word (USA, GUPE8P):
+            # - OnCancel (0x80117614) is 23 words against 21: the build saves and restores r31 and
+            #   loads the 1 it stores at 0x30 of fn_800BADE8's object into r31 before that call,
+            #   where the original loads it into r0 after the call. Position by position 17 of the
+            #   21 words differ and 2 build words are unpaired; aligned, 2 words differ (li, stw)
+            #   and 2 are build-only (stw/lwz r31).
+            # - The function1<void, SavePointSelect::Args &> copy assignment is a 12-word function
+            #   in the original (fn_8011806C, 0x8011806C) that calls the 22-word body
+            #   (0x8011809C); boost/function.hpp has the body only, so UpdateBody's two
+            #   assignments (UpdateBody+0x1CC, +0x258) call the body directly (2 relocation
+            #   targets differ) and the 12-word function has no counterpart.
+            # - That function1's swap (0x801180F4) calls a 32-byte local copy of
+            #   std::swap<any_pointer> in this object, where the original calls the kept copy at
+            #   0x80019164 (1 relocation target; the local copy is build-only, and a source-enabled
+            #   link keeps it, at 0x8011812C in USA).
+            # The ten tree helpers of the two std::map members of Unk801A2AF4 (__destroy,
+            # deallocate, __node_alloc, destroy, __alloc) follow the trees' destructors here and
+            # come last, before the static initialiser, in the original; a non-inline __destroy in
+            # the shared map header gives the original order but changes five other objects.
+            # Compared by contents, with the 85 copies that a source-enabled link discards set
+            # aside (55 weak and 3 local functions; 3 weak vtables in .data, which the original
+            # keeps as zero-filled holes; 8 .rodata, 7 .sdata and 9 .sbss locals), every original
+            # data object matches in bytes, relocations and place; the retained local std::swap
+            # copy above is not one of them. The compiled .bss and .sdata2 are 0x7C and 0x1C
+            # bytes, 4 bytes shorter than the split's 0x80 and 0x20; in the source-enabled link
+            # the next object starts 4 bytes after each of them (alignment padding), so there they
+            # take 0x80 and 0x20 bytes, as in the split. .sdata2 is writable in the compiled
+            # object where the split's is read-only.
+            Object(NonMatching, "Game/SavePoint.cpp", cflags=cflags_game_cpp),
             # 12 of the 13 functions are identical in every word and relocation. The data contents
             # and relocations match once the 44 linker-discarded copies (9 local, 35 weak) are set
             # aside, with these differences in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P): the
@@ -2343,8 +2373,8 @@ config.libs = [
             Object(NonMatching, "Game/Stick.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/TurnOver.cpp", cflags=cflags_game_cpp),
             # 51 of 54 functions are identical in every word and relocation in USA, Japan and PAL.
-            # The data contents and relocations match once the 86 linker-discarded copies (26 local,
-            # 60 weak) are set aside, with two differences in every region: the original's .sdata2
+            # The data contents and relocations match once the 97 linker-discarded copies (33 local,
+            # 64 weak) are set aside, with two differences in every region: the original's .sdata2
             # is allocatable (A, flags 0x2) and the compiled one writable and allocatable (WA, 0x3),
             # and the compiled sections end without the original's alignment padding (.sdata2 0x1B
             # bytes against 0x20). Three functions keep their length but differ in register use or

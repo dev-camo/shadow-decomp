@@ -11,7 +11,9 @@ class UnkObject_800BADE8 {
   public:
     /* 0x00 */ u8 field_0x0[0x30];
     /* WarpHole's ManagerTask sets it to 0 while it takes a character's control; its destructor
-     * sets it to 1, and its update does so when fn_802E5810 returns false (meaning unknown). */
+     * sets it to 1, and its update does so when fn_802E5810 returns false. The SAVEPOINT gadget
+     * sets it to 0 when it opens a SavePointSelectTask and to 1 in that task's cancel callback
+     * (meaning unknown). */
     /* 0x30 */ s32 field_0x30;
 };
 /* Checks only the mapped prefix, not the object's size. */

@@ -30,8 +30,9 @@ CHECK_SIZEOF(PlayerObject, 0x68);
 /* Player::PlayerBase (class name from RTTI, with CharInfo and Player::PlayerObject as its bases):
  * 0x290 bytes. Its constructor (0x80079F04) initialises members from 0x68 through 0x28C, and a
  * derived class's constructor starts its own members at 0x290 (0x80077328-3C). Gadgets cast the
- * character info they act on to it. Only the vector at 0xE8 is mapped (the ElecFan gadget scales it
- * by -30 into the acceleration it sends the player).
+ * character info they act on to it. Only two members are mapped: the first word of the bit set at
+ * 0xA8 (the TornadoCollision gadget tests bit 0x14 of the set) and the vector at 0xE8 (the
+ * ElecFan gadget scales it by -30 into the acceleration it sends the player).
  *
  * Its vtable (0x80520310, 0x54 bytes) overrides the destructor and the first three CharInfo slots
  * and adds nine slots. The added slots are named after their implementations here, or, for the
@@ -65,11 +66,16 @@ class PlayerBase : public PlayerObject {
      * 0 for that object. */
     virtual bool fn_80079770();
 
-    /* 0x068 */ u8 field_0x68[0xE8 - 0x68];
+    /* 0x068 */ u8 field_0x68[0xA8 - 0x68];
+    /* The first word of a bit set; its other words are not mapped (fn_80079770 tests bits 0x24
+     * and 0x20 of the set, the TornadoCollision gadget bit 0x14). */
+    /* 0x0A8 */ u32 field_0xA8;
+    /* 0x0AC */ u8 field_0xAC[0xE8 - 0xAC];
     /* 0x0E8 */ Fn8040Vector3 field_0xE8;
     /* 0x0F4 */ u8 field_0xF4[0x290 - 0xF4];
 };
 CHECK_SIZEOF(PlayerBase, 0x290);
+CHECK_OFFSETOF(PlayerBase, field_0xA8, 0xA8);
 
 } // namespace Player
 
