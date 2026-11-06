@@ -1857,9 +1857,11 @@ config.libs = [
             # set aside. The bars' hit callback (0x80152164) is one instruction longer: the original
             # passes the result of the span's copy constructor straight to fn_8040CF50, where this
             # build copies into a local and passes its address. ElecBarSub's UpdateModelMatrix
-            # differs in 16 words: the original creates the transform's result before the scaled and
-            # offset vectors it is computed from, as a nested expression does, but loads the line
-            # pointer between them. Two placement differences remain: the tree's __destroy and the
+            # is 115 words against the original's 116, with 67 positional raw word differences
+            # and one unpaired word: the original creates the transform's result before the scaled
+            # and offset vectors it is computed from, as a nested expression does, but loads the
+            # line pointer between them, which the direct member assignments here do not
+            # reproduce. Two placement differences remain: the tree's __destroy and the
             # allocator helpers it calls follow the tree's destructor here instead of coming first
             # among the tree members at the end of the code, where clear also comes before insert in
             # the original (the map units show the same placement); and the int-to-float constant of
