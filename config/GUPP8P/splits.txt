@@ -178,6 +178,15 @@ Game/fn_800E59F8.cpp:
 	.sdata      start:0x805E62B8 end:0x805E62D8
 	.sdata2     start:0x805F4488 end:0x805F44C0
 
+Game/Balloon.cpp:
+	.text       start:0x800E6768 end:0x800E8C68
+	.ctors      start:0x804AAD78 end:0x804AAD7C
+	.rodata     start:0x804B9978 end:0x804B9DB8
+	.data       start:0x80525638 end:0x80525948
+	.sdata      start:0x805E62D8 end:0x805E6358
+	.sbss       start:0x805EF940 end:0x805EF978
+	.sdata2     start:0x805F44C0 end:0x805F4538
+
 Game/BreakObj.cpp:
 	.text       start:0x800F1734 end:0x800F25B4
 	.rodata     start:0x804BA958 end:0x804BAA60

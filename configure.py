@@ -1937,6 +1937,37 @@ config.libs = [
             Object(Matching, "Game/BAGunShip.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAMine.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),
+            # 81 of the 83 functions of the original split object are identical in every word and
+            # relocation (local names resolved; USA, Japan and PAL alike; addresses below are
+            # USA's). Counts: positional = word i against word i; aligned = instructions matched
+            # up, as paired-differing, original-only and source-only words.
+            # - Balloon::OnCommand (0x800E6AF0), 35 words each: the original copies the command
+            #   pointer to r31 inside case 0x14, after the m_type test (0x800E6B18); the compiled
+            #   code copies it in the prologue. Positional: 7 words differ. Aligned: 1
+            #   original-only and 1 source-only word (the moved copy) and 1 paired-differing word:
+            #   the beq into the case keeps its word, but it and the lwz it reaches sit one word
+            #   later here, and the b past the case keeps its target, but its displacement is one
+            #   word shorter here; which of the two pairs as differing depends on whether branch
+            #   targets or raw words are compared.
+            # - Balloon::UpdateBody (0x800E6FC8), 226 words against 225: in STATE_CIRCLE the
+            #   original loads m_charInfo's pointer into r31 before it calls fn_8040B67C
+            #   (0x800E72EC), so it keeps this in r30 and saves r30-r31; the compiled code, through
+            #   the matrix-vector operator*, loads the pointer after the call, keeps this in r31
+            #   and saves only r31. In STATE_START the vector built from X, Y and Z is at sp+0xA4
+            #   in the original and at sp+0x50 here, and the other cases' vectors sit 12 bytes
+            #   higher here. Positional: 115 of the first 225 words differ and the original has 1
+            #   more; aligned: 98 paired-differing, 6 original-only, 5 source-only.
+            # Data: once the 100 linker-discarded copies are set aside (75 weak, 25 local; the
+            # original keeps four of the weak vtables as zero-filled holes in .data), the bytes of
+            # .rodata, .data, .sdata, .sbss and .sdata2 match the original by contents. Because
+            # UpdateBody is one word shorter here, every function after it starts 4 bytes lower,
+            # and four relocations that point at them target .text offsets 4 bytes lower: the
+            # .ctors entry (__sinit_Balloon_cpp, .text+0x24EC in the original, +0x24E8 here) and
+            # the three .data entries at +0x278, +0x27C and +0x284, the VacuumBalloon
+            # sp_counted_base_impl destructor, dispose and get_deleter (for example .data+0x278
+            # targets .text+0x2198 in the original and .text+0x2194 here). The original's .sdata2
+            # is allocatable (A, 0x2) and this object's writable and allocatable (WA, 0x3).
+            Object(NonMatching, "Game/Balloon.cpp", cflags=cflags_game_cpp),
             # 62 of 66 functions are identical in every word and relocation. The three record
             # lookups fn_80301D04, fn_80301D90 and fn_80301E1C each differ in one word, the id
             # comparison: the original has cmpw r0,r3 (0x7C001800 at 0x80301D1C, 0x80301DA8 and
