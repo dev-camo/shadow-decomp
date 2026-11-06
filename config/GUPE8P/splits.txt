@@ -337,6 +337,14 @@ Game/Switch.cpp:
 	.sbss       start:0x805EED90 end:0x805EEDB0
 	.sdata2     start:0x805F3F40 end:0x805F3F70
 
+Game/TargetSwitch.cpp:
+	.text       start:0x8012459C end:0x80125524
+	.rodata     start:0x804BDCE8 end:0x804BDE08
+	.data       start:0x80527BE8 end:0x80527D70
+	.sdata      start:0x805E5D00 end:0x805E5D28
+	.sbss       start:0x805EEDB0 end:0x805EEDC0
+	.sdata2     start:0x805F3F70 end:0x805F3FF0
+
 Game/CandleStick.cpp:
 	.text       start:0x8012C900 end:0x8012DACC
 	.ctors      start:0x804A9D50 end:0x804A9D54
