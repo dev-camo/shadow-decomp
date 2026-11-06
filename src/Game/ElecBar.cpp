@@ -350,13 +350,11 @@ void ElecBarSub::UpdateModelMatrix() {
 
     Fn8040Vector3 inset(3.75f, 0.0f, 0.0f);
     const Fn8040Vector3 &start = right * m_parent->m_params.scale - inset;
-    UnkSegment_80020A20 *line = m_line.get();
-    line->start = matrix * start;
+    m_line->start = matrix * start;
 
     Fn8040Vector3 endInset(3.75f, 0.0f, 0.0f);
     const Fn8040Vector3 &end = left * m_parent->m_params.scale + endInset;
-    line = m_line.get();
-    line->end = matrix * end;
+    m_line->end = matrix * end;
 
     fn_8040B720(&matrix, m_parent->m_params.scale, 0.75f, 0.75f);
     if (m_model != 0) {
