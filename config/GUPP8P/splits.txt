@@ -244,6 +244,14 @@ Game/HintRing.cpp:
 	.sbss       start:0x805EFC20 end:0x805EFC48
 	.sdata2     start:0x805F4AA0 end:0x805F4AF8
 
+Game/ItemBox.cpp:
+	.text       start:0x8010B6C8 end:0x8010E8FC
+	.rodata     start:0x804BCD88 end:0x804BD2C8
+	.data       start:0x80527650 end:0x805277F8
+	.sdata      start:0x805E6950 end:0x805E69D0
+	.sbss       start:0x805EFC48 end:0x805EFC88
+	.sdata2     start:0x805F4AF8 end:0x805F4B68
+
 Game/JumpBoard.cpp:
 	.text       start:0x8010E8FC end:0x8010F8F0
 	.rodata     start:0x804BD2C8 end:0x804BD458

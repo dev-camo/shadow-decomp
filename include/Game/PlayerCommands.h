@@ -14,9 +14,10 @@ class UnkLockonObject_8005FDF4;
  * Player::PlayerCommand as their only base); WallJumpCommand is sent by the player and received
  * by gadgets. The constructors and destructors are defined elsewhere, together with the vtables,
  * except the constructors of CancelBehaviorCommand, AddWeaponCommand, SetVelocityCommand,
- * IgnoreInputCommand(int, float), InvincibleCommand and SwitchCommand, which gadget files define,
- * and the constructor of Player::StartExternalControlCommand, which is defined in its class here
- * (see the classes); the argument meanings are inferred from the stores in the constructors.
+ * IgnoreInputCommand(int, float), InvincibleCommand, SwitchCommand and Player::HomingJumpCommand
+ * (ItemBox.cpp), which gadget files define, and the constructor of
+ * Player::StartExternalControlCommand, which is defined in its class here (see the classes); the
+ * argument meanings are inferred from the stores in the constructors.
  * SetPositionCommand, SetVelocityCommand and LaunchCommand pass their last argument to the base
  * constructor as its second argument, and ClrVelocityCommand its only argument;
  * IgnoreInputCommand passes 0. Most callers pass 4 there (0 and 2 also occur). */
@@ -155,6 +156,31 @@ class WallJumpCommand : public CharCommand {
     /* 0x1C */ Fn8040Vector3 field_0x1C;
 };
 CHECK_SIZEOF(WallJumpCommand, 0x28);
+
+/* VacuumCommand (class name from RTTI, with CharCommand as its only base): the command with the id
+ * 0x14. Its constructor (0x801DB0D8) passes 0x14 and 4 to the base constructor, copies its first
+ * two arguments to the weak pointers at 0x14 and 0x1C, default-constructs the weak pointer at 0x24
+ * and stores its third argument at 0x2C; the creators allocate 0x30 bytes. The ITEM_BOX gadget and
+ * VacuumObject's constructor (0x80238424), which reads the members at 0x1C, 0x24 and 0x2C, take
+ * it. */
+class VacuumCommand : public CharCommand {
+  public:
+    /* Defined elsewhere (USA 0x801DC178). */
+    virtual ~VacuumCommand();
+
+    /* Copied with 0x8005FDB4, which copies UseCommand's field_0x1C. */
+    /* 0x14 */ boost::weak_ptr<UnkLockonObject_8005FDF4> field_0x14;
+    /* A weak pointer (copied with 0x801DB14C) whose pointee type is not established. */
+    /* 0x1C */ u8 field_0x1C[0x24 - 0x1C];
+    /* 0x24 */ boost::weak_ptr<CharInfo> field_0x24;
+    /* 0x2C */ s32 field_0x2C;
+
+  private:
+    /* Copying is disabled: field_0x1C holds a reference-counted weak pointer as bytes. */
+    VacuumCommand(const VacuumCommand &);
+    VacuumCommand &operator=(const VacuumCommand &);
+};
+CHECK_SIZEOF(VacuumCommand, 0x30);
 
 namespace Player {
 
