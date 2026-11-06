@@ -299,6 +299,10 @@ void fn_800494F8(UnkRotation3 *angles, const Fn8040Matrix34 *matrix);
 void fn_800493C4(UnkRotation3 *angles, const Fn8040Matrix34 *matrix);
 /* Stores the matrix's translation (its fourth column) in translation (behaviour from its body). */
 void fn_80049690(Fn8040Vector3 *translation, const Fn8040Matrix34 *matrix);
+/* Returns the matrix's translation, read element by element with fn_8040C168 (behaviour from its
+ * body; the by-value result is inferred: the HEALING_UNIT gadget's unit takes the destination's
+ * address before the call and assigns the result to it). */
+Fn8040Vector3 fn_800496F8(const Fn8040Matrix34 *matrix);
 /* Matrix-to-angle sibling with a different rotation order (description inferred). */
 void fn_80049290(UnkRotation3 *angles, const Fn8040Matrix34 *matrix);
 /* Blends angles using the wrapped difference and relative weights (description inferred). */
@@ -451,9 +455,10 @@ extern "C" Fn8040Vector3 fn_8040D044(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_80016284(const Fn8040Vector3 &vector);
 
 /* The matrix's rotation applied to vector, without the translation, returned by value
- * (inferred). The const references are inferred too: the ELEC_SEARCHLIGHT gadget builds the
- * vector in a stack slot below the result's, where this compiler places an argument temporary
- * made before the result (USA (GUPE8P) 0x80153828). */
+ * (inferred). The const references are inferred too: the ELEC_SEARCHLIGHT and HEALING_UNIT
+ * gadgets build the vector in a stack slot below the result's, where this compiler places an
+ * argument temporary made before the result (USA (GUPE8P) 0x80153828 and 0x8010821C), and the
+ * HEALING_UNIT unit loads the destination's address before the call (0x80108218). */
 extern "C" Fn8040Vector3 fn_8040B618(const Fn8040Matrix34 &matrix, const Fn8040Vector3 &vector);
 
 /* Scales the matrix's three rotation columns by the components of scale. The reference is

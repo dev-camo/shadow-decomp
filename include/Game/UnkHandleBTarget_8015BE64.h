@@ -188,6 +188,11 @@ bool fn_8015B1C4(ColliDetectArgs &args);
  * that function reports is not recovered (behaviour inferred; the CircusBall, DashPanel, DashRing,
  * JumpBoard, LongSpring and Spring gadgets pass their hit callbacks to it). */
 void fn_8015B004(ColliDetectArgs *args, ColliHitCallback callback, void *context);
+/* The same as fn_8015B004 except for the filter: callback runs only for the hits whose collision
+ * object and character info still lock and whose character info's fn_80073634 (vtable offset
+ * 0x2C) returns true, and only when callback is not null (behaviour inferred from its body; the
+ * HEALING_UNIT gadget's blast passes its hit callback to it). */
+void fn_8015B384(ColliDetectArgs *args, ColliHitCallback callback, void *context);
 }
 
 #endif

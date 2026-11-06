@@ -542,4 +542,62 @@ class ReadyCommand : public CharCommand {
 };
 CHECK_SIZEOF(ReadyCommand, 0x1C);
 
+/* PickupCommand (class name from the RTTI of its vtable at 0x8053D2E4, with CharCommand as its only
+ * base): the command with the id 0x11. Its constructor (0x801DB26C) passes 0x11 and 4 to the base
+ * constructor, copies a vector to 0x14, stores a float at 0x20, copies a weak pointer to a
+ * character info to 0x24 and a second vector to 0x2C. The HEALING_UNIT gadget's unit keeps the
+ * weak pointer as the character that picked it up (role inferred). */
+class PickupCommand : public CharCommand {
+  public:
+    /* Defined elsewhere (0x801DC2D4). */
+    virtual ~PickupCommand();
+
+    /* 0x14 */ Fn8040Vector3 field_0x14;
+    /* 0x20 */ float field_0x20;
+    /* 0x24 */ boost::weak_ptr<CharInfo> m_picker;
+    /* 0x2C */ Fn8040Vector3 field_0x2C;
+};
+CHECK_SIZEOF(PickupCommand, 0x38);
+
+/* CastCommand (class name from the RTTI of its vtable at 0x8053D2C0, with CharCommand as its only
+ * base): the command with the id 0x12. Its constructor (0x801DB200) passes 0x12 and 4 to the base
+ * constructor and copies a weak pointer to a character info to 0x14 and a vector to 0x1C. */
+class CastCommand : public CharCommand {
+  public:
+    /* Defined elsewhere (0x801DC268). */
+    virtual ~CastCommand();
+
+    /* 0x14 */ boost::weak_ptr<CharInfo> field_0x14;
+    /* 0x1C */ Fn8040Vector3 field_0x1C;
+};
+CHECK_SIZEOF(CastCommand, 0x28);
+
+/* ThrowCommand (class name from the RTTI of its vtable at 0x8053D29C, with CharCommand as its only
+ * base): the command with the id 0x13. Its constructor (0x801DB194) passes 0x13 and 4 to the base
+ * constructor and copies a weak pointer to a character info to 0x14 and a vector to 0x1C. */
+class ThrowCommand : public CharCommand {
+  public:
+    /* Defined elsewhere (0x801DC1FC). */
+    virtual ~ThrowCommand();
+
+    /* 0x14 */ boost::weak_ptr<CharInfo> field_0x14;
+    /* 0x1C */ Fn8040Vector3 field_0x1C;
+};
+CHECK_SIZEOF(ThrowCommand, 0x28);
+
+/* RecoverCommand (class name from the RTTI of its vtable at 0x8053D308, with CharCommand as its
+ * only base). Its constructor (0x801DB2F8) passes 0x10 and 4 to the base constructor, copies a
+ * weak pointer to a character info to 0x14 and stores amount at 0x1C; the HEALING_UNIT gadget's
+ * blast allocates 0x20 bytes for it. The parameter names and the const reference are inferred. */
+class RecoverCommand : public CharCommand {
+  public:
+    RecoverCommand(const boost::weak_ptr<CharInfo> &sender, float amount);
+    /* Defined elsewhere (0x801DC340). */
+    virtual ~RecoverCommand();
+
+    /* 0x14 */ boost::weak_ptr<CharInfo> m_sender;
+    /* 0x1C */ float m_amount;
+};
+CHECK_SIZEOF(RecoverCommand, 0x20);
+
 #endif

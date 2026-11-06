@@ -63,6 +63,10 @@ class CharInfo {
     void SetField0x50(s32 value) {
         field_0x50 = value;
     }
+    /* Copies at most 15 characters of name to the bytes at 0x3C and clears the byte at 0x4C
+     * (0x801DC984, behaviour from its body). The gadget character info factories pass the
+     * gadget's name; GadgetPickup::PickupBaseTask uses these characters as its task name. */
+    void fn_801DC984(const char *name);
 
     /* 0x3C */ u8 field_0x3C[0x50 - 0x3C];
     /* 0x50 */ s32 field_0x50; /* the constructor's arg0 */

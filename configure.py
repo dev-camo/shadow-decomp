@@ -2157,6 +2157,7 @@ config.libs = [
             Object(Matching, "Game/Fire.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Fruit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/GoalRing.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/HealingUnit.cpp", cflags=cflags_game_cpp),
             # Compared with the split original object (USA, Japan and PAL alike), with the 60
             # symbols the link discards set aside (46 weak copies, 14 locals), 57 of the 60
             # functions have identical words and relocations (targets resolved to their symbols).
