@@ -2315,6 +2315,7 @@ config.libs = [
             # pool order is inferred.
             Object(NonMatching, "Game/SecretKey.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetCollision.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/SetParticle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetVehicle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetWeapon.cpp", cflags=cflags_game_cpp),
             # 52 of 53 functions are identical in every word and relocation. The hit callback

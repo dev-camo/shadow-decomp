@@ -337,6 +337,13 @@ Game/SetCollision.cpp:
 	.sbss       start:0x805EF310 end:0x805EF330
 	.sdata2     start:0x805F4378 end:0x805F4430
 
+Game/SetParticle.cpp:
+	.text       start:0x8011DFE8 end:0x8011E44C
+	.rodata     start:0x804BDC08 end:0x804BDC20
+	.data       start:0x80527B90 end:0x80527CC0
+	.sdata      start:0x805E61E0 end:0x805E6200
+	.sdata2     start:0x805F4430 end:0x805F4468
+
 Game/SetVehicle.cpp:
 	.text       start:0x8011E44C end:0x8011E9DC
 	.rodata     start:0x804BDC20 end:0x804BDC68

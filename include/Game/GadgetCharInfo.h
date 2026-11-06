@@ -33,6 +33,10 @@ extern "C" boost::shared_ptr<GadgetCharInfo> fn_8015CB88(int arg0, int arg1, con
  * with its arg1. */
 extern "C" boost::shared_ptr<GadgetCharInfo> fn_8015CD90(int arg0, int arg1);
 
+/* Builds a character info without a name (behaviour inferred; argument unknown): the body is
+ * fn_8015CD90's without its store at 0x5C, so arg0 is passed to the GadgetCharInfo constructor. */
+extern "C" boost::shared_ptr<GadgetCharInfo> fn_8015CE20(int arg0);
+
 /* Creates the command unit at 0x64 when there is none (behaviour inferred). */
 extern "C" void fn_8015CF7C(GadgetCharInfo *info);
 /* Passes target a new Player::GetItemCommand (class name from RTTI) built from arg0, arg1, arg2
