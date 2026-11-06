@@ -1934,6 +1934,7 @@ config.libs = [
             # conversion of the level index gets its own stack slot and the level and the table
             # difference are in f3 and f2 instead of f2 and f3.
             Object(NonMatching, "Game/LongSpring.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/PoisonGas.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAGunShip.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAMine.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),

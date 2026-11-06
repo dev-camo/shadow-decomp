@@ -269,6 +269,15 @@ Game/LongSpring.cpp:
 	.sbss       start:0x805EFC98 end:0x805EFCA8
 	.sdata2     start:0x805F4BA8 end:0x805F4BF0
 
+Game/PoisonGas.cpp:
+	.text       start:0x80110BA4 end:0x801124C4
+	.ctors      start:0x804AAD94 end:0x804AAD98
+	.rodata     start:0x804BD5A8 end:0x804BD860
+	.data       start:0x805279F0 end:0x80527B90
+	.sdata      start:0x805E6A20 end:0x805E6A70
+	.sbss       start:0x805EFCA8 end:0x805EFCD8
+	.sdata2     start:0x805F4BF0 end:0x805F4C28
+
 Game/SecretDoor.cpp:
 	.text       start:0x8011B9B8 end:0x8011C18C
 	.ctors      start:0x804AAD9C end:0x804AADA0
