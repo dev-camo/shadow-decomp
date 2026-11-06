@@ -372,6 +372,15 @@ Game/UpDownReel.cpp:
 	.sbss       start:0x805EEDE0 end:0x805EEE18
 	.sdata2     start:0x805F4040 end:0x805F40A8
 
+Game/WarpHole.cpp:
+	.text       start:0x80129458 end:0x8012AB88
+	.rodata     start:0x804BE210 end:0x804BE328
+	.data       start:0x805280D0 end:0x80528160
+	.bss        start:0x8057FB98 end:0x8057FFA8
+	.sdata      start:0x805E5DA0 end:0x805E5DD0
+	.sbss       start:0x805EEE18 end:0x805EEE30
+	.sdata2     start:0x805F40A8 end:0x805F40C8
+
 Game/Weight.cpp:
 	.text       start:0x8012AB88 end:0x8012C900
 	.ctors      start:0x804A9D4C end:0x804A9D50

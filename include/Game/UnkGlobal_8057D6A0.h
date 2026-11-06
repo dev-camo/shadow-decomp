@@ -24,7 +24,8 @@ struct UnkRecord_802039C8 {
     /* 0x1A */ u8 field_0x1A[0x20 - 0x1A];
     /* While it is set, ElecSecurityCode's update returns true right after its model update (the
      * model's fn_80162FB0, called only when the model pointer is not null), skipping its state,
-     * model matrix and part updates (meaning unknown). */
+     * model matrix and part updates (meaning unknown). WarpHole's ManagerTask sets it through
+     * fn_80203970 in its constructor and may clear it in its destructor. */
     /* 0x20 */ u8 field_0x20;
     /* 0x21 */ u8 field_0x21; /* fn_802039E8 tests it */
     /* 0x22 */ u8 field_0x22;
@@ -64,6 +65,9 @@ extern UnkGlobal_8057D6A0 lbl_8057D6A0;
 extern "C" {
 bool fn_802039C8(const UnkRecord_802039C8 *record);
 bool fn_802039E8(const UnkRecord_802039C8 *record);
+/* Sets (set true) or clears the record's field_0x20 and returns true when that changed it
+ * (behaviour inferred from its body). */
+bool fn_80203970(UnkRecord_802039C8 *record, bool set);
 }
 
 #endif
