@@ -292,6 +292,15 @@ Game/TargetSwitch.cpp:
 	.sbss       start:0x805EF3B8 end:0x805EF3C8
 	.sdata2     start:0x805F4598 end:0x805F4618
 
+Game/UpDownReel.cpp:
+	.text       start:0x80127748 end:0x80129804
+	.ctors      start:0x804AA388 end:0x804AA38C
+	.rodata     start:0x804BE6A0 end:0x804BE8A8
+	.data       start:0x80528550 end:0x80528770
+	.sdata      start:0x805E6370 end:0x805E63C0
+	.sbss       start:0x805EF3E8 end:0x805EF420
+	.sdata2     start:0x805F4668 end:0x805F46D0
+
 Game/Weight.cpp:
 	.text       start:0x8012AF30 end:0x8012CCA8
 	.ctors      start:0x804AA38C end:0x804AA390

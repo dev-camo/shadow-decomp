@@ -2190,6 +2190,16 @@ config.libs = [
             # 0x8000AB90) emitted after UpdatePosition and discarded by the linker, where this
             # source calls fn_8000AB90 as an external function (inferred).
             Object(NonMatching, "Game/TargetSwitch.cpp", cflags=cflags_game_cpp),
+            # 59 of the 60 functions have identical instructions and relocations, and the data
+            # matches once the linker-discarded weak and local copies are set aside.
+            # UpdateModelMatrix is 122 words against the original's 123 (USA, GUPE8P): position by
+            # position 46 words differ and the original's last word has no counterpart. The
+            # original loads the segment pointer m_line into r31 before each of the two transform
+            # calls (0x80127940 and 0x80127954) and keeps the object in r30; this build reads the
+            # pointer after each call, so it saves one register fewer and the object is in r31.
+            # The functions after it start 4 bytes earlier, so the .ctors entry and three .data
+            # relocations to them (OnCollision, UpdateBody and the destructor) have addends 4 lower.
+            Object(NonMatching, "Game/UpDownReel.cpp", cflags=cflags_game_cpp),
             # fn_8040C55C's instructions match. fn_8040C3EC (92 words) differs in 15 positional raw
             # words (19 when relocation targets are compared by section and offset: the shared-pool
             # loads and the threshold load at +0x90, which refers to .sdata2+0 in the original and
