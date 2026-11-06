@@ -123,6 +123,9 @@ boost::weak_ptr<Effect::System::EffectElement> fn_8015D7DC(const Fn8040Vector3 *
 /* Calls fn_8015D7DC with the direction (0, 1, 0) (behaviour inferred; the GoalRing gadget
  * stores the result as an effect). */
 boost::weak_ptr<Effect::System::EffectElement> fn_8015D794(const Fn8040Vector3 *position, int id);
+/* Passes 0, matrix, id and 0 to fn_801D2B74 and returns the effect it creates (behaviour and
+ * spellings inferred from its body; the SECRETDOOR gadget passes a frame's world matrix). */
+boost::weak_ptr<Effect::System::EffectElement> fn_8015D754(const Fn8040Matrix34 *matrix, int id);
 }
 
 #endif

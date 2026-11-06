@@ -75,6 +75,9 @@ float fn_800C9938(UnkGadgetOwner_800C9CD0 *owner);
 /* Stores the word at 0x1C of the record that owner points to in *flags (behaviour inferred from
  * its body). Coaster and BreakableOrnament test bit 0x400000 of it. */
 void fn_800C9E70(UnkGadgetOwner_800C9CD0 *owner, u32 *flags);
+/* Returns whether every bit of bits is set in the word at 0x18 of the record that owner points to
+ * (behaviour and spellings inferred from its body; the SECRETDOOR gadget tests bit 0x400000). */
+bool fn_800C9E80(UnkGadgetOwner_800C9CD0 *owner, u32 bits);
 }
 
 /* Gadget (class name from RTTI): a stage object task registered with an owner object. */

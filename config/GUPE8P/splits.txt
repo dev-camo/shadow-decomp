@@ -322,6 +322,15 @@ Game/LongSpring.cpp:
 	.sbss       start:0x805EEBF0 end:0x805EEC00
 	.sdata2     start:0x805F3B00 end:0x805F3B48
 
+Game/SecretDoor.cpp:
+	.text       start:0x8011B5D0 end:0x8011BDA4
+	.ctors      start:0x804A9D3C end:0x804A9D40
+	.rodata     start:0x804BD270 end:0x804BD2B0
+	.data       start:0x80527158 end:0x805271C0
+	.sdata      start:0x805E5B40 end:0x805E5B60
+	.sbss       start:0x805EECF0 end:0x805EECF8
+	.sdata2     start:0x805F3D08 end:0x805F3D38
+
 Game/SetVehicle.cpp:
 	.text       start:0x8011E0A0 end:0x8011E630
 	.rodata     start:0x804BD588 end:0x804BD5D0
