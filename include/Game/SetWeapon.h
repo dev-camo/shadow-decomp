@@ -35,8 +35,10 @@ class Arms {
     void UpdateModels();
     /* Advances the model and the item by dt (name inferred). */
     void Update(float dt);
-    /* Returns fn_80169BE4 of the character info's position: false while a player is closer than
-     * the square root of squaredDistance (name inferred). */
+    /* Returns fn_80169BE4 of the character info's position (name inferred): false when the
+     * squared distance to the vector that fn_80010244 returns for index 0, or also for index 1
+     * while the byte at 0xB2 of lbl_8057D6A0 is set, is below squaredDistance. Whether those
+     * vectors are player positions is not established. */
     bool IsFarFromPlayers(float squaredDistance);
     /* Passes on to the item's fn_8005F09C when there is an item; WeaponTask calls it once, when
      * its time falls to 3 seconds (purpose unknown). */
@@ -60,8 +62,9 @@ CHECK_SIZEOF(SetWeapon::Arms, 0x1C);
 
 /* SetWeapon::WeaponTask (class name from RTTI, with Task as its only base): the task that keeps a
  * weapon lying in the stage for 30 seconds (behaviour inferred). It finishes when the time runs
- * out, when every player is at least 1000 units away or when the weapon has been taken. Member
- * names are inferred from the code. */
+ * out or, while it has arms, when their IsFarFromPlayers(1000000.0f) is true (no vector that
+ * fn_80169BE4 checks has a squared distance below 1000000, that is, none is closer than 1000 units)
+ * or, failing that, when the weapon has been taken. Member names are inferred from the code. */
 class WeaponTask : public Task {
   public:
     WeaponTask(Task *parent, boost::shared_ptr<Arms> arms);
