@@ -422,7 +422,7 @@ RCPtr<CNode> CScene::fn_80366468(const ElementRef *elementRef) {
         ElementData *element = m_scene->layers[elementRef->layer].elements[elementRef->element];
         RCPtr<CNode> node(CSD_NEW CNode(element, m_ref, m_palette, *elementRef, this, m_fonts),
                           RCPtr<CNode>::DeleteRelease());
-        m_nodes.insert(std::make_pair(key, node));
+        m_nodes.insert(std::pair<SceneNodeKey, RCPtr<CNode> >(key, node));
         return node;
     }
     return RCPtr<CNode>(NULL);
