@@ -180,6 +180,9 @@ void fn_8015BDC4(UnkHandleBTarget_8015BE64 *target, int arg0, int arg1);
  * (behaviour inferred; the counterpart of fn_8015D2EC in UnkWorld_80021B08.h for the next virtual
  * function, taking the collision callback's arguments). */
 bool fn_8015AC84(ColliDetectArgs &args);
+/* The same as fn_8015AC84 except for the filter: true when one of the hits belongs to a character
+ * info whose fn_80078B2C (vtable offset 0x18) reports true (behaviour inferred). */
+bool fn_8015B1C4(ColliDetectArgs &args);
 /* The same as fn_8015AA84 except for the filter: callback runs only for the character infos whose
  * fn_80078B2C (vtable offset 0x18) returns true, where fn_8015AA84 tests fn_80078B4C (0x28); what
  * that function reports is not recovered (behaviour inferred; the CircusBall, DashPanel, DashRing,

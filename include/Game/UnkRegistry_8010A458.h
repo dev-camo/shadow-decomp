@@ -22,6 +22,9 @@ class UnkRegistry_8010A458 {
     ~UnkRegistry_8010A458();
     /* Releases one reference to the named entry and erases it after its last user (inferred). */
     void fn_801EB550(const UnkString_8004F888 &name);
+    /* Adds one reference to the named entry, or creates the entry for resource with one reference
+     * when there is none; returns 1 when it created the entry and 0 otherwise (inferred). */
+    int fn_801EB660(const UnkString_8004F888 &name, void *resource);
 
     /* 0x00 */ UnkRegistryStorage_8010A458 field_0x0;
 

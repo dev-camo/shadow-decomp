@@ -29,14 +29,20 @@ extern "C" {
 UnkManager_80009548 *fn_80009548(void);
 /* Behaviour inferred from the CityLaser gadget's call only: three floats and an integer (0). */
 void fn_8000D664(UnkManager_80009548 *manager, int arg1, float arg2, float arg3, float arg4);
-/* Returns a vector that the BDTrue gadget uses as angles (behaviour inferred). */
-UnkRotation3 fn_80109B80(UnkManager_80009548 *manager, int arg1);
+/* Returns the angles that fn_8000A610 computes from the entry with the given index (behaviour
+ * inferred). The BDTrue and HINTRING gadgets use them as rotation angles. */
+UnkRotation3 fn_80109B80(UnkManager_80009548 *manager, int index);
 /* Returns the address of the vector 0x8 bytes into the entry with the given index (behaviour
  * inferred from its body). BDHologram and RainEffect pass 0 for index. */
 Fn8040Vector3 *fn_80010244(UnkManager_80009548 *manager, int index);
 /* Looks up the entry with the given index (behaviour inferred from its callers: fn_80010244 and
  * fn_800101F8 return the addresses 0x8 and 0x14 bytes into the entry). */
 boost::shared_ptr<UnkEntry_8000D0F0> fn_8000D0F0(UnkManager_80009548 *manager, int index);
+/* Returns angles whose x and y come from the direction of the difference of the vector at view and
+ * the vector 0xC bytes after it, and whose z is the float 0x18 bytes after view, copied unchanged
+ * (behaviour inferred from its body). fn_80109B80 passes field_0x8 of an entry, so the second
+ * vector is field_0x14 and the float is the word at 0x20 of the entry. */
+UnkRotation3 fn_8000A610(const Fn8040Vector3 *view);
 /* Returns the address of the vector 0x14 bytes into the entry with the given index (behaviour
  * inferred from its body). RainEffect passes 0 for index and subtracts the translation of the
  * entry's matrix at 0x6C from the vector. */

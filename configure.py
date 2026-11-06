@@ -2165,6 +2165,36 @@ config.libs = [
             Object(Matching, "Game/Fire.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Fruit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/GoalRing.cpp", cflags=cflags_game_cpp),
+            # Compared with the split original object (USA, Japan and PAL alike), with the 60
+            # symbols the link discards set aside (46 weak copies, 14 locals), 57 of the 60
+            # functions have identical words and relocations (targets resolved to their symbols).
+            # UpdateBody (0x8010A1DC, USA) is 109 words against 108: the original's state dispatch
+            # compares with 2 first and has one unreachable branch, as a switch with a fourth, empty
+            # case 3 compiles, where this build compares with 1 first; nothing in the file stores 3,
+            # so the source keeps the three cases. Raw words in USA: by position, 79 of the first
+            # 108 differ and this build has 1 more; with the instructions aligned by mnemonic, 6
+            # paired words differ, 1 is original-only and 2 are source-only. The vector destructor
+            # of the manager that fn_80109D64 returns (0x80109E2C) is 19 words against 20: the
+            # original tests the object pointer a second time before calling the base destructor. By
+            # position, 13 of the 19 common words differ and the original has 1 more; aligned, 1
+            # paired word differs and 1 is original-only. The constructor differs in 3 of its 181
+            # words, all immediates that are offsets into .rodata (below). Layout: this build emits
+            # the __vector_obj destructor, __alloc and __cap right after the vector destructor and
+            # __data before the addressof functions, where the original emits them with clear after
+            # the bind functions, so the functions from 0x80109E7C on sit 0x7C to 0x88 bytes later
+            # here. Data, by contents with the discarded copies set aside: .data, .sdata and .sdata2
+            # match; the original's .rodata has 0x1C zero bytes after the three axes (the strings
+            # after them sit 0x1C lower here) and ends with the string "string constructor: n >
+            # max_size\n", which this object lacks. In .sbss the original has both accessor guard
+            # bytes after the last boost tag object and then both pointers, where this build puts
+            # each guard after its pointer; in .bss it has both destructor-chain records before the
+            # registry and the manager, where this build interleaves them. Section flags: the
+            # original's .sdata2 is read-only (A), this object's is writable (WA), in all three
+            # regions. Linked in place of the original (USA), this object keeps 0x320 bytes of
+            # .rodata against the original's 0x360 and 0x30 bytes of .sbss (up to the next
+            # 8-byte-aligned object) against 0x28, the extra alignment coming from the interleaved
+            # guards and pointers; .data, .bss, .sdata and .sdata2 keep the original sizes.
+            Object(NonMatching, "Game/HintRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetVehicle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetWeapon.cpp", cflags=cflags_game_cpp),
             # 52 of 53 functions are identical in every word and relocation. The hit callback
