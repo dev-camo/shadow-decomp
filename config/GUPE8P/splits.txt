@@ -321,6 +321,14 @@ Game/Spring.cpp:
 	.sbss       start:0x805EED50 end:0x805EED70
 	.sdata2     start:0x805F3E98 end:0x805F3EF8
 
+Game/Switch.cpp:
+	.text       start:0x801230D4 end:0x8012459C
+	.rodata     start:0x804BDAD8 end:0x804BDCE8
+	.data       start:0x80527A90 end:0x80527BE8
+	.sdata      start:0x805E5CB8 end:0x805E5D00
+	.sbss       start:0x805EED90 end:0x805EEDB0
+	.sdata2     start:0x805F3F40 end:0x805F3F70
+
 Game/CandleStick.cpp:
 	.text       start:0x8012C900 end:0x8012DACC
 	.ctors      start:0x804A9D50 end:0x804A9D54

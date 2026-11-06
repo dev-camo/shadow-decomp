@@ -268,6 +268,14 @@ Game/Spring.cpp:
 	.sbss       start:0x805EF358 end:0x805EF378
 	.sdata2     start:0x805F44C0 end:0x805F4520
 
+Game/Switch.cpp:
+	.text       start:0x80123480 end:0x80124948
+	.rodata     start:0x804BE170 end:0x804BE380
+	.data       start:0x80528130 end:0x80528288
+	.sdata      start:0x805E62D8 end:0x805E6320
+	.sbss       start:0x805EF398 end:0x805EF3B8
+	.sdata2     start:0x805F4568 end:0x805F4598
+
 Game/FireRing.cpp:
 	.text       start:0x8013564C end:0x80136E64
 	.rodata     start:0x804BF910 end:0x804BFB28
