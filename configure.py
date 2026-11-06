@@ -2231,6 +2231,33 @@ config.libs = [
             # no counterpart; aligned (instructions matched up): no pair differs, 6 words are only
             # in the original and 2 only in this build.
             Object(NonMatching, "Game/SecretDoor.cpp", cflags=cflags_game_cpp),
+            # Relocatable comparison (compiler literals paired by contents), the same in USA
+            # (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P): 33 of the 34 functions of the original
+            # split have the original's instructions and relocation targets. UpdateBody (USA
+            # 0x8011C1E0) searches the key list with a flag that is cleared before the loop and set
+            # at a match; the original sets 1 at the match and 0 when the loop ends, then tests that
+            # value. Both are 61 words with the same relocation targets. Positional (word i against
+            # word i): 12 words differ (0x8011C234-0x8011C264); aligned (instructions matched up): 7
+            # pairs differ, 3 words are only in the original and 3 only in this build. The data
+            # contents match once the 68 linker-discarded copies (50 weak, 18 local) are set aside,
+            # with these differences: the original's .sdata2 is allocatable (A, flags 0x2) and the
+            # compiled one writable and allocatable (WA, 0x3); the compiled .rodata, .bss, .sdata
+            # and .sbss end without the original's alignment padding (0xF2 against 0xF8, 0x14
+            # against 0x18, 0x24 against 0x28, 0xD against 0x10); and the RTTI name strings are
+            # pooled in another order: the original pools "Task", "Gadget" and
+            # "SecretKey::SecretKey" after the constructor's "col" and "mtn" and after the
+            # allocator's "Memory allocation failure", where this build pools them first. Linked in
+            # place of the original object (USA), with every function the same size, 38 words
+            # differ: 16 in .text (the 12 UpdateBody words, 0x8011C588 in the allocator, 0x8011C76C,
+            # 0x8011C814 and 0x8011C828 in the constructor), 13 in .rodata (0x804BD370-0x804BD3A0),
+            # 3 in .sdata (the name words of the Task, Gadget and SecretKey RTTI records) and 6 in
+            # .sdata2 (0x805F3D38-0x805F3D4C). A USA test build with a second class, whose virtual
+            # destructor is defined after SecretKey's members, gives the original's string order,
+            # leaving only the 12 UpdateBody words different. The PAL RC1 prototype has the RTTI
+            # name "SecretKey::VacuumSecretKey" (0x804BA15C), whose record a table references; the
+            # retail executables lack that name. That a class removed from retail explains the
+            # pool order is inferred.
+            Object(NonMatching, "Game/SecretKey.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetVehicle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetWeapon.cpp", cflags=cflags_game_cpp),
             # 52 of 53 functions are identical in every word and relocation. The hit callback

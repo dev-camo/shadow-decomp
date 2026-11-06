@@ -33,13 +33,18 @@ CHECK_SIZEOF(UnkEntry_80178B5C, 0x4C);
 
 /* The object that fn_80079808 returns: a static object (at 0x80575FBC in the USA release) that the
  * function constructs and caches on first use (placeholder name; the original class is unknown).
- * Only the members that FallBuildingHolder uses are mapped; its size is not known. */
+ * Only the members that FallBuildingHolder and the SECRETKEY gadget's file use are mapped; its size
+ * is not known. */
 class UnkManager_80079808 {
   public:
     /* 0x000 */ u8 field_0x0[0x70C];
     /* 0x70C */ UnkState_8016F0CC field_0x70C;
+    /* The SECRETKEY gadget's file passes its address to fn_803357F4 when it adds a key. It follows
+     * the two mapped entries of field_0x70C; whether it belongs to that record is unknown. */
+    /* 0x724 */ u32 field_0x724;
 };
 CHECK_OFFSETOF(UnkManager_80079808, field_0x70C, 0x70C);
+CHECK_OFFSETOF(UnkManager_80079808, field_0x724, 0x724);
 
 extern "C" {
 UnkManager_80079808 *fn_80079808(void);
@@ -58,6 +63,9 @@ UnkEntry_80178B5C *fn_80178B5C(UnkManager_80079808 *manager, int index);
  * field_0xC[index] (behaviour inferred from its body). The attack callback of FallBuildingHolder
  * passes 2 and 200. */
 void fn_8016F5B8(UnkCounters_8016F5B8 *counters, int index, int amount);
+/* Stores the word at 0x90 of the global at 0x8057D6A0 in *value (behaviour inferred from its
+ * body). */
+void fn_803357F4(u32 *value);
 }
 
 #endif

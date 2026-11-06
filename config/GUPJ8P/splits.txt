@@ -287,6 +287,15 @@ Game/SecretDoor.cpp:
 	.sbss       start:0x805EF2F8 end:0x805EF300
 	.sdata2     start:0x805F4330 end:0x805F4360
 
+Game/SecretKey.cpp:
+	.text       start:0x8011C150 end:0x8011CF00
+	.rodata     start:0x804BD948 end:0x804BDA40
+	.data       start:0x80527860 end:0x805278D0
+	.bss        start:0x80580200 end:0x80580218
+	.sdata      start:0x805E6180 end:0x805E61A8
+	.sbss       start:0x805EF300 end:0x805EF310
+	.sdata2     start:0x805F4360 end:0x805F4378
+
 Game/SetVehicle.cpp:
 	.text       start:0x8011E44C end:0x8011E9DC
 	.rodata     start:0x804BDC20 end:0x804BDC68
