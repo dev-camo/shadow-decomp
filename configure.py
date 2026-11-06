@@ -2214,6 +2214,22 @@ config.libs = [
             #   further relocation-target difference. Aligned: 0 paired-differing, 6 original-only,
             #   6 source-only words.
             Object(NonMatching, "Game/ItemBox.cpp", cflags=cflags_game_cpp),
+            # 12 of the 13 functions are identical in every word and relocation. The data contents
+            # and relocations match once the 44 linker-discarded copies (9 local, 35 weak) are set
+            # aside, with these differences in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P): the
+            # original's .sdata2 is allocatable (A, flags 0x2) and the compiled one writable and
+            # allocatable (WA, 0x3), and the compiled sections end without the original's alignment
+            # padding (.rodata 0x3F bytes against 0x40, .data 0x64 against 0x68, .sbss 0x4 against
+            # 0x8). Because RemoveLocks is 16 bytes shorter, the functions after it (UpdateBody, the
+            # destructor, the constructor, RemoveLockPart, a weak_ptr constructor and the static
+            # initialiser) start 0x10 lower in .text. RemoveLocks (USA 0x8011B754) is 14 words
+            # against the original's 18: the original stores zero into both members of its
+            # part-walk context (0x8011B76C and 0x8011B770) and then stores the arguments over
+            # them, where this build stores only the arguments, in another order. Positional (word
+            # i against word i): 12 of the 14 common words differ and the original's last 4 have
+            # no counterpart; aligned (instructions matched up): no pair differs, 6 words are only
+            # in the original and 2 only in this build.
+            Object(NonMatching, "Game/SecretDoor.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetVehicle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetWeapon.cpp", cflags=cflags_game_cpp),
             # 52 of 53 functions are identical in every word and relocation. The hit callback
