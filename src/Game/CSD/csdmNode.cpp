@@ -144,16 +144,16 @@ void CNode::ClearColor(int corner) {
     m_pattern->ClearColor(corner);
 }
 
+s32 CNode::GetValue(int index) const {
+    return m_pattern->GetValue(index);
+}
+
 void CNodeListenerSource::fn_8036AAC8(void (CNodeListener::*event)(CNode *), CNode *node) {
     std::list<CNodeListener *>::iterator listener;
 
     for (listener = m_listeners.begin(); listener != m_listeners.end(); ++listener) {
         ((*listener)->*event)(node);
     }
-}
-
-s32 CNode::GetValue(int index) const {
-    return m_pattern->GetValue(index);
 }
 
 void CNode::fn_8036A954() {

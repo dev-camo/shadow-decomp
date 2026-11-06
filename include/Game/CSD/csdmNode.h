@@ -31,6 +31,7 @@ class CNodeListener {
 
     /* 0x04 */ std::list<CNode *> m_nodes;
 };
+/* Size of the declared view, not the unknown complete listener object. */
 CHECK_SIZEOF(Chao::CSD::CNodeListener, 0x10);
 
 /* The two objects a node creates in the block it allocates for them: the pattern of its entry
