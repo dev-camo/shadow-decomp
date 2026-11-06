@@ -187,6 +187,14 @@ Game/Balloon.cpp:
 	.sbss       start:0x805EF940 end:0x805EF978
 	.sdata2     start:0x805F44C0 end:0x805F4538
 
+Game/BlastBreak.cpp:
+	.text       start:0x800ECD2C end:0x800ED828
+	.rodata     start:0x804BA2B8 end:0x804BA3B8
+	.data       start:0x80525B08 end:0x80525B78
+	.sdata      start:0x805E63C8 end:0x805E63F0
+	.sbss       start:0x805EF9B8 end:0x805EF9C8
+	.sdata2     start:0x805F45A8 end:0x805F45C0
+
 Game/Bomb.cpp:
 	.text       start:0x800EDDD0 end:0x800F1734
 	.rodata     start:0x804BA410 end:0x804BA958
