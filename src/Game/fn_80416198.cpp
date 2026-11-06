@@ -759,7 +759,7 @@ MotionNode *fn_8041D448(MotionNode *node, unsigned int nodeId) {
 
 void fn_8041E420(MotionScaleStep *step) {
     if (step->scale->x != 1.0f || step->scale->y != 1.0f || step->scale->z != 1.0f) {
-        fn_8040B790(TopMatrix(), step->scale);
+        fn_8040B790(TopMatrix(), *step->scale);
     }
 }
 
@@ -791,6 +791,6 @@ void fn_8041E5E0(MotionOffsetStep *step) {
 /* The same as fn_8041E420. */
 void fn_8041FD0C(MotionScaleStep *step) {
     if (step->scale->x != 1.0f || step->scale->y != 1.0f || step->scale->z != 1.0f) {
-        fn_8040B790(TopMatrix(), step->scale);
+        fn_8040B790(TopMatrix(), *step->scale);
     }
 }

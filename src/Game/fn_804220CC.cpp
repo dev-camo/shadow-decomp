@@ -787,7 +787,7 @@ bool EffCmdLaunchExec::Update(float deltaTime) {
         fn_8040B80C(&m_transform, m_rotation.z);
         fn_8040B848(&m_transform, m_rotation.y);
         fn_8040B884(&m_transform, m_rotation.x);
-        fn_8040B790(&m_transform, &m_scale);
+        fn_8040B790(&m_transform, m_scale);
         if ((parent->m_definitionFlags & ARRANGER_LINK_TRANSFORM) != 0) {
             child->SetMatrixSource(&m_transform);
         } else {
@@ -818,7 +818,7 @@ bool EffCmdLaunchExec::Update(float deltaTime) {
         fn_8040B80C(&m_transform, m_rotation.z);
         fn_8040B848(&m_transform, m_rotation.y);
         fn_8040B884(&m_transform, m_rotation.x);
-        fn_8040B790(&m_transform, &m_scale);
+        fn_8040B790(&m_transform, m_scale);
     }
     return true;
 }

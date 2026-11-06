@@ -265,9 +265,9 @@ Fn8040Vector3 fn_8040B67C(const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vec
 Fn8040Matrix34 *fn_80325384(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Sets the matrix to the identity. */
 void fn_8040B6F8(Fn8040Matrix34 *matrix);
-/* Scales the matrix's three rotation columns by x, y and z, or by the components of a vector. */
+/* Scales the matrix's three rotation columns by x, y and z (fn_8040B790 below takes them as a
+ * vector). */
 void fn_8040B720(Fn8040Matrix34 *matrix, float x, float y, float z);
-void fn_8040B790(Fn8040Matrix34 *matrix, const Fn8040Vector3 *scale);
 /* The three rotations that fn_8001E070 builds from the y, x and z angles of a rotation vector:
  * multiply the matrix by the rotation about the y, x and z axes. */
 void fn_8040B848(Fn8040Matrix34 *matrix, float angle);
@@ -450,6 +450,11 @@ extern "C" Fn8040Vector3 fn_8040D0AC(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_8040D118(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_8040D044(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_80016284(const Fn8040Vector3 &vector);
+
+/* Scales the matrix's three rotation columns by the components of scale. The reference is
+ * inferred (the code is that of a pointer parameter): the WEIGHT gadget passes a temporary scale
+ * vector (0x8012B0CC), at r1+0x8 below its named locals, where MWCC places temporaries. */
+extern "C" void fn_8040B790(Fn8040Matrix34 *matrix, const Fn8040Vector3 &scale);
 
 /* Returns whether the value is close enough to 0 to count as 0 (behaviour inferred). */
 extern "C" bool fn_8000A950(float value);

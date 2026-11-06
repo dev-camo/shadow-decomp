@@ -207,16 +207,16 @@ void fn_8040B80C(Fn8040Matrix34 *matrix, float angle) {
     fn_8040BAC4(matrix, &rotation);
 }
 
-void fn_8040B790(Fn8040Matrix34 *matrix, const Fn8040Vector3 *scale) {
-    matrix->values[0][0] *= scale->x;
-    matrix->values[0][1] *= scale->y;
-    matrix->values[0][2] *= scale->z;
-    matrix->values[1][0] *= scale->x;
-    matrix->values[1][1] *= scale->y;
-    matrix->values[1][2] *= scale->z;
-    matrix->values[2][0] *= scale->x;
-    matrix->values[2][1] *= scale->y;
-    matrix->values[2][2] *= scale->z;
+void fn_8040B790(Fn8040Matrix34 *matrix, const Fn8040Vector3 &scale) {
+    matrix->values[0][0] *= scale.x;
+    matrix->values[0][1] *= scale.y;
+    matrix->values[0][2] *= scale.z;
+    matrix->values[1][0] *= scale.x;
+    matrix->values[1][1] *= scale.y;
+    matrix->values[1][2] *= scale.z;
+    matrix->values[2][0] *= scale.x;
+    matrix->values[2][1] *= scale.y;
+    matrix->values[2][2] *= scale.z;
 }
 
 void fn_8040B720(Fn8040Matrix34 *matrix, float x, float y, float z) {
