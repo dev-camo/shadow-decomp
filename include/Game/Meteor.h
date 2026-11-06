@@ -39,8 +39,8 @@ class Meteor : public Gadget {
     /* Reads the position, rotation and parameters from the owner and starts over (name
      * inferred). */
     void ReadOwner(UnkGadgetOwner_800C9CD0 *owner);
-    /* Places the model and the object at the character info's position and rotation (name
-     * inferred). */
+    /* Places the model at the character info's position and rotation, and moves the object to
+     * the character info's position only (name inferred). */
     void UpdateModelMatrix();
     /* The callback of the meteor's attack object for an attack on it (name inferred). */
     void OnAttack(SonicteamUSA::System::CharaColli::AttackCallbackParam &param);
