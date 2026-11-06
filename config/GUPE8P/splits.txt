@@ -266,6 +266,15 @@ Game/CatchStick.cpp:
 	.sbss       start:0x805EE9A0 end:0x805EE9C8
 	.sdata2     start:0x805F3650 end:0x805F3688
 
+Game/Container.cpp:
+	.text       start:0x800F64D0 end:0x800F8D2C
+	.ctors      start:0x804A9D28 end:0x804A9D2C
+	.rodata     start:0x804B9F70 end:0x804BA340
+	.data       start:0x80525388 end:0x80525560
+	.sdata      start:0x805E5528 end:0x805E5578
+	.sbss       start:0x805EE9C8 end:0x805EEA18
+	.sdata2     start:0x805F3688 end:0x805F3708
+
 Game/DashPanel.cpp:
 	.text       start:0x800FEFF0 end:0x80100198
 	.rodata     start:0x804BABF0 end:0x804BAD80

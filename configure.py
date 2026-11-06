@@ -2125,6 +2125,45 @@ config.libs = [
             # (the original's copy looks like the out-of-line copy of an inline function).
             Object(NonMatching, "Game/Tornado.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CityChaosEmerald.cpp", cflags=cflags_game_cpp),
+            # Relocatable comparison with the split original object (local names paired by
+            # position), the same in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P): 81 of its 83
+            # functions have identical instruction words and relocation targets.
+            # - ContainerNormal::OnCommand (USA 0x800F7290) is 257 words against 258: in the
+            #   VacuumCommand case the original copies the command pointer (mr r29,r31 at
+            #   OnCommand+0x338, before the fn_80161880 call) and passes that copy to fn_80254384,
+            #   where this build passes r31 itself. Positional: 62 of the 257 common words differ
+            #   and 1 original word is unpaired; aligned: 12 pairs differ (11 branch displacements
+            #   across the missing word and the register of that argument), 1 word is only in the
+            #   original and none only in this build. The other calls have the original's targets.
+            # - ContainerNormal::Update (USA 0x800F7890) is 218 words against 212: the original
+            #   calls the out-of-line copy of ContainerBehavior::GetPosition (0x800EF448) with
+            #   m_behavior and m_charInfo loaded directly (3 words at Update+0x148), where this
+            #   build inlines GetPosition: it calls both shared pointers' operator-> out of line and
+            #   then Fn8040Vector3::operator= (9 words). The original calls that copy from all six
+            #   of its callers. Measured in USA (GUPE8P): with Fn8040Vector3::operator= defined in
+            #   its class body, GetPosition stays a call and Update is identical to the original,
+            #   but UpdateMotion (80 to 94 words), UpdateHeldPosition (32 to 36), OnCommand (258 to
+            #   281) and the out-of-line GetPosition (7 words against the original's 11) then
+            #   inline the assignment, which the original calls out of line in all four. So that is
+            #   not the original's form, and why the original keeps the call is not established.
+            #   Positional (word i against word i): 127 of the 212 common words differ and 6 build
+            #   words are unpaired; aligned (instructions matched up): 5 pairs differ (the 2 loads
+            #   and 3 branches across the extra words), no word is only in the original and 6 only
+            #   in this build, and the matched call has operator= as its target instead of
+            #   GetPosition. The other calls have the original's targets.
+            # Data, compared object by object with the 131 compiled copies that are absent from the
+            # original split set aside (94 weak and 3 local functions, 6 weak vtables, 4 .data, 9
+            # .rodata, 7 .sdata and 8 .sbss locals): every original object matches in bytes and
+            # relocation targets except the state jump table, whose entries for the states after
+            # STATE_WAITING point 0x18 bytes later into Update.
+            # A link with the compiled object discards 130 of those copies but keeps the weak
+            # shared_ptr<ContainerBehavior>::operator-> (8 bytes, after Update), which only this
+            # build's Update calls. Measured in that link: the four functions from SetTransform to
+            # Update start 4 bytes earlier (OnCommand's missing word), the functions after Update
+            # and the code after this file 0x1C bytes later (Update's extra 0x18 bytes and
+            # operator->'s 8), and the later sections (.ctors, .rodata, .data, .sdata, .sbss,
+            # .sdata2) 0x20 bytes later.
+            Object(NonMatching, "Game/Container.cpp", cflags=cflags_game_cpp),
             # Every function but the static initialiser is identical, and the data matches once
             # the weak copies the linker discards are removed. The static initialiser differs in 2
             # words: the original loads the saved link register before it stores the startup float
