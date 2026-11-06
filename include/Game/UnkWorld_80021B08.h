@@ -11,6 +11,7 @@
 /* The world object that owns the probes (placeholder name; see fn_80021B08). The functions below
  * create and query its probes, which are CharaColliBase objects. */
 class UnkWorld_80021B08;
+struct _stMtnPlayWork;
 namespace SonicteamUSA {
 namespace System {
 namespace CharaColli {
@@ -131,6 +132,15 @@ fn_800C86A8(UnkWorld_80021B08 *world, void *collision, const Fn8040Vector3 *posi
 /* Tests the segment from start to end against the world; when it meets something, stores the
  * point in hit (unless hit is null) and returns true (behaviour inferred from its body). */
 bool fn_8015D61C(Fn8040Vector3 *hit, const Fn8040Vector3 &start, const Fn8040Vector3 &end);
+/* Builds a 0x70-byte probe (constructor at 0x800C3B4C) for the character info that owner refers
+ * to from the collision data collision and the motion control motion, registers it with the world
+ * and returns it (behaviour inferred from its body; arg4, which the constructor receives as a
+ * 16-bit value, and arg5 are passed on and not understood). The TurnOver gadget passes the file
+ * that GadgetModelInfo's fn_801616CC returns, the motion of the same part, 3 and 0. Passing owner
+ * by const reference is inferred, as for fn_800C86A8. */
+boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>
+fn_800C7F7C(UnkWorld_80021B08 *world, const boost::weak_ptr<CharInfo> &owner, void *collision,
+            _stMtnPlayWork *motion, u16 arg4, int arg5);
 }
 
 #endif

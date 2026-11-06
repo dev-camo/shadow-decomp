@@ -268,6 +268,12 @@ extern "C" boost::shared_ptr<GadgetModelInfo> fn_8015F9D8(int arg0, int id);
  * (behaviour inferred from the ball, which looks it up with fn_80208888). */
 extern "C" const char *fn_801626D8(GadgetModelInfo *model);
 
+/* Finds the first entry of the table at 0x18 of the object at 0x30 (count at 0x1C, entries 0x18
+ * bytes apart) whose word at 0x14 equals id, and returns what fn_80012700 gives for the model's
+ * word at 0x70 and the entry's name at 0x4; null when there is no such entry (behaviour from its
+ * body). The TurnOver gadget passes the result to fn_800C7F7C as the probe's collision data. */
+extern "C" void *fn_801616CC(GadgetModelInfo *model, int id);
+
 /* Native atomic callback; its original free/static-member spelling is unknown. */
 extern "C" RpAtomic *fn_80164064(RpAtomic *atomic, void *data);
 

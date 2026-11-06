@@ -73,6 +73,10 @@ void fn_801E7108(boost::shared_ptr<Target> &object);
 /* Creates an object for the character info (the number is not understood; Coaster passes 0x2000,
  * ArkCannon 0xA400 and 0x8800, and BombingWall 0xA000). */
 boost::shared_ptr<Target> fn_801E7128(boost::weak_ptr<CharInfo> info, int arg1);
+/* Copies vector to the object's 0x14 (with the vector's assignment operator, 0x800091D0) and sets
+ * bit 1 of m_flags (behaviour from its body; the meaning of both is unknown). Passing vector as a
+ * pointer is inferred: the bytes pass its address. */
+void fn_801E73B0(Target *object, const Fn8040Vector3 *vector);
 }
 
 #endif
