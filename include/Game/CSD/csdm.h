@@ -80,10 +80,11 @@ class CFontListRef {
 };
 CHECK_SIZEOF(Chao::CSD::CFontListRef, 0xC);
 
-/* A reference to an element of a scene: the layer and the element within it (inferred from the
- * use as an index of the palette's layers and entries). */
+/* A reference to a scene element: its name, layer and element index (inferred from lookups
+ * and use as indices into the palette). */
 struct ElementRef {
-    /* 0x00 */ s32 field_0x0;
+    /* Null marks a failed lookup; the two indices are unspecified in that case. */
+    /* 0x00 */ const char *field_0x0;
     /* 0x04 */ s32 layer;
     /* 0x08 */ s32 element;
 };
@@ -216,7 +217,7 @@ class CNode : public CElementDataRef, public CNodeListenerSource, public CBase {
     /* 0x1C */ CallbackList m_callbacks;
     /* 0x28 */ CMotionPattern *m_pattern;
     /* 0x2C */ CFontList *m_fonts;
-    /* 0x30 */ s32 field_0x30;
+    /* 0x30 */ const char *field_0x30;
     /* 0x34 */ CScene *m_scene;
     /* These handles share their native constructor and destructor with CScene+0xC4.
      * The payload is unrecovered; native deletion calls the global operator delete. */

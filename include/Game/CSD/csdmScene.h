@@ -65,15 +65,28 @@ class CScene;
 class CProject;
 class CTexList;
 
+/* The listener's list-owning base, identified by its constructor and destructor (name unknown).
+ * Scene pointers are non-owning back-references. Its pure destructor has an out-of-line body. */
+class UnkSceneListenerBase_80365054 {
+  public:
+    UnkSceneListenerBase_80365054();
+    virtual ~UnkSceneListenerBase_80365054() = 0;
+
+    void fn_80367A70(CScene *scene);
+
+  protected:
+    /* 0x04 */ std::list<CScene *> m_scenes;
+};
+CHECK_SIZEOF(Chao::CSD::UnkSceneListenerBase_80365054, 0x10);
+
 /* What a scene reports to its listeners (class name and event names inferred from the vtables
  * 0x8055FFB0 and 0x8055FF88): six event slots and a destructor that releases the listener from
  * the scenes it listens to. Persistent listeners share one list in CSceneListenerSource; the
  * scene's six callback lists hold a separate interface. The
  * first two slots report the end boundary at positive speed and the start boundary at negative
  * speed (from CMotionEndPolicy). The next two receive the scene before and after palette update;
- * the final two receive the scene around drawing. The listener keeps the scenes it
- * listens to in a container at 0x4, which is not modelled yet. */
-class CSceneListener : public CBase {
+ * the final two receive the scene around drawing. */
+class CSceneListener : public UnkSceneListenerBase_80365054, public CBase {
   public:
     CSceneListener();
     virtual ~CSceneListener();
@@ -84,7 +97,8 @@ class CSceneListener : public CBase {
     virtual void fn_8036F974(CScene *scene) {}
     virtual void fn_8036F978(CScene *scene) {}
 
-    /* 0x04 */ u8 field_0x4[0xC];
+    /* Removes a scene back-reference without modifying that scene's listener list. */
+    void fn_8036542C(CScene *scene);
 };
 CHECK_SIZEOF(Chao::CSD::CSceneListener, 0x10);
 
@@ -104,6 +118,9 @@ class CMotionEndPolicy : public CSceneListener {
     virtual void OnReachEnd(CScene *scene);
     virtual void OnReachStart(CScene *scene);
 
+    /* Copies the two boundary actions, leaving listener connections unchanged. */
+    void fn_803676D4(const CMotionEndPolicy &other);
+
     /* 0x10 */ MotionEndAction m_endAction;
     /* 0x14 */ MotionEndAction m_startAction;
 };
@@ -119,6 +136,8 @@ class CSceneListenerSource {
 
     /* Invokes the selected listener member on each persistent listener. */
     void fn_80365478(void (CSceneListener::*event)(CScene *), CScene *scene);
+    /* Removes both sides of the non-owning listener connection. */
+    void fn_80365958(CSceneListener *listener);
 
     /* 0x04 */ std::list<CSceneListener *> m_listeners;
 };
@@ -141,6 +160,9 @@ CHECK_SIZEOF(Chao::CSD::CSceneCallback, 0x4);
 struct SceneNodeKey {
     /* 0x00 */ s32 layer;
     /* 0x04 */ s32 element;
+
+    SceneNodeKey(s32 layerIndex, s32 elementIndex);
+    SceneNodeKey(const SceneNodeKey &other);
 };
 CHECK_SIZEOF(Chao::CSD::SceneNodeKey, 0x8);
 
@@ -159,6 +181,7 @@ class CScene : public CSceneDataRef, public CSceneListenerSource, public CBase {
 
     CScene();
     virtual ~CScene();
+    /* other must be a CScene (inferred from the derived playback and handle fields read). */
     virtual void Copy(const CSceneDataRef &other);
 
     /* Frame update, drawing and sender conversion in their native virtual order. The update
@@ -166,6 +189,22 @@ class CScene : public CSceneDataRef, public CSceneListenerSource, public CBase {
     virtual void fn_803669B8(f32 step);
     virtual void fn_803667A4(const RCPtr<CTexList> &textures);
     virtual CScene *GetSender();
+
+    /* Initializes playback state and allocates the placement-object block when absent. */
+    void fn_80367500();
+    /* Attaches scene data, its project key and optional fonts (signature inferred). */
+    void fn_803648DC(const SceneData *scene, const RCPtr<unsigned char> &ref, const char *key,
+                     CProject *project, const CFontListRef *fonts);
+    /* Replaces fonts in this scene and its cached nodes, then rebuilds with non-null fonts. */
+    void fn_80364538(const CFontListRef *fonts);
+    const char *fn_803674F8() const;
+    f32 fn_80365424() const;
+    /* Invokes the virtual update with the library's mutable default step. */
+    void fn_80366F9C();
+    /* Finds or creates the cached node for an element; null gives an empty reference. */
+    RCPtr<CNode> fn_80366468(const ElementRef *elementRef);
+    ElementRef fn_80366640(const char *name) const;
+    RCPtr<CNode> fn_803666B4(const char *name);
 
     /* The first and last frame of a motion (by name or by its index in the scene's data); a name
      * the scene does not have, or data older than version 2, gives the frame range of the motion
@@ -232,6 +271,7 @@ class CScene : public CSceneDataRef, public CSceneListenerSource, public CBase {
     /* Store the two motion-end policy actions (working signatures inferred). */
     void fn_803659CC(MotionEndAction action);
     void fn_803659DC(MotionEndAction action);
+    MotionEndAction fn_803659D4() const;
 
     /* 0x1C */ CallbackList m_endCallbacks;
     /* 0x28 */ CallbackList m_startCallbacks;
@@ -239,8 +279,9 @@ class CScene : public CSceneDataRef, public CSceneListenerSource, public CBase {
     /* 0x40 */ CallbackList m_afterUpdateCallbacks;
     /* 0x4C */ CallbackList m_beforeDrawCallbacks;
     /* 0x58 */ CallbackList m_afterDrawCallbacks;
-    /* 0x64 */ CSceneMotion *m_motion;
-    /* 0x68 */ CFontList *m_fonts;
+    /* Base-handle pointers: native Copy passes them to the owning classes' handle constructors. */
+    /* 0x64 */ CSceneMotionRef *m_motion;
+    /* 0x68 */ CFontListRef *m_fonts;
     /* 0x6C */ CMotionPalette *m_palette;
     /* 0x70 */ f32 m_lastFrame;
     /* 0x74 */ f32 m_frame;
@@ -254,7 +295,9 @@ class CScene : public CSceneDataRef, public CSceneListenerSource, public CBase {
     /* 0xA8 */ s32 m_motionIndex;
     /* 0xAC */ f32 field_0xAC;
     /* 0xB0 */ NodeMap m_nodes;
-    /* 0xC0 */ u8 field_0xC0[0x8];
+    /* The project compares this key with strcmp (type inferred). */
+    /* 0xC0 */ const char *field_0xC0;
+    /* 0xC4 */ RCPtr<UnkNodePayload_80364C40> field_0xC4;
     /* The project the scene was created by, set while it belongs to one (name inferred: the
      * project's destructor clears it in each of its scenes). */
     /* 0xC8 */ CProject *m_project;
@@ -269,10 +312,15 @@ CHECK_OFFSETOF(Chao::CSD::CScene, m_rootPattern, 0x88);
 CHECK_OFFSETOF(Chao::CSD::CScene, m_paused, 0x8C);
 CHECK_OFFSETOF(Chao::CSD::CScene, m_endPolicy, 0x90);
 CHECK_OFFSETOF(Chao::CSD::CScene, m_motionIndex, 0xA8);
+CHECK_OFFSETOF(Chao::CSD::CScene, field_0xC0, 0xC0);
+CHECK_OFFSETOF(Chao::CSD::CScene, field_0xC4, 0xC4);
 CHECK_OFFSETOF(Chao::CSD::CScene, m_project, 0xC8);
 CHECK_SIZEOF(Chao::CSD::CScene, 0xD0);
 CHECK_SIZEOF(Chao::CSD::CScene::CallbackList, 0xC);
 CHECK_SIZEOF(Chao::CSD::CScene::NodeMap, 0x10);
+
+/* Stores the default step used by the scene's no-argument update (name unknown). */
+void fn_803649F8(f32 step);
 
 } // namespace CSD
 } // namespace Chao

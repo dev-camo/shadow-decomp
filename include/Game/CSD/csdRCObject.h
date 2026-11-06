@@ -6,10 +6,10 @@
 /* The library's reference-counting pointer (class name from the game's RTTI, which names
  * RCPtr<Chao::CSD::CTexList>::RCObject<Chao::CSD::CTexList> and others). This file stands in for
  * the original csdRCObject.h, the file name the game's RCPtr code passes to AllocObject: it has
- * only the members recovered code uses. Reset, Assign and the holder's constructors are defined in
- * the class because the game's copies come out right after their first user (the weak instances of
- * a member defined outside the class come out at the end of the file). The destructor and
- * SetRelease are defined below; the remaining members are compiled elsewhere.
+ * only the members recovered code uses. The default constructor, Reset, Assign and the holder's
+ * constructors are defined in the class because their native copies follow their first user.
+ * A member defined outside the class emits its weak instances at the end of the file.
+ * The destructor and SetRelease are defined below; other declared members are compiled elsewhere.
  *
  * The CBase base is inferred: the game's deleting destructor of RCPtr<unsigned char> (0x8003F224
  * in the USA release) frees the pointer through the current allocator's FreeObject, as CBase's
@@ -35,7 +35,9 @@ template <class T> class RCPtr : public CBase {
         void (*function)(T *);
     };
 
-    RCPtr();
+    RCPtr() : field_0x0(NULL) {
+        Assign(NULL);
+    }
     RCPtr(T *object);
     ~RCPtr();
     RCPtr &operator=(const RCPtr &other);
@@ -90,7 +92,7 @@ template <class T> class RCPtr : public CBase {
         RELEASE_DELETE = 1,   /* delete the object */
         RELEASE_NONE = 2,     /* leave the object alone */
         RELEASE_FUNCTION = 3, /* call a function with the object */
-        RELEASE_RELEASER = 4  /* run a releaser object */
+        RELEASE_RELEASER = 4  /* run the holder's functor object */
     };
 
     /* Holds object, released with delete; the policy object is taken by value (the RenderWare
@@ -102,19 +104,14 @@ template <class T> class RCPtr : public CBase {
         Assign(object, release);
     }
 
-    /* An object that releases an object itself (RELEASE_RELEASER). */
-    class Releaser {
+    /* The holder's name and CBase base come from RTTI. Member names are inferred except
+     * m_eDealloctor, named by the library's error text. Native allocations pass csdRCObject.h
+     * and line 410 for explicit policies or 428 for the no-policy path. */
+    template <class U> class RCObject : public CBase {
       public:
-        virtual void Release();
-        virtual ~Releaser();
-    };
+        /* The native no-policy constructor leaves m_eDealloctor uninitialized. */
+        explicit RCObject(U *object) : m_pObject(object), m_refCount(0), m_custom() {}
 
-    /* The shared holder of an object (class name from the game's RTTI). The member names are
-     * inferred, except m_eDealloctor, which the library's error text for an invalid value names
-     * ("Not inititalized m_eDealloctor"). Holders pass this header's file name and line; the
-     * original passes line 410 of its csdRCObject.h (see the unit's status in configure.py). */
-    template <class U> class RCObject {
-      public:
         RCObject(U *object, DeleteRelease release)
             : m_pObject(object), m_refCount(0), m_custom(), m_eDealloctor(-1) {
             m_custom.function = NULL;       /* stored again, as in the original */
@@ -138,14 +135,22 @@ template <class T> class RCPtr : public CBase {
             return GetMemoryAlloc()->AllocObject(size, __FILE__, __LINE__);
         }
 
+        /* Name and nesting come from the native type-name pool. Association with the holder's
+         * +0x0C pointer and CBase inheritance are inferred from that pool's ordering. */
+        class CFunctorBase : public CBase {
+          public:
+            virtual void Release() = 0; /* Operation name inferred. */
+            virtual ~CFunctorBase() {}
+        };
+
         /* 0x0 */ U *m_pObject;
         /* The vptr is at 0x4: the members before the first virtual function come first. */
-        virtual ~RCObject();
+        virtual ~RCObject() {}
         /* 0x8 */ int m_refCount;
         /* 0xC */ union ReleaseTarget {
             ReleaseTarget() : function(NULL) {}
             void (*function)(U *);
-            Releaser *releaser;
+            CFunctorBase *releaser;
         } m_custom;
         /* 0x10 */ int m_eDealloctor;
     };
@@ -169,69 +174,8 @@ template <class T> class RCPtr : public CBase {
     }
 
   private:
-    /* Replaces the held object by object, to be released as release selects (name inferred).
-     * Called by Reset and by the constructors that take a release policy. Each policy gets its own
-     * instance, as the original's separate copies of this code show. */
-    template <class Release> void Assign(T *object, const Release &release) {
-        RCObject<T> *holder = field_0x0;
-
-        if (holder != NULL) {
-            if (holder->m_pObject == object) {
-                return;
-            }
-            if (--holder->m_refCount == 0) {
-                if (holder->m_pObject != NULL) {
-                    switch (holder->m_eDealloctor) {
-                    case RELEASE_FREE:
-                        if (holder->m_pObject != NULL) {
-                            Free(holder->m_pObject);
-                            holder->m_pObject = NULL;
-                        }
-                        break;
-                    case RELEASE_DELETE:
-                        if (holder->m_pObject != NULL) {
-                            delete holder->m_pObject;
-                            holder->m_pObject = NULL;
-                        }
-                        break;
-                    case RELEASE_NONE:
-                        break;
-                    case RELEASE_FUNCTION:
-                        holder->m_custom.function(holder->m_pObject);
-                        holder->m_custom.function = NULL;
-                        break;
-                    case RELEASE_RELEASER:
-                        if (holder->m_custom.releaser != NULL) {
-                            holder->m_custom.releaser->Release();
-                        }
-                        if (holder->m_custom.releaser != NULL) {
-                            delete holder->m_custom.releaser;
-                            holder->m_custom.releaser = NULL;
-                        }
-                        break;
-                    default:
-                        PrintFatalError("Not inititalized m_eDealloctor\n");
-                        break;
-                    }
-                }
-                delete holder;
-            }
-            field_0x0 = NULL;
-        }
-
-        if (object != NULL) {
-            field_0x0 = new RCObject<T>(object, release);
-            field_0x0->m_refCount++;
-        }
-    }
-
-    /* 0x0 */ RCObject<T> *field_0x0;
-};
-
-template <class T> inline RCPtr<T>::~RCPtr() {
-    RCObject<T> *holder = field_0x0;
-
-    if (holder != NULL) {
+    /* Drops one reference and applies the holder's release policy at zero (name inferred). */
+    static void ReleaseHolder(RCObject<T> *holder) {
         if (--holder->m_refCount == 0) {
             if (holder->m_pObject != NULL) {
                 switch (holder->m_eDealloctor) {
@@ -269,6 +213,54 @@ template <class T> inline RCPtr<T>::~RCPtr() {
             }
             delete holder;
         }
+    }
+
+    /* Replaces the held object by object, to be released as release selects (name inferred).
+     * Called by Reset and by the constructors that take a release policy. Each policy gets its own
+     * instance, as the original's separate copies of this code show. */
+    template <class Release> void Assign(T *object, const Release &release) {
+        RCObject<T> *holder = field_0x0;
+
+        if (holder != NULL) {
+            if (holder->m_pObject == object) {
+                return;
+            }
+            ReleaseHolder(holder);
+            field_0x0 = NULL;
+        }
+
+        if (object != NULL) {
+            field_0x0 = new RCObject<T>(object, release);
+            field_0x0->m_refCount++;
+        }
+    }
+
+    /* No-policy assignment used by the default constructor with a null object. */
+    void Assign(T *object) {
+        RCObject<T> *holder = field_0x0;
+
+        if (holder != NULL) {
+            if (holder->m_pObject == object) {
+                return;
+            }
+            ReleaseHolder(holder);
+            field_0x0 = NULL;
+        }
+
+        if (object != NULL) {
+            field_0x0 = new RCObject<T>(object);
+            field_0x0->m_refCount++;
+        }
+    }
+
+    /* 0x0 */ RCObject<T> *field_0x0;
+};
+
+template <class T> inline RCPtr<T>::~RCPtr() {
+    RCObject<T> *holder = field_0x0;
+
+    if (holder != NULL) {
+        ReleaseHolder(holder);
         field_0x0 = NULL;
     }
 }

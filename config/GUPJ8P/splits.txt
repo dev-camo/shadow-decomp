@@ -1122,6 +1122,12 @@ Game/CSD/csdTexList.cpp:
 	.data       start:0x80560110 end:0x80560138
 	.bss        start:0x80586048 end:0x80586050
 
+Game/CSD/csdmScene.cpp:
+	.text       start:0x80364A60 end:0x80368D60
+	.rodata     start:0x80513720 end:0x805137A8
+	.data       start:0x80560380 end:0x80560550
+	.bss        start:0x80586170 end:0x80586178
+
 Game/CSD/csdmMotionPalette.cpp:
 	.text       start:0x80368D60 end:0x803692A4
 	.rodata     start:0x805137A8 end:0x805137F0

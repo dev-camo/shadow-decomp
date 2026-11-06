@@ -390,24 +390,24 @@ void RenderState::SetField0x30(const s32 *values) {
     }
 }
 
-void DrawScene(const SceneData *scene, const RCPtr<CTexList> &texList, void *unused,
+void DrawScene(const SceneData *scene, const RCPtr<CTexList> &texList, const FontList *fonts,
                const MotionPalette *palette) {
     GetRenderState().Enter();
     for (int i = 0; i < scene->layerCount; i++) {
-        DrawLayer(scene, &scene->layers[i], texList, unused, &palette->layers[i]);
+        DrawLayer(scene, &scene->layers[i], texList, fonts, &palette->layers[i]);
     }
     GetRenderState().Leave();
 }
 
 void DrawLayer(const SceneData *scene, const LayerData *layer, const RCPtr<CTexList> &texList,
-               void *unused, const MotionPaletteLayer *paletteLayer) {
+               const FontList *fonts, const MotionPaletteLayer *paletteLayer) {
     for (int i = 0; i < layer->elementCount; i++) {
-        DrawElement(scene, layer->elements[i], texList, unused, &paletteLayer->entries[i]);
+        DrawElement(scene, layer->elements[i], texList, fonts, &paletteLayer->entries[i]);
     }
 }
 
 void DrawElement(const SceneData *scene, const ElementData *element, const RCPtr<CTexList> &texList,
-                 void *unused, MotionPaletteEntry *entry) {
+                 const FontList *fonts, MotionPaletteEntry *entry) {
     if (element->field_0x8 != 0 && entry->field_0x20 == 0 && entry->field_0x140 != 0) {
         switch (element->type) {
         case 0:
@@ -417,7 +417,7 @@ void DrawElement(const SceneData *scene, const ElementData *element, const RCPtr
             DrawQuadElement(scene, element, texList, entry);
             break;
         case 2:
-            DrawTextElement(scene, element, texList, unused, entry);
+            DrawTextElement(scene, element, texList, fonts, entry);
             break;
         }
     }
@@ -456,7 +456,8 @@ void DrawQuadElement(const SceneData *scene, const ElementData *element,
 }
 
 void DrawTextElement(const SceneData *scene, const ElementData *element,
-                     const RCPtr<CTexList> &texList, void *unused, MotionPaletteEntry *entry) {
+                     const RCPtr<CTexList> &texList, const FontList *fonts,
+                     MotionPaletteEntry *entry) {
     if (entry->textures == NULL) {
         return;
     }

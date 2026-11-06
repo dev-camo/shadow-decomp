@@ -94,20 +94,21 @@ void SetEntryColors(MotionPaletteEntry *entry);
 void TintEntryColors(MotionPaletteEntry *entry);
 
 /* Draws a scene's elements through the render state, layer by layer, element by element. The
- * texture list supplies the textures of the elements. The unused argument is passed along to
- * DrawTextElement, which ignores it (its type is unknown). Names are inferred. */
-void DrawScene(const SceneData *scene, const RCPtr<CTexList> &texList, void *unused,
+ * texture list supplies the textures of the elements. The font-list argument is passed along to
+ * DrawTextElement, which ignores it (type inferred from the scene caller). Names are inferred. */
+void DrawScene(const SceneData *scene, const RCPtr<CTexList> &texList, const FontList *fonts,
                const MotionPalette *palette);
 void DrawLayer(const SceneData *scene, const LayerData *layer, const RCPtr<CTexList> &texList,
-               void *unused, const MotionPaletteLayer *paletteLayer);
+               const FontList *fonts, const MotionPaletteLayer *paletteLayer);
 /* Draws an element of type 1 (a quad) or 2 (text) when the element's field_0x8 and the entry's
  * field_0x140 are nonzero and the entry's field_0x20 is zero. */
 void DrawElement(const SceneData *scene, const ElementData *element, const RCPtr<CTexList> &texList,
-                 void *unused, MotionPaletteEntry *entry);
+                 const FontList *fonts, MotionPaletteEntry *entry);
 void DrawQuadElement(const SceneData *scene, const ElementData *element,
                      const RCPtr<CTexList> &texList, MotionPaletteEntry *entry);
 void DrawTextElement(const SceneData *scene, const ElementData *element,
-                     const RCPtr<CTexList> &texList, void *unused, MotionPaletteEntry *entry);
+                     const RCPtr<CTexList> &texList, const FontList *fonts,
+                     MotionPaletteEntry *entry);
 
 /* Returns the index the scene's name table gives the name, or -1 (name inferred). The table holds
  * the names of the scene's motions; the index selects an entry of SceneData::motions. */
