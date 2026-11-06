@@ -1628,7 +1628,7 @@ config.libs = [
             # select the original unit and its existing providers; these links do not include
             # this source object or establish which source weak copies would be discarded.
             Object(NonMatching, "Game/CSD/csdmMotionPalette.cpp", cflags=cflags_csd),
-            # All 25 functions and their owned data are represented. The 23 other functions have
+            # All 25 functions and their owned data are represented. 23 of the 25 functions have
             # identical instruction words and relocation targets; BuildTextEntry and InitPalette
             # remain NonMatching. BuildTextEntry is 0x540 bytes versus 0x564, with 316 differing
             # overlapping instruction words and nine unpaired native words. InitPalette is 0x190

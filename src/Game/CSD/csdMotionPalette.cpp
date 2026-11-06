@@ -497,8 +497,8 @@ static void MarkLayerMatrixUsers(MotionPaletteLayer *layer, const LayerData *src
 /* Marks the entries that need extra matrices, and their ancestors, with a non-null sub0 so that
  * CountPaletteMatrices can size the pool.
  *
- * Matching workaround: auto_inline expands the recursion once and keeps the out-of-line body
- * at its definition, before MarkLayerMatrixUsers. The original is 0x1F0 bytes; a plain static
+ * Matching workaround: auto_inline expands the recursion once and emits the out-of-line body
+ * ahead of MarkLayerMatrixUsers, as in the original. The original is 0x1F0 bytes; a plain static
  * definition emits 0xD0. Revisit when the original's inline helpers are found. */
 #pragma auto_inline on
 static void MarkMatrixUsers(MotionPaletteLayer *layer, int index, const LayerData *src,
