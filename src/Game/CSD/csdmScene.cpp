@@ -1,13 +1,28 @@
-/* csdmScene.cpp (original name from the library's allocation calls): the scene object and the
- * handles it is built from (csdm.h, csdmScene.h). Class and function names are inferred.
- * Definitions are in reverse address order (deferred inlining emits the last definition first). */
+/* csdmScene.cpp (original name from the library's allocation calls): scene objects,
+ * reference handles and callback dispatch. Names not established by RTTI are inferred.
+ * Definitions with established native identities are in reverse address order
+ * (deferred inlining emits the last definition first). The callback destructor's
+ * placement is provisional.
+ * Persistent listeners are non-owning; scene destruction only detaches them. */
 #include <new>
+#include "Game/CSD/CPlatform.h"
 #include "Game/CSD/csdmScene.h"
 #include "Game/CSD/Screen.h"
 #include "Game/CSD/csdLoader.h"
 
 namespace Chao {
 namespace CSD {
+
+static f32 lbl_8055FCF8 = 0.016666f;
+
+CSceneCallback::~CSceneCallback() {}
+
+bool SceneNodeKeyCompare::operator()(const SceneNodeKey &left, const SceneNodeKey &right) const {
+    if (left.layer == right.layer) {
+        return left.element < right.element;
+    }
+    return left.layer < right.layer;
+}
 
 void CMotionPaletteRef::Copy(const CMotionPaletteRef &other) {
     m_ref = other.m_ref;
@@ -19,9 +34,103 @@ void CMotionPatternRef::Copy(const CMotionPatternRef &other) {
     m_entry = other.m_entry;
 }
 
+void UnkSceneListenerBase_80365054::fn_80367A70(CScene *scene) {
+    m_scenes.remove(scene);
+}
+
+UnkSceneListenerBase_80365054::~UnkSceneListenerBase_80365054() {}
+
+CSceneListenerSource::~CSceneListenerSource() {}
+
+CScene::~CScene() {
+    fn_80365478(&CSceneListener::fn_80367A70, GetSender());
+    m_listeners.clear();
+
+    NodeMap::iterator entry;
+    for (entry = m_nodes.begin(); entry != m_nodes.end();) {
+        (entry++)->second->m_scene = NULL;
+    }
+
+    if (m_motion != NULL) {
+        m_motion->~CSceneMotionRef();
+        m_motion = NULL;
+    }
+    if (m_fonts != NULL) {
+        m_fonts->~CFontListRef();
+        m_fonts = NULL;
+    }
+    if (m_palette != NULL) {
+        m_palette->~CMotionPalette();
+        m_palette = NULL;
+    }
+    Free(m_objects);
+    if (m_rootPattern != NULL) {
+        delete m_rootPattern;
+        m_rootPattern = NULL;
+    }
+}
+
 void CSceneDataRef::Copy(const CSceneDataRef &other) {
     m_ref = other.m_ref;
     m_scene = other.m_scene;
+}
+
+void CMotionEndPolicy::fn_803676D4(const CMotionEndPolicy &other) {
+    m_endAction = other.m_endAction;
+    m_startAction = other.m_startAction;
+}
+
+void CScene::Copy(const CSceneDataRef &other) {
+    const CScene &scene = static_cast<const CScene &>(other);
+
+    CSceneDataRef::Copy(other);
+    if (m_motion != NULL) {
+        m_motion->~CSceneMotionRef();
+        m_motion = NULL;
+    }
+    if (scene.m_motion != NULL) {
+        m_motion = ::new (&m_objects->motion) CSceneMotion(*scene.m_motion);
+    }
+    if (m_fonts != NULL) {
+        m_fonts->~CFontListRef();
+        m_fonts = NULL;
+    }
+    if (scene.m_fonts != NULL) {
+        m_fonts = ::new (&m_objects->fonts) CFontList(*scene.m_fonts);
+    }
+    CreatePalette();
+    field_0x84 = scene.field_0x84;
+    m_lastFrame = scene.m_lastFrame;
+    m_frame = scene.m_frame;
+    m_speed = scene.m_speed;
+    m_startFrame = scene.m_startFrame;
+    m_endFrame = scene.m_endFrame;
+    m_motionIndex = scene.m_motionIndex;
+    m_paused = scene.m_paused;
+    m_endPolicy.fn_803676D4(scene.m_endPolicy);
+}
+
+void CScene::fn_80367500() {
+    m_motion = NULL;
+    m_fonts = NULL;
+    m_motionIndex = -1;
+    m_lastFrame = 0.0f;
+    m_frame = 0.0f;
+    m_speed = 1.0f;
+    m_palette = NULL;
+    field_0x84.Reset(NULL);
+    m_rootPattern = NULL;
+    m_paused = 0;
+    field_0xC0 = NULL;
+    field_0xAC = 0.0f;
+    m_project = NULL;
+    if (m_objects == NULL) {
+        m_objects = static_cast<SceneObjects *>(Alloc(sizeof(SceneObjects), __FILE__, __LINE__));
+    }
+}
+
+const char *CScene::fn_803674F8() const {
+    return field_0xC0;
 }
 
 void CSceneMotionRef::Copy(const CSceneMotionRef &other) {
@@ -55,7 +164,7 @@ CSceneMotion::CSceneMotion(const SceneMotion *motion, const RCPtr<unsigned char>
 void CScene::SetMotion(int index) {
     if (index != m_motionIndex && index < m_scene->nameCount) {
         if (m_motion != NULL) {
-            m_motion->~CSceneMotion();
+            m_motion->~CSceneMotionRef();
             m_motion = NULL;
         }
         m_motion = ::new (&m_objects->motion) CSceneMotion(&m_scene->motions[index], m_ref);
@@ -115,6 +224,14 @@ void CScene::CreatePalette() {
             m_palette = ::new (&m_objects->palette) CMotionPalette(m_scene, NULL);
         }
     }
+}
+
+void CScene::fn_80366F9C() {
+    fn_803669B8(lbl_8055FCF8);
+}
+
+size_t CNodeListenerSource::fn_80366F78() {
+    return m_listeners.size();
 }
 
 void CScene::fn_803669B8(f32 step) {
@@ -209,6 +326,40 @@ void CScene::fn_803669B8(f32 step) {
     }
 }
 
+void CScene::fn_803667A4(const RCPtr<CTexList> &textures) {
+    if (m_scene == NULL) {
+        return;
+    }
+
+    fn_80365478(&CSceneListener::fn_8036F974, this);
+    for (CallbackList::iterator callback = m_beforeDrawCallbacks.begin();
+         callback != m_beforeDrawCallbacks.end();) {
+        if (!(*callback)->Invoke(this)) {
+            callback = m_beforeDrawCallbacks.erase(callback);
+        } else {
+            ++callback;
+        }
+    }
+
+    GetPlatform()->Begin();
+    const FontList *fonts = NULL;
+    if (m_fonts != NULL) {
+        fonts = m_fonts->m_fonts;
+    }
+    DrawScene(m_scene, textures, fonts, m_palette->m_palette);
+    GetPlatform()->End();
+
+    fn_80365478(&CSceneListener::fn_8036F978, this);
+    for (CallbackList::iterator callback = m_afterDrawCallbacks.begin();
+         callback != m_afterDrawCallbacks.end();) {
+        if (!(*callback)->Invoke(this)) {
+            callback = m_afterDrawCallbacks.erase(callback);
+        } else {
+            ++callback;
+        }
+    }
+}
+
 const SceneData *CSceneDataRef::fn_8036679C() const {
     return m_scene;
 }
@@ -234,6 +385,47 @@ f32 CScene::GetMotionStart() const {
 
 f32 CScene::GetMotionEnd() const {
     return m_endFrame;
+}
+
+RCPtr<CNode> CScene::fn_803666B4(const char *name) {
+    ElementRef element = fn_80366640(name);
+
+    if (element.field_0x0 != NULL) {
+        return fn_80366468(&element);
+    }
+    return RCPtr<CNode>(NULL);
+}
+
+ElementRef CScene::fn_80366640(const char *name) const {
+    const NodeEntry *node = FindNode(name, m_scene);
+    ElementRef result;
+
+    if (node != NULL) {
+        result.field_0x0 = node->name;
+        result.layer = node->field_0x4;
+        result.element = node->field_0x8;
+    } else {
+        /* The original only clears the name; failed lookups leave both indices unspecified. */
+        result.field_0x0 = NULL;
+    }
+    return result;
+}
+
+RCPtr<CNode> CScene::fn_80366468(const ElementRef *elementRef) {
+    if (elementRef != NULL) {
+        SceneNodeKey key(elementRef->layer, elementRef->element);
+        NodeMap::iterator found = m_nodes.find(key);
+
+        if (found != m_nodes.end()) {
+            return found->second;
+        }
+        ElementData *element = m_scene->layers[elementRef->layer].elements[elementRef->element];
+        RCPtr<CNode> node(CSD_NEW CNode(element, m_ref, m_palette, *elementRef, this, m_fonts),
+                          RCPtr<CNode>::DeleteRelease());
+        m_nodes.insert(std::make_pair(key, node));
+        return node;
+    }
+    return RCPtr<CNode>(NULL);
 }
 
 void CScene::fn_803663C0(const RCPtr<CNode> &node) {
@@ -358,8 +550,43 @@ void CScene::fn_803659DC(MotionEndAction action) {
     m_endPolicy.m_endAction = action;
 }
 
+MotionEndAction CScene::fn_803659D4() const {
+    return m_endPolicy.m_endAction;
+}
+
 void CScene::fn_803659CC(MotionEndAction action) {
     m_endPolicy.m_startAction = action;
+}
+
+void CSceneListenerSource::fn_80365958(CSceneListener *listener) {
+    listener->fn_8036542C(GetSender());
+    m_listeners.remove(listener);
+}
+
+SceneNodeKey::SceneNodeKey(const SceneNodeKey &other)
+    : layer(other.layer), element(other.element) {}
+
+SceneNodeKey::SceneNodeKey(s32 layerIndex, s32 elementIndex)
+    : layer(layerIndex), element(elementIndex) {}
+
+CScene *CSceneListenerSource::GetSender() {
+    return NULL;
+}
+
+void CSceneListenerSource::fn_80365478(void (CSceneListener::*event)(CScene *), CScene *scene) {
+    std::list<CSceneListener *>::iterator listener;
+
+    for (listener = m_listeners.begin(); listener != m_listeners.end(); ++listener) {
+        ((*listener)->*event)(scene);
+    }
+}
+
+void CSceneListener::fn_8036542C(CScene *scene) {
+    m_scenes.remove(scene);
+}
+
+f32 CScene::fn_80365424() const {
+    return field_0xAC;
 }
 
 CSceneDataRef::CSceneDataRef() {
@@ -370,8 +597,18 @@ CSceneDataRef::~CSceneDataRef() {
     m_scene = NULL;
 }
 
+CSceneListenerSource::CSceneListenerSource() {}
+
+UnkSceneListenerBase_80365054::UnkSceneListenerBase_80365054() {}
+
+CSceneListener::CSceneListener() {}
+
 CMotionEndPolicy::CMotionEndPolicy()
     : m_endAction(MOTION_END_WRAP), m_startAction(MOTION_END_WRAP) {}
+
+void fn_803649F8(f32 step) {
+    lbl_8055FCF8 = step;
+}
 
 void CSceneDataRef::Clear() {
     m_ref.Reset(NULL);
@@ -382,6 +619,20 @@ void CSceneDataRef::Attach(const SceneData *scene, const RCPtr<unsigned char> &r
     Clear();
     m_ref = ref;
     m_scene = scene;
+}
+
+void CScene::fn_803648DC(const SceneData *scene, const RCPtr<unsigned char> &ref, const char *key,
+                         CProject *project, const CFontListRef *fonts) {
+    fn_80367500();
+    CSceneDataRef::Attach(scene, ref);
+    field_0xC0 = key;
+    if (fonts != NULL) {
+        m_fonts = ::new (&m_objects->fonts) CFontList(*fonts);
+    }
+    CreatePalette();
+    fn_8036674C();
+    field_0xAC = 1.0f + scene->field_0x4;
+    m_project = project;
 }
 
 CFontList::~CFontList() {}
@@ -406,6 +657,22 @@ void CFontListRef::Copy(const CFontListRef &other) {
 
 CFontList::CFontList(const CFontListRef &other) {
     Copy(other);
+}
+
+void CScene::fn_80364538(const CFontListRef *fonts) {
+    if (m_fonts != NULL) {
+        m_fonts->~CFontListRef();
+        m_fonts = NULL;
+    }
+
+    for (NodeMap::iterator node = m_nodes.begin(); node != m_nodes.end(); ++node) {
+        node->second->SetFonts(fonts);
+    }
+
+    if (fonts != NULL) {
+        m_fonts = ::new (&m_objects->fonts) CFontList(*fonts);
+        BuildPalette(m_palette->m_palette, m_scene, m_fonts->m_fonts);
+    }
 }
 
 void CScene::RebuildPalette() {
@@ -442,6 +709,10 @@ f32 CScene::GetMotionEnd(const char *name) {
         return GetMotionEnd(index);
     }
     return m_endFrame;
+}
+
+CScene *CScene::GetSender() {
+    return this;
 }
 
 } // namespace CSD
