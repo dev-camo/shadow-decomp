@@ -2215,6 +2215,7 @@ config.libs = [
             #   further relocation-target difference. Aligned: 0 paired-differing, 6 original-only,
             #   6 source-only words.
             Object(NonMatching, "Game/ItemBox.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/Rocket.cpp", cflags=cflags_game_cpp),
             # 12 of the 13 functions are identical in every word and relocation. The data contents
             # and relocations match once the 44 linker-discarded copies (9 local, 35 weak) are set
             # aside, with these differences in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P): the

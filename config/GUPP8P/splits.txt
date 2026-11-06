@@ -278,6 +278,14 @@ Game/PoisonGas.cpp:
 	.sbss       start:0x805EFCA8 end:0x805EFCD8
 	.sdata2     start:0x805F4BF0 end:0x805F4C28
 
+Game/Rocket.cpp:
+	.text       start:0x80114CC4 end:0x801177D8
+	.rodata     start:0x804BDAB0 end:0x804BDDA0
+	.data       start:0x80527DD0 end:0x80527F10
+	.sdata      start:0x805E6AD8 end:0x805E6B30
+	.sbss       start:0x805EFD00 end:0x805EFD30
+	.sdata2     start:0x805F4CB8 end:0x805F4D18
+
 Game/SecretDoor.cpp:
 	.text       start:0x8011B9B8 end:0x8011C18C
 	.ctors      start:0x804AAD9C end:0x804AADA0

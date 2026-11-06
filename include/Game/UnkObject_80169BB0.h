@@ -57,6 +57,10 @@ boost::weak_ptr<UnkObject_80169BB0> fn_8034DE08(int kind, const Fn8040Vector3 *p
  * 9 at its character info's position when an attack toggles it, and the BA GUNSHIP gadget passes 3
  * at its character info's position when it breaks; both discard the result. */
 boost::weak_ptr<UnkObject_80169BB0> fn_80169B80(int kind, const Fn8040Vector3 *position);
+/* Forwards kind and 0 to fn_8034DEE4 and returns its result; the body ignores target (behaviour
+ * inferred from the 0x34-byte wrapper). The ROCKET gadget's rocket passes its rider and 11 when it
+ * launches and keeps the result. */
+boost::weak_ptr<UnkObject_80169BB0> fn_80169B4C(const boost::weak_ptr<CharInfo> &target, int kind);
 }
 
 #endif
