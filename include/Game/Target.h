@@ -45,6 +45,13 @@ class Target {
     void SetField20(float value) {
         field_0x20 = value;
     }
+    /* Matching workaround: the same kind of stand-in for a store of the whole flag word, which the
+     * RING gadget makes through an out-of-line operator-> (0x801125B8, 0x80112774, 0x80112BD8); a
+     * direct store to the member expands the operator in place. Revisit with the accessors above.
+     * Name inferred from what it does. */
+    void SetFlagWord(u32 flags) {
+        m_flags = flags;
+    }
 
     /* 0x04 */ u8 field_0x4[0x8 - 0x4];          /* Unrecovered. */
     /* 0x08 */ Fn8040Vector3 m_position;         /* fn_800CCE38 sets it (name inferred) */
