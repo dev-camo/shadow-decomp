@@ -193,6 +193,12 @@ void fn_8015B004(ColliDetectArgs *args, ColliHitCallback callback, void *context
  * 0x2C) returns true, and only when callback is not null (behaviour inferred from its body; the
  * HEALING_UNIT gadget's blast passes its hit callback to it). */
 void fn_8015B384(ColliDetectArgs *args, ColliHitCallback callback, void *context);
+/* For each hit of args whose collision object and character info still lock, calls callback
+ * (when it is not null) with that character info and context if the character info's word at
+ * 0x5C equals value; no virtual filter function is tested (behaviour inferred from its body; the
+ * CAGE gadget passes 4, and the unsplit CAPTURE_CAGE code at 0x800F3570 passes 3). The void
+ * return and the s32 value are inferred. */
+void fn_8015B70C(ColliDetectArgs *args, ColliHitCallback callback, void *context, s32 value);
 }
 
 #endif
