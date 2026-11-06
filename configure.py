@@ -2221,6 +2221,7 @@ config.libs = [
             # the other way round (the same instructions, registers and relocations otherwise), as
             # in BreakWall's and SuperComputer's constructors.
             Object(NonMatching, "Game/Stick.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/TurnOver.cpp", cflags=cflags_game_cpp),
             # fn_8040C55C's instructions match. fn_8040C3EC (92 words) differs in 15 positional raw
             # words (19 when relocation targets are compared by section and offset: the shared-pool
             # loads and the threshold load at +0x90, which refers to .sdata2+0 in the original and

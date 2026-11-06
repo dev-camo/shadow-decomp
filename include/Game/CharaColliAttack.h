@@ -24,7 +24,11 @@ class AttackCallbackParam {
     /* 0x08 */ boost::weak_ptr<CharaColliAttack> field_0x8;
     /* 0x10 */ u8 field_0x10[0x18 - 0x10];
     /* 0x18 */ Fn8040Vector3 field_0x18;
-    /* 0x24 */ u8 field_0x24[0x34 - 0x24];
+    /* 0x24 */ u8 field_0x24[0x30 - 0x24];
+    /* The TurnOver gadget's first callback stores 1 here when the attack object of field_0x8
+     * and that object's owner both still exist and the owner's word at 0x5C is 1. */
+    /* 0x30 */ u8 field_0x30;
+    /* 0x31 */ u8 field_0x31[0x34 - 0x31];
     /* The stick stores field_0x18 minus its owner's position here; GiantLantern stores
      * field_0x18 minus its character info's position, normalised (inferred). */
     /* 0x34 */ Fn8040Vector3 field_0x34;

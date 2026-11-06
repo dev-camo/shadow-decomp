@@ -435,4 +435,24 @@ class DamageCommand : public CharCommand {
 };
 CHECK_SIZEOF(DamageCommand, 0x24);
 
+/* ScoreCommand (class name from the RTTI of its vtable at 0x8053D158, with CharCommand as its only
+ * base); the constructor, the destructor and the vtable are elsewhere. The constructor
+ * (0x801DA8B4) passes 28 (0x1C) and 4 to the base constructor and stores its five arguments at
+ * 0x14 to 0x24 in order. The TurnOver gadget's command handler passes a copy of each ScoreCommand
+ * it receives to the character info of the user it recorded from a UseCommand (while that user is
+ * recorded and still exists), with the five words in the same order; their meanings are unknown.
+ * The argument types are inferred from those 32-bit copies. */
+class ScoreCommand : public CharCommand {
+  public:
+    ScoreCommand(int arg0, int arg1, int arg2, int arg3, int arg4);
+    virtual ~ScoreCommand();
+
+    /* 0x14 */ int field_0x14;
+    /* 0x18 */ int field_0x18;
+    /* 0x1C */ int field_0x1C;
+    /* 0x20 */ int field_0x20;
+    /* 0x24 */ int field_0x24;
+};
+CHECK_SIZEOF(ScoreCommand, 0x28);
+
 #endif
