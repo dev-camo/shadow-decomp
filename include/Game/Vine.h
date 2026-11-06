@@ -83,16 +83,19 @@ class Vine : public Gadget {
     void ReadOwner(UnkGadgetOwner_800C9CD0 *owner);
     /* Places the models at the character info. While waiting or attacking it first turns the
      * vine about the y axis towards m_targetPosition, by at most two degrees, from the other side
-     * when the vine is upside down. Also moves m_target to the frame m_launchFrame. */
+     * when the vine is upside down. Then, when there are both a launch frame (m_launchFrame) and
+     * a target (m_target), moves the target to that frame. */
     void UpdateModelMatrix();
-    /* The attack callback of the vine model: while the vine waits or attacks, an attack with
-     * none of the bits 0x3D1 set in the attack object's word at 0x40 is ignored (the callback
-     * reports 5); otherwise its value (the parameter's float at 0x50) is taken from the health
-     * and the vine enters STATE_DIE when that is used up and STATE_DAMAGE otherwise (the callback
-     * reports 1). In the other states the callback reports 5. */
+    /* The attack callback of the vine model: while the vine waits or attacks, an attack whose
+     * attack object still locks and has none of the bits 0x3D1 set in its word at 0x40 is ignored
+     * (the callback reports 5); otherwise, including when the attack object has expired, its
+     * value (the parameter's float at 0x50) is taken from the health and the vine enters
+     * STATE_DIE when that is used up and STATE_DAMAGE otherwise (the callback reports 1). In the
+     * other states the callback reports 5. */
     void OnAttack(SonicteamUSA::System::CharaColli::AttackCallbackParam &param);
-    /* Creates a Vine::FireBall at m_launchFrame, flying towards m_targetPosition at a speed of 3,
-     * and plays sound 0x7543 there. */
+    /* When the first model and the launch frame (m_launchFrame) both exist, creates a
+     * Vine::FireBall through FireBall::Create at that frame, flying towards m_targetPosition at a
+     * speed of 3, and plays sound 0x7543 there; otherwise it does nothing. */
     void ShootFireBall();
     /* Keeps m_targetInfo and m_targetPosition up to date and returns whether there is a target.
      * Without a target it takes the character nearest to the character info when that is within
