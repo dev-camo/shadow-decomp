@@ -2209,6 +2209,26 @@ config.libs = [
                 extra_cflags=["-Cpp_exceptions on"],
             ),
             Object(Matching, "Game/ShootingGameScore.cpp", cflags=cflags_game_cpp),
+            # With the weak and local copies the linker discards set aside, all 56 functions have
+            # identical relocations and 54 have identical instructions. The original's .bss is 0xF8
+            # bytes with the three static size vectors at 0xC, 0x18 and 0x24. ApplyScale and the
+            # static initialiser form the pooled base address 0x8057FFA8 (USA), the first byte of
+            # the 0xC bytes before the vectors, but no instruction in the file reads or writes those
+            # 0xC bytes or the 0xC8 bytes after the vectors, and what occupies them is unknown, so
+            # the .bss here is 0x24 bytes with the vectors at 0x0, 0xC and 0x18. ApplyScale and the static initialiser address the vectors from the pooled
+            # .bss base, so ApplyScale differs in three words (USA 0x8012AF58, 0x8012AFD8,
+            # 0x8012B030) and the static initialiser in six (0x8012C8C4, 0x8012C8CC, 0x8012C8D0,
+            # 0x8012C8D8, 0x8012C8E4, 0x8012C8F0), each a displacement 0xC lower. Compared by
+            # contents with the discarded copies set aside (the dropped weak vtables as zero-filled
+            # holes), .sdata2, .sbss and .ctors match. The original also has the RTTI base lists of
+            # Player::PlayerCommand and of an unnamed class derived from it (0x20 bytes at
+            # .data+0x26C) and a zero-filled hole 0x18 bytes longer after them, the CharCommand and
+            # Player::PlayerCommand RTTI records (.sdata+0x4C, 0x10 bytes) and their names
+            # (.rodata+0x24C, 0x24 bytes). No instruction in the file refers to these records, and
+            # the declarations that emitted them are not identified, so the boost::bad_weak_ptr base
+            # list, the std::exception RTTI record and its name sit lower here (.data 0x2B0, .sdata
+            # 0x54 and .rodata 0x25B bytes against 0x2E8, 0x68 and 0x280).
+            Object(NonMatching, "Game/Weight.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_8005A300.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80054DD0.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80096B64.cpp", cflags=cflags_game_cpp),

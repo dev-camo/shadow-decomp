@@ -345,6 +345,16 @@ Game/TargetSwitch.cpp:
 	.sbss       start:0x805EEDB0 end:0x805EEDC0
 	.sdata2     start:0x805F3F70 end:0x805F3FF0
 
+Game/Weight.cpp:
+	.text       start:0x8012AB88 end:0x8012C900
+	.ctors      start:0x804A9D4C end:0x804A9D50
+	.rodata     start:0x804BE328 end:0x804BE5A8
+	.data       start:0x80528160 end:0x80528448
+	.bss        start:0x8057FFA8 end:0x805800A0
+	.sdata      start:0x805E5DD0 end:0x805E5E38
+	.sbss       start:0x805EEE30 end:0x805EEE50
+	.sdata2     start:0x805F40C8 end:0x805F4140
+
 Game/CandleStick.cpp:
 	.text       start:0x8012C900 end:0x8012DACC
 	.ctors      start:0x804A9D50 end:0x804A9D54
