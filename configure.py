@@ -2195,6 +2195,25 @@ config.libs = [
             # 8-byte-aligned object) against 0x28, the extra alignment coming from the interleaved
             # guards and pointers; .data, .bss, .sdata and .sdata2 keep the original sizes.
             Object(NonMatching, "Game/HintRing.cpp", cflags=cflags_game_cpp),
+            # 122 of 124 functions are identical in every word and relocation. The data sections
+            # and their relocations match once the linker-discarded weak and local copies are set
+            # aside; .sdata2 is allocatable (A, flags 0x2) in the original and writable and
+            # allocatable (WA, 0x3) here, and its 0x6B bytes are padded to 0x70 in the original.
+            # Two functions differ in instruction order (counts: positional = word i against word
+            # i, raw word or relocation target; aligned = instructions matched up as sequences):
+            # - ItemBox::OnCommand (0x8010C110), 64 words each: the original copies the command
+            #   pointer to r3 before it compares m_type with 10 (0x8010C1D8), the compiled code
+            #   after that test. Positional: 5 raw words differ, no further relocation-target
+            #   difference. Aligned: 1 original-only and 1 source-only word (the moved copy); the
+            #   bne after the test keeps its word and in both versions skips the optional icon load
+            #   to the same lwz r5 (0x8010C1E8), which sits one word earlier here, so it pairs as
+            #   differing when branch-target offsets are compared and as equal when raw words are.
+            # - fn_8010DE60 (0x8010DE60), 92 words each: the original stores the zero vector for
+            #   the HomingJumpCommand (0x8010DF70-0x8010DF80) before the allocation, the compiled
+            #   code after the allocation and its null test. Positional: 10 raw words differ, no
+            #   further relocation-target difference. Aligned: 0 paired-differing, 6 original-only,
+            #   6 source-only words.
+            Object(NonMatching, "Game/ItemBox.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetVehicle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetWeapon.cpp", cflags=cflags_game_cpp),
             # 52 of 53 functions are identical in every word and relocation. The hit callback
