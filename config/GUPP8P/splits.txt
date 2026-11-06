@@ -276,6 +276,15 @@ Game/Spring.cpp:
 	.sbss       start:0x805EFDF8 end:0x805EFE18
 	.sdata2     start:0x805F4F40 end:0x805F4FA0
 
+Game/Stick.cpp:
+	.text       start:0x80121E14 end:0x801234BC
+	.ctors      start:0x804AADA0 end:0x804AADA4
+	.rodata     start:0x804BEAA0 end:0x804BEBA8
+	.data       start:0x80528AA0 end:0x80528BB0
+	.sdata      start:0x805E6D50 end:0x805E6D78
+	.sbss       start:0x805EFE18 end:0x805EFE38
+	.sdata2     start:0x805F4FA0 end:0x805F4FE8
+
 Game/Switch.cpp:
 	.text       start:0x801234BC end:0x80124984
 	.rodata     start:0x804BEBA8 end:0x804BEDB8

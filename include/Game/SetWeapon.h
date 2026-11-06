@@ -118,8 +118,8 @@ void fn_8011E630(const boost::shared_ptr<Weapon::Item> &item, const Fn8040Vector
 /* Creates a weapon item of the type on the ground below position (the nearest hit of a probe 1000
  * units down, or position itself), with the given rotation, and keeps it there with a WeaponTask
  * (behaviour inferred; the original name is unknown). A breaking active stone statue passes 0x1F,
- * its position and its rotation; fn_80122580 calls it twice as well (0x80122900 and 0x8012296C).
- * rotation is passed on to Arms::SetTransform. */
+ * its position and its rotation; Stick::Stick::UpdateBody calls it twice as well (USA
+ * (GUPE8P) 0x80122900 and 0x8012296C). rotation is passed on to Arms::SetTransform. */
 void fn_8011E938(int type, const Fn8040Vector3 *position, UnkRotation3 *rotation);
 }
 

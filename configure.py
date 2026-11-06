@@ -2202,6 +2202,25 @@ config.libs = [
             # The functions after it start 4 bytes earlier, so the .ctors entry and three .data
             # relocations to them (OnCollision, UpdateBody and the destructor) have addends 4 lower.
             Object(NonMatching, "Game/UpDownReel.cpp", cflags=cflags_game_cpp),
+            # 33 of the 35 functions have identical instructions and relocations. By contents,
+            # with the 95 weak and local copies this object has and the original does not set
+            # aside (75 weak, 20 local), the data, symbols and relocations match, except four
+            # relocations that point 8 or 4 bytes lower: the jump table's entries for states 5 and
+            # 6 point into the tail of UpdateBody, and the vtable's destructor entry and the
+            # .ctors entry point after it. UpdateBody (USA (GUPE8P) 0x80122580) is 259 words
+            # against the original's 261: in each of its two weapon put-down blocks the original
+            # loads the "weapon" parameter into r30 before the position's copy construction
+            # (0x800091EC) and moves it to r3 for fn_8011E938, where this build loads it into r3
+            # just before that call, so each block is one word longer in the original. In the
+            # relocatable objects 54 of the 259 common words differ positionally: 8 earlier
+            # branches to the code after the switch, and 46 of the 48 words from the branch before
+            # the first block to the end, which this build has one word earlier after the first
+            # block and two after the second; 15 of the 54 original words are branches. The constructor (0x80122C5C) differs in 2 of its 226 words: for its
+            # call of GadgetModelInfo::fn_801629D8 with the crash information's fn_802087D8 name,
+            # the original loads m_crashInfo's pointer before m_model's and this build loads them
+            # the other way round (the same instructions, registers and relocations otherwise), as
+            # in BreakWall's and SuperComputer's constructors.
+            Object(NonMatching, "Game/Stick.cpp", cflags=cflags_game_cpp),
             # fn_8040C55C's instructions match. fn_8040C3EC (92 words) differs in 15 positional raw
             # words (19 when relocation targets are compared by section and offset: the shared-pool
             # loads and the threshold load at +0x90, which refers to .sdata2+0 in the original and
