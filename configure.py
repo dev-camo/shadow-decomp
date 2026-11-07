@@ -1162,8 +1162,6 @@ config.libs = [
             ),
             Object(Matching, "Game/fn_8040CAB4.cpp"),
             Object(Matching, "Game/fn_8040C244.c"),
-            Object(Matching, "Game/fn_8040CCD4.c"),
-            Object(Matching, "Game/fn_8040CD20.c"),
             Object(Matching, "Game/fn_8007D624.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_8007D770.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_8001C4B8.cpp", cflags=cflags_game_cpp),
@@ -1217,11 +1215,8 @@ config.libs = [
             # 0x805FAD68. External literal symbols would hide this artificial unit boundary;
             # revisit when the data-owning functions can be sourced and merged into this unit.
             Object(NonMatching, "Game/fn_8040CAF8.cpp"),
-            # Preserve the legacy USA status; Japan and PAL remain NonMatching because the clear
-            # value belongs to the larger original file's shared .sdata2 pool (0x805FAD78-0x805FAD88).
-            # Revisit when the pool-owning functions are merged into one unit.
-            Object(Matching if config.version == "GUPE8P" else NonMatching, "Game/fn_8040CC5C.c"),
-            # The clear value belongs to the same original-file pool; keep the ordinary literal
+            # The clear value is the 0.0f of an original file's .sdata2 pool (0x805FAD80: 0.0f,
+            # 1e-6f) that fn_8040CE74 and fn_8040D02C also read; keep the ordinary literal
             # NonMatching until the pool-owning functions are merged into one unit.
             Object(NonMatching, "Game/fn_8040CE60.c"),
             Object(Matching, "Game/fn_8040E310.c"),
@@ -2756,25 +2751,19 @@ config.libs = [
                 cflags=cflags_game_cpp,
                 extra_cflags=["-Cpp_exceptions on"],
             ),
+            # Two-component vector helpers. Their length helper fn_8040CCEC, like
+            # Game/fn_8040CF50.cpp and Game/fn_8041116C.cpp, calls std::sqrt(float) from MSL
+            # <cmath>. One level of inlining keeps that call out of line, because std::sqrt's
+            # body calls the inline sqrtf; plain -inline auto expands both into the helper. Each
+            # object also carries weak copies of std::sqrt and sqrtf with their literals, which
+            # the link discards in favour of the copies at 0x8000FEE4 and 0x8000FF04. Those
+            # copies match <cmath> compiled with fp_contract on (cflags_base).
             Object(
                 Matching,
-                "Game/fn_8040CC6C.cpp",
-                extra_cflags=["-Cpp_exceptions on"],
-            ),
-            # Vector length helpers (also Game/fn_8040CF50.cpp and Game/fn_8041116C.cpp), which
-            # call std::sqrt(float) from MSL <cmath>. One level of inlining keeps that call out
-            # of line, because std::sqrt's body calls the inline sqrtf; plain -inline auto
-            # expands both into the helper. Each object also carries weak copies of std::sqrt and
-            # sqrtf with their literals, which the link discards in favour of the copies at
-            # 0x8000FEE4 and 0x8000FF04. Those copies match <cmath> compiled with fp_contract on
-            # (cflags_base).
-            Object(
-                Matching,
-                "Game/fn_8040CCEC.cpp",
+                "Game/fn_8040CC5C.cpp",
                 cflags=cflags_game_cpp,
                 extra_cflags=["-Cpp_exceptions on"],
             ),
-            Object(Matching, "Game/fn_8040CD60.cpp"),
             Object(
                 Matching,
                 "Game/fn_8040CE74.cpp",

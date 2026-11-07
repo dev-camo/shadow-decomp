@@ -2978,29 +2978,13 @@ Game/fn_8040CB2C.cpp:
 Game/fn_8040CBF8.cpp:
 	.text       start:0x8040DC48 end:0x8040DCAC
 
-Game/fn_8040CC5C.c:
-	.text       start:0x8040DCAC end:0x8040DCBC
-
-Game/fn_8040CC6C.cpp:
-	extab       start:0x80005850 end:0x80005858
-	extabindex  start:0x80007790 end:0x8000779C
-	.text       start:0x8040DCBC end:0x8040DD24
-
-Game/fn_8040CCD4.c:
-	.text       start:0x8040DD24 end:0x8040DD3C
-
-Game/fn_8040CCEC.cpp:
-	extab       start:0x80005858 end:0x80005860
-	extabindex  start:0x8000779C end:0x800077A8
-	.text       start:0x8040DD3C end:0x8040DD70
-
-Game/fn_8040CD20.c:
-	.text       start:0x8040DD70 end:0x8040DDB0
-
-Game/fn_8040CD60.cpp:
-	.text       start:0x8040DDB0 end:0x8040DDC4
+Game/fn_8040CC5C.cpp:
+	extab       start:0x80005850 end:0x80005860
+	extabindex  start:0x80007790 end:0x800077A8
+	.text       start:0x8040DCAC end:0x8040DDC4
 	.ctors      start:0x804AB0B0 end:0x804AB0B4
 	.sbss       start:0x805F2400 end:0x805F2408
+	.sdata2     start:0x805FBDF0 end:0x805FBDF8
 
 Game/fn_8040CD74.cpp:
 	.text       start:0x8040DDC4 end:0x8040DEB0
