@@ -16,7 +16,6 @@ class UnkCtrlUnitList_802A451C;
 class UnkSphere_80035CEC;
 struct RpClump;
 struct Unk801A35ACParameters;
-struct UnkBossParamRecord3;
 struct _stMtnPlayWork;
 
 /* The parameter tables that a boss's Init stores in BossVarParam::field_0x4 (placeholder names;
@@ -54,6 +53,17 @@ struct UnkBossParamRecord2 {
 };
 CHECK_SIZEOF(UnkBossParamRecord2, 0xC);
 
+/* The optional record at UnkBossParamTable::field_0x1C (null-tested at 0x80179118): a sphere's
+ * centre and radius (behaviour inferred). The reader transforms the vector that the first word
+ * points to by a matrix (0x8017917C) and passes the result and the float at 0x4 (0x80179198) to
+ * the UnkSphere_80021C04 constructor as centre and radius; the HEAVY_DOG_0410 unit's record is an
+ * 8-byte object in .sdata. */
+struct UnkBossParamRecord3 {
+    /* 0x00 */ Fn8040Vector3 *field_0x0;
+    /* 0x04 */ float field_0x4;
+};
+CHECK_SIZEOF(UnkBossParamRecord3, 0x8);
+
 struct UnkBossParamTable {
     /* 0x00 */ s32 field_0x0;
     /* 0x04 */ s32 field_0x4;
@@ -62,8 +72,7 @@ struct UnkBossParamTable {
     /* 0x10 */ s32 field_0x10;
     /* 0x14 */ UnkBossParamRecord *field_0x14;
     /* 0x18 */ UnkBossParamRecord2 *field_0x18;
-    /* Optional (null-tested at 0x80179118). Its first word points to a vector and a float follows
-     * at 0x4 (0x8017917C, 0x80179198); the rest of the record is not mapped. */
+    /* Optional (null-tested at 0x80179118). */
     /* 0x1C */ UnkBossParamRecord3 *field_0x1C;
 };
 CHECK_SIZEOF(UnkBossParamTable, 0x20);

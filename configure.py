@@ -2411,6 +2411,19 @@ config.libs = [
             # with clrlwi for fn_801690D0, where this build loads it into r4 after the call (a
             # local copy of m_comId moves the load but leaves mr for the clrlwi).
             Object(NonMatching, "Game/ElecAccessPanel.cpp", cflags=cflags_game_cpp),
+            # Compared as relocatable objects, 23 of 24 functions have identical words and
+            # relocation targets, and the data contents match once the linker-discarded weak and
+            # local copies are set aside, apart from two differences (the .sdata2 contents are the
+            # same 0x78 bytes, but the compiled section is writable, WA, where the original's is
+            # allocatable only, A). .bss: the original keeps 0x30 bytes before the first sphere and
+            # 0x98 bytes after the last vector that no code reads or writes, so the static
+            # initialiser differs in 6 words and the parameter tables' pointers to those objects in
+            # their relocation addends (the objects' offsets from the .bss start). .rodata: the
+            # class name "HeavyDog0410CtrlUnit" comes after "BossCtrlUnit" and "HeavyDogCtrlUnit" in
+            # the original and before them here. A USA (GUPE8P) DOL linked from this source as a
+            # diagnostic differs in nine words across three functions, with no unpaired words; the
+            # normal build links the original object.
+            Object(NonMatching, "Game/HeavyDog0410.cpp", cflags=cflags_game_cpp),
             # 35 of 38 functions have identical words and relocations, and the data matches once the
             # linker-discarded weak and local copies are set aside. Differences (raw words in a USA
             # DOL linked from this source object, a diagnostic only: the build links the original

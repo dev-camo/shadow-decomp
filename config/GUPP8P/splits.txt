@@ -991,6 +991,16 @@ Game/ElecAccessPanel.cpp:
 	.sbss       start:0x805F1028 end:0x805F1040
 	.sdata2     start:0x805F8578 end:0x805F85A0
 
+Game/HeavyDog0410.cpp:
+	.text       start:0x8024E488 end:0x8024F700
+	.ctors      start:0x804AAF44 end:0x804AAF48
+	.rodata     start:0x804F5360 end:0x804F5468
+	.data       start:0x8054A1A0 end:0x8054A338
+	.bss        start:0x80584ED0 end:0x80584FD0
+	.sdata      start:0x805EB340 end:0x805EB390
+	.sbss       start:0x805F1050 end:0x805F1058
+	.sdata2     start:0x805F85E8 end:0x805F8660
+
 Game/RailSwitch.cpp:
 	.text       start:0x80257D34 end:0x80258BE0
 	.ctors      start:0x804AAF54 end:0x804AAF58
