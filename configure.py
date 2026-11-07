@@ -663,14 +663,11 @@ config.libs = [
                 Object(NonMatching, "rw/fn_804A6CDC.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_804A869C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804A90F8.c", cflags=cflags_game),
-                Object(Matching, "Game/SpaceGadget.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/BackDrop.cpp", cflags=cflags_game_cpp),
                 # All 35 functions have identical instructions. The unit's own data and its order
                 # are the original's; the accessor of the switch counter is emitted after the
                 # template instances that follow ApplyState here, directly after ApplyState in the
                 # original.
                 Object(NonMatching, "Game/CandleStick.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/ChaoHolder.cpp", cflags=cflags_game_cpp),
                 # 35 of 36 functions are identical in every word and relocation. The hit callback
                 # (0x80130364) differs in 19 words: the float-to-int conversion of the level and
                 # the int-to-float conversion of the index get separate 8-byte stack slots (the
@@ -703,7 +700,6 @@ config.libs = [
                 # pointer). The RTTI and vtable records differ in layout, and the object has
                 # additional weak template instances.
                 Object(NonMatching, "Game/Coaster.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/Cream.cpp", cflags=cflags_game_cpp),
                 # Every function but the ThreatObj constructor is instruction-identical, and the
                 # functions are in the original's order. The constructor's two table loads (model
                 # table and holder) use r6 and r7 the other way round (four words). ThreatObj's
@@ -716,14 +712,6 @@ config.libs = [
                 # (moving them 8 and 0x1C bytes later), and the std::exception and sp_counted_base
                 # vtables are appended to .data.
                 Object(NonMatching, "Game/ThreatObjHolder.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/ElecCircuitEntrance.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/EscapePlaneRail.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/WeaponStickBase.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/TestNakazawa.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/BDHologram.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/BDTrue.cpp", cflags=cflags_game_cpp),
                 # All 14 functions have identical instructions; .data, .rodata and .sdata match and
                 # .sdata2 is 4 bytes short of the original's trailing pad. The unit cannot replace
                 # the original object: GetTaskGroup is local here, where the original's is
@@ -731,7 +719,6 @@ config.libs = [
                 # call it and its statics lie outside the unit). An inline definition is expanded
                 # into Create, and a global one keeps its statics local to the unit.
                 Object(NonMatching, "Game/RainEffect.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/GravitySignBoard.cpp", cflags=cflags_game_cpp),
                 # Every function, the data and all relocations match except ProcessHits, which is
                 # one word short: the original branches twice on one comparison of the word at 0x50
                 # of the character info (the second branch skips the cast check), and the single
@@ -748,8 +735,6 @@ config.libs = [
                 # constructor differ, and 16 small helper functions (the constructor chain, the
                 # accessors, the pair swap) are not reproduced one for one.
                 Object(NonMatching, "Game/CityLaserHolder.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/FallBuildingHolder.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/ElecCristalWallSwitch.cpp", cflags=cflags_game_cpp),
                 # All 11 functions have identical instructions, and the whole object matches once
                 # the 14 weak and local copies the linker discards are set aside, except the order
                 # of the nine floats in .sdata2 (0x18-0x38): the original pools 70.0f, 1.0f, 0.1f,
@@ -757,15 +742,11 @@ config.libs = [
                 # 1.5f, 0.0f, 0.1f, 0.6f, 70.0f (UpdateRotation's order of first use), so the
                 # .sdata2 relocations of the functions point at other offsets.
                 Object(NonMatching, "Game/ElecCube.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/ElecPillar.cpp", cflags=cflags_game_cpp),
                 Object(NonMatching, "Game/GrindGadget.cpp", cflags=cflags_game_cpp),
                 # 11 of 12 functions have identical instructions. UpdateBody differs in 8 words, all
                 # register numbers in the case that moves the footing back (the hidden depth and the
                 # height are in f2 and f0 here, f0 and f1 in the original).
                 Object(NonMatching, "Game/PopFooting.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/ElecSmallPillar.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/ElecWakka.cpp", cflags=cflags_game_cpp),
-                Object(Matching, "Game/GravityChangeCollision.cpp", cflags=cflags_game_cpp),
                 # All 33 functions have identical words. The data sections are not compared: the
                 # compiled object's .data and .sbss are 0x104 and 0x2D bytes against the original's
                 # 0xC0 and 0x10.
@@ -2845,6 +2826,25 @@ config.libs = [
             Object(Matching, "Game/fn_80008DA4.c"),
             Object(Matching, "Game/fn_80008E1C.c"),
             Object(Matching, "Game/fn_800091D0.cpp"),
+            Object(Matching, "Game/WeaponStickBase.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/FallBuildingHolder.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/ChaoHolder.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/Cream.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/ElecCircuitEntrance.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/ElecCristalWallSwitch.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/ElecPillar.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/ElecSmallPillar.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/ElecWakka.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/GravityChangeCollision.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/GravitySignBoard.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/SpaceGadget.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/BackDrop.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/EscapePlaneRail.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/TestNakazawa.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/BDHologram.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/BDTrue.cpp", cflags=cflags_game_cpp),
         ],
     },
     DolphinLib(
