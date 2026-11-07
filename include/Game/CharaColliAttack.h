@@ -35,7 +35,9 @@ class AttackCallbackParam {
      * the frame id (name inferred) it also passes to its display's fn_8019448C. */
     /* 0x14 */ UnkAttackPart_80192F14 *field_0x14;
     /* 0x18 */ Fn8040Vector3 field_0x18;
-    /* 0x24 */ u8 field_0x24[0x30 - 0x24];
+    /* The CityBombSmall gadget's attack callback copies field_0x24 to field_0x40 (meaning
+     * unknown). */
+    /* 0x24 */ Fn8040Vector3 field_0x24;
     /* The TurnOver gadget's first callback stores 1 here when the attack object of field_0x8
      * and that object's owner both still exist and the owner's word at 0x5C is 1. */
     /* 0x30 */ u8 field_0x30;
@@ -43,7 +45,8 @@ class AttackCallbackParam {
     /* The stick stores field_0x18 minus its owner's position here; GiantLantern stores
      * field_0x18 minus its character info's position, normalised (inferred). */
     /* 0x34 */ Fn8040Vector3 field_0x34;
-    /* 0x40 */ u8 field_0x40[0x4C - 0x40];
+    /* The CityBombSmall gadget's attack callback copies field_0x24 here. */
+    /* 0x40 */ Fn8040Vector3 field_0x40;
     /* Meteor stores its movement speed here (inferred); GiantLantern stores 10. */
     /* 0x4C */ float field_0x4C;
     /* 0x50 */ float field_0x50; /* ThreatObj subtracts it from its health; GiantLantern stores 1 */
