@@ -629,6 +629,14 @@ Game/Door.cpp:
 	.sbss       start:0x805F00D8 end:0x805F00F8
 	.sdata2     start:0x805F55E0 end:0x805F5660
 
+Game/Elevator.cpp:
+	.text       start:0x80147EBC end:0x801496EC
+	.rodata     start:0x804C1D70 end:0x804C1F18
+	.data       start:0x8052ACF0 end:0x8052AE38
+	.sdata      start:0x805E7380 end:0x805E73B0
+	.sbss       start:0x805F0118 end:0x805F0138
+	.sdata2     start:0x805F56A8 end:0x805F56F8
+
 Game/Footing.cpp:
 	.text       start:0x801496EC end:0x80149B28
 	.rodata     start:0x804C1F18 end:0x804C1F28

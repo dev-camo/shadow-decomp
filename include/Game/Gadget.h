@@ -123,5 +123,15 @@ extern "C" bool fn_8015A858(Gadget *gadget);
 extern "C" bool fn_8015A818(Gadget *gadget);
 /* Passes the gadget's owner (m_owner) to fn_800C9AD4 when there is one (behaviour inferred). */
 extern "C" void fn_8015A7C0(Gadget *gadget);
+/* A 16-bit 2 in the .sdata2 of Gadget's file (USA (GUPE8P) 0x805F4A80; name and meaning
+ * unknown). The ELEVATOR gadget passes it as the last argument of fn_801D53C4.
+ * Matching workaround: declared without const. In each of the four fn_801D53C4 calls of
+ * Elevator::UpdateBody the original loads m_loopSound and then this value, both after the
+ * fn_80053164 call (USA: the call at 0x8014877C, the loads at 0x80148780 and 0x80148788 in the
+ * first). Declared const, the calls stay in place and the two loads swap (8 words differ). Its
+ * place in .sdata2 suggests a const definition; whether the original declaration had const is
+ * inferred from this load order only. Revisit when Gadget's file and its definition are
+ * recovered. */
+extern s16 lbl_805F4A80;
 
 #endif
