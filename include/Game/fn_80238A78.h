@@ -10,7 +10,8 @@ class CharCommand;
  * creates a draw layer), wraps it in a shared pointer, calls the object's virtual functions at
  * vtable offsets 0xC and 0x10 with position and rotation, and passes the shared pointer to the
  * constructor of a new 0x30-byte object (0x80237C90). The RING gadget calls it when a command
- * with the id 0x14 collects a ring, with the ring's position and rotation and 1.
+ * with the id 0x14 collects a ring, with the ring's position and rotation and 1;
+ * ScatteringRing::OnCommand does so with a copy of the rotation and the ring's field_0x34 (0 or 1).
  *
  * Behaviour inferred from the bodies; the original name is unknown. The signature is inferred too:
  * the arguments are forwarded unchanged, so the bytes do not determine the parameter types,

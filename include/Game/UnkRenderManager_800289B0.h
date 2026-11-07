@@ -25,10 +25,11 @@ void fn_80047780(UnkRenderManager_800289B0 *manager);
 
 /* The object that fn_800289B0 returns (placeholder name; its size is unknown and only the byte
  * the gadgets read is mapped). The drawing code selects an index with fn_80048390 and applies it
- * with ApplyIndex, then restores it with fn_80047780. Besides the RING gadget, nine functions
- * (fn_800382DC, fn_800383B4, fn_800384F4, fn_800386C4, fn_80038AB8, fn_80119E80, fn_801641EC,
- * fn_80238A98 and fn_80357BF4) follow fn_80048390 with the same three instructions (call
- * fn_800289B0, load the byte at 0x456, call fn_800482E0), which suggests the inline below. */
+ * with ApplyIndex, then restores it with fn_80047780. Besides the RING gadget and
+ * ScatteringRing::OnDraw, eight functions (fn_800382DC, fn_800383B4, fn_800384F4, fn_800386C4,
+ * fn_80038AB8, fn_801641EC, fn_80238A98 and fn_80357BF4) follow fn_80048390 with the same three
+ * instructions (call fn_800289B0, load the byte at 0x456, call fn_800482E0), which
+ * suggests the inline below. */
 class UnkRenderManager_800289B0 {
   public:
     /* Passes the index at 0x456 to fn_800482E0 (name inferred). */

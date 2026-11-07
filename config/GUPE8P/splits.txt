@@ -465,6 +465,14 @@ Game/SetCharacter.cpp:
 	.sdata      start:0x805E5AE0 end:0x805E5AF8
 	.sdata2     start:0x805F3C90 end:0x805F3CA8
 
+Game/ScatteringRing.cpp:
+	.text       start:0x80119E00 end:0x8011B5D0
+	.rodata     start:0x804BD040 end:0x804BD270
+	.data       start:0x80527080 end:0x80527158
+	.sdata      start:0x805E5AF8 end:0x805E5B40
+	.sbss       start:0x805EECD0 end:0x805EECF0
+	.sdata2     start:0x805F3CA8 end:0x805F3D08
+
 Game/SecretDoor.cpp:
 	.text       start:0x8011B5D0 end:0x8011BDA4
 	.ctors      start:0x804A9D3C end:0x804A9D40
