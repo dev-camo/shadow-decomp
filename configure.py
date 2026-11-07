@@ -841,11 +841,7 @@ config.libs = [
                 # selected by those links.
                 Object(NonMatching, "Game/CSD/csdmMotionPattern.cpp", cflags=cflags_csd),
                 # The units below that use -Cpp_exceptions on are those whose original object
-                # carries extab/extabindex entries (C++ exception tables), plus Game/fn_8041583C.c,
-                # the middle piece of a file whose other pieces carry them; the default is off.
-                Object(Matching, "Game/fn_8041FD6C.c"),
-                Object(Matching, "Game/fn_8041FF08.c"),
-                Object(Matching, "Game/fn_80420438.c"),
+                # carries extab/extabindex entries (C++ exception tables); the default is off.
                 # 3x4 matrix helpers. Seven of 28 functions still differ (raw differing instruction
                 # words, by position, or the larger length minus the exact LCS where the sizes
                 # differ). The three axis rotations (fn_8040B0C0, fn_8040B138, fn_8040B1B0; 2 words
@@ -865,46 +861,6 @@ config.libs = [
                     cflags=cflags_game_cpp,
                     extra_cflags=["-Cpp_exceptions on"],
                 ),
-                # SonicUSA::System::Random. Matching workaround: -sdata 0 and -sdata2 0; the target
-                # keeps its doubles in .rodata and its RTTI record and twist table in .data. Revisit
-                # when the original unit's flags are known.
-                Object(
-                    Matching,
-                    "Game/fn_8040EA90.cpp",
-                    cflags=cflags_game_cpp,
-                    extra_cflags=[
-                        "-Cpp_exceptions on",
-                        "-sdata 0",
-                        "-sdata2 0",
-                    ],
-                ),
-                # Interpolation helpers. Matching workaround: the target keeps its float constants in
-                # .rodata (-sdata2 0); revisit when the original unit's flags are known.
-                Object(
-                    Matching,
-                    "Game/fn_8040EFA4.cpp",
-                    cflags=cflags_game_cpp,
-                    extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
-                ),
-                # Rotation and segment helpers (Matching workaround: float constants in .rodata,
-                # -sdata2 0; revisit when the original unit's flags are known; <cmath> leaves the
-                # double constants and statics of the inline std::sqrt/sqrtf and the weak copies
-                # of the inline math functions and of operator*, which the link discards).
-                Object(
-                    Matching,
-                    "Game/fn_8040F364.cpp",
-                    cflags=cflags_game_cpp,
-                    extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
-                ),
-                # Motion integration (Matching workaround: float constants in .rodata, -sdata2 0;
-                # revisit when the original unit's flags are known; <cmath> leaves the weak
-                # sqrtf static locals, which the link discards).
-                Object(
-                    Matching,
-                    "Game/fn_804103E8.cpp",
-                    cflags=cflags_game_cpp,
-                    extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
-                ),
                 # The library code at 0x80410630-0x8042166C is built with one flag set (-O4,s,
                 # -use_lmw_stmw on, -str reuse,readonly, -inline auto,level=1), taken as the
                 # library's own build settings rather than per-unit workarounds. Game/fn_80410630.c,
@@ -916,52 +872,6 @@ config.libs = [
                 # Game/fn_804110EC.c, Game/fn_804202B8.c and the empty functions Game/fn_8041FD6C.c,
                 # Game/fn_8041FF08.c and Game/fn_80420438.c omit it: their objects are identical
                 # with or without it.
-                # Loader of packs of named nodes. Inlining is automatic but one level deep: the
-                # recursive node functions expand once, as in the original (with unlimited depth
-                # fn_80410C7C grows from 0xC4 to 0x304 bytes).
-                Object(
-                    Matching,
-                    "Game/fn_80410630.c",
-                    extra_cflags=[
-                        "-Cpp_exceptions on",
-                        "-O4,s",
-                        "-use_lmw_stmw on",
-                        "-str reuse,readonly",
-                        "-inline auto,level=1",
-                    ],
-                ),
-                # Replaceable memory functions of the library code at 0x80410630-0x8042166C.
-                Object(Matching, "Game/fn_804110EC.c", extra_cflags=["-Cpp_exceptions on"]),
-                # The middle piece of the control of motions (see Game/fn_804157E8.cpp
-                # below); it takes the same flags as the other two pieces.
-                Object(
-                    Matching,
-                    "Game/fn_8041583C.c",
-                    extra_cflags=[
-                        "-Cpp_exceptions on",
-                        "-O4,s",
-                        "-use_lmw_stmw on",
-                        "-str reuse,readonly",
-                        "-inline auto,level=1",
-                    ],
-                ),
-                # Transform helpers over the current matrix stack: a C++ unit of the library, built
-                # with the MSL headers for <cmath> and the library's flag set. The original keeps
-                # the functions in definition order; the deferred inlining of cflags_game_cpp emits
-                # them in reverse order and moves the 1.0f .sdata2 literal after the doubles (0x34
-                # bytes instead of 0x30).
-                Object(
-                    Matching,
-                    "Game/fn_8041116C.cpp",
-                    cflags=[*cflags_base, *msl_includes],
-                    extra_cflags=[
-                        "-Cpp_exceptions on",
-                        "-O4,s",
-                        "-use_lmw_stmw on",
-                        "-str reuse,readonly",
-                        "-inline auto,level=1",
-                    ],
-                ),
                 # Groups of numbered resources. Not complete (differing words, GUPE8P; for the two
                 # functions of different length, original words left unmatched by
                 # difflib.SequenceMatcher(autojunk=False) over the instruction words):
@@ -1166,20 +1076,10 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
-                # Support code of the same library after the quaternion helpers: the start-up and
-                # shut-down wrappers with a name registry, the byte reversal (two functions that do
-                # not match yet) and the ARAM transfers and allocator.
-                Object(
-                    Matching,
-                    "Game/fn_80420C30.c",
-                    extra_cflags=[
-                        "-Cpp_exceptions on",
-                        "-O4,s",
-                        "-use_lmw_stmw on",
-                        "-str reuse,readonly",
-                        "-inline auto,level=1",
-                    ],
-                ),
+                # Support code of the same library after the quaternion helpers: the byte reversal
+                # (two functions that do not match yet). The start-up and shut-down wrappers with a
+                # name registry before it (Game/fn_80420C30.c) and the ARAM transfers and allocator
+                # after it (Game/fn_804211CC.c) are in the all-region list below.
                 # Not matching: fn_8042118C (4 of 16 words differ): the two byte loads of each pair
                 # get each other's registers (a register swap). fn_804210E4
                 # (32 of 42 words differ; 35 words against 42) tests the address of each of its two
@@ -1197,18 +1097,6 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
-                Object(
-                    Matching,
-                    "Game/fn_804211CC.c",
-                    extra_cflags=[
-                        "-Cpp_exceptions on",
-                        "-O4,s",
-                        "-use_lmw_stmw on",
-                        "-str reuse,readonly",
-                        "-inline auto,level=1",
-                    ],
-                ),
-                Object(Matching, "Game/fn_804202B8.c"),
             ]
             if config.version == "GUPE8P"
             else []
@@ -2795,7 +2683,8 @@ config.libs = [
             # established.
             Object(Matching, "Game/fn_80403E44.c"),
             # The units below that use -Cpp_exceptions on are those whose original object
-            # carries extab/extabindex entries (C++ exception tables).
+            # carries extab/extabindex entries (C++ exception tables), plus Game/fn_8041583C.c,
+            # the middle piece of a file whose other pieces carry them; the default is off.
             Object(
                 Matching,
                 "Game/fn_8040ABC8.cpp",
@@ -2850,6 +2739,132 @@ config.libs = [
             # CRI middleware functions (MWSFD); the original source file names are not yet
             # established.
             Object(Matching, "Game/fn_8040E048.c"),
+            # SonicUSA::System::Random. Matching workaround: -sdata 0 and -sdata2 0; the target
+            # keeps its doubles in .rodata and its RTTI record and twist table in .data. Revisit
+            # when the original unit's flags are known.
+            Object(
+                Matching,
+                "Game/fn_8040EA90.cpp",
+                cflags=cflags_game_cpp,
+                extra_cflags=[
+                    "-Cpp_exceptions on",
+                    "-sdata 0",
+                    "-sdata2 0",
+                ],
+            ),
+            # Interpolation helpers. Matching workaround: the target keeps its float constants in
+            # .rodata (-sdata2 0); revisit when the original unit's flags are known.
+            Object(
+                Matching,
+                "Game/fn_8040EFA4.cpp",
+                cflags=cflags_game_cpp,
+                extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
+            ),
+            # Rotation and segment helpers (Matching workaround: float constants in .rodata,
+            # -sdata2 0; revisit when the original unit's flags are known; <cmath> leaves the
+            # double constants and statics of the inline std::sqrt/sqrtf and the weak copies
+            # of the inline math functions and of operator*, which the link discards).
+            Object(
+                Matching,
+                "Game/fn_8040F364.cpp",
+                cflags=cflags_game_cpp,
+                extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
+            ),
+            # Motion integration (Matching workaround: float constants in .rodata, -sdata2 0;
+            # revisit when the original unit's flags are known; <cmath> leaves the weak
+            # sqrtf static locals, which the link discards).
+            Object(
+                Matching,
+                "Game/fn_804103E8.cpp",
+                cflags=cflags_game_cpp,
+                extra_cflags=["-Cpp_exceptions on", "-sdata2 0"],
+            ),
+            # The library code at 0x80410630-0x8042166C is built with one flag set (-O4,s,
+            # -use_lmw_stmw on, -str reuse,readonly, -inline auto,level=1), taken as the
+            # library's own build settings rather than per-unit workarounds. Game/fn_80410630.c,
+            # Game/fn_8041116C.cpp, Game/fn_80411714.c, Game/fn_80413B30.c,
+            # Game/fn_804157E8.cpp, Game/fn_8041583C.c, Game/fn_80415854.cpp and the later
+            # NonMatching pieces of the control of motions (Game/fn_80416198.cpp,
+            # fn_8041FD70.cpp, fn_8041FF0C.cpp, fn_80420308.cpp and fn_8042043C.cpp) and the
+            # later units from Game/fn_80420724.cpp to Game/fn_804211CC.c carry it.
+            # Game/fn_804110EC.c, Game/fn_804202B8.c and the empty functions Game/fn_8041FD6C.c,
+            # Game/fn_8041FF08.c and Game/fn_80420438.c omit it: their objects are identical
+            # with or without it.
+            # Loader of packs of named nodes. Inlining is automatic but one level deep: the
+            # recursive node functions expand once, as in the original (with unlimited depth
+            # fn_80410C7C grows from 0xC4 to 0x304 bytes).
+            Object(
+                Matching,
+                "Game/fn_80410630.c",
+                extra_cflags=[
+                    "-Cpp_exceptions on",
+                    "-O4,s",
+                    "-use_lmw_stmw on",
+                    "-str reuse,readonly",
+                    "-inline auto,level=1",
+                ],
+            ),
+            # Replaceable memory functions of the library code at 0x80410630-0x8042166C.
+            Object(Matching, "Game/fn_804110EC.c", extra_cflags=["-Cpp_exceptions on"]),
+            # Transform helpers over the current matrix stack: a C++ unit of the library, built
+            # with the MSL headers for <cmath> and the library's flag set. The original keeps
+            # the functions in definition order; the deferred inlining of cflags_game_cpp emits
+            # them in reverse order and moves the 1.0f .sdata2 literal after the doubles (0x34
+            # bytes instead of 0x30).
+            Object(
+                Matching,
+                "Game/fn_8041116C.cpp",
+                cflags=[*cflags_base, *msl_includes],
+                extra_cflags=[
+                    "-Cpp_exceptions on",
+                    "-O4,s",
+                    "-use_lmw_stmw on",
+                    "-str reuse,readonly",
+                    "-inline auto,level=1",
+                ],
+            ),
+            # The middle piece of the control of motions (see Game/fn_804157E8.cpp
+            # above); it takes the same flags as the other two pieces.
+            Object(
+                Matching,
+                "Game/fn_8041583C.c",
+                extra_cflags=[
+                    "-Cpp_exceptions on",
+                    "-O4,s",
+                    "-use_lmw_stmw on",
+                    "-str reuse,readonly",
+                    "-inline auto,level=1",
+                ],
+            ),
+            Object(Matching, "Game/fn_8041FD6C.c"),
+            Object(Matching, "Game/fn_8041FF08.c"),
+            Object(Matching, "Game/fn_804202B8.c"),
+            Object(Matching, "Game/fn_80420438.c"),
+            # Support code of the same library after the quaternion helpers: the start-up and
+            # shut-down wrappers with a name registry and the ARAM transfers and allocator. The
+            # byte reversal between them (Game/fn_804210E4.c) is in the USA-only list above.
+            Object(
+                Matching,
+                "Game/fn_80420C30.c",
+                extra_cflags=[
+                    "-Cpp_exceptions on",
+                    "-O4,s",
+                    "-use_lmw_stmw on",
+                    "-str reuse,readonly",
+                    "-inline auto,level=1",
+                ],
+            ),
+            Object(
+                Matching,
+                "Game/fn_804211CC.c",
+                extra_cflags=[
+                    "-Cpp_exceptions on",
+                    "-O4,s",
+                    "-use_lmw_stmw on",
+                    "-str reuse,readonly",
+                    "-inline auto,level=1",
+                ],
+            ),
             Object(Matching, "Game/EffectArranger.cpp", cflags=cflags_effect),
         ],
     },
