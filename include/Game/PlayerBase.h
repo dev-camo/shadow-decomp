@@ -2,6 +2,7 @@
 #define GAME_PLAYERBASE_H
 
 #include "Game/CharInfo.h"
+#include "Game/UnkBitFlags_80014E04.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/shared_ptr.hpp"
 #include <dolphin/types.h>
@@ -14,6 +15,10 @@ class CharCommand;
 class UnkPlayerShared_80076D24;
 
 class Target;
+
+namespace Player {
+class PlayerMotion;
+}
 
 /* A partial view of the object at 0x24C of a Player::PlayerBase (placeholder name). The code at
  * 0x800AD4BC-0x800AD4C4 (USA) stores a Player::Shadow::PlayerTarget there, whose
@@ -60,10 +65,11 @@ CHECK_SIZEOF(PlayerObject, 0x68);
 /* Player::PlayerBase (class name from RTTI, with CharInfo and Player::PlayerObject as its bases):
  * 0x290 bytes. Its constructor (0x80079F04) initialises members from 0x68 through 0x28C, and a
  * derived class's constructor starts its own members at 0x290 (0x80077328-3C). Gadgets cast the
- * character info they act on to it. Only three members are mapped: the first word of the bit set
- * at 0xA8 (the TornadoCollision gadget tests bit 0x14 of the set), the vector at 0xE8 (the
- * ElecFan gadget scales it by -30 into the acceleration it sends the player) and the pointer at
- * 0x24C (see UnkTargetSource_80206574).
+ * character info they act on to it. Few members are mapped: the flags at 0xA0, the first word of
+ * the bit set at 0xA8 (the TornadoCollision gadget tests bit 0x14 of the set), the vectors at
+ * 0xB8, 0xDC and 0x1C8 that Player::Behavior::Super reads, the vector at 0xE8 (the ElecFan gadget
+ * scales it by -30 into the acceleration it sends the player) and the pointers at 0x230 (see
+ * Player::PlayerMotion) and 0x24C (see UnkTargetSource_80206574).
  *
  * Its vtable (0x80520310, 0x54 bytes) overrides the destructor and the first three CharInfo slots
  * and adds nine slots. The added slots are named after their implementations here, or, for the
@@ -97,18 +103,36 @@ class PlayerBase : public PlayerObject {
      * 0 for that object. */
     virtual bool fn_80079770();
 
-    /* 0x068 */ u8 field_0x68[0xA8 - 0x68];
-    /* The first word of a bit set; its other words are not mapped (fn_80079770 tests bits 0x24
-     * and 0x20 of the set, the TornadoCollision gadget bit 0x14). */
-    /* 0x0A8 */ u32 field_0xA8;
-    /* 0x0AC */ u8 field_0xAC[0xE8 - 0xAC];
+    /* 0x068 */ u8 field_0x68[0xA0 - 0x68];
+    /* Player::Behavior::Super sets bits 2, 7 and 9 when it starts and resets them when it ends. */
+    /* 0x0A0 */ UnkBitFlags_80014E04 field_0xA0;
+    /* 0x0A4 */ u8 field_0xA4[0xA8 - 0xA4];
+    /* A bit set of three words, which the constructor initialises at 0xA8, 0xAC and 0xB0; bit n
+     * is in word n / 32 (fn_8006CD78). fn_80079770 tests bits 0x24 and 0x20 of the set, the
+     * TornadoCollision gadget bit 0x14 and Player::Behavior::Super bits 0x1B and 0x3C. */
+    /* 0x0A8 */ u32 field_0xA8[3];
+    /* 0x0B4 */ u8 field_0xB4[0xB8 - 0xB4];
+    /* 0x0B8 */ Fn8040Vector3 field_0xB8;
+    /* 0x0C4 */ u8 field_0xC4[0xDC - 0xC4];
+    /* 0x0DC */ Fn8040Vector3 field_0xDC;
     /* 0x0E8 */ Fn8040Vector3 field_0xE8;
-    /* 0x0F4 */ u8 field_0xF4[0x24C - 0xF4];
+    /* 0x0F4 */ u8 field_0xF4[0x1C8 - 0xF4];
+    /* Passed as the onto vector of fn_8040F990, which takes it to be of unit length. */
+    /* 0x1C8 */ Fn8040Vector3 field_0x1C8;
+    /* 0x1D4 */ u8 field_0x1D4[0x230 - 0x1D4];
+    /* The constructor clears it; Player::PlayerMotion's destructor clears it too. */
+    /* 0x230 */ PlayerMotion *field_0x230;
+    /* 0x234 */ u8 field_0x234[0x24C - 0x234];
     /* 0x24C */ UnkTargetSource_80206574 *field_0x24C;
     /* 0x250 */ u8 field_0x250[0x290 - 0x250];
 };
 CHECK_SIZEOF(PlayerBase, 0x290);
+CHECK_OFFSETOF(PlayerBase, field_0xA0, 0xA0);
 CHECK_OFFSETOF(PlayerBase, field_0xA8, 0xA8);
+CHECK_OFFSETOF(PlayerBase, field_0xB8, 0xB8);
+CHECK_OFFSETOF(PlayerBase, field_0xDC, 0xDC);
+CHECK_OFFSETOF(PlayerBase, field_0x1C8, 0x1C8);
+CHECK_OFFSETOF(PlayerBase, field_0x230, 0x230);
 CHECK_OFFSETOF(PlayerBase, field_0x24C, 0x24C);
 
 } // namespace Player
@@ -129,5 +153,36 @@ CHECK_SIZEOF(UnkPlayerRecord_80078CEC, 0x70);
  * and adds 120 (0x78) once if the result is negative, so only indices 0 to 119 are supported; the
  * ELEC_BAR gadget passes 0 and 1. */
 extern "C" UnkPlayerRecord_80078CEC *fn_80078CEC(Player::PlayerBase *player, int index);
+
+/* Player functions that Player::Behavior::Super calls. Their names, the void returns and the
+ * const qualifiers are not known (inferred); the behaviour comes from their bodies. */
+extern "C" {
+/* Returns (0, 0, -1) transformed by the rotation of the matrix at 0x1E4 of player, turned by the
+ * angles in CharInfo::m_rotation (fn_80079628). */
+Fn8040Vector3 fn_800796DC(Player::PlayerBase *player);
+/* Calls fn_800936F4 with the shared pointer that boost::weak_ptr<Player::PlayerBase>::lock
+ * (0x8006D754 in USA (GUPE8P)) makes from the weak pointer at 0x260 of player and with the float
+ * that CharInfo's pointer at 0x60 refers to. */
+void fn_80079720(Player::PlayerBase *player);
+/* Returns fn_800796DC's vector when the word at 0x54 of the player is -1. Otherwise it takes a
+ * vector from fn_80093F74 for that word, normalises it (fn_8040CE74), crosses the vector at 0x1C8
+ * with it, crosses that result with the vector at 0x1C8 again and returns the normalised result
+ * (fn_8040CEE8). */
+Fn8040Vector3 fn_80093FC0(const boost::shared_ptr<Player::PlayerBase> &player);
+/* Stores in the player's float at 0x10 (the y component of CharInfo::m_rotation) what
+ * fn_8040F314 returns for it, for an angle that it derives from direction through the matrix at
+ * 0x1E4 (fn_8040BEF8, fn_8040B67C, fn_8003B9E8) and for rate, which it first replaces with the
+ * float at 0x805F29B0 (USA, GUPE8P) when rate is greater. */
+void fn_80093BA0(const boost::shared_ptr<Player::PlayerBase> &player,
+                 const Fn8040Vector3 &direction, float rate);
+/* When bit 0x1B of the bit set at 0xA8 is set, calls fn_80093BA0 with a copy of the vector at
+ * 0xB8 and rate; otherwise takes the part of the vector at 0x18 that is perpendicular to the
+ * vector at 0x1C8 (fn_8040F990) and calls fn_80093BA0 with it and rate unless its squared length
+ * is less than the square of the float at 0x805E4598 (10.0f). */
+void fn_80093AF8(const boost::shared_ptr<Player::PlayerBase> &player, float rate);
+/* Starts by resetting bits 0 and 4 of the flags at 0xA4 of the player; the rest of its 0x714
+ * bytes is not described here. */
+void fn_8009728C(const boost::shared_ptr<Player::PlayerBase> &player, int arg1);
+}
 
 #endif

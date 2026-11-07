@@ -125,7 +125,7 @@ void TornadoCollision::ProcessHits(float) {
                                 boost::shared_ptr<Player::Player> derived =
                                     boost::static_pointer_cast<Player::Player>(charInfo);
 
-                                if (fn_8006CD78(&derived->field_0xA8, 0x14)) {
+                                if (fn_8006CD78(derived->field_0xA8, 0x14)) {
                                     continue;
                                 }
                             }
