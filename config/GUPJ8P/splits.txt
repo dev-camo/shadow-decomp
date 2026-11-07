@@ -1393,6 +1393,16 @@ Game/CityGadget.cpp:
 	.sbss       start:0x805F0E48 end:0x805F0E58
 	.sdata2     start:0x805F9AB8 end:0x805F9AF0
 
+Game/Helicopter.cpp:
+	.text       start:0x802F7808 end:0x802FA34C
+	.ctors      start:0x804AA608 end:0x804AA60C
+	.rodata     start:0x8050AA68 end:0x8050AD80
+	.data       start:0x8055AA18 end:0x8055AC38
+	.bss        start:0x805851A0 end:0x80585308
+	.sdata      start:0x805ED178 end:0x805ED208
+	.sbss       start:0x805F0E58 end:0x805F0E88
+	.sdata2     start:0x805F9AF0 end:0x805F9B68
+
 Game/SecretDisk.cpp:
 	.text       start:0x802FA34C end:0x802FAF24
 	.ctors      start:0x804AA60C end:0x804AA610

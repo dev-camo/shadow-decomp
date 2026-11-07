@@ -1991,6 +1991,25 @@ config.libs = [
             # has zeros; the later code and data land lower, so 17 more words in 8 of the other
             # functions differ, all in relocated fields.
             Object(NonMatching, "Game/DarkHammer.cpp", cflags=cflags_game_cpp),
+            # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
+            # (GUPP8P): 73 of the 75 functions have identical words and relocation targets once the
+            # copies the linker discards (84 weak and 3 local functions, the _2 to _9 placeholders,
+            # 13 local RTTI records and names, sqrtf's two weak locals and three weak vtables, which
+            # stay zero-filled holes in .data) are set aside. OnCollision is 0x264 bytes against
+            # 0x270: the original copies the inverse matrix into a second stack matrix (a
+            # fn_8040C148 call, 3 words this source lacks) and transforms the hang position with
+            # the copy, as an inline function returning the inverse by value would; aligned, 19
+            # paired words differ (the frame size and stack offsets, the frame being 0x30 bytes
+            # larger in the original, and branch displacements across the missing words) and 3
+            # original words are unpaired (compared position by position, 51 paired positions differ
+            # and the original's last 3 words are unpaired). The static initialiser
+            # differs in 9 words: it addresses the four bar objects from the start of .bss, and
+            # they start there here but 0xC bytes later in the original. Data: the original's .bss
+            # is 0x168 bytes, with 0xC bytes before the bar objects and 0x114 after them that no
+            # code in the file reads or writes (0x48 bytes here). The compiled .sdata2 is writable
+            # (WA) where the original's is allocatable only (A). The other sections match by
+            # contents, apart from section-end alignment. Normal builds link the original object.
+            Object(NonMatching, "Game/Helicopter.cpp", cflags=cflags_game_cpp),
             # Compared as relocatable objects, 13 of the 16 functions have identical words and
             # relocation targets once the linker-discarded copies are set aside (28 weak boost and
             # std::exception instances and 22 locals: the RTTI records and name strings of their
