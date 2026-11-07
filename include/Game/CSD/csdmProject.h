@@ -34,7 +34,7 @@ template <class T> class CResourceBase {
 };
 CHECK_SIZEOF(Chao::CSD::CResourceBase<Chao::CSD::Project>, 0xC);
 
-/* String ordering shared by the project's indexes and CSceneList (name inferred). */
+/* String ordering shared by the project's name index and CSceneList (name inferred). */
 struct SceneNameCompare {
     bool operator()(const char *const &left, const char *const &right) const;
 };
