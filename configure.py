@@ -2647,7 +2647,7 @@ config.libs = [
             # differences (2564 source bytes versus 2568 original bytes). Its exception
             # record and the parameter constructor's exception-record order also differ.
             Object(NonMatching, "Game/fn_80430A54.cpp", cflags=cflags_effect_rw3),
-            Object(Matching, "Game/fn_80432A50.cpp", cflags=cflags_effect_rw3),
+            Object(Matching, "Game/EffectObjectRW3.cpp", cflags=cflags_effect_rw3),
             Object(Matching, "Game/fn_804340CC.cpp", cflags=cflags_effect_rw3),
             # Render retains 656 paired instruction-word differences and one source tail
             # word (source 3660 bytes, native 3656). The Data48 vertex builder retains 419
