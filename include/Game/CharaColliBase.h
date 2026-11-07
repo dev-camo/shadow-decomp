@@ -83,7 +83,11 @@ class CharaColliBase {
      * pointer from a reference, and the reference spelling is inferred because it reproduces both
      * callers (named-local pointer forms differ by 8-9 words in ResetFromOwner). */
     virtual void SetRotation(const UnkRotation3 &rotation) = 0;
-    virtual void UnkSlot15() = 0;
+    /* CharaColliBody (0x800C13EC) and CharaColliGeneral (0x800C31F8) pass vector to their
+     * range or ranges (vtable offset 0x24), then call slot 31 and set the byte at 0x29.
+     * CityGadget passes its scale parameters (meaning inferred; the pointer spelling and const
+     * are inferred). */
+    virtual void UnkSlot15(const Fn8040Vector3 *vector) = 0;
     /* Sets the probe's size (name inferred): TornadoCollision passes its radius as x and 0.0f as
      * y and z, GravityChangeCollision the three half extents of its box. Both pass -2 as arg1,
      * which 0x800374D0 uses as the range selector of slots 8 and 9. */

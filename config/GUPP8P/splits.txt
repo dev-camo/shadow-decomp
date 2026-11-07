@@ -1385,6 +1385,14 @@ Game/CityBombSmall.cpp:
 	.sbss       start:0x805F18B8 end:0x805F18E8
 	.sdata2     start:0x805FA4E8 end:0x805FA518
 
+Game/CityGadget.cpp:
+	.text       start:0x802F68BC end:0x802F781C
+	.rodata     start:0x8050B320 end:0x8050B4B8
+	.data       start:0x8055B348 end:0x8055B498
+	.sdata      start:0x805EDBE0 end:0x805EDC18
+	.sbss       start:0x805F18E8 end:0x805F18F8
+	.sdata2     start:0x805FA518 end:0x805FA550
+
 Game/SecretDisk.cpp:
 	.text       start:0x802FA360 end:0x802FAF38
 	.ctors      start:0x804AB02C end:0x804AB030
