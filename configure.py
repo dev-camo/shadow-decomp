@@ -2206,6 +2206,23 @@ config.libs = [
             # operator->'s 8), and the later sections (.ctors, .rodata, .data, .sdata, .sbss,
             # .sdata2) 0x20 bytes later.
             Object(NonMatching, "Game/Container.cpp", cflags=cflags_game_cpp),
+            # Relocatable comparison with the split original object, the same in USA (GUPE8P),
+            # Japan (GUPJ8P) and PAL (GUPP8P): 15 of its 17 functions have identical instruction
+            # words and relocation targets. The original's ProbeGround (USA 0x800F8D2C) calls the
+            # out-of-line copy of UnkProbeNode_80021FE4::fn_800F8E88 (0x800F8E88, 6 words), which
+            # undecompiled code at 0x801B9E54 and 0x802A2980 also calls; this build expands that
+            # inline function, so the copy is absent and ProbeGround is 88 words against 87: the
+            # call becomes five instructions, and one saved register fewer renumbers r28-r31.
+            # Positional: 47 of the 87 paired words differ (no relocation target differs under
+            # equal words) and 1 build word is unpaired; aligned: 16 of 84 pairs differ, 3 words
+            # are only in the original and 4 only in this build, and the original's call to the
+            # copy has no counterpart. A link with this object fails: the two callers of the
+            # copy have no definition.
+            # Data, compared object by object with the 47 compiled copies that are absent from the
+            # original split set aside (35 weak and 1 local function, 3 weak vtables, 1 .data, 4
+            # .rodata and 3 .sdata locals): every original object matches in bytes and relocation
+            # targets.
+            Object(NonMatching, "Game/ContainerBehavior.cpp", cflags=cflags_game_cpp),
             # Relocatable comparison with the split original object (local names paired by
             # position), the same in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P): 134 of its 139
             # functions have identical instruction words and relocation targets when each body is
