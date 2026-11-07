@@ -58,8 +58,8 @@ struct UnkGlobal_8057D6A0 {
     /* 0x9C */ u8 field_0x9C[0xA8 - 0x9C];
     /* 0xA8 */ UnkRecord_802039C8 field_0xA8;
     /* 0xCC */ u8 field_0xCC[0x125 - 0xCC];
-    /* The Researcher and ElecAccessPanel gadgets pass 1 to fn_800740E4 when it is set, otherwise 2
-     * (meaning unknown). */
+    /* The Researcher and ElecAccessPanel gadgets pass 1 to fn_800740E4 when it is set, otherwise 2;
+     * CityBombBig passes 1 when it is set, otherwise 0 (meaning unknown). */
     /* 0x125 */ u8 field_0x125;
     /* 0x126 */ u8 field_0x126[0x150 - 0x126];
 };

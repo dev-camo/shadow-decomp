@@ -33,6 +33,11 @@ class UnkTarget_80166AF4 {
     /* Calls fn_80166D90 on the entries whose word at 0xC equals arg0 (behaviour inferred from
      * its body; purpose unknown). */
     void fn_80166E20(int arg0);
+    /* Calls fn_80166EE8 on the entries whose word at 0xC equals arg0 (behaviour inferred from
+     * its body; purpose unknown). The CityBombBig gadget calls it with 1 when it starts its
+     * countdown and ignores any result. The member form, the int parameter and the void return
+     * are inferred. */
+    void fn_80166E84(int arg0);
     /* Calls fn_80166D90 on every entry, then destroys the entries and clears the collection
      * (fn_8016847C; behaviour inferred from the bodies; purpose unknown). The DOOR gadget calls it
      * when a key door unlocks. */
