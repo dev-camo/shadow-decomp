@@ -1872,6 +1872,7 @@ config.libs = [
                 "Game/Gadget.cpp",
                 cflags=[*cflags_game_cpp, "-inline auto,deferred,level=1"],
             ),
+            Object(Matching, "Game/fn_8015AA84.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SecurityLaser.cpp", cflags=cflags_game_cpp),
             # Every function but the constructor has identical instructions and relocations, and
             # the data, symbols and relocations match once the linker-discarded weak and local

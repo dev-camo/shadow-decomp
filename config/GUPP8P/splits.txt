@@ -740,6 +740,9 @@ Game/Gadget.cpp:
 	.sdata      start:0x805E7658 end:0x805E7670
 	.sdata2     start:0x805F5B18 end:0x805F5B28
 
+Game/fn_8015AA84.cpp:
+	.text       start:0x8015AE68 end:0x8015BCA8
+
 Game/fn_80160B18.cpp:
 	.text       start:0x80160EFC end:0x80160F84
 
