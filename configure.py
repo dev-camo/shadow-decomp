@@ -1711,6 +1711,7 @@ config.libs = [
             # UpdateBody lacks one branch of the state switch: the original's compare tree has an
             # extra blt.
             Object(NonMatching, "Game/Cage.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/CaptureCage.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A1FA0.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A35AC.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A4430.cpp", cflags=cflags_game_cpp),

@@ -221,6 +221,14 @@ Game/Cage.cpp:
 	.sbss       start:0x805EFA18 end:0x805EFA28
 	.sdata2     start:0x805F4668 end:0x805F46C0
 
+Game/CaptureCage.cpp:
+	.text       start:0x800F386C end:0x800F4EEC
+	.rodata     start:0x804BAB28 end:0x804BAD78
+	.data       start:0x80526150 end:0x805262E0
+	.sdata      start:0x805E6520 end:0x805E6570
+	.sbss       start:0x805EFA28 end:0x805EFA48
+	.sdata2     start:0x805F46C0 end:0x805F46F8
+
 Game/CatchStick.cpp:
 	.text       start:0x800F4EEC end:0x800F68B8
 	.rodata     start:0x804BAD78 end:0x804BB040
