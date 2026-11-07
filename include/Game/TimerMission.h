@@ -2,6 +2,7 @@
 #define GAME_TIMERMISSION_H
 
 #include "Game/Mission.h"
+#include "Game/TimerMessage.h"
 #include <dolphin/types.h>
 #include "layout_check.h"
 
@@ -27,9 +28,7 @@ class TimerMission : public virtual Mission {
     virtual void fn_8016AA98();
 
     /* 0x08 */ float field_0x8;
-    /* A Mission::TimerMessageManage (constructed by fn_802EF49C, destroyed by fn_802EF3D0); not
-     * mapped here. */
-    /* 0x0C */ u8 field_0xC[0x3C - 0xC];
+    /* 0x0C */ TimerMessageManage field_0xC;
 };
 CHECK_SIZEOF(TimerMission, 0x80);
 
