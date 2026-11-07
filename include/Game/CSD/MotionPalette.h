@@ -137,14 +137,15 @@ struct TextureSize {
 };
 CHECK_SIZEOF(Chao::CSD::TextureSize, 0x8);
 
-/* An entry of a scene's node table, which is sorted by name (searched by FindNode). The
- * members after the name are used by the csdm* files. */
-struct NodeEntry {
+/* The record used by a scene's name-sorted node table and node lookups (shared type inferred).
+ * The indices select a layer and its element. A failed lookup clears the name and leaves both
+ * indices unspecified. */
+struct UnkNodeEntry_80366640 {
     /* 0x00 */ const char *name;
-    /* 0x04 */ s32 field_0x4;
-    /* 0x08 */ s32 field_0x8;
+    /* 0x04 */ s32 layer;
+    /* 0x08 */ s32 element;
 };
-CHECK_SIZEOF(Chao::CSD::NodeEntry, 0xC);
+CHECK_SIZEOF(Chao::CSD::UnkNodeEntry_80366640, 0xC);
 
 struct SceneMotion;
 
@@ -172,7 +173,7 @@ struct SceneData {
     /* 0x24 */ s32 layerCount;
     /* 0x28 */ LayerData *layers;
     /* 0x2C */ s32 nodeCount;
-    /* 0x30 */ NodeEntry *nodes;
+    /* 0x30 */ UnkNodeEntry_80366640 *nodes;
     /* 0x34 */ s32 nameCount; /* also the number of motions */
     /* 0x38 */ const SceneMotion *motions;
     /* 0x3C */ NameEntry *names;

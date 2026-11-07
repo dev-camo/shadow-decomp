@@ -40,7 +40,8 @@ CMotionPattern::CMotionPattern(MotionPaletteEntry *entry, const RCPtr<unsigned c
     Attach(entry, ref);
 }
 
-CMotionPattern *CMotionPalette::GetPattern(CMotionPattern *result, const ElementRef &element) {
+CMotionPattern *CMotionPalette::GetPattern(CMotionPattern *result,
+                                           const UnkNodeEntry_80366640 &element) {
     MotionPaletteEntry *entry = &m_palette->layers[element.layer].entries[element.element];
 
     return ::new (result) CMotionPattern(entry, m_ref);

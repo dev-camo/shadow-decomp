@@ -155,8 +155,8 @@ class CSceneCallback {
 };
 CHECK_SIZEOF(Chao::CSD::CSceneCallback, 0x4);
 
-/* Key of the node cache: the two indices copied from ElementRef when creating or finding a node
- * (name inferred). The native comparator orders the signed layer, then the signed element. */
+/* Key of the node cache: the two indices copied from the node entry when creating or finding a
+ * node (name inferred). The native comparator orders the signed layer, then the signed element. */
 struct SceneNodeKey {
     /* 0x00 */ s32 layer;
     /* 0x04 */ s32 element;
@@ -202,8 +202,8 @@ class CScene : public CSceneDataRef, public CSceneListenerSource, public CBase {
     /* Invokes the virtual update with the library's mutable default step. */
     void fn_80366F9C();
     /* Finds or creates the cached node for an element; null gives an empty reference. */
-    RCPtr<CNode> fn_80366468(const ElementRef *elementRef);
-    ElementRef fn_80366640(const char *name) const;
+    RCPtr<CNode> fn_80366468(const UnkNodeEntry_80366640 *elementRef);
+    UnkNodeEntry_80366640 fn_80366640(const char *name) const;
     RCPtr<CNode> fn_803666B4(const char *name);
 
     /* The first and last frame of a motion (by name or by its index in the scene's data); a name

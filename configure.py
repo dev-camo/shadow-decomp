@@ -1585,7 +1585,7 @@ config.libs = [
             # Ten bodies differ in allocation lines, pooled constants, iterator accessors,
             # return-object stores or the final repeated motion-index copy. The scene initialization
             # allocation passes source line 128 rather than native 173; root-pattern allocations
-            # pass 489/476 rather than 1124/1102.
+            # pass 486/473 rather than 1124/1102.
             # Definitions with established native identities follow descending addresses; callback
             # destructor placement is provisional. Among the 166 paired bodies, 129
             # retain native relative order. Generated helpers still differ: map traversal helpers
@@ -1597,7 +1597,7 @@ config.libs = [
             # The first 0x58 .data bytes and 0x4C .rodata bytes match with their relocations; this
             # includes the member-pointer constants used by the now-identical frame update.
             # Node lookup emits both 64-byte pair constructors and has the original 372-byte size;
-            # its remaining instruction difference is allocation line 423 versus native 974.
+            # its remaining instruction difference is allocation line 420 versus native 974.
             # Source .data is 448 bytes versus 464 native bytes. One unused direct member pointer
             # is unemitted; two native 28-byte zero ranges remain unclassified. The provisional
             # callback-holder table has a four-byte native zero tail. Read-only data is 130 bytes

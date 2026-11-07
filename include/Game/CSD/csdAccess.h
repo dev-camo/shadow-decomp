@@ -55,7 +55,7 @@ SceneData *GetSceneByPath(const char *path, const Project *project, const char *
 SceneData *GetSceneByName(const char *name, const Project *project, const char **foundName);
 
 /* Looks a node up in a scene's node table. */
-const NodeEntry *FindNode(const char *name, const SceneData *scene);
+const UnkNodeEntry_80366640 *FindNode(const char *name, const SceneData *scene);
 
 /* Resets an element to the state of a newly created one. */
 void ResetEntry(MotionPaletteEntry *entry);
