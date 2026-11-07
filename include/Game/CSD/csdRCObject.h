@@ -157,9 +157,9 @@ template <class T> class RCPtr : public CBase {
 
     /* Shares the other pointer's holder, taking a counted reference (the game's copy constructor
      * of RCPtr<CTexList>, 0x80042270 in the USA release, clears the holder and then takes the
-     * reference). It is declared here, after the holder, so that the __LINE__ the holder's
-     * allocation passes does not move; no unit matches that word either way (the original passes
-     * 410). */
+     * reference). Matching workaround: declared after the holder to preserve its allocation's
+     * __LINE__; the original passes 410. Revisit when the original header layout is known.
+     */
     RCPtr(const RCPtr &other);
 
     /* The held object. Dereferencing a pointer that holds none reports an error and never
