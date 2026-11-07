@@ -88,6 +88,8 @@ extern "C" {
 int fn_801A642C(const Enemy *enemy);
 UnkRotation3 *fn_8017C684(Enemy *enemy);
 Fn8040Vector3 *fn_8017C690(Enemy *enemy);
+/* Returns a copy of field_0x38 (behaviour from its body). */
+boost::weak_ptr<EnemyCharInfo> fn_8017D014(Enemy *enemy);
 Fn8040Vector3 *fn_80181F0C(Enemy *enemy);
 float fn_8018346C(const Enemy *enemy);
 /* Play sound `id` through the sound manager, passing the m_charInfo object as its position when
