@@ -2938,16 +2938,47 @@ Game/fn_8040CCEC.cpp:
 Game/fn_8040CD20.c:
 	.text       start:0x8040D360 end:0x8040D3A0
 
+Game/fn_8040CD60.cpp:
+	.text       start:0x8040D3A0 end:0x8040D3B4
+	.ctors      start:0x804AA690 end:0x804AA694
+	.sbss       start:0x805F1968 end:0x805F1970
+
 Game/fn_8040CD74.cpp:
 	.text       start:0x8040D3B4 end:0x8040D4A0
 
 Game/fn_8040CE60.c:
 	.text       start:0x8040D4A0 end:0x8040D4B4
 
+Game/fn_8040CE74.cpp:
+	extab       start:0x80005860 end:0x80005868
+	extabindex  start:0x800077A8 end:0x800077B4
+	.text       start:0x8040D4B4 end:0x8040D528
+
 Game/fn_8040CEE8.cpp:
 	extab       start:0x80005868 end:0x80005870
 	extabindex  start:0x800077B4 end:0x800077C0
 	.text       start:0x8040D528 end:0x8040D56C
+
+Game/fn_8040CF2C.c:
+	.text       start:0x8040D56C end:0x8040D590
+
+Game/fn_8040CF50.cpp:
+	extab       start:0x80005870 end:0x80005878
+	extabindex  start:0x800077C0 end:0x800077CC
+	.text       start:0x8040D590 end:0x8040D5D0
+
+Game/fn_8040CF90.cpp:
+	.text       start:0x8040D5D0 end:0x8040D66C
+
+Game/fn_8040D02C.cpp:
+	.text       start:0x8040D66C end:0x8040D684
+	.ctors      start:0x804AA694 end:0x804AA698
+	.bss        start:0x805E0DC0 end:0x805E0DD0
+
+Game/fn_8040D044.cpp:
+	extab       start:0x80005878 end:0x80005880
+	extabindex  start:0x800077CC end:0x800077D8
+	.text       start:0x8040D684 end:0x8040D6EC
 
 Game/fn_8040D0AC.cpp:
 	extab       start:0x80005880 end:0x80005890
@@ -2964,6 +2995,12 @@ Game/fn_8040D1B4.cpp:
 	extabindex  start:0x800077FC end:0x80007808
 	.text       start:0x8040D7F4 end:0x8040D828
 
+Game/fn_8040D498.c:
+	.text       start:0x8040DAD8 end:0x8040DAF8
+
+Game/fn_8040D608.c:
+	.text       start:0x8040DC48 end:0x8040DC80
+
 Game/fn_8040D640.cpp:
 	extab       start:0x80005928 end:0x80005958
 	extabindex  start:0x80007874 end:0x8000788C
@@ -2979,6 +3016,15 @@ Game/fn_8040D7C4.cpp:
 	extabindex  start:0x800078A4 end:0x800078C8
 	.text       start:0x8040DE04 end:0x8040DF1C
 	.sdata2     start:0x805FB3B0 end:0x805FB3B8
+
+Game/fn_8040D9D8.c:
+	.text       start:0x8040E018 end:0x8040E02C
+
+Game/fn_8040DB6C.c:
+	.text       start:0x8040E1AC end:0x8040E1C0
+
+Game/fn_8040E048.c:
+	.text       start:0x8040E688 end:0x8040E68C
 
 Game/fn_8040E310.c:
 	.text       start:0x8040E950 end:0x8040E990
