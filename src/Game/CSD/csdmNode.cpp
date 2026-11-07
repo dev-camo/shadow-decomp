@@ -106,9 +106,14 @@ s32 CNode::GetHidden() const {
     return m_pattern->GetHidden();
 }
 
+/* Matching workaround: expand this setter in the channel switch while retaining its
+ * native out-of-line body. Explicit inline drops that body; revisit with the original
+ * inline settings. */
+#pragma auto_inline on
 void CNode::SetHidden(s32 hidden) {
     m_pattern->SetHidden(hidden);
 }
+#pragma auto_inline reset
 
 f32 CNode::GetRotation() const {
     return m_pattern->GetRotation();
@@ -124,9 +129,14 @@ u32 CNode::GetTint() const {
     return m_pattern->GetTint();
 }
 
+/* Matching workaround: expand this setter in the channel switch while retaining its
+ * native out-of-line body. Explicit inline drops that body; revisit with the original
+ * inline settings. */
+#pragma auto_inline on
 void CNode::SetTint(const u32 &tint) {
     m_pattern->SetTint(tint);
 }
+#pragma auto_inline reset
 
 void CNode::ClearTint() {
     m_pattern->ClearTint();
@@ -136,9 +146,14 @@ u32 CNode::GetColor(int corner) const {
     return m_pattern->GetColor(corner);
 }
 
+/* Matching workaround: expand this setter in the channel switch while retaining its
+ * native out-of-line body. Explicit inline drops that body; revisit with the original
+ * inline settings. */
+#pragma auto_inline on
 void CNode::SetColor(int corner, const u32 &color) {
     m_pattern->SetColor(corner, color);
 }
+#pragma auto_inline reset
 
 void CNode::ClearColor(int corner) {
     m_pattern->ClearColor(corner);
@@ -190,7 +205,7 @@ void CNode::fn_8036A728() {
 void CNode::fn_8036A44C(const ChannelMap::iterator &node) {
     switch (node->first) {
     case CHANNEL_HIDDEN:
-        m_pattern->SetHidden(node->second->GetHidden());
+        SetHidden(node->second->GetHidden());
         break;
     case CHANNEL_TRANSLATE_X:
         SetTranslateX(node->second->GetTranslateX());
@@ -202,10 +217,10 @@ void CNode::fn_8036A44C(const ChannelMap::iterator &node) {
         m_pattern->SetRotation(node->second->GetRotation());
         break;
     case CHANNEL_SCALE_X:
-        m_pattern->SetScaleX(node->second->GetScaleX());
+        SetScaleX(node->second->GetScaleX());
         break;
     case CHANNEL_SCALE_Y:
-        m_pattern->SetScaleY(node->second->GetScaleY());
+        SetScaleY(node->second->GetScaleY());
         break;
     case CHANNEL_PATTERN: {
         int first;
@@ -217,19 +232,19 @@ void CNode::fn_8036A44C(const ChannelMap::iterator &node) {
         break;
     }
     case CHANNEL_TINT:
-        m_pattern->SetTint(node->second->GetTint());
+        SetTint(node->second->GetTint());
         break;
     case CHANNEL_COLOR_0:
-        m_pattern->SetColor(0, node->second->GetColor(0));
+        SetColor(0, node->second->GetColor(0));
         break;
     case CHANNEL_COLOR_0 + 1:
-        m_pattern->SetColor(1, node->second->GetColor(1));
+        SetColor(1, node->second->GetColor(1));
         break;
     case CHANNEL_COLOR_0 + 2:
-        m_pattern->SetColor(2, node->second->GetColor(2));
+        SetColor(2, node->second->GetColor(2));
         break;
     case CHANNEL_COLOR_0 + 3:
-        m_pattern->SetColor(3, node->second->GetColor(3));
+        SetColor(3, node->second->GetColor(3));
         break;
     case CHANNEL_FIELD_0x30:
         m_pattern->SetValue(0, node->second->GetValue(0));
@@ -281,17 +296,27 @@ f32 CNode::GetScaleX() const {
     return m_pattern->GetScale().x;
 }
 
+/* Matching workaround: expand this setter in the channel switch while retaining its
+ * native out-of-line body. Explicit inline drops that body; revisit with the original
+ * inline settings. */
+#pragma auto_inline on
 void CNode::SetScaleX(f32 scaleX) {
     m_pattern->SetScaleX(scaleX);
 }
+#pragma auto_inline reset
 
 f32 CNode::GetScaleY() const {
     return m_pattern->GetScale().y;
 }
 
+/* Matching workaround: expand this setter in the channel switch while retaining its
+ * native out-of-line body. Explicit inline drops that body; revisit with the original
+ * inline settings. */
+#pragma auto_inline on
 void CNode::SetScaleY(f32 scaleY) {
     m_pattern->SetScaleY(scaleY);
 }
+#pragma auto_inline reset
 
 void CNode::fn_8036A20C() {
     u32 flags = m_element->flags;

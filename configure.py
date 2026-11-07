@@ -1607,16 +1607,17 @@ config.libs = [
             # and fn_8036528C. Normal links retain the original Scene object in every region.
             Object(NonMatching, "Game/CSD/csdmScene.cpp", cflags=cflags_csd),
             # The complete node source, including its constructor, destructor, callbacks, channel
-            # map and owned data. The candidate emits 96 of the 97 native function bodies; the
-            # 12-byte tree iterator arrow is represented by its inlined header definition. 94
-            # emitted bodies have identical instruction words. The channel-transfer switch is 0x338
-            # versus 0x2D0, with 159 differing positional words and 26 extra words. The original
-            # translate-X/Y cases read the pair directly; the other 13 call outlined iterator and
-            # reference arrows. This build expands the arrows in all 15 cases. The constructor
-            # differs in its allocation line (45 versus 51). The callback reference destructor
-            # has the original 0x198-byte body. The object also emits a 0x20-byte weak typed-pointer
-            # remove copy; its native definition is in Scene at 0x803655D0 in USA (GUPE8P). Both
-            # member pointers, all three vtable groups and the literal contents are represented. The
+            # map and owned data. The original translate-X/Y cases read the pair directly; the
+            # other 13 call outlined iterator and reference arrows. Ten cases now preserve the
+            # original calls and operations; rotation,
+            # pattern and the three value cases still expand arrows and each add eight bytes.
+            # All 97 native functions are emitted, with 95 identical instruction bodies. The
+            # switch is 760 bytes versus 720; its shared epilogue branch displacements differ.
+            # The constructor differs in its allocation line (45 versus 51). The callback reference
+            # destructor has the original 0x198-byte body. The object also emits a 0x20-byte weak
+            # typed-pointer remove copy; its native definition is in Scene at 0x803655D0 in
+            # USA (GUPE8P). Both member pointers, all three vtable groups and the literal contents
+            # are represented. The
             # switch-table addends differ, and a weak byte-holder vtable shifts the
             # element-data-reference vtable.
             # Function order also differs: the map destruction group (__destroy, deallocate,
