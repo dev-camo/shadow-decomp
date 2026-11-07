@@ -85,6 +85,9 @@ bool fn_800C9E80(UnkGadgetOwner_800C9CD0 *owner, u32 bits);
  * set (behaviour from its body; purpose unknown). The RING gadget's destructor leaves the owner's
  * state alone while it is true. */
 bool fn_800C9870(UnkGadgetOwner_800C9CD0 *owner);
+/* Sets bit 0x20000000 of the word at 0x18 of the record that owner points to (behaviour inferred
+ * from its body). */
+void fn_800C9690(UnkGadgetOwner_800C9CD0 *owner);
 }
 
 /* Gadget (class name from RTTI): a stage object task registered with an owner object. */
@@ -101,8 +104,12 @@ class Gadget : public Task {
     virtual void fn_800CBC1C(float dt);
     /* Re-reads the owner's settings (name inferred). */
     virtual void ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) = 0;
-    /* True once the owner reports the gadget finished; also sets Task flag 0x01 (name inferred). */
+    /* Sets Task flag 0x01 and returns true when the first owner query is true, or else when the
+     * second is; the second is not made when the first is true (name inferred). */
     virtual bool IsFinished();
+
+    /* The class name the constructor stores in m_name (name inferred). */
+    static const char *s_name;
 
     /* 0x28 */ UnkGadgetOwner_800C9CD0 *m_owner;
     /* 0x2C */ u32 field_0x2C;
@@ -123,15 +130,16 @@ extern "C" bool fn_8015A858(Gadget *gadget);
 extern "C" bool fn_8015A818(Gadget *gadget);
 /* Passes the gadget's owner (m_owner) to fn_800C9AD4 when there is one (behaviour inferred). */
 extern "C" void fn_8015A7C0(Gadget *gadget);
-/* A 16-bit 2 in the .sdata2 of Gadget's file (USA (GUPE8P) 0x805F4A80; name and meaning
- * unknown). The ELEVATOR gadget passes it as the last argument of fn_801D53C4.
+/* A 16-bit 2 in .sdata2 right after Gadget's file (USA (GUPE8P) 0x805F4A80; name, meaning and
+ * defining file unknown). MWCC places a const definition ahead of the RTTI names it pools when
+ * it generates code, so in Gadget's file it would precede "Task", which follows "Gadget" there.
+ * The ELEVATOR gadget passes it as the last argument of fn_801D53C4.
  * Matching workaround: declared without const. In each of the four fn_801D53C4 calls of
  * Elevator::UpdateBody the original loads m_loopSound and then this value, both after the
  * fn_80053164 call (USA: the call at 0x8014877C, the loads at 0x80148780 and 0x80148788 in the
  * first). Declared const, the calls stay in place and the two loads swap (8 words differ). Its
  * place in .sdata2 suggests a const definition; whether the original declaration had const is
- * inferred from this load order only. Revisit when Gadget's file and its definition are
- * recovered. */
+ * inferred from this load order only. Revisit when its definition is recovered. */
 extern s16 lbl_805F4A80;
 
 #endif

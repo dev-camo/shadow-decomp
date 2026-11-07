@@ -1857,6 +1857,17 @@ config.libs = [
             # of the two table entries are held in f3 and f2 instead of f2 and f3, as in the
             # Spring and LongSpring hit callbacks.
             Object(NonMatching, "Game/SpringPanel.cpp", cflags=cflags_game_cpp),
+            # Matching workaround: -inline auto,deferred,level=1 for this unit only (cflags_game_cpp
+            # has -inline noauto). The original expands fn_8015A858 and fn_8015A818 (owner load,
+            # null test, call to fn_800C9A64 or fn_800C996C) into Gadget::IsFinished and still
+            # emits both as functions, which BreakableOrnament::IsFinished calls; with -inline
+            # noauto they stay calls (IsFinished is then 0x70 bytes against 0xAC). Revisit if the
+            # original's flags or an inline declaration that reproduces both are found.
+            Object(
+                Matching,
+                "Game/Gadget.cpp",
+                cflags=[*cflags_game_cpp, "-inline auto,deferred,level=1"],
+            ),
             Object(Matching, "Game/SecurityLaser.cpp", cflags=cflags_game_cpp),
             # Every function but the constructor has identical instructions and relocations, and
             # the data, symbols and relocations match once the linker-discarded weak and local
