@@ -560,26 +560,9 @@ config.libs = [
                 Object(NonMatching, "rw/fn_80451F48.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80453018.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80453980.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80458CF8.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8045A760.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8045AF28.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8045B6F0.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8045BF30.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8045CA38.c", cflags=cflags_game),
-                # Matching workaround: -inline noauto. At the default (-inline auto) fn_8045F2A0.o
-                # has a .text of 0x758 bytes instead of the original 0x748 (measured). Revisit
-                # when the unit's real flags are found.
-                Object(Matching, "rw/fn_8045F2A0.c", cflags=[*cflags_game, "-inline noauto"]),
-                Object(Matching, "rw/fn_8045F9E8.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80460974.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_804626F8.c", cflags=cflags_game),
-                # Matching workaround: -inline noauto. At the default (-inline auto) fn_8046288C.o
-                # has a .text of 0xB58 bytes instead of the original 0xAD0 (measured). Revisit
-                # when the unit's real flags are found.
-                Object(Matching, "rw/fn_8046288C.c", cflags=[*cflags_game, "-inline noauto"]),
                 Object(NonMatching, "rw/fn_8046335C.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80463D28.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_804641CC.c", cflags=cflags_game),
                 # fn_804649C0 and the data match. fn_80464814 differs in 28 of 107 instruction
                 # words, all register numbers (opcodes, relocations and stack offsets are the
                 # original's): the two component sizes, start and end take r29/r31/r30 instead
@@ -587,7 +570,6 @@ config.libs = [
                 # settings, the morph target array, the position type and two table addresses).
                 Object(NonMatching, "rw/fn_80464814.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80464A94.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8046528C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80465CDC.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80466B58.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8046B110.c", cflags=cflags_game),
@@ -1723,6 +1705,24 @@ config.libs = [
             Object(Matching, "rw/fn_804535C8.c", cflags=cflags_game),
             Object(Matching, "rw/fn_80454AA4.c", cflags=cflags_game),
             Object(Matching, "rw/fn_80455D0C.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80458CF8.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8045A760.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8045AF28.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8045BF30.c", cflags=cflags_game),
+            # Matching workaround: -inline noauto. At the default (-inline auto) fn_8045F2A0.o
+            # has a .text of 0x758 bytes instead of the original 0x748 (measured). Revisit
+            # when the unit's real flags are found.
+            Object(Matching, "rw/fn_8045F2A0.c", cflags=[*cflags_game, "-inline noauto"]),
+            Object(Matching, "rw/fn_8045F9E8.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80460974.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_804626F8.c", cflags=cflags_game),
+            # Matching workaround: -inline noauto. At the default (-inline auto) fn_8046288C.o
+            # has a .text of 0xB58 bytes instead of the original 0xAD0 (measured). Revisit
+            # when the unit's real flags are found.
+            Object(Matching, "rw/fn_8046288C.c", cflags=[*cflags_game, "-inline noauto"]),
+            Object(Matching, "rw/fn_80463D28.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_804641CC.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8046528C.c", cflags=cflags_game),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
