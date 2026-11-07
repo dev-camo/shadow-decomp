@@ -2671,8 +2671,8 @@ config.libs = [
             # record and the parameter constructor's exception-record order also differ.
             Object(NonMatching, "Game/fn_80430A54.cpp", cflags=cflags_effect_rw3),
             Object(Matching, "Game/EffectObjectRW3.cpp", cflags=cflags_effect_rw3),
-            # Matching workaround: the particle constructor addresses each float literal
-            # independently. Pooling adds a shared base and shortens it by 64 bytes.
+            # Matching workaround: the EffectParticle3DRW3 constructor addresses each float
+            # literal independently. Pooling adds a shared base and shortens it by 64 bytes.
             # Revisit when this original file's compiler settings are recovered.
             Object(NonMatching, "Game/fn_80432D58.cpp", cflags=cflags_effect),
             Object(Matching, "Game/fn_804340CC.cpp", cflags=cflags_effect_rw3),

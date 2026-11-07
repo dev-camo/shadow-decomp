@@ -28,6 +28,7 @@ class EffectParticleExecUnit {
     /* 0x48 */ float field_0x48;
     /* 0x4C */ unsigned int m_flags;
     /* 0x50 */ float m_elapsed;
+    /* Channel bytes are stored shifted left by 22; renderers recover them with >> 22. */
     /* 0x54 */ unsigned int m_color[4];
     /* 0x64 */ EffectParticleExecUnit *m_prev;
     /* 0x68 */ EffectParticleExecUnit *m_next;

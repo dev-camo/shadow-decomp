@@ -42,7 +42,7 @@ struct UnkEffectElementData2 : UnkEffectElementData {
     /* 0x4C */ unsigned int field_0x4C;
     /* 0x50 */ int field_0x50;
     /* 0x54 */ unsigned char field_0x54[4];
-    /* 0x58 */ void *field_0x58;
+    /* 0x58 */ const char *field_0x58;
     /* 0x5C */ unsigned int field_0x5C;
     /* 0x60 */ short field_0x60;
     /* 0x62 */ short field_0x62;
