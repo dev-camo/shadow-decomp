@@ -1335,6 +1335,14 @@ Game/Message.cpp:
 	.data       start:0x8055A340 end:0x8055A350
 	.sdata      start:0x805ECFA0 end:0x805ECFA8
 
+Game/TimerMessage.cpp:
+	.text       start:0x802EF1B0 end:0x802F0C94
+	.rodata     start:0x80509620 end:0x80509798
+	.data       start:0x8055A350 end:0x8055A3B0
+	.sdata      start:0x805ECFA8 end:0x805ECFE0
+	.sbss       start:0x805F0DA8 end:0x805F0DB8
+	.sdata2     start:0x805F99C0 end:0x805F99C8
+
 Game/ChaosSpear.cpp:
 	.text       start:0x802F0C94 end:0x802F1794
 	.rodata     start:0x80509798 end:0x805098C0
