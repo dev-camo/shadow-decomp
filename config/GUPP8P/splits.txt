@@ -1100,6 +1100,15 @@ Game/HeavyDog0410.cpp:
 	.sbss       start:0x805F1050 end:0x805F1058
 	.sdata2     start:0x805F85E8 end:0x805F8660
 
+Game/HeavyDog0510.cpp:
+	.text       start:0x80253CD4 end:0x80254708
+	.ctors      start:0x804AAF48 end:0x804AAF4C
+	.rodata     start:0x804F58B8 end:0x804F5988
+	.data       start:0x8054AA70 end:0x8054ABC0
+	.bss        start:0x80584FD0 end:0x805850C0
+	.sdata      start:0x805EB4A0 end:0x805EB4D0
+	.sdata2     start:0x805F86E8 end:0x805F8718
+
 Game/VacuumContainer.cpp:
 	.text       start:0x80254708 end:0x80255214
 	.ctors      start:0x804AAF4C end:0x804AAF50

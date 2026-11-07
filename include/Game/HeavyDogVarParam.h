@@ -120,7 +120,10 @@ class HeavyDogVarParam : public BossVarParam {
     /* 0x0E8 */ float field_0xE8;
     /* 0x0EC */ Fn8040Vector3 field_0xEC;
     /* 0x0F8 */ Fn8040Vector3 field_0xF8;
-    /* 0x104 */ u8 field_0x104[0x114 - 0x104]; /* unknown */
+    /* 0x104 */ float field_0x104;             /* HEAVY_DOG_0510's Init copies field_0x110 here */
+    /* 0x108 */ u8 field_0x108[0x110 - 0x108]; /* unknown */
+    /* HEAVY_DOG_0510's Init stores fn_80016260(-x, -z) of field_0xEC here. */
+    /* 0x110 */ float field_0x110;
     /* 0x114 */ u8 field_0x114;
     /* 0x115 */ u8 field_0x115;
     /* 0x116 */ u8 field_0x116;

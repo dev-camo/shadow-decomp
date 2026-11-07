@@ -2235,6 +2235,16 @@ config.libs = [
             # with clrlwi for fn_801690D0, where this build loads it into r4 after the call (a
             # local copy of m_comId moves the load but leaves mr for the clrlwi).
             Object(NonMatching, "Game/ElecAccessPanel.cpp", cflags=cflags_game_cpp),
+            # Compared as relocatable objects, 11 of 12 functions have identical words and
+            # relocation targets, and the data contents match once the linker-discarded weak and
+            # local copies are set aside (the compiled .sdata2 is writable, WA, where the original's
+            # is allocatable only, A, and the compiled .rodata and .sdata2, 0xC9 and 0x2C bytes,
+            # lack the original's section-end alignment to 0xD0 and 0x30). .bss: the original keeps
+            # 0x30 bytes before the first sphere and 0x94 bytes after the vector that no code reads
+            # or writes, so the static initialiser differs in 4 of its 32 words (the objects'
+            # offsets from the .bss start) and the parameter tables' three pointers to those objects
+            # in their relocation addends.
+            Object(NonMatching, "Game/HeavyDog0510.cpp", cflags=cflags_game_cpp),
             # Compared as relocatable objects, 23 of 24 functions have identical words and
             # relocation targets, and the data contents match once the linker-discarded weak and
             # local copies are set aside, apart from two differences (the .sdata2 contents are the
