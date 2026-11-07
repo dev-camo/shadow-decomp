@@ -609,23 +609,12 @@ config.libs = [
                 # assignment r20-r31 only; its inlined copies in fn_8048A96C match).
                 Object(NonMatching, "rw/fn_8048A178.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8048D85C.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8049043C.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80491AB4.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_804939DC.c", cflags=cflags_game),
                 # fn_80496408 differs in 7 words: its error strings are addressed from a .data
                 # base 0x74 bytes below the original's. The original loads 0x8056E4F8 (fn_80495428's
                 # jump table, 0x74 bytes after fn_804951B8's at 0x8056E484) as its base. That suggests
                 # the original file's .data starts there and fn_804951B8 belonged to another file
                 # (inferred, not established).
                 Object(NonMatching, "rw/fn_804951B8.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80497198.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80497FB4.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8049952C.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80499B24.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8049A78C.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8049A82C.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8049B0CC.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8049B14C.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049B1F8.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8049B8BC.c", cflags=cflags_game),
                 # fn_8049D934 differs in 10 words: in the duplicate check of the clusters of interest
@@ -1666,6 +1655,17 @@ config.libs = [
             Object(Matching, "rw/fn_8048ADE0.c", cflags=cflags_game),
             Object(Matching, "rw/fn_8048B6AC.c", cflags=cflags_game),
             Object(Matching, "rw/fn_8048D7C0.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8049043C.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80491AB4.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_804939DC.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80497198.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80497FB4.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8049952C.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80499B24.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8049A78C.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8049A82C.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8049B0CC.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8049B14C.c", cflags=cflags_game),
             # The material-copy callback retains seven register-word differences.
             Object(NonMatching, "rw/fn_804A076C.c", cflags=cflags_game),
             Object(Matching, "Game/fn_80015954.cpp", cflags=cflags_game_cpp),
