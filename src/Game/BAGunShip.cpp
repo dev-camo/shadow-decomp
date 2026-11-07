@@ -430,7 +430,7 @@ float BAGunShip::Shoot() {
         UnkParams_80051D10 params(boost::weak_ptr<CharInfo>(m_charInfo), 1, muzzle, direction,
                                   Fn8040Vector3(0.0f, 0.0f, 0.0f));
 
-        fn_80051C34(0x1D, &params);
+        fn_80051C34(0x1D, params);
         fn_801D54F4(fn_80053164(), 0x7930, &m_charInfo->m_position, 0, 1);
     }
 

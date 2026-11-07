@@ -10,6 +10,7 @@
 class CharInfo;
 namespace Weapon {
 class LockonTarget;
+class WeaponBase;
 } // namespace Weapon
 
 /* The 0x44-byte block that the constructors at 0x80051D10 and 0x800693AC build (placeholder name;
@@ -58,8 +59,29 @@ CHECK_SIZEOF(UnkParams_80051D10, 0x44);
 extern "C" {
 /* Passes params to the function at 0x8 of the 0x14-byte record that the pointer at index kind of
  * the table lbl_8051D720 addresses, when the pointer and that function are set (behaviour inferred
- * from its body; the BA GUNSHIP gadget passes 0x1D for its shots). */
-void fn_80051C34(int kind, const UnkParams_80051D10 *params);
+ * from its body; the BA GUNSHIP gadget passes 0x1D for its shots). The bytes show only an address:
+ * Weapon::HeavyShot builds the block that fn_80069424 or fn_80069298 returns at r1+0x8, passes
+ * that address and destroys the block right after the call (USA (GUPE8P) 0x802F1A50-0x802F1A68).
+ * The const reference spelling is inferred; a pointer to a named or bound temporary gives the
+ * same code. */
+void fn_80051C34(int kind, const UnkParams_80051D10 &params);
+/* Call the function at 0x4 (fn_80051C80) or at 0x0 (fn_80051CC8) of the same record for kind when
+ * the pointer and that function are set (behaviour from their bodies). Weapon::HeavyShot's unload
+ * and load hooks pass 0xB. */
+void fn_80051C80(int kind);
+void fn_80051CC8(int kind);
+/* Build the parameters for a bullet of weapon from the position of matrix with the second
+ * constructor above, arg as arg4 and arg2 0 when the weapon's owner locks and its field_0x5C is 1,
+ * otherwise 1 (behaviour from their bodies). The direction is matrix applied to a constant vector
+ * (fn_8040B618) for fn_80069424, and the normalised difference target - position for
+ * fn_80069298. The by-value return, the pointer, const and reference spellings and the parameter
+ * names are inferred. Weapon::ChaosSpear::ChaosSpear::fn_8005C0CC
+ * computes arg2 with the same rule in its own body, so the three may share an unidentified inline
+ * helper. */
+UnkParams_80051D10 fn_80069424(const Weapon::WeaponBase *weapon, Fn8040Matrix34 *matrix,
+                               const Fn8040Vector3 &arg);
+UnkParams_80051D10 fn_80069298(const Weapon::WeaponBase *weapon, Fn8040Matrix34 *matrix,
+                               const Fn8040Vector3 &arg, const Fn8040Vector3 &target);
 }
 
 #endif

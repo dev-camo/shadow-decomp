@@ -246,7 +246,7 @@ void BkWormBase::fn_80192608(Fn8040Matrix34 *frame,
         direction = fn_8040B618(*frame, direction);
         UnkParams_80051D10 params(boost::weak_ptr<CharInfo>(fn_8017D014(m_enemy)), target, 1,
                                   position, direction, lbl_805E07A0);
-        fn_80051C34(kind, &params);
+        fn_80051C34(kind, params);
     }
 }
 
