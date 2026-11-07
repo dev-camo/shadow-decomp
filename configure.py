@@ -1972,19 +1972,7 @@ config.libs = [
             # placeholders _2 to _9). Neither object has .sdata2.
             Object(NonMatching, "Game/BasicMessage.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Message.cpp", cflags=cflags_game_cpp),
-            # Relocatable-object comparison: 23 of 24 functions have identical words and
-            # relocation targets. UpdateMatrix is 200 bytes against 220, with 20 differing words at
-            # equal positions and 5 extra original words: the original keeps the shared pointer's
-            # operator-> out of line and forms the rotation's address inside an expansion, as an
-            # inline CharInfo helper around fn_8040FFBC would; no such helper is recovered (the
-            # same open question as #910), so the source calls fn_8040FFBC directly. Data matches
-            # once the linker-discarded weak copies are set aside; the compiled .sdata2 is writable
-            # (WA) where the original's is allocatable only (A). Normal builds link the original
-            # object; the source object was linked only as a separate USA diagnostic. There,
-            # UpdateMatrix has 22 differing words at equal positions and 5 extra original words,
-            # the code after it is placed 0x14 bytes lower, and words of the other 23 functions
-            # differ only in relocated fields (in 12 of them).
-            Object(NonMatching, "Game/ChaosSpear.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/ChaosSpear.cpp", cflags=cflags_game_cpp),
             # Relocatable-object comparison: the 13 functions other than the start-up function
             # match, words and relocations. The original sets the name and the floats at 0x10 and
             # 0x14 (1.0 and 5.0, two .sdata2 literals) of the weapon description in the start-up

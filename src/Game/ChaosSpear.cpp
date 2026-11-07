@@ -164,7 +164,7 @@ void ChaosSpear::UpdateMatrix() {
         fn_8040C148(&m_matrix, &translation);
 
         Fn8040Matrix34 rotated;
-        fn_8040FFBC(&rotated, &m_matrix, &charInfo->m_rotation, fn_801DBD00(charInfo->field_0x30));
+        charInfo->RotateMatrix(&rotated, m_matrix, fn_801DBD00(charInfo->field_0x30));
         fn_8040C148(&m_matrix, &rotated);
     }
 }
