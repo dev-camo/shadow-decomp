@@ -2795,6 +2795,10 @@ config.libs = [
             # unsigned-conversion-bias addresses, which this build folds into loads.
             # The cause of the address-selection difference remains unresolved.
             Object(NonMatching, "Game/fn_80437118.cpp", cflags=cflags_effect),
+            # Nine function bodies match. fn_80437C40 is 2584 bytes on both sides,
+            # with 57 differing instruction words within +0x19C..+0x304 from literal
+            # addressing, scheduling and register allocation. Eight literal relocation
+            # sites move; their targets are unchanged.
             Object(NonMatching, "Game/fn_80437C40.cpp", cflags=cflags_effect),
             Object(Matching, "Game/EffectGlobalParamRW3.cpp", cflags=cflags_effect_rw3),
             # Four functions match; the vertex builder is 2556 versus 2736 bytes, with
