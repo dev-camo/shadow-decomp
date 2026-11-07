@@ -106,9 +106,11 @@ s32 CNode::GetHidden() const {
     return m_pattern->GetHidden();
 }
 
-/* Matching workaround: expand this setter in the channel switch while retaining its
- * native out-of-line body. Explicit inline drops that body; revisit with the original
- * inline settings. */
+/* Matching workaround: the original keeps five global setter bodies, with no calls to
+ * them from this object, and expands them in the channel switch. Scoped automatic
+ * inlining preserves those bodies; explicit inline drops them. Unit-wide automatic
+ * inlining grows SetTranslation(const Vector2 &) from 40 to 84 bytes. Revisit with
+ * the original inline settings. */
 #pragma auto_inline on
 void CNode::SetHidden(s32 hidden) {
     m_pattern->SetHidden(hidden);
@@ -129,9 +131,7 @@ u32 CNode::GetTint() const {
     return m_pattern->GetTint();
 }
 
-/* Matching workaround: expand this setter in the channel switch while retaining its
- * native out-of-line body. Explicit inline drops that body; revisit with the original
- * inline settings. */
+// Matching workaround: as for SetHidden
 #pragma auto_inline on
 void CNode::SetTint(const u32 &tint) {
     m_pattern->SetTint(tint);
@@ -146,9 +146,7 @@ u32 CNode::GetColor(int corner) const {
     return m_pattern->GetColor(corner);
 }
 
-/* Matching workaround: expand this setter in the channel switch while retaining its
- * native out-of-line body. Explicit inline drops that body; revisit with the original
- * inline settings. */
+// Matching workaround: as for SetHidden
 #pragma auto_inline on
 void CNode::SetColor(int corner, const u32 &color) {
     m_pattern->SetColor(corner, color);
@@ -296,9 +294,7 @@ f32 CNode::GetScaleX() const {
     return m_pattern->GetScale().x;
 }
 
-/* Matching workaround: expand this setter in the channel switch while retaining its
- * native out-of-line body. Explicit inline drops that body; revisit with the original
- * inline settings. */
+// Matching workaround: as for SetHidden
 #pragma auto_inline on
 void CNode::SetScaleX(f32 scaleX) {
     m_pattern->SetScaleX(scaleX);
@@ -309,9 +305,7 @@ f32 CNode::GetScaleY() const {
     return m_pattern->GetScale().y;
 }
 
-/* Matching workaround: expand this setter in the channel switch while retaining its
- * native out-of-line body. Explicit inline drops that body; revisit with the original
- * inline settings. */
+// Matching workaround: as for SetHidden
 #pragma auto_inline on
 void CNode::SetScaleY(f32 scaleY) {
     m_pattern->SetScaleY(scaleY);
