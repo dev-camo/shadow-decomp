@@ -8,6 +8,7 @@
 
 class CharInfo;
 class UnkWeaponModel_800631FC;
+struct UnkWeaponModelDesc_8006465C;
 
 namespace Weapon {
 
@@ -20,6 +21,10 @@ class WeaponBase;
  * from the bodies. */
 class Item {
   public:
+    /* The constructor at 0x8005F380: builds the model from desc for an empty owner. The weapon
+     * files' item factories pass their item model description. The const on desc and its pointer
+     * spelling are inferred (the body only forwards the address, which a reference would too). */
+    Item(const UnkWeaponModelDesc_8006465C *desc);
     virtual ~Item();
     /* Stores value at 0xC (the type table's creator passes its second argument here). */
     virtual void fn_8005BBEC(int value);
@@ -57,6 +62,9 @@ extern "C" {
 boost::shared_ptr<Weapon::Item> fn_8005B9D4(int type, int arg1);
 /* Returns the type's flag byte. */
 bool fn_8005BF14(int type);
+/* Sets the type's flag byte to 1 (behaviour from its body); the weapon files' load hooks call it
+ * for their type. */
+void fn_8005B760(int type);
 /* Returns the name at the start of the type's description, or an empty string when the type has
  * none. */
 const char *fn_8005BEEC(int type);
