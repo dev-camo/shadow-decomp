@@ -978,22 +978,6 @@ config.libs = [
                 Object(Matching, "Game/fn_8041FD6C.c"),
                 Object(Matching, "Game/fn_8041FF08.c"),
                 Object(Matching, "Game/fn_80420438.c"),
-                Object(Matching, "Game/fn_80425858.cpp", cflags=cflags_effect),
-                # All six method bodies have identical instruction words and named relocation
-                # targets. Live local template copies have their original providers in
-                # fn_80425860.cpp, so this split is still NonMatching. Linked as a whole object
-                # (which first needs a name for 0x803A1754, the function the shared_count
-                # constructor calls after __throw, here __end__catch), it still keeps a local
-                # 0x18-byte boost operator== copy for shared_ptr<EffectElement> that the
-                # original calls at 0x80426224 and extab and extabindex records for the template
-                # copies. The object also emits .rodata and .data (the type records, name strings
-                # and vtables of the boost template copies), but the linked image keeps none of
-                # them. Of its .bss it keeps one byte, the object that the local
-                # shared_ptr<EffectElement> constructor copies into its checked_deleter argument;
-                # the original's counterpart is lbl_805E1500. Revisit when fn_80425860.cpp can be
-                # merged into this unit.
-                Object(NonMatching, "Game/EffectManager.cpp", cflags=cflags_effect),
-                Object(NonMatching, "Game/fn_80425860.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/EffectArranger.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/fn_8040D9D8.c"),
                 Object(Matching, "Game/fn_8040D498.c"),
@@ -2802,6 +2786,28 @@ config.libs = [
             Object(Matching, "Game/fn_800532F8.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80422070.cpp", cflags=cflags_effect),
             Object(Matching, "Game/fn_804220CC.cpp", cflags=cflags_effect),
+            # These slices cover USA (GUPE8P) 0x80425170-0x8042631C.
+            # Original Remove and Create calls reach the tail's operator== and shared/weak pointer
+            # constructors, which the current compiler emits locally in EffectManager.cpp. This
+            # suggests a common original file; the original pre-link bindings and filename are
+            # unknown. Keep the eight-byte Matching factory separate until the whole object matches.
+            Object(Matching, "Game/fn_80425858.cpp", cflags=cflags_effect),
+            # The six method bodies have identical instruction words and named call targets.
+            # Their local template copies correspond to bodies in the original tail range, so
+            # retaining the original tail does not replace these local definitions. The fifteen tail
+            # exception records occur across both source objects; only the shared_count action
+            # padding differs (original 0x0255). Original RTTI, vtables and the one-byte deleter
+            # tag at USA 0x805E1500 remain in separate automatic data units.
+            Object(NonMatching, "Game/EffectManager.cpp", cflags=cflags_effect),
+            # Of the nine named bodies, eight have identical instruction words. The 748-byte
+            # loader differs in four words that set up strncmp's arguments. The unit's EFFD string,
+            # float literals and jump-table targets agree by contents. The other nine original
+            # bodies are Boost helpers emitted by EffectManager.cpp; their instruction words
+            # agree, but the separate objects do not reproduce the original code/data ownership.
+            # The compiled object orders fn_80425C34 through fn_80425E68 before the loader;
+            # the EffectManager destructor and constructor come last, after the EffectElement
+            # constructor.
+            Object(NonMatching, "Game/fn_80425860.cpp", cflags=cflags_effect),
             Object(Matching, "Game/fn_8042A2D8.cpp", cflags=cflags_effect),
             Object(Matching, "Game/EffectGlobalParam.cpp", cflags=cflags_effect),
             Object(Matching, "Game/EffectLensFlare.cpp", cflags=cflags_effect),
