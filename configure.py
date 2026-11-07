@@ -2101,6 +2101,7 @@ config.libs = [
             # including ~EggFleet, is not reconstructed, so checked_delete<EggFleet> is inlined
             # here and the shared metadata remains in the original data.
             Object(NonMatching, "Game/FleetHolder.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/PowerDeviceCage.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PowerDeviceNaked.cpp", cflags=cflags_game_cpp),
             # All 95 functions have identical instruction words and relocation types. Selecting
             # this source produces the original DOL in all three regions, but ELF validation still
