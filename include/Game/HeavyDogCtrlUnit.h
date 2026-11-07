@@ -11,13 +11,13 @@
 /* The control units of the Heavy Dog bosses (class names and bases from RTTI; see BossCtrlUnit.h).
  * They are defined at 0x802498AC-0x8024E104 apart from the constructors marked inline, whose
  * copies the linker keeps from the HEAVY_DOG_0410 unit. Only the classes that the HEAVY_DOG_0410
- * boss task creates, and their bases, are declared. Each declares its destructor and, where its
- * vtable shows an override, Update; HeavyDogCtrlUnit_AttackCallbackCanopy and
+ * and HEAVY_DOG_0510 boss tasks create, and their bases, are declared. Each declares its destructor
+ * and, where its vtable shows an override, Update; HeavyDogCtrlUnit_AttackCallbackCanopy and
  * HeavyDogCtrlUnit_AttackCallbackBody also declare their overrides of container slots 0 and 2.
  * Other overrides and further virtual functions are not declared yet. The parameter types are
- * inferred from the boss task, which passes its HeavyDog0410VarParam, and the parameter names
- * (index, arg, resourceIndex) are inferred. Regions marked unknown are set up by the out-of-line
- * constructors and not mapped yet. */
+ * inferred from the boss tasks, which pass their HeavyDog0410VarParam or HeavyDog0510VarParam, and
+ * the parameter names (index, arg, resourceIndex) are inferred. Regions marked unknown are set up
+ * by the out-of-line constructors and not mapped yet. */
 
 class HeavyDogCtrlUnit : public virtual BossCtrlUnit {
   public:
