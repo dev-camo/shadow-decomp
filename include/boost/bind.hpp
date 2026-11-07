@@ -25,16 +25,18 @@
 //
 //  See http://www.boost.org/libs/bind/bind.html for documentation.
 //
-//  Adapted from Boost 1.32: the include guard follows this project's naming, and boost/bind.hpp
-//  is merged with the pieces of boost/bind/ it includes, resolved for a compiler with void
-//  returns and a single calling convention, and cut to what the reconstructed units use
-//  (bind(&C::f, this, _1) with a member function of one argument, see boost/mem_fn.hpp): the
-//  lists and call operators of up to two arguments, the member function overload of bind() for
-//  two arguments, and the placeholders. The overloads for function pointers and const member
-//  functions are left out (the game also uses bind(f, _1) with a function pointer and cmf1, in
-//  units not yet reconstructed), as are boost::reference_wrapper and data member support. The
-//  bodies stay in the classes as in Boost: the game's inlining depends on them (see
-//  cflags_game_cpp in configure.py).
+//  Adapted from Boost 1.32: the include guard follows this project's naming, and boost/bind.hpp is
+//  merged with the pieces of boost/bind/ it includes, resolved for a compiler with void returns and
+//  a single calling convention, and cut to what the reconstructed units use (bind(&C::f, this, _1)
+//  with a member function of one argument, see boost/mem_fn.hpp, and bind(f, _1, a, b) with a
+//  function of three arguments): the argument lists of up to three bound arguments, bind_t's call
+//  operators for up to two call-time arguments (the bind object is invoked with at most two; the
+//  bound function itself can take three), the member function overload of bind() for two arguments,
+//  the function pointer overload for three, and the placeholders. The other overloads for function
+//  pointers and those for const member functions are left out (the game also uses bind(f, _1) with
+//  a function pointer and cmf1, in units not yet reconstructed), as are boost::reference_wrapper
+//  and data member support. The bodies stay in the classes as in Boost: the game's inlining depends
+//  on them (see cflags_game_cpp in configure.py).
 //
 
 #include "boost/mem_fn.hpp"
@@ -275,6 +277,81 @@ template <class A1, class A2> class list2 {
     A2 a2_;
 };
 
+template <class A1, class A2, class A3> class list3 {
+  public:
+    list3(A1 a1, A2 a2, A3 a3) : a1_(a1), a2_(a2), a3_(a3) {}
+
+    A1 operator[](boost::arg<1>) const {
+        return a1_;
+    }
+    A2 operator[](boost::arg<2>) const {
+        return a2_;
+    }
+    A3 operator[](boost::arg<3>) const {
+        return a3_;
+    }
+
+    A1 operator[](boost::arg<1> (*)()) const {
+        return a1_;
+    }
+    A2 operator[](boost::arg<2> (*)()) const {
+        return a2_;
+    }
+    A3 operator[](boost::arg<3> (*)()) const {
+        return a3_;
+    }
+
+    template <class T> T &operator[](value<T> &v) const {
+        return v.get();
+    }
+
+    template <class T> T const &operator[](value<T> const &v) const {
+        return v.get();
+    }
+
+    template <class R, class F, class L>
+    typename result_traits<R, F>::type operator[](bind_t<R, F, L> &b) const {
+        return b.eval(*this);
+    }
+
+    template <class R, class F, class L>
+    typename result_traits<R, F>::type operator[](bind_t<R, F, L> const &b) const {
+        return b.eval(*this);
+    }
+
+    template <class R, class F, class A> R operator()(type<R>, F &f, A &a, long) {
+        return unwrap(&f, 0)(a[a1_], a[a2_], a[a3_]);
+    }
+
+    template <class R, class F, class A> R operator()(type<R>, F const &f, A &a, long) const {
+        return unwrap(&f, 0)(a[a1_], a[a2_], a[a3_]);
+    }
+
+    template <class F, class A> void operator()(type<void>, F &f, A &a, int) {
+        unwrap(&f, 0)(a[a1_], a[a2_], a[a3_]);
+    }
+
+    template <class F, class A> void operator()(type<void>, F const &f, A &a, int) const {
+        unwrap(&f, 0)(a[a1_], a[a2_], a[a3_]);
+    }
+
+    template <class V> void accept(V &v) const {
+        visit_each(v, a1_, 0);
+        visit_each(v, a2_, 0);
+        visit_each(v, a3_, 0);
+    }
+
+    bool operator==(list3 const &rhs) const {
+        return ref_compare(a1_, rhs.a1_, 0) && ref_compare(a2_, rhs.a2_, 0) &&
+               ref_compare(a3_, rhs.a3_, 0);
+    }
+
+  private:
+    A1 a1_;
+    A2 a2_;
+    A3 a3_;
+};
+
 // bind_t
 
 template <class R, class F, class L> class bind_t {
@@ -367,7 +444,24 @@ template <class A1, class A2> struct list_av_2 {
     typedef list2<B1, B2> type;
 };
 
+template <class A1, class A2, class A3> struct list_av_3 {
+    typedef typename add_value<A1>::type B1;
+    typedef typename add_value<A2>::type B2;
+    typedef typename add_value<A3>::type B3;
+    typedef list3<B1, B2, B3> type;
+};
+
 } // namespace _bi
+
+// bind(function, argument, argument, argument)
+
+template <class R, class B1, class B2, class B3, class A1, class A2, class A3>
+_bi::bind_t<R, R (*)(B1, B2, B3), typename _bi::list_av_3<A1, A2, A3>::type>
+bind(R (*f)(B1, B2, B3), A1 a1, A2 a2, A3 a3) {
+    typedef R (*F)(B1, B2, B3);
+    typedef typename _bi::list_av_3<A1, A2, A3>::type list_type;
+    return _bi::bind_t<R, F, list_type>(f, list_type(a1, a2, a3));
+}
 
 // bind(member function, object, argument)
 
