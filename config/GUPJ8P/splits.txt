@@ -1118,6 +1118,16 @@ Game/VacuumContainer.cpp:
 	.sbss       start:0x805F05B8 end:0x805F05C8
 	.sdata2     start:0x805F7CB8 end:0x805F7CD8
 
+Game/EscapePlane.cpp:
+	.text       start:0x80255220 end:0x80256A00
+	.ctors      start:0x804AA530 end:0x804AA534
+	.rodata     start:0x804F5048 end:0x804F5258
+	.data       start:0x8054A198 end:0x8054A258
+	.bss        start:0x80584680 end:0x80584690
+	.sdata      start:0x805EAA60 end:0x805EAA98
+	.sbss       start:0x805F05C8 end:0x805F05E8
+	.sdata2     start:0x805F7CD8 end:0x805F7D08
+
 Game/BaseDoor.cpp:
 	.text       start:0x80256A00 end:0x80257D40
 	.rodata     start:0x804F5258 end:0x804F5370

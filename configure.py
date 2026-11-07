@@ -2717,6 +2717,7 @@ config.libs = [
             Object(Matching, "Game/GravitySignBoard.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SpaceGadget.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BackDrop.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/EscapePlane.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EscapePlaneRail.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecCircuitExit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/TestNakazawa.cpp", cflags=cflags_game_cpp),
