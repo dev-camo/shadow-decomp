@@ -2,6 +2,7 @@
 #define GAME_COUNTMISSION_H
 
 #include "Game/Mission.h"
+#include "Game/CountMessage.h"
 #include <dolphin/types.h>
 #include "layout_check.h"
 
@@ -37,9 +38,7 @@ class CountMission : public virtual Mission {
     /* 0x1C */ int field_0x1C;
     /* 0x20 */ int field_0x20;
     /* 0x24 */ int field_0x24;
-    /* A Mission::CountMessageManage (constructed by fn_802ED710, destroyed by fn_802ED644); not
-     * mapped here. */
-    /* 0x28 */ u8 field_0x28[0x58 - 0x28];
+    /* 0x28 */ CountMessageManage field_0x28;
 };
 CHECK_SIZEOF(CountMission, 0x9C);
 

@@ -1969,6 +1969,61 @@ config.libs = [
             # RTTI records (std::exception, std::bad_alloc) and 8 .sbss objects (the boost
             # placeholders _2 to _9). Neither object has .sdata2.
             Object(NonMatching, "Game/BasicMessage.cpp", cflags=cflags_game_cpp),
+            # Relocatable-object comparison (addresses are the USA release's): of the 72
+            # functions, 55 have a counterpart in this object and 50 of them have identical words
+            # and relocation targets: the other game code, std::sort with its helpers, std::ceil
+            # and the boost::shared_ptr<Mission::CountMessage> members. Word counts compare raw
+            # words, so a call to a different function is not counted there; relocation targets
+            # are given separately. Two methods: by position (word i against word i over the
+            # shorter of the two functions, with the longer one's extra words counted on their
+            # own) and aligned (instructions matched up by a sequence diff, Python's difflib, with
+            # branch displacements masked; paired differing, original-only and source-only words).
+            # Sizes are the original's first:
+            # - fn_802ED4E0, 0xD0 bytes against 0xCC: by position 45 of 51 words differ, plus 1
+            #   original-only word; aligned 3 paired differing and 1 original-only. The relocation
+            #   targets are the same, in the same order. The original loads the word at 0x14 again
+            #   at the top of each pass (lwz r0,0x14(r29)) where this build compares the value its
+            #   loop test has just loaded. It also keeps the record in r5 and loads the record's
+            #   word at 0x14 again for the second fn_802EEAF0 call (lwz r4,0x14(r5)); this build
+            #   keeps the record in r4 and passes the value it has just compared (mr r4,r0).
+            # The other four are instances of std::vector<boost::shared_ptr<Mission::CountMessage> >
+            # that differ as the BasicMessage instances above do:
+            # - the vector destructor, 0x50 bytes against 0x4C: by position 13 of 19 words differ,
+            #   plus 1 original-only word; aligned 1 original-only word (a second branch on the
+            #   original's null test of this) and no other difference;
+            # - the vector constructor: the same 12 words, but it calls __vector_obj's
+            #   constructor where the original calls a further layer (0x802ED7C8);
+            # - insert, 0x310 bytes against 0x31C: by position 145 of 196 words differ, plus 3
+            #   source-only words; aligned 24 paired differing, 17 original-only and 20
+            #   source-only;
+            # - reserve, 0x10C bytes against 0xFC: by position 51 of 63 words differ, plus 4
+            #   original-only words; aligned 7 paired differing, 6 original-only and 2
+            #   source-only.
+            # In total, by position 254 paired words differ, with 6 original-only and 3
+            # source-only words; aligned, 34 paired differing, 25 original-only and 22 source-only.
+            # Relocation targets: insert and reserve call __cap, __vector_obj's constructor and
+            # swap where the original calls small helpers for the capacity, the maximum size, a
+            # constructor from the allocator and swap. 17 helpers of the original (146 words)
+            # have no counterpart here: the vector constructor chain (4, from 0x802ED7C8), swap
+            # (5, from 0x802EE344), the constructor from the allocator (3, from 0x802EE46C), the
+            # capacity (2, from 0x802EE618) and the maximum size (3, from 0x802EE640). This
+            # object has 17 functions the original unit lacks: 13 weak copies that the link
+            # discards (10 of them of functions the game defines elsewhere, such as
+            # boost::detail::shared_count's destructor), and __vector_obj's constructor and swap
+            # with the two __compressed_pair constructors they call. 33 of the 55 paired functions
+            # are in the original's relative order: the original emits the vector's begin, end,
+            # back, push_back, pop_back and clear next to their users, this build after the
+            # unit's other functions. The data match by contents, relocation targets included,
+            # once the compiled copies that the original unit does not have are set aside: 4
+            # .rodata strings (the names and what() texts of std::exception and std::bad_alloc),
+            # 5 .data objects (the Mission::MessageManage, std::exception, std::bad_alloc and
+            # boost::detail::sp_counted_base vtables and the std::bad_alloc base list), 2 .sdata
+            # RTTI records (std::exception, std::bad_alloc) and 2 .sdata2 doubles (the static
+            # locals of <cmath>'s sqrtf). The original sections end in alignment padding that this
+            # object lacks: 2 bytes of .rodata and 7 bytes of .sbss. The compiled .sdata2 is
+            # writable (WA) where the original's is allocatable only (A). Normal builds link the
+            # original object.
+            Object(NonMatching, "Game/CountMessage.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Message.cpp", cflags=cflags_game_cpp),
             # Relocatable-object comparison (addresses are the USA release's): of the 70
             # functions, 53 have a counterpart in this object and 48 of them have identical words
