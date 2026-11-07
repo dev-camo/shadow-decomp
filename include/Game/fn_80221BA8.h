@@ -11,9 +11,11 @@ extern "C" {
  * returns; otherwise it passes the item, two of the task's members, position and rotation to
  * fn_8005F0F4 (0x8022222C). Behaviour inferred from the two bodies; the original name is unknown.
  * The BA GUNSHIP gadget passes its character info's position and rotation, (0, 1, 0), 0x10 and
- * -1 when it breaks. */
-void fn_80221BA8(const Fn8040Vector3 *position, const UnkRotation3 *rotation,
-                 const Fn8040Vector3 *arg2, int itemType, int arg4);
+ * -1 when it breaks. The references are inferred: BkWormBase passes fn_800496F8's result and a
+ * temporary vector straight to the call (0x80192DB8), which a pointer parameter would not take
+ * without named objects. */
+void fn_80221BA8(const Fn8040Vector3 &position, const UnkRotation3 &rotation,
+                 const Fn8040Vector3 &arg2, int itemType, int arg4);
 }
 
 #endif

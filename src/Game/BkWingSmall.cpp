@@ -105,7 +105,7 @@ bool BkWingSmallBase::fn_8019B40C(UnkEnemyDispEvent_8019B40C *event) {
     return true;
 }
 
-int BkWingSmallBase::fn_8017E14C() {
+int BkWingSmallBase::fn_8017E14C() const {
     return 0;
 }
 

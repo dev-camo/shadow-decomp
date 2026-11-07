@@ -16,7 +16,7 @@ template <class Base, class AI> class EnemyTemplate : public Base, public AI, pu
         m_control = this;
     }
     virtual ~EnemyTemplate() {}
-    virtual int fn_8017D788() {
+    virtual UnkGadgetOwner_800C9CD0 *fn_8017D788() {
         return TEnemySetTask::field_0x2C;
     }
 };

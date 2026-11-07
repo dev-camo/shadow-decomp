@@ -14,7 +14,8 @@ class TEnemySetTask : public virtual EnemyReferer, public Task {
     virtual ~TEnemySetTask();
     virtual void Update(float dt);
 
-    /* 0x2C */ int field_0x2C;
+    // The constructor stores its owner argument here and passes it to fn_800C9CD0.
+    /* 0x2C */ UnkGadgetOwner_800C9CD0 *field_0x2C;
 };
 CHECK_SIZEOF(TEnemySetTask, 0x38);
 

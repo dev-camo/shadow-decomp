@@ -40,7 +40,7 @@ class BkWingSmallBase : public FlyerCommonBase {
     virtual void fn_8019B3A8(float dt);
     virtual void fn_801812C8();
     virtual void fn_8019B414();
-    virtual int fn_8017E14C();
+    virtual int fn_8017E14C() const;
     virtual int fn_8017EE98();
     virtual int fn_8019B4C8();
     virtual int fn_8018019C();

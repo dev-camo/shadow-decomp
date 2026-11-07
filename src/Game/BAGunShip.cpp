@@ -262,10 +262,12 @@ void BAGunShip::UpdateBody(float dt) {
     case 6: {
         StartCrashEffect();
 
+        // Copies of the position and rotation are passed: passing the members directly gives a
+        // stack frame 16 bytes smaller than the original's.
         Fn8040Vector3 position = m_charInfo->m_position;
         UnkRotation3 rotation = m_charInfo->m_rotation;
         Fn8040Vector3 up(0.0f, 1.0f, 0.0f);
-        fn_80221BA8(&position, &rotation, &up, 0x10, -1);
+        fn_80221BA8(position, rotation, up, 0x10, -1);
 
         if (m_object8027C3C4.get() != 0) {
             m_object8027C3C4->fn_8027C650();

@@ -27,7 +27,7 @@ class EnemyParamCommon : public virtual EnemyReferer, public EnemyParaFunc {
     virtual int fn_80192B58() const;
     virtual void fn_8019B4BC(const UnkEnemyParaData_8017B8E4 *data);
     virtual const UnkEnemyParaData_8017B8E4 *fn_8019B4C0();
-    virtual int fn_8017E14C();
+    virtual int fn_8017E14C() const;
     virtual int fn_8017EE98();
     virtual int fn_8019B4C8();
     virtual int fn_8018019C();

@@ -7,6 +7,7 @@
 #include "Game/DebugDisp.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/LockonTarget.h"
+#include "Game/PlayerBase.h"
 #include "Game/SharedConstants.h"
 #include "Game/AngleConversion.h"
 #include "Game/UnkEffectParams_8015F0B8.h"
@@ -21,26 +22,6 @@
 
 using SonicteamUSA::System::CharaColli::AttackCallbackParam;
 using SonicteamUSA::System::CharaColli::CharaColliAttack;
-
-/* The object at 0x24C of the character (placeholder name; the original class is unknown).
- * fn_80206574 returns a weak pointer to the Target that it holds at 0xC (see LockonTarget.h). */
-class UnkTargetSource_80206574 {
-  public:
-    /* Returns a weak pointer built from the member at 0xC (fn_80206598; behaviour inferred). */
-    boost::weak_ptr<Target> fn_80206574();
-};
-
-/* The object that fn_80095388 returns (placeholder name; the original class is unknown). Only the
- * pointer at 0x24C is used here. fn_80095388 has the shape of boost::static_pointer_cast (it passes
- * an empty tag byte and copies the pointer and its count unchanged), so this is probably a class
- * derived from CharInfo at offset 0, which field_0x0 covers (lead, not verified). */
-class UnkCharacter_80095388 {
-  public:
-    /* 0x000 */ u8 field_0x0[0x24C];
-    /* 0x24C */ UnkTargetSource_80206574 *field_0x24C;
-};
-/* Checks only the recovered view; the complete native extent remains unknown. */
-CHECK_SIZEOF(UnkCharacter_80095388, 0x250);
 
 /* The object that the callback at 0xC of UnkFactory_8051DDC8 returns (placeholder name; the
  * original class is unknown). fn_80051B58 constructs it when there is no callback. */
@@ -65,9 +46,6 @@ CHECK_SIZEOF(UnkFactory_8051DDC8, 0x14);
 extern UnkFactory_8051DDC8 lbl_8051DDC8;
 
 extern "C" {
-/* Returns the character as an UnkCharacter_80095388 (behaviour inferred: the pointer and its count
- * are copied unchanged). */
-boost::shared_ptr<UnkCharacter_80095388> fn_80095388(const boost::shared_ptr<CharInfo> &character);
 /* Returns a when a < b, otherwise b (behaviour inferred from its body). */
 const float &fn_800704AC(const float &a, const float &b);
 }
@@ -361,7 +339,8 @@ void ArkCannon::Fire(u32 index, boost::shared_ptr<CharInfo> target) {
 
     if (fn_80169EF0(&matrix, m_model, 0, s_shotFrames[index])) {
         boost::shared_ptr<Weapon::LockonTarget> lockon(new Weapon::LockonTarget());
-        boost::shared_ptr<UnkCharacter_80095388> character = fn_80095388(target);
+        boost::shared_ptr<Player::PlayerBase> character =
+            boost::static_pointer_cast<Player::PlayerBase>(target);
 
         if (character->field_0x24C != 0) {
             lockon->fn_80061054(character->field_0x24C->fn_80206574());

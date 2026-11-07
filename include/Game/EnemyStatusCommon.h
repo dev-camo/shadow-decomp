@@ -18,6 +18,13 @@ class EnemyStatusCommon : public virtual EnemyReferer, public EnemyStatFunc {
     /* The original (0x8018F294) constructs and initialises the members. */
     EnemyStatusCommon();
 
+    // Matching workaround: slots 0xB8 and 0xBC are declared before the EnemyStatFunc overrides.
+    // MWCC creates a derived class's adjustment thunks in this class's declaration order: this
+    // order gives BkWorm's thunks (0x8019339C-0x801933BC, USA) their original order, which
+    // declaring the added slots after the overrides does not. The slot offsets are the same
+    // either way. Revisit if a later file shows a different order.
+    virtual int fn_80191A58() = 0;
+    virtual ~EnemyStatusCommon();
     virtual void fn_801A9138();
     virtual void fn_801A8CE8();
     virtual void fn_801A86A8(float);
@@ -44,7 +51,7 @@ class EnemyStatusCommon : public virtual EnemyReferer, public EnemyStatFunc {
     virtual unsigned char fn_8017B768();
     virtual unsigned char fn_8017B770();
     virtual unsigned char fn_8017B778();
-    virtual void fn_801A8020(Unk801A8020Argument *);
+    virtual void fn_801A8020(SonicteamUSA::System::CharaColli::AttackCallbackParam *);
     virtual int fn_8017B780();
     virtual bool fn_801A8388(float);
     virtual void fn_8017B7D8(unsigned char, unsigned char);
@@ -62,8 +69,6 @@ class EnemyStatusCommon : public virtual EnemyReferer, public EnemyStatFunc {
     virtual float fn_8017B844();
     virtual float fn_8017B84C();
     virtual void fn_8017B854(float);
-    virtual int fn_80191A58() = 0;
-    virtual ~EnemyStatusCommon();
     virtual void fn_801A84D4();
     virtual int fn_8017B8CC();
     virtual bool fn_801A84AC();

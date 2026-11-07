@@ -15,6 +15,14 @@ namespace CharaColli {
 class CharaColliAttack;
 class CharaColliBase;
 
+/* The object at 0x14 of an AttackCallbackParam (placeholder name; the original type is unknown).
+ * Only the word at 0x20 is mapped; the complete extent is unknown. */
+struct UnkAttackPart_80192F14 {
+    /* 0x00 */ u8 field_0x0[0x20];
+    /* 0x20 */ u32 field_0x20;
+};
+CHECK_SIZEOF(UnkAttackPart_80192F14, 0x24);
+
 /* SonicteamUSA::System::CharaColli::AttackCallbackParam (class name from the RTTI names of the
  * weapon stick's and ThreatObj's bound callbacks): what an attack object passes to its callbacks.
  * The mapped members form a 0x58-byte view; the complete native extent remains unknown. */
@@ -22,7 +30,10 @@ class AttackCallbackParam {
   public:
     /* 0x00 */ boost::weak_ptr<CharaColliAttack> field_0x0;
     /* 0x08 */ boost::weak_ptr<CharaColliAttack> field_0x8;
-    /* 0x10 */ u8 field_0x10[0x18 - 0x10];
+    /* 0x10 */ u8 field_0x10[0x14 - 0x10];
+    /* BkWormBase's slot 0x70 (0x80192F14) compares the word at 0x20 of this object with 0xBBF,
+     * the frame id (name inferred) it also passes to its display's fn_8019448C. */
+    /* 0x14 */ UnkAttackPart_80192F14 *field_0x14;
     /* 0x18 */ Fn8040Vector3 field_0x18;
     /* 0x24 */ u8 field_0x24[0x30 - 0x24];
     /* The TurnOver gadget's first callback stores 1 here when the attack object of field_0x8
@@ -127,7 +138,9 @@ class CharaColliAttack {
     /* 0x34 */ float field_0x34;
     /* 0x38 */ int field_0x38;
     /* 0x3C */ int field_0x3C;
-    /* 0x40 */ int field_0x40;
+    /* Unsigned (inferred): 0x80192F14 compares its masked bits with cmplwi, which a signed field
+     * compared with an unsigned mask also gives. */
+    /* 0x40 */ u32 field_0x40;
     /* 0x44 */ UnkAttackList_8005A8C0 field_0x44;
     /* 0x54 */ u8 field_0x54;
     /* 0x55 */ u8 field_0x55;
