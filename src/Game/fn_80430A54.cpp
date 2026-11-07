@@ -150,12 +150,27 @@ void UnkEffectManagerRW3Data50::fn_80431D18(RwTexDictionary *dictionary,
     }
 }
 
+/* Matching workaround: the original addresses this builder's literals independently.
+ * Pooling gives 2488 bytes and twelve saved GPRs; disabling it gives 2564 bytes, versus
+ * 2568 original bytes. Its 304-byte frame saves ten GPRs; the original 320-byte frame
+ * saves eleven. One original address-add instruction is still absent. Revisit when
+ * the original compiler options or literal-access form are recovered. */
+#pragma pool_data off
 void UnkEffectManagerRW3Data50::fn_80431310() {
     field_0x8C = 1;
     field_0x8D = 1;
     EffectSystemRW3 *system = dynamic_cast<EffectSystemRW3 *>(fn_8042A5D0());
     // Zero count still reaches the original first-item processing below.
-    if (system == 0 || m_parameters.field_0x0 == 0 || m_vertices == 0 || m_count < 0) {
+    if (system == 0) {
+        return;
+    }
+    if (m_parameters.field_0x0 == 0) {
+        return;
+    }
+    if (m_vertices == 0) {
+        return;
+    }
+    if (m_count < 0) {
         return;
     }
     RwCamera *camera = system->GetCamera();
@@ -279,6 +294,8 @@ void UnkEffectManagerRW3Data50::fn_80431310() {
     m_quad[3].x = width;
     m_quad[3].y = height;
 }
+
+#pragma pool_data reset
 
 void UnkEffectManagerRW3Data50::fn_80430DE8(unsigned char flag) {
     EffectSystemRW3 *system = dynamic_cast<EffectSystemRW3 *>(fn_8042A5D0());

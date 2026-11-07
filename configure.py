@@ -2606,8 +2606,9 @@ config.libs = [
             # Update retains six register-word differences; the other seven bodies have
             # identical instruction words.
             Object(NonMatching, "Game/EffectLocus.cpp", cflags=cflags_effect),
-            # The vertex builder retains independent-literal addressing, stack and
-            # instruction-layout differences (2492 versus 2568 bytes).
+            # The vertex builder retains address-materialization, stack and instruction-layout
+            # differences (2564 source bytes versus 2568 original bytes). Its exception
+            # record and the parameter constructor's exception-record order also differ.
             Object(NonMatching, "Game/fn_80430A54.cpp", cflags=cflags_effect_rw3),
             Object(Matching, "Game/fn_804340CC.cpp", cflags=cflags_effect_rw3),
             # Render retains 656 paired instruction-word differences and one source tail
