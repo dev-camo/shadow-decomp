@@ -1271,10 +1271,10 @@ config.libs = [
             # the holder's +0x0C pointer and CBase inheritance remain inferred. Matching deleting
             # instructions and table/destructor references alone do not identify fn_80367FB4,
             # fn_80364BE4, fn_80365F28, lbl_8055FE98 or lbl_8055FEA8 in USA (GUPE8P).
-            # Nine bodies differ in allocation lines, pooled constants, iterator accessors,
-            # return-object stores or the final repeated motion-index copy. The scene initialization
-            # allocation passes source line 128 rather than native 173; root-pattern allocations
-            # pass 486/473 rather than 1124/1102.
+            # Nine bodies differ in allocation lines, pooled constants, indexed addressing,
+            # iterator accessors, return-object stores or the final repeated motion-index copy.
+            # Scene initialization passes allocation line 128 rather than native 173; root-pattern
+            # allocations pass 486/473 rather than 1124/1102.
             # Definitions with established native identities follow descending addresses; callback
             # destructor placement is provisional. Among the 166 paired bodies, 129
             # retain native relative order. Generated helpers still differ: map traversal helpers
