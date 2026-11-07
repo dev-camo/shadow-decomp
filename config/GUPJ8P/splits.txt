@@ -3279,6 +3279,74 @@ rw/fn_8048053C.c:
 	.text       start:0x80480B7C end:0x804812AC
 	.sbss       start:0x805F1B88 end:0x805F1B90
 
+rw/fn_80480C6C.c:
+	.text       start:0x804812AC end:0x80481C30
+	.bss        start:0x805E30C8 end:0x805E30F0
+	.sdata      start:0x805EE4B8 end:0x805EE4D0
+	.sbss       start:0x805F1B90 end:0x805F1B98
+
+rw/fn_804815F0.c:
+	.text       start:0x80481C30 end:0x8048286C
+	.bss        start:0x805E30F0 end:0x805E3118
+	.sdata      start:0x805EE4D0 end:0x805EE4D8
+	.sbss       start:0x805F1B98 end:0x805F1BA8
+
+rw/fn_80482984.c:
+	.text       start:0x80482FC4 end:0x80483204
+
+rw/fn_80483444.c:
+	.text       start:0x80483A84 end:0x80483ADC
+
+rw/fn_8048349C.c:
+	.text       start:0x80483ADC end:0x80483B94
+
+rw/fn_80483554.c:
+	.text       start:0x80483B94 end:0x80483D2C
+
+rw/fn_804836EC.c:
+	.text       start:0x80483D2C end:0x8048413C
+	.sdata      start:0x805EE4E0 end:0x805EE4E8
+	.sdata2     start:0x805FB900 end:0x805FB908
+
+rw/fn_80483AFC.c:
+	.text       start:0x8048413C end:0x80484908
+
+rw/fn_80485BCC.c:
+	.text       start:0x8048620C end:0x80486EC8
+	.data       start:0x8056E630 end:0x8056E668
+	.bss        start:0x805E3168 end:0x805E3298
+	.sbss       start:0x805F1BC0 end:0x805F1BC8
+
+rw/fn_80486888.c:
+	.text       start:0x80486EC8 end:0x80487F54
+	.data       start:0x8056E668 end:0x8056E680
+	.bss        start:0x805E3298 end:0x805E32C0
+	.sdata      start:0x805EE4F0 end:0x805EE4F8
+	.sbss       start:0x805F1BC8 end:0x805F1BD0
+	.sdata2     start:0x805FB930 end:0x805FB938
+
+rw/fn_80489B2C.c:
+	.text       start:0x8048A16C end:0x8048A7B8
+	.data       start:0x8056E698 end:0x8056E6B0
+	.bss        start:0x805E3308 end:0x805E3330
+	.sdata      start:0x805EE508 end:0x805EE510
+	.sbss       start:0x805F1BD8 end:0x805F1BE0
+
+rw/fn_8048ADE0.c:
+	.text       start:0x8048B420 end:0x8048BCEC
+
+rw/fn_8048B6AC.c:
+	.text       start:0x8048BCEC end:0x8048DE00
+	.rodata     start:0x8051C970 end:0x8051C988
+	.data       start:0x8056E6B0 end:0x8056E6E0
+	.bss        start:0x805E3330 end:0x805E3378
+	.sdata      start:0x805EE510 end:0x805EE530
+	.sbss       start:0x805F1BE0 end:0x805F1BF0
+	.sdata2     start:0x805FB980 end:0x805FB988
+
+rw/fn_8048D7C0.c:
+	.text       start:0x8048DE00 end:0x8048DE9C
+
 rw/fn_804A076C.c:
 	.text       start:0x804A0DAC end:0x804A32D0
 	.rodata     start:0x8051CA60 end:0x8051CAA0
