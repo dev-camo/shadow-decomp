@@ -1,6 +1,7 @@
 #ifndef GAME_BOSSCTRLUNIT_H
 #define GAME_BOSSCTRLUNIT_H
 
+#include "Game/fn_8040_vector_types.h"
 #include <dolphin/types.h>
 #include "layout_check.h"
 
@@ -17,7 +18,9 @@ class BossCtrlUnit {
   public:
     /* Inline: every derived constructor expands it. */
     BossCtrlUnit(BossVarParam *param) : field_0x4(0), m_param(param) {}
-    virtual ~BossCtrlUnit();
+    /* Inline: HeavyDog0410CtrlUnit's destructor (0x8024EA8C) stores BossCtrlUnit's vtable for the
+     * virtual base instead of calling this destructor. The copy the linker keeps is 0x80231EF0. */
+    virtual ~BossCtrlUnit() {}
     /* Pure (null in BossCtrlUnit's vtable). BossCtrl::Update calls it on each unit through
      * 0x80179BB0, passing the float at 0x20 of the global at 0x8057D6A0 (meaning unknown), and
      * tests the low byte of the result (name inferred). */
@@ -92,5 +95,36 @@ class BossCtrlUnit_FixLookCharCamera : public virtual BossCtrlUnit {
     /* 0x08 */ u8 field_0x8[0x30 - 0x8]; /* unknown */
 };
 CHECK_SIZEOF(BossCtrlUnit_FixLookCharCamera, 0x40);
+
+/* BossCtrlUnit_StageObject: constructor at 0x80290920. It sets field_0x4 to 3, keeps arg3 at 0xC
+ * and a copy of *position at 0x10, and builds a matrix from that position and the three angles at
+ * rotation (behaviour inferred; the parameter names are inferred, and the meanings of arg4-arg6
+ * are unknown). */
+class BossCtrlUnit_StageObject : public BossCtrlUnit {
+  public:
+    BossCtrlUnit_StageObject(BossVarParam *param, const Fn8040Vector3 *position,
+                             const Fn8040Vector3 *rotation, float arg3, int arg4, int arg5,
+                             int arg6);
+    virtual ~BossCtrlUnit_StageObject();
+    virtual bool Update(float arg);
+
+    /* 0x0C */ float field_0xC;
+    /* 0x10 */ Fn8040Vector3 field_0x10;
+    /* 0x1C */ u8 field_0x1C[0x28 - 0x1C]; /* unknown */
+};
+CHECK_SIZEOF(BossCtrlUnit_StageObject, 0x28);
+
+/* BossCtrlUnit_Shadow: constructor at 0x802904D8. It sets field_0x4 to 3 and keeps arg at 0xC; the
+ * region from 0x10 is constructed by 0x8009368C and not mapped. */
+class BossCtrlUnit_Shadow : public BossCtrlUnit {
+  public:
+    BossCtrlUnit_Shadow(BossVarParam *param, float arg);
+    virtual ~BossCtrlUnit_Shadow();
+    virtual bool Update(float arg);
+
+    /* 0x0C */ float field_0xC;
+    /* 0x10 */ u8 field_0x10[0x38 - 0x10]; /* unknown */
+};
+CHECK_SIZEOF(BossCtrlUnit_Shadow, 0x38);
 
 #endif
