@@ -29,6 +29,7 @@
 #include "Game/fn_8006_resource_list.h"
 #include "Game/fn_800E9CEC.h"
 #include "Game/fn_80109AF8.h"
+#include "Game/fn_8000A950_near_zero.h"
 #include "Game/fn_8040_vector_types.h"
 #include "rw/rpdmorph.h"
 #include "rw/rpworld.h"

@@ -335,7 +335,10 @@ Fn8040Vector3 fn_8040CDA8(const Fn8040Vector3 *vector, float factor);
 Fn8040Vector3 fn_80093230(const Fn8040Vector3 *vector, float factor);
 /* atan2(y, x) as a float. */
 float fn_80016260(float y, float x);
-/* Absolute value. */
+/* Absolute value. Units built with the MSL headers use the inline definition in
+ * fn_8000A950_near_zero.h; units built against include/libc call it through this declaration,
+ * and the per-function units fn_8000A980.cpp, fn_8000A950.cpp and fn_8000B044.cpp, which keep
+ * ordinary definitions, use it too. */
 float fn_8000A980(float value);
 /* Wraps an angle in radians by one turn: the fractional part (fn_8040EA40) of angle / (2 * pi)
  * times 2 * pi, plus 2 * pi when that is negative (behaviour from its body). */
@@ -469,13 +472,9 @@ extern "C" void fn_8040B790(Fn8040Matrix34 *matrix, const Fn8040Vector3 &scale);
  * temporary is inferred as well. */
 extern "C" void fn_8040B59C(Fn8040Matrix34 *matrix, const Fn8040Vector3 &offset);
 
-/* Returns whether the value is close enough to 0 to count as 0 (behaviour inferred). */
-extern "C" bool fn_8000A950(float value);
 /* Returns fn_8000A950(a - b): whether the two values are close enough to count as equal
  * (behaviour inferred from its body). */
 extern "C" bool fn_801C455C(float a, float b);
-/* True when |value| < 0.0001 (behaviour inferred). */
-extern "C" bool fn_8000B044(float value);
 /* Returns whichever of value, low and high lies in between (a clamp; behaviour inferred). The
  * parameters are references: Meteor's calls with literal bounds keep each bound in its own .sdata
  * slot, as the original does. */

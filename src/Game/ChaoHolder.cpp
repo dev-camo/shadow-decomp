@@ -25,6 +25,7 @@
 #include "Game/UnkStartupFloat_800E2570.h"
 #include "Game/fn_8006_resource_list.h"
 #include "Game/fn_8040_random.h"
+#include "Game/fn_8000A950_near_zero.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"

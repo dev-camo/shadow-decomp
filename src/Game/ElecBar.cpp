@@ -22,6 +22,7 @@
 #include "Game/UnkParamCursor_800CBC20.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/UnkWorld_80021B08.h"
+#include "Game/fn_8000A950_near_zero.h"
 #include "Game/fn_8006_resource_list.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"

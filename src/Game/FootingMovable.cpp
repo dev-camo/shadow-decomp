@@ -26,6 +26,7 @@
 #include "Game/UnkParamCursor_800CBC20.h"
 #include "Game/UnkResource_80012700.h"
 #include "Game/UnkStartupFloat_800E2570.h"
+#include "Game/fn_8000A950_near_zero.h"
 #include "Game/fn_8006_resource_list.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"

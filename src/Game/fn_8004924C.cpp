@@ -1,6 +1,7 @@
 /* Angle blend and matrix-to-angle helpers (behaviour inferred; original names and filename
  * unknown). */
 #include "Game/SharedConstants.h"
+#include "Game/fn_8000A950_near_zero.h"
 #include "Game/fn_8040_vector_types.h"
 
 extern "C" {
