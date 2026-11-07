@@ -14,9 +14,15 @@ class CharInfo;
  * Its constructor (0x80051B58) copies the vector at 0x805E07A0 into the three vectors, constructs
  * the weak pointer, clears the words at 0x2C and 0x30 and the byte at 0x35 and stores its argument
  * in the byte at 0x34; its copy constructor (0x80052844) also copies the word at 0x38, which gives
- * the size. Only the destructor (0x800528C4), which destroys the weak pointer, is declared here. */
+ * the size. Only the copy constructor and the destructor (0x800528C4), which destroys the weak
+ * pointer, are declared here. fn_8005AFE4 sets field_0x34 (and field_0x35) for a hit when attack
+ * is empty or fn_800C3ED4 returns false for the hit object, and stops at that hit; the callbacks
+ * it runs for the other hits receive the result's address (AttackCallbackParam::field_0x58), and
+ * Weapon::Bullet::ChaosSpear::ChaosSpear's second callback sets field_0x34 to 1 for the attack
+ * kinds 1, 3 and 5 (behaviour from the bodies). */
 class UnkResult_80051B58 {
   public:
+    UnkResult_80051B58(const UnkResult_80051B58 &other);
     ~UnkResult_80051B58();
 
     /* 0x00 */ Fn8040Vector3 field_0x0;

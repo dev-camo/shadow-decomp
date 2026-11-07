@@ -270,17 +270,17 @@ Fn8040Vector2 fn_8040F760(const Fn8040Vector3 *direction) {
     return rotation;
 }
 
-Fn8040Vector2 fn_8040F664(const Fn8040Vector3 *direction) {
+Fn8040Vector2 fn_8040F664(const Fn8040Vector3 &direction) {
     Fn8040Vector2 rotation;
-    float yaw = fn_80016260(direction->x, direction->z);
+    float yaw = fn_80016260(direction.x, direction.z);
     float pitch;
     float reference;
-    if (fn_8000A980(direction->x) > fn_8000A980(direction->z)) {
+    if (fn_8000A980(direction.x) > fn_8000A980(direction.z)) {
         reference = std::sin(yaw);
-        pitch = fn_80016260(-direction->y * reference, direction->x);
+        pitch = fn_80016260(-direction.y * reference, direction.x);
     } else {
         reference = std::cos(yaw);
-        pitch = fn_80016260(-direction->y * reference, direction->z);
+        pitch = fn_80016260(-direction.y * reference, direction.z);
     }
     if (reference < 0.0f) {
         pitch += (pitch < 0.0f) ? lbl_805FAD38 : -lbl_805FAD38;
