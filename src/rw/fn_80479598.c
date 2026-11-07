@@ -70,7 +70,7 @@ RwChar *fn_8047971C(RwChar *buffer, RwInt32 bufferSize, const RwChar *prefix, co
     out = buffer + prefixLength;
     /* the path's terminator is copied too */
     for (i = 0; i <= pathLength; i++) {
-        RwChar character = *in;
+        const RwChar character = *in;
 
         if (character == '/' || character == '\\') {
             *out = separator;
