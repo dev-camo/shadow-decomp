@@ -48,6 +48,37 @@ class UnkTargetSource_80206574 {
 /* Checks only the recovered view; the complete native extent remains unknown. */
 CHECK_SIZEOF(UnkTargetSource_80206574, 0x14);
 
+/* The 0x88-byte object that PlayerBase's constructor creates for the owner at 0x218 (placeholder
+ * name; USA, GUPE8P): it calls operator new(0x88) and fn_800A87C0 at 0x80079F8C-0x80079FA4.
+ * fn_800A8784, its destructor, frees it when its flag is positive. Nothing else is recovered. */
+class UnkObject_80079F8C;
+
+/* The object that the pointer at 0x244 of a Player::PlayerBase refers to (placeholder name). Its
+ * destructor, fn_800A25E0, destroys a member at 0x10 (fn_800A2630) and frees it when its flag is
+ * positive. Its size and the code that creates it are not recovered. */
+class UnkObject_80079BA4;
+
+/* The one-word owner at 0x218 of a Player::PlayerBase (placeholder name; owner inferred). In USA
+ * (GUPE8P), PlayerBase's constructor stores the new UnkObject_80079F8C straight into its word at
+ * 0x80079FA4, with no separate call for the owner, and the destructor destroys it in place
+ * at 0x80079C08-0x80079C10 with fn_80079E64 and flag -1; fn_80079E64 calls the object's destructor
+ * (fn_800A8784) with flag 1, freeing it, and frees the owner itself only for a positive flag.
+ * As safeguards for this view, the destructor (fn_80079E64) is declared without a body, so no
+ * no-op destructor stands in for that cleanup, and the copy constructor and assignment are
+ * private and undefined; the original copy contract is not established. */
+class UnkOwner_80079E64 {
+  public:
+    /* fn_80079E64 (not recovered). */
+    ~UnkOwner_80079E64();
+
+    /* 0x0 */ UnkObject_80079F8C *field_0x0;
+
+  private:
+    UnkOwner_80079E64(const UnkOwner_80079E64 &);
+    UnkOwner_80079E64 &operator=(const UnkOwner_80079E64 &);
+};
+CHECK_SIZEOF(UnkOwner_80079E64, 0x4);
+
 namespace Player {
 
 /* Player::PlayerObject (class name from RTTI, with CharInfo as its only base): 0x68 bytes. Its
@@ -65,11 +96,12 @@ CHECK_SIZEOF(PlayerObject, 0x68);
 /* Player::PlayerBase (class name from RTTI, with CharInfo and Player::PlayerObject as its bases):
  * 0x290 bytes. Its constructor (0x80079F04) initialises members from 0x68 through 0x28C, and a
  * derived class's constructor starts its own members at 0x290 (0x80077328-3C). Gadgets cast the
- * character info they act on to it. Few members are mapped: the flags at 0xA0, the first word of
- * the bit set at 0xA8 (the TornadoCollision gadget tests bit 0x14 of the set), the vectors at
+ * character info they act on to it. Few members are mapped: the flags at 0xA0, the three-word
+ * bit set at 0xA8 (the TornadoCollision gadget tests bit 0x14 of the set), the vectors at
  * 0xB8, 0xDC and 0x1C8 that Player::Behavior::Super reads, the vector at 0xE8 (the ElecFan gadget
- * scales it by -30 into the acceleration it sends the player) and the pointers at 0x230 (see
- * Player::PlayerMotion) and 0x24C (see UnkTargetSource_80206574).
+ * scales it by -30 into the acceleration it sends the player), the owner at 0x218 (see
+ * UnkOwner_80079E64) and the pointers at 0x230 (see Player::PlayerMotion), 0x244 (see
+ * UnkObject_80079BA4) and 0x24C (see UnkTargetSource_80206574).
  *
  * Its vtable (0x80520310, 0x54 bytes) overrides the destructor and the first three CharInfo slots
  * and adds nine slots. The added slots are named after their implementations here, or, for the
@@ -119,10 +151,16 @@ class PlayerBase : public PlayerObject {
     /* 0x0F4 */ u8 field_0xF4[0x1C8 - 0xF4];
     /* Passed as the onto vector of fn_8040F990, which takes it to be of unit length. */
     /* 0x1C8 */ Fn8040Vector3 field_0x1C8;
-    /* 0x1D4 */ u8 field_0x1D4[0x230 - 0x1D4];
+    /* 0x1D4 */ u8 field_0x1D4[0x218 - 0x1D4];
+    /* 0x218 */ UnkOwner_80079E64 field_0x218;
+    /* 0x21C */ u8 field_0x21C[0x230 - 0x21C];
     /* The constructor clears it; Player::PlayerMotion's destructor clears it too. */
     /* 0x230 */ PlayerMotion *field_0x230;
-    /* 0x234 */ u8 field_0x234[0x24C - 0x234];
+    /* 0x234 */ u8 field_0x234[0x244 - 0x234];
+    /* The constructor clears it (0x8007A108). The destructor, when it is not null, calls its
+     * destructor (fn_800A25E0) with flag 1, freeing it, and clears it (0x80079BA4-0x80079BBC). */
+    /* 0x244 */ UnkObject_80079BA4 *field_0x244;
+    /* 0x248 */ u8 field_0x248[0x24C - 0x248];
     /* 0x24C */ UnkTargetSource_80206574 *field_0x24C;
     /* 0x250 */ u8 field_0x250[0x290 - 0x250];
 };
@@ -132,7 +170,9 @@ CHECK_OFFSETOF(PlayerBase, field_0xA8, 0xA8);
 CHECK_OFFSETOF(PlayerBase, field_0xB8, 0xB8);
 CHECK_OFFSETOF(PlayerBase, field_0xDC, 0xDC);
 CHECK_OFFSETOF(PlayerBase, field_0x1C8, 0x1C8);
+CHECK_OFFSETOF(PlayerBase, field_0x218, 0x218);
 CHECK_OFFSETOF(PlayerBase, field_0x230, 0x230);
+CHECK_OFFSETOF(PlayerBase, field_0x244, 0x244);
 CHECK_OFFSETOF(PlayerBase, field_0x24C, 0x24C);
 
 } // namespace Player
