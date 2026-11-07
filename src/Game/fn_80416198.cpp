@@ -785,7 +785,7 @@ void fn_8041E480(MotionRotationStep *step) {
 }
 
 void fn_8041E5E0(MotionOffsetStep *step) {
-    fn_8040B59C(TopMatrix(), step->offset);
+    fn_8040B59C(TopMatrix(), *step->offset);
 }
 
 /* The same as fn_8041E420. */

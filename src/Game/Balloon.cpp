@@ -221,7 +221,7 @@ void Balloon::UpdateBody(float dt) {
 
         Fn8040Matrix34 matrix = lbl_805E0720;
 
-        fn_8040B59C(&matrix, &origin);
+        fn_8040B59C(&matrix, origin);
         fn_8040B848(&matrix, DegreesToRadians(angle));
         m_charInfo->m_position = matrix * offset;
         break;
@@ -317,13 +317,13 @@ void Balloon::UpdateModels() {
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         m_model->fn_801633DC(&matrix);
     }
 
     if (m_target.get() != 0) {
-        fn_800CCE38(m_target.get(), &m_charInfo->m_position);
+        fn_800CCE38(m_target.get(), m_charInfo->m_position);
     }
 }
 
@@ -425,7 +425,7 @@ void VacuumBalloon::Update(float dt) {
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &position);
+        fn_8040B59C(&matrix, position);
         fn_8040B848(&matrix, rotation.y);
         fn_8040B884(&matrix, rotation.x);
         fn_8040B80C(&matrix, rotation.z);

@@ -221,7 +221,7 @@ void FootingRoll::UpdateModelMatrix() {
     Fn8040Matrix34 product;
 
     fn_8040C148(&matrix, &lbl_805E0720);
-    fn_8040B59C(&matrix, &m_charInfo->m_position);
+    fn_8040B59C(&matrix, m_charInfo->m_position);
     fn_8001E044(&product, &matrix, &rotation);
     fn_8040C148(&matrix, &product);
     m_model->fn_801633DC(&matrix);

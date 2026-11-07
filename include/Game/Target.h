@@ -72,8 +72,12 @@ extern "C" {
 /* Creates the object (the meaning of the argument is unknown; the Chao and Cream gadgets pass
  * 0x2000, CircusBall and Spring 0x400 and PowerDeviceNaked 0x2800). */
 boost::shared_ptr<Target> fn_801E72DC(int arg0);
-/* Copies position into the object's position at 0x8 (behaviour inferred from its body). */
-void fn_800CCE38(Target *object, const Fn8040Vector3 *position);
+/* Copies position into the object's position at 0x8 (behaviour inferred from its body). The
+ * reference is inferred (the code is that of a pointer parameter). Observed: the ESCAPE_PLANE
+ * gadget passes a vector built from a frame's position that sits at r1+0x8, below its named
+ * locals (0x8025592C). That placement fits a temporary passed by reference, but a named vector
+ * passed by pointer compiles the same, so the temporary is inferred as well. */
+void fn_800CCE38(Target *object, const Fn8040Vector3 &position);
 /* Resets the shared pointer (its body only calls shared_ptr<Target>::reset; CircusBall and Spring
  * call it from their destructors). */
 void fn_801E7108(boost::shared_ptr<Target> &object);

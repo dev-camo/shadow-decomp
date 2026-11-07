@@ -84,7 +84,7 @@ Fn8040Matrix34 Container::fn_80237EE4() {
     Fn8040Matrix34 matrix = fn_80237F10();
     Fn8040Vector3 offset(0.0f, 0.0f, 5.0f);
 
-    fn_8040B59C(&matrix, &offset);
+    fn_8040B59C(&matrix, offset);
     return matrix;
 }
 

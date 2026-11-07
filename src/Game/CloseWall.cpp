@@ -153,13 +153,13 @@ void SetCloseWall::UpdateModelMatrices() {
 
     if (m_model[0].get() != 0) {
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &m_charInfo[0]->m_position);
+        fn_8040B59C(&matrix, m_charInfo[0]->m_position);
         fn_8040B848(&matrix, m_charInfo[0]->m_rotation.y);
         m_model[0]->fn_801633DC(&matrix);
     }
     if (m_model[1].get() != 0) {
         fn_8040C148(&matrix2, &lbl_805E0720);
-        fn_8040B59C(&matrix2, &m_charInfo[1]->m_position);
+        fn_8040B59C(&matrix2, m_charInfo[1]->m_position);
         fn_8040B848(&matrix2, m_charInfo[1]->m_rotation.y);
         m_model[1]->fn_801633DC(&matrix2);
     }

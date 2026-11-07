@@ -125,7 +125,7 @@ void FruitTask::UpdateModelMatrix(const Fn8040Vector3 *position, const UnkRotati
         Fn8040Matrix34 matrix;
 
         fn_8040B6F8(&matrix);
-        fn_8040B59C(&matrix, position);
+        fn_8040B59C(&matrix, *position);
         fn_8040B848(&matrix, rotation->y);
         fn_8040B884(&matrix, rotation->x);
         fn_8040B80C(&matrix, rotation->z);

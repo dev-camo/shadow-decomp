@@ -133,7 +133,7 @@ void PoisonGas::UpdatePositions() {
     }
 
     if (m_target.get() != 0) {
-        fn_800CCE38(m_target.get(), &m_charInfo->m_position);
+        fn_800CCE38(m_target.get(), m_charInfo->m_position);
     }
 }
 

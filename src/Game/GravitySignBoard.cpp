@@ -178,7 +178,7 @@ void GravitySignBoard::UpdateModelMatrix() {
     fn_800494F8(&m_charInfo->m_rotation, &rotation);
 
     fn_8040C148(&placed, &lbl_805E0720);
-    fn_8040B59C(&placed, &m_charInfo->m_position);
+    fn_8040B59C(&placed, m_charInfo->m_position);
     fn_8001E044(&product, &placed, &rotation);
     fn_8040C148(&placed, &product);
     m_model->fn_801633DC(&placed);

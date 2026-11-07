@@ -783,7 +783,7 @@ bool EffCmdLaunchExec::Update(float deltaTime) {
     if (field_0x10 == 0) {
         field_0x10 = 1;
         fn_8040C148(&m_transform, &parent->m_transform);
-        fn_8040B59C(&m_transform, &m_translation);
+        fn_8040B59C(&m_transform, m_translation);
         fn_8040B80C(&m_transform, m_rotation.z);
         fn_8040B848(&m_transform, m_rotation.y);
         fn_8040B884(&m_transform, m_rotation.x);
@@ -814,7 +814,7 @@ bool EffCmdLaunchExec::Update(float deltaTime) {
     }
     if ((parent->m_definitionFlags & ARRANGER_LINK_TRANSFORM) != 0) {
         fn_8040C148(&m_transform, &parent->m_transform);
-        fn_8040B59C(&m_transform, &m_translation);
+        fn_8040B59C(&m_transform, m_translation);
         fn_8040B80C(&m_transform, m_rotation.z);
         fn_8040B848(&m_transform, m_rotation.y);
         fn_8040B884(&m_transform, m_rotation.x);

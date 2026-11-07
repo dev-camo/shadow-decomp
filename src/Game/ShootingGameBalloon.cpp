@@ -137,7 +137,7 @@ void Balloon::UpdateModelMatrix() {
     if (m_target.get() != 0) {
         Fn8040Vector3 position = m_charInfo->m_position;
         position.y += 10.0f;
-        fn_800CCE38(m_target.get(), &position);
+        fn_800CCE38(m_target.get(), position);
     }
 }
 
@@ -275,7 +275,7 @@ void BalloonGenerator::Generate(int count) {
         Fn8040Vector3 position(0.0f, 0.0f, m_params.radius);
 
         fn_8040B6F8(&matrix);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B848(&matrix, angles->Pop());
         position = matrix * position;
 

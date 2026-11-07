@@ -300,7 +300,7 @@ void Weight::UpdateModelMatrix() {
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
 
         fn_8040B790(&matrix, Fn8040Vector3(m_params.scaleX, m_params.scaleY, m_params.scaleZ));

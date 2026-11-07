@@ -315,7 +315,7 @@ void Ring::PlaceRings(const RingParams &params) {
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
         fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
@@ -346,7 +346,7 @@ void Ring::PlaceRings(const RingParams &params) {
         for (int i = 0; i < m_count; i++) {
             if (m_rings[i].m_flags.Test(1)) {
                 fn_8040B6F8(&matrix);
-                fn_8040B59C(&matrix, &m_charInfo->m_position);
+                fn_8040B59C(&matrix, m_charInfo->m_position);
                 fn_8040B848(&matrix, m_charInfo->m_rotation.y);
                 fn_8040B884(&matrix, m_charInfo->m_rotation.x);
                 fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
@@ -376,7 +376,7 @@ void Ring::PlaceRings(const RingParams &params) {
                 offset.x = height * std::sin(angleStep * i);
                 offset.z = spacing * i;
                 fn_8040B6F8(&matrix);
-                fn_8040B59C(&matrix, &m_charInfo->m_position);
+                fn_8040B59C(&matrix, m_charInfo->m_position);
                 fn_8040B848(&matrix, m_charInfo->m_rotation.y);
                 fn_8040B884(&matrix, m_charInfo->m_rotation.x);
                 fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
@@ -424,7 +424,7 @@ void Ring::CollectTouchedRings() {
 void Ring::UpdatePositions() {
     for (int i = 0; i < m_count; i++) {
         if (m_rings[i].m_target.get() != 0) {
-            fn_800CCE38(m_rings[i].m_target.get(), &m_rings[i].m_position);
+            fn_800CCE38(m_rings[i].m_target.get(), m_rings[i].m_position);
         }
 
         if (m_rings[i].m_probe.get() != 0) {

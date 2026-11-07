@@ -163,7 +163,7 @@ void HealingUnit::SetTransform(const Fn8040Vector3 *position, const UnkRotation3
         Fn8040Matrix34 matrix;
 
         fn_8040B6F8(&matrix);
-        fn_8040B59C(&matrix, position);
+        fn_8040B59C(&matrix, *position);
         fn_8040B848(&matrix, rotation->y);
         m_model->fn_801633DC(&matrix);
     }

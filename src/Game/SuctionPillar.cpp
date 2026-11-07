@@ -118,7 +118,7 @@ void SuctionPillar::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         Fn8040Matrix34 matrix;
 
         fn_8040B6F8(&matrix);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
         fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
@@ -150,7 +150,7 @@ void SuctionPillar::UpdateModelMatrix() {
         Fn8040Vector3 offset2;
 
         fn_8040B6F8(&matrix);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
         fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
@@ -159,12 +159,12 @@ void SuctionPillar::UpdateModelMatrix() {
         offset.Set(0.0f, 40.0f, 40.0f);
 
         offset = matrix * offset;
-        fn_800CCE38(m_objects[0].get(), &offset);
+        fn_800CCE38(m_objects[0].get(), offset);
 
         offset2.Set(0.0f, 40.0f, -40.0f);
 
         offset2 = matrix * offset2;
-        fn_800CCE38(m_objects[1].get(), &offset2);
+        fn_800CCE38(m_objects[1].get(), offset2);
     }
 }
 

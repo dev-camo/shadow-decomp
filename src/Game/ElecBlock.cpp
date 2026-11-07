@@ -181,11 +181,11 @@ void ElecBlock::UpdateModelMatrix() {
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
 
         Fn8040Vector3 offset(0.0f, m_height, 0.0f);
 
-        fn_8040B59C(&matrix, &offset);
+        fn_8040B59C(&matrix, offset);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         fn_8040B720(&matrix, m_params.scaleX, m_params.scaleY, m_params.scaleZ);
         m_model->fn_801633DC(&matrix);

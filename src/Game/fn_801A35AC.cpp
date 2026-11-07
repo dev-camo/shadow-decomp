@@ -345,7 +345,7 @@ void Unk801A35AC::fn_801A367C(const Fn8040Vector3 &position, const Fn8040Vector3
     if (m_count > 0) {
         Fn8040Matrix34 matrix;
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &position);
+        fn_8040B59C(&matrix, position);
         fn_8040B848(&matrix, rotation.y);
         fn_8040B884(&matrix, rotation.x);
         fn_8040B80C(&matrix, rotation.z);

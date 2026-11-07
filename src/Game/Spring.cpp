@@ -177,7 +177,7 @@ void Spring::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
         fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
         start = matrix * start;
@@ -199,7 +199,7 @@ void Spring::UpdateModelMatrix() {
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
         fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
         m_model->fn_801633DC(&matrix);
@@ -209,7 +209,7 @@ void Spring::UpdateModelMatrix() {
         m_position = matrix * top;
 
         if (m_object.get() != 0) {
-            fn_800CCE38(m_object.get(), &m_position);
+            fn_800CCE38(m_object.get(), m_position);
         }
     }
 }

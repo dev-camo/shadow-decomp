@@ -106,7 +106,7 @@ static void fn_80118F68(boost::shared_ptr<CharInfo> hit, void *arg) {
             Fn8040Matrix34 matrix;
 
             fn_8040B6F8(&matrix);
-            fn_8040B59C(&matrix, &info->m_position);
+            fn_8040B59C(&matrix, info->m_position);
             fn_8040B848(&matrix, info->m_rotation.y);
             fn_8040B884(&matrix, info->m_rotation.x);
             fn_8040B80C(&matrix, info->m_rotation.z);
@@ -262,7 +262,7 @@ void SavePoint::UpdateModelMatrix() {
     fn_8040C148(&matrix, &lbl_805E0720);
 
     if (m_model.get() != 0) {
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
         fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
