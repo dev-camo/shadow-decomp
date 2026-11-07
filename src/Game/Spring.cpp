@@ -87,7 +87,7 @@ static void fn_801213E8(boost::shared_ptr<CharInfo> hit, void *arg) {
 
     Fn8040Vector3 forwardTurned = matrix * Fn8040Vector3(0.0f, 0.0f, -1.0f);
 
-    hit->fn_801DC980(new SetAngleCommand(fn_8040F364(&forwardTurned, &upTurned), 2, 4));
+    hit->fn_801DC980(new SetAngleCommand(fn_8040F364(forwardTurned, upTurned), 2, 4));
 
     float level = context->m_params->level;
     int index = (int)level;

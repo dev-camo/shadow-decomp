@@ -1100,6 +1100,15 @@ Game/HeavyDog0410.cpp:
 	.sbss       start:0x805F05B0 end:0x805F05B8
 	.sdata2     start:0x805F7B88 end:0x805F7C00
 
+Game/VacuumContainer.cpp:
+	.text       start:0x80254714 end:0x80255220
+	.ctors      start:0x804AA52C end:0x804AA530
+	.rodata     start:0x804F4F50 end:0x804F5048
+	.data       start:0x8054A140 end:0x8054A198
+	.sdata      start:0x805EAA30 end:0x805EAA60
+	.sbss       start:0x805F05B8 end:0x805F05C8
+	.sdata2     start:0x805F7CB8 end:0x805F7CD8
+
 Game/RailSwitch.cpp:
 	.text       start:0x80257D40 end:0x80258BEC
 	.ctors      start:0x804AA534 end:0x804AA538

@@ -53,7 +53,7 @@ UnkRotation3 fn_80410204(const Fn8040Vector4 *quaternion, int order) {
 
         rotatedForward = matrix * Fn8040Vector3(0.0f, 0.0f, -1.0f);
 
-        return fn_8040F364(&rotatedForward, &rotatedUp);
+        return fn_8040F364(rotatedForward, rotatedUp);
     }
     case 0:
     case 1:
@@ -294,7 +294,7 @@ UnkRotation3 fn_8040F5F4(const Fn8040Vector3 *forward, const Fn8040Vector3 *up, 
     case 0:
         return fn_8040F450(forward, up);
     case 2:
-        return fn_8040F364(forward, up);
+        return fn_8040F364(*forward, *up);
     default:
         return UnkRotation3(0.0f, 0.0f, 0.0f);
     }
@@ -331,13 +331,13 @@ UnkRotation3 fn_8040F450(const Fn8040Vector3 *forward, const Fn8040Vector3 *up) 
     return rotation;
 }
 
-UnkRotation3 fn_8040F364(const Fn8040Vector3 *forward, const Fn8040Vector3 *up) {
+UnkRotation3 fn_8040F364(const Fn8040Vector3 &forward, const Fn8040Vector3 &up) {
     UnkRotation3 rotation;
-    float horizontalLength = std::sqrt(forward->x * forward->x + forward->z * forward->z);
-    float yaw = fn_80016260(-forward->x, -forward->z);
-    float pitch = fn_80016260(forward->y, horizontalLength);
+    float horizontalLength = std::sqrt(forward.x * forward.x + forward.z * forward.z);
+    float yaw = fn_80016260(-forward.x, -forward.z);
+    float pitch = fn_80016260(forward.y, horizontalLength);
 
-    Fn8040Vector3 rotatedUp = fn_8040D0AC(*up, -yaw);
+    Fn8040Vector3 rotatedUp = fn_8040D0AC(up, -yaw);
     rotatedUp = fn_8040D118(rotatedUp, -pitch);
     float roll = fn_80016260(-rotatedUp.x, rotatedUp.y);
 

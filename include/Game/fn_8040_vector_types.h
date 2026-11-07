@@ -349,14 +349,17 @@ Fn8040Vector3 fn_80093230(const Fn8040Vector3 *vector, float factor);
 float fn_80016260(float y, float x);
 /* Absolute value. */
 float fn_8000A980(float value);
+/* Wraps an angle in radians by one turn: the fractional part (fn_8040EA40) of angle / (2 * pi)
+ * times 2 * pi, plus 2 * pi when that is negative (behaviour from its body). */
+float fn_8040E9D8(float angle);
 /* Arc cosine as a float. */
 float fn_801B1DB0(float value);
 /* Functions defined in fn_8040F364.cpp (descriptions inferred; fn_8040FB88 is declared below,
  * after this block, as it returns bool). */
-/* Rotation vector of a forward and an up direction, in order 2 (fn_8040F364) and order 0
- * (fn_8040F450), and the one of them that order selects (fn_8040F5F4; any other order gives the
- * zero vector). They return the vector by value. */
-UnkRotation3 fn_8040F364(const Fn8040Vector3 *forward, const Fn8040Vector3 *up);
+/* Rotation vector of a forward and an up direction, in order 2 (fn_8040F364, declared below for
+ * C++ only, as it takes references) and order 0 (fn_8040F450), and the one of them that order
+ * selects (fn_8040F5F4; any other order gives the zero vector). They return the vector by
+ * value. */
 UnkRotation3 fn_8040F450(const Fn8040Vector3 *forward, const Fn8040Vector3 *up);
 UnkRotation3 fn_8040F5F4(const Fn8040Vector3 *forward, const Fn8040Vector3 *up, int order);
 /* Pitch and yaw of a direction, by two conventions (fn_8040F664, fn_8040F760), and the first of
@@ -453,6 +456,11 @@ extern "C" Fn8040Vector3 fn_8040D0AC(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_8040D118(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_8040D044(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_80016284(const Fn8040Vector3 &vector);
+
+/* The rotation vector of a forward and an up direction in order 2 (see fn_8040F5F4 above). The
+ * references are inferred from VacuumContainer::Container::Update, which passes two temporaries
+ * in place (the code is that of pointer parameters). */
+extern "C" UnkRotation3 fn_8040F364(const Fn8040Vector3 &forward, const Fn8040Vector3 &up);
 
 /* The matrix's rotation applied to vector, without the translation, returned by value
  * (inferred). The const references are inferred too: the ELEC_SEARCHLIGHT and HEALING_UNIT
