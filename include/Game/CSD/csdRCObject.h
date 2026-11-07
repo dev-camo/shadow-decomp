@@ -40,7 +40,10 @@ template <class T> class RCPtr : public CBase {
     }
     RCPtr(T *object);
     ~RCPtr();
-    RCPtr &operator=(const RCPtr &other);
+    RCPtr &operator=(const RCPtr &other) {
+        Assign(other);
+        return *this;
+    }
 
     /* The object, or null for a pointer that holds none. */
     T *Get() const {
@@ -142,7 +145,7 @@ template <class T> class RCPtr : public CBase {
          * +0x0C pointer and CBase inheritance are inferred from that pool's ordering. */
         class CFunctorBase : public CBase {
           public:
-            virtual void Release() = 0; /* Operation name inferred. */
+            virtual void Release(U *object) = 0; /* Operation name and signature inferred. */
             virtual ~CFunctorBase() {}
         };
 
@@ -162,7 +165,7 @@ template <class T> class RCPtr : public CBase {
      * of RCPtr<CTexList>, 0x80042270 in the USA release, clears the holder and then takes the
      * reference). */
     RCPtr(const RCPtr &other) : field_0x0(NULL) {
-        *this = other;
+        Assign(other);
     }
 
     /* The held object. Dereferencing a pointer that holds none reports an error and never
@@ -202,7 +205,7 @@ template <class T> class RCPtr : public CBase {
                     break;
                 case RELEASE_RELEASER:
                     if (holder->m_custom.releaser != NULL) {
-                        holder->m_custom.releaser->Release();
+                        holder->m_custom.releaser->Release(holder->m_pObject);
                     }
                     if (holder->m_custom.releaser != NULL) {
                         delete holder->m_custom.releaser;
@@ -215,6 +218,26 @@ template <class T> class RCPtr : public CBase {
                 }
             }
             delete holder;
+        }
+    }
+
+    /* Replaces this reference with the source handle's holder (name and signature inferred).
+     * When both holders exist, equal held objects leave this handle unchanged. */
+    void Assign(const RCPtr &other) {
+        RCObject<T> *holder = field_0x0;
+
+        if (holder != NULL) {
+            if (other.field_0x0 != NULL && holder->m_pObject == other.field_0x0->m_pObject) {
+                return;
+            }
+            ReleaseHolder(holder);
+            field_0x0 = NULL;
+        }
+
+        /* Release callbacks may change the source handle. */
+        if (other.field_0x0 != NULL) {
+            field_0x0 = other.field_0x0;
+            field_0x0->m_refCount++;
         }
     }
 
