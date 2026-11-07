@@ -248,6 +248,13 @@ Game/BlastBreak.cpp:
 	.sbss       start:0x805EE910 end:0x805EE920
 	.sdata2     start:0x805F3500 end:0x805F3518
 
+Game/BlockChange.cpp:
+	.text       start:0x800ED440 end:0x800ED9E8
+	.rodata     start:0x804B92E8 end:0x804B9340
+	.data       start:0x80524A58 end:0x80524C18
+	.sdata      start:0x805E5330 end:0x805E5368
+	.sdata2     start:0x805F3518 end:0x805F3548
+
 Game/Bomb.cpp:
 	.text       start:0x800ED9E8 end:0x800F134C
 	.rodata     start:0x804B9340 end:0x804B9888

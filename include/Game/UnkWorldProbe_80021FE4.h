@@ -78,6 +78,10 @@ CHECK_SIZEOF(UnkProbeNode_80021FE4, 0x24);
  * postfix step returns the previous value through a hidden pointer, which MWCC does for a class
  * with a constructor but not for a plain struct of one pointer. */
 struct UnkProbeIterator_80027374 {
+    /* The default constructor is inferred: the BlockChange gadget stores 0 to its iterator and
+     * then assigns the first node, building that temporary with the out-of-line copy of the
+     * converting constructor (0x8001EDFC). */
+    UnkProbeIterator_80027374() : node(0) {}
     UnkProbeIterator_80027374(UnkProbeNode_80021FE4 *start) : node(start) {}
 
     /* 0x0 */ UnkProbeNode_80021FE4 *node;
