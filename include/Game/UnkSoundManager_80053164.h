@@ -39,6 +39,10 @@ bool fn_801D53C4(UnkSoundManager_80053164 *manager, u16 id, const Fn8040Vector3 
  * null; otherwise it sets that float to the float at 0x805F5DDC and gives the sound a byte from a
  * two-entry table at 0x8053CE14, taking the entries in turn. */
 bool fn_801D5300(UnkSoundManager_80053164 *manager);
+/* Passes id, arg2 and arg3 to fn_801D7A50 and ignores manager (behaviour from its body; purpose
+ * unknown, the return type is inferred). Weapon::ChaosSpear::ChaosSpear passes 0xF and 0x10 with -1
+ * and -1. */
+void fn_801D51A0(UnkSoundManager_80053164 *manager, int id, s8 arg2, int arg3);
 }
 
 #endif

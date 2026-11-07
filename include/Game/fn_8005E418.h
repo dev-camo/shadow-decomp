@@ -16,7 +16,13 @@
  * info before it returns, so nothing here keeps that object alive: its float must stay valid for as
  * long as the effect is updated (behaviour inferred from the bodies; the GunBattery and BKBattery
  * descriptions call it). */
-extern "C" boost::weak_ptr<Effect::System::EffectElement>
-fn_8005E418(const Fn8040Matrix34 *matrix, int id, const boost::weak_ptr<CharInfo> &owner);
+extern "C" {
+boost::weak_ptr<Effect::System::EffectElement> fn_8005E418(const Fn8040Matrix34 *matrix, int id,
+                                                           const boost::weak_ptr<CharInfo> &owner);
+/* The time-scale source of the effects created for owner (see above): the pointer at 0x60 of the
+ * owner's character info plus 4 bytes, or the address 0x1C bytes into lbl_8057D6A0 when the owner
+ * has expired (behaviour from its body). */
+const float *fn_8005E4B8(const boost::weak_ptr<CharInfo> &owner);
+}
 
 #endif

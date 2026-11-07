@@ -115,6 +115,9 @@ int fn_8020642C(const boost::shared_ptr<CharInfo> &charInfo, int arg1);
  * rotations, in the order that the rotation order at 0x30 selects; does nothing when matrix is null
  * (behaviour inferred from its body). */
 void fn_8015CEA0(const CharInfo *info, Fn8040Matrix34 *matrix);
+/* Returns value (its body is a single blr). Weapon::ChaosSpear::ChaosSpear passes the rotation
+ * order at 0x30 through it to fn_8040FFBC. */
+int fn_801DBD00(int value);
 }
 
 /* The id that callers pass to fn_800A8B74 (the meaning is unknown; 43 functions read it). */
