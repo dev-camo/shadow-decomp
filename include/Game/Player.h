@@ -25,6 +25,8 @@ CHECK_SIZEOF(Player, 0x290);
 extern "C" {
 /* True when bit number bit of the bit set starting at bits is set (behaviour inferred). */
 bool fn_8006CD78(const u32 *bits, int bit);
+/* Clears bit number bit of the bit set starting at bits (behaviour from its body). */
+void fn_80076CC8(u32 *bits, int bit);
 /* Return fn_8006CD78 for bit 10 (fn_800B78B0), bit 15 (fn_800B7938), bit 2 (fn_800B7AD0) or
  * bit 41 (fn_800B7828) of the bit set at 0xA8 of the Player::PlayerBase that
  * boost::dynamic_pointer_cast (0x80074630) gives for charInfo, or false when there is none

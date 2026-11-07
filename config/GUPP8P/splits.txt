@@ -1307,6 +1307,15 @@ Game/EggMeca310.cpp:
 	.sdata      start:0x805ED980 end:0x805ED998
 	.sdata2     start:0x805FA3B0 end:0x805FA3D0
 
+Game/Super.cpp:
+	.text       start:0x802EB58C end:0x802EBB60
+	.ctors      start:0x804AB010 end:0x804AB014
+	.rodata     start:0x80508C40 end:0x80508C80
+	.data       start:0x8055ABD8 end:0x8055AC08
+	.sdata      start:0x805ED998 end:0x805ED9B0
+	.sbss       start:0x805F1820 end:0x805F1828
+	.sdata2     start:0x805FA3D0 end:0x805FA418
+
 Game/TimerCountMission.cpp:
 	.text       start:0x802EBB60 end:0x802EBF58
 	.rodata     start:0x80508C80 end:0x80508CE0

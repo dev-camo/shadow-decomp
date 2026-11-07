@@ -1919,6 +1919,20 @@ config.libs = [
             Object(Matching, "Game/EggMeca511.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EggMeca411.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EggMeca310.cpp", cflags=cflags_game_cpp),
+            # Relocatable-object comparison: 13 of the 14 functions have identical words and
+            # relocation targets, and the data matches once the linker-discarded copies are set
+            # aside (std::sqrt, sqrtf with its two weak locals and three literals, the scaled-vector
+            # operator* and shared_ptr::operator->); .rodata is 0x3F bytes against 0x40 (alignment
+            # padding), and the compiled .sdata2 is writable (WA) where the original's is
+            # allocatable only (A). fn_802EB0C4 is 183 words against 182: by position 128 of the 182
+            # paired words differ and 1 word is source-only; aligned, 9 paired words differ, 1 is
+            # original-only and 2 are source-only, with the same relocation targets in the same
+            # order. In the facing test the original builds the facing vector at r1+0x50 and passes
+            # r1+0x50 and r1+0x44 to fn_8040CF90 directly, saving only r31. This build builds the
+            # facing vector at r1+0x44 and keeps the normalised vector's address, r1+0x50, in r30
+            # (addi r30,r1,0x50; stmw/lmw r30), passing it from there (mr r4,r30).
+            # Normal builds link the original object.
+            Object(NonMatching, "Game/Super.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/TimerCountMission.cpp", cflags=cflags_game_cpp),
             # The game code and the boost instances match: of the 71 functions, 54 have a
             # counterpart in this object and 49 of them are identical in instructions and
