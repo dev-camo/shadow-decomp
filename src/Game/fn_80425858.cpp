@@ -5,7 +5,7 @@
 namespace Effect {
 namespace System {
 
-EffectElement *EffectManager::CreateElement(const UnkEffectElementData *definition,
+EffectElement *EffectManager::CreateElement(UnkEffectElementData *definition,
                                             EffectLaunchInfo *info) {
     return 0;
 }
