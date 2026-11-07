@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include "Game/SharedConstants.h"
+#include "Game/fn_8000A950_near_zero.h"
 #include "Game/fn_8040_vector_types.h"
 
 extern "C" void fn_8003B9E8(const Fn8040Vector3 *direction, float *pitch, float *yaw) {

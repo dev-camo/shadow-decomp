@@ -28,6 +28,7 @@
 #include "Game/UnkWorld_80021B08.h"
 #include "Game/UnkWorldProbe_80021FE4.h"
 #include "Game/fn_8006_resource_list.h"
+#include "Game/fn_8000A950_near_zero.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"

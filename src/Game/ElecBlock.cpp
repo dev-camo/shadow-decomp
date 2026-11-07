@@ -10,6 +10,7 @@
 #include "Game/UnkParamCursor_800CBC20.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/fn_8006_resource_list.h"
+#include "Game/fn_8000A950_near_zero.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/weak_ptr.hpp"
 #include <cmath>

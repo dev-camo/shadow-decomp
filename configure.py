@@ -2147,12 +2147,11 @@ config.libs = [
             # address and loads at 0x50 from it, this source adds 0x50 to the offset and uses an
             # indexed load (in CreateStones the argument set-up around it is also ordered
             # differently). These three bodies have 13 differing positional words in total.
-            # The data match by contents (the original
-            # object's absent copies set aside) with two differences: .sdata2 holds 0.0001 before 1
-            # and 70 in the original and after them here (3 words in a different order; the cause is
-            # not established), and the original's .bss starts with 0x3C bytes that no code
-            # references, relative to which its static initialiser addresses the three vectors
-            # (their type is unknown).
+            # The data match by contents (the original object's absent copies set aside); .sdata2
+            # also has the original order once the weak sqrtf statics of <cmath> are discarded (the
+            # weak fn_8000B044 copy places 0.0001 before 1 and 70). One difference remains: the
+            # original's .bss starts with 0x3C bytes that no code references, relative to which its
+            # static initialiser addresses the three vectors (their type is unknown).
             Object(NonMatching, "Game/PoleHolder.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/StoneStatue.cpp", cflags=cflags_game_cpp),
             # All 56 functions have identical instructions, and the data matches by contents once

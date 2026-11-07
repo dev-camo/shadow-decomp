@@ -7,6 +7,7 @@
 #include "Game/GadgetModelInfo.h"
 #include "Game/UnkBitFlags_80014E04.h"
 #include "Game/fn_8027B3E8.h"
+#include "Game/fn_8000A950_near_zero.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/weak_ptr.hpp"
 

@@ -6,6 +6,7 @@
 #include "Game/EnemyStatFunc.h"
 #include "Game/EnemyDispFunc.h"
 #include "Game/UnkGlobal_8057D6A0.h"
+#include "Game/fn_8000A950_near_zero.h"
 
 using SonicteamUSA::System::Collision::CollisionResultList;
 

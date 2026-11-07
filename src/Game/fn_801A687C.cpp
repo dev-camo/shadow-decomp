@@ -4,6 +4,7 @@
  * address order: the compiler emits the last definition first. */
 #include "Game/Unk8018A374.h"
 #include "Game/SharedConstants.h"
+#include "Game/fn_8000A950_near_zero.h"
 #include "Game/fn_8040_vector_types.h"
 
 /* Sets up both volumes from a position, a rotation and the set data (inferred): the circle of
