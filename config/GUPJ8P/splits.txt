@@ -621,6 +621,13 @@ Game/Door.cpp:
 	.sbss       start:0x805EF638 end:0x805EF658
 	.sdata2     start:0x805F4B60 end:0x805F4BE0
 
+Game/Footing.cpp:
+	.text       start:0x801496B0 end:0x80149AEC
+	.rodata     start:0x804C14E0 end:0x804C14F0
+	.data       start:0x8052A3B8 end:0x8052A470
+	.sdata      start:0x805E6910 end:0x805E6930
+	.sdata2     start:0x805F4C78 end:0x805F4CA0
+
 Game/StretchGrass.cpp:
 	.text       start:0x8014C0BC end:0x8014DDFC
 	.ctors      start:0x804AA3B0 end:0x804AA3B4

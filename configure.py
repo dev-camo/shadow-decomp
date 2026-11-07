@@ -1833,6 +1833,7 @@ config.libs = [
             Object(NonMatching, "Game/Catapult.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DamageBlock.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Door.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/Footing.cpp", cflags=cflags_game_cpp),
             # Word by word against the split original object (USA, Japan and PAL alike), with the
             # linker-discarded weak and local copies set aside: 54 of the 58 functions have
             # identical words and relocations. The preload hook (0x8014BD6C, USA) and the constructor (0x8014CB98)
