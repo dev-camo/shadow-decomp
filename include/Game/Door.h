@@ -17,8 +17,8 @@ struct RpClump;
 namespace Door {
 
 /* The gadget parameters in the order of the descriptor's table (names from the table's strings),
- * shared by the DOOR and MORPHDOOR descriptors. The constructor stores the table's default
- * values. */
+ * shared by the DOOR, MORPHDOOR and BASE DOOR descriptors. The constructor stores the table's
+ * default values. */
 struct SetDoorParams {
     SetDoorParams()
         : type(0), model(0), width(100.0f), height(100.0f), depth(100.0f), x(0.0f), y(0.0f),
