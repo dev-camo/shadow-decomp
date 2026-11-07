@@ -632,6 +632,15 @@ Game/Door.cpp:
 	.sbss       start:0x805EF638 end:0x805EF658
 	.sdata2     start:0x805F4B60 end:0x805F4BE0
 
+Game/EggBalloon.cpp:
+	.text       start:0x801458B0 end:0x80147E80
+	.ctors      start:0x804AA3A8 end:0x804AA3AC
+	.rodata     start:0x804C10A0 end:0x804C1338
+	.data       start:0x8052A188 end:0x8052A270
+	.sdata      start:0x805E68A8 end:0x805E68E0
+	.sbss       start:0x805EF658 end:0x805EF678
+	.sdata2     start:0x805F4BE0 end:0x805F4C28
+
 Game/Elevator.cpp:
 	.text       start:0x80147E80 end:0x801496B0
 	.rodata     start:0x804C1338 end:0x804C14E0
