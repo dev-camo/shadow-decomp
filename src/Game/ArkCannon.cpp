@@ -45,11 +45,6 @@ CHECK_SIZEOF(UnkFactory_8051DDC8, 0x14);
 
 extern UnkFactory_8051DDC8 lbl_8051DDC8;
 
-extern "C" {
-/* Returns a when a < b, otherwise b (behaviour inferred from its body). */
-const float &fn_800704AC(const float &a, const float &b);
-}
-
 /* Converts metres to game units, as for the "RANGE m" parameter (name inferred). */
 static inline float MetresToUnits(float metres) {
     return 10.0f * metres;

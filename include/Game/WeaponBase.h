@@ -31,23 +31,29 @@ class WeaponBase {
      * (behaviour inferred). Every weapon stick passes 5 as the third argument. */
     WeaponBase(const boost::weak_ptr<CharInfo> &owner, int arg1, int arg2);
     virtual ~WeaponBase();
-    /* Copies position into m_position and three floats from arg1 into 0x2C to 0x34 (behaviour
-     * inferred; the type of arg1 is unknown). */
-    virtual void fn_8005CFF0(const Fn8040Vector3 *position, const void *arg1);
+    /* Copies position into m_position and rotation into 0x2C to 0x34 (behaviour inferred). The
+     * rotation type is inferred: the overrides of Weapon::DarkHammer and Weapon::HeavyShot pass
+     * the same argument to fn_800632E8 of their model, which Weapon::Item passes a rotation. */
+    virtual void fn_8005CFF0(const Fn8040Vector3 *position, const UnkRotation3 *rotation);
     /* Per-frame entry point (name inferred); the base does nothing. */
     virtual void Update(float dt);
     /* The next two pass the model at 0x1C to fn_80063130 and fn_80063154 when it exists. */
     virtual void fn_8005CF64();
     virtual void fn_8005CF38();
-    /* Passes field_0x14 to fn_80051AC8. */
-    virtual void fn_8005CF14();
+    /* Returns fn_80051AC8 of field_0x14. */
+    virtual float fn_8005CF14();
     /* Returns three constants (0, -1, -2.703125) as a vector. */
     virtual Fn8040Vector3 fn_8005CEF8();
-    /* Pass field_0x14 to fn_8005B904 and fn_8005B8DC. */
-    virtual void fn_8005CED4();
-    virtual void fn_8005CEB0();
+    /* Return fn_8005B904 and fn_8005B8DC of field_0x14 (the floats at 0x28 and 0x2C of the weapon
+     * type's description). */
+    virtual float fn_8005CED4();
+    virtual float fn_8005CEB0();
     /* Returns 0. */
     virtual int fn_8005C0DC();
+
+    /* Copies m_position into position and the rotation at 0x2C to 0x34 into rotation, each unless
+     * it is null (behaviour from its body; the pointer spellings and const are inferred). */
+    void fn_8005CF90(Fn8040Vector3 *position, UnkRotation3 *rotation) const;
 
     /* The character info that carries the weapon (name inferred). The out-of-line copy the linker
      * kept is at 0x80065034. */

@@ -1409,6 +1409,14 @@ Game/Message.cpp:
 	.data       start:0x80559CB8 end:0x80559CC8
 	.sdata      start:0x805EC990 end:0x805EC998
 
+Game/ChaosSpear.cpp:
+	.text       start:0x802F0730 end:0x802F1230
+	.rodata     start:0x805090F8 end:0x80509220
+	.data       start:0x80559D28 end:0x80559DB0
+	.sdata      start:0x805EC9D0 end:0x805ECA00
+	.sbss       start:0x805F07B0 end:0x805F07B8
+	.sdata2     start:0x805F93A0 end:0x805F93C0
+
 Game/SecretDisk.cpp:
 	.text       start:0x802F9DE8 end:0x802FA9C0
 	.ctors      start:0x804A9FCC end:0x804A9FD0
