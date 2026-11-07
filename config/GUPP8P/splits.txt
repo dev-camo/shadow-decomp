@@ -3220,6 +3220,29 @@ Game/EffectLocusRW3.cpp:
 	.rodata     start:0x8051CB78 end:0x8051CC40
 	.data       start:0x8056C0E8 end:0x8056C150
 
+Game/gcaxSndMemory.c:
+	.text       start:0x8043BACC end:0x8043C2AC
+	.rodata     start:0x8051CC40 end:0x8051CD20
+
+Game/fn_8043B25C.c:
+	.text       start:0x8043C2AC end:0x8043CDD0
+	.data       start:0x8056C150 end:0x8056E158
+	.sdata2     start:0x805FBEC0 end:0x805FBEE8
+
+Game/fn_8043D7B4.c:
+	.text       start:0x8043E804 end:0x8043F304
+	.sdata2     start:0x805FBFA0 end:0x805FBFB8
+
+Game/fn_8043E2B4.c:
+	.text       start:0x8043F304 end:0x80440BA8
+	.rodata     start:0x8051CD58 end:0x8051CDC0
+	.sbss       start:0x805F24A8 end:0x805F24B8
+	.sdata2     start:0x805FBFB8 end:0x805FBFE0
+
+Game/fn_8043FB58.c:
+	.text       start:0x80440BA8 end:0x80441460
+	.sdata2     start:0x805FBFE0 end:0x805FC000
+
 rw/fn_80440410.c:
 	.text       start:0x80441460 end:0x80443BE8
 	.sbss       start:0x805F24B8 end:0x805F24D0
