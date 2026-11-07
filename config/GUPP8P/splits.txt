@@ -2801,6 +2801,19 @@ Game/fn_804220CC.cpp:
 	.rodata     start:0x8051B7C8 end:0x8051BA20
 	.data       start:0x8056B160 end:0x8056B410
 
+Game/EffectManager.cpp:
+	extab       start:0x80006464 end:0x80006584
+	extabindex  start:0x80008498 end:0x800084E0
+	.text       start:0x804261C0 end:0x804268A8
+
+Game/fn_80425858.cpp:
+	.text       start:0x804268A8 end:0x804268B0
+
+Game/fn_80425860.cpp:
+	extab       start:0x80006584 end:0x800066D0
+	extabindex  start:0x800084E0 end:0x80008594
+	.text       start:0x804268B0 end:0x8042736C
+
 Game/fn_8042A2D8.cpp:
 	extab       start:0x80006CF8 end:0x80006D08
 	extabindex  start:0x80008714 end:0x8000872C
