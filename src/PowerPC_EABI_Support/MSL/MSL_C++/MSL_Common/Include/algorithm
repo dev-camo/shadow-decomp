@@ -4,6 +4,7 @@
 #include <iterator>
 #include <string>
 #include <functional>
+#include <utility>
 #include "global.h"
 
 namespace std {
@@ -178,6 +179,152 @@ ForwardIt remove_if(ForwardIt first, ForwardIt last, Predicate pred) {
     ForwardIt next = first;
     ++next;
     return remove_copy_if(next, last, first, pred);
+}
+
+template <class ForwardIt1, class ForwardIt2>
+inline void iter_swap(ForwardIt1 a, ForwardIt2 b) {
+    swap(*a, *b);
+}
+
+template <class ForwardIt, class Compare>
+ForwardIt min_element(ForwardIt first, ForwardIt last, Compare comp) {
+    ForwardIt result = first;
+    if (first != last) {
+        for (++first; first != last; ++first) {
+            if (comp(*first, *result)) {
+                result = first;
+            }
+        }
+    }
+    return result;
+}
+
+/* sort's helpers. The names are placeholders: the library's names for them are not recoverable
+ * from the game. */
+
+/* Orders the three elements so that the median of the three is at c. */
+template <class RandomIt, class Compare>
+void __median_of_three(RandomIt a, RandomIt b, RandomIt c, Compare comp) {
+    bool a_not_above_c = !comp(*c, *a);
+    bool c_not_above_b = !comp(*b, *c);
+    if (a_not_above_c && c_not_above_b) {
+        return;
+    }
+    if (!a_not_above_c && !c_not_above_b) {
+        std::iter_swap(a, b);
+        return;
+    }
+    if (comp(*b, *a)) {
+        std::iter_swap(a, b);
+    }
+    if (a_not_above_c) {
+        std::iter_swap(b, c);
+    } else {
+        std::iter_swap(a, c);
+    }
+}
+
+template <class RandomIt, class Compare>
+void __selection_sort(RandomIt first, RandomIt last, Compare comp) {
+    if (first != last) {
+        RandomIt stop = last - 1;
+        for (; first < stop; ++first) {
+            RandomIt smallest = std::min_element(first, last, comp);
+            if (smallest != first) {
+                std::iter_swap(smallest, first);
+            }
+        }
+    }
+}
+
+/* A quicksort that sorts ranges of up to 20 elements by selection, takes the pivot as the median
+ * of the last element and two elements near the quarter points (shifted by -4 to 4 in turn),
+ * recurses into the smaller part and continues with the larger one. */
+template <class RandomIt, class Compare>
+void sort(RandomIt first, RandomIt last, Compare comp) {
+    while (true) {
+        typename iterator_traits<RandomIt>::difference_type len = last - first;
+        if (len <= 1) {
+            break;
+        }
+        if (len <= 20) {
+            std::__selection_sort(first, last, comp);
+            break;
+        }
+
+        // A named constant: the literals 5 and -4 compile to different code.
+        const int shift_range = 5;
+        static int shift = -shift_range + 1;
+        RandomIt m = first + (len / 4 + shift % shift_range);
+        if (++shift >= shift_range) {
+            shift = -shift_range + 1;
+        }
+        RandomIt i = first + (3 * len / 4 + shift % shift_range);
+        if (++shift >= shift_range) {
+            shift = -shift_range + 1;
+        }
+        RandomIt pivot = last - 1;
+        std::__median_of_three(m, i, pivot, comp);
+
+        m = first;
+        i = pivot;
+        while (comp(*m, *pivot)) {
+            ++m;
+        }
+        while (m != --i && !comp(*i, *pivot)) {
+        }
+        if (m < i) {
+            std::iter_swap(m, i);
+            ++m;
+            while (true) {
+                while (comp(*m, *pivot)) {
+                    ++m;
+                }
+                while (!comp(*--i, *pivot)) {
+                }
+                if (m >= i) {
+                    break;
+                }
+                std::iter_swap(m, i);
+                ++m;
+            }
+        }
+
+        if (m == first) {
+            std::iter_swap(m, pivot);
+            ++m;
+            i = last;
+            if (!comp(*first, *--i)) {
+                while (m != last && !comp(*first, *m)) {
+                    ++m;
+                }
+                if (m < i) {
+                    std::iter_swap(m, i);
+                }
+            }
+            if (m < i) {
+                while (true) {
+                    while (!comp(*first, *m)) {
+                        ++m;
+                    }
+                    while (comp(*first, *--i)) {
+                    }
+                    if (m >= i) {
+                        break;
+                    }
+                    std::iter_swap(m, i);
+                    ++m;
+                }
+            }
+            first = m;
+        } else if (m - first < last - m) {
+            std::sort(first, m, comp);
+            first = m;
+        } else {
+            std::sort(m, last, comp);
+            last = m;
+        }
+    }
 }
 
 }  // namespace std

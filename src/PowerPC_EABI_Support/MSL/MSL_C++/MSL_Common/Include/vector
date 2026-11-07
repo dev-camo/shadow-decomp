@@ -224,8 +224,10 @@ template <class T, class Allocator> class __vector_obj {
     /* Defined after the class and not inline: the game has an out-of-line copy of each. */
     iterator begin();
     iterator end();
+    value_type &back();
     void clear();
     void push_back(const value_type &x);
+    void pop_back();
     iterator erase(iterator first, iterator last);
 
     void reserve(size_type n);
@@ -273,6 +275,11 @@ template <class T, class Allocator> T *&__vector_obj<T, Allocator>::__data() {
     return data_;
 }
 
+template <class T, class Allocator>
+typename __vector_obj<T, Allocator>::value_type &__vector_obj<T, Allocator>::back() {
+    return *(data_ + size_ - 1);
+}
+
 template <class T, class Allocator> void __vector_obj<T, Allocator>::clear() {
     iterator first = data_;
     iterator last = data_ + size_;
@@ -285,6 +292,10 @@ template <class T, class Allocator> void __vector_obj<T, Allocator>::clear() {
 template <class T, class Allocator>
 void __vector_obj<T, Allocator>::push_back(const value_type &x) {
     insert(end(), 1, x);
+}
+
+template <class T, class Allocator> void __vector_obj<T, Allocator>::pop_back() {
+    __alloc().destroy(data_ + --size_);
 }
 
 template <class T, class Allocator>
@@ -409,9 +420,9 @@ void __vector_obj<T, Allocator>::insert(iterator position, size_type n, const va
 
 template <class T, class Allocator = allocator<T> > class vector;
 
-/* A vector of objects. The game has out-of-line copies of begin, end, push_back and clear, which
- * are defined after the class; erase and reserve are inline, as the game's callers call
- * __vector_obj's erase and reserve directly. */
+/* A vector of objects. The game has out-of-line copies of begin, end, back, push_back, pop_back
+ * and clear, which are defined after the class; erase and reserve are inline, as the game's
+ * callers call __vector_obj's erase and reserve directly. */
 template <class T, class Allocator> class vector : private __vector_obj<T, Allocator> {
     typedef __vector_obj<T, Allocator> base;
 
@@ -424,7 +435,9 @@ template <class T, class Allocator> class vector : private __vector_obj<T, Alloc
     bool empty() const {
         return base::empty();
     }
+    T &back();
     void push_back(const T &x);
+    void pop_back();
     iterator erase(iterator first, iterator last) {
         return base::erase(first, last);
     }
@@ -442,8 +455,14 @@ template <class T, class Allocator>
 typename vector<T, Allocator>::iterator vector<T, Allocator>::end() {
     return base::end();
 }
+template <class T, class Allocator> T &vector<T, Allocator>::back() {
+    return base::back();
+}
 template <class T, class Allocator> void vector<T, Allocator>::push_back(const T &x) {
     base::push_back(x);
+}
+template <class T, class Allocator> void vector<T, Allocator>::pop_back() {
+    base::pop_back();
 }
 template <class T, class Allocator> void vector<T, Allocator>::clear() {
     base::clear();
