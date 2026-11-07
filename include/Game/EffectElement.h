@@ -33,6 +33,11 @@ class EffectElement {
     virtual void Update(float deltaTime) = 0;
     virtual void Render() = 0;
 
+    /* Allocation contract inferred from the native effect factory's eight new expressions. */
+    static void *operator new(unsigned long size) {
+        return fn_8042A5D0()->Allocate(size);
+    }
+
     static void operator delete(void *block) {
         fn_8042A5D0()->Free(block);
     }

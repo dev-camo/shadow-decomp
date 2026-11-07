@@ -2752,6 +2752,10 @@ config.libs = [
             # differences (2564 source bytes versus 2568 original bytes). Its exception
             # record and the parameter constructor's exception-record order also differ.
             Object(NonMatching, "Game/fn_80430A54.cpp", cflags=cflags_effect_rw3),
+            # All ten relocatable bodies match, but the weak delete helper precedes the
+            # destructor and constructor instead of following them. Text placement and
+            # exception-index order differ; the kept text extent remains 1748 bytes.
+            Object(NonMatching, "Game/EffectManagerRW3.cpp", cflags=cflags_effect_rw3),
             Object(Matching, "Game/EffectObjectRW3.cpp", cflags=cflags_effect_rw3),
             # Matching workaround: the EffectParticle3DRW3 constructor addresses each float
             # literal independently. Pooling adds a shared base and shortens it by 64 bytes.

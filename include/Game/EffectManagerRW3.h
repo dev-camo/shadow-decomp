@@ -19,7 +19,15 @@ struct UnkEffectRW3Param2;
 struct UnkEffectRW3Param3;
 struct UnkEffectRW3Param4;
 struct UnkEffectManagerRW3Data50Item;
-struct UnkEffectManagerRW3Data2C;
+/* Observed cache-node view; the complete allocation extent is unknown.
+ * Names and field types are inferred from the list and particle-tank operations. */
+struct UnkEffectManagerRW3Data2C {
+    /* 0x00 */ UnkEffectManagerRW3Data2C *next;
+    /* 0x04 */ int field_0x4;
+    /* 0x08 */ RpAtomic *atomic;
+    /* 0x0C */ int count;
+};
+CHECK_SIZEOF(UnkEffectManagerRW3Data2C, 0x10);
 struct UnkEffectManagerRW3Data3C;
 struct UnkEffectManagerRW3Data40;
 struct UnkEffectManagerRW3Data44;
@@ -60,6 +68,11 @@ class EffectManagerRW3 : public System::EffectManager {
     void fn_8043224C();
     void fn_80432278();
     void fn_804322E0(const UnkEffectRW3Param4 *parameters);
+
+    void fn_8043237C();
+    void fn_804323F8();
+    void fn_80432578();
+    void fn_804325E8();
 
     void fn_804324A0(RpAtomic *atomic, int count);
     RpAtomic *fn_804324C4(int count);
