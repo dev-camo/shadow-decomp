@@ -1399,10 +1399,29 @@ Game/CSD/csdMatrix.cpp:
 	.rodata     start:0x80514000 end:0x80514020
 	.bss        start:0x80586A20 end:0x80586A50
 
+Game/CSD/fn_80360528.cpp:
+	.text       start:0x80361370 end:0x80361430
+	.bss        start:0x80586A50 end:0x80586A58
+
 Game/CSD/csdMotionPalette.cpp:
 	.text       start:0x80361430 end:0x80362580
 	.rodata     start:0x80514020 end:0x80514050
 	.bss        start:0x80586A58 end:0x80586A68
+
+Game/CSD/fn_80361738.cpp:
+	.text       start:0x80362580 end:0x8036286C
+	.rodata     start:0x80514050 end:0x80514060
+	.bss        start:0x80586A68 end:0x80586A70
+
+Game/CSD/fn_80361A24.cpp:
+	.text       start:0x8036286C end:0x80362B40
+	.ctors      start:0x804AB0A4 end:0x804AB0A8
+	.rodata     start:0x80514060 end:0x80514068
+	.bss        start:0x80586A70 end:0x80586AA8
+
+Game/CSD/fn_80361CF8.cpp:
+	.text       start:0x80362B40 end:0x80362D78
+	.bss        start:0x80586AE0 end:0x80586AE8
 
 Game/CSD/csdTexList.cpp:
 	.text       start:0x80362D78 end:0x80363A1C
