@@ -12,7 +12,8 @@ struct UnkCommandData;
 struct UnkEffectPool;
 struct UnkEffectElementData4;
 
-/* Class and base names from RTTI; member names are inferred. */
+/* Class and base names come from RTTI; member names and the constructor signature, including
+ * parameter types and qualifiers, are inferred. */
 class EffectObject : public EffectElement {
   public:
     EffectObject(UnkEffectElementData4 *definition, EffectLaunchInfo *info, EffectManager *manager);
