@@ -68,7 +68,7 @@ template <class T> class RCPtr : public CBase {
         return field_0x0 == other.field_0x0;
     }
 
-    /* Inferred comparison: independently reads each held object, treating an empty handle as null. */
+    /* Signature and comparison inferred from fn_8036C8E0. */
     bool operator!=(const RCPtr &other) const {
         return (field_0x0 != NULL ? field_0x0->m_pObject : NULL) !=
                (other.field_0x0 != NULL ? other.field_0x0->m_pObject : NULL);
