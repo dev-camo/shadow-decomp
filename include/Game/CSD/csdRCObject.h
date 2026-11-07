@@ -234,7 +234,7 @@ template <class T> class RCPtr : public CBase {
             field_0x0 = NULL;
         }
 
-        /* Release callbacks may change the source handle. */
+        /* Read the source holder again after handling the old reference. */
         if (other.field_0x0 != NULL) {
             field_0x0 = other.field_0x0;
             field_0x0->m_refCount++;
