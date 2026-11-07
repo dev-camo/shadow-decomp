@@ -203,7 +203,7 @@ class CScene : public CSceneDataRef, public CSceneListenerSource, public CBase {
     void fn_80366F9C();
     /* Finds or creates the cached node for an element; null gives an empty reference. */
     RCPtr<CNode> fn_80366468(const UnkNodeEntry_80366640 *elementRef);
-    UnkNodeEntry_80366640 fn_80366640(const char *name) const;
+    UnkNodeEntry_80366640 fn_80366640(const char *name); /* Signature inferred. */
     RCPtr<CNode> fn_803666B4(const char *name);
 
     /* The first and last frame of a motion (by name or by its index in the scene's data); a name

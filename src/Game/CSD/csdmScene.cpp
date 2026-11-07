@@ -396,7 +396,7 @@ RCPtr<CNode> CScene::fn_803666B4(const char *name) {
     return RCPtr<CNode>(NULL);
 }
 
-UnkNodeEntry_80366640 CScene::fn_80366640(const char *name) const {
+UnkNodeEntry_80366640 CScene::fn_80366640(const char *name) {
     const UnkNodeEntry_80366640 *node = FindNode(name, m_scene);
 
     if (node != NULL) {
