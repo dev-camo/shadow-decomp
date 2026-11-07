@@ -27,8 +27,8 @@ class EffectRay : public EffectElement {
     /* 0x108 */ unsigned int m_definitionFlags;
     /* 0x10C */ int m_capacity;
     /* 0x110 */ int m_count;
-    /* 0x114 */ float m_damping;
-    /* 0x118 */ float m_emissionRate;
+    /* 0x114 */ float m_friction;
+    /* 0x118 */ float m_genQuantity;
     /* Unrecovered storage; no access is identified in the native base or RW3 methods. */
     /* 0x11C */ unsigned char field_0x11C[4];
     /* 0x120 */ const UnkCommandData *m_command;

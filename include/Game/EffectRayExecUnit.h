@@ -15,7 +15,7 @@ struct UnkEffectElementData6;
 /* Class name comes from RTTI; method/member names, signature types and qualifiers are inferred. */
 class EffectRayExecUnit {
   public:
-    EffectRayExecUnit(UnkEffectElementData6 *definition, UnkEffectPool *commandPool);
+    EffectRayExecUnit(const UnkEffectElementData6 *definition, UnkEffectPool *commandPool);
     virtual ~EffectRayExecUnit();
 
     /* 0x04 */ Fn8040Vector3 m_position;
@@ -27,10 +27,10 @@ class EffectRayExecUnit {
     /* 0x34 */ float m_width;
     /* 0x38 */ int m_color[3];
     /* 0x44 */ int m_alpha;
-    /* 0x48 */ int m_startColor[3];
-    /* 0x54 */ int m_startAlpha;
-    /* 0x58 */ int m_endColor[3];
-    /* 0x64 */ int m_endAlpha;
+    /* 0x48 */ int m_topColor[3];
+    /* 0x54 */ int m_topAlpha;
+    /* 0x58 */ int m_lastColor[3];
+    /* 0x64 */ int m_lastAlpha;
     /* 0x68 */ EffectRayExecUnit *m_prev;
     /* 0x6C */ EffectRayExecUnit *m_next;
     /* 0x70 */ const UnkCommandData *m_command;
