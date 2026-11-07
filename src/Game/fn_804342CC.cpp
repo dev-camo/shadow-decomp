@@ -299,8 +299,8 @@ void UnkEffectManagerRW3Data48::fn_80436128(float deltaTime) {
         field_0xBC -= m_parameters.field_0x8.field_0x8;
     }
     float angleScale = 2.0f * lbl_805FAD38;
-    float phase = (field_0xBC * angleScale) / m_parameters.field_0x8.field_0x8;
-    float step = (field_0xD0 * angleScale) /
+    float phase = (angleScale * field_0xBC) / m_parameters.field_0x8.field_0x8;
+    float step = (angleScale * field_0xD0) /
                  (m_parameters.field_0x20.field_0x0 * m_parameters.field_0x20.field_0xC);
     for (int row = 0; row < m_parameters.field_0x20.field_0x0 + 1; ++row) {
         m_rowOffsets[row] = m_parameters.field_0x20.field_0x4 * std::sin(row * step + phase);

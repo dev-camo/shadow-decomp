@@ -2779,7 +2779,7 @@ config.libs = [
             Object(Matching, "Game/fn_804340CC.cpp", cflags=cflags_effect_rw3),
             # Render and the Data48 vertex builder retain branch/instruction-layout and
             # register differences; the Shimmer constructor differs by one instruction and
-            # fn_80436128 by registers.
+            # fn_80436128 retains seventeen register-word differences.
             Object(NonMatching, "Game/fn_804342CC.cpp", cflags=cflags_effect_rw3),
             # Matching workaround: these two units address literals independently in the
             # original. Keep unpooled addressing until their original build options are known.
