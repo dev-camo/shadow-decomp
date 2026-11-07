@@ -89,7 +89,9 @@ class PlayerObject : public CharInfo {
   public:
     virtual ~PlayerObject();
 
-    /* 0x64 */ u32 field_0x64; /* PlayerBase's constructor stores its second argument here */
+    /* PlayerBase's constructor stores its second argument here. The HintController file compares
+     * it with 9 as a signed word and indexes a table of 20 message ids by it. */
+    /* 0x64 */ s32 field_0x64;
 };
 CHECK_SIZEOF(PlayerObject, 0x68);
 

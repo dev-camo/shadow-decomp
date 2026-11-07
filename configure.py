@@ -1989,6 +1989,32 @@ config.libs = [
             # has zeros; the later code and data land lower, so 17 more words in 8 of the other
             # functions differ, all in relocated fields.
             Object(NonMatching, "Game/DarkHammer.cpp", cflags=cflags_game_cpp),
+            # Compared as relocatable objects, 13 of the 16 functions have identical words and
+            # relocation targets once the linker-discarded copies are set aside (28 weak boost and
+            # std::exception instances and 22 locals: the RTTI records and name strings of their
+            # classes, two local converting-constructor copies and a one-byte .sbss tag).
+            # fn_802F299C (64 words) and fn_802F2A9C (41 words) each differ in 9 words, by position
+            # and aligned (9 paired, none unpaired), in register choice only: the same instructions
+            # in the row lookup, with the addresses of lbl_8057D6A0 and of the table in r4 and r5
+            # the other way round and the sum built in r0 and r6 instead of r4 and r0. fn_802F2C1C
+            # (70 words in the original, 69 here) differs by position in 20 paired raw words plus 1
+            # original-only word; one more position has the same raw branch word but a different
+            # relocation target, as the sequences are shifted. Aligned, 4 paired words differ and 1
+            # word is original-only, with the same relocation targets: the original loads the
+            # message id into r0, compares it and copies it to r31 after the early return, where
+            # this build loads it straight into r31. The functions after fn_802F2C1C sit 4 bytes
+            # lower because it is one word shorter.
+            # Data, the same in all three regions: with the discarded copies set aside, the
+            # retained contents match, but the sections end before the original's: .rodata at
+            # 0x809 against 0x810, .data at 0x64 against 0x68 and .sdata2 at 0x14 against 0x18
+            # (and .sbss at 0x11 against 0x18). The original's extra 7, 4 and 4 bytes are zero end
+            # alignment, which the link supplies. The compiled .sdata2 is writable (WA) where the
+            # original's is allocatable only (A). .sdata: the original has a zero word
+            # (0x805ECA6C in USA (GUPE8P)) that no code references between the literal 2 of
+            # fn_802F2C1C and s_name; this object lacks it, so s_name and the three RTTI records
+            # sit 4 bytes lower and the section ends at 0x20 against the original's 0x24 plus 4
+            # bytes of end alignment.
+            Object(NonMatching, "Game/HintController.cpp", cflags=cflags_game_cpp),
             # Relocatable-object comparison: nine of 11 functions have identical words and
             # relocation targets. The start-up function and the description's floats at 0x10 and
             # 0x14 differ as in Game/DarkHammer.cpp above: 24 bytes against 40, with 5 of the 6

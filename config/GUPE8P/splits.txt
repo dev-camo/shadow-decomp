@@ -1461,6 +1461,14 @@ Game/HeavyShot.cpp:
 	.sdata      start:0x805ECA20 end:0x805ECA40
 	.sdata2     start:0x805F93E0 end:0x805F93F8
 
+Game/HintController.cpp:
+	.text       start:0x802F28A8 end:0x802F31DC
+	.rodata     start:0x805095A8 end:0x80509DB8
+	.data       start:0x80559FC0 end:0x8055A028
+	.sdata      start:0x805ECA68 end:0x805ECA90
+	.sbss       start:0x805F07D0 end:0x805F07E8
+	.sdata2     start:0x805F9410 end:0x805F9428
+
 Game/CityBombSmall.cpp:
 	.text       start:0x802F46E4 end:0x802F6344
 	.ctors      start:0x804A9FC4 end:0x804A9FC8
