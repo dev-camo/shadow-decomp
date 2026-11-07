@@ -804,11 +804,6 @@ config.libs = [
                 # (0x1AC). Source .data is 28 bytes; the original has none. Normal links use the
                 # original object.
                 Object(NonMatching, "Game/CSD/csdLoader.cpp", cflags=cflags_csd),
-                Object(Matching, "Game/CSD/fn_80360528.cpp", cflags=cflags_csd),
-                # Current file system and its directory (original file name unknown).
-                Object(Matching, "Game/CSD/fn_80361738.cpp", cflags=cflags_csd),
-                Object(Matching, "Game/CSD/fn_80361A24.cpp", cflags=cflags_csd),
-                Object(Matching, "Game/CSD/fn_80361CF8.cpp", cflags=cflags_csd),
                 # Matching workaround: -inline auto for this unit only (the rest of the library uses
                 # -inline noauto). The texture array's constructor (0xA0 bytes) and destructor (0x54
                 # bytes) are emitted out of line and also expanded in CTexListRW::Load and in the
@@ -2845,6 +2840,11 @@ config.libs = [
             Object(Matching, "Game/TestNakazawa.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BDHologram.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BDTrue.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/CSD/fn_80360528.cpp", cflags=cflags_csd),
+            # Current file system and its directory (original file name unknown).
+            Object(Matching, "Game/CSD/fn_80361738.cpp", cflags=cflags_csd),
+            Object(Matching, "Game/CSD/fn_80361A24.cpp", cflags=cflags_csd),
+            Object(Matching, "Game/CSD/fn_80361CF8.cpp", cflags=cflags_csd),
         ],
     },
     DolphinLib(
