@@ -80,7 +80,7 @@ void SetParticle::CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     fn_800C9DBC(owner, &m_params, sizeof(m_params));
 
     fn_8040B6F8(&m_matrix);
-    fn_8040B59C(&m_matrix, &m_charInfo->m_position);
+    fn_8040B59C(&m_matrix, m_charInfo->m_position);
     fn_8040B848(&m_matrix, m_charInfo->m_rotation.y);
     fn_8040B884(&m_matrix, m_charInfo->m_rotation.x);
     fn_8040B80C(&m_matrix, m_charInfo->m_rotation.z);

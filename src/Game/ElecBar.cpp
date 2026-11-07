@@ -344,9 +344,9 @@ void ElecBarSub::UpdateModelMatrix() {
     Fn8040Matrix34 matrix;
 
     fn_8040C148(&matrix, &lbl_805E0720);
-    fn_8040B59C(&matrix, &m_charInfo->m_position);
+    fn_8040B59C(&matrix, m_charInfo->m_position);
     fn_8040B848(&matrix, m_charInfo->m_rotation.y);
-    fn_8040B59C(&matrix, &offset);
+    fn_8040B59C(&matrix, offset);
 
     Fn8040Vector3 inset(3.75f, 0.0f, 0.0f);
     const Fn8040Vector3 &start = right * m_parent->m_params.scale - inset;

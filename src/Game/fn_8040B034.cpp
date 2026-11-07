@@ -253,13 +253,13 @@ Fn8040Vector3 fn_8040B618(const Fn8040Matrix34 &matrix, const Fn8040Vector3 &vec
                              matrix.values[2][2] * vector.z);
 }
 
-void fn_8040B59C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *offset) {
-    matrix->values[0][3] += matrix->values[0][0] * offset->x + matrix->values[0][1] * offset->y +
-                            matrix->values[0][2] * offset->z;
-    matrix->values[1][3] += matrix->values[1][0] * offset->x + matrix->values[1][1] * offset->y +
-                            matrix->values[1][2] * offset->z;
-    matrix->values[2][3] += matrix->values[2][0] * offset->x + matrix->values[2][1] * offset->y +
-                            matrix->values[2][2] * offset->z;
+void fn_8040B59C(Fn8040Matrix34 *matrix, const Fn8040Vector3 &offset) {
+    matrix->values[0][3] += matrix->values[0][0] * offset.x + matrix->values[0][1] * offset.y +
+                            matrix->values[0][2] * offset.z;
+    matrix->values[1][3] += matrix->values[1][0] * offset.x + matrix->values[1][1] * offset.y +
+                            matrix->values[1][2] * offset.z;
+    matrix->values[2][3] += matrix->values[2][0] * offset.x + matrix->values[2][1] * offset.y +
+                            matrix->values[2][2] * offset.z;
 }
 
 void fn_8040B52C(Fn8040Matrix34 *matrix, float x, float y, float z) {

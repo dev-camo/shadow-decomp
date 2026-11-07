@@ -155,7 +155,7 @@ void FallRoad::UpdateModelMatrix() {
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
 
         Fn8040Vector3 offset(0.0f, m_bounce, 0.0f);
-        fn_8040B59C(&matrix, &offset);
+        fn_8040B59C(&matrix, offset);
         m_model->fn_801633DC(&matrix);
     }
 }

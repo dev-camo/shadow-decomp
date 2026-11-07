@@ -271,7 +271,7 @@ void SetEggBalloon::UpdateModelMatrix() {
             RwMatrix *ltm = RwFrameGetLTM(m_aimFrames[i]);
             Fn8040Vector3 position(ltm->pos.x, ltm->pos.y, ltm->pos.z);
 
-            fn_800CCE38(m_targets[i].get(), &position);
+            fn_800CCE38(m_targets[i].get(), position);
         }
     }
 }

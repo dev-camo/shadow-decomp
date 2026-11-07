@@ -120,7 +120,7 @@ void ElecSmallCube::UpdateModelMatrix() {
     if (m_model != 0) {
         Fn8040Matrix34 matrix;
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8001E070(&matrix, &m_charInfo->m_rotation, m_charInfo->field_0x30);
         m_model->fn_801633DC(&matrix);
     }

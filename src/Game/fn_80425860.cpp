@@ -173,7 +173,7 @@ extern "C" void fn_80425C34(Effect::System::EffectElement *effect, float deltaTi
     }
     fn_8040C148(&effect->m_transform, &effect->m_baseTransform);
     AddVector(&effect->m_translation, fn_80093230(&effect->m_velocity, deltaTime));
-    fn_8040B59C(&effect->m_transform, &effect->m_translation);
+    fn_8040B59C(&effect->m_transform, effect->m_translation);
     fn_8040B80C(&effect->m_transform, effect->m_rotation.z);
     fn_8040B848(&effect->m_transform, effect->m_rotation.y);
     fn_8040B884(&effect->m_transform, effect->m_rotation.x);

@@ -165,7 +165,7 @@ void Rocket::UpdateModelMatrix() {
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
         m_model->fn_801633DC(&matrix);
@@ -324,7 +324,7 @@ void RocketBase::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &mount);
+        fn_8040B59C(&matrix, mount);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         fn_8040B884(&matrix, DegreesToRadians(-m_params.angle));
         start = matrix * start;
@@ -349,7 +349,7 @@ void RocketBase::UpdateModelMatrix() {
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         m_model->fn_801633DC(&matrix);
     }

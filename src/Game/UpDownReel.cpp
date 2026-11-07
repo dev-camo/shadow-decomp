@@ -223,7 +223,7 @@ void UpDownReel::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     Fn8040Matrix34 matrix;
 
     fn_8040C148(&matrix, &lbl_805E0720);
-    fn_8040B59C(&matrix, &m_charInfo->m_position);
+    fn_8040B59C(&matrix, m_charInfo->m_position);
     fn_8040B52C(&matrix, 0.0f, 10.0f * -m_params.pos, 0.0f);
     fn_8040B848(&matrix, m_charInfo->m_rotation.y);
 
@@ -251,7 +251,7 @@ void UpDownReel::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     Fn8040Matrix34 launchMatrix;
 
     fn_8040C148(&launchMatrix, &lbl_805E0720);
-    fn_8040B59C(&launchMatrix, &m_charInfo->m_position);
+    fn_8040B59C(&launchMatrix, m_charInfo->m_position);
     fn_8040B52C(&launchMatrix, 0.0f, 10.0f * -m_ropeLength, 0.0f);
     fn_8040B848(&launchMatrix, m_charInfo->m_rotation.y);
     fn_8040B884(&launchMatrix, DegreesToRadians(m_params.angle));
@@ -280,7 +280,7 @@ void UpDownReel::UpdateModelMatrix() {
     fn_8040C148(&matrix, &lbl_805E0720);
 
     if (m_models[0] != 0) {
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         m_models[0]->fn_801633DC(&matrix);
     }
@@ -292,7 +292,7 @@ void UpDownReel::UpdateModelMatrix() {
 
     if (m_models[1] != 0) {
         fn_8040B6F8(&matrix);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B52C(&matrix, 0.0f, 10.0f * -m_ropeLength, 0.0f);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         fn_8040B848(&matrix, m_handleRotation.y);

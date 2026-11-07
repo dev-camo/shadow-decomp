@@ -255,7 +255,6 @@ void fn_8040B33C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *eye, const Fn8040V
 void fn_8040B4D0(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Translates the matrix by an offset that the matrix's rotation turns first. */
 void fn_8040B52C(Fn8040Matrix34 *matrix, float x, float y, float z);
-void fn_8040B59C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *offset);
 /* The matrix applied to vector, with the translation, returned by value (inferred; game code
  * reaches it through operator* below; fn_8040B618 below applies only the rotation). */
 Fn8040Vector3 fn_8040B67C(const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector);
@@ -473,6 +472,13 @@ extern "C" Fn8040Vector3 fn_8040B618(const Fn8040Matrix34 &matrix, const Fn8040V
  * inferred (the code is that of a pointer parameter): the WEIGHT gadget passes a temporary scale
  * vector (0x8012B0CC), at r1+0x8 below its named locals, where MWCC places temporaries. */
 extern "C" void fn_8040B790(Fn8040Matrix34 *matrix, const Fn8040Vector3 &scale);
+
+/* Translates the matrix by an offset that the matrix's rotation turns first (fn_8040B52C with the
+ * offset as a vector). The reference is inferred (the code is that of a pointer parameter).
+ * Observed: the ESCAPE_PLANE gadget passes the vector that fn_80016284 returns, at r1+0x14 below
+ * its named locals (0x8025588C); a temporary passed by reference fits that placement, and the
+ * temporary is inferred as well. */
+extern "C" void fn_8040B59C(Fn8040Matrix34 *matrix, const Fn8040Vector3 &offset);
 
 /* Returns whether the value is close enough to 0 to count as 0 (behaviour inferred). */
 extern "C" bool fn_8000A950(float value);

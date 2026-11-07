@@ -151,7 +151,7 @@ void JumpBoard::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
         fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
@@ -177,7 +177,7 @@ void JumpBoard::UpdateModelMatrix() {
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
         fn_8040B80C(&matrix, m_charInfo->m_rotation.z);

@@ -318,7 +318,7 @@ void ElecSecurityCode::UpdateModelMatrix() {
         Fn8040Matrix34 matrix;
 
         fn_8040C148(&matrix, &lbl_805E0720);
-        fn_8040B59C(&matrix, &m_charInfo->m_position);
+        fn_8040B59C(&matrix, m_charInfo->m_position);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         fn_8040B720(&matrix, m_scale.x, m_scale.y, m_scale.z);
         m_model->fn_801633DC(&matrix);
@@ -327,7 +327,7 @@ void ElecSecurityCode::UpdateModelMatrix() {
     if (m_target.get() != 0) {
         Fn8040Vector3 position = m_charInfo->m_position;
         position.y += s_targetHeights[m_type];
-        fn_800CCE38(m_target.get(), &position);
+        fn_800CCE38(m_target.get(), position);
     }
 }
 

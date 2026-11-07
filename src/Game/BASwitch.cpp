@@ -130,7 +130,7 @@ void BASwitch::UpdateModelMatrix() {
     Fn8040Matrix34 matrix;
 
     fn_8040C148(&matrix, &lbl_805E0720);
-    fn_8040B59C(&matrix, &m_charInfo->m_position);
+    fn_8040B59C(&matrix, m_charInfo->m_position);
     fn_8040B848(&matrix, m_charInfo->m_rotation.y);
 
     for (int i = 0; i < 3; i++) {
@@ -148,7 +148,7 @@ void BASwitch::UpdateModelMatrix() {
     if (m_object.get() != 0) {
         Fn8040Vector3 position = m_charInfo->m_position;
         position.y += s_objectHeight;
-        fn_800CCE38(m_object.get(), &position);
+        fn_800CCE38(m_object.get(), position);
     }
 }
 

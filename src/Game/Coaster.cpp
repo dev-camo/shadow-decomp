@@ -598,7 +598,7 @@ void Coaster::BuildMatrices() {
     fn_800493C4(&m_charInfo->m_rotation, &m_matrix);
 
     fn_8040C148(&translation, &lbl_805E0720);
-    fn_8040B59C(&translation, &m_charInfo->m_position);
+    fn_8040B59C(&translation, m_charInfo->m_position);
     fn_8001E044(&moved, &translation, &m_matrix);
     fn_8040C148(&m_matrix, &moved);
     fn_8001E044(&moved2, &translation, &m_matrix2);
@@ -610,7 +610,7 @@ void Coaster::BuildMatrices() {
 
 void Coaster::UpdateModelMatrix() {
     m_model->fn_801633DC(&m_matrix);
-    fn_800CCE38(m_object.get(), &m_charInfo->m_position);
+    fn_800CCE38(m_object.get(), m_charInfo->m_position);
     if (m_handle.get() != 0) {
         m_handle->m_probe->SetPosition(&m_position);
     }
