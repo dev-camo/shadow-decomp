@@ -332,7 +332,7 @@ float SetWatchCamera::Shoot() {
     UnkParams_80051D10 params(boost::weak_ptr<CharInfo>(m_charInfo), 1, position, direction,
                               Fn8040Vector3(0.0f, 0.0f, 0.0f));
 
-    fn_80051C34(0x1C, &params);
+    fn_80051C34(0x1C, params);
     fn_801D560C(fn_80053164(), 0x7840, 0, 0);
     return 1.0f / 12.0f;
 }

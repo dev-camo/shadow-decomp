@@ -1974,6 +1974,22 @@ config.libs = [
             # has zeros; the later code and data land lower, so 17 more words in 8 of the other
             # functions differ, all in relocated fields.
             Object(NonMatching, "Game/DarkHammer.cpp", cflags=cflags_game_cpp),
+            # Relocatable-object comparison: nine of 11 functions have identical words and
+            # relocation targets. The start-up function and the description's floats at 0x10 and
+            # 0x14 differ as in Game/DarkHammer.cpp above: 24 bytes against 40, with 5 of the 6
+            # paired words different and 4 original-only words. .sdata2 is 0x10 bytes marked
+            # writable (WA) against the original's 0x18 bytes, allocatable only (A); the original's
+            # last 8 bytes are the 1.0 and 5.0 that its start-up function stores. PlayShotEffects
+            # is 152 bytes against 156, with 28 of the 38 paired words different and 1
+            # original-only word: the original copies the frame pointer that fn_80063234 returns
+            # to r0, sets r3 to the result slot and then moves r0 to r4, while this build moves it
+            # to r4 directly. The weak copies set aside are the weak_ptr<EffectElement> and
+            # weak_count destructors and sp_counted_base's destructor, destruct and vtable with its
+            # RTTI record and name string. Normal builds link the original object. In a USA
+            # diagnostic link of this object, PlayShotEffects has 29 differing paired words and 1
+            # original-only word, and 30 words of the other nine functions differ, all in
+            # relocated fields.
+            Object(NonMatching, "Game/HeavyShot.cpp", cflags=cflags_game_cpp),
             # Every function except UpdateBody, the retained data and all retained relocations
             # match once the linker-discarded definitions (43 weak copies and nine local ones,
             # among them a converting constructor, RTTI records and literals) are set aside. Normal

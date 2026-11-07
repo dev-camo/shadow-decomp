@@ -685,7 +685,7 @@ float SetEggBalloon::FireShots() {
             Fn8040Vector3 direction(forward.x, forward.y, forward.z);
             UnkParams_80051D10 params(boost::weak_ptr<CharInfo>(m_charInfo), 1, position,
                                       direction);
-            fn_80051C34(0x11, &params);
+            fn_80051C34(0x11, params);
         }
     }
 

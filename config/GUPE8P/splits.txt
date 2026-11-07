@@ -1444,6 +1444,14 @@ Game/DarkHammer.cpp:
 	.sdata      start:0x805ECA00 end:0x805ECA20
 	.sdata2     start:0x805F93C0 end:0x805F93E0
 
+Game/HeavyShot.cpp:
+	.text       start:0x802F1790 end:0x802F1BB0
+	.ctors      start:0x804A9FB8 end:0x804A9FBC
+	.rodata     start:0x80509318 end:0x80509410
+	.data       start:0x80559E60 end:0x80559F18
+	.sdata      start:0x805ECA20 end:0x805ECA40
+	.sdata2     start:0x805F93E0 end:0x805F93F8
+
 Game/SecretDisk.cpp:
 	.text       start:0x802F9DE8 end:0x802FA9C0
 	.ctors      start:0x804A9FCC end:0x804A9FD0
