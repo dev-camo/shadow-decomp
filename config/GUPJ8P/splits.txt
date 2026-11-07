@@ -3216,6 +3216,13 @@ Game/EffectLocus.cpp:
 	.rodata     start:0x8051B730 end:0x8051B7F0
 	.data       start:0x8056B160 end:0x8056B228
 
+Game/EffectRayRW3.cpp:
+	extab       start:0x80007034 end:0x80007068
+	extabindex  start:0x80008834 end:0x80008864
+	.text       start:0x8042CE60 end:0x8042D844
+	.rodata     start:0x8051B7F0 end:0x8051B8A0
+	.data       start:0x8056B228 end:0x8056B290
+
 Game/fn_80430A54.cpp:
 	extab       start:0x80007130 end:0x800071CC
 	extabindex  start:0x80008960 end:0x80008A14
