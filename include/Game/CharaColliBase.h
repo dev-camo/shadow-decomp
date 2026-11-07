@@ -127,6 +127,17 @@ class CharaColliBase {
     Collision::CollisionResultList *GetHits() {
         return &hits;
     }
+    /* Stores value in the byte at 0x2C (name inferred).
+     * Matching workaround: this inline member stands for an unknown original accessor. Called
+     * through a smart pointer as a statement, an inline member leaves the smart pointer's
+     * operator-> out of line, as the original does where the Helicopter gadget's constructor and
+     * the code at USA (GUPE8P) 0x80078024 store this byte right after creating a probe (both call
+     * the copy of operator-> at 0x800783F0); a plain member store expands the operator in place
+     * (the Helicopter constructor is then 2 words shorter). Revisit when the original accessor is
+     * identified. */
+    void SetField0x2C(u8 value) {
+        field_0x2C = value;
+    }
 
     /* 0x04 */ s16 field_0x4;
     /* 0x06 */ s16 field_0x6;
