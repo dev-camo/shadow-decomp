@@ -2686,8 +2686,11 @@ config.libs = [
             # Update retains six register-word differences; the other seven bodies have
             # identical instruction words.
             Object(NonMatching, "Game/EffectLocus.cpp", cflags=cflags_effect),
-            # Render differs in literal addressing and vertex stores. Update calls its
-            # base without the original terminal tests, which perform no further operation.
+            # Render retains 511 paired word differences and seven native tail words
+            # (source 2120 bytes, native 2148); pooled literal addressing remains.
+            # Update retains five paired differences and ten native tail words
+            # (source 32 bytes, native 72), without the original terminal tests,
+            # which perform no further operation.
             Object(NonMatching, "Game/EffectRayRW3.cpp", cflags=cflags_effect_rw3),
             # The vertex builder retains address-materialization, stack and instruction-layout
             # differences (2564 source bytes versus 2568 original bytes). Its exception

@@ -44,6 +44,7 @@ void EffectRayRW3::Render() {
         Fn8040Vector3 cameraPosition(frame->modelling.pos.x, frame->modelling.pos.y,
                                      frame->modelling.pos.z);
         System::EffectRayExecUnit *ray = m_head;
+        /* Both degenerate paths leave the slice unwritten; the later draw loop still submits it. */
         for (int i = 0; i < m_capacity; ++i, ray = ray->m_next) {
             if (ray == 0) {
                 break;
@@ -55,7 +56,6 @@ void EffectRayRW3::Render() {
             position = ray->m_position;
             direction = position - ray->m_origin;
             float length = fn_8040CF50(&direction);
-            /* The later draw loop still submits this slice when no vertices were written. */
             if (length < 0.0001f) {
                 continue;
             }
@@ -86,40 +86,56 @@ void EffectRayRW3::Render() {
                 ((ray->m_color[1] >> System::MATERIAL_FRACTION_BITS) & 0xFF) / 255.0f;
             float blueScale = ((ray->m_color[2] >> System::MATERIAL_FRACTION_BITS) & 0xFF) / 255.0f;
             float alphaScale = ((ray->m_alpha >> System::MATERIAL_FRACTION_BITS) & 0xFF) / 255.0f;
-            int red = static_cast<int>(
-                ((ray->m_startColor[0] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * redScale);
-            int green = static_cast<int>(
-                ((ray->m_startColor[1] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * greenScale);
-            int blue = static_cast<int>(
-                ((ray->m_startColor[2] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * blueScale);
-            int alpha = static_cast<int>(
-                ((ray->m_startAlpha >> System::MATERIAL_FRACTION_BITS) & 0xFF) * alphaScale);
-            RwIm3DVertexSetPos(&m_vertices[i][0], position.x + side.x, position.y + side.y,
-                               position.z + side.z);
-            RwIm3DVertexSetPos(&m_vertices[i][1], position.x - side.x, position.y - side.y,
-                               position.z - side.z);
-            RwIm3DVertexSetRGBA(&m_vertices[i][0], red, green, blue, alpha);
-            RwIm3DVertexSetRGBA(&m_vertices[i][1], red, green, blue, alpha);
+            int topRed = static_cast<int>(
+                ((ray->m_topColor[0] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * redScale);
+            int topGreen = static_cast<int>(
+                ((ray->m_topColor[1] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * greenScale);
+            int topBlue = static_cast<int>(
+                ((ray->m_topColor[2] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * blueScale);
+            int topAlpha = static_cast<int>(
+                ((ray->m_topAlpha >> System::MATERIAL_FRACTION_BITS) & 0xFF) * alphaScale);
+            m_vertices[i][0].objVertex.x = position.x + side.x;
+            m_vertices[i][0].objVertex.y = position.y + side.y;
+            m_vertices[i][0].objVertex.z = position.z + side.z;
+            m_vertices[i][1].objVertex.x = position.x - side.x;
+            m_vertices[i][1].objVertex.y = position.y - side.y;
+            m_vertices[i][1].objVertex.z = position.z - side.z;
+            m_vertices[i][0].color.red = topRed;
+            m_vertices[i][0].color.green = topGreen;
+            m_vertices[i][0].color.blue = topBlue;
+            m_vertices[i][0].color.alpha = topAlpha;
+            m_vertices[i][1].color.red = topRed;
+            m_vertices[i][1].color.green = topGreen;
+            m_vertices[i][1].color.blue = topBlue;
+            m_vertices[i][1].color.alpha = topAlpha;
 
-            red = static_cast<int>(((ray->m_endColor[0] >> System::MATERIAL_FRACTION_BITS) & 0xFF) *
-                                   redScale);
-            green = static_cast<int>(
-                ((ray->m_endColor[1] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * greenScale);
-            blue = static_cast<int>(
-                ((ray->m_endColor[2] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * blueScale);
-            alpha = static_cast<int>(((ray->m_endAlpha >> System::MATERIAL_FRACTION_BITS) & 0xFF) *
-                                     alphaScale);
-            RwIm3DVertexSetPos(&m_vertices[i][2], endpoint.x + side.x, endpoint.y + side.y,
-                               endpoint.z + side.z);
-            RwIm3DVertexSetPos(&m_vertices[i][3], endpoint.x - side.x, endpoint.y - side.y,
-                               endpoint.z - side.z);
-            RwIm3DVertexSetRGBA(&m_vertices[i][2], red, green, blue, alpha);
-            RwIm3DVertexSetRGBA(&m_vertices[i][3], red, green, blue, alpha);
+            int lastRed = static_cast<int>(
+                ((ray->m_lastColor[0] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * redScale);
+            int lastGreen = static_cast<int>(
+                ((ray->m_lastColor[1] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * greenScale);
+            int lastBlue = static_cast<int>(
+                ((ray->m_lastColor[2] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * blueScale);
+            int lastAlpha = static_cast<int>(
+                ((ray->m_lastAlpha >> System::MATERIAL_FRACTION_BITS) & 0xFF) * alphaScale);
+            m_vertices[i][2].objVertex.x = endpoint.x + side.x;
+            m_vertices[i][2].objVertex.y = endpoint.y + side.y;
+            m_vertices[i][2].objVertex.z = endpoint.z + side.z;
+            m_vertices[i][3].objVertex.x = endpoint.x - side.x;
+            m_vertices[i][3].objVertex.y = endpoint.y - side.y;
+            m_vertices[i][3].objVertex.z = endpoint.z - side.z;
+            m_vertices[i][2].color.red = lastRed;
+            m_vertices[i][2].color.green = lastGreen;
+            m_vertices[i][2].color.blue = lastBlue;
+            m_vertices[i][2].color.alpha = lastAlpha;
+            m_vertices[i][3].color.red = lastRed;
+            m_vertices[i][3].color.green = lastGreen;
+            m_vertices[i][3].color.blue = lastBlue;
+            m_vertices[i][3].color.alpha = lastAlpha;
         }
 
         RwInt32 cullMode;
-        RwInt32 vertexAlpha;
-        RwInt32 fog;
+        RwBool vertexAlpha;
+        RwBool fog;
         RwRaster *raster;
         RwRenderStateGet(rwRENDERSTATECULLMODE, &cullMode);
         RwRenderStateGet(rwRENDERSTATEVERTEXALPHAENABLE, &vertexAlpha);
