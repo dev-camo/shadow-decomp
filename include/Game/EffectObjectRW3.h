@@ -10,7 +10,8 @@ struct RpWorld;
 namespace Effect {
 namespace RW3 {
 
-/* Class and base names come from RTTI; member names and parameter qualifiers are inferred. */
+/* Class and base names come from RTTI; method and member names, signature types and qualifiers
+ * are inferred. */
 class EffectObjectRW3 : public System::EffectObject {
   public:
     EffectObjectRW3(System::UnkEffectElementData4 *definition, System::EffectLaunchInfo *info,
