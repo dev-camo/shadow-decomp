@@ -575,10 +575,7 @@ config.libs = [
                 Object(NonMatching, "rw/fn_8046B110.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8046D8C8.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8046EE8C.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8046FC1C.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80470474.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80470AC4.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80473E9C.c", cflags=cflags_game),
                 # fn_80474C7C and fn_80476830 expand their own recursive call one level deeper than
                 # the original (49 and 39 words; 0x294 and 0x210 bytes against 0x224 and 0x1DC).
                 # fn_80474FF8, fn_80475260 and fn_80476510 differ in register numbers only (16, 10
@@ -590,8 +587,6 @@ config.libs = [
                 Object(NonMatching, "rw/fn_80476ABC.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80477344.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8047832C.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80479040.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80479598.c", cflags=cflags_game),
                 # The line reader (fn_8047A518) is 79 words against the original's 78 (316 bytes
                 # instead of 312). Counting differing words at the same position (and, in
                 # parentheses, rows that differ once the instruction streams are aligned): 76 of 78
@@ -601,14 +596,9 @@ config.libs = [
                 Object(NonMatching, "rw/fn_80479A50.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8047A7C8.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8047B720.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8047CCF8.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8047DB10.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8047DC90.c", cflags=cflags_game),
                 # The orthonormalizer (fn_8047E298) retains 21 register-word differences: the
                 # floating-point registers of the axis dot products that pick the pivot pair.
                 Object(NonMatching, "rw/fn_8047E100.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8047FA28.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8048053C.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80480C6C.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_804815F0.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8048222C.c", cflags=cflags_game),
@@ -1726,6 +1716,16 @@ config.libs = [
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8046FC1C.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80470474.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80473E9C.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80479040.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80479598.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8047CCF8.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8047DB10.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8047DC90.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8047FA28.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8048053C.c", cflags=cflags_game),
             Object(Matching, "Game/fn_8000AAEC.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80014E04.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_8006127C.cpp", cflags=cflags_game_cpp),
