@@ -1262,7 +1262,7 @@ config.libs = [
             # 12 source bytes versus the original 16-byte extent including trailing alignment.
             Object(NonMatching, "Game/CSD/csdMotionPalette.cpp", cflags=cflags_csd),
             # Scene objects, playback, node lookup and non-owning listeners. Of the 195 native
-            # bodies, this source emits 166 identified counterparts. The 156 instruction-identical
+            # bodies, this source emits 166 identified counterparts. The 157 instruction-identical
             # bodies include two tree methods that call the key comparator instead of distinct
             # value_compare wrappers. Five destructor models remain provisional, and five
             # operations are expanded in headers. Remaining helpers are external to this object;
@@ -1271,7 +1271,7 @@ config.libs = [
             # the holder's +0x0C pointer and CBase inheritance remain inferred. Matching deleting
             # instructions and table/destructor references alone do not identify fn_80367FB4,
             # fn_80364BE4, fn_80365F28, lbl_8055FE98 or lbl_8055FEA8 in USA (GUPE8P).
-            # Ten bodies differ in allocation lines, pooled constants, iterator accessors,
+            # Nine bodies differ in allocation lines, pooled constants, iterator accessors,
             # return-object stores or the final repeated motion-index copy. The scene initialization
             # allocation passes source line 128 rather than native 173; root-pattern allocations
             # pass 486/473 rather than 1124/1102.
