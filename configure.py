@@ -878,34 +878,15 @@ config.libs = [
                 # native bytes. Normal links use the original object; the extra copies are not
                 # selected by those links.
                 Object(NonMatching, "Game/CSD/csdmMotionPattern.cpp", cflags=cflags_csd),
-                # Matching workaround: -sdata 0 and -use_lmw_stmw on. The target reaches lbl_805C0AF0
-                # and lbl_805C0AF4 with absolute @ha/@l addressing (lis with lwz/addi), not
-                # r13-relative small data (without -sdata 0 the unit is 69% matching), and saves its
-                # callee-saved registers with lmw/stmw (without it 87%). Both flags are also set on
-                # the CRI library units, such as its caller CRI/uty_tmr.c. Revisit when the original
-                # unit's flags are known.
-                Object(
-                    Matching,
-                    "Game/fn_803CC9D0.c",
-                    extra_cflags=["-sdata 0", "-use_lmw_stmw on"],
-                ),
                 # CRI middleware functions (MWSFD); the original source file names are not yet
                 # established.
-                Object(Matching, "Game/fn_80403E44.c"),
                 Object(Matching, "Game/fn_8040E048.c"),
                 # The units below that use -Cpp_exceptions on are those whose original object
                 # carries extab/extabindex entries (C++ exception tables), plus Game/fn_8041583C.c,
                 # the middle piece of a file whose other pieces carry them; the default is off.
-                Object(
-                    Matching,
-                    "Game/fn_8040ABC8.cpp",
-                    cflags=cflags_game_cpp,
-                    extra_cflags=["-Cpp_exceptions on"],
-                ),
                 Object(Matching, "Game/fn_8041FD6C.c"),
                 Object(Matching, "Game/fn_8041FF08.c"),
                 Object(Matching, "Game/fn_80420438.c"),
-                Object(Matching, "Game/EffectArranger.cpp", cflags=cflags_effect),
                 Object(Matching, "Game/fn_8040D9D8.c"),
                 Object(Matching, "Game/fn_8040D498.c"),
                 # 3x4 matrix helpers. Seven of 28 functions still differ (raw differing instruction
@@ -924,24 +905,6 @@ config.libs = [
                 Object(
                     NonMatching,
                     "Game/fn_8040B034.cpp",
-                    cflags=cflags_game_cpp,
-                    extra_cflags=["-Cpp_exceptions on"],
-                ),
-                Object(
-                    Matching,
-                    "Game/fn_8040CC6C.cpp",
-                    extra_cflags=["-Cpp_exceptions on"],
-                ),
-                # Vector length helpers (also Game/fn_8040CF50.cpp and Game/fn_8041116C.cpp), which
-                # call std::sqrt(float) from MSL <cmath>. One level of inlining keeps that call out
-                # of line, because std::sqrt's body calls the inline sqrtf; plain -inline auto
-                # expands both into the helper. Each object also carries weak copies of std::sqrt and
-                # sqrtf with their literals, which the link discards in favour of the copies at
-                # 0x8000FEE4 and 0x8000FF04. Those copies match <cmath> compiled with fp_contract on
-                # (cflags_base).
-                Object(
-                    Matching,
-                    "Game/fn_8040CCEC.cpp",
                     cflags=cflags_game_cpp,
                     extra_cflags=["-Cpp_exceptions on"],
                 ),
@@ -2845,6 +2808,47 @@ config.libs = [
             Object(Matching, "Game/CSD/fn_80361738.cpp", cflags=cflags_csd),
             Object(Matching, "Game/CSD/fn_80361A24.cpp", cflags=cflags_csd),
             Object(Matching, "Game/CSD/fn_80361CF8.cpp", cflags=cflags_csd),
+            # Matching workaround: -sdata 0 and -use_lmw_stmw on. The target reaches lbl_805C0AF0
+            # and lbl_805C0AF4 with absolute @ha/@l addressing (lis with lwz/addi), not
+            # r13-relative small data (without -sdata 0 the unit is 69% matching), and saves its
+            # callee-saved registers with lmw/stmw (without it 87%). Both flags are also set on
+            # the CRI library units, such as its caller CRI/uty_tmr.c. Revisit when the original
+            # unit's flags are known.
+            Object(
+                Matching,
+                "Game/fn_803CC9D0.c",
+                extra_cflags=["-sdata 0", "-use_lmw_stmw on"],
+            ),
+            # CRI middleware functions (MWSFD); the original source file names are not yet
+            # established.
+            Object(Matching, "Game/fn_80403E44.c"),
+            # The units below that use -Cpp_exceptions on are those whose original object
+            # carries extab/extabindex entries (C++ exception tables).
+            Object(
+                Matching,
+                "Game/fn_8040ABC8.cpp",
+                cflags=cflags_game_cpp,
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
+            Object(
+                Matching,
+                "Game/fn_8040CC6C.cpp",
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
+            # Vector length helpers (also Game/fn_8040CF50.cpp and Game/fn_8041116C.cpp), which
+            # call std::sqrt(float) from MSL <cmath>. One level of inlining keeps that call out
+            # of line, because std::sqrt's body calls the inline sqrtf; plain -inline auto
+            # expands both into the helper. Each object also carries weak copies of std::sqrt and
+            # sqrtf with their literals, which the link discards in favour of the copies at
+            # 0x8000FEE4 and 0x8000FF04. Those copies match <cmath> compiled with fp_contract on
+            # (cflags_base).
+            Object(
+                Matching,
+                "Game/fn_8040CCEC.cpp",
+                cflags=cflags_game_cpp,
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
+            Object(Matching, "Game/EffectArranger.cpp", cflags=cflags_effect),
         ],
     },
     DolphinLib(
