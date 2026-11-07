@@ -2470,6 +2470,9 @@ CRI/mfci.c:
 	.data       start:0x80569F60 end:0x80569FC8
 	.bss        start:0x805C11B8 end:0x805C1BB0
 
+Game/fn_803CC9D0.c:
+	.text       start:0x803CDA20 end:0x803CDAD8
+
 CRI/gcci.c:
 	.text       start:0x803CDAD8 end:0x803CEB08
 	.rodata     start:0x80518A40 end:0x80518C78
@@ -2782,6 +2785,9 @@ CRI/mwsfdsfx.c:
 	.text       start:0x80404570 end:0x80404E94
 	.rodata     start:0x80519FD8 end:0x8051A518
 
+Game/fn_80403E44.c:
+	.text       start:0x80404E94 end:0x80404E9C
+
 CRI/fn_80403E4C.c:
 	.text       start:0x80404E9C end:0x80404F14
 
@@ -2835,6 +2841,14 @@ CRI/cft_lib.c:
 	.text       start:0x8040BBE4 end:0x8040BC18
 	.rodata     start:0x8051B370 end:0x8051B3C8
 	.bss        start:0x805E17D8 end:0x805E17E0
+
+Game/fn_8040ABC8.cpp:
+	extab       start:0x8000574C end:0x8000577C
+	extabindex  start:0x80007628 end:0x80007670
+	.text       start:0x8040BC18 end:0x8040C084
+	.rodata     start:0x8051B3C8 end:0x8051B400
+	.data       start:0x8056AF20 end:0x8056AF58
+	.sdata      start:0x805EEDC0 end:0x805EEDD0
 
 Game/fn_8040C244.c:
 	.text       start:0x8040D294 end:0x8040D2AC
@@ -2908,8 +2922,18 @@ Game/fn_8040CBF8.cpp:
 Game/fn_8040CC5C.c:
 	.text       start:0x8040DCAC end:0x8040DCBC
 
+Game/fn_8040CC6C.cpp:
+	extab       start:0x80005850 end:0x80005858
+	extabindex  start:0x80007790 end:0x8000779C
+	.text       start:0x8040DCBC end:0x8040DD24
+
 Game/fn_8040CCD4.c:
 	.text       start:0x8040DD24 end:0x8040DD3C
+
+Game/fn_8040CCEC.cpp:
+	extab       start:0x80005858 end:0x80005860
+	extabindex  start:0x8000779C end:0x800077A8
+	.text       start:0x8040DD3C end:0x8040DD70
 
 Game/fn_8040CD20.c:
 	.text       start:0x8040DD70 end:0x8040DDB0
@@ -2986,6 +3010,13 @@ Game/fn_80425860.cpp:
 	extab       start:0x80006584 end:0x800066D0
 	extabindex  start:0x800084E0 end:0x80008594
 	.text       start:0x804268B0 end:0x8042736C
+
+Game/EffectArranger.cpp:
+	extab       start:0x800066D0 end:0x800067F8
+	extabindex  start:0x80008594 end:0x800085C4
+	.text       start:0x8042736C end:0x80427E2C
+	.rodata     start:0x8051BB48 end:0x8051BBD0
+	.data       start:0x8056B4B8 end:0x8056B548
 
 Game/fn_8042A2D8.cpp:
 	extab       start:0x80006CF8 end:0x80006D08
