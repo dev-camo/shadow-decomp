@@ -1,10 +1,10 @@
 /* MissionClearCollision (class name from RTTI): a gadget that, once the character info that
  * fn_800A8C54 returns for 0 comes within the parameter "COLLI_RADIUS point" of it, calls
- * fn_8016B2A4 on the actor that fn_800740E4 returns for the parameter "0:DK 1:NM 2:HR" and
- * finishes, provided there is such an actor and its word at 0xC is neither 1 nor 2. Except for type
- * 1 it creates an UnkObject_802B4254 for the type, placed above the gadget (behaviour inferred).
- * File name inferred from the class. Definitions are in reverse address order (deferred inlining
- * emits functions last-defined first). */
+ * fn_8016B2A4 on the mission that fn_800740E4 returns for the parameter "0:DK 1:NM 2:HR" and
+ * finishes, provided there is such a mission and its word at 0xC is neither 1 nor 2. Except for
+ * type 1 it creates an UnkObject_802B4254 for the type, placed above the gadget (behaviour
+ * inferred). File name inferred from the class. Definitions are in reverse address order (deferred
+ * inlining emits functions last-defined first). */
 #include "Game/MissionClearCollision.h"
 #include "Game/DebugDisp.h"
 #include "Game/GadgetTypeInfo.h"
@@ -82,11 +82,11 @@ void MissionClearCollision::UpdateBody(float dt) {
         Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
 
         if (fn_8040CF50(&distance) < m_params.radius) {
-            boost::shared_ptr<UnkActor_800740E4> actor =
+            boost::shared_ptr<Mission::Mission> mission =
                 fn_800740E4(fn_8006D6A8(), m_params.type).lock();
 
-            if (actor.get() != 0 && !actor->Field0xCEquals(2) && !actor->Field0xCEquals(1)) {
-                fn_8016B2A4(actor.get());
+            if (mission.get() != 0 && !mission->Field0xCEquals(2) && !mission->Field0xCEquals(1)) {
+                fn_8016B2A4(mission.get());
                 fn_800C9B34(m_owner);
                 m_flags |= 1;
                 /* The original returns here: falling through instead shares the destructor calls

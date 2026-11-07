@@ -33,11 +33,12 @@ CHECK_SIZEOF(ResearcherParams, 0x4);
 
 /* Researcher (class name from RTTI; the gadget's descriptor is "Researcher"): the RESEARCHER.BIN
  * model, set up for the type, with a second object (fn_802B4254) above it. When its character
- * info receives command id 16 while the gadget waits, it calls UnkSlot7(1, 0) on the actor that
- * fn_800740E4 returns, releases the second object, requests motion 2 of the type from the model
- * and plays sound 0x7634; the gadget then waits half a unit of dt, fades the model out over two
- * units and finishes half a unit later (behaviour inferred). Method names marked "(name
- * inferred)" are not original; all member names are inferred. */
+ * info receives command id 16 while the gadget waits, it calls fn_8016B224(1, 0) on the mission
+ * that fn_800740E4 returns when it locks to a non-null pointer, releases the second object,
+ * requests motion 2 of the type from the model and plays sound 0x7634; the gadget then waits half a
+ * unit of dt, fades the model out over two units and finishes half a unit later (behaviour
+ * inferred). Method names marked "(name inferred)" are not original; all member names are inferred.
+ */
 class Researcher : public Gadget {
   public:
     Researcher(Task *parent, UnkGadgetOwner_800C9CD0 *owner);

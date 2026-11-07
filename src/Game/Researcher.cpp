@@ -173,17 +173,17 @@ void Researcher::OnCommand(CharCommand &command) {
     switch (command.m_type) {
     case 16:
         if (m_state == 0) {
-            int actorId = 2;
+            int missionId = 2;
             if (lbl_8057D6A0.field_0x125 != 0) {
-                actorId = 1;
+                missionId = 1;
             }
 
             {
-                boost::shared_ptr<UnkActor_800740E4> actor =
-                    fn_800740E4(fn_8006D6A8(), actorId).lock();
+                boost::shared_ptr<Mission::Mission> mission =
+                    fn_800740E4(fn_8006D6A8(), missionId).lock();
 
-                if (actor.get() != 0) {
-                    actor->UnkSlot7(1, 0);
+                if (mission.get() != 0) {
+                    mission->fn_8016B224(1, 0);
                 }
             }
 

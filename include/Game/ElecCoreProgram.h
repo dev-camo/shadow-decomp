@@ -21,9 +21,9 @@
  * shrinks from 1.0 to 0.1 times its size over 0.2 seconds and then grows, and part 8 grows from 1
  * times its size, along curves that reach 30 and 200 times the size at one second. The time is
  * tested before it is advanced, so the last scaling can evaluate the curves past one second and
- * overshoot those values. After that second, if the actor that fn_800740E4 returns for 0 exists and
- * its word at 0xC is not 1, it sets that actor's byte at 0x14 and calls fn_8016B2A4 on it; then,
- * whether or not it did so, it creates the object of kind 9 at its position (fn_8034DE08) and
+ * overshoot those values. After that second, if the mission that fn_800740E4 returns for 0 exists
+ * and its word at 0xC is not 1, it sets that mission's byte at 0x14 and calls fn_8016B2A4 on it;
+ * then, whether or not it did so, it creates the object of kind 9 at its position (fn_8034DE08) and
  * finishes (behaviour inferred). Method and member names are inferred. */
 class ElecCoreProgram : public Gadget {
   public:

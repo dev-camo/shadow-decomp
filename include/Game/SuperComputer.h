@@ -22,10 +22,10 @@ namespace SuperComputer {
  * Target above it. An attack subtracts its value from a health of 50. Below 37.5, 25 and 12.5
  * the gadget enters damage stages 0 to 2; at 0 or below it enters stage 3, which passes
  * fn_8015D93C a parameter block built from the crash information's table entry and selects the
- * model entry that the crash information names. On the next update it calls UnkSlot7(1, 0) on
- * the actor that fn_800740E4 returns for 0, passes the owner's id to fn_8016907C, passes its
- * owner on through fn_8015A768 and hands the Target to fn_801E7108 (behaviour inferred). Method
- * and member names are inferred. */
+ * model entry that the crash information names. On the next update it calls fn_8016B224(1, 0) on
+ * the mission that fn_800740E4 returns for 0 when it locks to a non-null pointer, passes the
+ * owner's id to fn_8016907C, passes its owner on through fn_8015A768 and hands the Target to
+ * fn_801E7108 (behaviour inferred). Method and member names are inferred. */
 class SetSuperComputer : public Gadget {
   public:
     SetSuperComputer(Task *parent, UnkGadgetOwner_800C9CD0 *owner);
