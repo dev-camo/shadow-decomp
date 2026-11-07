@@ -9,6 +9,7 @@
 #include "layout_check.h"
 
 class CharInfo;
+class UnkBitFlags_80014E04;
 class VacuumCommand;
 class UnkVacuumState_802389BC;
 
@@ -18,11 +19,11 @@ class UnkVacuumState_802389BC;
  * CEnemyVacuumObject (EnemyVacuumObject.cpp); SetItem::VacuumItemBox's vtable reuses its
  * implementations of the slots it does not override. Its constructor takes a VacuumCommand (objects
  * that a character pulls in, inferred from the names). Its file (from 0x802379B8) is not recovered:
- * only what SetItem::VacuumItemBox calls is declared. The constructor (0x80238424) creates the
- * 0x84-byte object at 0x4 with arg0 (constructor 0x802389BC), copies the command's members at 0x1C,
- * 0x24 and 0x2C into it and copies the matrix that the virtual fn_80237EE4 returns (possibly left
- * unwritten; see fn_80237EE4) into it at 0x18. The destructor (0x80238304), when the effect that
- * object keeps at 0x7C has not expired, sets bit 4 of the effect's word at 0x18 and clears its
+ * only what the recovered derived classes call is declared. The constructor (0x80238424) creates
+ * the 0x84-byte object at 0x4 with arg0 (constructor 0x802389BC), copies the command's members at
+ * 0x1C, 0x24 and 0x2C into it and copies the matrix that the virtual fn_80237EE4 returns (possibly
+ * left unwritten; see fn_80237EE4) into it at 0x18. The destructor (0x80238304), when the effect
+ * that object keeps at 0x7C has not expired, sets bit 4 of the effect's word at 0x18 and clears its
  * words at 0x48-0x50, then destroys the member at 0x4. The functions that are not virtual pass the
  * object at 0x4 on to functions of their own. Names and signatures are inferred: the virtual
  * functions are named after their implementations in VacuumObject's vtable (0x80547A24), in slot
@@ -42,9 +43,11 @@ class VacuumObject {
      * to fn_80238654 and, when the object's effect has not expired, passes the effect and the
      * position (fn_802382B0) to fn_80425E4C. */
     virtual void Update(float dt);
-    /* VacuumObject's two following implementations are empty, so their arguments are unknown;
-     * SetItem::VacuumItemBox's override of the second uses none. */
-    virtual void fn_80238184();
+    /* VacuumObject's two following implementations are empty. VacuumContainer::Container's
+     * override of the first passes its argument on as a pointer to a vector (see fn_8027B3E8), so
+     * the parameter type is inferred from that; SetItem::VacuumItemBox's override of the second
+     * uses no argument, so its arguments are unknown. */
+    virtual void fn_80238184(const Fn8040Vector3 *target);
     virtual void fn_80238180();
     /* Returns fn_80238600 of the object at 0x4: true while the weak pointer at the object's 0x4
      * has not expired, otherwise whether the weak_ptr<CharInfo> at its 0xC has not expired. The
@@ -72,6 +75,19 @@ class VacuumObject {
      * member form is inferred from its use of the object at 0x4, the float result from the
      * caller's use of f1). Balloon::VacuumBalloon clamps it to [0, 1] to shrink its model. */
     float fn_8023800C();
+    /* Return the addresses of the matrix (0x18) and of the flags (0x78) of the object at 0x4
+     * (behaviour from their bodies; the pointer return types are inferred from the callers: the
+     * matrix is passed on to matrix helpers and VacuumContainer::Container sets bit 1 of the
+     * flags). */
+    Fn8040Matrix34 *fn_80238000();
+    UnkBitFlags_80014E04 *fn_802380B8();
+    /* When the weak pointer to an Effect::System::EffectElement at 0x7C of the object at 0x4 has
+     * not expired, sets bit 4 of the element's word at 0x18, clears its words at 0x48-0x50 and
+     * resets the weak pointer; then stores there the weak pointer that fn_801D2BB0 returns for
+     * effect (behaviour inferred from its body). */
+    void fn_802380C4(int effect);
+    /* The matrix that the virtual fn_80237EE4 returns in VacuumObject (see there). */
+    Fn8040Matrix34 fn_80237F10();
 
     /* The constructor's 0x84-byte object. A scoped_ptr: VacuumObject's destructor destroys it with
      * 0x802383B4, which passes the pointer to boost's checked_delete (0x80238400), and some of
@@ -97,11 +113,24 @@ extern "C" {
 /* Returns 1 (the body ignores command; purpose unknown). SetItem::VacuumItemBox passes its command
  * and hands the result to VacuumObject's constructor. */
 int fn_80237EDC(VacuumCommand *command);
+/* Returns 1 when fn_801DAFD0 of the command's member at 0x1C is false and the word at 0x14 of the
+ * object that member leads to (fn_801DAEE0, fn_801AA958, fn_80237ED4) is 0x3D or 0x3E, otherwise
+ * 2 (behaviour from its body; purpose unknown). VacuumContainer::Container passes its command
+ * and hands the result to VacuumObject's constructor. */
+int fn_80237E34(VacuumCommand *command);
 }
 
 /* The float 3.5 at the start of the .sdata2 of VacuumObject's file (purpose unknown). The BALLOON
  * gadget divides it by 15 for the scale its VacuumBalloon shrinks to; the static initialisers at
  * 0x80254E64, 0x802F6320 and 0x8033FB8C (.ctors entries) read it too. */
 extern const float lbl_805F72B0;
+/* -1080 degrees in radians (-1080 * (pi / 180), that is -6 pi: three turns backwards), set at
+ * startup by the static initialiser of VacuumObject's file (0x80238A4C). VacuumContainer::Container
+ * uses it as the spin rate of its model (m_spin advances by dt times it times a factor in [0, 1];
+ * use inferred) and passes it to fn_8027B3E8. It is a const float set by a static initialiser, the
+ * same kind of object as s_scale and s_yaw in the container's file. The const also shows in the
+ * code: Container's fn_80238184 loads it ahead of the store of its stack argument, which this
+ * compiler does for a const object only. */
+extern const float lbl_805EFEE8;
 
 #endif
