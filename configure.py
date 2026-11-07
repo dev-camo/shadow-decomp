@@ -526,16 +526,7 @@ config.libs = [
                 Object(Matching, "Game/fn_8043D7B4.c", cflags=cflags_game_gcax),
                 Object(Matching, "Game/fn_8043E2B4.c", cflags=cflags_game_gcax),
                 Object(Matching, "Game/fn_8043FB58.c", cflags=cflags_game_gcax),
-                # Matching workaround: -inline noauto on fn_80440410.c and fn_8044BAB4.c. With the
-                # library default fn_80440D58..fn_80440E80 and fn_8044C56C..fn_8044CD4C grow (e.g.
-                # fn_80440E80 0x198 -> 0x404, fn_8044C5FC 0x158 -> 0x1F8); the other units from
-                # fn_80442B98.c through fn_80451A6C.c build to the same code and data with or
-                # without the flag. Revisit when the original unit flags are known.
-                Object(Matching, "rw/fn_80440410.c", cflags=[*cflags_game, "-inline noauto"]),
-                Object(Matching, "rw/fn_80442B98.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80443044.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80443A74.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_804447B0.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804448B8.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80445CF4.c", cflags=cflags_game),
                 # Two functions differ. The hierarchy create function fn_804472AC: 7 of its 91
@@ -545,10 +536,7 @@ config.libs = [
                 # attach function fn_804474D8: 5 of its 41 words (the original copies the node
                 # index's zero into the node offset and keeps the index in r31).
                 Object(NonMatching, "rw/fn_80446A04.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80447598.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_804485BC.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80448CB0.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8044920C.c", cflags=cflags_game),
+                # Matching workaround: -inline noauto; see the comment on rw/fn_80440410.c.
                 Object(NonMatching, "rw/fn_8044BAB4.c", cflags=[*cflags_game, "-inline noauto"]),
                 # NonMatching, USA raw differing words per function (branch displacements included;
                 # data unchanged): fn_8044CDC4, fn_8044CEE0, fn_8044CF68, fn_8044D554, fn_8044D6E8,
@@ -569,14 +557,9 @@ config.libs = [
                 # register.
                 Object(NonMatching, "rw/fn_8044CDC4.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8044E6BC.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80450D6C.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80451A6C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80451F48.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80453018.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_804535C8.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80453980.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80454AA4.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_80455D0C.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80458CF8.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8045A760.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_8045AF28.c", cflags=cflags_game),
@@ -1722,6 +1705,24 @@ config.libs = [
                 # The native constructors retain 52 bytes of extab and 36 bytes of extabindex.
                 extra_cflags=["-Cpp_exceptions on"],
             ),
+            # Matching workaround: -inline noauto on fn_80440410.c and fn_8044BAB4.c. With the
+            # library default fn_80440D58..fn_80440E80 and fn_8044C56C..fn_8044CD4C grow (e.g.
+            # fn_80440E80 0x198 -> 0x404, fn_8044C5FC 0x158 -> 0x1F8); the other units from
+            # fn_80442B98.c through fn_80451A6C.c build to the same code and data with or
+            # without the flag. Revisit when the original unit flags are known.
+            Object(Matching, "rw/fn_80440410.c", cflags=[*cflags_game, "-inline noauto"]),
+            Object(Matching, "rw/fn_80442B98.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80443044.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_804447B0.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80447598.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_804485BC.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80448CB0.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8044920C.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80450D6C.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80451A6C.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_804535C8.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80454AA4.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_80455D0C.c", cflags=cflags_game),
             # The size and preparation helpers match; the vertex-byte counter retains twelve
             # register-word differences in its normal-attribute case.
             Object(NonMatching, "rw/fn_8046ACBC.c", cflags=cflags_game),
