@@ -337,7 +337,10 @@ void UnkEffectManagerRW3Data48::fn_80436128(float deltaTime) {
 
 void UnkEffectManagerRW3Data48::fn_8043597C() {
     if (m_parameters.field_0x0 == 0 || m_grid == 0 || m_dynamicVertices == 0 ||
-        m_columnOffsets == 0 || m_rowOffsets == 0 || m_raster == 0) {
+        m_columnOffsets == 0 || m_rowOffsets == 0) {
+        return;
+    }
+    if (m_raster == 0) {
         return;
     }
     EffectSystemRW3 *system = dynamic_cast<EffectSystemRW3 *>(fn_8042A5D0());
@@ -381,9 +384,11 @@ void UnkEffectManagerRW3Data48::fn_8043597C() {
     unsigned char alpha = m_parameters.field_0x1;
     for (int row = 0; row < m_parameters.field_0x20.field_0x0; ++row) {
         for (int column = 0; column < columns; ++column) {
-            int x = column;
+            int x;
             if (row % 2 != 0) {
                 x = m_parameters.field_0x8.field_0x0 - column;
+            } else {
+                x = column;
             }
             for (int i = 0; i < 2; ++i) {
                 UnkEffectManagerRW3GridPoint *point = &m_grid[x + columns * (row + i)];
@@ -626,7 +631,10 @@ void EffectShimmerRW3::Render() {
     fn_80482458(&position, &position, &camera->viewMatrix);
     float nearPlane = camera->nearPlane;
     float farPlane = camera->farPlane;
-    if (position.z < nearPlane || position.z > farPlane) {
+    if (position.z < nearPlane) {
+        return;
+    }
+    if (position.z > farPlane) {
         return;
     }
     RwInt16 offsetX;
@@ -717,7 +725,7 @@ void EffectShimmerRW3::Render() {
                         continue;
                     }
                     int gridIndex = gridColumn + (field_0x108[0] + 1) * (row + side);
-                    int vertexIndex = column * 2 + row * (field_0x108[0] + 1) * 2 + side - row;
+                    int vertexIndex = column * 2 + row * ((field_0x108[0] + 1) * 2) + side - row;
                     float nx = m_grid[gridIndex].x / (0.5f * field_0x110[0]);
                     float ny = m_grid[gridIndex].y / (0.5f * field_0x110[1]);
                     float falloff = (1.0f - nx * nx) * (1.0f - ny * ny);
@@ -772,7 +780,7 @@ void EffectShimmerRW3::Render() {
                         continue;
                     }
                     int gridIndex = gridColumn + (field_0x108[0] + 1) * (row + side);
-                    int vertexIndex = column * 2 + row * (field_0x108[0] + 1) * 2 + side - row;
+                    int vertexIndex = column * 2 + row * ((field_0x108[0] + 1) * 2) + side - row;
                     float px = m_grid[gridIndex].x;
                     float py = m_grid[gridIndex].y;
                     float squareX = px * px;
