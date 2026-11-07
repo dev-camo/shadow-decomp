@@ -18,8 +18,7 @@ class EffectManager {
     virtual boost::weak_ptr<EffectElement> Create(EffectLaunchInfo *info, int id);
     virtual boost::weak_ptr<EffectElement> Create(const boost::shared_ptr<EffectLaunchInfo> &info,
                                                   int id);
-    virtual EffectElement *CreateElement(const UnkEffectElementData *definition,
-                                         EffectLaunchInfo *info);
+    virtual EffectElement *CreateElement(UnkEffectElementData *definition, EffectLaunchInfo *info);
 
     void Render(int group);
     void Update(float deltaTime);

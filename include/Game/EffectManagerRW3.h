@@ -32,7 +32,7 @@ class EffectManagerRW3 : public System::EffectManager {
   public:
     EffectManagerRW3();
     virtual ~EffectManagerRW3();
-    virtual System::EffectElement *CreateElement(const System::UnkEffectElementData *definition,
+    virtual System::EffectElement *CreateElement(System::UnkEffectElementData *definition,
                                                  System::EffectLaunchInfo *info);
     virtual void fn_80437C14(RpClump *clump, unsigned char flag, int count, const RwRGBA &color);
 
