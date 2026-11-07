@@ -2897,6 +2897,69 @@ Game/EffectLocusRW3.cpp:
 	.rodata     start:0x8051C100 end:0x8051C1C8
 	.data       start:0x8056B6A8 end:0x8056B710
 
+rw/fn_80440410.c:
+	.text       start:0x80440A50 end:0x804431D8
+	.sbss       start:0x805F1A20 end:0x805F1A38
+	.sdata2     start:0x805FB5B0 end:0x805FB5C8
+
+rw/fn_80442B98.c:
+	.text       start:0x804431D8 end:0x80443684
+
+rw/fn_80443044.c:
+	.text       start:0x80443684 end:0x804440B4
+	.sbss       start:0x805F1A38 end:0x805F1A40
+
+rw/fn_804447B0.c:
+	.text       start:0x80444DF0 end:0x80444EF8
+	.sdata      start:0x805EE378 end:0x805EE380
+
+rw/fn_80447598.c:
+	.text       start:0x80447BD8 end:0x80448BFC
+	.rodata     start:0x8051C348 end:0x8051C390
+	.data       start:0x8056DD78 end:0x8056DD88
+	.sbss       start:0x805F1A58 end:0x805F1A60
+	.sdata2     start:0x805FB678 end:0x805FB690
+	.sbss2      start:0x805FBB90 end:0x805FBB98
+
+rw/fn_804485BC.c:
+	.text       start:0x80448BFC end:0x804492F0
+	.sbss       start:0x805F1A60 end:0x805F1A68
+	.sdata2     start:0x805FB690 end:0x805FB6A0
+
+rw/fn_80448CB0.c:
+	.text       start:0x804492F0 end:0x8044984C
+	.sdata2     start:0x805FB6A0 end:0x805FB6C0
+
+rw/fn_8044920C.c:
+	.text       start:0x8044984C end:0x8044C0F4
+	.rodata     start:0x8051C390 end:0x8051C3B0
+	.sdata      start:0x805EE388 end:0x805EE390
+	.sdata2     start:0x805FB6C0 end:0x805FB6D0
+
+rw/fn_80450D6C.c:
+	.text       start:0x804513AC end:0x804520AC
+
+rw/fn_80451A6C.c:
+	.text       start:0x804520AC end:0x80452588
+
+rw/fn_804535C8.c:
+	.text       start:0x80453C08 end:0x80453FC0
+	.rodata     start:0x8051C3C8 end:0x8051C3E0
+	.sdata2     start:0x805FB708 end:0x805FB720
+
+rw/fn_80454AA4.c:
+	.text       start:0x804550E4 end:0x8045634C
+	.sbss       start:0x805F1AB0 end:0x805F1AC8
+	.sdata2     start:0x805FB730 end:0x805FB738
+
+rw/fn_80455D0C.c:
+	.text       start:0x8045634C end:0x80459338
+	.data       start:0x8056DE60 end:0x8056DE90
+	.bss        start:0x805E1BA0 end:0x805E1BE8
+	.sdata      start:0x805EE3B0 end:0x805EE3C0
+	.sbss       start:0x805F1AC8 end:0x805F1AE0
+	.sdata2     start:0x805FB738 end:0x805FB740
+
 rw/fn_8046ACBC.c:
 	.text       start:0x8046B2FC end:0x8046B750
 	.data       start:0x8056E178 end:0x8056E1D0
