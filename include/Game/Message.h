@@ -6,11 +6,12 @@
 
 /* A 0x18-byte record of a mission's message list (placeholder name; the lists are the arrays that
  * fn_802EEBF8 returns). Message::fn_802EEAF0 passes the word at 0x0 to fn_801FAF00 as its id.
- * BasicMessageManage allocates a message for each record whose word at 0x4 is 0, and
- * TimerMessageManage for each one whose word at 0x4 is 2; each constructs the message only when
- * the allocation succeeds. When the word at 0x8 is 0, 1 or 2, TimerMessageManage derives a value
- * from the float at 0x10 in a way chosen by that word; for any other value it stores a constant
- * without reading the float. */
+ * BasicMessageManage allocates a message for each record whose word at 0x4 is 0,
+ * CountMessageManage for each one whose word at 0x4 is 1 and TimerMessageManage for each one
+ * whose word at 0x4 is 2; each constructs the message only when the allocation succeeds. When the
+ * word at 0x8 is 0, 1 or 2, TimerMessageManage derives a value from the float at 0x10 and
+ * CountMessageManage one from the word at 0xC (0 and 2) or the float (1), in a way chosen by that
+ * word; for any other value each stores a constant without reading them. */
 struct UnkMessageRecord_802EEBF8 {
     /* 0x00 */ int field_0x0;
     /* 0x04 */ int field_0x4;

@@ -1431,6 +1431,14 @@ Game/BasicMessage.cpp:
 	.sdata      start:0x805EC920 end:0x805EC958
 	.sbss       start:0x805F0780 end:0x805F0790
 
+Game/CountMessage.cpp:
+	.text       start:0x802ECF8C end:0x802EEA98
+	.rodata     start:0x80507D68 end:0x80507EE0
+	.data       start:0x80559C58 end:0x80559CB8
+	.sdata      start:0x805EC958 end:0x805EC990
+	.sbss       start:0x805F0790 end:0x805F07A0
+	.sdata2     start:0x805F9390 end:0x805F9398
+
 Game/Message.cpp:
 	.text       start:0x802EEA98 end:0x802EEB9C
 	.rodata     start:0x80507EE0 end:0x80507EF8
