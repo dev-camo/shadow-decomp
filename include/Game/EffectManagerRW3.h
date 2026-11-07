@@ -5,6 +5,7 @@
 #include "layout_check.h"
 
 struct RpClump;
+struct RpAtomic;
 struct RwRaster;
 struct RwTexDictionary;
 struct RwRGBA;
@@ -59,6 +60,9 @@ class EffectManagerRW3 : public System::EffectManager {
     void fn_8043224C();
     void fn_80432278();
     void fn_804322E0(const UnkEffectRW3Param4 *parameters);
+
+    void fn_804324A0(RpAtomic *atomic, int count);
+    RpAtomic *fn_804324C4(int count);
 
     /* 0x2C */ UnkEffectManagerRW3Data2C *field_0x2C;
     /* 0x30 */ int field_0x30;

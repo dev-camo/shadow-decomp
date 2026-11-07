@@ -3228,6 +3228,13 @@ Game/EffectObjectRW3.cpp:
 	.rodata     start:0x8051BBC0 end:0x8051BC68
 	.data       start:0x8056B3F8 end:0x8056B460
 
+Game/fn_80432D58.cpp:
+	extab       start:0x800072D0 end:0x80007338
+	extabindex  start:0x80008ABC end:0x80008B1C
+	.text       start:0x80433398 end:0x8043470C
+	.rodata     start:0x8051BC68 end:0x8051BD48
+	.data       start:0x8056B460 end:0x8056B4F8
+
 Game/fn_804340CC.cpp:
 	extab       start:0x80007338 end:0x80007374
 	extabindex  start:0x80008B1C end:0x80008B40
