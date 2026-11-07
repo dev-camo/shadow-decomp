@@ -840,17 +840,12 @@ config.libs = [
                 # native bytes. Normal links use the original object; the extra copies are not
                 # selected by those links.
                 Object(NonMatching, "Game/CSD/csdmMotionPattern.cpp", cflags=cflags_csd),
-                # CRI middleware functions (MWSFD); the original source file names are not yet
-                # established.
-                Object(Matching, "Game/fn_8040E048.c"),
                 # The units below that use -Cpp_exceptions on are those whose original object
                 # carries extab/extabindex entries (C++ exception tables), plus Game/fn_8041583C.c,
                 # the middle piece of a file whose other pieces carry them; the default is off.
                 Object(Matching, "Game/fn_8041FD6C.c"),
                 Object(Matching, "Game/fn_8041FF08.c"),
                 Object(Matching, "Game/fn_80420438.c"),
-                Object(Matching, "Game/fn_8040D9D8.c"),
-                Object(Matching, "Game/fn_8040D498.c"),
                 # 3x4 matrix helpers. Seven of 28 functions still differ (raw differing instruction
                 # words, by position, or the larger length minus the exact LCS where the sizes
                 # differ). The three axis rotations (fn_8040B0C0, fn_8040B138, fn_8040B1B0; 2 words
@@ -937,7 +932,6 @@ config.libs = [
                 ),
                 # Replaceable memory functions of the library code at 0x80410630-0x8042166C.
                 Object(Matching, "Game/fn_804110EC.c", extra_cflags=["-Cpp_exceptions on"]),
-                Object(Matching, "Game/fn_8040DB6C.c"),
                 # The middle piece of the control of motions (see Game/fn_804157E8.cpp
                 # below); it takes the same flags as the other two pieces.
                 Object(
@@ -951,7 +945,6 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
-                Object(Matching, "Game/fn_8040D608.c"),
                 # Transform helpers over the current matrix stack: a C++ unit of the library, built
                 # with the MSL headers for <cmath> and the library's flag set. The original keeps
                 # the functions in definition order; the deferred inlining of cflags_game_cpp emits
@@ -1215,30 +1208,7 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
-                Object(Matching, "Game/fn_8040CF2C.c"),
                 Object(Matching, "Game/fn_804202B8.c"),
-                Object(Matching, "Game/fn_8040CD60.cpp"),
-                Object(Matching, "Game/fn_8040D02C.cpp"),
-                Object(
-                    Matching,
-                    "Game/fn_8040D044.cpp",
-                    # Matching workaround: the original saves its two callee-saved registers with
-                    # stmw/lmw, which this unit's code only gets when optimized for size with
-                    # -use_lmw_stmw; revisit when the original unit's flags are known.
-                    extra_cflags=["-Cpp_exceptions on", "-O4,s", "-use_lmw_stmw on"],
-                ),
-                Object(
-                    Matching,
-                    "Game/fn_8040CE74.cpp",
-                    extra_cflags=["-Cpp_exceptions on"],
-                ),
-                Object(
-                    Matching,
-                    "Game/fn_8040CF50.cpp",
-                    cflags=cflags_game_cpp,
-                    extra_cflags=["-Cpp_exceptions on"],
-                ),
-                Object(Matching, "Game/fn_8040CF90.cpp"),
             ]
             if config.version == "GUPE8P"
             else []
@@ -2850,6 +2820,36 @@ config.libs = [
                 cflags=cflags_game_cpp,
                 extra_cflags=["-Cpp_exceptions on"],
             ),
+            Object(Matching, "Game/fn_8040CD60.cpp"),
+            Object(
+                Matching,
+                "Game/fn_8040CE74.cpp",
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
+            Object(Matching, "Game/fn_8040CF2C.c"),
+            Object(
+                Matching,
+                "Game/fn_8040CF50.cpp",
+                cflags=cflags_game_cpp,
+                extra_cflags=["-Cpp_exceptions on"],
+            ),
+            Object(Matching, "Game/fn_8040CF90.cpp"),
+            Object(Matching, "Game/fn_8040D02C.cpp"),
+            Object(
+                Matching,
+                "Game/fn_8040D044.cpp",
+                # Matching workaround: the original saves its two callee-saved registers with
+                # stmw/lmw, which this unit's code only gets when optimized for size with
+                # -use_lmw_stmw; revisit when the original unit's flags are known.
+                extra_cflags=["-Cpp_exceptions on", "-O4,s", "-use_lmw_stmw on"],
+            ),
+            Object(Matching, "Game/fn_8040D498.c"),
+            Object(Matching, "Game/fn_8040D608.c"),
+            Object(Matching, "Game/fn_8040D9D8.c"),
+            Object(Matching, "Game/fn_8040DB6C.c"),
+            # CRI middleware functions (MWSFD); the original source file names are not yet
+            # established.
+            Object(Matching, "Game/fn_8040E048.c"),
             Object(Matching, "Game/EffectArranger.cpp", cflags=cflags_effect),
         ],
     },
