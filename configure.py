@@ -626,7 +626,7 @@ config.libs = [
                 Object(NonMatching, "rw/fn_80477344.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8047832C.c", cflags=cflags_game),
                 Object(Matching, "rw/fn_80479040.c", cflags=cflags_game),
-                Object(NonMatching, "rw/fn_80479598.c", cflags=cflags_game),
+                Object(Matching, "rw/fn_80479598.c", cflags=cflags_game),
                 # The line reader (fn_8047A518) is 79 words against the original's 78 (316 bytes
                 # instead of 312). Counting differing words at the same position (and, in
                 # parentheses, rows that differ once the instruction streams are aligned): 76 of 78
