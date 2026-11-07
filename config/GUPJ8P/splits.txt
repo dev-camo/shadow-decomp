@@ -1359,6 +1359,15 @@ Game/HeavyShot.cpp:
 	.sdata      start:0x805ED030 end:0x805ED050
 	.sdata2     start:0x805F9A08 end:0x805F9A20
 
+Game/CityBombSmall.cpp:
+	.text       start:0x802F4C48 end:0x802F68A8
+	.ctors      start:0x804AA604 end:0x804AA608
+	.rodata     start:0x8050A640 end:0x8050A8D0
+	.data       start:0x8055A7A0 end:0x8055A8C8
+	.sdata      start:0x805ED0E8 end:0x805ED140
+	.sbss       start:0x805F0E18 end:0x805F0E48
+	.sdata2     start:0x805F9A88 end:0x805F9AB8
+
 Game/SecretDisk.cpp:
 	.text       start:0x802FA34C end:0x802FAF24
 	.ctors      start:0x804AA60C end:0x804AA610
