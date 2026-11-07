@@ -353,9 +353,9 @@ float fn_801B1DB0(float value);
  * value. */
 UnkRotation3 fn_8040F450(const Fn8040Vector3 *forward, const Fn8040Vector3 *up);
 UnkRotation3 fn_8040F5F4(const Fn8040Vector3 *forward, const Fn8040Vector3 *up, int order);
-/* Pitch and yaw of a direction, by two conventions (fn_8040F664, fn_8040F760), and the first of
- * them with a zero roll added (fn_8040F7F8). */
-Fn8040Vector2 fn_8040F664(const Fn8040Vector3 *direction);
+/* Pitch and yaw of a direction, by two conventions (fn_8040F664, declared below for C++ only, as
+ * it takes a reference, and fn_8040F760), and the first of them with a zero roll added
+ * (fn_8040F7F8). */
 Fn8040Vector2 fn_8040F760(const Fn8040Vector3 *direction);
 UnkRotation3 fn_8040F7F8(const Fn8040Vector3 *direction);
 /* Stores the pitch and the yaw of a direction (behaviour inferred from its body, which takes
@@ -452,6 +452,14 @@ extern "C" Fn8040Vector3 fn_80016284(const Fn8040Vector3 &vector);
  * references are inferred from VacuumContainer::Container::Update, which passes two temporaries
  * in place (the code is that of pointer parameters). */
 extern "C" UnkRotation3 fn_8040F364(const Fn8040Vector3 &forward, const Fn8040Vector3 &up);
+
+/* Pitch and yaw of a direction (see fn_8040F760 above). The reference is inferred (the code is
+ * that of a pointer parameter): six of the seven calls pass a temporary built just before the
+ * call, five the vector that fn_80016284 returns and one a copy of fn_8040B67C's result, and load
+ * the result slot's address into r3 before the temporary's into r4 (USA (GUPE8P) calls at
+ * 0x80087624, 0x800A4128, 0x801ACCEC, 0x801B07A4, 0x802F1D5C and 0x8030542C); the seventh
+ * (0x800AC5AC) passes a member. */
+extern "C" Fn8040Vector2 fn_8040F664(const Fn8040Vector3 &direction);
 
 /* The matrix's rotation applied to vector, without the translation, returned by value
  * (inferred). The const references are inferred too: the ELEC_SEARCHLIGHT and HEALING_UNIT

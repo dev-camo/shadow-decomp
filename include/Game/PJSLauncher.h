@@ -57,6 +57,16 @@ boost::weak_ptr<Effect::System::EffectElement> fn_80305900(Effect::PJS::Launcher
 boost::weak_ptr<Effect::System::EffectElement> fn_803055F8(Effect::PJS::Launcher *launcher,
                                                            const Fn8040Matrix34 *matrix, int id,
                                                            const float *timeScale);
+/* Ask for an effect in the same way without a matrix. Only when the returned effect locks, both
+ * clear bit 2 of its flags and store timeScale as above; fn_8030536C first passes position to
+ * fn_80425E4C and the pitch and yaw that fn_8040F664 gives for the negated direction, with a zero
+ * roll, to fn_80425D94 (behaviour from their bodies; the pointer spellings are inferred). */
+boost::weak_ptr<Effect::System::EffectElement> fn_803056F8(Effect::PJS::Launcher *launcher, int id,
+                                                           const float *timeScale);
+boost::weak_ptr<Effect::System::EffectElement> fn_8030536C(Effect::PJS::Launcher *launcher,
+                                                           const Fn8040Vector3 *position,
+                                                           const Fn8040Vector3 *direction, int id,
+                                                           const float *timeScale);
 }
 
 #endif

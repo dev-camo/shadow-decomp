@@ -2052,6 +2052,13 @@ config.libs = [
             # original-only word, and 30 words of the other nine functions differ, all in
             # relocated fields.
             Object(NonMatching, "Game/HeavyShot.cpp", cflags=cflags_game_cpp),
+            # The data match by contents once the 63 definitions the linker discards are set aside
+            # (47 weak copies, such as boost::bad_weak_ptr's vtable, and 16 local ones, such as the
+            # boost::bind placeholders _2 to _9); the original keeps zero-filled holes in .data where
+            # three of those vtables were, and its .rodata and .sbss end with 1 and 3 bytes of
+            # alignment padding. .sdata2 is writable (WA) here and allocatable only (A) in the
+            # original.
+            Object(Matching, "Game/BulletChaosSpear.cpp", cflags=cflags_game_cpp),
             # Every function except UpdateBody, the retained data and all retained relocations
             # match once the linker-discarded definitions (43 weak copies and nine local ones,
             # among them a converting constructor, RTTI records and literals) are set aside. Normal

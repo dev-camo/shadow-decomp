@@ -8,6 +8,8 @@
 #include <dolphin/types.h>
 #include "layout_check.h"
 
+class UnkResult_80051B58;
+
 namespace SonicteamUSA {
 namespace System {
 namespace CharaColli {
@@ -25,7 +27,7 @@ CHECK_SIZEOF(UnkAttackPart_80192F14, 0x24);
 
 /* SonicteamUSA::System::CharaColli::AttackCallbackParam (class name from the RTTI names of the
  * weapon stick's and ThreatObj's bound callbacks): what an attack object passes to its callbacks.
- * The mapped members form a 0x58-byte view; the complete native extent remains unknown. */
+ * The mapped members form a 0x5C-byte view; the complete native extent remains unknown. */
 class AttackCallbackParam {
   public:
     /* 0x00 */ boost::weak_ptr<CharaColliAttack> field_0x0;
@@ -55,9 +57,14 @@ class AttackCallbackParam {
      * FallBuilding 1 or 5, PoleHolder's pole and stones 1 or 3, BAGunShip 1, 3 or 5,
      * FootingMovable 1 or 5. */
     /* 0x54 */ s32 field_0x54; /* signed word: compared as a signed value by Meteors */
+    /* The result object that fn_8005AFE4 builds on its stack and passes down (through
+     * 0x800C40C4 to 0x800C6220, which stores it here, 0x800C63E0). The second callback of
+     * Weapon::Bullet::ChaosSpear::ChaosSpear writes field_0x54 to its field_0x38 and, for the
+     * kinds 1, 3 and 5, 1 to its field_0x34. */
+    /* 0x58 */ UnkResult_80051B58 *field_0x58;
 };
 /* Checks only the recovered view; the complete native extent remains unknown. */
-CHECK_SIZEOF(SonicteamUSA::System::CharaColli::AttackCallbackParam, 0x58);
+CHECK_SIZEOF(SonicteamUSA::System::CharaColli::AttackCallbackParam, 0x5C);
 CHECK_OFFSETOF(SonicteamUSA::System::CharaColli::AttackCallbackParam, field_0x50, 0x50);
 CHECK_OFFSETOF(SonicteamUSA::System::CharaColli::AttackCallbackParam, field_0x54, 0x54);
 

@@ -1461,6 +1461,15 @@ Game/HeavyShot.cpp:
 	.sdata      start:0x805ECA20 end:0x805ECA40
 	.sdata2     start:0x805F93E0 end:0x805F93F8
 
+Game/BulletChaosSpear.cpp:
+	.text       start:0x802F1BB0 end:0x802F28A8
+	.ctors      start:0x804A9FBC end:0x804A9FC0
+	.rodata     start:0x80509410 end:0x805095A8
+	.data       start:0x80559F18 end:0x80559FC0
+	.sdata      start:0x805ECA40 end:0x805ECA68
+	.sbss       start:0x805F07B8 end:0x805F07D0
+	.sdata2     start:0x805F93F8 end:0x805F9410
+
 Game/HintController.cpp:
 	.text       start:0x802F28A8 end:0x802F31DC
 	.rodata     start:0x805095A8 end:0x80509DB8
