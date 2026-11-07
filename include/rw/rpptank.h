@@ -44,6 +44,10 @@ extern "C" {
 /* lock flags */
 #define rpPTANKLOCKWRITE 0x40000000
 
+/* Instance-callback dirty flags; names are inferred from the accompanying state writes. */
+#define rpPTANKIFLAGACTPCOUNT 0x800000
+#define rpPTANKIFLAGBLENDSTATE 0x10000000
+
 /* A locked stream: its first element and the distance between elements */
 typedef struct RpPTankLockStruct {
     /* 0x0 */ RwUInt8 *data;

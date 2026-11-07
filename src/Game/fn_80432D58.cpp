@@ -43,7 +43,7 @@ EffectParticleRW3::EffectParticleRW3(const System::UnkEffectElementData2 *defini
         return;
     }
     fn_80458CBC(m_atomic, m_frame);
-    PTANKEXT(m_atomic)->instFlags |= 0x800000;
+    PTANKEXT(m_atomic)->instFlags |= rpPTANKIFLAGACTPCOUNT;
     PTANKEXT(m_atomic)->actPCount = 0;
     PTANKEXT(m_atomic)->vertexAlphaBlend = TRUE;
     switch (definition->field_0x50) {
@@ -51,35 +51,34 @@ EffectParticleRW3::EffectParticleRW3(const System::UnkEffectElementData2 *defini
         if ((m_definitionFlags & 4) != 0) {
             PTANKEXT(m_atomic)->srcBlend = rwBLENDSRCALPHA;
             PTANKEXT(m_atomic)->dstBlend = rwBLENDINVSRCALPHA;
-            PTANKEXT(m_atomic)->instFlags |= 0x10000000;
+            PTANKEXT(m_atomic)->instFlags |= rpPTANKIFLAGBLENDSTATE;
         } else {
             PTANKEXT(m_atomic)->srcBlend = rwBLENDONE;
             PTANKEXT(m_atomic)->dstBlend = rwBLENDZERO;
-            PTANKEXT(m_atomic)->instFlags |= 0x10000000;
+            PTANKEXT(m_atomic)->instFlags |= rpPTANKIFLAGBLENDSTATE;
         }
         break;
     case 1:
         if ((m_definitionFlags & 4) != 0) {
             PTANKEXT(m_atomic)->srcBlend = rwBLENDSRCALPHA;
             PTANKEXT(m_atomic)->dstBlend = rwBLENDONE;
-            PTANKEXT(m_atomic)->instFlags |= 0x10000000;
+            PTANKEXT(m_atomic)->instFlags |= rpPTANKIFLAGBLENDSTATE;
         } else {
             PTANKEXT(m_atomic)->srcBlend = rwBLENDONE;
             PTANKEXT(m_atomic)->dstBlend = rwBLENDONE;
-            PTANKEXT(m_atomic)->instFlags |= 0x10000000;
+            PTANKEXT(m_atomic)->instFlags |= rpPTANKIFLAGBLENDSTATE;
         }
         break;
     case 2:
         PTANKEXT(m_atomic)->srcBlend = rwBLENDDESTCOLOR;
         PTANKEXT(m_atomic)->dstBlend = rwBLENDZERO;
-        PTANKEXT(m_atomic)->instFlags |= 0x10000000;
+        PTANKEXT(m_atomic)->instFlags |= rpPTANKIFLAGBLENDSTATE;
         break;
     }
     if ((m_definitionFlags & 0x10) != 0 && definition->field_0x58 != 0) {
         EffectLaunchInfoRW3 *rwInfo = dynamic_cast<EffectLaunchInfoRW3 *>(info);
         if (rwInfo != 0 && rwInfo->field_0x8 != 0) {
-            RwTexture *texture =
-                fn_8048CFFC(rwInfo->field_0x8, static_cast<const char *>(definition->field_0x58));
+            RwTexture *texture = fn_8048CFFC(rwInfo->field_0x8, definition->field_0x58);
             if (texture != 0) {
                 fn_8045B270(m_atomic->geometry->matList.materials[0], texture);
             }
@@ -109,7 +108,7 @@ EffectParticleRW3::~EffectParticleRW3() {
             fn_8046221C(world, m_atomic);
         }
         fn_80458CBC(m_atomic, 0);
-        PTANKEXT(m_atomic)->instFlags |= 0x800000;
+        PTANKEXT(m_atomic)->instFlags |= rpPTANKIFLAGACTPCOUNT;
         PTANKEXT(m_atomic)->actPCount = 0;
         fn_8045B270(m_atomic->geometry->matList.materials[0], 0);
         static_cast<EffectManagerRW3 *>(m_manager)->fn_804324A0(m_atomic, m_maxCount);
@@ -206,7 +205,7 @@ void EffectParticleRW3::Render() {
             outputTexCoords[1].v = particle->m_uvUpper.y;
         }
         fn_80448598(m_atomic);
-        PTANKEXT(m_atomic)->instFlags |= 0x800000;
+        PTANKEXT(m_atomic)->instFlags |= rpPTANKIFLAGACTPCOUNT;
         PTANKEXT(m_atomic)->actPCount = m_count;
         if (field_0x144 == 0) {
             RwBool fog;
@@ -333,9 +332,9 @@ void EffectParticle3DRW3::Update(float deltaTime) {
                     m_particles[i].vertices[corner].color.blue = particle->m_color[2] >> 22;
                     m_particles[i].vertices[corner].color.alpha = particle->m_color[3] >> 22;
                     m_particles[i].vertices[corner].u =
-                        corner / 2 == 0 ? particle->m_uvUpper.x : particle->m_uvLower.x;
+                        corner / 2 != 0 ? particle->m_uvLower.x : particle->m_uvUpper.x;
                     m_particles[i].vertices[corner].v =
-                        corner % 2 == 0 ? particle->m_uvUpper.y : particle->m_uvLower.y;
+                        corner % 2 != 0 ? particle->m_uvLower.y : particle->m_uvUpper.y;
                 }
                 particle = particle->m_next;
             }
