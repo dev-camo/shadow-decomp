@@ -847,7 +847,7 @@ config.libs = [
                 ),
                 # The texture list over an existing RenderWare texture dictionary (file name
                 # unknown). 6 of its 7 functions match in raw instruction words; the holder's Assign
-                # (120 words) differs only in allocation line 141 versus native 410. The constructor
+                # (120 words) differs only in allocation line 147 versus native 410. The constructor
                 # and destructor of the texture array are called out of line, as in the original.
                 # The constructors of CTexListRW2, CTexListRW and CTexList and the allocator's
                 # AllocObject and FreeObject are also emitted as weak copies, as are the CTexList
@@ -862,7 +862,7 @@ config.libs = [
                 # __LINE__ passed by their allocations (one word each, two in UpdateTransform; the
                 # original's lines run from 54 to 1067 in a file far longer than this one). The
                 # holder Assign for the free and function release policies has the original
-                # 115-word size and differs only in allocation line 141 versus native 410.
+                # 115-word size and differs only in allocation line 147 versus native 410.
                 # GetTranslation and GetScale (49 words, the original's 45) copy their result
                 # through the float registers where the original uses the integer ones. The .rodata
                 # holds the same four strings in a different order (the original has the holder's
@@ -1421,7 +1421,7 @@ config.libs = [
             # The CMotionPalette constructor and Rebuild differ in one word each, the __LINE__
             # of their allocations (the original passes 55 and 100). The holder Assign for the
             # function release policy has the original 115-word size and differs only in
-            # allocation line 141 versus native 410. GetPattern retains seven positional setup/load
+            # allocation line 147 versus native 410. GetPattern retains seven positional setup/load
             # scheduling differences, including an equivalent palette-pointer base register.
             # The holder's SetRelease matches but comes last in the unit, where the original
             # has it right after the holder constructor for the function policy (see csdRCObject.h).
@@ -1530,10 +1530,10 @@ config.libs = [
             # instruction-edit distance. Allocation lines, inlining and stack/register choices
             # remain. LoadFile combines the original cmplwi and mr into one mr. instruction;
             # in 8036C318 the source loads before two prologue stores instead of after them.
-            # In fn_8036C8E0, both versions construct a null RCPtr<CScene>, read the two held
-            # objects with independent null checks and destroy the temporary before branching.
-            # The original saves the comparison result before destruction; the source saves the
-            # two object pointers and compares them after destruction. Iterator loads and the
+            # In fn_8036C8E0, both versions construct a null RCPtr<CScene> and independently
+            # null-check each holder, reading the scene's object before the temporary's. The
+            # original saves the comparison result before destroying the temporary. The source
+            # saves both object pointers and compares them afterward. Iterator loads and the
             # prologue also differ.
             # Definitions follow descending established original addresses. Of the 169 paired
             # bodies, 111 retain original relative order; generated helper order still differs.
@@ -1543,7 +1543,7 @@ config.libs = [
             # 8036C0C4        388           388               1            0            0
             # 8036C318         84            84               3            0            0
             # 8036C46C        248           248               1            0            0
-            # 8036C8E0        412           400              58            3            0
+            # 8036C8E0        412           400              56            3            0
             # 8036D054        104           136              22            0            8
             # 8036D2FC        276           276               1            0            0
             # 8036D448        180           180               1            0            0

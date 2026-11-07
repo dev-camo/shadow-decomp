@@ -70,8 +70,8 @@ template <class T> class RCPtr : public CBase {
 
     /* Signature and comparison inferred from fn_8036C8E0. */
     bool operator!=(const RCPtr &other) const {
-        return (field_0x0 != NULL ? field_0x0->m_pObject : NULL) !=
-               (other.field_0x0 != NULL ? other.field_0x0->m_pObject : NULL);
+        return (other.field_0x0 != NULL ? other.field_0x0->m_pObject : NULL) !=
+               (field_0x0 != NULL ? field_0x0->m_pObject : NULL);
     }
 
     /* Releases the held object and takes object, returning this pointer (names inferred; the
