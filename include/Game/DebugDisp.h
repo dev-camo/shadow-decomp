@@ -12,6 +12,9 @@ struct UnkDebugColor_802E0E84 {
     /* Sets the four bytes in order (fn_8040D2D8); the body is not visible to the compiler, as in
      * the original. */
     UnkDebugColor_802E0E84(u8 b0, u8 b1, u8 b2, u8 b3);
+    /* Sets the first byte to 0xFF and the other three in order (fn_8040D2EC); out of line, as in
+     * the original. Weapon::DarkHammer passes it to Test::EffLocusMultiVtx. */
+    UnkDebugColor_802E0E84(u8 b1, u8 b2, u8 b3);
 
     /* 0x0 */ u8 field_0x0;
     /* 0x1 */ u8 field_0x1;
