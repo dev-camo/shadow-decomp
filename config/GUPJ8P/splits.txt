@@ -103,11 +103,14 @@ Game/fn_80096B64.cpp:
 	.text       start:0x80096E18 end:0x80096E50
 
 Game/FleetHolder.cpp:
-	.text       start:0x800CBFE4 end:0x800CC4DC
-	.rodata     start:0x804B71F4 end:0x804B7260
-	.data       start:0x80523418 end:0x80523594
-	.sdata      start:0x805E5428 end:0x805E5438
-	.sbss       start:0x805EED70 end:0x805EED78
+	.text       start:0x800CBFC8 end:0x800D2518
+	.ctors      start:0x804AA340 end:0x804AA344
+	.rodata     start:0x804B6DC0 end:0x804B75E0
+	.data       start:0x805232D0 end:0x80523698
+	.bss        start:0x8057DE70 end:0x8057DE88
+	.sdata      start:0x805E53D8 end:0x805E5480
+	.sbss       start:0x805EED10 end:0x805EED78
+	.sdata2     start:0x805F3720 end:0x805F37A0
 
 Game/PowerDeviceCage.cpp:
 	.text       start:0x800D2518 end:0x800D3A88

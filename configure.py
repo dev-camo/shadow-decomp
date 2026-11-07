@@ -2143,9 +2143,34 @@ config.libs = [
             # vtables that instructions reference (__vt__11EnemyBaseAI, __vt__13BkWingSmallAI and
             # __vt__13FlyerCommonAI), so the unit does not link.
             Object(NonMatching, "Game/BkWingSmall.cpp", cflags=cflags_game_cpp),
-            # First part of a larger original object. The following EggFleet/EggCannon code,
-            # including ~EggFleet, is not reconstructed, so checked_delete<EggFleet> is inlined
-            # here and the shared metadata remains in the original data.
+            # The split covers the whole original file: USA (GUPE8P) .text 0x800CBC1C-0x800D216C
+            # (255 functions, the static initialiser at 0x800D202C among them) with its .ctors,
+            # .rodata, .data, .bss, .sdata, .sbss and .sdata2. Code in that range addresses the
+            # .rodata from its start (0x804B6728), which holds the FleetHolder, EggCannonBullet and
+            # EGGFLEET.BIN strings. The source has bodies for 19 of the 255 functions: FleetHolder's
+            # methods, its descriptor's hooks and the template copies they use. Not reconstructed:
+            # Gadget::fn_800CBC1C and fn_800CBC20 at the start of the range (only data refers to
+            # them, and the lowest-addressed references are this file's vtable and parameter
+            # table), the EggFleet, EggCannon and EggCannonBullet code, ~EggFleet (so
+            # checked_delete<EggFleet> is inlined here) and the static initialiser. The normal
+            # link uses the original object. Data of the compiled object, compared with the split
+            # original by contents, relocation types and relocation target symbols within the
+            # original's symbol boundaries, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
+            # (GUPP8P): of its 41 data objects 32 equal a whole original object. 5 equal only part
+            # of a larger original symbol: four .rodata strings inside the 0x7C-byte string block
+            # at 0x804B6DD4 (USA), the sp_counted_base_impl<EggFleet *, ...> type name,
+            # "exception", "std::bad_alloc" and "bad_alloc", and the std::bad_alloc base-class
+            # list, whose 12 bytes and std::exception type-record target occur at 0x80522F54 and
+            # 0x80522FA4 inside the .data symbols at 0x80522F3C and 0x80522F94. 4 have no
+            # counterpart in the split: the weak vtables of std::exception, std::bad_alloc and
+            # boost::detail::sp_counted_base (the original refers to an external copy of the last
+            # one) and the std::bad_alloc type record. Section sizes (original / compiled): .rodata
+            # 0x820 / 0x155, .data 0x3C8 / 0x1E4, .sdata 0xA8 / 0x44, .sbss 0x68 / 0x1, .sdata2
+            # 0x80 / 0x18. The compiled object has no .ctors (4 bytes in the original) or .bss (24
+            # bytes): the original static initialiser (0x800D202C) stores floats into two 12-byte
+            # vectors in .bss, nine words in .sbss and the .data object at 0x80522C30, none of
+            # which the source defines, so no initialiser is generated. Its .sdata2 is writable
+            # (WA); the original's is read-only (A).
             Object(NonMatching, "Game/FleetHolder.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PowerDeviceCage.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PowerDeviceNaked.cpp", cflags=cflags_game_cpp),
