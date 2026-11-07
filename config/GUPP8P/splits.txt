@@ -759,6 +759,16 @@ Game/BkWingSmall.cpp:
 	.sdata      start:0x805E89E8 end:0x805E8AF0
 	.sdata2     start:0x805F6410 end:0x805F6458
 
+Game/BkWorm.cpp:
+	.text       start:0x801920A4 end:0x801937E8
+	.ctors      start:0x804AADFC end:0x804AAE00
+	.rodata     start:0x804CA858 end:0x804CAB98
+	.data       start:0x80535A28 end:0x80536950
+	.bss        start:0x80581E58 end:0x80581E68
+	.sdata      start:0x805E8AF0 end:0x805E8BE8
+	.sbss       start:0x805F0748 end:0x805F0750
+	.sdata2     start:0x805F6458 end:0x805F64F0
+
 Game/fn_801A1FA0.cpp:
 	.text       start:0x801A235C end:0x801A3968
 	.rodata     start:0x804CD1F8 end:0x804CD2A8

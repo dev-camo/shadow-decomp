@@ -2171,13 +2171,29 @@ config.libs = [
             # load/store counts are identical.
             Object(NonMatching, "Game/FallRoad.cpp", cflags=cflags_game_cpp),
             # All 60 functions have identical instructions and the data bytes match, but the 0.0f
-            # and 120.0f literals are pooled in the opposite order, and the vtable relocations
-            # name functions of other units whose symbols still have address names. 104 names
-            # stay unresolved: 101 function references from the vtables (methods of
-            # EnemyStatusCommon, EnemyDispCommon, EnemyBaseAI, TEnemySetBase and others) and three
-            # vtables that instructions reference (__vt__11EnemyBaseAI, __vt__13BkWingSmallAI and
-            # __vt__13FlyerCommonAI), so the unit does not link.
+            # and 120.0f literals are pooled in the opposite order. Linked from source as a
+            # diagnostic together with BkWorm (normal builds link the original object), the USA
+            # (GUPE8P) DOL differs in 232 words, four of them in this file's ranges: the two
+            # .sdata2 literals (0x805F53A0, 0x805F53A4) and the two loads that address them
+            # (0x8019166C, 0x80191970). The other 228 are in BkWorm's ranges.
             Object(NonMatching, "Game/BkWingSmall.cpp", cflags=cflags_game_cpp),
+            # The split covers the whole original file: USA (GUPE8P) .text 0x80191CF0-0x80193434 (67
+            # functions: the static initialiser at 0x80193314 and 29 adjustment thunks among them)
+            # with its .ctors, .rodata, .data, .bss, .sdata, .sbss and .sdata2. Relocatable
+            # comparison: 66 functions have identical instructions and relocation targets;
+            # fn_80192394 differs in 13 of its 95 words, register allocation only (this takes r27
+            # where the original has r31, and the four loop values each sit one register higher).
+            # Data by contents, with the linker-discarded copies set aside: .sdata2 pools 0.0f,
+            # 0.5f, the empty string and -1.0f in another order (original 0.0f, 0.5f, "", -1.0f;
+            # this build "", 0.0f, -1.0f, 0.5f), and .rodata has the BkWormBase type name before
+            # the model tables, where this build places it among the other type names. The compiled
+            # .sdata2 section is writable (WA) where the original's is allocatable only (A). Linked
+            # from source as a diagnostic together with BkWingSmall (normal builds link the original
+            # object), the USA DOL differs in 232 words, 228 of them in this file's ranges: 24 in
+            # .text (fn_80192394 and 11 references to the moved literals and tables), 162 in
+            # .rodata (the type name and the tables and strings after it), 13 in .data and 26 in
+            # .sdata (pointers to those strings) and 3 in .sdata2. The other four are BkWingSmall's.
+            Object(NonMatching, "Game/BkWorm.cpp", cflags=cflags_game_cpp),
             # The split covers the whole original file: USA (GUPE8P) .text 0x800CBC1C-0x800D216C
             # (255 functions, the static initialiser at 0x800D202C among them) with its .ctors,
             # .rodata, .data, .bss, .sdata, .sbss and .sdata2. Code in that range addresses the

@@ -4,9 +4,16 @@
 #include "Game/EnemyDispFunc.h"
 #include "Game/EnemyReferer.h"
 #include "boost/shared_ptr.hpp"
+#include "boost/weak_ptr.hpp"
 #include "layout_check.h"
 
 class UnkObject_802B4254;
+
+namespace Effect {
+namespace System {
+class EffectElement;
+} // namespace System
+} // namespace Effect
 
 /* Original RTTI name. Its vtable replaces all 21 EnemyDispFunc slots, then adds one slot whose
  * parameter list is not recovered (0x5C), the virtual destructor (0x60) and a pure slot (0x64,
@@ -71,5 +78,17 @@ CHECK_OFFSETOF(EnemyDispCommon, field_0x22, 0x22);
 CHECK_OFFSETOF(EnemyDispCommon, field_0x2C, 0x2C);
 CHECK_OFFSETOF(EnemyDispCommon, field_0x3C, 0x3C);
 CHECK_SIZEOF(EnemyDispCommon, 0x44);
+
+/* Effect launchers that follow EnemyDispCommon's constructor (behaviour inferred from their
+ * bodies): each passes 0, its arguments and the address 0x24 bytes into lbl_8057D6A0 to an
+ * effect creator and returns the effect it creates. fn_801A1E48 forwards a matrix and id to
+ * fn_801D2C28, fn_801A1ED8 to fn_801D2B74, and fn_801A1F54 a position, a second vector and id
+ * to fn_801D2AFC. The pointer spellings are inferred. */
+extern "C" {
+boost::weak_ptr<Effect::System::EffectElement> fn_801A1E48(const Fn8040Matrix34 *matrix, int id);
+boost::weak_ptr<Effect::System::EffectElement> fn_801A1ED8(const Fn8040Matrix34 *matrix, int id);
+boost::weak_ptr<Effect::System::EffectElement> fn_801A1F54(const Fn8040Vector3 *position,
+                                                           const Fn8040Vector3 *vector, int id);
+}
 
 #endif

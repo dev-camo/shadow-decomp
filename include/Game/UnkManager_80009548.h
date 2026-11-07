@@ -27,6 +27,10 @@ CHECK_OFFSETOF(UnkEntry_8000D0F0, field_0x6C, 0x6C);
 extern "C" {
 /* Returns the object, constructing it on first use. */
 UnkManager_80009548 *fn_80009548(void);
+/* Looks up the entry with the given index (fn_8000D0F0) and passes value and arg2 to fn_8000EDD0,
+ * whose result it hands to the entry's member at 0xEC (behaviour inferred from its body). BkWorm
+ * passes 0.5, 0 and 0; the position of the float among the integer parameters is inferred. */
+void fn_8000D8EC(UnkManager_80009548 *manager, float value, int arg2, int index);
 /* Behaviour inferred from the CityLaser gadget's call only: three floats and an integer (0). */
 void fn_8000D664(UnkManager_80009548 *manager, int arg1, float arg2, float arg3, float arg4);
 /* Returns the angles that fn_8000A610 computes from the entry with the given index (behaviour

@@ -34,6 +34,12 @@ class UnkParams_80051D10 {
      * inferred). */
     UnkParams_80051D10(const boost::weak_ptr<CharInfo> &owner, int arg2,
                        const Fn8040Vector3 &position, const Fn8040Vector3 &direction);
+    /* The constructor at 0x80069218: as the one at 0x800693AC, but it also copies target to 0x8
+     * (behaviour from its body; the reference parameters are inferred). */
+    UnkParams_80051D10(const boost::weak_ptr<CharInfo> &owner,
+                       const boost::shared_ptr<Weapon::LockonTarget> &target, int arg2,
+                       const Fn8040Vector3 &position, const Fn8040Vector3 &direction,
+                       const Fn8040Vector3 &arg4);
     ~UnkParams_80051D10();
 
     /* 0x00 */ boost::weak_ptr<CharInfo> m_owner;

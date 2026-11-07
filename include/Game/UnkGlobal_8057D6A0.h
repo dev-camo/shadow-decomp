@@ -8,7 +8,7 @@
  * and fn_802039E8 passes the address of lbl_8057D6A0 plus 0xA8. Its size is not known: 0x24 only
  * covers the bytes up to 0x23 that fn_802039C8 and fn_802039E8 read. */
 struct UnkRecord_802039C8 {
-    /* Fan compares it with 0x1F5 (meaning unknown). */
+    /* Fan compares it with 0x1F5 and BkWorm with 0x259 (meanings unknown). */
     /* 0x00 */ s32 field_0x0;
     /* ThreatObjHolder compares it with 9 to pick its model table, FallBuildingHolder's hookA
      * with 12 and 5 to limit the building type, and GrindGadget's hookA with 13 to pick
