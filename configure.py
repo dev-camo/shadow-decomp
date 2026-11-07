@@ -1994,6 +1994,21 @@ config.libs = [
             # is allocatable (A, 0x2) and this object's writable and allocatable (WA, 0x3).
             Object(NonMatching, "Game/Balloon.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BlastBreak.cpp", cflags=cflags_game_cpp),
+            # 8 of the 9 functions are identical in every word and relocation target. ProcessHits
+            # has 136 words against the original's 138; by position 67 of the 136 common words
+            # differ, plus 2 unpaired original words. Aligned, 4 words differ (branch displacements
+            # at +0x40, +0x98 and +0x114, and the loop branch at +0x210, +0x208 here), 2 are
+            # original-only and none source-only: after locking the character info, the original
+            # tests the locked pointer a second time (cmplwi r3,0 and beq at USA (GUPE8P)
+            # 0x800ED67C-0x800ED680, Japan (GUPJ8P) 0x800EDA28-0x800EDA2C and PAL (GUPP8P)
+            # 0x800EDA64-0x800EDA68). The cause is not established (possibly an inline helper). The
+            # 30 relocation targets of ProcessHits are the same, in the same order. With the copies
+            # the link discards set aside (vtables, type records and name strings of std::exception,
+            # boost::bad_weak_ptr and sp_counted_base: 4 .rodata, 4 .data and 3 .sdata objects), the
+            # 25 data objects equal the original's in contents and relocations. The compiled .sdata2
+            # is WA (0x3) where the original's is A (0x2). The comparison is the same in all three
+            # regions.
+            Object(NonMatching, "Game/BlockChange.cpp", cflags=cflags_game_cpp),
             # 62 of 66 functions are identical in every word and relocation. The three record
             # lookups fn_80301D04, fn_80301D90 and fn_80301E1C each differ in one word, the id
             # comparison: the original has cmpw r0,r3 (0x7C001800 at 0x80301D1C, 0x80301DA8 and

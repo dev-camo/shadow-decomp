@@ -26,4 +26,9 @@ extern UnkObject_8003A52C *lbl_8051CE88[4];
  * body; the original name is unknown). */
 extern "C" void fn_8003A52C(UnkObject_8003A52C *object);
 
+/* Stores value in the word at 0x2E8 + 4 * index of object (behaviour inferred from its body; the
+ * original name is unknown, and the parameter types and the void result are inferred). The
+ * BlockChange gadget passes its "BLOCK" values as index and 1 or 2 as value. */
+extern "C" void fn_8003AAB0(UnkObject_8003A52C *object, int index, int value);
+
 #endif
