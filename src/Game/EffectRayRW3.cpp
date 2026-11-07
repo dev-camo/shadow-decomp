@@ -1,6 +1,7 @@
 /* EffectRayRW3 methods; class identity comes from RTTI, original filename unknown. */
 #include "Game/EffectRayRW3.h"
 #include "Game/EffectRayExecUnit.h"
+#include "Game/EffectCommandExec.h"
 #include "Game/EffectSystemRW3.h"
 #include "rw/rwcore.h"
 
@@ -80,14 +81,19 @@ void EffectRayRW3::Render() {
             fn_8040CE74(&side);
             fn_8040CE38(&side, 0.5f * ray->m_width);
 
-            float redScale = ((ray->m_color[0] >> 22) & 0xFF) / 255.0f;
-            float greenScale = ((ray->m_color[1] >> 22) & 0xFF) / 255.0f;
-            float blueScale = ((ray->m_color[2] >> 22) & 0xFF) / 255.0f;
-            float alphaScale = ((ray->m_alpha >> 22) & 0xFF) / 255.0f;
-            int red = static_cast<int>(((ray->m_startColor[0] >> 22) & 0xFF) * redScale);
-            int green = static_cast<int>(((ray->m_startColor[1] >> 22) & 0xFF) * greenScale);
-            int blue = static_cast<int>(((ray->m_startColor[2] >> 22) & 0xFF) * blueScale);
-            int alpha = static_cast<int>(((ray->m_startAlpha >> 22) & 0xFF) * alphaScale);
+            float redScale = ((ray->m_color[0] >> System::MATERIAL_FRACTION_BITS) & 0xFF) / 255.0f;
+            float greenScale =
+                ((ray->m_color[1] >> System::MATERIAL_FRACTION_BITS) & 0xFF) / 255.0f;
+            float blueScale = ((ray->m_color[2] >> System::MATERIAL_FRACTION_BITS) & 0xFF) / 255.0f;
+            float alphaScale = ((ray->m_alpha >> System::MATERIAL_FRACTION_BITS) & 0xFF) / 255.0f;
+            int red = static_cast<int>(
+                ((ray->m_startColor[0] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * redScale);
+            int green = static_cast<int>(
+                ((ray->m_startColor[1] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * greenScale);
+            int blue = static_cast<int>(
+                ((ray->m_startColor[2] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * blueScale);
+            int alpha = static_cast<int>(
+                ((ray->m_startAlpha >> System::MATERIAL_FRACTION_BITS) & 0xFF) * alphaScale);
             RwIm3DVertexSetPos(&m_vertices[i][0], position.x + side.x, position.y + side.y,
                                position.z + side.z);
             RwIm3DVertexSetPos(&m_vertices[i][1], position.x - side.x, position.y - side.y,
@@ -95,10 +101,14 @@ void EffectRayRW3::Render() {
             RwIm3DVertexSetRGBA(&m_vertices[i][0], red, green, blue, alpha);
             RwIm3DVertexSetRGBA(&m_vertices[i][1], red, green, blue, alpha);
 
-            red = static_cast<int>(((ray->m_endColor[0] >> 22) & 0xFF) * redScale);
-            green = static_cast<int>(((ray->m_endColor[1] >> 22) & 0xFF) * greenScale);
-            blue = static_cast<int>(((ray->m_endColor[2] >> 22) & 0xFF) * blueScale);
-            alpha = static_cast<int>(((ray->m_endAlpha >> 22) & 0xFF) * alphaScale);
+            red = static_cast<int>(((ray->m_endColor[0] >> System::MATERIAL_FRACTION_BITS) & 0xFF) *
+                                   redScale);
+            green = static_cast<int>(
+                ((ray->m_endColor[1] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * greenScale);
+            blue = static_cast<int>(
+                ((ray->m_endColor[2] >> System::MATERIAL_FRACTION_BITS) & 0xFF) * blueScale);
+            alpha = static_cast<int>(((ray->m_endAlpha >> System::MATERIAL_FRACTION_BITS) & 0xFF) *
+                                     alphaScale);
             RwIm3DVertexSetPos(&m_vertices[i][2], endpoint.x + side.x, endpoint.y + side.y,
                                endpoint.z + side.z);
             RwIm3DVertexSetPos(&m_vertices[i][3], endpoint.x - side.x, endpoint.y - side.y,

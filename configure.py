@@ -2686,12 +2686,12 @@ config.libs = [
             # Update retains six register-word differences; the other seven bodies have
             # identical instruction words.
             Object(NonMatching, "Game/EffectLocus.cpp", cflags=cflags_effect),
-            # The vertex builder retains address-materialization, stack and instruction-layout
-            # differences (2564 source bytes versus 2568 original bytes). Its exception
-            # record and the parameter constructor's exception-record order also differ.
             # Render differs in literal addressing and vertex stores. Update calls its
             # base without the original terminal tests, which perform no further operation.
             Object(NonMatching, "Game/EffectRayRW3.cpp", cflags=cflags_effect_rw3),
+            # The vertex builder retains address-materialization, stack and instruction-layout
+            # differences (2564 source bytes versus 2568 original bytes). Its exception
+            # record and the parameter constructor's exception-record order also differ.
             Object(NonMatching, "Game/fn_80430A54.cpp", cflags=cflags_effect_rw3),
             Object(Matching, "Game/EffectObjectRW3.cpp", cflags=cflags_effect_rw3),
             # Matching workaround: the EffectParticle3DRW3 constructor addresses each float
