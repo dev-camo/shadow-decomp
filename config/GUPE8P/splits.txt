@@ -856,6 +856,9 @@ Game/Gadget.cpp:
 	.sdata      start:0x805E6598 end:0x805E65B0
 	.sdata2     start:0x805F4A70 end:0x805F4A80
 
+Game/fn_8015AA84.cpp:
+	.text       start:0x8015AA84 end:0x8015B8C4
+
 Game/fn_80160B18.cpp:
 	.text       start:0x80160B18 end:0x80160BA0
 

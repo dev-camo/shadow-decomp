@@ -154,19 +154,20 @@ CHECK_OFFSETOF(UnkHandleBTarget_8015BE64, m_flags, 0x2C);
 CHECK_OFFSETOF(UnkHandleBTarget_8015BE64, field_0x34, 0x34);
 CHECK_SIZEOF(UnkHandleBTarget_8015BE64, 0x40);
 
-/* What fn_8015AA84 and fn_8015B004 call for each character info they take from the hits (name
- * inferred). context is the pointer the caller passed to them: both forward it unchanged without
- * reading it (the argument is kept in r29 and passed as r4), so each callback converts it to its
- * own context record. */
+/* What the walks below that take a callback call for each character info they take from the hits
+ * (name inferred). context is the pointer the caller passed to the walk, forwarded unchanged
+ * without being read; each callback interprets it as its caller intends, or ignores it. */
 typedef void (*ColliHitCallback)(boost::shared_ptr<CharInfo> hit, void *context);
 
 extern "C" {
 /* Calls callback with the character infos taken from the hits of args whose fn_80078B4C (vtable
- * offset 0x28) returns true, passing context through (behaviour inferred). */
+ * offset 0x28) returns true, passing context through (behaviour inferred). Only hits whose
+ * collision object and character info still lock are tested, and callback runs only when it is
+ * not null. */
 void fn_8015AA84(ColliDetectArgs *args, ColliHitCallback callback, void *context);
 /* Calls callback with each character info taken from the hits of args whose fn_80078B44 reports
- * true, passing context through (behaviour inferred; fn_8015AA84 makes the same walk with
- * fn_80078B4C). */
+ * true, passing context through (behaviour inferred; fn_8015AA84 makes the same walk, with the
+ * same lock and null-callback conditions, with fn_80078B4C). */
 void fn_8015AE44(ColliDetectArgs *args, ColliHitCallback callback, void *context);
 /* Wraps a probe in a handle target (behaviour inferred). */
 boost::shared_ptr<UnkHandleBTarget_8015BE64>
@@ -176,9 +177,10 @@ void fn_8015BE9C(UnkHandleBTarget_8015BE64 *target, float dt);
 /* Passes the array at 0x34 and an 8-byte pair holding arg0 and arg1 to fn_8015BE00 (purpose
  * unknown; the Fan gadget passes 1 and 2). */
 void fn_8015BDC4(UnkHandleBTarget_8015BE64 *target, int arg0, int arg1);
-/* True when one of the hits of args belongs to a character info whose fn_80078B4C reports true
- * (behaviour inferred; the counterpart of fn_8015D2EC in UnkWorld_80021B08.h for the next virtual
- * function, taking the collision callback's arguments). */
+/* True when one of the hits of args whose collision object and character info still lock belongs
+ * to a character info whose fn_80078B4C reports true (behaviour inferred; the counterpart of
+ * fn_8015D2EC in UnkWorld_80021B08.h for the next virtual function, taking the collision
+ * callback's arguments). */
 bool fn_8015AC84(ColliDetectArgs &args);
 /* The same as fn_8015AC84 except for the filter: true when one of the hits belongs to a character
  * info whose fn_80078B2C (vtable offset 0x18) reports true (behaviour inferred). */
@@ -193,6 +195,11 @@ void fn_8015B004(ColliDetectArgs *args, ColliHitCallback callback, void *context
  * 0x2C) returns true, and only when callback is not null (behaviour inferred from its body; the
  * HEALING_UNIT gadget's blast passes its hit callback to it). */
 void fn_8015B384(ColliDetectArgs *args, ColliHitCallback callback, void *context);
+/* True when one of the hits of args whose collision object and character info still lock belongs
+ * to a character info whose word at 0x5C equals arg1 and whose word at 0x50 equals arg2; no
+ * virtual filter function is tested (behaviour inferred from its body). The reference and the s32
+ * arguments are inferred. */
+bool fn_8015B544(ColliDetectArgs &args, s32 arg1, s32 arg2);
 /* For each hit of args whose collision object and character info still lock, calls callback
  * (when it is not null) with that character info and context if the character info's word at
  * 0x5C equals value; no virtual filter function is tested (behaviour inferred from its body; the
