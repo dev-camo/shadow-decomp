@@ -72,8 +72,10 @@ class CharInfo {
     /* 0x50 */ s32 field_0x50; /* the constructor's arg0 */
     /* 0x54 */ s32 field_0x54; /* set by fn_8007A4CC; PlayerBase compares it with 0 as signed */
     /* 0x58 */ u8 field_0x58[0x5C - 0x58];
-    /* 0x5C */ s32 field_0x5C;         /* cleared by the constructor */
-    /* 0x60 */ const void *field_0x60; /* the constructor stores a data address here */
+    /* 0x5C */ s32 field_0x5C; /* cleared by the constructor */
+    /* The constructor stores the address of the float at 0x20 of lbl_8057D6A0 here; the
+     * FootingMovable gadget adds the float it points to onto its sync time at every update. */
+    /* 0x60 */ const float *field_0x60;
 };
 CHECK_SIZEOF(CharInfo, 0x64);
 

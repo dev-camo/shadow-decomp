@@ -69,8 +69,9 @@ class CharaColliBase {
     virtual Range::RangeBase *UnkSlot9(int selector) = 0;
     /* Returns the word that UnkSlot20 stores (0x800C0808 returns the word at 0x1C of the object
      * at 0x5C, where 0x800C0890 stores UnkSlot20's arg0). The Door gadgets pass 0 and hand the
-     * result back to UnkSlot20 with bit 0x100 set or cleared; the signature is inferred from that
-     * call. */
+     * result back to UnkSlot20 with bit 0x100 set or cleared; FootingMovable passes each range
+     * index below slot 0's count (at most 16) and hands the result back with bit 0x100 set. The
+     * signature is inferred from those calls. */
     virtual int UnkSlot10(int arg0) = 0;
     virtual void UnkSlot11() = 0;
     /* Returns the float at 0x8 (0x80037358). */
@@ -98,7 +99,10 @@ class CharaColliBase {
      * GravityChangeZone with 0x140100 and -1 on its zone model's probe, ElecCircuitColli with 0x202
      * or 0x40000 and -1, and BombServer with 0x10302 or 0x50100 and -1. ElecCircuitColli and
      * BombServer create their probes with 0x40000 and 0x50100 as the factories' flags word, so it
-     * may re-apply a flags word (inferred; purpose unknown). */
+     * may re-apply a flags word (inferred; purpose unknown). The Door gadgets pass the word that
+     * UnkSlot10(0) returned, with bit 0x100 set or cleared, and -1; FootingMovable passes a range
+     * index as arg1 and, as arg0, the word that UnkSlot10 returned for that index, first with bit
+     * 0x100 set and later unchanged. */
     virtual void UnkSlot20(int arg0, int arg1) = 0;
     virtual void UnkSlot21() = 0;
     virtual void UnkSlot22() = 0;
@@ -139,5 +143,11 @@ CHECK_SIZEOF(CharaColliBase, 0x30);
 } // namespace CharaColli
 } // namespace System
 } // namespace SonicteamUSA
+
+/* The bit of a probe's flags word (CharaColliBase::UnkSlot10, UnkSlot20) that the Door gadgets
+ * and the FootingMovable gadget set while they are transparent; Door clears it again (meaning
+ * unknown). A const object: their set branches load 0x100 from their own .sdata2 and Door's clear
+ * branch folds it into an rlwinm, while a literal is folded into an ori. */
+static const int s_transparentFlag = 0x100;
 
 #endif

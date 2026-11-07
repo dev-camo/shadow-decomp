@@ -22,6 +22,7 @@ class CharaColliBase;
 } // namespace SonicteamUSA
 struct _stMtnPlayWork;
 struct RpClump;
+class UnkResource_80012700;
 struct RpAtomic;
 
 /* An entry of the array at 0x0 of the object at 0x30 of a GadgetModelInfo, found by the word at
@@ -245,7 +246,11 @@ class GadgetModelInfo {
     /* 0x04 */ ColliDetectCallback m_collisionCallback;
     /* 0x10 */ ColliDetectCallback field_0x10;
     /* 0x1C */ ColliDetectCallback field_0x1C;
-    /* 0x28 */ u8 field_0x28[0x14]; /* Unrecovered members. */
+    /* 0x28 */ u8 field_0x28[0x30 - 0x28]; /* Unrecovered members. */
+    /* The object at 0x30 that the functions above search: FootingMovable passes it to
+     * fn_80208848 when it is not null (type inferred from that call). */
+    /* 0x30 */ UnkResource_80012700 *field_0x30;
+    /* 0x34 */ u8 field_0x34[0x3C - 0x34]; /* Unrecovered members. */
     /* 0x3C */ UnkBitFlags_80014E04 field_0x3C;
     /* 0x40 */ u8 field_0x40[0xC];
     /* 0x4C */ UnkModelPartList field_0x4C;

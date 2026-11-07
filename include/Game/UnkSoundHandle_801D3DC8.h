@@ -38,6 +38,10 @@ UnkSoundHandle_801D3DC8 fn_801D3E58(u16 id, const Fn8040Vector3 *position, void 
 /* Starts the sound id without a position (behaviour inferred from the arguments only; owner is
  * stored in the handle). */
 UnkSoundHandle_801D3DC8 fn_801D3EF0(u16 id, void *owner);
+/* Starts the sound id that follows position (the pointer is kept in the handle) and returns its
+ * handle, with owner stored in it; for the id 0xFFFF it starts nothing and returns a
+ * default-constructed handle (behaviour inferred from its body). */
+UnkSoundHandle_801D3DC8 fn_801D3C38(u16 id, const Fn8040Vector3 *position, void *owner);
 }
 
 #endif
