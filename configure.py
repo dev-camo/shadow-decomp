@@ -1650,7 +1650,9 @@ config.libs = [
             # Sizes and positional counts below agree in each region. Different words are counted
             # at equal positions in the overlap; tail words are unpaired by length, not an aligned
             # instruction-edit distance. Allocation lines, inlining and stack/register choices
-            # remain. In fn_8036C8E0, the original constructs a null RCPtr<CScene>, compares the
+            # remain. LoadFile combines the original cmplwi and mr into one mr. instruction;
+            # in 8036C318 the source loads before two prologue stores instead of after them.
+            # In fn_8036C8E0, the original constructs a null RCPtr<CScene>, compares the
             # two held objects with independent null checks, then destroys the temporary before
             # branching. This source tests scene.Get() against null and omits those two calls.
             # Definitions follow descending established original addresses. Of the 169 paired
