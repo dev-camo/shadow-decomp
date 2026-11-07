@@ -24,8 +24,8 @@ void fn_8033E644(boost::shared_ptr<GadgetModelInfo> model, int modelIndex,
  * - 0, or any value outside 0 to 6 (an unsigned compare): returns without a call.
  * - 1: fn_8010B824 with value, copies of position and rotation, and 0.5.
  * - 2: fn_80221BA8 with position, rotation, the vector (0, 1, 0), value and -1.
- * - 3: fn_8011B22C with a local record (constructed by the empty fn_800B7E40) holding position
- *   and, at 0xC, value, and 1.
+ * - 3: ScatteringRing::ScatteringRing::Create with a local record (constructed by the empty
+ *   fn_800B7E40) holding position and, at 0xC, value as the ring count, and 1.
  * - 4: fn_801070CC with a copy of position whose Y is lowered by 10, rotation and 500 (value is
  *   not used).
  * - 5: EnergyCore::EnergyCoreTask::Create with value, copies of position and rotation, and 500.

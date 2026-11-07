@@ -2436,6 +2436,30 @@ config.libs = [
             # object where the split's is read-only.
             Object(NonMatching, "Game/SavePoint.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetCharacter.cpp", cflags=cflags_game_cpp),
+            # Relocatable comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P): 45
+            # of the 49 functions of the original split have the original's words and relocation
+            # targets. The constructor calls the out-of-line assignment of UnkRingParams_8011B170
+            # (0x8011B0F0 in USA, 32 words) where this build expands it in place: the constructor is
+            # 203 words against 184 (aligned: 19 words only in this build, none only in the
+            # original, 3 paired words differ; positionally 150 of the 184 common words differ). Of
+            # the 3, one is the call, whose target is Fn8040Vector3's assignment instead of the
+            # record's; the other two load the address of @92 at the start of .data, which this
+            # build relocates against the section's start symbol (same address and bytes). The
+            # record's assignment has no counterpart. Create (124 words) loads record.num (lwz
+            # r0,0xC(r24)) and compares it before the three stores of the speed vector where the
+            # original stores first: 8 words differ positionally; aligned, 2 words are only in the
+            # original and 2 only here. OnCommand (32 words) copies the rotation component by
+            # component, storing each one right after its load, where the original loads all three
+            # (0x68, 0x64, 0x60) before the first store: 8 words differ positionally; aligned, 3
+            # paired words differ, 2 are only in the original and 2 only here, with the same stack
+            # slot and the same call to fn_80238A78. Data, by contents with the 86 compiled symbols
+            # absent from the original split set aside (27 local, 59 weak), matches in .rodata,
+            # .data (the original has zero-filled words where the compiled object holds five weak
+            # vtables), .sdata, .sbss and .sdata2. The compiled .rodata, .sdata and .sbss (0x354,
+            # 0x84 and 0x3D bytes; 0x22F, 0x44 and 0x1D without the set-aside symbols) end without
+            # the original's section-end alignment (0x230, 0x48 and 0x20), and the compiled .sdata2
+            # is writable and allocatable (WA, 0x3) where the original's is allocatable (A, 0x2).
+            Object(NonMatching, "Game/ScatteringRing.cpp", cflags=cflags_game_cpp),
             # 12 of the 13 functions are identical in every word and relocation. The data contents
             # and relocations match once the 44 linker-discarded copies (9 local, 35 weak) are set
             # aside, with these differences in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P): the
