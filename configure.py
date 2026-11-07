@@ -615,28 +615,15 @@ config.libs = [
                 # the original file's .data starts there and fn_804951B8 belonged to another file
                 # (inferred, not established).
                 Object(NonMatching, "rw/fn_804951B8.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8049B1F8.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8049B8BC.c", cflags=cflags_game),
                 # fn_8049D934 differs in 10 words: in the duplicate check of the clusters of interest
                 # the index, its 12-byte offset and the hoisted count take r7/r5/r6 instead of
                 # r5/r6/r7. All other functions and the data match.
                 Object(NonMatching, "rw/fn_8049D408.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8049EA2C.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8049F2A4.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8049F3F8.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8049F8AC.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_8049FAFC.c", cflags=cflags_game),
-                # Matching workaround: the original calls fn_804A2F24 from fn_804A457C; the default
-                # limit inlines it, an inline_max_size of 350 to 480 keeps the call. Revisit when the
-                # unit's real inline settings, or a source shape that keeps the call at the default
-                # limit, are found.
-                Object(Matching, "rw/fn_804A2C90.c", cflags=[*cflags_game, "-pragma \"inline_max_size(400)\""]),
                 # Matching workaround: -inline noauto; at the default setting .text is 0x1738 bytes,
                 # with the flag 0x1710 like the original's. Revisit when the unit's real inline
                 # settings are found.
                 Object(NonMatching, "rw/fn_804A55CC.c", cflags=[*cflags_game, "-inline noauto"]),
                 Object(NonMatching, "rw/fn_804A6CDC.c", cflags=cflags_game),
-                Object(Matching, "rw/fn_804A869C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_804A90F8.c", cflags=cflags_game),
                 # All 35 functions have identical instructions. The unit's own data and its order
                 # are the original's; the accessor of the switch counter is emitted after the
@@ -1666,8 +1653,21 @@ config.libs = [
             Object(Matching, "rw/fn_8049A82C.c", cflags=cflags_game),
             Object(Matching, "rw/fn_8049B0CC.c", cflags=cflags_game),
             Object(Matching, "rw/fn_8049B14C.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8049B1F8.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8049B8BC.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8049EA2C.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8049F2A4.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8049F3F8.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8049F8AC.c", cflags=cflags_game),
+            Object(Matching, "rw/fn_8049FAFC.c", cflags=cflags_game),
             # The material-copy callback retains seven register-word differences.
             Object(NonMatching, "rw/fn_804A076C.c", cflags=cflags_game),
+            # Matching workaround: the original calls fn_804A2F24 from fn_804A457C; the default
+            # limit inlines it, an inline_max_size of 350 to 480 keeps the call. Revisit when the
+            # unit's real inline settings, or a source shape that keeps the call at the default
+            # limit, are found.
+            Object(Matching, "rw/fn_804A2C90.c", cflags=[*cflags_game, "-pragma \"inline_max_size(400)\""]),
+            Object(Matching, "rw/fn_804A869C.c", cflags=cflags_game),
             Object(Matching, "Game/fn_80015954.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80160B18.cpp", cflags=cflags_game_cpp),
             # Part cleanup retains one extra element-address addi and register differences.
