@@ -1123,6 +1123,12 @@ Game/EggMeca310.cpp:
 	.sdata      start:0x805ECEE0 end:0x805ECEF8
 	.sdata2     start:0x805F9950 end:0x805F9970
 
+Game/Message.cpp:
+	.text       start:0x802EEFFC end:0x802EF100
+	.rodata     start:0x80508580 end:0x80508598
+	.data       start:0x8055A340 end:0x8055A350
+	.sdata      start:0x805ECFA0 end:0x805ECFA8
+
 Game/SecretDisk.cpp:
 	.text       start:0x802FA34C end:0x802FAF24
 	.ctors      start:0x804AA60C end:0x804AA610

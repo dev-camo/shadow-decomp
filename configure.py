@@ -2160,6 +2160,7 @@ config.libs = [
             Object(Matching, "Game/EggMeca511.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EggMeca411.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EggMeca310.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/Message.cpp", cflags=cflags_game_cpp),
             # Every function except UpdateBody, the retained data and all retained relocations
             # match once the linker-discarded definitions (43 weak copies and nine local ones,
             # among them a converting constructor, RTTI records and literals) are set aside. Normal
