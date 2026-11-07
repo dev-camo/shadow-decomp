@@ -215,14 +215,6 @@ bool SetDoor::IsTouched() {
     return false;
 }
 
-/* The bit of the probe's flags word (UnkSlot10, UnkSlot20) that OnCommand sets while the door is
- * transparent and clears again (meaning unknown). A named constant: the set branch loads 0x100
- * from this file's .sdata2 and the clear branch folds it into an rlwinm, which is what a const
- * object gives here (a literal is folded into an ori). FootingMovable reads the same 0x100 from
- * its own .sdata2, so this is probably a constant of a shared header: move it into a header
- * shared with FootingMovable when that gadget is recovered. */
-static const int s_transparentFlag = 0x100;
-
 void SetDoor::OnCommand(CharCommand &command) {
     switch (command.m_type) {
     case 0x17: {

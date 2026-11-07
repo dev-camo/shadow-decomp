@@ -45,9 +45,11 @@ extern "C" {
 UnkCollision_8001B494 *fn_8001B494(void);
 
 /* Collision manager functions that set up or use a PathCtrl (behaviour inferred). */
-/* Sets up path for the path number pathNo and returns whether that path exists. */
+/* Sets up path for the path number pathNo and returns whether that path exists. pathNo is
+ * unsigned: the function compares it with cmplw, and FootingMovable converts its float "path id"
+ * for it with __cvt_fp2unsigned. */
 bool fn_8001C7B4(UnkCollision_8001B494 *collision, SonicteamUSA::System::PathCtrl *path,
-                 s32 pathNo);
+                 u32 pathNo);
 /* Moves position along the path by distance and returns whether the end was reached. */
 bool fn_8001C91C(UnkCollision_8001B494 *collision, SonicteamUSA::System::PathCtrl *path,
                  s32 reversed, Fn8040Vector3 *position, float distance, UnkRotation3 *rotation,
