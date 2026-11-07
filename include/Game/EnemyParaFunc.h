@@ -26,10 +26,17 @@ class EnemyParaFunc {
     /* 0x30 */ virtual float fn_8019B4AC() const;
     /* 0x34 */ virtual float fn_8019AD04() const;
     /* 0x38 */ virtual int fn_8019B4B4() const;
-    /* 0x3C */ virtual int fn_80192B58() const;
+    // Defined in the class: a unit that calls it emits a weak copy (BkWorm's follows its first
+    // caller, BkWormBase's override of EnemyDispFunc slot 0x4C), and the DOL keeps BkWorm's at
+    // 0x80192B58.
+    /* 0x3C */ virtual int fn_80192B58() const {
+        return 0;
+    }
     /* 0x40 */ virtual void fn_8019B4BC(const UnkEnemyParaData_8017B8E4 *data);
     /* 0x44 */ virtual const UnkEnemyParaData_8017B8E4 *fn_8019B4C0();
-    /* 0x48 */ virtual int fn_8017E14C();
+    // const is inferred: BkWormBase's override (0x80192B68) matches only with a const this (its
+    // first load through this is scheduled above the link-register save).
+    /* 0x48 */ virtual int fn_8017E14C() const;
     /* 0x4C */ virtual int fn_8017EE98();
     /* 0x50 */ virtual int fn_8019B4C8();
     /* 0x54 */ virtual int fn_8018019C();

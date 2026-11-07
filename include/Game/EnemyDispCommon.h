@@ -16,6 +16,13 @@ class EnemyDispCommon : public virtual EnemyReferer, public EnemyDispFunc {
     /* The original (0x801A1CB4) constructs the owning members and stores the flags and floats. */
     EnemyDispCommon();
 
+    // Matching workaround: slots 0x5C and 0x60 are declared before the EnemyDispFunc overrides
+    // and slot 0x64 after them. MWCC creates a derived class's adjustment thunks in this class's
+    // declaration order: this order gives BkWorm's thunks (0x801933C4-0x801933F4, USA) their
+    // original order, which declaring the added slots after the overrides does not. The slot
+    // offsets are the same either way. Revisit if a later file shows a different order.
+    virtual void fn_801A128C();
+    virtual ~EnemyDispCommon();
     virtual void fn_8019B3A0();
     virtual void fn_8019B3A4(float);
     virtual void fn_8019B3A8(float);
@@ -37,8 +44,6 @@ class EnemyDispCommon : public virtual EnemyReferer, public EnemyDispFunc {
     virtual void fn_801812C8();
     virtual void fn_8019B418();
     virtual void fn_8019B41C(bool);
-    virtual void fn_801A128C();
-    virtual ~EnemyDispCommon();
     virtual void fn_801919C0() = 0;
 
     /* 0x14 */ boost::shared_ptr<Unk802CD448> field_0x14;

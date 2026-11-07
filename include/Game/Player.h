@@ -26,8 +26,9 @@ extern "C" {
 /* True when bit number bit of the bit set starting at bits is set (behaviour inferred). */
 bool fn_8006CD78(const u32 *bits, int bit);
 /* Return fn_8006CD78 for bit 10 (fn_800B78B0), bit 15 (fn_800B7938), bit 2 (fn_800B7AD0) or
- * bit 41 (fn_800B7828) of the bit set at 0xA8 of the object that fn_80074630 and fn_8006D714
- * derive from charInfo, or false when there is none (behaviour inferred). */
+ * bit 41 (fn_800B7828) of the bit set at 0xA8 of the Player::PlayerBase that
+ * boost::dynamic_pointer_cast (0x80074630) gives for charInfo, or false when there is none
+ * (behaviour inferred). */
 bool fn_800B78B0(const boost::shared_ptr<CharInfo> &charInfo);
 bool fn_800B7938(const boost::shared_ptr<CharInfo> &charInfo);
 bool fn_800B7AD0(const boost::shared_ptr<CharInfo> &charInfo);

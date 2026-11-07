@@ -13,6 +13,36 @@ class CharCommand;
  * vtable 0x805200AC, returns a copy of its shared pointer at 0x290). */
 class UnkPlayerShared_80076D24;
 
+class Target;
+
+/* A partial view of the object at 0x24C of a Player::PlayerBase (placeholder name). The code at
+ * 0x800AD4BC-0x800AD4C4 (USA) stores a Player::Shadow::PlayerTarget there, whose
+ * constructor calls the Player::PlayerTargetBase constructor (0x80206E20; both class names from
+ * RTTI). Which of the two this pointer's static type and fn_80206574's class are is not
+ * established. fn_80206574 returns a weak pointer to the Target that it holds at 0xC (see
+ * LockonTarget.h).
+ *
+ * The prefix hides the vtable pointer and a strong owner at 0x4 that the native constructor and
+ * destructor copy and release, so the view is only borrowed through pointers: construction,
+ * copying, assignment and destruction are declared private and left undefined. */
+class UnkTargetSource_80206574 {
+  public:
+    /* Returns a weak pointer built from the member at 0xC (fn_80206598, which constructs the
+     * weak count from that member's shared count; behaviour inferred). */
+    boost::weak_ptr<Target> fn_80206574();
+
+    /* 0x00 */ u8 field_0x0[0xC];
+    /* 0x0C */ boost::shared_ptr<Target> field_0xC;
+
+  private:
+    UnkTargetSource_80206574();
+    UnkTargetSource_80206574(const UnkTargetSource_80206574 &);
+    UnkTargetSource_80206574 &operator=(const UnkTargetSource_80206574 &);
+    ~UnkTargetSource_80206574();
+};
+/* Checks only the recovered view; the complete native extent remains unknown. */
+CHECK_SIZEOF(UnkTargetSource_80206574, 0x14);
+
 namespace Player {
 
 /* Player::PlayerObject (class name from RTTI, with CharInfo as its only base): 0x68 bytes. Its
@@ -30,9 +60,10 @@ CHECK_SIZEOF(PlayerObject, 0x68);
 /* Player::PlayerBase (class name from RTTI, with CharInfo and Player::PlayerObject as its bases):
  * 0x290 bytes. Its constructor (0x80079F04) initialises members from 0x68 through 0x28C, and a
  * derived class's constructor starts its own members at 0x290 (0x80077328-3C). Gadgets cast the
- * character info they act on to it. Only two members are mapped: the first word of the bit set at
- * 0xA8 (the TornadoCollision gadget tests bit 0x14 of the set) and the vector at 0xE8 (the
- * ElecFan gadget scales it by -30 into the acceleration it sends the player).
+ * character info they act on to it. Only three members are mapped: the first word of the bit set
+ * at 0xA8 (the TornadoCollision gadget tests bit 0x14 of the set), the vector at 0xE8 (the
+ * ElecFan gadget scales it by -30 into the acceleration it sends the player) and the pointer at
+ * 0x24C (see UnkTargetSource_80206574).
  *
  * Its vtable (0x80520310, 0x54 bytes) overrides the destructor and the first three CharInfo slots
  * and adds nine slots. The added slots are named after their implementations here, or, for the
@@ -72,10 +103,13 @@ class PlayerBase : public PlayerObject {
     /* 0x0A8 */ u32 field_0xA8;
     /* 0x0AC */ u8 field_0xAC[0xE8 - 0xAC];
     /* 0x0E8 */ Fn8040Vector3 field_0xE8;
-    /* 0x0F4 */ u8 field_0xF4[0x290 - 0xF4];
+    /* 0x0F4 */ u8 field_0xF4[0x24C - 0xF4];
+    /* 0x24C */ UnkTargetSource_80206574 *field_0x24C;
+    /* 0x250 */ u8 field_0x250[0x290 - 0x250];
 };
 CHECK_SIZEOF(PlayerBase, 0x290);
 CHECK_OFFSETOF(PlayerBase, field_0xA8, 0xA8);
+CHECK_OFFSETOF(PlayerBase, field_0x24C, 0x24C);
 
 } // namespace Player
 

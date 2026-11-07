@@ -19,7 +19,9 @@ class EnemySetFunc {
     /* 0x20 */ virtual void fn_8019B360(UnkGadgetOwner_800C9CD0 *owner);
     /* 0x24 */ virtual void fn_8019B364(float);
     /* 0x28 */ virtual int fn_8019B368();
-    /* 0x2C */ virtual int fn_8017D788();
+    /* Returns null in the base; EnemyTemplate's override returns TEnemySetTask's field_0x2C, the
+     * gadget owner (the pointer return is inferred from that member's type). */
+    /* 0x2C */ virtual UnkGadgetOwner_800C9CD0 *fn_8017D788();
 };
 CHECK_SIZEOF(EnemySetFunc, 0x4);
 

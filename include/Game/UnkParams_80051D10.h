@@ -12,7 +12,7 @@ namespace Weapon {
 class LockonTarget;
 } // namespace Weapon
 
-/* The 0x48-byte block that the constructors at 0x80051D10 and 0x800693AC build (placeholder name;
+/* The 0x44-byte block that the constructors at 0x80051D10 and 0x800693AC build (placeholder name;
  * the original class is unknown). The first copies the owner and the lock-on target, stores the
  * translation of the matrix at 0x10, the matrix's rotation applied to a constant vector at 0x1C, a
  * copy of arg4 at 0x28 and arg2 at 0x34; the second copies the owner, leaves the lock-on target
@@ -42,10 +42,12 @@ class UnkParams_80051D10 {
     /* 0x1C */ Fn8040Vector3 field_0x1C;
     /* 0x28 */ Fn8040Vector3 field_0x28;
     /* 0x34 */ int field_0x34;
-    /* An object that fn_80051EB4 constructs and fn_80051DBC destroys (type unknown). */
-    /* 0x38 */ u8 field_0x38[0x10];
+    /* An object that fn_80051EB4 constructs (its constructor, 0x80051EE4, clears three words) and
+     * fn_80051DBC destroys (type unknown). BkWormBase's stack frame at 0x80192608 leaves 0x44
+     * bytes for the block (the other users' code is the same with 0x44 and 0x48). */
+    /* 0x38 */ u8 field_0x38[0xC];
 };
-CHECK_SIZEOF(UnkParams_80051D10, 0x48);
+CHECK_SIZEOF(UnkParams_80051D10, 0x44);
 
 extern "C" {
 /* Passes params to the function at 0x8 of the 0x14-byte record that the pointer at index kind of
