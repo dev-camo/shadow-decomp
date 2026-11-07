@@ -409,7 +409,7 @@ void CProject::fn_8036C8E0(const OrderChangeList::iterator &change) {
             break;
         }
     }
-    if (scene.Get() != NULL) {
+    if (scene != NULL) {
         m_drawOrder.insert(std::pair<f32, RCPtr<CScene> >(scene->fn_80365424(), scene));
     }
 }

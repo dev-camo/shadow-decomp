@@ -68,6 +68,12 @@ template <class T> class RCPtr : public CBase {
         return field_0x0 == other.field_0x0;
     }
 
+    /* Inferred comparison: independently reads each held object, treating an empty handle as null. */
+    bool operator!=(const RCPtr &other) const {
+        return (field_0x0 != NULL ? field_0x0->m_pObject : NULL) !=
+               (other.field_0x0 != NULL ? other.field_0x0->m_pObject : NULL);
+    }
+
     /* Releases the held object and takes object, returning this pointer (names inferred; the
      * game's copy at 0x8035EC38 in the USA release returns its first argument). The object is
      * released with delete (the only policy this instance uses). */

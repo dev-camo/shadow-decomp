@@ -794,7 +794,7 @@ config.libs = [
                 # the original's 319) differs in 201 (105): the original copies the vertices that
                 # change layout word by word through integer registers and addresses some stores
                 # differently. The DeleteRelease RCPtr::Assign has the original 120-word size and
-                # differs only in the holder allocation line: 141 in csdRCObject.h versus native
+                # differs only in the holder allocation line: 147 in csdRCObject.h versus native
                 # 410. Reset and the holder's constructor come after RenderState::End, as in the
                 # original; the out-of-line CMemoryAlloc::AllocObject that the holder allocation
                 # emits after them is a weak copy of a function the game has at 0x8003DF84.
@@ -825,7 +825,7 @@ config.libs = [
                 # constructor differs only in passing line 141 for line 70. InitLibraryRW (139
                 # words) differs in 25 only by the .bss offsets of its function-local statics: the
                 # original has 12 more bytes before the first record. The holder's Assign (at
-                # 0x8036342C, 120 words) differs only in its holder allocation line, 141 versus
+                # 0x8036342C, 120 words) differs only in its holder allocation line, 147 versus
                 # native 410 in csdRCObject.h. Weak copies of the allocator's default slots and of
                 # the CTexList, CMemoryAlloc and RCObject vtables are also emitted here. .data
                 # differs as well: the vtables come out in a different order from the original's.
@@ -1530,9 +1530,11 @@ config.libs = [
             # instruction-edit distance. Allocation lines, inlining and stack/register choices
             # remain. LoadFile combines the original cmplwi and mr into one mr. instruction;
             # in 8036C318 the source loads before two prologue stores instead of after them.
-            # In fn_8036C8E0, the original constructs a null RCPtr<CScene>, compares the
-            # two held objects with independent null checks, then destroys the temporary before
-            # branching. This source tests scene.Get() against null and omits those two calls.
+            # In fn_8036C8E0, both versions construct a null RCPtr<CScene>, read the two held
+            # objects with independent null checks and destroy the temporary before branching.
+            # The original saves the comparison result before destruction; the source saves the
+            # two object pointers and compares them after destruction. Iterator loads and the
+            # prologue also differ.
             # Definitions follow descending established original addresses. Of the 169 paired
             # bodies, 111 retain original relative order; generated helper order still differs.
             # USA address  Native bytes  Source bytes  Different words  Native tail  Source tail
@@ -1541,7 +1543,7 @@ config.libs = [
             # 8036C0C4        388           388               1            0            0
             # 8036C318         84            84               3            0            0
             # 8036C46C        248           248               1            0            0
-            # 8036C8E0        412           348              67           16            0
+            # 8036C8E0        412           400              58            3            0
             # 8036D054        104           136              22            0            8
             # 8036D2FC        276           276               1            0            0
             # 8036D448        180           180               1            0            0
@@ -1570,7 +1572,7 @@ config.libs = [
             # Scene, SceneList, CTexList, CNode, SceneCallback and UnkNodePayload references.
             # The pointer association and CBase inheritance remain inferred as in csdRCObject.h;
             # these emitted names do not identify the unnamed native tables. Holder allocations
-            # pass line 141, including the explicit DeleteRelease Reset overload.
+            # pass line 147, including the explicit DeleteRelease Reset overload.
             # Inline reference-copy constructors and assignment operators call the inferred
             # counted-reference helpers directly. Their weak copies have the original bodies and
             # call targets; the combined source link retains the original external definitions.
