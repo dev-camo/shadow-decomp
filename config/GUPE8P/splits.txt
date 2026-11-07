@@ -3126,36 +3126,12 @@ Game/fn_8040CC5C.cpp:
 	.sdata2     start:0x805FAD78 end:0x805FAD80
 
 Game/fn_8040CD74.cpp:
-	.text       start:0x8040CD74 end:0x8040CE60
-
-Game/fn_8040CE60.c:
-	.text       start:0x8040CE60 end:0x8040CE74
-
-Game/fn_8040CE74.cpp:
-	extab       start:0x80005860 end:0x80005868
-	extabindex  start:0x800077A8 end:0x800077B4
-	.text       start:0x8040CE74 end:0x8040CEE8
-
-Game/fn_8040CEE8.cpp:
-	extab       start:0x80005868 end:0x80005870
-	extabindex  start:0x800077B4 end:0x800077C0
-	.text       start:0x8040CEE8 end:0x8040CF2C
-
-Game/fn_8040CF2C.c:
-	.text       start:0x8040CF2C end:0x8040CF50
-
-Game/fn_8040CF50.cpp:
-	extab       start:0x80005870 end:0x80005878
-	extabindex  start:0x800077C0 end:0x800077CC
-	.text       start:0x8040CF50 end:0x8040CF90
-
-Game/fn_8040CF90.cpp:
-	.text       start:0x8040CF90 end:0x8040D02C
-
-Game/fn_8040D02C.cpp:
-	.text       start:0x8040D02C end:0x8040D044
+	extab       start:0x80005860 end:0x80005878
+	extabindex  start:0x800077A8 end:0x800077CC
+	.text       start:0x8040CD74 end:0x8040D044
 	.ctors      start:0x804AA054 end:0x804AA058
 	.bss        start:0x805E07A0 end:0x805E07B0
+	.sdata2     start:0x805FAD80 end:0x805FAD88
 
 Game/fn_8040D044.cpp:
 	extab       start:0x80005878 end:0x80005880
