@@ -44,6 +44,9 @@ class CrashInfoCtrl {
     /* The float at +0x20 of the selected record, or 1.0 when there is none (behaviour inferred
      * from its body; constness inferred). */
     float fn_802085FC() const;
+    /* The nullable string at +0x1C of the selected record (the one fn_80208618 searches for);
+     * constness is inferred. */
+    const char *fn_80208768() const;
 
     /* 0x00 */ UnkResource_80012700 *field_0x0;
     /* 0x04 */ const UnkCrashRecord_802087F4 *field_0x4;
