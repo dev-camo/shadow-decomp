@@ -58,11 +58,11 @@ class PowerDeviceNaked : public Gadget {
     /* Reads the position, the rotation, the parameters and the tag from the owner (name
      * inferred). */
     void ReadOwner(UnkGadgetOwner_800C9CD0 *owner);
-    /* Places both models at the character info, the object at 0x38 above it and, while there is
-     * one, the second object above it (name inferred). */
+    /* When both models exist, places them at the character info, m_object above it and, while
+     * there is one, m_object2 above it (name inferred). */
     void UpdateModelMatrix();
-    /* Gives the two core parts the colours of the damage level and passes the level's id to the
-     * object at 0x58 (name inferred). */
+    /* Gives each core part that fn_80162298 finds the colour of the damage level and passes the
+     * level's id to m_target when there is one (name inferred). */
     void ApplyDamageLevel();
     /* Enters state 0 (the core is intact and can be attacked) or state 1 (the core is broken)
      * (name inferred). */
@@ -92,8 +92,7 @@ class PowerDeviceNaked : public Gadget {
 };
 CHECK_SIZEOF(PowerDeviceNaked, 0x90);
 
-/* The ids that ApplyDamageLevel passes to the object at 0x58 for each damage level (name
- * inferred). */
+/* The ids that ApplyDamageLevel passes to m_target for each damage level (name inferred). */
 static const s32 s_levelTargetIds[4] = {0, 1, 2, 3};
 
 /* The state that the owner remembers between the creations of the gadget (class name from RTTI,
@@ -110,10 +109,9 @@ class PowerDeviceNakedSetState : public SetAdapterState {
 };
 CHECK_SIZEOF(PowerDeviceNakedSetState, 0xC);
 
-/* Values that the original builds at startup (names inferred from their uses): the height of the
- * object at 0x38 above the character info, the colours of the two core parts for each damage
- * level, the height of the second object above the character info and the value passed to its
- * fn_802B4498. */
+/* Values that the original builds at startup (names inferred from their uses): the height of
+ * m_object above the character info, the colours of the two core parts for each damage level,
+ * the height of m_object2 above the character info and the value passed to its fn_802B4498. */
 static UnkStartupFloat_800E2570 s_objectHeight(35.0f);
 static UnkDebugColor_802E0E84 s_part0Colors[4] = {
     UnkDebugColor_802E0E84(0xFF, 0x13, 0xFF, 0x68),
