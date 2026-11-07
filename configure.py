@@ -2610,9 +2610,11 @@ config.libs = [
             # instruction-layout differences (2492 versus 2568 bytes).
             Object(NonMatching, "Game/fn_80430A54.cpp", cflags=cflags_effect_rw3),
             Object(Matching, "Game/fn_804340CC.cpp", cflags=cflags_effect_rw3),
-            # Render and the Data48 vertex builder retain branch/instruction-layout and
-            # register differences; the Shimmer constructor differs by one instruction and
-            # fn_80436128 retains seventeen register-word differences.
+            # Render retains 656 paired instruction-word differences and one source tail
+            # word (source 3660 bytes, native 3656). The Data48 vertex builder retains 419
+            # paired differences and two native tail words (source 1956 bytes, native 1964).
+            # Both retain instruction-layout and register differences. The Shimmer ctor differs
+            # by one instruction; fn_80436128 retains seventeen register-word differences.
             Object(NonMatching, "Game/fn_804342CC.cpp", cflags=cflags_effect_rw3),
             # Matching workaround: these two units address literals independently in the
             # original. Keep unpooled addressing until their original build options are known.
