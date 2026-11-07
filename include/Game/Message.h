@@ -33,6 +33,10 @@ class MessageManage {
      * (fn_802EEB9C) at 0x4 and 0x8. Mission passes its own id and index (parameter types
      * inferred). */
     MessageManage(int id, int index);
+    /* Empty and not virtual (the vtable has no destructor slot). BasicMessageManage's destructor
+     * stores this class's vtable after destroying its own members; with the implicitly declared
+     * destructor that store is left out. */
+    ~MessageManage() {}
     virtual void fn_802EBDF0() = 0;
     virtual void fn_802EBCF0() = 0;
     virtual void fn_802EB9E0() = 0;

@@ -1936,6 +1936,41 @@ config.libs = [
             Object(Matching, "Game/EggMeca411.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EggMeca310.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/TimerCountMission.cpp", cflags=cflags_game_cpp),
+            # The game code and the boost instances match: of the 71 functions, 54 have a
+            # counterpart in this object and 49 of them are identical in instructions and
+            # relocation targets (relocatable-object comparison; addresses are the USA
+            # release's). The other five are instances of
+            # std::vector<boost::shared_ptr<Mission::BasicMessage> > and std::remove_if from the
+            # MSL headers. Word counts compare the raw words of the relocatable objects, so a
+            # call to a different function is not counted (such callees are named separately).
+            # They are given by position and aligned (instructions matched up, branch
+            # displacements masked):
+            # - the vector destructor, 0x50 bytes against 0x4C: the original tests this for null
+            #   twice, as an expanded base-class destructor does; 14 of 20 words by position,
+            #   aligned 1 original-only word;
+            # - the vector constructor: the same 12 words, but it calls __vector_obj's
+            #   constructor where the original calls a further layer (0x802EC088);
+            # - insert, 0x310 against 0x31C bytes: 148 words by position, aligned 24 paired
+            #   differing, 17 original-only and 20 source-only;
+            # - reserve, 0x10C against 0xFC bytes: 55 words by position, aligned 7 paired
+            #   differing, 6 original-only and 2 source-only. insert and reserve call the
+            #   __vector_obj constructor and swap where the original calls small helpers for the
+            #   capacity, the maximum size, a constructor from the allocator and swap;
+            # - remove_if, 0x70 bytes: 11 words by position, aligned 3 paired differing, 1
+            #   original-only and 1 source-only, register and scheduling only: the original
+            #   compares find_if's result in r3 and copies it to r5 afterwards, this build copies
+            #   it first; opcodes, relocation targets and load/store counts are identical.
+            # 17 helpers of the original (146 words) have no counterpart here: the vector
+            # constructor chain (4, from 0x802EC088), swap (5, from 0x802ECA44), the constructor
+            # from the allocator (3, from 0x802ECB6C), the capacity (2, from 0x802ECCD8) and the
+            # maximum size (3, from 0x802ECD00). The data match by contents, relocation targets
+            # included, once the compiled copies that the original unit does not have are set
+            # aside: 4 .rodata strings (the names and what() texts of std::exception and
+            # std::bad_alloc), 4 .data objects (the std::exception, std::bad_alloc and
+            # boost::detail::sp_counted_base vtables and the std::bad_alloc base list), 2 .sdata
+            # RTTI records (std::exception, std::bad_alloc) and 8 .sbss objects (the boost
+            # placeholders _2 to _9). Neither object has .sdata2.
+            Object(NonMatching, "Game/BasicMessage.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Message.cpp", cflags=cflags_game_cpp),
             # Every function except UpdateBody, the retained data and all retained relocations
             # match once the linker-discarded definitions (43 weak copies and nine local ones,

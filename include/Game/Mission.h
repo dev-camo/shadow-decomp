@@ -85,8 +85,8 @@ class Mission {
     /* 0x10 */ int field_0x10;
     /* 0x14 */ u8 field_0x14; /* a gadget stores 1 here */
     /* 0x15 */ u8 field_0x15;
-    /* A Mission::BasicMessageManage (constructed by fn_802EBFE0, destroyed by fn_802EBF14); not
-     * mapped here. */
+    /* A Mission::BasicMessageManage (Game/BasicMessage.h; the mission's constructor and destructor
+     * call its constructor and destructor); not mapped here. */
     /* 0x18 */ u8 field_0x18[0x40 - 0x18];
 };
 CHECK_SIZEOF(Mission, 0x40);

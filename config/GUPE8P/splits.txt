@@ -1396,6 +1396,13 @@ Game/TimerCountMission.cpp:
 	.data       start:0x80559B00 end:0x80559BE0
 	.sdata      start:0x805EC900 end:0x805EC920
 
+Game/BasicMessage.cpp:
+	.text       start:0x802EB9E0 end:0x802ECF8C
+	.rodata     start:0x80507BF0 end:0x80507D68
+	.data       start:0x80559BE0 end:0x80559C58
+	.sdata      start:0x805EC920 end:0x805EC958
+	.sbss       start:0x805F0780 end:0x805F0790
+
 Game/Message.cpp:
 	.text       start:0x802EEA98 end:0x802EEB9C
 	.rodata     start:0x80507EE0 end:0x80507EF8
