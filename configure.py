@@ -902,10 +902,6 @@ config.libs = [
                 # native bytes. Normal links use the original object; the extra copies are not
                 # selected by those links.
                 Object(NonMatching, "Game/CSD/csdmMotionPattern.cpp", cflags=cflags_csd),
-                Object(Matching, "Game/fn_80008D48.c"),
-                Object(Matching, "Game/fn_80008DA4.c"),
-                Object(Matching, "Game/fn_80008E1C.c"),
-                Object(Matching, "Game/fn_800091D0.cpp"),
                 # Matching workaround: -sdata 0 and -use_lmw_stmw on. The target reaches lbl_805C0AF0
                 # and lbl_805C0AF4 with absolute @ha/@l addressing (lis with lwz/addi), not
                 # r13-relative small data (without -sdata 0 the unit is 69% matching), and saves its
@@ -2845,6 +2841,10 @@ config.libs = [
             # point's position into a local component by component, where this build calls the
             # vector's copy constructor).
             Object(NonMatching, "Game/EffectLocusRW3.cpp", cflags=cflags_effect_rw3),
+            Object(Matching, "Game/fn_80008D48.c"),
+            Object(Matching, "Game/fn_80008DA4.c"),
+            Object(Matching, "Game/fn_80008E1C.c"),
+            Object(Matching, "Game/fn_800091D0.cpp"),
         ],
     },
     DolphinLib(
