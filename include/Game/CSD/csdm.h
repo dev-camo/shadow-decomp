@@ -80,16 +80,6 @@ class CFontListRef {
 };
 CHECK_SIZEOF(Chao::CSD::CFontListRef, 0xC);
 
-/* A reference to a scene element: its name, layer and element index (inferred from lookups
- * and use as indices into the palette). */
-struct ElementRef {
-    /* Null marks a failed lookup; the two indices are unspecified in that case. */
-    /* 0x00 */ const char *field_0x0;
-    /* 0x04 */ s32 layer;
-    /* 0x08 */ s32 element;
-};
-CHECK_SIZEOF(Chao::CSD::ElementRef, 0xC);
-
 /* The handle of an element's runtime entry (inferred). */
 class CMotionPatternRef {
   public:
@@ -166,7 +156,7 @@ class CNode : public CElementDataRef, public CNodeListenerSource, public CBase {
 
     /* Argument types are inferred from the scene's native node construction. */
     CNode(ElementData *element, const RCPtr<unsigned char> &ref, CMotionPalette *palette,
-          const ElementRef &elementRef, CScene *scene, const CFontListRef *fonts);
+          const UnkNodeEntry_80366640 &elementRef, CScene *scene, const CFontListRef *fonts);
     virtual ~CNode();
     virtual CNode *GetSender();
 
@@ -324,7 +314,7 @@ class CMotionPalette : public CMotionPaletteRef, public CBase {
 
     /* Constructs the entry of an element as a CMotionPattern in result and returns it (name
      * inferred). */
-    CMotionPattern *GetPattern(CMotionPattern *result, const ElementRef &element);
+    CMotionPattern *GetPattern(CMotionPattern *result, const UnkNodeEntry_80366640 &element);
 };
 CHECK_SIZEOF(Chao::CSD::CMotionPalette, 0xC);
 

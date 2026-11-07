@@ -388,30 +388,27 @@ f32 CScene::GetMotionEnd() const {
 }
 
 RCPtr<CNode> CScene::fn_803666B4(const char *name) {
-    ElementRef element = fn_80366640(name);
+    UnkNodeEntry_80366640 element = fn_80366640(name);
 
-    if (element.field_0x0 != NULL) {
+    if (element.name != NULL) {
         return fn_80366468(&element);
     }
     return RCPtr<CNode>(NULL);
 }
 
-ElementRef CScene::fn_80366640(const char *name) const {
-    const NodeEntry *node = FindNode(name, m_scene);
-    ElementRef result;
+UnkNodeEntry_80366640 CScene::fn_80366640(const char *name) const {
+    const UnkNodeEntry_80366640 *node = FindNode(name, m_scene);
 
     if (node != NULL) {
-        result.field_0x0 = node->name;
-        result.layer = node->field_0x4;
-        result.element = node->field_0x8;
-    } else {
-        /* The original only clears the name; failed lookups leave both indices unspecified. */
-        result.field_0x0 = NULL;
+        return *node;
     }
+    /* The original only clears the name; failed lookups leave both indices unspecified. */
+    UnkNodeEntry_80366640 result;
+    result.name = NULL;
     return result;
 }
 
-RCPtr<CNode> CScene::fn_80366468(const ElementRef *elementRef) {
+RCPtr<CNode> CScene::fn_80366468(const UnkNodeEntry_80366640 *elementRef) {
     if (elementRef != NULL) {
         SceneNodeKey key(elementRef->layer, elementRef->element);
         NodeMap::iterator found = m_nodes.find(key);

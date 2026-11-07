@@ -39,14 +39,14 @@ void CElementDataRef::Attach(ElementData *element, const RCPtr<unsigned char> &r
 }
 
 CNode::CNode(ElementData *element, const RCPtr<unsigned char> &ref, CMotionPalette *palette,
-             const ElementRef &elementRef, CScene *scene, const CFontListRef *fonts)
+             const UnkNodeEntry_80366640 &elementRef, CScene *scene, const CFontListRef *fonts)
     : m_fonts(NULL) {
     Attach(element, ref);
     m_objects = static_cast<NodeObjects *>(Alloc(sizeof(NodeObjects), __FILE__, __LINE__));
     m_pattern = palette->GetPattern(&m_objects->pattern, elementRef);
     m_pattern->m_aspect = scene->GetAspect();
     m_pattern->m_node = this;
-    field_0x30 = elementRef.field_0x0;
+    field_0x30 = elementRef.name;
     m_scene = scene;
     if (fonts != NULL) {
         m_fonts = ::new (&m_objects->fonts) CFontList(*fonts);

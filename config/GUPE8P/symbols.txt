@@ -30306,7 +30306,7 @@ Clear__Q34Chao3CSD17CMotionPatternRefFv = .text:0x803662EC; // type:function siz
 Reset__Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>FPQ34Chao3CSD5CNode = .text:0x80366328; // type:function size:0x34
 fn_8036635C__Q34Chao3CSD6CSceneCFv = .text:0x8036635C; // type:function size:0x64
 fn_803663C0__Q34Chao3CSD6CSceneFRCQ34Chao3CSD24RCPtr<Q34Chao3CSD5CNode> = .text:0x803663C0; // type:function size:0xA8
-fn_80366468__Q34Chao3CSD6CSceneFPCQ34Chao3CSD10ElementRef = .text:0x80366468; // type:function size:0x174
+fn_80366468__Q34Chao3CSD6CSceneFPCQ34Chao3CSD21UnkNodeEntry_80366640 = .text:0x80366468; // type:function size:0x174
 __ct__Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>FPQ34Chao3CSD5CNodeQ44Chao3CSD24RCPtr<Q34Chao3CSD5CNode>13DeleteRelease = .text:0x803665DC; // type:function size:0x38
 find__Q23std199map<Q34Chao3CSD12SceneNodeKey,Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>,Q34Chao3CSD19SceneNodeKeyCompare,Q23std89allocator<Q23std70pair<CQ34Chao3CSD12SceneNodeKey,Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>>>>FRCQ34Chao3CSD12SceneNodeKey = .text:0x80366614; // type:function size:0x2C
 fn_80366640__Q34Chao3CSD6CSceneCFPCc = .text:0x80366640; // type:function size:0x74
@@ -30397,7 +30397,7 @@ __size__Q23std434__tree<Q34Chao3CSD12SceneNodeKey,Q23std70pair<CQ34Chao3CSD12Sce
 @12@__dt__Q34Chao3CSD6CSceneFv = .text:0x8036871C; // type:function size:0x8
 @12@GetSender__Q34Chao3CSD6CSceneFv = .text:0x80368724; // type:function size:0x8
 Rebuild__Q34Chao3CSD14CMotionPaletteFRCQ34Chao3CSD13CSceneDataRefRCQ34Chao3CSD12CFontListRef = .text:0x8036872C; // type:function size:0x94
-GetPattern__Q34Chao3CSD14CMotionPaletteFPQ34Chao3CSD14CMotionPatternRCQ34Chao3CSD10ElementRef = .text:0x803687C0; // type:function size:0x64
+GetPattern__Q34Chao3CSD14CMotionPaletteFPQ34Chao3CSD14CMotionPatternRCQ34Chao3CSD21UnkNodeEntry_80366640 = .text:0x803687C0; // type:function size:0x64
 __ct__Q34Chao3CSD14CMotionPatternFPQ34Chao3CSD18MotionPaletteEntryRCQ34Chao3CSD9RCPtr<Uc> = .text:0x80368824; // type:function size:0x5C
 Attach__Q34Chao3CSD14CMotionPatternFPQ34Chao3CSD18MotionPaletteEntryRCQ34Chao3CSD9RCPtr<Uc> = .text:0x80368880; // type:function size:0x44
 __ct__Q34Chao3CSD14CMotionPaletteFPCQ34Chao3CSD9SceneDataPCQ34Chao3CSD8FontList = .text:0x803688C4; // type:function size:0x8C
@@ -30499,7 +30499,7 @@ __dt__Q23std128__list_obj_imp<Q34Chao3CSD33RCPtr<Q34Chao3CSD13CNodeCallback>,Q23
 __dt__Q23std206map<Q34Chao3CSD12EntryChannel,Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>,Q23std31less<Q34Chao3CSD12EntryChannel>,Q23std89allocator<Q23std70pair<CQ34Chao3CSD12EntryChannel,Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>>>>Fv = .text:0x8036B1A8; // type:function size:0x4C scope:weak
 __dt__Q23std441__tree<Q34Chao3CSD12EntryChannel,Q23std70pair<CQ34Chao3CSD12EntryChannel,Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>>,Q33std206map<Q34Chao3CSD12EntryChannel,Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>,Q23std31less<Q34Chao3CSD12EntryChannel>,Q23std89allocator<Q23std70pair<CQ34Chao3CSD12EntryChannel,Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>>>>13value_compare,Q23std89allocator<Q23std70pair<CQ34Chao3CSD12EntryChannel,Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>>>>Fv = .text:0x8036B1F4; // type:function size:0x6C scope:weak
 root__Q23std441__tree<Q34Chao3CSD12EntryChannel,Q23std70pair<CQ34Chao3CSD12EntryChannel,Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>>,Q33std206map<Q34Chao3CSD12EntryChannel,Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>,Q23std31less<Q34Chao3CSD12EntryChannel>,Q23std89allocator<Q23std70pair<CQ34Chao3CSD12EntryChannel,Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>>>>13value_compare,Q23std89allocator<Q23std70pair<CQ34Chao3CSD12EntryChannel,Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>>>>Fv = .text:0x8036B260; // type:function size:0x20 scope:weak
-__ct__Q34Chao3CSD5CNodeFPQ34Chao3CSD11ElementDataRCQ34Chao3CSD9RCPtr<Uc>PQ34Chao3CSD14CMotionPaletteRCQ34Chao3CSD10ElementRefPQ34Chao3CSD6CScenePCQ34Chao3CSD12CFontListRef = .text:0x8036B280; // type:function size:0x10C
+__ct__Q34Chao3CSD5CNodeFPQ34Chao3CSD11ElementDataRCQ34Chao3CSD9RCPtr<Uc>PQ34Chao3CSD14CMotionPaletteRCQ34Chao3CSD21UnkNodeEntry_80366640PQ34Chao3CSD6CScenePCQ34Chao3CSD12CFontListRef = .text:0x8036B280; // type:function size:0x10C
 Attach__Q34Chao3CSD15CElementDataRefFPQ34Chao3CSD11ElementDataRCQ34Chao3CSD9RCPtr<Uc> = .text:0x8036B38C; // type:function size:0x44
 Clear__Q34Chao3CSD15CElementDataRefFv = .text:0x8036B3D0; // type:function size:0x3C
 __ct__Q23std206map<Q34Chao3CSD12EntryChannel,Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>,Q23std31less<Q34Chao3CSD12EntryChannel>,Q23std89allocator<Q23std70pair<CQ34Chao3CSD12EntryChannel,Q34Chao3CSD24RCPtr<Q34Chao3CSD5CNode>>>>Fv = .text:0x8036B40C; // type:function size:0x38 scope:weak

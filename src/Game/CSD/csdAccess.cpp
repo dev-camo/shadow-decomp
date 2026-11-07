@@ -114,7 +114,8 @@ void GetChannelValue(u32 *value, int channel, u32 channelMask, const u32 *values
 }
 
 static int CompareNodeNames(const void *a, const void *b) {
-    return strcmp(static_cast<const NodeEntry *>(a)->name, static_cast<const NodeEntry *>(b)->name);
+    return strcmp(static_cast<const UnkNodeEntry_80366640 *>(a)->name,
+                  static_cast<const UnkNodeEntry_80366640 *>(b)->name);
 }
 
 int CompareNames(const void *a, const void *b) {
@@ -170,13 +171,13 @@ static SceneData *FindScene(const char *name, const SceneFolder *folder, const c
 }
 #pragma auto_inline reset
 
-const NodeEntry *FindNode(const char *name, const SceneData *scene) {
-    NodeEntry key;
+const UnkNodeEntry_80366640 *FindNode(const char *name, const SceneData *scene) {
+    UnkNodeEntry_80366640 key;
     key.name = name;
-    key.field_0x4 = -1;
-    key.field_0x8 = -1;
-    const NodeEntry *entry = static_cast<const NodeEntry *>(
-        bsearch(&key, scene->nodes, scene->nodeCount, sizeof(NodeEntry), CompareNodeNames));
+    key.layer = -1;
+    key.element = -1;
+    const UnkNodeEntry_80366640 *entry = static_cast<const UnkNodeEntry_80366640 *>(bsearch(
+        &key, scene->nodes, scene->nodeCount, sizeof(UnkNodeEntry_80366640), CompareNodeNames));
     /* Matching workaround: the test gives the original's 0x5C bytes; revisit on a natural form. */
     if (entry != NULL) {
         return entry;
