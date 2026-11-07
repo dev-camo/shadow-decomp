@@ -87,6 +87,12 @@ class EffectManagerRW3 : public System::EffectManager {
     /* 0x48 */ UnkEffectManagerRW3Data48 *field_0x48;
     /* 0x4C */ UnkEffectManagerRW3Data4C *field_0x4C;
     /* 0x50 */ UnkEffectManagerRW3Data50 *field_0x50;
+
+  private:
+    /* Copying is disabled in this reconstructed interface because the copy contract is
+     * unrecovered and memberwise copying would alias the owned raster and cache list. */
+    EffectManagerRW3(const EffectManagerRW3 &);
+    EffectManagerRW3 &operator=(const EffectManagerRW3 &);
 };
 /* Extent inferred from the final pointer at 0x50 and the derived manager's field at 0x54. */
 CHECK_SIZEOF(EffectManagerRW3, 0x54);
