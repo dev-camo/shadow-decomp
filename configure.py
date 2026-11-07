@@ -2787,6 +2787,13 @@ config.libs = [
             Object(NonMatching, "Game/fn_804342CC.cpp", cflags=cflags_effect_rw3),
             # Matching workaround: these two units address literals independently in the
             # original. Keep unpooled addressing until their original build options are known.
+            # fn_804372A8 retains six register-word differences; fn_80437118 (400 bytes)
+            # and the manager wrapper (44 bytes) have identical instruction words.
+            # fn_804376EC is 1312 versus 1320 bytes, with 205 common-position word
+            # differences and two unpaired original words. Scheduling and address selection
+            # differ: the original uses two additional addi instructions for the 0.5f and
+            # unsigned-conversion-bias addresses, which this build folds into loads.
+            # The cause of the address-selection difference remains unresolved.
             Object(NonMatching, "Game/fn_80437118.cpp", cflags=cflags_effect),
             Object(NonMatching, "Game/fn_80437C40.cpp", cflags=cflags_effect),
             Object(Matching, "Game/EffectGlobalParamRW3.cpp", cflags=cflags_effect_rw3),
