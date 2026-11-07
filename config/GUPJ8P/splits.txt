@@ -253,6 +253,15 @@ Game/Container.cpp:
 	.sbss       start:0x805EEFD0 end:0x805EF020
 	.sdata2     start:0x805F3CB0 end:0x805F3D30
 
+Game/ContainerBehavior.cpp:
+	.text       start:0x800F90D8 end:0x800F996C
+	.ctors      start:0x804AA36C end:0x804AA370
+	.rodata     start:0x804BA9D8 end:0x804BA9F0
+	.data       start:0x80525C00 end:0x80525C10
+	.bss        start:0x805800A0 end:0x805800B0
+	.sdata      start:0x805E5B98 end:0x805E5BA0
+	.sdata2     start:0x805F3D30 end:0x805F3D48
+
 Game/DashPanel.cpp:
 	.text       start:0x800FF39C end:0x80100544
 	.rodata     start:0x804BB288 end:0x804BB418

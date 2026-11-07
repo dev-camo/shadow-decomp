@@ -40,12 +40,17 @@ typedef bool (*UnkProbePredicate)(const UnkProbeFilterRecord *record);
  * 0x2 of the node's word at 0x20 is clear, the node's word at 0x10 is 0, the pointer is not null
  * and the object's word at 0x14 is -1. The word at 0x1C is a flags word: Meteors tests it with the
  * same bits as a record's flags. It may be the word that CharaColliBase::UnkSlot20 stores at 0x1C
- * of the object at the probe's 0x5C (inferred). Only that word is declared: the checks cover this
- * 0x20-byte view, and the size of the complete object is unknown. */
+ * of the object at the probe's 0x5C (inferred). Only the words that code reads are declared: the
+ * checks cover this 0x20-byte view, and the size of the complete object is unknown. */
 struct UnkProbeObject_800265A4 {
-    /* 0x00 */ u8 field_0x0[0x1C];
+    /* 0x00 */ u8 field_0x0[0x14];
+    /* Compared with -1 by the node's destructor and fn_800F8E88, and with 1 by the code at
+     * 0x801B9E60. */
+    /* 0x14 */ s32 field_0x14;
+    /* 0x18 */ u8 field_0x18[0x1C - 0x18];
     /* 0x1C */ u32 flags;
 };
+CHECK_OFFSETOF(UnkProbeObject_800265A4, field_0x14, 0x14);
 CHECK_OFFSETOF(UnkProbeObject_800265A4, flags, 0x1C);
 CHECK_SIZEOF(UnkProbeObject_800265A4, 0x20);
 
@@ -55,6 +60,15 @@ struct UnkProbeNode_80021FE4 {
      * it for each node, and SecurityLaser.cpp and SetWeapon.cpp, like most callers of fn_80021E24,
      * delete the node that function returns with it. */
     ~UnkProbeNode_80021FE4();
+
+    /* Whether the word at 0x14 of the object at 0x0C is -1 (placeholder name; behaviour from the
+     * original's out-of-line copy at 0x800F8E88, which ContainerBehavior::ProbeGround and the code
+     * at 0x801B9E54 and 0x802A2980 call in the original). The compiler expands this inline form
+     * where it is called; the source form that gives the original's call and its out-of-line copy
+     * is not recovered (see configure.py). */
+    bool fn_800F8E88() {
+        return field_0xC->field_0x14 == -1;
+    }
 
     /* 0x00 */ boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliBase> target;
     /* 0x08 */ u8 field_0x8[0xC - 0x8];
