@@ -105,6 +105,15 @@ Game/fn_8005A300.cpp:
 Game/fn_8006127C.cpp:
 	.text       start:0x80061368 end:0x80061380
 
+Game/WeaponStickBase.cpp:
+	.text       start:0x8006795C end:0x80068B34
+	.ctors      start:0x804AA2BC end:0x804AA2C0
+	.rodata     start:0x804AEC30 end:0x804AED58
+	.data       start:0x8051FE50 end:0x8051FEB0
+	.sdata      start:0x805E43E8 end:0x805E4400
+	.sbss       start:0x805EE8D0 end:0x805EE8E8
+	.sdata2     start:0x805F2828 end:0x805F2850
+
 Game/fn_8007D624.cpp:
 	.text       start:0x8007D72C end:0x8007D7A0
 
@@ -186,6 +195,14 @@ Game/CityChaosEmerald.cpp:
 	.sdata      start:0x805E5728 end:0x805E5750
 	.sbss       start:0x805EEE50 end:0x805EEE60
 	.sdata2     start:0x805F3970 end:0x805F3988
+
+Game/FallBuildingHolder.cpp:
+	.text       start:0x800E293C end:0x800E4294
+	.rodata     start:0x804B8A90 end:0x804B8D70
+	.data       start:0x805247C8 end:0x80524978
+	.sdata      start:0x805E5788 end:0x805E57F0
+	.sbss       start:0x805EEE78 end:0x805EEE90
+	.sdata2     start:0x805F39C0 end:0x805F39D8
 
 Game/BreakableOrnament.cpp:
 	.text       start:0x800E4294 end:0x800E5DA4
@@ -554,6 +571,24 @@ Game/Weight.cpp:
 	.sbss       start:0x805EF438 end:0x805EF458
 	.sdata2     start:0x805F46F0 end:0x805F4768
 
+Game/ChaoHolder.cpp:
+	.text       start:0x8012DE74 end:0x8012FA1C
+	.ctors      start:0x804AA394 end:0x804AA398
+	.rodata     start:0x804BED90 end:0x804BEFA8
+	.data       start:0x80528BC0 end:0x80528D10
+	.sdata      start:0x805E6490 end:0x805E64E0
+	.sbss       start:0x805EF470 end:0x805EF498
+	.sdata2     start:0x805F4788 end:0x805F47E0
+
+Game/Cream.cpp:
+	.text       start:0x801345B0 end:0x8013564C
+	.ctors      start:0x804AA39C end:0x804AA3A0
+	.rodata     start:0x804BF818 end:0x804BF910
+	.data       start:0x80529138 end:0x805291C0
+	.sdata      start:0x805E65A0 end:0x805E65D8
+	.sbss       start:0x805EF4F8 end:0x805EF518
+	.sdata2     start:0x805F48B0 end:0x805F48E0
+
 Game/FireRing.cpp:
 	.text       start:0x8013564C end:0x80136E64
 	.rodata     start:0x804BF910 end:0x804BFB28
@@ -851,6 +886,23 @@ Game/ElecFireWall.cpp:
 	.sbss       start:0x805F0158 end:0x805F0168
 	.sdata2     start:0x805F6BE0 end:0x805F6C50
 
+Game/ElecCircuit.cpp:
+	.text       start:0x801F7BD4 end:0x801F8040
+	.rodata     start:0x804EBFC8 end:0x804EBFF0
+	.data       start:0x80542948 end:0x805429B0
+	.sdata      start:0x805E9618 end:0x805E9638
+	.sdata2     start:0x805F6C50 end:0x805F6C68
+
+Game/ElecCircuitEntrance.cpp:
+	.text       start:0x801F8040 end:0x801F8F74
+	.ctors      start:0x804AA444 end:0x804AA448
+	.rodata     start:0x804EBFF0 end:0x804EC128
+	.data       start:0x805429B0 end:0x80542AA0
+	.bss        start:0x805841A0 end:0x805841B0
+	.sdata      start:0x805E9638 end:0x805E9678
+	.sbss       start:0x805F0168 end:0x805F0178
+	.sdata2     start:0x805F6C68 end:0x805F6C98
+
 Game/ElecCristalWall.cpp:
 	.text       start:0x801F8F74 end:0x801FA2B8
 	.ctors      start:0x804AA448 end:0x804AA44C
@@ -860,6 +912,13 @@ Game/ElecCristalWall.cpp:
 	.sbss       start:0x805F0178 end:0x805F0198
 	.sdata2     start:0x805F6C98 end:0x805F6CF0
 
+Game/ElecCristalWallSwitch.cpp:
+	.text       start:0x801FA2B8 end:0x801FA5F8
+	.rodata     start:0x804EC278 end:0x804EC2A0
+	.data       start:0x80542BB0 end:0x80542C68
+	.sdata      start:0x805E96A8 end:0x805E96C8
+	.sdata2     start:0x805F6CF0 end:0x805F6D08
+
 Game/ElecSmallCube.cpp:
 	.text       start:0x8021B0CC end:0x8021C080
 	.rodata     start:0x804F0AE0 end:0x804F0BF0
@@ -867,6 +926,13 @@ Game/ElecSmallCube.cpp:
 	.sdata      start:0x805E9E50 end:0x805E9E78
 	.sbss       start:0x805F0348 end:0x805F0358
 	.sdata2     start:0x805F7290 end:0x805F72C8
+
+Game/ElecPillar.cpp:
+	.text       start:0x8021C93C end:0x8021CCE8
+	.rodata     start:0x804F0C18 end:0x804F0C40
+	.data       start:0x80546030 end:0x80546098
+	.sdata      start:0x805E9E98 end:0x805E9EB8
+	.sdata2     start:0x805F7308 end:0x805F7320
 
 Game/Meteor.cpp:
 	.text       start:0x8021CCE8 end:0x8021E148
@@ -965,6 +1031,20 @@ Game/ElecKyuu.cpp:
 	.sbss       start:0x805F04B0 end:0x805F04C0
 	.sdata2     start:0x805F7758 end:0x805F7780
 
+Game/ElecSmallPillar.cpp:
+	.text       start:0x80231328 end:0x802316D0
+	.rodata     start:0x804F2C00 end:0x804F2C38
+	.data       start:0x80547620 end:0x80547688
+	.sdata      start:0x805EA298 end:0x805EA2B8
+	.sdata2     start:0x805F7780 end:0x805F7798
+
+Game/ElecWakka.cpp:
+	.text       start:0x802316D0 end:0x80231A2C
+	.rodata     start:0x804F2C38 end:0x804F2C60
+	.data       start:0x80547688 end:0x805476F0
+	.sdata      start:0x805EA2B8 end:0x805EA2D8
+	.sdata2     start:0x805F7798 end:0x805F77B0
+
 Game/MissionClearCollision.cpp:
 	.text       start:0x80231A2C end:0x80231E98
 	.ctors      start:0x804AA4F0 end:0x804AA4F4
@@ -993,6 +1073,13 @@ Game/GravityChangeSwitch.cpp:
 	.sdata      start:0x805EA740 end:0x805EA768
 	.sbss       start:0x805F0568 end:0x805F0578
 	.sdata2     start:0x805F7AA0 end:0x805F7AC8
+
+Game/GravityChangeCollision.cpp:
+	.text       start:0x80247A38 end:0x80247EB4
+	.rodata     start:0x804F4360 end:0x804F43A0
+	.data       start:0x80548FF0 end:0x80549120
+	.sdata      start:0x805EA768 end:0x805EA788
+	.sdata2     start:0x805F7AC8 end:0x805F7AF0
 
 Game/ElecAccessPanel.cpp:
 	.text       start:0x80248D1C end:0x80249C3C
@@ -1030,6 +1117,13 @@ Game/DarkSpinEntrance.cpp:
 	.bss        start:0x80584690 end:0x805846A0
 	.sdata      start:0x805EAAF0 end:0x805EAB10
 	.sdata2     start:0x805F7D88 end:0x805F7DB0
+
+Game/GravitySignBoard.cpp:
+	.text       start:0x802590D8 end:0x80259740
+	.rodata     start:0x804F54D8 end:0x804F5508
+	.data       start:0x8054A5C8 end:0x8054A630
+	.sdata      start:0x805EAB10 end:0x805EAB30
+	.sdata2     start:0x805F7DB0 end:0x805F7DD0
 
 Game/FootingRoll.cpp:
 	.text       start:0x80261288 end:0x802621E8
@@ -1104,8 +1198,33 @@ Game/SpaceGadget.cpp:
 	.sbss       start:0x805F0710 end:0x805F0720
 	.sdata2     start:0x805F83A0 end:0x805F83C8
 
+Game/BackDrop.cpp:
+	.text       start:0x8026B7B0 end:0x8026BB18
+	.ctors      start:0x804AA54C end:0x804AA550
+	.rodata     start:0x804F6A90 end:0x804F6AB8
+	.data       start:0x8054CE18 end:0x8054CE80
+	.sdata      start:0x805EAE68 end:0x805EAE88
+	.sbss       start:0x805F0720 end:0x805F0728
+	.sdata2     start:0x805F83C8 end:0x805F83E0
+
 Game/fn_80293AC8.cpp:
 	.text       start:0x80293EC8 end:0x80293F60
+
+Game/EscapePlaneRail.cpp:
+	.text       start:0x802ABEAC end:0x802AC2A4
+	.rodata     start:0x804FD498 end:0x804FD4F0
+	.data       start:0x80554D28 end:0x80554E08
+	.sdata      start:0x805EBF90 end:0x805EBFB0
+	.sdata2     start:0x805F8DB8 end:0x805F8DE0
+
+Game/ElecCircuitExit.cpp:
+	.text       start:0x802C8524 end:0x802C886C
+	.ctors      start:0x804AA5C0 end:0x804AA5C4
+	.rodata     start:0x80500838 end:0x80500858
+	.data       start:0x80558188 end:0x805581F0
+	.bss        start:0x80584BB8 end:0x80584BC8
+	.sdata      start:0x805EC640 end:0x805EC660
+	.sdata2     start:0x805F93B0 end:0x805F93C8
 
 Game/DebugMissionClearCollision.cpp:
 	.text       start:0x802C89D0 end:0x802C9058
@@ -1116,6 +1235,13 @@ Game/DebugMissionClearCollision.cpp:
 	.sdata      start:0x805EC660 end:0x805EC690
 	.sbss       start:0x805F0BB8 end:0x805F0BE8
 	.sdata2     start:0x805F93C8 end:0x805F93F0
+
+Game/TestNakazawa.cpp:
+	.text       start:0x802DFC14 end:0x802DFF64
+	.rodata     start:0x80505EE0 end:0x80505F00
+	.data       start:0x80559898 end:0x805598D8
+	.sdata      start:0x805ECBA8 end:0x805ECBC0
+	.sdata2     start:0x805F96F8 end:0x805F9708
 
 Game/EggMeca511.cpp:
 	.text       start:0x802E9C64 end:0x802EA8FC
@@ -1199,6 +1325,22 @@ Game/BASwitch.cpp:
 	.sdata      start:0x805ED378 end:0x805ED3A8
 	.sbss       start:0x805F0F10 end:0x805F0F38
 	.sdata2     start:0x805F9D30 end:0x805F9D60
+
+Game/BDHologram.cpp:
+	.text       start:0x80303CB4 end:0x803041D8
+	.ctors      start:0x804AA618 end:0x804AA61C
+	.rodata     start:0x8050BB60 end:0x8050BBB8
+	.data       start:0x8055B468 end:0x8055B548
+	.sdata      start:0x805ED3A8 end:0x805ED3C8
+	.sbss       start:0x805F0F38 end:0x805F0F40
+	.sdata2     start:0x805F9D60 end:0x805F9D78
+
+Game/BDTrue.cpp:
+	.text       start:0x803041D8 end:0x80304628
+	.rodata     start:0x8050BBB8 end:0x8050BBD8
+	.data       start:0x8055B548 end:0x8055B5B0
+	.sdata      start:0x805ED3C8 end:0x805ED3E8
+	.sdata2     start:0x805F9D78 end:0x805F9D98
 
 Game/SuctionPillar.cpp:
 	.text       start:0x80304628 end:0x803054A4
