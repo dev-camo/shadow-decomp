@@ -2730,7 +2730,16 @@ config.libs = [
             Object(Matching, "Game/FallBuildingHolder.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ChaoHolder.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Cream.cpp", cflags=cflags_game_cpp),
-            Object(Matching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
+            # Relocatable-object comparison: all functions but UpdateBody match, words and
+            # relocations. UpdateBody is 65 words against 66: after the compare tree of the switch
+            # on the state the original has an unreachable branch to the end of the switch (the
+            # code of a case label with no statements, which this source does not have). By
+            # position 54 of the 66 words differ (every word after it shifts by one). Pairing the
+            # compare tree's branches by control flow, the four reachable branches (beq, two bge
+            # and b) differ only in their displacements and the unreachable b (USA 0x801F7A90) is
+            # original-only; every other word matches. Relocation targets are unchanged. Normal
+            # builds link the original object.
+            Object(NonMatching, "Game/ElecCircuit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecCircuitEntrance.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecCristalWallSwitch.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecPillar.cpp", cflags=cflags_game_cpp),

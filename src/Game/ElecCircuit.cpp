@@ -82,8 +82,6 @@ void ElecCircuit::UpdateBody(float dt) {
             m_model->fn_80160B18(0);
         }
         break;
-    case 2: /* nothing to do in state 2 */
-        break;
     }
 
     UpdateModelMatrix();
