@@ -30,7 +30,7 @@ class UnkGadgetOwner_800C9CD0 {
     /* 0x08 */ UnkGadgetOwner_800C9CD0 *m_next;
     /* 0x0C */ u8 field_0xC[0x8];
     /* The object that fn_800C9930 stores here, a SetAdapterState or a class derived from it (the
-     * Chao gadget reads it back with dynamic_cast; name inferred). */
+     * Chao gadget reads it back with dynamic_cast, CityGadget without a check; name inferred). */
     /* 0x14 */ SetAdapterState *m_adapterState;
 };
 CHECK_OFFSETOF(UnkGadgetOwner_800C9CD0, m_adapterState, 0x14);

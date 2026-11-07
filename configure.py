@@ -1971,6 +1971,7 @@ config.libs = [
             Object(NonMatching, "Game/BasicMessage.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Message.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CityBombBig.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/CityGadget.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CityBombSmall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ChaosSpear.cpp", cflags=cflags_game_cpp),
             # Relocatable-object comparison: the 13 functions other than the start-up function
