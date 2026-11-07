@@ -10,10 +10,12 @@ namespace System {
 class EffectCommandExec;
 struct UnkCommandData;
 struct UnkEffectPool;
+struct UnkEffectElementData4;
 
 /* Class and base names from RTTI; member names are inferred. */
 class EffectObject : public EffectElement {
   public:
+    EffectObject(UnkEffectElementData4 *definition, EffectLaunchInfo *info, EffectManager *manager);
     virtual ~EffectObject();
     virtual void Update(float deltaTime);
 
