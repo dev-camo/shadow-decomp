@@ -159,20 +159,17 @@ CHECK_SIZEOF(UnkSegment_80020A20, 0x18);
 extern "C" {
 #endif
 
-/* Zero vectors constructed by the static initialisers in fn_8040CD60.cpp and fn_8040D02C.cpp;
+/* Zero vectors constructed by the static initialisers in fn_8040CC5C.cpp and fn_8040D02C.cpp;
  * fn_8040CC6C/fn_8040CE74 return them for a vector too short to normalise, and lbl_805E07A0 is
  * read throughout the game code. */
 extern Fn8040Vector2 lbl_805F1358;
-/* Float literals in .sdata2: lbl_805FAD78 (2D clear value), lbl_805FAD80 (3D clear value, also
- * the length fn_8040CE74 returns for a too-short vector), and the 1e-6f literals lbl_805FAD7C and
- * lbl_805FAD84 of the 2D and 3D normalising functions (fn_8040CC6C and fn_8040CE74): a vector
- * whose length is below these is replaced by the zero vector.
+/* Float literals in .sdata2: lbl_805FAD80 (3D clear value, also the length fn_8040CE74 returns for
+ * a too-short vector) and the 1e-6f literal lbl_805FAD84 of the 3D normalising function
+ * fn_8040CE74: a vector whose length is below it is replaced by the zero vector.
  *
  * Matching workaround: referenced as external symbols because no split owns the .sdata2 range
- * 0x805FAD78-0x805FAD88, where the four literals sit interleaved. A literal in the source would
- * emit a unit-local .sdata2 copy. Revisit when these units are merged into their original files. */
-extern float lbl_805FAD78;
-extern float lbl_805FAD7C;
+ * 0x805FAD80-0x805FAD88. A literal in the source would emit a unit-local .sdata2 copy. Revisit when
+ * these units are merged into their original file. */
 extern float lbl_805FAD80;
 extern float lbl_805FAD84;
 extern Fn8040Vector3 lbl_805E07A0;
