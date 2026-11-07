@@ -1211,6 +1211,14 @@ Game/VacuumContainer.cpp:
 	.sbss       start:0x805EFFB0 end:0x805EFFC0
 	.sdata2     start:0x805F7690 end:0x805F76B0
 
+Game/BaseDoor.cpp:
+	.text       start:0x80256670 end:0x802579B0
+	.rodata     start:0x804F4BC0 end:0x804F4CD8
+	.data       start:0x80549BD0 end:0x80549DC8
+	.sdata      start:0x805EA488 end:0x805EA4B8
+	.sbss       start:0x805EFFE0 end:0x805EFFF0
+	.sdata2     start:0x805F76E0 end:0x805F7730
+
 Game/RailSwitch.cpp:
 	.text       start:0x802579B0 end:0x8025885C
 	.ctors      start:0x804A9EF4 end:0x804A9EF8

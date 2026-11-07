@@ -2201,6 +2201,7 @@ config.libs = [
             # normal build links the original object.
             Object(NonMatching, "Game/HeavyDog0410.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/VacuumContainer.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/BaseDoor.cpp", cflags=cflags_game_cpp),
             # 35 of 38 functions have identical words and relocations, and the data matches once the
             # linker-discarded weak and local copies are set aside. Differences (raw words in a USA
             # DOL linked from this source object, a diagnostic only: the build links the original
