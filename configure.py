@@ -857,13 +857,12 @@ config.libs = [
                 # still match once the instruction streams are aligned): SetEntryPattern (317 words,
                 # the original's 319) differs in 201 (105): the original copies the vertices that
                 # change layout word by word through integer registers and addresses some stores
-                # differently. RCPtr::Assign (117 words, the original's 120) differs in 100 (24):
-                # the original keeps the object to release in r4 and copies it to r3 for each call,
-                # and the allocation of the holder passes line 138 of csdRCObject.h where the
-                # original passes 410. Reset and the holder's constructor come after
-                # RenderState::End, as in the original; the out-of-line CMemoryAlloc::AllocObject
-                # that the holder allocation emits after them is a weak copy of a function the game
-                # has at 0x8003DF84. Additional weak copies are the CTexList holder and CFunctorBase
+                # differently. RCPtr::Assign has the original 120-word size and differs only in
+                # the holder allocation line: 141 in csdRCObject.h versus native 410. Reset and
+                # the holder's constructor come after RenderState::End, as in the original; the
+                # out-of-line CMemoryAlloc::AllocObject that the holder allocation emits after
+                # them is a weak copy of a function the game has at 0x8003DF84. Additional weak
+                # copies are the CTexList holder and CFunctorBase
                 # destructors, the CFunctorBase vtable, default RCPtr constructor, no-policy Assign
                 # and holder constructor. Source .data is 28 bytes; the original has none. Normal
                 # links use the original object.
@@ -894,9 +893,8 @@ config.libs = [
                 # constructor differs only in passing line 141 for line 70. InitLibraryRW (139
                 # words) differs in 25 only by the .bss offsets of its function-local statics: the
                 # original has 12 more bytes before the first record. The holder's Assign (at
-                # 0x8036342C, 117 words, the original's 120) shows the difference described for
-                # csdLoader.cpp: the original keeps the object to release in r4, and the holder
-                # allocation passes line 410 of csdRCObject.h. The weak copies of the allocator's
+                # 0x8036342C, 120 words) differs only in its holder allocation line, 141 versus
+                # native 410 in csdRCObject.h. The weak copies of the allocator's
                 # default slots and of the CTexList, CMemoryAlloc and RCObject vtables are also
                 # emitted here. .data differs as well: the vtables come out in a different order
                 # from the original's. .rodata differs too (0x9D bytes, the original's 0xA8): the
@@ -917,7 +915,7 @@ config.libs = [
                 ),
                 # The texture list over an existing RenderWare texture dictionary (file name
                 # unknown). 6 of its 7 functions match in raw instruction words; the holder's Assign
-                # (117 words, the original's 120) differs as in csdTexListRW.cpp. The constructor
+                # (120 words) differs only in allocation line 141 versus native 410. The constructor
                 # and destructor of the texture array are called out of line, as in the original.
                 # The constructors of CTexListRW2, CTexListRW and CTexList and the allocator's
                 # AllocObject and FreeObject are also emitted as weak copies, as are the CTexList
@@ -931,10 +929,11 @@ config.libs = [
                 # functions are sourced. 15 have identical instructions; 13 differ only in the
                 # __LINE__ passed by their allocations (one word each, two in UpdateTransform; the
                 # original's lines run from 54 to 1067 in a file far longer than this one). The
-                # holder Assign for the free and function release policies (112 words, the
-                # original's 115) shows the difference described for csdLoader.cpp. GetTranslation
-                # and GetScale (49 words, the original's 45) copy their result through the float
-                # registers where the original uses the integer ones. The .rodata holds the same
+                # holder Assign for the free and function release policies has the original
+                # 115-word size and differs only in allocation line 141 versus native 410.
+                # GetTranslation and GetScale (49 words, the original's 45) copy their result
+                # through the float registers where the original uses the integer ones. The
+                # .rodata holds the same
                 # four strings in a different order (the original has the holder's error text
                 # first). The unit also emits weak copies of the CMotionPattern destructor
                 # (identical to the game's copy, which comes from csdmScene.cpp), RCObject<unsigned
@@ -1546,8 +1545,8 @@ config.libs = [
             # words. Source read-only data is 70 bytes against the original 72-byte extent.
             # The CMotionPalette constructor and Rebuild differ in one word each, the __LINE__
             # of their allocations (the original passes 55 and 100). The holder Assign for the
-            # function release policy (112 words, the original's 115) shows the difference
-            # described for csdLoader.cpp. GetPattern retains seven positional setup/load
+            # function release policy has the original 115-word size and differs only in
+            # allocation line 141 versus native 410. GetPattern retains seven positional setup/load
             # scheduling differences, including an equivalent palette-pointer base register.
             # The holder's SetRelease matches but comes last in the unit, where the original
             # has it right after the holder constructor for the function policy (see csdRCObject.h).
@@ -1573,7 +1572,7 @@ config.libs = [
             # 12 source bytes versus the original 16-byte extent including trailing alignment.
             Object(NonMatching, "Game/CSD/csdMotionPalette.cpp", cflags=cflags_csd),
             # Scene objects, playback, node lookup and non-owning listeners. Of the 195 native
-            # bodies, this source emits 166 identified counterparts. The 153 instruction-identical
+            # bodies, this source emits 166 identified counterparts. The 156 instruction-identical
             # bodies include two tree methods that call the key comparator instead of distinct
             # value_compare wrappers. Five destructor models remain provisional, and five
             # operations are expanded in headers. Remaining helpers are external to this object;
@@ -1582,8 +1581,8 @@ config.libs = [
             # the holder's +0x0C pointer and CBase inheritance remain inferred. Matching deleting
             # instructions and table/destructor references alone do not identify fn_80367FB4,
             # fn_80364BE4, fn_80365F28, lbl_8055FE98 or lbl_8055FEA8 in USA (GUPE8P).
-            # Thirteen bodies differ in allocation lines, release argument moves, pooled constants,
-            # iterator accessors, return-object stores or the final repeated
+            # Ten bodies differ in allocation lines, pooled constants, iterator accessors,
+            # return-object stores or the final repeated
             # motion-index copy. The scene initialization allocation passes source line 128 rather
             # than native 173; root-pattern allocations pass 489/476 rather than 1124/1102.
             # Definitions with established native identities follow descending addresses; callback
@@ -1608,14 +1607,14 @@ config.libs = [
             Object(NonMatching, "Game/CSD/csdmScene.cpp", cflags=cflags_csd),
             # The complete node source, including its constructor, destructor, callbacks, channel
             # map and owned data. The candidate emits 96 of the 97 native function bodies; the
-            # 12-byte tree iterator arrow is represented by its inlined header definition. 93
+            # 12-byte tree iterator arrow is represented by its inlined header definition. 94
             # emitted bodies have identical instruction words. The channel-transfer switch is 0x338
             # versus 0x2D0, with 159 differing positional words and 26 extra words. The original
             # translate-X/Y cases read the pair directly; the other 13 call outlined iterator and
             # reference arrows. This build expands the arrows in all 15 cases. The constructor
-            # differs in its allocation line (45 versus 51). The callback reference destructor is
-            # 0x18C versus 0x198, with 82 differing positional words and three omitted argument
-            # moves. The object also emits a 0x20-byte weak typed-pointer remove copy; its native
+            # differs in its allocation line (45 versus 51). The callback reference destructor
+            # has the original 0x198-byte body. The object also emits a 0x20-byte weak
+            # typed-pointer remove copy; its native
             # definition is in Scene at 0x803655D0 in USA (GUPE8P). Both member pointers, all three
             # vtable groups and the literal contents are represented. The switch-table addends
             # differ, and a weak byte-holder vtable shifts the element-data-reference vtable.
@@ -1627,7 +1626,7 @@ config.libs = [
             # precede Attach/Clear instead of following them. fn_8036B9FC follows Copy instead of
             # the callback compressed-pair constructors. The two adjustment thunks are reversed:
             # GetSender precedes the destructor. Extra weak reference/container copies and their
-            # support data are also emitted. A local, non-weak 0x1C0 delete-policy Assign is reached
+            # support data are also emitted. A local, non-weak 0x1CC delete-policy Assign is reached
             # only by the weak RCPtr<unsigned char>::Reset. Normal links retain the original object
             # in every region. Weak holder/CFunctorBase destructors and tables are emitted for
             # CNode, MatrixValue, CNodeCallback, unsigned char and UnkNodePayload_80364C40. Byte and
@@ -1659,7 +1658,7 @@ config.libs = [
             # bodies, 111 retain original relative order; generated helper order still differs.
             # USA address  Native bytes  Source bytes  Different words  Native tail  Source tail
             # 8036BCAC        312           312               1            0            0
-            # 8036BE04        480           468              97            3            0
+            # 8036BE04        480           480               1            0            0
             # 8036C0C4        388           388               1            0            0
             # 8036C318         84            84               3            0            0
             # 8036C46C        248           248               1            0            0
@@ -1669,7 +1668,7 @@ config.libs = [
             # 8036D448        180           180               1            0            0
             # 8036D598        200           200               1            0            0
             # 8036DD44        212           212               1            0            0
-            # 8036DF18        460           448              92            3            0
+            # 8036DF18        460           460               1            0            0
             # 8036E114        648           644             121            1            0
             # 8036E3A8        176           176               1            0            0
             # 8036E458        308           320              47            0            3
@@ -1683,19 +1682,19 @@ config.libs = [
             # scene-node-map constructors belong to Scene; the other seven definitions are outside
             # these CSD files. For example, original removal processing at 8036C3AC calls external
             # list begin/end at 8003EB64/8003EB28 in USA; this source keeps local weak copies.
-            # The SceneList release helper is also kept here: 316 source bytes versus 328 at
-            # native 80042B10 in USA, with release-argument moves still differing. The implicit
-            # CSceneList destructor emits a 92-byte weak copy; the linked definition remains
-            # the original external one at 80042CB4 in USA.
+            # The weak SceneList release helper has the original 328-byte body and direct calls;
+            # the combined source link selects its external definition at 80042B10 in USA. The
+            # implicit CSceneList destructor emits a 92-byte weak copy; the linked definition
+            # remains the original external one at 80042CB4 in USA.
             #
             # Weak copies include the nested holder CFunctorBase destructors and tables for byte,
             # Scene, SceneList, CTexList, CNode, SceneCallback and UnkNodePayload references.
             # The pointer association and CBase inheritance remain inferred as in csdRCObject.h;
             # these emitted names do not identify the unnamed native tables. Holder allocations
-            # pass line 138, including the explicit DeleteRelease Reset overload.
-            # Inline reference-copy constructors emit weak copies that call operator=. The linked
-            # game-file constructors instead call the counted-reference helpers directly and
-            # remain selected; the unselected weak copies retain that call-target difference.
+            # pass line 141, including the explicit DeleteRelease Reset overload.
+            # Inline reference-copy constructors and assignment operators call the inferred
+            # counted-reference helpers directly. Their weak copies have the original bodies and
+            # call targets; the combined source link retains the original external definitions.
             # The combined source link includes this file's real CScene constructor, which emits
             # the scene-node-map and callback-list constructor helpers needed by Scene/Node.
             # Strings, table slots and policy values are represented; pooling, order, alignment
@@ -2206,8 +2205,9 @@ config.libs = [
             # association remains inferred from the native name-pool order. This object has type
             # records, base lists and weak/local copies absent from the original unit (TNumEdit,
             # CharaColliBase, std::exception, boost::bad_weak_ptr, sp_counted_base, the boost
-            # placeholders _2 to _9). It also emits weak copies of the 0x18C RCPtr<CScene>
-            # destructor and CMemoryAlloc::FreeObject. Weak CScene holder/CFunctorBase destructors
+            # placeholders _2 to _9). It also emits weak copies of the 0x198 RCPtr<CScene>
+            # destructor, the 56-byte reference-copy constructor, counted-reference Assign and
+            # CMemoryAlloc::FreeObject. Weak CScene holder/CFunctorBase destructors
             # and their tables are also emitted, with CBase, holder and CFunctorBase type records.
             # Source .rodata is 867 bytes versus 1264 native bytes; .data is 412 versus 248. The
             # object comparison still matches 96 data bytes. Normal links use the original object.
