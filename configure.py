@@ -1879,6 +1879,22 @@ config.libs = [
             Object(NonMatching, "Game/Catapult.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DamageBlock.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Door.cpp", cflags=cflags_game_cpp),
+            # Relocatable comparison with the split original object (USA, Japan and PAL alike; data
+            # by contents, with the definitions the link discards set aside: 70 weak definitions
+            # that the link does not take from this object and 21 unreferenced local ones): 61 of
+            # the 63 functions have the original's instructions and relocation targets. The original
+            # keeps the constructor of fn_80209B58's parameter block (0x80145B58, USA) out of line
+            # after Drop; this build expands it in Drop, so that function is 62 words against 49 (by
+            # position, 41 of the 49 common words differ and 13 build words are unpaired; aligned by
+            # raw words, 43 pairs are equal, 6 words are only in the original and 19 only in this
+            # build; its relocations add two Fn8040Vector3 copy constructor calls and two
+            # lbl_805E07A0 references in place of the one constructor call), the constructor has no
+            # counterpart, and in .sdata2 the literals 2.0f and 4.0f are in the opposite order
+            # (0x805F45D0 and 0x805F45D4, USA). The rest of .rodata, .data, .sdata and .sdata2 has
+            # the original's contents. The compiled .sdata2 is writable (WA) where the original's is
+            # read-only (A), and it is 0x44 bytes without the original's section-end alignment to
+            # 0x48.
+            Object(NonMatching, "Game/EggBalloon.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Footing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Elevator.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/FootingMovable.cpp", cflags=cflags_game_cpp),

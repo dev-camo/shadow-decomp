@@ -70,5 +70,9 @@ extern "C" boost::shared_ptr<UnkTarget_80166AF4> fn_8016690C(RpClump *clump);
 /* The part callback that gadgets pass to GadgetModelInfo::fn_8015FA78 together with an
  * UnkWeakHolder_800CC6C8 as the user data (behaviour inferred). */
 extern "C" UnkModelPart_8015FA78 *fn_80169D00(UnkModelPart_8015FA78 *part, void *userData);
+/* Returns whether the word at 0x8 of the object that fn_80074470 returns is 4 (behaviour from its
+ * body; what the object and the value 4 are is unknown). The EGG_BALLOON gadget counts its fire
+ * time and shot timer down only while it returns false. */
+extern "C" bool fn_80169CD0(void);
 
 #endif

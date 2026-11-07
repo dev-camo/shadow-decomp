@@ -27,6 +27,13 @@ class UnkParams_80051D10 {
     UnkParams_80051D10(const boost::weak_ptr<CharInfo> &owner, int arg2,
                        const Fn8040Vector3 &position, const Fn8040Vector3 &direction,
                        const Fn8040Vector3 &arg4);
+    /* The constructor at 0x80051FC8: copies the owner, leaves the lock-on target empty, copies
+     * position and direction to 0x10 and 0x1C and stores arg2 at 0x34; when the owner still
+     * locks, it copies the locked character info's field_0x18 to 0x28, and otherwise sets 0x28
+     * to the clear value (fn_8040CE60) (behaviour from its body; the reference parameters are
+     * inferred). */
+    UnkParams_80051D10(const boost::weak_ptr<CharInfo> &owner, int arg2,
+                       const Fn8040Vector3 &position, const Fn8040Vector3 &direction);
     ~UnkParams_80051D10();
 
     /* 0x00 */ boost::weak_ptr<CharInfo> m_owner;
