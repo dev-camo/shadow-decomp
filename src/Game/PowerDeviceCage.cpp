@@ -123,10 +123,10 @@ void PowerDeviceCage::UpdateBody(float dt) {
             fn_8016907C(fn_800CB69C(), m_tag, 1);
 
             {
-                boost::shared_ptr<UnkActor_800740E4> actor = fn_800740E4(fn_8006D6A8(), 0).lock();
+                boost::shared_ptr<Mission::Mission> mission = fn_800740E4(fn_8006D6A8(), 0).lock();
 
-                if (actor.get() != 0) {
-                    actor->UnkSlot7(1, 0);
+                if (mission.get() != 0) {
+                    mission->fn_8016B224(1, 0);
                 }
             }
 

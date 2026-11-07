@@ -123,11 +123,11 @@ void ElecCoreProgram::UpdateBody(float dt) {
 
     case 1:
         if (m_time >= 1.0f) {
-            boost::shared_ptr<UnkActor_800740E4> actor = fn_800740E4(fn_8006D6A8(), 0).lock();
+            boost::shared_ptr<Mission::Mission> mission = fn_800740E4(fn_8006D6A8(), 0).lock();
 
-            if (actor.get() != 0 && !actor->Field0xCEquals(1)) {
-                actor->SetField0x14(1);
-                fn_8016B2A4(actor.get());
+            if (mission.get() != 0 && !mission->Field0xCEquals(1)) {
+                mission->SetField0x14(1);
+                fn_8016B2A4(mission.get());
             }
 
             fn_8034DE08(9, &m_charInfo->m_position, -2);

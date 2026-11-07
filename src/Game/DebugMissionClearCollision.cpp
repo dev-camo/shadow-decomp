@@ -1,11 +1,11 @@
 /* DebugMissionClearCollision (class name from RTTI): the debug counterpart of
  * MissionClearCollision. Once the character info that fn_800A8C54 returns for 0 comes within 10
  * units of it, it finishes: for the parameter "0:DK 1:NM 2:HR 3:BOSS" set to 3 it passes 6 to
- * fn_80175EEC; otherwise, when fn_800740E4 returns an actor for the type whose word at 0xC is not
- * 1, it stores 1 in the actor's byte at 0x14 and calls fn_8016B2A4 on it. Until then it turns about
- * its y axis by a quarter turn per unit of dt and queues its debug shapes (behaviour inferred).
- * File name inferred from the class. Definitions are in reverse address order (deferred inlining
- * emits functions last-defined first). */
+ * fn_80175EEC; otherwise, when fn_800740E4 returns a mission for the type whose word at 0xC is not
+ * 1, it stores 1 in the mission's byte at 0x14 and calls fn_8016B2A4 on it. Until then it turns
+ * about its y axis by a quarter turn per unit of dt and queues its debug shapes (behaviour
+ * inferred). File name inferred from the class. Definitions are in reverse address order (deferred
+ * inlining emits functions last-defined first). */
 #include "Game/DebugMissionClearCollision.h"
 #include "Game/AngleConversion.h"
 #include "Game/DebugDisp.h"
@@ -116,11 +116,11 @@ void DebugMissionClearCollision::UpdateBody(float dt) {
                 return;
             }
 
-            boost::shared_ptr<UnkActor_800740E4> actor = fn_800740E4(fn_8006D6A8(), type).lock();
+            boost::shared_ptr<Mission::Mission> mission = fn_800740E4(fn_8006D6A8(), type).lock();
 
-            if (actor.get() != 0 && !actor->Field0xCEquals(1)) {
-                actor->SetField0x14(1);
-                fn_8016B2A4(actor.get());
+            if (mission.get() != 0 && !mission->Field0xCEquals(1)) {
+                mission->SetField0x14(1);
+                fn_8016B2A4(mission.get());
                 fn_800C9B34(m_owner);
                 m_flags |= 1;
                 return;

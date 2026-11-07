@@ -15,9 +15,10 @@ namespace SecretDisk {
 /* SecretDisk::SecretDisk (class name from RTTI): a gadget, in the namespace SecretDisk, that shows
  * the SECRETDISK.BIN model at the owner's position with a second object (fn_802B4254) above it.
  * Once the model's collision callback has reported a hit for which fn_8015AC84 is true, the
- * gadget calls UnkSlot7(1, 0) on the actor that fn_800740E4 returns for 2, starts an effect 6
- * units below its position, plays a sound, passes its owner to fn_800C9B04 (through fn_8015A768)
- * and marks itself finished (behaviour inferred). Method and member names are inferred. */
+ * gadget calls fn_8016B224(1, 0) on the mission that fn_800740E4 returns for 2 when it locks to a
+ * non-null pointer, starts an effect 6 units below its position, plays a sound, passes its owner to
+ * fn_800C9B04 (through fn_8015A768) and marks itself finished (behaviour inferred). Method and
+ * member names are inferred. */
 class SecretDisk : public Gadget {
   public:
     SecretDisk(Task *parent, UnkGadgetOwner_800C9CD0 *owner);

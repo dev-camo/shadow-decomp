@@ -1,11 +1,11 @@
 /* ElecBomb (class name from RTTI; the gadget's descriptor is "ELEC_BOMB"): a bomb of the electric
  * circuit area that shows ELECBOMB.BIN. When a character comes near, it plays a sound and switches
  * parts of the model; on the next frame it explodes: it passes -1 to its target's fn_80167448,
- * calls the actor that fn_800740E4 returns for 0, releases its object, stores state 2 in the
- * owner's ElecBombData and calls fn_800C985C, fn_8000D664 and fn_8034DE74 (behaviour inferred).
- * File name inferred from the class. Method names marked "(name inferred)" are not original.
- * Definitions are in reverse address order (deferred inlining emits functions last-defined
- * first). */
+ * calls fn_8016B224(1, 0) on the mission that fn_800740E4 returns for 0 when it locks to a non-null
+ * pointer, releases its object, stores state 2 in the owner's ElecBombData and calls fn_800C985C,
+ * fn_8000D664 and fn_8034DE74 (behaviour inferred). File name inferred from the class. Method names
+ * marked "(name inferred)" are not original. Definitions are in reverse address order (deferred
+ * inlining emits functions last-defined first). */
 #include "Game/ElecBomb.h"
 #include "Game/DebugDisp.h"
 #include "Game/GadgetTypeInfo.h"
@@ -99,10 +99,10 @@ void ElecBomb::UpdateBody(float dt) {
     case 1: {
         m_target->fn_80167448(-1);
         {
-            boost::shared_ptr<UnkActor_800740E4> actor = fn_800740E4(fn_8006D6A8(), 0).lock();
+            boost::shared_ptr<Mission::Mission> mission = fn_800740E4(fn_8006D6A8(), 0).lock();
 
-            if (actor.get() != 0) {
-                actor->UnkSlot7(1, 0);
+            if (mission.get() != 0) {
+                mission->fn_8016B224(1, 0);
             }
         }
         m_object.reset();

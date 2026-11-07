@@ -2,11 +2,11 @@
  * electric circuit area that shows ACCESS.BIN with an object (fn_802B4254) above it. When a
  * character hits it while the state of its com id is not 1, it sets that state to 1, switches
  * the model's parts and fades the colour of the model's "mat" atomic state from 0 to FF over half
- * a second; it then calls UnkSlot7(1, 0) on the actor that fn_800740E4 returns, releases the
- * object and keeps passing sound 0x7249 to fn_801D53C4. The owner's ElecAccessPanelData keeps the
- * state between creations (behaviour inferred). File name inferred from the class. Method names
- * marked "(name inferred)" are not original. Definitions are in reverse address order (deferred
- * inlining emits functions last-defined first).
+ * a second; it then calls fn_8016B224(1, 0) on the mission that fn_800740E4 returns when it locks
+ * to a non-null pointer, releases the object and keeps passing sound 0x7249 to fn_801D53C4. The
+ * owner's ElecAccessPanelData keeps the state between creations (behaviour inferred). File name
+ * inferred from the class. Method names marked "(name inferred)" are not original. Definitions are
+ * in reverse address order (deferred inlining emits functions last-defined first).
  *
  * The model's collision callback is a boost::function object built with
  * boost::bind(&ElecAccessPanel::OnCollision, this, _1); its manager, invoker and copy functions
@@ -124,16 +124,16 @@ void ElecAccessPanel::UpdateBody(float dt) {
             /* The original repeats the lookup in each branch (one lookup with the id chosen
              * first compiles to different code). */
             if (lbl_8057D6A0.field_0x125 != 0) {
-                boost::shared_ptr<UnkActor_800740E4> actor = fn_800740E4(fn_8006D6A8(), 1).lock();
+                boost::shared_ptr<Mission::Mission> mission = fn_800740E4(fn_8006D6A8(), 1).lock();
 
-                if (actor.get() != 0) {
-                    actor->UnkSlot7(1, 0);
+                if (mission.get() != 0) {
+                    mission->fn_8016B224(1, 0);
                 }
             } else {
-                boost::shared_ptr<UnkActor_800740E4> actor = fn_800740E4(fn_8006D6A8(), 2).lock();
+                boost::shared_ptr<Mission::Mission> mission = fn_800740E4(fn_8006D6A8(), 2).lock();
 
-                if (actor.get() != 0) {
-                    actor->UnkSlot7(1, 0);
+                if (mission.get() != 0) {
+                    mission->fn_8016B224(1, 0);
                 }
             }
             m_object.reset();

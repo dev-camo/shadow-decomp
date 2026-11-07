@@ -18,10 +18,10 @@ class GiantLanternSetState;
 /* GiantLantern (class name from RTTI; the gadget's descriptor has the same name): a gadget without
  * a model of its own. A probe sphere around its character info carries an attack object, and an
  * attack whose flag word has bit 0x400 lights the lantern. Once lit it starts an effect at its
- * position, plays the sounds 0x7431 and 0x7430, sets the state of its com id, calls UnkSlot7(1, 0)
- * on the actor that fn_800740E4 returns for 0, passes its owner to fn_800C985C and drops the
- * object (fn_802B4254) that it shows above itself while unlit (behaviour inferred). Method and
- * member names are inferred unless they are placeholders. */
+ * position, plays the sounds 0x7431 and 0x7430, sets the state of its com id, calls fn_8016B224(1,
+ * 0) on the mission that fn_800740E4 returns for 0 when it locks to a non-null pointer, passes its
+ * owner to fn_800C985C and drops the object (fn_802B4254) that it shows above itself while unlit
+ * (behaviour inferred). Method and member names are inferred unless they are placeholders. */
 class GiantLantern : public Gadget {
   public:
     GiantLantern(Task *parent, UnkGadgetOwner_800C9CD0 *owner);

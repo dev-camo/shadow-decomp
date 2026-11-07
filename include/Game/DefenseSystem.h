@@ -54,8 +54,8 @@ CHECK_SIZEOF(DefenseSystemSetState, 0xC);
  * once IsFinished is true). It tests the destruction flag first and clears both flags there, so a
  * hit that uses up the health before the body runs skips the damaged stage. For damage it shows
  * the first break model and enters the damaged state. For destruction it shows the second break
- * model, passes its com id to fn_8016907C, calls UnkSlot7(1, 0) on the actor only when the weak
- * handle that fn_800740E4 returns locks, passes its owner to fn_800C9B04, enters the destroyed
+ * model, passes its com id to fn_8016907C, calls fn_8016B224(1, 0) on the mission only when the
+ * weak handle that fn_800740E4 returns locks, passes its owner to fn_800C9B04, enters the destroyed
  * state and finishes (behaviour inferred). Method names marked "(name inferred)" are not original;
  * all member names are inferred. */
 class DefenseSystem : public Gadget {

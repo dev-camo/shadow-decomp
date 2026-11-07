@@ -38,8 +38,8 @@ namespace BASwitch {
  * (see OnCommand) turns the switch of its com id over in the manager of fn_800CB69C, plays a
  * motion of the base and shows the blue part while the switch is off and the red part while it
  * is on. It also marks the switch in the table of switch records when the id has a record or a
- * free record is left, and passes -1 (switched off) or 1 (switched on) to the actor that
- * fn_800740E4 returns for 0 when that actor still exists (behaviour inferred). Method and member
+ * free record is left, and passes -1 (switched off) or 1 (switched on) to the mission that
+ * fn_800740E4 returns for 0 when that mission still exists (behaviour inferred). Method and member
  * names marked "(name inferred)" are not original. */
 class BASwitch : public Gadget {
   public:
@@ -64,10 +64,10 @@ class BASwitch : public Gadget {
      * switch over. */
     void OnAttack(SonicteamUSA::System::CharaColli::AttackCallbackParam &param);
     /* Turns the switch of the com id over (name inferred). A switch whose state in the manager
-     * is 1 is set to 0: the base model gets motion 1 (fn_80160A84), ShowState(1) runs, the actor
+     * is 1 is set to 0: the base model gets motion 1 (fn_80160A84), ShowState(1) runs, the mission
      * gets -1 and the switch is marked off in the table of switch records. Any other state is set
-     * to 1: motion 2, ShowState(2), the actor gets 1, bit 1 of the flags is set and the switch is
-     * marked on. The actor is called only when the weak pointer that fn_800740E4 returns can be
+     * to 1: motion 2, ShowState(2), the mission gets 1, bit 1 of the flags is set and the switch is
+     * marked on. The mission is called only when the weak pointer that fn_800740E4 returns can be
      * locked, and the table is written only when the id has a record or a free record is left
      * (fn_80301D04, fn_80301D90). Both play sound 0x7939. */
     void Toggle();

@@ -247,13 +247,13 @@ void Chao::Update(float dt) {
                         m_data->m_flags.Set(0);
 
                         {
-                            boost::shared_ptr<UnkActor_800740E4> actor =
+                            boost::shared_ptr<Mission::Mission> mission =
                                 fn_800740E4(fn_8006D6A8(), 2).lock();
 
-                            if (actor.get() != 0) {
-                                actor->UnkSlot7(1, 0);
+                            if (mission.get() != 0) {
+                                mission->fn_8016B224(1, 0);
 
-                                if (!actor->Field0xCEquals(1)) {
+                                if (!mission->Field0xCEquals(1)) {
                                     fn_801FAF00(fn_80109D64(), 0x3D2, fn_801FAAC4(2), 0, 0);
                                 }
                             }

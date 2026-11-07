@@ -55,7 +55,7 @@ class SetCharacterTask : public Gadget {
 
     /* Reads the character from the owner's parameters (fn_800C9DBC copies them only when the
      * owner's parameter size is 8). It returns at once when the weak pointer that fn_800740E4
-     * gives for the id that fn_802285A0 returns for the character has not expired and its actor's
+     * gives for the id that fn_802285A0 returns for the character has not expired and its mission's
      * word at 0xC is 2. Otherwise it takes the weak pointer that fn_8007488C returns for the
      * character, replaces it with fn_80076218's result when it has expired, and passes it to
      * PlaceCharacter unless that one has expired too (name and behaviour inferred). */
@@ -93,13 +93,13 @@ void SetCharacterTask::SetCharacter(UnkGadgetOwner_800C9CD0 *owner) {
 
     int character = params.character;
 
-    /* The weak pointer to the actor is released before the character info is looked up (its
+    /* The weak pointer to the mission is released before the character info is looked up (its
      * destructor call at 0x80119C9C). */
     {
-        boost::weak_ptr<UnkActor_800740E4> actor =
+        boost::weak_ptr<Mission::Mission> mission =
             fn_800740E4(fn_8006D6A8(), fn_802285A0(character));
 
-        if (!actor.expired() && actor.lock()->field_0xC == 2) {
+        if (!mission.expired() && mission.lock()->field_0xC == 2) {
             return;
         }
     }

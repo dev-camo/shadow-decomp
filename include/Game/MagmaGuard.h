@@ -19,9 +19,9 @@ namespace MagmaGuard {
  * falls to 10.8, 6 and 0 or below, the part target (m_target) is passed the selectors 1, 2 and 3
  * through fn_80167010 (the last two after the previous selector through fn_80166E20). Once the
  * health is used up, the next update sets the state of the gadget's com id to 1 (fn_801690D0),
- * calls UnkSlot7(1, 0) on the actor that fn_800740E4 returns for 0 and sets bit 0x400000 of the
- * owner's record; a gadget whose owner has that bit set starts destroyed (behaviour inferred).
- * Method and member names are inferred. */
+ * calls fn_8016B224(1, 0) on the mission that fn_800740E4 returns for 0 when it locks to a non-null
+ * pointer, and sets bit 0x400000 of the owner's record; a gadget whose owner has that bit set
+ * starts destroyed (behaviour inferred). Method and member names are inferred. */
 class SetMagmaGuard : public Gadget {
   public:
     SetMagmaGuard(Task *parent, UnkGadgetOwner_800C9CD0 *owner);

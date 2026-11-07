@@ -35,7 +35,7 @@ using SonicteamUSA::System::CharaColli::CharaColliAttack;
  * A10500 files when lbl_8057D6A0.field_0xA8.field_0x4 is 17 and the A10503 files otherwise (member
  * names inferred, the file members' from the file names). */
 struct DefenseSystemBreakModels {
-    /* 0x0 */ int actorId;
+    /* 0x0 */ int missionId;
     /* 0x4 */ const char *brkFile;    /* shown on entering the damaged state */
     /* 0x8 */ const char *aftBrkFile; /* shown on destruction */
 };
@@ -132,11 +132,11 @@ void DefenseSystem::UpdateBody(float dt) {
         fn_8016907C(fn_800CB69C(), m_comId, 1);
 
         {
-            boost::shared_ptr<UnkActor_800740E4> actor =
-                fn_800740E4(fn_8006D6A8(), s_breakModels->actorId).lock();
+            boost::shared_ptr<Mission::Mission> mission =
+                fn_800740E4(fn_8006D6A8(), s_breakModels->missionId).lock();
 
-            if (actor.get() != 0) {
-                actor->UnkSlot7(1, 0);
+            if (mission.get() != 0) {
+                mission->fn_8016B224(1, 0);
             }
         }
 
