@@ -1510,6 +1510,13 @@ Game/SuctionPillar.cpp:
 	.sbss       start:0x805F0F40 end:0x805F0F58
 	.sdata2     start:0x805F9D98 end:0x805F9DC0
 
+Game/PJSLauncher.cpp:
+	.text       start:0x803054A4 end:0x8030603C
+	.rodata     start:0x8050BD00 end:0x8050BE38
+	.data       start:0x8055B620 end:0x8055B690
+	.sdata      start:0x805ED410 end:0x805ED450
+	.sdata2     start:0x805F9DC0 end:0x805F9DD0
+
 Game/BombingWall.cpp:
 	.text       start:0x803149B8 end:0x80315740
 	.rodata     start:0x8050CA78 end:0x8050CB90

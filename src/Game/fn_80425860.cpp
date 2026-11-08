@@ -142,15 +142,15 @@ extern "C" void fn_80425E4C(Effect::System::EffectElement *effect, const Fn8040V
     effect->m_baseTransform.values[2][3] = position->z;
 }
 
-extern "C" void fn_80425D94(Effect::System::EffectElement *effect, const Fn8040Vector3 *rotation) {
+extern "C" void fn_80425D94(Effect::System::EffectElement *effect, const Fn8040Vector3 &rotation) {
     Fn8040Matrix34 matrix;
     fn_8040C148(&matrix, &lbl_805E0720);
     Fn8040Vector3 translation(effect->m_baseTransform.values[0][3],
                               effect->m_baseTransform.values[1][3],
                               effect->m_baseTransform.values[2][3]);
-    fn_8040B80C(&matrix, rotation->z);
-    fn_8040B848(&matrix, rotation->y);
-    fn_8040B884(&matrix, rotation->x);
+    fn_8040B80C(&matrix, rotation.z);
+    fn_8040B848(&matrix, rotation.y);
+    fn_8040B884(&matrix, rotation.x);
     matrix.values[0][3] = translation.x;
     matrix.values[1][3] = translation.y;
     matrix.values[2][3] = translation.z;
@@ -168,7 +168,7 @@ extern "C" void fn_80425C34(Effect::System::EffectElement *effect, float deltaTi
             effect->m_baseTransform.values[2][3] = translation->z;
         }
         if (effect->m_rotationSource != 0) {
-            fn_80425D94(effect, effect->m_rotationSource);
+            fn_80425D94(effect, *effect->m_rotationSource);
         }
     }
     fn_8040C148(&effect->m_transform, &effect->m_baseTransform);

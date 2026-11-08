@@ -38,6 +38,9 @@ class Resource;
 
 extern "C" {
 UnkResourceManager_800122D4 *fn_800122D4(void);
+/* Returns what virtual slot 0x14 of the resource registered under key returns, or 4 when key is
+ * absent (behaviour inferred; the PJS launcher's Loader waits for 3). */
+int fn_80012408(UnkResourceManager_800122D4 *manager, int key);
 /* Returns the resource's 32-bit indexed value, or zero when key is absent (inferred). */
 u32 fn_80012608(UnkResourceManager_800122D4 *manager, int key, int index);
 void *fn_8001277C(UnkResourceManager_800122D4 *manager, int key, int index);
@@ -46,6 +49,10 @@ void *fn_80012684(UnkResourceManager_800122D4 *manager, int key, int index);
 void fn_800127F8(UnkResourceManager_800122D4 *manager, int key);
 /* Registers resource when key is absent; returns whether it was inserted (inferred). */
 bool fn_8001299C(UnkResourceManager_800122D4 *manager, int key, Resource *resource);
+/* Registers resource under the first absent key of the 100 from the manager's word at 0x14 on,
+ * adds 1 to the manager's word at 0x10 and returns the key, or returns -1 when all 100 are taken
+ * (behaviour inferred). */
+int fn_800128D8(UnkResourceManager_800122D4 *manager, Resource *resource);
 /* Looks up the entry for key arg1 in manager (fn_800124E4, compared with fn_8001247C's result);
  * when present, returns its named file payload through resource virtual slot 0x1C, otherwise null.
  * Payload types vary by file kind; callers select the corresponding type. */

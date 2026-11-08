@@ -2407,6 +2407,7 @@ config.libs = [
             # Constructor (22 words) and UpdateBody (6 words): the two startup floats load later
             # than in the original (const floats with a dynamic initialiser reproduce both loads).
             Object(NonMatching, "Game/SuctionPillar.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/PJSLauncher.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SecretDisk.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/GiantLantern.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/GravityChangeSwitch.cpp", cflags=cflags_game_cpp),
