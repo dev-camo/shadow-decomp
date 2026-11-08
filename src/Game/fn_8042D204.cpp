@@ -95,7 +95,7 @@ UnkEffectManagerRW3Data40::UnkEffectManagerRW3Data40(EffectManagerRW3 *manager,
     if (camera == 0) {
         return;
     }
-    // The native early returns leave the remaining record storage untouched.
+    // The original early returns leave the remaining record storage untouched.
     m_quad[0].z = RwIm2DGetNearScreenZ();
     m_quad[0].emissiveColor.red = 0xFF;
     m_quad[0].emissiveColor.green = 0xFF;
@@ -126,7 +126,7 @@ UnkEffectManagerRW3Data40::UnkEffectManagerRW3Data40(EffectManagerRW3 *manager,
     float u[2] = {0.5f / width, (0.5f + rect.w) / width};
     float v[2] = {0.5f / height, (0.5f + rect.h) / height};
 
-    /* Native construction copies the base vertices before replacing the destination
+    /* Original construction copies the base vertices before replacing the destination
      * coordinates and UVs; only the base depth and colors have been initialized here. */
     m_fullQuad[0].x = m_quad[0].x;
     m_fullQuad[0].y = m_quad[0].y;
@@ -285,7 +285,7 @@ void UnkEffectManagerRW3Data40::fn_8042D7E8() {
         RwIm2DRenderPrimitive(rwPRIMTYPETRISTRIP, m_fullQuad, 4);
         fn_804854B4(camera);
     }
-    // The native flag is set even when either camera update fails.
+    // The original flag is set even when either camera update fails.
     field_0x78 = 1;
 }
 
@@ -328,8 +328,9 @@ void UnkEffectManagerRW3Data40::fn_8042D204() {
     fn_80489B2C(raster, &xOffset, &yOffset);
     int width = raster->width;
     int height = raster->height;
-    unsigned int parentWidth = raster->parent->width;
-    unsigned int parentHeight = raster->parent->height;
+    RwRaster *parentRaster = raster->parent;
+    unsigned int parentWidth = parentRaster->width;
+    unsigned int parentHeight = parentRaster->height;
     float u[2] = {(0.5f + xOffset) / parentWidth, (0.5f + (xOffset + width)) / parentWidth};
     float v[2] = {(0.5f + yOffset) / parentHeight, (0.5f + (yOffset + height)) / parentHeight};
     m_quad[0].u = u[0];
