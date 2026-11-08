@@ -2245,6 +2245,18 @@ config.libs = [
             Object(Matching, "Game/BombServer.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/GunLift.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Researcher.cpp", cflags=cflags_game_cpp),
+            # 60 of the 61 functions have identical instructions and relocations, and the retained
+            # data and relocations match, once the weak and local definitions (58 weak copies and
+            # 18 local ones: boost and math helpers, vtables, RTTI records, string and float
+            # literals and unused bind placeholders) are set aside. .sdata2 is writable (WA) here
+            # and allocatable only (A) in the original, and .rodata, .data, .sbss and .sdata2 end
+            # before the original's alignment padding. LamborghiniImpl::UpdatePoints (0x48C bytes
+            # in both) differs in 4 positional words (USA 0x8031A688-0x8031A694) in USA (GUPE8P),
+            # Japan (GUPJ8P) and PAL (GUPP8P): the original loads the first character's rotation
+            # order (lwz r6,0x30(r6)) before the three stores that build the (0, 0, -1) argument of
+            # fn_80410098, this source after them; aligned, 3 of the words are identical, 1 is
+            # original-only and 1 source-only. Normal builds link the original object.
+            Object(NonMatching, "Game/LamborghiniCamera.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DiablonPartsBomb.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BKTank.cpp", cflags=cflags_game_cpp),
             # 216 of the 219 functions have identical instructions and relocations once the weak and

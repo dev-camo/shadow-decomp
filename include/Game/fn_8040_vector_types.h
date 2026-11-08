@@ -348,7 +348,8 @@ float fn_8040E9D8(float angle);
 /* Arc cosine as a float. */
 float fn_801B1DB0(float value);
 /* Functions defined in fn_8040F364.cpp (descriptions inferred; fn_8040FB88 is declared below,
- * after this block, as it returns bool). */
+ * after this block, as it returns bool, and fn_80410098 below for C++ only, as it takes a
+ * reference). */
 /* Rotation vector of a forward and an up direction, in order 2 (fn_8040F364, declared below for
  * C++ only, as it takes references) and order 0 (fn_8040F450), and the one of them that order
  * selects (fn_8040F5F4; any other order gives the zero vector). They return the vector by
@@ -386,8 +387,6 @@ void fn_8040FFBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const Unk
                  int order);
 void fn_8040FEBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const UnkRotation3 *rotation,
                  int order);
-/* Returns the vector rotated by a rotation vector. */
-Fn8040Vector3 fn_80410098(const Fn8040Vector3 *vector, const UnkRotation3 *rotation, int order);
 /* A segment helper outside fn_8040F364.cpp: the distance from point to the closest point of the
  * segment, which it also stores in closest unless that is null (behaviour inferred). */
 float fn_8003C63C(const Fn8040Vector3 *point, const UnkSegment_80020A20 *segment,
@@ -466,6 +465,13 @@ extern "C" Fn8040Vector3 fn_8040D0AC(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_8040D118(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_8040D044(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_80016284(const Fn8040Vector3 &vector);
+/* Returns the vector rotated by a rotation vector in the given order (behaviour inferred). The
+ * reference is inferred (the code is that of a pointer parameter): Boss::Camera's
+ * LamborghiniImpl::UpdatePoints passes a vector built for the call, at r1+0x90 below its named
+ * locals (USA (GUPE8P) 0x8031A668-0x8031A694). A named vector is placed among them instead and
+ * moves the other locals' stack offsets (measured); the instructions are otherwise the same. */
+extern "C" Fn8040Vector3 fn_80410098(const Fn8040Vector3 &vector, const UnkRotation3 *rotation,
+                                     int order);
 
 /* Length (see fn_8040CCEC above) and squared length of a 3D vector. The const references are
  * inferred; the code is that of pointer parameters. Evidence: at four calls of each function the
