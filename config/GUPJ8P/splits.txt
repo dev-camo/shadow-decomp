@@ -3280,6 +3280,13 @@ Game/EffectArranger.cpp:
 	.rodata     start:0x8051B0D0 end:0x8051B158
 	.data       start:0x8056AA78 end:0x8056AB08
 
+Game/EffectParticle.cpp:
+	extab       start:0x800067F8 end:0x80006A78
+	extabindex  start:0x800085C4 end:0x80008660
+	.text       start:0x8042741C end:0x80428F48
+	.rodata     start:0x8051B158 end:0x8051B2E0
+	.data       start:0x8056AB08 end:0x8056ACC8
+
 Game/fn_8042A2D8.cpp:
 	extab       start:0x80006CF8 end:0x80006D08
 	extabindex  start:0x80008714 end:0x8000872C

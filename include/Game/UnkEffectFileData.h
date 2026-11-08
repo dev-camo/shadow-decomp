@@ -29,27 +29,47 @@ struct UnkCommandData;
 struct UnkEffectGlobalParamData;
 struct UnkEffectShimmerData;
 
+/* Particle definition subrecords. Names and types are inferred from the base Particle
+ * constructor, spawning path and command users. These are accessed views; the full serialized
+ * record extents are unknown. */
+struct UnkEffectParticleShape {
+    /* 0x00 */ int type;
+    /* 0x04 */ unsigned int flags;
+};
+CHECK_SIZEOF(UnkEffectParticleShape, 0x8);
+
+struct UnkEffectParticleData124 {
+    /* 0x00 */ unsigned int flags;
+    /* 0x04 */ float speed;
+    /* 0x08 */ float speedRange;
+    /* 0x0C */ float lifetime;
+    /* 0x10 */ float scale;
+    /* 0x14 */ float gravity;
+    /* 0x18 */ float friction;
+    /* 0x1C */ const UnkCommandData *command;
+};
+CHECK_SIZEOF(UnkEffectParticleData124, 0x20);
+
+struct UnkEffectParticleData120 {
+    /* 0x00 */ unsigned int flags;
+    /* 0x04 */ short capacity;
+    /* 0x06 */ short commandCount;
+    /* 0x08 */ float duration;
+    /* 0x0C */ const UnkCommandData *command;
+    /* 0x10 */ float generationRate;
+    /* 0x14 */ const UnkEffectParticleShape *shape;
+};
+CHECK_SIZEOF(UnkEffectParticleData120, 0x18);
+
 /* Accessed variant prefixes, not complete serialized record sizes. Unknown arrays represent
  * uninterpreted encoded storage; automatic alignment gaps are left to the compiler. */
 struct UnkEffectElementData2 : UnkEffectElementData {
-    /* 0x2C */ unsigned int field_0x2C;
-    /* 0x30 */ float field_0x30;
-    /* 0x34 */ float field_0x34;
-    /* 0x38 */ unsigned char field_0x38[8];
-    /* 0x40 */ float field_0x40;
-    /* 0x44 */ float field_0x44;
-    /* 0x48 */ const UnkCommandData *field_0x48;
+    /* 0x2C */ UnkEffectParticleData124 particle;
     /* 0x4C */ unsigned int field_0x4C;
     /* 0x50 */ int field_0x50;
     /* 0x54 */ unsigned char field_0x54[4];
     /* 0x58 */ const char *field_0x58;
-    /* 0x5C */ unsigned int field_0x5C;
-    /* 0x60 */ short field_0x60;
-    /* 0x62 */ short field_0x62;
-    /* 0x64 */ unsigned char field_0x64[4];
-    /* 0x68 */ const UnkCommandData *field_0x68;
-    /* 0x6C */ float field_0x6C;
-    /* 0x70 */ void *field_0x70;
+    /* 0x5C */ UnkEffectParticleData120 emitter;
 };
 CHECK_SIZEOF(UnkEffectElementData2, 0x74);
 
@@ -74,24 +94,13 @@ struct UnkEffectElementData4 : UnkEffectElementData {
 CHECK_SIZEOF(UnkEffectElementData4, 0x44);
 
 struct UnkEffectElementData5 : UnkEffectElementData {
-    /* 0x2C */ unsigned int field_0x2C;
-    /* 0x30 */ float field_0x30;
-    /* 0x34 */ float field_0x34;
-    /* 0x38 */ unsigned char field_0x38[8];
-    /* 0x40 */ float field_0x40;
-    /* 0x44 */ float field_0x44;
-    /* 0x48 */ const UnkCommandData *field_0x48;
+    /* 0x2C */ UnkEffectParticleData124 particle;
     /* 0x4C */ unsigned int field_0x4C;
-    /* 0x50 */ unsigned char field_0x50[8];
+    /* 0x50 */ unsigned char field_0x50[4];
+    /* 0x54 */ unsigned char field_0x54[4];
     /* 0x58 */ void *field_0x58;
     /* 0x5C */ void *field_0x5C;
-    /* 0x60 */ unsigned int field_0x60;
-    /* 0x64 */ short field_0x64;
-    /* 0x66 */ short field_0x66;
-    /* 0x68 */ unsigned char field_0x68[4];
-    /* 0x6C */ const UnkCommandData *field_0x6C;
-    /* 0x70 */ float field_0x70;
-    /* 0x74 */ void *field_0x74;
+    /* 0x60 */ UnkEffectParticleData120 emitter;
 };
 CHECK_SIZEOF(UnkEffectElementData5, 0x78);
 

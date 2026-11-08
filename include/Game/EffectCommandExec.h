@@ -272,6 +272,39 @@ class EffCmdSingleExec : public EffectCommandExec {
 };
 CHECK_SIZEOF(EffCmdSingleExec, 0x28);
 
+/* Class identities and inheritance come from RTTI; constructor signatures are inferred. */
+class EffCmd2DRotExec : public EffCmdSingleExec {
+  public:
+    EffCmd2DRotExec(const UnkCommandData *command, unsigned int *flags, float *target)
+        : EffCmdSingleExec(command, flags, target) {}
+    virtual ~EffCmd2DRotExec();
+};
+CHECK_SIZEOF(EffCmd2DRotExec, 0x28);
+
+class EffCmdGenQuantityExec : public EffCmdSingleExec {
+  public:
+    EffCmdGenQuantityExec(const UnkCommandData *command, unsigned int *flags, float *target)
+        : EffCmdSingleExec(command, flags, target) {}
+    virtual ~EffCmdGenQuantityExec();
+};
+CHECK_SIZEOF(EffCmdGenQuantityExec, 0x28);
+
+class EffCmdFrictionExec : public EffCmdSingleExec {
+  public:
+    EffCmdFrictionExec(const UnkCommandData *command, unsigned int *flags, float *target)
+        : EffCmdSingleExec(command, flags, target) {}
+    virtual ~EffCmdFrictionExec();
+};
+CHECK_SIZEOF(EffCmdFrictionExec, 0x28);
+
+class EffCmdGravityExec : public EffCmdSingleExec {
+  public:
+    EffCmdGravityExec(const UnkCommandData *command, unsigned int *flags, float *target)
+        : EffCmdSingleExec(command, flags, target) {}
+    virtual ~EffCmdGravityExec();
+};
+CHECK_SIZEOF(EffCmdGravityExec, 0x28);
+
 class EffCmdVector2Exec : public EffectCommandExec {
   public:
     EffCmdVector2Exec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target);

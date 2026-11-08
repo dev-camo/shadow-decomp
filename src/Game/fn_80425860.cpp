@@ -65,10 +65,10 @@ bool EffectManager::fn_80425860(UnkEffectFileData *file) {
         switch (record->field_0x20) {
         case 2: {
             UnkEffectElementData2 *data = static_cast<UnkEffectElementData2 *>(record);
-            RelocateEffectPointer(data->field_0x48, base);
+            RelocateEffectPointer(data->particle.command, base);
             RelocateEffectPointer(data->field_0x58, base);
-            RelocateEffectPointer(data->field_0x70, base);
-            RelocateEffectPointer(data->field_0x68, base);
+            RelocateEffectPointer(data->emitter.shape, base);
+            RelocateEffectPointer(data->emitter.command, base);
             break;
         }
         case 3: {
@@ -84,11 +84,11 @@ bool EffectManager::fn_80425860(UnkEffectFileData *file) {
         }
         case 5: {
             UnkEffectElementData5 *data = static_cast<UnkEffectElementData5 *>(record);
-            RelocateEffectPointer(data->field_0x48, base);
+            RelocateEffectPointer(data->particle.command, base);
             RelocateEffectPointer(data->field_0x58, base);
             RelocateEffectPointer(data->field_0x5C, base);
-            RelocateEffectPointer(data->field_0x74, base);
-            RelocateEffectPointer(data->field_0x6C, base);
+            RelocateEffectPointer(data->emitter.shape, base);
+            RelocateEffectPointer(data->emitter.command, base);
             break;
         }
         case 6: {
