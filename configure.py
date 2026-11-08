@@ -2417,6 +2417,7 @@ config.libs = [
             # with clrlwi for fn_801690D0, where this build loads it into r4 after the call (a
             # local copy of m_comId moves the load but leaves mr for the clrlwi).
             Object(NonMatching, "Game/ElecAccessPanel.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/HeavyDog0510ModeCtrlUnit.cpp", cflags=cflags_game_cpp),
             # Compared as relocatable objects, 11 of 12 functions have identical words and
             # relocation targets, and the data contents match once the linker-discarded weak and
             # local copies are set aside (the compiled .sdata2 is writable, WA, where the original's

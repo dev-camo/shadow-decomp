@@ -11,8 +11,8 @@
 /* The control units of the Heavy Dog bosses (class names and bases from RTTI; see BossCtrlUnit.h).
  * They are defined at 0x802498AC-0x8024E104 apart from the constructors marked inline, whose
  * copies the linker keeps from the HEAVY_DOG_0410 unit. Only the classes that the HEAVY_DOG_0410
- * and HEAVY_DOG_0510 boss tasks and the HEAVY_DOG_0410 mode units create, and their bases, are
- * declared. Each declares its destructor and, where its vtable shows an override, Update;
+ * and HEAVY_DOG_0510 boss tasks and mode units create, and their bases, are declared. Each
+ * declares its destructor and, where its vtable shows an override, Update;
  * HeavyDogCtrlUnit_AttackCallbackCanopy and HeavyDogCtrlUnit_AttackCallbackBody also declare their
  * overrides of container slots 0 and 2, and HeavyDogCtrlUnit_Barrier its override of slot 0.
  * Other overrides and further virtual functions are not declared yet. The parameter types are

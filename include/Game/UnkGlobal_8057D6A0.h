@@ -41,7 +41,9 @@ CHECK_SIZEOF(UnkRecord_802039C8, 0x24);
  * 0x94 and 0x98, the record at 0xA8 and the byte at 0x125 are mapped. */
 struct UnkGlobal_8057D6A0 {
     /* 0x00 */ u8 field_0x0[0x18];
-    /* RollCircle divides the vector it passes to an attacked object by it (meaning unknown). */
+    /* RollCircle divides the vector it passes to an attacked object by it, and
+     * HeavyDog0510ModeCtrlUnit_GET_ATK's Update adds it to its field_0x10 while
+     * BossVarParam::field_0x18 is non-zero (meaning unknown). */
     /* 0x18 */ float field_0x18;
     /* 0x1C */ u8 field_0x1C[0x28 - 0x1C];
     /* 0x28 */ float field_0x28; /* Coaster multiplies it by 540 (meaning unknown) */

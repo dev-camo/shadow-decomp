@@ -120,8 +120,9 @@ class BossVarParam {
     /* 0x38 */ u8 field_0x38[4];           /* not set by the constructor */
     /* 0x3C */ _stMtnPlayWork *field_0x3C; /* fn_8041B908's result (0x8017A704) */
     /* 0x40 */ float field_0x40;
-    /* Not set by the constructor. The HEAVY_DOG_0410 mode units pass it plus 1 to 4, as a 16-bit
-     * motion id, to fn_80417568 with the motion at 0x3C. The signedness is inferred. */
+    /* Not set by the constructor. The HEAVY_DOG_0410 and HEAVY_DOG_0510 mode units pass it plus 1
+     * to 4, as a 16-bit motion id, to fn_80417568 with the motion at 0x3C. The signedness is
+     * inferred. */
     /* 0x44 */ s32 field_0x44;
     /* 0x48 */ Fn8040Vector3 field_0x48;
     /* The object of the BossCharaColli task, which stores itself here (0x801797E4). */
