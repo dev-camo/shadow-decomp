@@ -1248,7 +1248,9 @@ config.libs = [
             # Scene objects, playback, node lookup and non-owning listeners. Of the 195 native
             # bodies, this source emits 166 identified counterparts. The 157 instruction-identical
             # bodies include two tree methods that call the key comparator instead of distinct
-            # value_compare wrappers. Five destructor models remain provisional, and five
+            # value_compare wrappers. The source expands those wrappers into their callers; the
+            # original keeps separate copies and emits the key comparator after the first wrapper.
+            # Five destructor models remain provisional, and five
             # operations are expanded in headers. Remaining helpers are external to this object;
             # five are emitted by Node. Unidentified callback/functor tables keep placeholders.
             # The nested CFunctorBase name comes from the original name pool; its association with
@@ -1319,7 +1321,8 @@ config.libs = [
             # emitted copy. Five of the 151 bodies make seven calls to SceneNameCompare where the
             # original calls distinct value_compare wrappers (USA functions 8036E5F4, 8036E6CC,
             # 8036EDA4, 8036F580 and 8036F688). For example, 8036E5F4+0x48 calls native 8036E678;
-            # the source calls the key comparator directly.
+            # the source expands value_compare and calls the key comparator directly. The
+            # original emits its comparator immediately after the first separate wrapper.
             # In 8036D0BC and 8036F4F0, three calls also use local weak const-key pair destructors
             # instead of the original external definitions at 800418A4 and 80041B70 in USA.
             #
@@ -1362,6 +1365,10 @@ config.libs = [
             # scene-node-map constructors belong to Scene; the other seven definitions are outside
             # these CSD files. For example, original removal processing at 8036C3AC calls external
             # list begin/end at 8003EB64/8003EB28 in USA; this source keeps local weak copies.
+            # The Project destructor also calls local weak order-change-list, float-multimap and
+            # name-multimap destructors instead of the external definitions at 8003E874, 8003EF90
+            # and 8003F0A8 in USA. Each immediate destructor has the original 76-byte instruction
+            # shape after masking branch displacements; the different call targets remain.
             # The weak SceneList release helper has the original 328-byte body and direct calls;
             # the combined source link selects its external definition at 80042B10 in USA. The
             # implicit CSceneList destructor emits a 92-byte weak copy; the linked definition
