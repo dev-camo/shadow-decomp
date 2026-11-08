@@ -33,7 +33,8 @@ class EffectElement {
     virtual void Update(float deltaTime) = 0;
     virtual void Render() = 0;
 
-    /* Allocation contract inferred from the native effect factory's eight new expressions. */
+    /* Inferred: each new expression in EffectManagerRW3::CreateElement allocates through
+     * fn_8042A5D0()->Allocate, and its cleanup uses EffectElement::operator delete. */
     static void *operator new(unsigned long size) {
         return fn_8042A5D0()->Allocate(size);
     }

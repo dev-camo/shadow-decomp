@@ -66,9 +66,7 @@ void EffectManagerRW3::fn_804325E8() {
         if (camera != 0) {
             int width = camera->frameBuffer->width;
             int height = camera->frameBuffer->height;
-            RwRect rect = {0, 0, 0, 0};
-            rect.w = width;
-            rect.h = height;
+            RwRect rect = {0, 0, width, height};
             field_0x34 = fn_80489E74(0, 0, 0, rwRASTERTYPECAMERATEXTURE);
             fn_80489DC4(
                 field_0x34,
