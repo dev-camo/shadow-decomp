@@ -2350,6 +2350,7 @@ config.libs = [
             # than in the original (const floats with a dynamic initialiser reproduce both loads).
             Object(NonMatching, "Game/SuctionPillar.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PJSLauncher.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/NpcSound.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SecretDisk.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/GiantLantern.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/GravityChangeSwitch.cpp", cflags=cflags_game_cpp),
