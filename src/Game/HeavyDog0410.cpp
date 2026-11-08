@@ -12,6 +12,7 @@
 #include "Game/GadgetTypeInfo.h"
 #include "Game/HeavyDog0410.h"
 #include "Game/HeavyDog0410CtrlUnit.h"
+#include "Game/HeavyDog0410ModeCtrlUnit.h"
 #include "Game/HeavyDogCtrlUnit.h"
 #include "Game/HeavyDogVarParam.h"
 #include "Game/PJSLauncher.h"

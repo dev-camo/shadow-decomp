@@ -2440,6 +2440,7 @@ config.libs = [
             # diagnostic differs in nine words across three functions, with no unpaired words; the
             # normal build links the original object.
             Object(NonMatching, "Game/HeavyDog0410.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/HeavyDog0410ModeCtrlUnit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/VacuumContainer.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BaseDoor.cpp", cflags=cflags_game_cpp),
             # 35 of 38 functions have identical words and relocations, and the data matches once the

@@ -93,6 +93,14 @@ class BossVarParam {
 
     /* 0x04 */ UnkBossParamTable *field_0x4; /* not set by the constructor */
     /* 0x08 */ float field_0x8;
+    /* The next three words are used by BossModeCtrlUnit::Update (0x802925A0) as the current,
+     * previous and requested mode (the word "mode" is inferred from the class names). When Update
+     * has a unit, it calls the unit's Update unless field_0x14 is already non-zero; if field_0x14
+     * is then non-zero, it deletes the unit and copies field_0xC to field_0x10. Only this path
+     * copies the previous mode. When Update has no unit (from the start or after that deletion),
+     * it moves field_0x14 to field_0xC, even when it is zero, clears field_0x14 and passes the
+     * value to CreateUnit. If field_0x14 is non-zero after CreateUnit, it deletes the new unit and
+     * takes the no-unit path again, without the copy. */
     /* 0x0C */ s32 field_0xC;
     /* 0x10 */ s32 field_0x10;
     /* 0x14 */ s32 field_0x14;
@@ -112,7 +120,9 @@ class BossVarParam {
     /* 0x38 */ u8 field_0x38[4];           /* not set by the constructor */
     /* 0x3C */ _stMtnPlayWork *field_0x3C; /* fn_8041B908's result (0x8017A704) */
     /* 0x40 */ float field_0x40;
-    /* 0x44 */ u8 field_0x44[4]; /* not set by the constructor */
+    /* Not set by the constructor. The HEAVY_DOG_0410 mode units pass it plus 1 to 4, as a 16-bit
+     * motion id, to fn_80417568 with the motion at 0x3C. The signedness is inferred. */
+    /* 0x44 */ s32 field_0x44;
     /* 0x48 */ Fn8040Vector3 field_0x48;
     /* The object of the BossCharaColli task, which stores itself here (0x801797E4). */
     /* 0x54 */ UnkBossCharaColliImpl_8017956C *field_0x54;

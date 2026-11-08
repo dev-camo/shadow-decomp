@@ -24,20 +24,6 @@ class HeavyDog0410CtrlUnit : public HeavyDogCtrlUnit {
 };
 CHECK_SIZEOF(HeavyDog0410CtrlUnit, 0x20);
 
-/* The constructor is inline: the boss task's copy (0x8024E9E0) is the one the linker keeps. Its
- * vtable (0x80549280-0x805492B8, USA) points to the destructor, Update and CreateUnit declared
- * below; its other function entries are adjustment thunks. The words after the vtable are
- * CreateUnit's switch table. */
-class HeavyDog0410ModeCtrlUnit : public HeavyDog0410CtrlUnit, public BossModeCtrlUnit {
-  public:
-    HeavyDog0410ModeCtrlUnit(HeavyDog0410VarParam *param)
-        : BossCtrlUnit(param), HeavyDog0410CtrlUnit(param), BossModeCtrlUnit(param) {}
-    virtual ~HeavyDog0410ModeCtrlUnit();
-    virtual bool Update(float arg);
-    virtual BossCtrlUnit *CreateUnit(int mode);
-};
-CHECK_SIZEOF(HeavyDog0410ModeCtrlUnit, 0x2C);
-
 /* Constructor at 0x8026D428. */
 class HeavyDog0410CtrlUnit_Move : public HeavyDog0410CtrlUnit {
   public:
@@ -57,5 +43,29 @@ class HeavyDog0410CtrlUnit_Dust : public HeavyDog0410CtrlUnit {
     /* 0x10 */ u8 field_0x10[0x18 - 0x10]; /* unknown */
 };
 CHECK_SIZEOF(HeavyDog0410CtrlUnit_Dust, 0x28);
+
+/* Constructor at 0x8026CD1C. It copies the vectors at arg1, arg2 and arg3 to 0x2C, 0x38 and 0x44
+ * (the parameter names are inferred). */
+class HeavyDog0410CtrlUnit_Mine : public HeavyDog0410CtrlUnit, public AttackCallbackContainer {
+  public:
+    HeavyDog0410CtrlUnit_Mine(HeavyDog0410VarParam *param, const Fn8040Vector3 *arg1,
+                              const Fn8040Vector3 *arg2, const Fn8040Vector3 *arg3);
+    virtual ~HeavyDog0410CtrlUnit_Mine();
+    virtual bool Update(float arg);
+    /* Overrides container slot 2 (0x8026C7C4; the container's vtable reaches it through the
+     * adjustment thunk 0x8026D50C). */
+    virtual void fn_8023357C(SonicteamUSA::System::CharaColli::AttackCallbackParam &param);
+
+    /* 0x14 */ u8 field_0x14[0x68 - 0x14]; /* unknown */
+
+  private:
+    /* Copying is disabled in this reconstructed interface because the copy contract is
+     * unrecovered: the destructor releases shared counts at 0x60, 0x58 and 0x50
+     * (0x8026CC44-0x8026CC5C), which the bytes here would copy without taking a reference.
+     * Declared and not defined. */
+    HeavyDog0410CtrlUnit_Mine(const HeavyDog0410CtrlUnit_Mine &);
+    HeavyDog0410CtrlUnit_Mine &operator=(const HeavyDog0410CtrlUnit_Mine &);
+};
+CHECK_SIZEOF(HeavyDog0410CtrlUnit_Mine, 0x78);
 
 #endif

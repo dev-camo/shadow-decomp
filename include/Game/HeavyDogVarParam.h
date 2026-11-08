@@ -85,10 +85,22 @@ struct UnkHeavyDogParams_8024EDFC {
 };
 CHECK_SIZEOF(UnkHeavyDogParams_8024EDFC, 0x74);
 
+/* An 8-byte entry of the array at HeavyDogVarParam::field_0x144 (placeholder name; the meanings of
+ * the fields are unknown). Code at 0x8024BDE4-0x8024CD84 reads and writes the three bytes and the
+ * float of the entries; the HEAVY_DOG_0410 mode units set field_0x2 of the entry that
+ * HeavyDogVarParam::field_0x138 selects. */
+struct UnkHeavyDogEntry_8025056C {
+    /* 0x0 */ u8 field_0x0;
+    /* 0x1 */ u8 field_0x1;
+    /* 0x2 */ u8 field_0x2;
+    /* 0x4 */ float field_0x4;
+};
+CHECK_SIZEOF(UnkHeavyDogEntry_8025056C, 0x8);
+
 /* HeavyDogVarParam (class name from RTTI, with BossVarParam as its only base): the variables of the
- * Heavy Dog bosses. The members are mapped from the constructor and HeavyDog0410's Init; their
- * meanings are unknown, and the regions marked unknown are used by code that is not reconstructed
- * yet. */
+ * Heavy Dog bosses. The members are mapped from the constructor, HeavyDog0410's Init and the
+ * HEAVY_DOG_0410 mode units; their meanings are unknown, and the regions marked unknown are used
+ * by code that is not reconstructed yet. */
 class HeavyDogVarParam : public BossVarParam {
   public:
     HeavyDogVarParam() {
@@ -128,17 +140,32 @@ class HeavyDogVarParam : public BossVarParam {
     /* 0x115 */ u8 field_0x115;
     /* 0x116 */ u8 field_0x116;
     /* 0x117 */ u8 field_0x117;
-    /* 0x118 */ u8 field_0x118[0x11C - 0x118]; /* unknown */
+    /* The HEAVY_DOG_0410 mode units clear it and compare it with
+     * HeavyDog0410VarParam::field_0x1D8. */
+    /* 0x118 */ float field_0x118;
     /* 0x11C */ Fn8040Vector3 field_0x11C;
     /* 0x128 */ Fn8040Vector3 field_0x128;
     /* 0x134 */ float field_0x134;
     /* 0x138 */ s32 field_0x138;
     /* 0x13C */ s32 field_0x13C;
     /* 0x140 */ s32 field_0x140;
-    /* 0x144 */ u8 field_0x144[0x1A0 - 0x144]; /* unknown */
+    /* The HEAVY_DOG_0410 mode units index it with field_0x138; other code indexes it with a member
+     * of its own (0x8024BDE4-0x8024CD84). The count of seven is what fits before field_0x17C. */
+    /* 0x144 */ UnkHeavyDogEntry_8025056C field_0x144[7];
+    /* HEAVY_DOG_0410's MOVETEST unit copies it to field_0xF8. */
+    /* 0x17C */ Fn8040Vector3 field_0x17C;
+    /* 0x188 */ u8 field_0x188[0x194 - 0x188]; /* unknown */
+    /* HEAVY_DOG_0410's ESCAPE unit measures the points (+-300, 0, +-300) from it. */
+    /* 0x194 */ Fn8040Vector3 field_0x194;
     /* 0x1A0 */ boost::shared_ptr<Target> field_0x1A0;
     /* 0x1A8 */ boost::shared_ptr<Weapon::LockonTarget> field_0x1A8;
-    /* 0x1B0 */ u8 field_0x1B0[0x1C0 - 0x1B0]; /* unknown */
+    /* HEAVY_DOG_0410's ESCAPE unit compares it with m_params.field_0x5C, its CHASE unit with
+     * m_params.field_0x5C - 30. */
+    /* 0x1B0 */ float field_0x1B0;
+    /* 0x1B4 */ u8 field_0x1B4[0x1BC - 0x1B4]; /* unknown */
+    /* HEAVY_DOG_0410's CHASE unit compares it with pi / 2, 0 and -pi / 2 (an angle in radians,
+     * inferred). */
+    /* 0x1BC */ float field_0x1BC;
     /* 0x1C0 */ float field_0x1C0;
     /* 0x1C4 */ float field_0x1C4;
     /* 0x1C8 */ u8 field_0x1C8;
