@@ -603,7 +603,7 @@ config.libs = [
                 # registers and operands identical), fn_8048A790 40 (non-volatile register
                 # assignment r20-r31 only; its inlined copies in fn_8048A96C match).
                 Object(NonMatching, "rw/fn_8048A178.c", cflags=cflags_game),
-                Object(NonMatching, "rw/fn_8048D85C.c", cflags=cflags_game),
+                Object(Matching, "rw/fn_8048D85C.c", cflags=cflags_game),
                 # fn_80496408 differs in 7 words: its error strings are addressed from a .data
                 # base 0x74 bytes below the original's. The original loads 0x8056E4F8 (fn_80495428's
                 # jump table, 0x74 bytes after fn_804951B8's at 0x8056E484) as its base. That suggests
