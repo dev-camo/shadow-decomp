@@ -219,6 +219,9 @@ Fn8040Vector3 *fn_80008E1C(Fn8040Vector3 *vector, float x, float y, float z);
 void fn_8040C148(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Original matrix conversion wrappers; C++ member identities are unknown. */
 void fn_80016370(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
+/* The vector counterpart of fn_80016370: assigns source to destination through the vector's
+ * assignment (0x800091D0). Its C++ member identity is unknown. */
+void fn_80016350(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
 Fn8040Matrix34 fn_800163F4(const Fn8040Matrix34 *source);
 /* Returns the address of the element at the given row and column. */
 float *fn_8040C17C(Fn8040Matrix34 *matrix, int row, int column);

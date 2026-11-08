@@ -10,17 +10,20 @@
 #include "layout_check.h"
 
 /* The control units of the DEVIL_DOOM boss (class names and bases from RTTI; see BossCtrlUnit.h).
- * They are defined at 0x803060C4-0x8030BCD4 (USA). The constructors marked inline are those whose
- * copies the linker keeps from the DEVIL_DOOM unit. Only the classes that the boss task creates,
- * and their bases, are declared. Each declares its destructor and, where its vtable shows an
- * override, Update; DevilDoomCtrlUnit_CheckMotionAttribute also declares its override of
- * OnMotionEvent, and the four attack callback classes below DevilDoomCtrlUnit_AttackCallback their
- * overrides of container slot 2. Other overrides and further virtual functions are not declared
- * yet. The parameter types are inferred from the caller, which passes its DevilDoomVarParam, and
- * the parameter name index is inferred. Regions marked unknown are set up by the out-of-line
- * constructors and not mapped yet. */
+ * Most are defined at 0x803060C4-0x8030BCD4 (USA); DevilDoomCtrlUnit_PsychoObjectControl,
+ * DevilDoomCtrlUnit_BitGroupControl and DevilDoomCtrlUnit_BitAttackControl are defined later in
+ * the code, with the boss's psycho object and bit units. The constructors marked inline are those
+ * whose copies the linker keeps from the DEVIL_DOOM unit. Only the classes that the boss task and
+ * its mode units create, and their bases, are declared. Each declares its destructor and, where its
+ * vtable shows an override, Update; DevilDoomCtrlUnit_CheckMotionAttribute also declares its
+ * override of OnMotionEvent, and the four classes derived from DevilDoomCtrlUnit_AttackCallback
+ * declare their overrides of AttackCallbackContainer::fn_8023357C. Other overrides and further
+ * virtual functions are not declared yet. The parameter types are inferred from the callers, which
+ * pass their DevilDoomVarParam, and the parameter names (index, motionId, position, direction)
+ * are inferred. Regions marked unknown are set up by the out-of-line constructors and not mapped
+ * yet. */
 
-/* Constructor at 0x80306554. */
+/* Constructor at 0x80306554, destructor at 0x8030631C. */
 class DevilDoomCtrlUnit : public virtual BossCtrlUnit {
   public:
     DevilDoomCtrlUnit(DevilDoomVarParam *param);
@@ -188,5 +191,61 @@ class DevilDoomCtrlUnit_CheckMotionAttribute : public DevilDoomCtrlUnit,
     virtual void OnMotionEvent(u16 id, void *payload);
 };
 CHECK_SIZEOF(DevilDoomCtrlUnit_CheckMotionAttribute, 0x24);
+
+/* Constructor at 0x803063A0. */
+class DevilDoomCtrlUnit_DoomsEye : public DevilDoomCtrlUnit {
+  public:
+    DevilDoomCtrlUnit_DoomsEye(DevilDoomVarParam *param, u16 motionId);
+    virtual ~DevilDoomCtrlUnit_DoomsEye();
+    virtual bool Update(float arg);
+
+    /* 0x0C */ u8 field_0xC[0x1C - 0xC]; /* unknown */
+};
+CHECK_SIZEOF(DevilDoomCtrlUnit_DoomsEye, 0x2C);
+
+/* Constructor at 0x803093F4. */
+class DevilDoomCtrlUnit_FireBreath : public DevilDoomCtrlUnit, public AttackCallbackContainer {
+  public:
+    DevilDoomCtrlUnit_FireBreath(DevilDoomVarParam *param, const Fn8040Vector3 *position,
+                                 const Fn8040Vector3 *direction);
+    virtual ~DevilDoomCtrlUnit_FireBreath();
+    virtual bool Update(float arg);
+
+    /* 0x10 */ u8 field_0x10[0x440 - 0x10]; /* unknown */
+};
+CHECK_SIZEOF(DevilDoomCtrlUnit_FireBreath, 0x450);
+
+/* Constructor at 0x80324920. */
+class DevilDoomCtrlUnit_PsychoObjectControl : public DevilDoomCtrlUnit {
+  public:
+    DevilDoomCtrlUnit_PsychoObjectControl(DevilDoomVarParam *param);
+    virtual ~DevilDoomCtrlUnit_PsychoObjectControl();
+    virtual bool Update(float arg);
+
+    /* 0x0C */ u8 field_0xC[0x10 - 0xC]; /* unknown */
+};
+CHECK_SIZEOF(DevilDoomCtrlUnit_PsychoObjectControl, 0x20);
+
+/* Constructor at 0x803274A8. */
+class DevilDoomCtrlUnit_BitGroupControl : public DevilDoomCtrlUnit {
+  public:
+    DevilDoomCtrlUnit_BitGroupControl(DevilDoomVarParam *param, int index);
+    virtual ~DevilDoomCtrlUnit_BitGroupControl();
+    virtual bool Update(float arg);
+
+    /* 0x0C */ u8 field_0xC[0xB4 - 0xC]; /* unknown */
+};
+CHECK_SIZEOF(DevilDoomCtrlUnit_BitGroupControl, 0xC4);
+
+/* Constructor at 0x80327B94. */
+class DevilDoomCtrlUnit_BitAttackControl : public DevilDoomCtrlUnit {
+  public:
+    DevilDoomCtrlUnit_BitAttackControl(DevilDoomVarParam *param);
+    virtual ~DevilDoomCtrlUnit_BitAttackControl();
+    virtual bool Update(float arg);
+
+    /* 0x0C */ u8 field_0xC[0x10 - 0xC]; /* unknown */
+};
+CHECK_SIZEOF(DevilDoomCtrlUnit_BitAttackControl, 0x20);
 
 #endif
