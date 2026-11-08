@@ -57,10 +57,12 @@ UnkCollision_8001B494 *fn_8001B494(void);
  * for it with __cvt_fp2unsigned. */
 bool fn_8001C7B4(UnkCollision_8001B494 *collision, SonicteamUSA::System::PathCtrl *path,
                  u32 pathNo);
-/* Moves position along the path by distance and returns whether the end was reached. */
+/* Moves position along the path by distance and returns whether the end was reached. The byte
+ * type of flag is inferred: it is passed unchanged as arg1 of fn_80018434 (after the path), which
+ * tests only its low byte (clrlwi.), and the callers pass 0, 1 or a loaded byte. */
 bool fn_8001C91C(UnkCollision_8001B494 *collision, SonicteamUSA::System::PathCtrl *path,
                  s32 reversed, Fn8040Vector3 *position, float distance, UnkRotation3 *rotation,
-                 int flag);
+                 u8 flag);
 /* Sets up path from resource at position and rotation (behaviour inferred). Argument 4 is passed
  * to fn_8001E070 as its third argument, like CharInfo::field_0x30 (rotation order, inferred),
  * which is what the GrindGadget passes; argument 6 is read as two groups of three floats (at
@@ -92,8 +94,10 @@ float fn_800183D8(SonicteamUSA::System::PathCtrl *path);
  * next one by the current fraction (behaviour inferred). */
 Fn8040Vector3 fn_80018634(SonicteamUSA::System::PathCtrl *path);
 /* The rotation angles of the path at its current state, from the current point and fraction
- * (behaviour inferred; the meaning of the two int arguments is not known). */
-UnkRotation3 fn_80018434(SonicteamUSA::System::PathCtrl *path, int arg1, int arg2);
+ * (behaviour inferred). arg1 is the byte flag that fn_8001C91C passes on; the body tests only its
+ * low byte (clrlwi.), and its meaning is not known. fn_8001C91C passes its reversed argument
+ * (inverted for a negative distance) as arg2, which the body does not read. */
+UnkRotation3 fn_80018434(SonicteamUSA::System::PathCtrl *path, u8 arg1, int arg2);
 
 /* External two-vector record read by fn_8001DB08. */
 extern UnkBss_80570B50 lbl_80570B50;
