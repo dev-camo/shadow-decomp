@@ -1,6 +1,7 @@
 /* RW3 particle methods; class identities come from RTTI, original filename unknown. */
 #include "Game/EffectParticleRW3.h"
 #include "Game/EffectParticle3DRW3.h"
+#include "Game/EffectCommandExec.h"
 #include "Game/EffectLaunchInfoRW3.h"
 #include "Game/EffectManagerRW3.h"
 #include "Game/UnkEffectFileData.h"
@@ -178,10 +179,14 @@ void EffectParticleRW3::Render() {
         for (particle = m_head; particle != 0; particle = particle->m_next) {
             RwRGBA *outputColor = reinterpret_cast<RwRGBA *>(color.data);
             color.data += color.stride;
-            outputColor->red = particle->m_color[0] >> 22;
-            outputColor->green = particle->m_color[1] >> 22;
-            outputColor->blue = particle->m_color[2] >> 22;
-            outputColor->alpha = particle->m_color[3] >> 22;
+            outputColor->red =
+                static_cast<unsigned int>(particle->m_color[0]) >> System::MATERIAL_FRACTION_BITS;
+            outputColor->green =
+                static_cast<unsigned int>(particle->m_color[1]) >> System::MATERIAL_FRACTION_BITS;
+            outputColor->blue =
+                static_cast<unsigned int>(particle->m_color[2]) >> System::MATERIAL_FRACTION_BITS;
+            outputColor->alpha =
+                static_cast<unsigned int>(particle->m_color[3]) >> System::MATERIAL_FRACTION_BITS;
             RwV2d *outputSize = reinterpret_cast<RwV2d *>(size.data);
             size.data += size.stride;
             outputSize->x = particle->m_scale.x;
@@ -327,10 +332,18 @@ void EffectParticle3DRW3::Update(float deltaTime) {
                     m_particles[i].vertices[corner].objVertex.x = position.x;
                     m_particles[i].vertices[corner].objVertex.y = position.y;
                     m_particles[i].vertices[corner].objVertex.z = position.z;
-                    m_particles[i].vertices[corner].color.red = particle->m_color[0] >> 22;
-                    m_particles[i].vertices[corner].color.green = particle->m_color[1] >> 22;
-                    m_particles[i].vertices[corner].color.blue = particle->m_color[2] >> 22;
-                    m_particles[i].vertices[corner].color.alpha = particle->m_color[3] >> 22;
+                    m_particles[i].vertices[corner].color.red =
+                        static_cast<unsigned int>(particle->m_color[0]) >>
+                        System::MATERIAL_FRACTION_BITS;
+                    m_particles[i].vertices[corner].color.green =
+                        static_cast<unsigned int>(particle->m_color[1]) >>
+                        System::MATERIAL_FRACTION_BITS;
+                    m_particles[i].vertices[corner].color.blue =
+                        static_cast<unsigned int>(particle->m_color[2]) >>
+                        System::MATERIAL_FRACTION_BITS;
+                    m_particles[i].vertices[corner].color.alpha =
+                        static_cast<unsigned int>(particle->m_color[3]) >>
+                        System::MATERIAL_FRACTION_BITS;
                     m_particles[i].vertices[corner].u =
                         corner / 2 != 0 ? particle->m_uvLower.x : particle->m_uvUpper.x;
                     m_particles[i].vertices[corner].v =
