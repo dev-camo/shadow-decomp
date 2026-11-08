@@ -1657,6 +1657,13 @@ Game/DevilDoom.cpp:
 	.sbss       start:0x805F0970 end:0x805F0978
 	.sdata2     start:0x805F9830 end:0x805F98E0
 
+Game/DevilDoomModeCtrlUnit.cpp:
+	.text       start:0x8030CC08 end:0x80310034
+	.rodata     start:0x8050BC78 end:0x8050BEB0
+	.data       start:0x8055B818 end:0x8055BB98
+	.sdata      start:0x805ECF58 end:0x805ECFE8
+	.sdata2     start:0x805F98E0 end:0x805F9928
+
 Game/BombingWall.cpp:
 	.text       start:0x80314410 end:0x80315198
 	.rodata     start:0x8050C3D8 end:0x8050C4F0

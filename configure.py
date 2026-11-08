@@ -2386,6 +2386,18 @@ config.libs = [
             Object(Matching, "Game/HeavyDog0410.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/HeavyDog0410ModeCtrlUnit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DevilDoom.cpp", cflags=cflags_game_cpp),
+            # 77 of the 78 functions match, in all three regions. BELOW_HALF's constructor (0x2A8
+            # bytes, the original's size) differs in 38 of its 170 words, register numbers only: the
+            # original keeps the unit in r30 and passCharPose in r31 (mr r30, r3 at 0x8030D208, USA
+            # (GUPE8P)), this build the other way round. The normal build therefore links the
+            # original object. A separate link with this build's object in its place gives a
+            # main.dol of the original's size that differs from the original in those 38 words only,
+            # in each region; its map keeps 0x234 bytes of .rodata, 0x380 of .data, 0x90 of .sdata
+            # and 0x48 of .sdata2 from this object at the original's addresses (the original's
+            # .rodata extent is 0x238 with its trailing alignment). The compiled .sdata2 is 0x58
+            # bytes with flags WA before the link drops the copy of sqrtf's two constants; the
+            # original's is 0x48 with flags A.
+            Object(NonMatching, "Game/DevilDoomModeCtrlUnit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/VacuumContainer.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BaseDoor.cpp", cflags=cflags_game_cpp),
             # 35 of 38 functions have identical words and relocations, and the data matches once the
