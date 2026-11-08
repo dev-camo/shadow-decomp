@@ -1813,6 +1813,7 @@ config.libs = [
             # other. The .rodata residual follows from that boundary.
             # The original file name is unknown. Normal builds link the original object.
             Object(NonMatching, "Game/fn_802FA9C0.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/EggLastMech.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAGunShip.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAMine.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),

@@ -24,12 +24,17 @@ class UnkCounters_8016F5B8 {
 };
 CHECK_SIZEOF(UnkCounters_8016F5B8, 0x18);
 
-/* An entry of the table of 0x4C-byte entries at 0x728 (placeholder name). Only two members are
- * mapped: the word at 0x28 that fn_8016F280 returns (the SAVEPOINT gadget reads it for entry 0)
- * and the counters at 0x2C that the attack callback of FallBuildingHolder uses. */
+/* An entry of the table of 0x4C-byte entries at 0x728 (placeholder name). Three members are
+ * mapped: the word at 0x20 that fn_8016EF84 returns, the word at 0x28 that fn_8016F280 returns
+ * (the SAVEPOINT gadget reads it for entry 0) and the counters at 0x2C that the attack callback
+ * of FallBuildingHolder uses. */
 class UnkEntry_80178B5C {
   public:
-    /* 0x00 */ u8 field_0x0[0x28];
+    /* 0x00 */ u8 field_0x0[0x20];
+    /* fn_8016EF84 returns it; fn_8016EF8C adds to it. The EggLastMech boss tests it for entry 0
+     * (meaning unknown). */
+    /* 0x20 */ s32 field_0x20;
+    /* 0x24 */ u8 field_0x24[0x28 - 0x24];
     /* 0x28 */ s32 field_0x28; /* fn_8016F280 returns it */
     /* 0x2C */ UnkCounters_8016F5B8 field_0x2C;
     /* 0x44 */ u8 field_0x44[0x4C - 0x44];
@@ -63,6 +68,8 @@ void fn_8016F0CC(UnkState_8016F0CC *state, int index, int amount);
 /* Returns the entry of the table at 0x728 with the given index, or null for a negative index
  * (behaviour inferred). */
 UnkEntry_80178B5C *fn_80178B5C(UnkManager_80079808 *manager, int index);
+/* Returns *value (behaviour from its body). */
+s32 fn_8016EF84(const s32 *value);
 /* Returns at once when amount is 0. Otherwise adds amount to field_0x0[index] when index is 0 to
  * 2, then, for any index, copies the word at 0x90 of the global at 0x8057D6A0 into
  * field_0xC[index] (behaviour inferred from its body). The attack callback of FallBuildingHolder

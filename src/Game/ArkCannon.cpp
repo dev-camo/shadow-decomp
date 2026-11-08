@@ -24,28 +24,6 @@
 using SonicteamUSA::System::CharaColli::AttackCallbackParam;
 using SonicteamUSA::System::CharaColli::CharaColliAttack;
 
-/* The object that the callback at 0xC of UnkFactory_8051DDC8 returns (placeholder name; the
- * original class is unknown). fn_80051B58 constructs it when there is no callback. */
-class UnkResult_80051B58;
-
-/* A 0x14-byte record whose function at 0x8 allocates a 0x6C-byte object from the parameters
- * (placeholder names; behaviour inferred from fn_80056B8C, the function lbl_8051DDC8 holds). This
- * record holds null at 0x0, 0x4 and 0xC; other records in the same table hold functions there,
- * which fn_80051CC8, fn_80051C80 and fn_80051AF0 call when they are set. */
-struct UnkFactory_8051DDC8 {
-    /* fn_80051CC8 calls it without setting arguments; the known callees take none. */
-    /* 0x00 */ void (*field_0x0)();
-    /* fn_80051C80 calls it without setting arguments; the known callees take none. */
-    /* 0x04 */ void (*field_0x4)();
-    /* 0x08 */ void (*create)(const UnkParams_80051D10 *params);
-    /* Called by fn_80051AF0 with the parameters and a float; its result is returned by value. */
-    /* 0x0C */ UnkResult_80051B58 (*field_0xC)(const UnkParams_80051D10 *params, float arg);
-    /* 0x10 */ float field_0x10;
-};
-CHECK_SIZEOF(UnkFactory_8051DDC8, 0x14);
-
-extern UnkFactory_8051DDC8 lbl_8051DDC8;
-
 /* Converts metres to game units, as for the "RANGE m" parameter (name inferred). */
 static inline float MetresToUnits(float metres) {
     return 10.0f * metres;

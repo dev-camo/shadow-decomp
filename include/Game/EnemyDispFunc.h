@@ -9,7 +9,8 @@
 class Unk801A4430;
 struct Unk801A35ACDescriptor;
 /* Opaque model wrapper and its field0 pointee; original names not recovered.
- * These declarations imply no layout and must be unified with later recovery. */
+ * These declarations imply no layout and must be unified with later recovery. The wrapper's
+ * 8-byte view and its members that the EggLastMech boss calls are in Game/Unk802CD448.h. */
 class Unk802CD448;
 struct Unk802CD448Data;
 

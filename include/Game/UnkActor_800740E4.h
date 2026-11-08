@@ -26,6 +26,11 @@ UnkManager_80109D64 *fn_80109D64(void);
  * its body; the int return is inferred: its only caller, the message slots of Unk802FA9C0, passes
  * 1 as arg2 and ignores the result). */
 int fn_801FAC44(UnkManager_80109D64 *manager, int id, int arg2);
+/* Calls on the manager that the EggLastMech boss makes around the messages it plays (behaviour
+ * not established; the void returns are inferred). */
+void fn_801FAAA4(UnkManager_80109D64 *manager);
+void fn_801FAAB4(UnkManager_80109D64 *manager);
+void fn_801FABE4(UnkManager_80109D64 *manager);
 /* Returns its argument. */
 int fn_801FAAC4(int arg0);
 /* Returns -1 at once when the manager's word at 0x24 is non-zero. Otherwise it locks the manager's
