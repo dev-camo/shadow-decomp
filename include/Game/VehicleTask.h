@@ -36,12 +36,22 @@ class VehicleTask : public Task {
 };
 CHECK_SIZEOF(Vehicle::VehicleTask, 0x38);
 
+/* The record that an entry of the vehicle type table points to (placeholder name): fn_801B4B34
+ * returns its name and fn_801B48D4 creates a vehicle of the type with create, passing the type. */
+struct VehicleTypeInfo {
+    /* 0x0 */ const char *name;
+    /* 0x4 */ TVehicleBase *(*create)(int type);
+};
+CHECK_SIZEOF(Vehicle::VehicleTypeInfo, 0x8);
+
 } // namespace Vehicle
 
 /* The vehicle types are looked up in an eight-byte table (the first word points to the type's
  * record, the byte at 0x4 is a flag); the original function names are unknown (placeholder names,
  * behaviour inferred from their bodies). */
 extern "C" {
+/* Sets the type's flag byte to 1 (behaviour from its body). */
+void fn_801B4850(int type);
 /* Returns the name at the start of the type's record, or an empty string when the type has none. */
 const char *fn_801B4B34(int type);
 /* Returns the type's flag byte; fn_801B48D4 creates nothing when it is 0. */

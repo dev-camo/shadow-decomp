@@ -9,6 +9,7 @@
 #include "layout_check.h"
 
 class CharInfo;
+class UnkParams_80051D10;
 
 /* The object that fn_8005AFE4 returns by value (placeholder name; the original class is unknown).
  * Its constructor (0x80051B58) copies the vector at 0x805E07A0 into the three vectors, constructs
@@ -44,6 +45,11 @@ extern "C" {
 UnkResult_80051B58
 fn_8005AFE4(int arg0, const Fn8040Vector3 *start, const Fn8040Vector3 *end,
             const boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack> &attack);
+/* Returns the result of the function at 0xC of the record that fn_80051C34 uses for kind, called
+ * with params and arg2, when the pointer and that function are set, and otherwise a result built
+ * by the constructor at 0x80051B58 with 0 (behaviour from its body). The GunLift vehicle passes
+ * 0x1C and 5.0f. */
+UnkResult_80051B58 fn_80051AF0(int kind, const UnkParams_80051D10 &params, float arg2);
 }
 
 #endif
