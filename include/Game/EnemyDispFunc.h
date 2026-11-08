@@ -1,7 +1,7 @@
 #ifndef GAME_ENEMY_DISP_FUNC_H
 #define GAME_ENEMY_DISP_FUNC_H
 
-#include "Game/Unk801A4430Event.h"
+#include "Game/EnemyMotionEventArg.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/shared_ptr.hpp"
 #include "layout_check.h"
@@ -50,7 +50,7 @@ class EnemyDispFunc {
     // 0x38; the second vector is taken by value: BkWingSmallBase copies it before the call.
     virtual void fn_8019B404(const Fn8040Vector3 &, UnkRotation3);
     virtual void fn_8017F234(bool);                              // 0x3C
-    virtual void fn_8019B408(const Unk801A4430Event &event);     // 0x40
+    virtual void fn_8019B408(EnemyMotionEventArg &event);        // 0x40
     virtual bool fn_8019B40C(UnkEnemyDispEvent_8019B40C *event); // 0x44
     virtual void fn_8019B414();                                  // 0x48
     virtual void fn_801834D4();                                  // 0x4C

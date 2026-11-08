@@ -37,7 +37,7 @@ bool Unk801A4430Callback::fn_801A4A74() const {
     return m_function.empty();
 }
 
-void Unk801A4430Callback::fn_801A4A48(const Unk801A4430Event &event) {
+void Unk801A4430Callback::fn_801A4A48(EnemyMotionEventArg &event) {
     if (!m_function.empty()) {
         m_function(event);
     }
@@ -58,7 +58,8 @@ void Unk801A4430::fn_801A4934() {
             _stMtnPlayWork *control = m_control;
             while (fn_80415854(control, 0, &eventId, &payload, 0)) {
                 control = 0;
-                m_callback.fn_801A4A48(Unk801A4430Event(eventId, payload));
+                EnemyMotionEventArg event(eventId, payload);
+                m_callback.fn_801A4A48(event);
             }
         }
     }
