@@ -8,10 +8,8 @@
  * addresses.
  *
  * NonMatching: SetState differs in five words (the order of the stack argument of fn_800C7A84 and
- * the moves around it), checked_delete<CityLaser> is a local symbol where the original's is weak, five std::vector
- * instances of weak pointers differ (insert, reserve, swap, the vector destructor and the
- * __vector_obj constructor) and 16 small helpers of the vector are not reproduced; see the notes
- * in configure.py. */
+ * the moves around it), checked_delete<CityLaser> is a local symbol where the original's is weak,
+ * and some functions are not in the original's order; see the notes in configure.py. */
 #include "Game/AngleConversion.h"
 #include "Game/CharInfo.h"
 #include "Game/CommonBomb.h"
