@@ -12,10 +12,13 @@ class Target;
 
 /* Commands that gadgets send to character infos (class names from RTTI, with CharCommand,
  * Player::PlayerCommand or Player::Npc::NpcCommand as their only base); WallJumpCommand is sent by
- * the player and received by gadgets. The constructors and destructors are defined elsewhere,
- * together with the vtables, except the constructors of CancelBehaviorCommand, AddWeaponCommand,
- * SetVelocityCommand, IgnoreInputCommand(int, float), InvincibleCommand, SwitchCommand and
- * Player::HomingJumpCommand (ItemBox.cpp), which gadget files define, and the constructors of
+ * the player and received by gadgets. Each class declares the overrides of CharCommand's three
+ * virtual functions that its original vtable holds, under CharCommand's placeholder names and with
+ * the USA address of the override in a comment; the overrides are defined elsewhere. The
+ * constructors and destructors are defined elsewhere too, together with the vtables, except the
+ * constructors of CancelBehaviorCommand, AddWeaponCommand, SetVelocityCommand,
+ * IgnoreInputCommand(int, float), InvincibleCommand, SwitchCommand and Player::HomingJumpCommand
+ * (ItemBox.cpp), which gadget files define, and the constructors of
  * Player::StartExternalControlCommand and Player::TouchHangCommand, which are defined in their
  * classes here (see the classes); the argument meanings are inferred from the stores in the
  * constructors.
@@ -28,6 +31,9 @@ class SetPositionCommand : public CharCommand {
   public:
     SetPositionCommand(const Fn8040Vector3 *position, int arg1);
     virtual ~SetPositionCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x801DBD84 */
+    virtual UnkString_8004F888 fn_801D9CB0();                     /* 0x801DBD10 */
+    virtual const char *fn_801D9CA8();                            /* 0x801DBD04 */
 
     /* 0x14 */ Fn8040Vector3 m_position;
 };
@@ -39,6 +45,9 @@ class SetVelocityCommand : public CharCommand {
   public:
     SetVelocityCommand(const Fn8040Vector3 *velocity, int arg1);
     virtual ~SetVelocityCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x801DBA50 */
+    virtual UnkString_8004F888 fn_801D9CB0();                     /* 0x801DB9DC */
+    virtual const char *fn_801D9CA8();                            /* 0x801DB9D0 */
 
     /* 0x14 */ Fn8040Vector3 m_velocity;
 };
@@ -49,6 +58,8 @@ class ClrVelocityCommand : public CharCommand {
   public:
     ClrVelocityCommand(int arg1);
     virtual ~ClrVelocityCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x801DBAE4 */
+    virtual const char *fn_801D9CA8();                            /* 0x801DBAD8 */
 };
 CHECK_SIZEOF(ClrVelocityCommand, 0x14);
 
@@ -58,6 +69,9 @@ CHECK_SIZEOF(ClrVelocityCommand, 0x14);
  * the vector and its direction. */
 class AccelerateInputCommand : public CharCommand {
   public:
+    virtual UnkString_8004F888 fn_801D9CB0(); /* 0x801DBE10 */
+    virtual const char *fn_801D9CA8();        /* 0x801DBE04 */
+
     /* 0x14 */ Fn8040Vector3 m_vector;
 };
 CHECK_SIZEOF(AccelerateInputCommand, 0x20);
@@ -69,6 +83,9 @@ CHECK_SIZEOF(AccelerateInputCommand, 0x20);
  * same choice by testing whether the float is below 1 and reads neither the byte nor the word. */
 class SetTransparentCommand : public CharCommand {
   public:
+    virtual UnkString_8004F888 fn_801D9CB0(); /* 0x801DAAB8 */
+    virtual const char *fn_801D9CA8();        /* 0x801DAAAC */
+
     /* 0x14 */ u8 m_enable;
     /* 0x18 */ float m_alpha;
     /* 0x1C */ int field_0x1C;
@@ -84,6 +101,9 @@ class AccelerateCommand : public CharCommand {
   public:
     AccelerateCommand(const Fn8040Vector3 &acceleration, int arg1);
     virtual ~AccelerateCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x801DB948 */
+    virtual UnkString_8004F888 fn_801D9CB0();                     /* 0x801DB8D4 */
+    virtual const char *fn_801D9CA8();                            /* 0x801DB8C8 */
 
     /* 0x14 */ Fn8040Vector3 m_acceleration;
 };
@@ -102,6 +122,7 @@ class UseCommand : public CharCommand {
     /* Defined elsewhere (0x801DC484): destroys the weak pointers at 0x1C and 0x14 and releases
      * the command through fn_801D9C64 with the size 0x24 (behaviour inferred from the bytes). */
     virtual ~UseCommand();
+    virtual const char *fn_801D9CA8(); /* 0x801DB414 */
 
     /* 0x14 */ boost::weak_ptr<CharInfo> m_user;
     /* The RING gadget locks it with the lock at 0x80057778, whose shared pointers are Target
@@ -121,6 +142,9 @@ class SetAngleCommand : public CharCommand {
   public:
     SetAngleCommand(const UnkRotation3 &angles, int order, int arg1);
     virtual ~SetAngleCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x801DBBFC */
+    virtual UnkString_8004F888 fn_801D9CB0();                     /* 0x801DBB70 */
+    virtual const char *fn_801D9CA8();                            /* 0x801DBB64 */
 
     /* 0x14 */ UnkRotation3 m_angles;
     /* 0x20 */ int m_order;
@@ -134,6 +158,7 @@ class SpringCommand : public CharCommand {
   public:
     SpringCommand();
     virtual ~SpringCommand();
+    virtual const char *fn_801D9CA8(); /* 0x801DA804 */
 };
 CHECK_SIZEOF(SpringCommand, 0x14);
 
@@ -145,6 +170,7 @@ class DeadCommand : public CharCommand {
   public:
     DeadCommand(int arg1);
     virtual ~DeadCommand();
+    virtual const char *fn_801D9CA8(); /* 0x801DB7F4 */
 };
 CHECK_SIZEOF(DeadCommand, 0x14);
 
@@ -158,6 +184,8 @@ class WallJumpCommand : public CharCommand {
     /* Defined elsewhere (USA 0x801DC5D4): destroys the weak pointer at 0x14 and releases the
      * command through fn_801D9C64 with size 0x28 (behaviour inferred from the bytes). */
     virtual ~WallJumpCommand();
+    virtual UnkString_8004F888 fn_801D9CB0(); /* 0x801DB6A8 */
+    virtual const char *fn_801D9CA8();        /* 0x801DB69C */
 
     /* 0x14 */ boost::weak_ptr<CharInfo> field_0x14;
     /* 0x1C */ Fn8040Vector3 field_0x1C;
@@ -177,6 +205,7 @@ class VacuumCommand : public CharCommand {
   public:
     /* Defined elsewhere (USA 0x801DC178). */
     virtual ~VacuumCommand();
+    virtual const char *fn_801D9CA8(); /* 0x801DAFFC */
 
     /* Copied with 0x8005FDB4, which copies UseCommand's field_0x1C. Holds a Target: it is locked
      * with the lock at 0x80057778 (see UseCommand::field_0x1C). Name inferred: the target being
@@ -207,6 +236,7 @@ class IgnoreInputCommand : public PlayerCommand {
      * unset (the callers pass 1 to 3 and 0 or 1; meanings unknown). */
     IgnoreInputCommand(int arg0, int arg1);
     virtual ~IgnoreInputCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009A77C */
 
     /* 0x14 */ float m_seconds;
     /* 0x18 */ u32 field_0x18;
@@ -219,6 +249,7 @@ class LaunchCommand : public PlayerCommand {
   public:
     LaunchCommand(int arg0, int arg1);
     virtual ~LaunchCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009ADD8 */
 
     /* 0x14 */ int m_arg0;
 };
@@ -231,6 +262,7 @@ class StreamCommand : public PlayerCommand {
   public:
     StreamCommand(bool arg0, int arg1);
     virtual ~StreamCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009ACD8 */
 
     /* 0x14 */ int m_arg0;
 };
@@ -252,6 +284,7 @@ class TouchHangCommand : public PlayerCommand {
         : PlayerCommand(0x112, arg4), m_target(target), field_0x1C(position), field_0x20(angles),
           field_0x24(arg3) {}
     virtual ~TouchHangCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009BD80 */
 
     /* 0x14 */ boost::weak_ptr<CharInfo> m_target;
     /* 0x1C */ const Fn8040Vector3 *field_0x1C;
@@ -268,6 +301,7 @@ class AddWeaponCommand : public PlayerCommand {
   public:
     AddWeaponCommand(int weaponType, int arg1, int arg2);
     virtual ~AddWeaponCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009B70C */
 
     /* 0x14 */ int m_weaponType;
     /* 0x18 */ int field_0x18;
@@ -283,6 +317,7 @@ class ActingAccelerateCommand : public PlayerCommand {
   public:
     ActingAccelerateCommand(const Fn8040Vector3 *vector, float seconds);
     virtual ~ActingAccelerateCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x80099B18 */
 
     /* 0x14 */ float m_seconds;
     /* 0x18 */ Fn8040Vector3 m_vector;
@@ -295,6 +330,7 @@ class PressGroundCommand : public PlayerCommand {
   public:
     PressGroundCommand(int arg1);
     virtual ~PressGroundCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009A11C */
 };
 CHECK_SIZEOF(PressGroundCommand, 0x14);
 
@@ -306,6 +342,7 @@ class CancelBehaviorCommand : public PlayerCommand {
   public:
     CancelBehaviorCommand(int arg1);
     virtual ~CancelBehaviorCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009CB90 */
 };
 CHECK_SIZEOF(CancelBehaviorCommand, 0x14);
 
@@ -328,6 +365,7 @@ class StartExternalControlCommand : public PlayerCommand {
           field_0x24(arg3) {}
     StartExternalControlCommand(int arg0, int arg1);
     virtual ~StartExternalControlCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009A414 */
 
     /* 0x14 */ boost::weak_ptr<CharInfo> m_target;
     /* 0x1C */ const Fn8040Vector3 *m_position;
@@ -345,6 +383,7 @@ class SetMotionCommand : public PlayerCommand {
   public:
     SetMotionCommand(int arg0, float arg1, int arg2);
     virtual ~SetMotionCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009A6EC */
 
     /* 0x14 */ int field_0x14;
     /* 0x18 */ float field_0x18;
@@ -373,6 +412,9 @@ class EnemyDeadByPlayerCommand : public NpcCommand {
   public:
     EnemyDeadByPlayerCommand(int arg0, int arg1);
     virtual ~EnemyDeadByPlayerCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x80072EE4 */
+    virtual UnkString_8004F888 fn_801D9CB0();                     /* 0x80072E68 */
+    virtual const char *fn_801D9CA8();                            /* 0x80072ED8 */
     /* 0x14 */ int field_0x14;
     /* 0x18 */ int field_0x18;
 };
@@ -386,6 +428,8 @@ class ShowCommand : public NpcCommand {
   public:
     ShowCommand(int arg0, int arg1);
     virtual ~ShowCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x80073050 */
+    virtual const char *fn_801D9CA8();                            /* 0x80073048 */
 
     /* 0x14 */ int field_0x14;
 };
@@ -409,6 +453,7 @@ class HomingJumpCommand : public PlayerCommand {
   public:
     HomingJumpCommand(const Fn8040Vector3 &vector, int arg1);
     virtual ~HomingJumpCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009C4FC */
 
     /* 0x14 */ Fn8040Vector3 m_vector;
 };
@@ -425,6 +470,8 @@ class RideCommand : public CharCommand {
   public:
     RideCommand(const boost::weak_ptr<CharInfo> &rider, const Fn8040Vector3 *vector);
     virtual ~RideCommand();
+    virtual UnkString_8004F888 fn_801D9CB0(); /* 0x801DB5C4 */
+    virtual const char *fn_801D9CA8();        /* 0x801DB5BC */
 
     /* 0x14 */ boost::weak_ptr<CharInfo> m_rider;
     /* 0x1C */ Fn8040Vector3 field_0x1C;
@@ -443,6 +490,7 @@ class TouchLineCommand : public PlayerCommand {
     TouchLineCommand(boost::weak_ptr<CharInfo> charInfo, boost::weak_ptr<UnkSegment_80020A20> line,
                      int arg2);
     virtual ~TouchLineCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009BF04 */
 
     /* 0x14 */ boost::weak_ptr<CharInfo> m_charInfo;
     /* 0x1C */ boost::weak_ptr<UnkSegment_80020A20> m_line;
@@ -456,6 +504,7 @@ class StartActionCommand : public PlayerCommand {
   public:
     StartActionCommand(int arg1);
     virtual ~StartActionCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009C7CC */
 };
 CHECK_SIZEOF(StartActionCommand, 0x14);
 
@@ -468,6 +517,7 @@ class InvincibleCommand : public PlayerCommand {
   public:
     InvincibleCommand(bool enable, int arg1);
     virtual ~InvincibleCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009A8F8 */
 
     /* 0x14 */ bool m_enable;
 };
@@ -481,6 +531,8 @@ class StartJumpCommand : public PlayerCommand {
   public:
     StartJumpCommand(int arg1);
     virtual ~StartJumpCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009C850 */
+    virtual UnkString_8004F888 fn_801D9CB0();                     /* 0x8009C7DC */
 
     /* 0x14 */ Fn8040Vector3 field_0x14;
 };
@@ -499,6 +551,8 @@ class SwitchCommand : public CharCommand {
   public:
     SwitchCommand(s32 route);
     virtual ~SwitchCommand();
+    virtual UnkString_8004F888 fn_801D9CB0(); /* 0x801DB780 */
+    virtual const char *fn_801D9CA8();        /* 0x801DB7EC */
 
     /* 0x14 */ s32 m_route;
 };
@@ -511,6 +565,9 @@ CHECK_SIZEOF(SwitchCommand, 0x18);
  * and acts on the values 1, 2, 3, 4, 6 and 7. */
 class ControlVehicleCommand : public CharCommand {
   public:
+    virtual UnkString_8004F888 fn_801D9CB0(); /* 0x801DAD4C */
+    virtual const char *fn_801D9CA8();        /* 0x801DAD40 */
+
     /* 0x14 */ int m_control;
 };
 CHECK_SIZEOF(ControlVehicleCommand, 0x18);
@@ -529,6 +586,7 @@ class DamageCommand : public CharCommand {
      * float and the other parameters and the reference spelling are inferred. */
     DamageCommand(float arg0, const Fn8040Vector3 &vector, int arg1);
     virtual ~DamageCommand();
+    virtual const char *fn_801D9CA8(); /* 0x801DB7FC */
 
     /* 0x14 */ float field_0x14;
     /* 0x18 */ Fn8040Vector3 field_0x18;
@@ -546,6 +604,7 @@ class ScoreCommand : public CharCommand {
   public:
     ScoreCommand(int arg0, int arg1, int arg2, int arg3, int arg4);
     virtual ~ScoreCommand();
+    virtual const char *fn_801D9CA8(); /* 0x801DA8AC */
 
     /* 0x14 */ int field_0x14;
     /* 0x18 */ int field_0x18;
@@ -566,6 +625,7 @@ class ReadyCommand : public CharCommand {
     ReadyCommand(const boost::weak_ptr<CharInfo> &sender);
     /* Defined elsewhere (0x801DC418). */
     virtual ~ReadyCommand();
+    virtual const char *fn_801D9CA8(); /* 0x801DB3B8 */
 
     /* 0x14 */ boost::weak_ptr<CharInfo> m_sender;
 };
@@ -580,6 +640,7 @@ class PickupCommand : public CharCommand {
   public:
     /* Defined elsewhere (0x801DC2D4). */
     virtual ~PickupCommand();
+    virtual const char *fn_801D9CA8(); /* 0x801DB264 */
 
     /* 0x14 */ Fn8040Vector3 field_0x14;
     /* 0x20 */ float field_0x20;
@@ -595,6 +656,7 @@ class CastCommand : public CharCommand {
   public:
     /* Defined elsewhere (0x801DC268). */
     virtual ~CastCommand();
+    virtual const char *fn_801D9CA8(); /* 0x801DB1F8 */
 
     /* 0x14 */ boost::weak_ptr<CharInfo> field_0x14;
     /* 0x1C */ Fn8040Vector3 field_0x1C;
@@ -608,6 +670,7 @@ class ThrowCommand : public CharCommand {
   public:
     /* Defined elsewhere (0x801DC1FC). */
     virtual ~ThrowCommand();
+    virtual const char *fn_801D9CA8(); /* 0x801DB18C */
 
     /* 0x14 */ boost::weak_ptr<CharInfo> field_0x14;
     /* 0x1C */ Fn8040Vector3 field_0x1C;
@@ -623,6 +686,7 @@ class RecoverCommand : public CharCommand {
     RecoverCommand(const boost::weak_ptr<CharInfo> &sender, float amount);
     /* Defined elsewhere (0x801DC340). */
     virtual ~RecoverCommand();
+    virtual const char *fn_801D9CA8(); /* 0x801DB2F0 */
 
     /* 0x14 */ boost::weak_ptr<CharInfo> m_sender;
     /* 0x1C */ float m_amount;
@@ -639,6 +703,7 @@ class BindCommand : public CharCommand {
     BindCommand(const boost::weak_ptr<CharInfo> &sender);
     /* Defined elsewhere (0x801DBF9C). */
     virtual ~BindCommand();
+    virtual const char *fn_801D9CA8(); /* 0x801DA97C */
 
     /* 0x14 */ boost::weak_ptr<CharInfo> m_sender;
 };
@@ -654,6 +719,7 @@ class ReleaseCommand : public CharCommand {
     ReleaseCommand(const boost::weak_ptr<CharInfo> &sender);
     /* Defined elsewhere (0x801DBF30). */
     virtual ~ReleaseCommand();
+    virtual const char *fn_801D9CA8(); /* 0x801DA920 */
 
     /* 0x14 */ boost::weak_ptr<CharInfo> m_sender;
 };

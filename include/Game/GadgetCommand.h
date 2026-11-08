@@ -5,8 +5,9 @@
 #include "layout_check.h"
 
 /* Commands of the GadgetCommand namespace (class names from RTTI). Only the classes that the
- * reconstructed code reads are declared; their constructors and destructors are defined
- * elsewhere, together with the vtables. GadgetCommand::AttackEndCommand (id 0x304, constructor
+ * reconstructed code reads are declared; their constructors, destructors and overrides of
+ * CharCommand's virtual functions are defined elsewhere, together with the vtables (the comment
+ * after an override gives its USA address). GadgetCommand::AttackEndCommand (id 0x304, constructor
  * 0x80273948) is not declared because nothing reconstructed reads its members. */
 namespace GadgetCommand {
 
@@ -17,6 +18,7 @@ class GadgetCommand : public CharCommand {
   public:
     GadgetCommand(int id, int arg1);
     virtual ~GadgetCommand();
+    virtual const char *fn_801D9CA8(); /* 0x8015D708 */
 };
 CHECK_SIZEOF(GadgetCommand, 0x14);
 
