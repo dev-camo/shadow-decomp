@@ -18,16 +18,18 @@ class BasicMessage : public Message {
 CHECK_SIZEOF(BasicMessage, 0x8);
 
 /* Mission::BasicMessageManage (class name from RTTI): the message manager that a Mission holds at
- * 0x18. It keeps the messages it has created in field_0x10 and a copy of that list in
- * field_0x1C. */
+ * 0x18. It keeps the messages it has created in field_0x10 and a snapshot of that list in
+ * field_0x1C. The snapshot is empty after construction and after fn_802EB9E0, which clear both
+ * lists and fill only field_0x10. fn_802EBDF0 saves field_0x10 into it and fn_802EBCF0 restores
+ * field_0x10 from it. The removals in fn_802EBE68 leave the snapshot unchanged. */
 class BasicMessageManage : public MessageManage {
   public:
     /* Reserves room for four messages in each list, then builds the messages (fn_802EB9E0). */
     BasicMessageManage(int id, int index);
     ~BasicMessageManage();
-    /* Replaces the copy with the current messages. */
+    /* Saves the snapshot: replaces field_0x1C with the current messages of field_0x10. */
     virtual void fn_802EBDF0();
-    /* Replaces the current messages with the copy. */
+    /* Restores the snapshot: replaces field_0x10 with the messages of field_0x1C. */
     virtual void fn_802EBCF0();
     /* Empties both lists, then adds a new message to field_0x10 for each record of the list
      * whose word at 0x4 is 0 (none when the list is null). When a message's own allocation fails,

@@ -245,6 +245,13 @@ template <class T, class Allocator> class __vector_obj {
     }
 
   private:
+    /* Copying is unrecovered in this partial interface: no copy of an object vector has been
+     * identified in the game's code. The vector owns data_, so a memberwise copy would destroy
+     * the same elements and free the same buffer twice. Declared only (as in C++03), which also
+     * makes an implicit copy of vector, and of any class holding one, ill-formed. */
+    __vector_obj(const __vector_obj &);
+    __vector_obj &operator=(const __vector_obj &);
+
     size_type max_size() {
         return size_type(-1) / sizeof(T);
     }
