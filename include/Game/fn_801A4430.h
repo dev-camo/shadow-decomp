@@ -5,7 +5,7 @@
 #include "Game/fn_8040_vector_types.h"
 #include "boost/function.hpp"
 #include <map>
-#include "Game/Unk801A4430Event.h"
+#include "Game/EnemyMotionEventArg.h"
 #include "layout_check.h"
 
 /* Original name unknown; the wrapper invokes its callback only when nonempty. */
@@ -14,9 +14,9 @@ class Unk801A4430Callback {
     Unk801A4430Callback();
     ~Unk801A4430Callback();
     bool fn_801A4A74() const;
-    void fn_801A4A48(const Unk801A4430Event &event);
+    void fn_801A4A48(EnemyMotionEventArg &event);
 
-    /* 0x00 */ boost::function1<void, const Unk801A4430Event &> m_function;
+    /* 0x00 */ boost::function1<void, EnemyMotionEventArg &> m_function;
 };
 CHECK_SIZEOF(Unk801A4430Callback, 0xC);
 
