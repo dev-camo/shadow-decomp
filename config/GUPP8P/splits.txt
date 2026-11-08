@@ -1465,6 +1465,13 @@ Game/EggLastMech.cpp:
 	.sbss       start:0x805F1940 end:0x805F1970
 	.sdata2     start:0x805FA680 end:0x805FA6B8
 
+Game/EggLastMechTask.cpp:
+	.text       start:0x802FE428 end:0x802FE790
+	.rodata     start:0x8050BF00 end:0x8050BF60
+	.data       start:0x8055B900 end:0x8055B948
+	.sdata      start:0x805EDD40 end:0x805EDD58
+	.sdata2     start:0x805FA6B8 end:0x805FA6C0
+
 Game/BAGunShip.cpp:
 	.text       start:0x802FE790 end:0x80300554
 	.ctors      start:0x804AB030 end:0x804AB034
