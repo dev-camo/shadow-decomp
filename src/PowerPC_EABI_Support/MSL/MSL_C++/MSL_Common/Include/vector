@@ -76,6 +76,13 @@ template <class T, class Allocator> class __vector_imp {
     }
 
   private:
+    /* Copying is unrecovered in this partial interface: no copy of a pointer or unsigned-long
+     * vector has been identified in the game's code. The vector owns data_, so a memberwise copy
+     * would free the same buffer twice. Declared only (as in C++03), which also makes an implicit
+     * copy of __vector_ptr, __vector_val and the vectors built on them ill-formed. */
+    __vector_imp(const __vector_imp &);
+    __vector_imp &operator=(const __vector_imp &);
+
     T *&__data() {
         return data_;
     }
