@@ -47,6 +47,14 @@ class HeavyDogCtrlUnit_AttackCallbackCanopy : public HeavyDogCtrlUnit_AttackCall
 };
 CHECK_SIZEOF(HeavyDogCtrlUnit_AttackCallbackCanopy, 0x20);
 
+/* The destructors of the two attack callback units are defined inline after their classes: these
+ * empty bodies compile to the kept destructors (0x8024DCAC Canopy, 0x8024DD44 Body), whose place
+ * among the inline copies at the end of 0x802498AC-0x8024E104 is consistent with that. Neither
+ * class then has a key function, so each unit that constructs one emits its vtable as a weak copy;
+ * the HEAVY_DOG_0410 unit builds BossCtrlUnit's and HeavyDogCtrlUnit's type infos for these
+ * vtables before HeavyDog0410CtrlUnit's, which places their class names first in its .rodata. */
+inline HeavyDogCtrlUnit_AttackCallbackCanopy::~HeavyDogCtrlUnit_AttackCallbackCanopy() {}
+
 class HeavyDogCtrlUnit_AttackCallbackBody : public HeavyDogCtrlUnit_AttackCallback {
   public:
     HeavyDogCtrlUnit_AttackCallbackBody(HeavyDogVarParam *param, int index)
@@ -56,6 +64,8 @@ class HeavyDogCtrlUnit_AttackCallbackBody : public HeavyDogCtrlUnit_AttackCallba
     virtual void fn_8023357C(SonicteamUSA::System::CharaColli::AttackCallbackParam &param);
 };
 CHECK_SIZEOF(HeavyDogCtrlUnit_AttackCallbackBody, 0x20);
+
+inline HeavyDogCtrlUnit_AttackCallbackBody::~HeavyDogCtrlUnit_AttackCallbackBody() {}
 
 class HeavyDogCtrlUnit_GetStatus : public HeavyDogCtrlUnit {
   public:
