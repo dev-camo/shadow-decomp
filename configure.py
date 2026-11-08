@@ -1803,6 +1803,21 @@ config.libs = [
             # difference are in f3 and f2 instead of f2 and f3.
             Object(NonMatching, "Game/LongSpring.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PoisonGas.cpp", cflags=cflags_game_cpp),
+            # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
+            # (GUPP8P): the 5 functions have the original's words and relocations (0 differing
+            # words, positional and aligned), and .data matches. .sdata2 is 0x9C bytes here and
+            # 0xA0 in the original split: the first 0x9C bytes agree and the original's last 4
+            # are zero alignment (USA 0x805F95F4); the original's section is read-only (A) and
+            # this object's is writable (WA). The original's .rodata is 0x188 bytes against 0x168
+            # here: the split gives it the string "boost::detail::sp_counted_base" (0x1F bytes and
+            # 1 padding byte, USA 0x8050A950), which nothing in the DOL references and this source
+            # does not emit. That string's owner and the file's end at USA 0x802FAB88 are
+            # provisional: the next .rodata block (0x8050A970) starts with the type names that
+            # begin other gadget files' .rodata and has its own, referenced copy of the string,
+            # but nothing places the string or the next function (0x802FAB88) in one file or the
+            # other. The .rodata residual follows from that boundary.
+            # The original file name is unknown. Normal builds link the original object.
+            Object(NonMatching, "Game/fn_802FA9C0.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAGunShip.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAMine.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),
