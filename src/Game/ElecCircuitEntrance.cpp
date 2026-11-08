@@ -141,8 +141,8 @@ static void fn_801F888C(boost::shared_ptr<CharInfo> hit, void *arg) {
         Fn8040Vector3 direction = lbl_805E07A0;
         fn_801F8040(&direction.x, &direction.z, context->m_owner->m_charInfo->m_rotation.y, -1.0f);
 
-        if (fn_8001CDA0(fn_8001B494(), &path, 0.0f, context->m_owner->m_charInfo.get(), &direction,
-                        &result, 0, 0)) {
+        if (fn_8001CDA0(fn_8001B494(), &path, 0.0f, &context->m_owner->m_charInfo->m_position,
+                        &direction, &result, 0, 0)) {
             UnkHandle_800ABCE8 handle(boost::weak_ptr<CharInfo>(hit), &path, result);
             Player::ElectricCircuitCommand *command =
                 new Player::ElectricCircuitCommand(handle, 4, false);
