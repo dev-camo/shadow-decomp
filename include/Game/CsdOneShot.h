@@ -10,7 +10,7 @@ extern "C" {
  * constructor, and returns it (null when the allocation fails); returns null without allocating
  * when a check on file fails (behaviour inferred from its body; the name file is inferred, and the
  * meanings of arg1 and arg2 are unknown). The HEAVY_DOG_0410 boss passes "CsdFiles/BChara_HDog",
- * "bchara" and "open". */
+ * "bchara" and "open", the HEAVY_DOG_0510 boss "CsdFiles/BChara_BFalcon", "bchara" and "open". */
 CsdOneShot *fn_8035367C(const char *file, const char *arg1, const char *arg2);
 }
 
