@@ -14,6 +14,11 @@ struct UnkParams_80145B58 {
     UnkParams_80145B58()
         : field_0x0(lbl_805E07A0), field_0xC(lbl_805E07A0), field_0x18(5.0f), field_0x1C(4.0f),
           field_0x20(true) {}
+    /* The constructor at 0x80194C1C: copies field_0x0 and field_0xC from the two vectors, stores
+     * field_0x18 and field_0x20 and a constant in field_0x1C (behaviour from its body; the
+     * reference spellings are inferred). */
+    UnkParams_80145B58(const Fn8040Vector3 &vector0, const Fn8040Vector3 &vector1, float arg2,
+                       bool arg3);
 
     /* 0x00 */ Fn8040Vector3 field_0x0;
     /* 0x0C */ Fn8040Vector3 field_0xC;

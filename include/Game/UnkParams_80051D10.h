@@ -56,6 +56,32 @@ class UnkParams_80051D10 {
 };
 CHECK_SIZEOF(UnkParams_80051D10, 0x44);
 
+/* The object that the callback at 0xC of UnkFactory_8051DDC8 returns (placeholder name; the
+ * original class is unknown). fn_80051B58 constructs it when there is no callback. */
+class UnkResult_80051B58;
+
+/* A 0x14-byte record of the table that fn_80051C34 indexes, whose function at 0x8 creates an object
+ * from the parameters (placeholder names; behaviour inferred from fn_80056B8C, the function
+ * lbl_8051DDC8 holds, which allocates a 0x6C-byte object; lbl_8051DDDC holds fn_80056B3C). These
+ * two records hold null at 0x0, 0x4 and 0xC; other records in the same table hold functions there,
+ * which fn_80051CC8, fn_80051C80 and fn_80051AF0 call when they are set. */
+struct UnkFactory_8051DDC8 {
+    /* fn_80051CC8 calls it without setting arguments; the known callees take none. */
+    /* 0x00 */ void (*field_0x0)();
+    /* fn_80051C80 calls it without setting arguments; the known callees take none. */
+    /* 0x04 */ void (*field_0x4)();
+    /* 0x08 */ void (*create)(const UnkParams_80051D10 *params);
+    /* Called by fn_80051AF0 with the parameters and a float; its result is returned by value. */
+    /* 0x0C */ UnkResult_80051B58 (*field_0xC)(const UnkParams_80051D10 *params, float arg);
+    /* 0x10 */ float field_0x10;
+};
+CHECK_SIZEOF(UnkFactory_8051DDC8, 0x14);
+
+/* The ArkCannon gadget's shots go through the first record, the EggLastMech boss's through the
+ * second. */
+extern UnkFactory_8051DDC8 lbl_8051DDC8;
+extern UnkFactory_8051DDC8 lbl_8051DDDC;
+
 extern "C" {
 /* Passes params to the function at 0x8 of the 0x14-byte record that the pointer at index kind of
  * the table lbl_8051D720 addresses, when the pointer and that function are set (behaviour inferred

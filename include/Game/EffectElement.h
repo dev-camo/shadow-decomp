@@ -133,6 +133,12 @@ void fn_80425D94(Effect::System::EffectElement *effect, const Fn8040Vector3 &rot
 boost::weak_ptr<Effect::System::EffectElement> fn_801D2B38(int arg0, const Fn8040Vector3 *position,
                                                            const UnkRotation3 *rotation, int id,
                                                            int arg4);
+/* Creates an effect (behaviour inferred). EnemyDispCommon's fn_801A1F54 passes 0, a position, a
+ * second vector, an id and the address 0x24 bytes into lbl_8057D6A0; the EggLastMech boss passes
+ * the same address through its character info's field_0x60. */
+boost::weak_ptr<Effect::System::EffectElement> fn_801D2AFC(int arg0, const Fn8040Vector3 *position,
+                                                           const Fn8040Vector3 *vector, int id,
+                                                           const float *arg4);
 /* Passes position, direction and id (with 0 before position and after id) to fn_801D2AFC and
  * returns the effect it creates (behaviour inferred). */
 boost::weak_ptr<Effect::System::EffectElement> fn_8015D7DC(const Fn8040Vector3 *position,

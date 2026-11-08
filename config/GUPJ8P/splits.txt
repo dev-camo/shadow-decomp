@@ -1457,6 +1457,14 @@ Game/fn_802FA9C0.cpp:
 	.data       start:0x8055ACA8 end:0x8055ACF0
 	.sdata2     start:0x805F9B80 end:0x805F9C20
 
+Game/EggLastMech.cpp:
+	.text       start:0x802FB0EC end:0x802FE414
+	.rodata     start:0x8050B010 end:0x8050B4B0
+	.data       start:0x8055ACF0 end:0x8055AE80
+	.sdata      start:0x805ED230 end:0x805ED2A0
+	.sbss       start:0x805F0EA0 end:0x805F0ED0
+	.sdata2     start:0x805F9C20 end:0x805F9C58
+
 Game/BAGunShip.cpp:
 	.text       start:0x802FE77C end:0x80300540
 	.ctors      start:0x804AA610 end:0x804AA614

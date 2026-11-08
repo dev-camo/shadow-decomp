@@ -227,6 +227,10 @@ void fn_80093AF8(const boost::shared_ptr<Player::PlayerBase> &player, float rate
 /* Starts by resetting bits 0 and 4 of the flags at 0xA4 of the player; the rest of its 0x714
  * bytes is not described here. */
 void fn_8009728C(const boost::shared_ptr<Player::PlayerBase> &player, int arg1);
+/* When the character info still exists and is a Player::PlayerBase, returns fn_800AADA4's weak
+ * pointer for the object at 0x254 of the player (not tested here) and 1; otherwise an empty pointer
+ * (behaviour from its body). The EggLastMech boss uses the result as the owner of its shots. */
+boost::weak_ptr<CharInfo> fn_800B75DC(const boost::weak_ptr<CharInfo> &charInfo);
 }
 
 #endif
