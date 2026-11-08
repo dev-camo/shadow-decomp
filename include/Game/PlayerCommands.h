@@ -473,6 +473,19 @@ class InvincibleCommand : public PlayerCommand {
 };
 CHECK_SIZEOF(InvincibleCommand, 0x18);
 
+/* Player::StartJumpCommand (class name from the RTTI of its vtable at 0x805214F4). The constructor
+ * at 0x8009C994 passes 0x104 as the command id and its argument to the base constructor and clears
+ * the vector at 0x14 with fn_8040CE60. The GunLift vehicle sends it with 4 to the character info
+ * at 0x80 of the vehicle. */
+class StartJumpCommand : public PlayerCommand {
+  public:
+    StartJumpCommand(int arg1);
+    virtual ~StartJumpCommand();
+
+    /* 0x14 */ Fn8040Vector3 field_0x14;
+};
+CHECK_SIZEOF(StartJumpCommand, 0x20);
+
 } // namespace Player
 
 /* SwitchCommand (class name from the RTTI of its vtable at 0x8053D404, with CharCommand as its
@@ -491,6 +504,17 @@ class SwitchCommand : public CharCommand {
 };
 CHECK_SIZEOF(SwitchCommand, 0x18);
 
+/* ControlVehicleCommand (class name from the RTTI of its vtable at 0x8053D254, with CharCommand as
+ * its only base); the constructor, the destructor and the vtable are elsewhere. The constructor
+ * (0x801DADB4) passes 0x15 as the command id and its second argument to the base constructor and
+ * stores its first argument at 0x14. The GunLift vehicle's command handler switches on that word
+ * and acts on the values 1, 2, 3, 4, 6 and 7. */
+class ControlVehicleCommand : public CharCommand {
+  public:
+    /* 0x14 */ int m_control;
+};
+CHECK_SIZEOF(ControlVehicleCommand, 0x18);
+
 /* DamageCommand (class name from the RTTI of its vtable at 0x8053D44C, with CharCommand as its
  * only base); the destructor and the vtable are elsewhere. The constructor at 0x801DB864 passes 7
  * as the command id and arg1 to the base constructor, stores the float at 0x14 and copy-constructs
@@ -500,6 +524,10 @@ CHECK_SIZEOF(SwitchCommand, 0x18);
 class DamageCommand : public CharCommand {
   public:
     DamageCommand(float arg0, int arg1);
+    /* The constructor at 0x801DB804 does the same, but copy-constructs vector at 0x18 instead of
+     * the zero vector. The GunLift vehicle sends it with 1.0f, (0, 1, 0) and 4. The order of the
+     * float and the other parameters and the reference spelling are inferred. */
+    DamageCommand(float arg0, const Fn8040Vector3 &vector, int arg1);
     virtual ~DamageCommand();
 
     /* 0x14 */ float field_0x14;

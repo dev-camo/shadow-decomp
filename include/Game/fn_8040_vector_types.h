@@ -489,6 +489,9 @@ extern "C" bool fn_801C455C(float a, float b);
 extern "C" const float &fn_80070460(const float &value, const float &low, const float &high);
 /* Returns a when a < b, otherwise b (behaviour inferred from its body). */
 extern "C" const float &fn_800704AC(const float &a, const float &b);
+/* Returns a unless a < b, in which case b: the fcmpo/bgelr pair also returns a when the
+ * comparison is unordered (either value a NaN) (behaviour from its body). */
+extern "C" const float &fn_80070494(const float &a, const float &b);
 /* Whether a - b (computed with the out-of-line copy of operator- at 0x8000AD64) is close to zero:
  * its squared length is below the float at 0x805F1730 (1e-4). */
 extern "C" bool fn_8000AD08(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
