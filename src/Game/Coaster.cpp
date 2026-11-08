@@ -6,14 +6,9 @@
  * stage. File name inferred from the class. Method names marked "(name inferred)" are not original.
  * Definitions are in reverse address order (deferred inlining emits functions last-defined first).
  *
- * NonMatching: 81 of the 85 functions have identical instructions. Four differ in a few words
- * (counted as words of the original that have no equal in this object): the preload hook (5, the
- * registers of the table pointer and the stage number), SetupPath (2, the order of two argument
- * moves), ResetFromOwner (7, the original calls the smart pointer's operator-> out of line for
- * the character info's yaw) and UpdateBody (6 raw differing words: the order of two argument
- * moves and the register of the stage pointer). The RTTI and vtable records of the boost and std
- * templates differ in layout from the original's, and the object has additional weak template
- * instances and the RTTI records of the headers' casts. */
+ * NonMatching: all 85 functions have identical instructions. The RTTI and vtable records of the
+ * boost and std templates differ in layout from the original's, and the object has additional
+ * weak template instances and the RTTI records of the headers' casts. */
 /* TNumEdit.h comes before CharaColliBaseCharInfo.h, in the order their names appear in the unit's
  * .rodata (alphabetical order would reverse them): the unit's .rodata (USA 0x804BECC0) starts with
  * those type names, and its .data (0x80528868) starts with their four RTTI base lists (+0x00,
@@ -253,8 +248,11 @@ Coaster::~Coaster() {
 /* Loads the model and selects the row of the table of stage settings for the current stage. */
 extern "C" void fn_80132BC8(void) {
     fn_8006B474("COASTER.BIN", 1);
+
+    s32 stage = lbl_8057D6A0.field_0xA8.field_0x4;
+
     for (int i = 0; i < 5; i++) {
-        if (lbl_8057D6A0.field_0xA8.field_0x4 == s_stages[i].stage) {
+        if (stage == s_stages[i].stage) {
             s_stage = &s_stages[i];
             break;
         }
@@ -304,10 +302,7 @@ void Coaster::UpdateBody(float dt) {
     case 0:
     case 3: {
         /* Waiting: stays at the path's current position. */
-        GadgetCharInfo *info = m_charInfo.get();
-        const Fn8040Vector3 &current = fn_80018634(m_path.get());
-
-        info->m_position = current;
+        m_charInfo->m_position = fn_80018634(m_path.get());
         m_rotation = fn_80018434(m_path.get(), 1, 0);
         BuildMatrices();
         break;
@@ -475,12 +470,15 @@ void Coaster::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
     /* Draws a debug line from the position along the launch direction (behaviour inferred). */
     Fn8040Vector3 direction(0.0f, 0.0f, -1.0f);
-    float yaw = m_charInfo->m_rotation.y;
+    UnkRotation3 angles = m_charInfo->m_rotation;
 
-    direction = fn_8040D118(direction, m_params.launchAngle);
-    direction = fn_8040D0AC(direction, yaw);
+    angles.x = m_params.launchAngle;
+    direction = fn_8040D118(direction, angles.x);
+    direction = fn_8040D0AC(direction, angles.y);
     fn_8040CE38(&direction, 50.0f);
-    fn_802E0B58(UnkSegment_80020A20(m_position, m_position + direction), lbl_805F1370);
+    UnkSegment_80020A20 segment(m_position, m_position + direction);
+
+    fn_802E0B58(segment, lbl_805F1370);
 }
 
 bool Coaster::IsFinished() {
@@ -547,11 +545,7 @@ void Coaster::SetupPath() {
     if (m_path.get() != 0) {
         fn_80018304(m_path.get());
 
-        GadgetCharInfo *info = m_charInfo.get();
-        const Fn8040Vector3 &start = fn_80018634(m_path.get());
-
-        info->m_position = start;
-
+        m_charInfo->m_position = fn_80018634(m_path.get());
         m_rotation = fn_80018434(m_path.get(), 1, 0);
     }
     if (s_stage->field_0x12) {

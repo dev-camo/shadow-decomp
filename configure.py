@@ -649,13 +649,8 @@ config.libs = [
                 # has a 32-byte local copy of std::swap (called by the weak boost::function1 swap)
                 # and the sp_counted_base vtable and RTTI, which the original unit does not have.
                 Object(NonMatching, "Game/CircusPole.cpp", cflags=cflags_game_cpp),
-                # 81 of the 85 functions have identical instructions. The preload hook differs in 5
-                # words (the registers of the table pointer and the stage number), SetupPath in 2
-                # (the order of two argument moves), ResetFromOwner in 7 (the original calls the
-                # smart pointer's operator-> out of line for the yaw of the character info) and
-                # UpdateBody in 6 (the order of two argument moves and the register of the stage
-                # pointer). The RTTI and vtable records differ in layout, and the object has
-                # additional weak template instances.
+                # All 85 functions have identical instructions. The RTTI and vtable records differ
+                # in layout, and the object has additional weak template instances.
                 Object(NonMatching, "Game/Coaster.cpp", cflags=cflags_game_cpp),
                 # Every function but the ThreatObj constructor is instruction-identical, and the
                 # functions are in the original's order. The constructor's two table loads (model
