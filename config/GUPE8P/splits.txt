@@ -1700,6 +1700,15 @@ Game/Researcher.cpp:
 	.sbss       start:0x805F0A80 end:0x805F0AA0
 	.sdata2     start:0x805F9A70 end:0x805F9A98
 
+Game/DiablonPartsBomb.cpp:
+	.text       start:0x8031DB34 end:0x8031E960
+	.ctors      start:0x804A9FFC end:0x804AA000
+	.rodata     start:0x8050D080 end:0x8050D1B8
+	.data       start:0x8055C448 end:0x8055C480
+	.sdata      start:0x805ED248 end:0x805ED260
+	.sbss       start:0x805F0AF8 end:0x805F0B10
+	.sdata2     start:0x805F9B28 end:0x805F9B40
+
 Game/FallRoad.cpp:
 	.text       start:0x803296D8 end:0x80329ED4
 	.rodata     start:0x8050D9A8 end:0x8050D9D0
