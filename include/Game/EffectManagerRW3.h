@@ -46,6 +46,10 @@ class EffectManagerRW3 : public System::EffectManager {
 
     UnkEffectRW3Param0 fn_80430844();
     void fn_804308C0(const UnkEffectRW3Param0 &parameters);
+    void fn_804308EC();
+    void fn_80430918();
+    void fn_80430944();
+    void fn_80430A08(const UnkEffectRW3Param0 *parameters);
     UnkEffectRW3Param1 fn_8042E034();
     void fn_8042E098(const UnkEffectRW3Param1 &parameters);
     UnkEffectRW3Param2 fn_804388A4();
