@@ -1814,6 +1814,32 @@ config.libs = [
             # The original file name is unknown. Normal builds link the original object.
             Object(NonMatching, "Game/fn_802FA9C0.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EggLastMech.cpp", cflags=cflags_game_cpp),
+            # Comparison of the compiled relocatable object with the original split object, the
+            # same in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P). Offsets are section offsets.
+            # - .text: the 10 functions have the original's words and relocations (0 differing
+            #   words, positional and aligned). The compiled section is 0x56C bytes against 0x368:
+            #   it also has 7 weak shared_ptr, shared_count and sp_counted_base functions (0x204
+            #   bytes) that the original object lacks.
+            # - Raw sizes of the data sections, compiled against original: .rodata 0x7B and 0x60,
+            #   .data 0x58 and 0x48, .sdata 0x1C and 0x18, .sdata2 0x5 and 0x8.
+            # - The compiled sections end with weak copies that the original object lacks:
+            #   sp_counted_base's type name (0x1F bytes at .rodata 0x5C, after 3 padding bytes),
+            #   its vtable (0x18 bytes at .data 0x40) and its RTTI record (8 bytes at .sdata 0x14).
+            #   Without them the compiled contents are 0x59 bytes of .rodata, 0x40 of .data and
+            #   0x14 of .sdata.
+            # - The original sections end with zero bytes after their last object: 7 in .rodata, 4
+            #   in .data, 4 in .sdata and 3 in .sdata2.
+            # - With those set aside, .rodata, .sdata and .sdata2 match. .data does not: the
+            #   original has 4 zero bytes at 0x24, right after the EGG_LASTMECH descriptor (USA
+            #   0x8055A81C in the original DOL), that nothing references. Its RTTI base list and
+            #   EggLastMechTask's vtable are therefore at 0x28 and 0x34, with relocations at 0x28,
+            #   0x34, 0x3C and 0x40, where the compiled object has them at 0x24 and 0x30, with
+            #   relocations at 0x24, 0x30, 0x38 and 0x3C. The cause is not established.
+            # - .sdata2 has flags A in the original and WA here.
+            # No link was made with the compiled object in place of the original, so which of the
+            # weak copies a link keeps and where the compiled data would be linked are not
+            # measured. Normal builds link the original object.
+            Object(NonMatching, "Game/EggLastMechTask.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAGunShip.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAMine.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),
