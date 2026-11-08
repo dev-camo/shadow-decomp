@@ -17,6 +17,15 @@ extern "C" {
 UnkManager_8006D6A8 *fn_8006D6A8(void);
 boost::weak_ptr<Mission::Mission> fn_800740E4(UnkManager_8006D6A8 *manager, int id);
 UnkManager_80109D64 *fn_80109D64(void);
+/* Returns -1 at once when the manager's word at 0x24 is non-zero. Otherwise it locks the manager's
+ * weak pointer and returns -1 when that gives no object. It then passes the object, id, 0 and each
+ * index from 0 up to 35 to fn_80049E1C until one returns null, and returns -1 when none does or
+ * when fn_80049E1C with index 0 returns null or an entry whose word at 0x8 is less than the
+ * manager's word at 0x28. Otherwise it queues one record {id, 0, fn_8040EA90 of the first null
+ * index} through fn_801FAD90 and returns 1000 times id. arg2 is not read (behaviour inferred from
+ * its body; the int return is inferred: its only caller, the message slots of Unk802FA9C0, passes
+ * 1 as arg2 and ignores the result). */
+int fn_801FAC44(UnkManager_80109D64 *manager, int id, int arg2);
 /* Returns its argument. */
 int fn_801FAAC4(int arg0);
 /* Returns -1 at once when the manager's word at 0x24 is non-zero. Otherwise it locks the manager's
