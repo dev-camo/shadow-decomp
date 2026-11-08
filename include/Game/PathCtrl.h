@@ -5,7 +5,6 @@
 #include <dolphin/types.h>
 #include "layout_check.h"
 
-class GadgetCharInfo;
 /* Two vectors copied by the original constructor at 0x8001C4B8; type name unknown. */
 class UnkBss_80570B50 {
   public:
@@ -41,6 +40,14 @@ CHECK_SIZEOF(PathCtrl, 0x58);
  * unknown). */
 class UnkCollision_8001B494;
 
+/* The record that fn_8001CDA0 passes to its filter (placeholder name): the first word of a path
+ * candidate and fn_8001CDA0's last argument. */
+struct UnkPathFilterRecord_8001CDA0 {
+    /* 0x0 */ u32 field_0x0;
+    /* 0x4 */ int field_0x4;
+};
+CHECK_SIZEOF(UnkPathFilterRecord_8001CDA0, 0x8);
+
 extern "C" {
 UnkCollision_8001B494 *fn_8001B494(void);
 
@@ -64,9 +71,14 @@ void fn_8001DB08(UnkCollision_8001B494 *collision, UnkPathData_8001DB08 *resourc
 /* Releases path (behaviour inferred from its body: it passes objects derived from the path to
  * release functions). The collision argument is unused. */
 void fn_8001E2DC(UnkCollision_8001B494 *collision, SonicteamUSA::System::PathCtrl *path);
+/* Reads the three floats of position as a point. When arg2 * arg2 is not zero, a group of
+ * candidates is searched only when position lies within the group's bounds widened by arg2; when it
+ * is zero, the bounds tests are skipped. When filter is not null, it is called for each candidate
+ * of a searched group with a record of the candidate's first word and arg7, and a candidate for
+ * which it returns false is skipped. */
 bool fn_8001CDA0(UnkCollision_8001B494 *collision, SonicteamUSA::System::PathCtrl *path, float arg2,
-                 GadgetCharInfo *charInfo, const Fn8040Vector3 *direction, int *result, int arg6,
-                 int arg7);
+                 const Fn8040Vector3 *position, const Fn8040Vector3 *direction, int *result,
+                 bool (*filter)(const UnkPathFilterRecord_8001CDA0 *record), int arg7);
 
 /* True when the weak counter at 0x4 of path still counts a reference (behaviour inferred: it is
  * the negation of fn_80016980, which tests the counter for none). */
