@@ -9,8 +9,11 @@
 #define PALQUANTREDWEIGHT 0.5093697f
 #define PALQUANTBLUEWEIGHT 0.19420783f
 
+/* The number of bits of a color component */
+#define PALQUANTCOMPONENTBITS 8
+
 /* The number of bit levels of the tree */
-RwInt32 lbl_805EDF20 = 6;
+RwUInt32 lbl_805EDF20 = 6;
 
 /* Each component value's bits, spread out to every fourth bit so that four components interleave
  * into a tree index */
@@ -89,33 +92,30 @@ void fn_8048D9C8(rwPalQuantLeafNode *result, rwPalQuantLeafNode *leaf1, rwPalQua
 /* A leaf's mean color, as bytes */
 void fn_8048DAC8(RwRGBA *color, rwPalQuantLeafNode *leaf) {
     RwRGBAReal mean;
-    RwInt32 red;
-    RwInt32 green;
-    RwInt32 blue;
-    RwInt32 alpha;
+    RwInt32 rgba[4];
 
     RwRGBARealScale(&mean, &leaf->sums, 1.0f / leaf->weight);
     fn_8048D85C(&mean);
 
-    red = (RwInt32)(255.99f * mean.red);
-    green = (RwInt32)(255.99f * mean.green);
-    blue = (RwInt32)(255.99f * mean.blue);
-    alpha = (RwInt32)(255.99f * mean.alpha);
+    rgba[0] = (RwInt32)(255.99f * mean.red);
+    rgba[1] = (RwInt32)(255.99f * mean.green);
+    rgba[2] = (RwInt32)(255.99f * mean.blue);
+    rgba[3] = (RwInt32)(255.99f * mean.alpha);
     color->red = 255;
-    if (red < 255) {
-        color->red = red;
+    if (rgba[0] < 255) {
+        color->red = rgba[0];
     }
     color->green = 255;
-    if (green < 255) {
-        color->green = green;
+    if (rgba[1] < 255) {
+        color->green = rgba[1];
     }
     color->blue = 255;
-    if (blue < 255) {
-        color->blue = blue;
+    if (rgba[2] < 255) {
+        color->blue = rgba[2];
     }
     color->alpha = 255;
-    if (alpha < 255) {
-        color->alpha = alpha;
+    if (rgba[3] < 255) {
+        color->alpha = rgba[3];
     }
 }
 
@@ -151,7 +151,7 @@ static inline void PalQuantAddColor(rwPalQuantLeafNode *leaf, RwRGBA *color, RwR
     RwUInt8 mask;
     RwRGBAReal low;
 
-    mask = (RwUInt8)((1 << (8 - lbl_805EDF20)) - 1);
+    mask = (RwUInt8)((1 << (PALQUANTCOMPONENTBITS - lbl_805EDF20)) - 1);
     low.red = (1.0f / 255.0f) * (RwReal)(RwUInt8)(color->red & mask);
     low.green = (1.0f / 255.0f) * (RwReal)(RwUInt8)(color->green & mask);
     low.blue = (1.0f / 255.0f) * (RwReal)(RwUInt8)(color->blue & mask);
@@ -191,8 +191,8 @@ void fn_8048DEB0(RwPalQuant *palQuant, RwImage *image, RwReal weight) {
             while (columns-- != 0) {
                 color = &palette[*pixel];
                 level = lbl_805EDF20;
-                leaf =
-                    fn_8048DBEC(palQuant, palQuant->root, PalQuantIndex(color, 8 - level), level);
+                leaf = fn_8048DBEC(palQuant, palQuant->root,
+                                   PalQuantIndex(color, PALQUANTCOMPONENTBITS - level), level);
                 PalQuantAddColor(&leaf->leaf, color, weight);
                 pixel++;
             }
@@ -205,7 +205,8 @@ void fn_8048DEB0(RwPalQuant *palQuant, RwImage *image, RwReal weight) {
             rgba = (RwRGBA *)row;
             while (columns-- != 0) {
                 level = lbl_805EDF20;
-                leaf = fn_8048DBEC(palQuant, palQuant->root, PalQuantIndex(rgba, 8 - level), level);
+                leaf = fn_8048DBEC(palQuant, palQuant->root,
+                                   PalQuantIndex(rgba, PALQUANTCOMPONENTBITS - level), level);
                 PalQuantAddColor(&leaf->leaf, rgba, weight);
                 rgba++;
             }
@@ -218,38 +219,53 @@ void fn_8048DEB0(RwPalQuant *palQuant, RwImage *image, RwReal weight) {
 /* Gives the leaves of a cell (corner, 1 << level wide) that are in a box a palette index */
 void fn_8048E300(rwPalQuantOctNode *node, RwInt32 *corner, RwInt32 level, rwPalQuantBox *box,
                  RwInt32 index) {
-    if (node != NULL) {
-        RwInt32 d0 = (1 << level) + corner[0] - box->lower[0];
-        RwInt32 d1 = (1 << level) + corner[1] - box->lower[1];
-        RwInt32 d2 = (1 << level) + corner[2] - box->lower[2];
-        RwInt32 d3 = (1 << level) + corner[3] - box->lower[3];
+    rwPalQuantBox cell;
+    RwInt32 i;
+    RwInt32 d0;
+    RwInt32 d1;
+    RwInt32 d2;
+    RwInt32 d3;
 
-        /* Nothing to do unless the cell overlaps the box */
-        if (d0 <= 0 || d1 <= 0 || d2 <= 0 || d3 <= 0) {
-            return;
-        }
-        d0 = corner[0] - box->upper[0];
-        d1 = corner[1] - box->upper[1];
-        d2 = corner[2] - box->upper[2];
-        d3 = corner[3] - box->upper[3];
-        if (d0 >= 0 || d1 >= 0 || d2 >= 0 || d3 >= 0) {
-            return;
-        }
+    if (node == NULL) {
+        return;
+    }
+    cell.lower[0] = corner[0];
+    cell.lower[1] = corner[1];
+    cell.lower[2] = corner[2];
+    cell.lower[3] = corner[3];
+    cell.upper[0] = corner[0] + (1 << level);
+    cell.upper[1] = corner[1] + (1 << level);
+    cell.upper[2] = corner[2] + (1 << level);
+    cell.upper[3] = corner[3] + (1 << level);
 
-        if (level == 0) {
-            node->leaf.palIndex = index;
-        } else {
-            RwInt32 i;
+    /* Nothing to do unless the cell overlaps the box */
+    d0 = cell.upper[0] - box->lower[0];
+    d1 = cell.upper[1] - box->lower[1];
+    d2 = cell.upper[2] - box->lower[2];
+    d3 = cell.upper[3] - box->lower[3];
+    if (d0 <= 0 || d1 <= 0 || d2 <= 0 || d3 <= 0) {
+        return;
+    }
+    d0 = cell.lower[0] - box->upper[0];
+    d1 = cell.lower[1] - box->upper[1];
+    d2 = cell.lower[2] - box->upper[2];
+    d3 = cell.lower[3] - box->upper[3];
+    if (d0 >= 0 || d1 >= 0 || d2 >= 0 || d3 >= 0) {
+        return;
+    }
 
-            for (i = 0; i < 16; i++) {
-                RwInt32 subCorner[4];
+    if (level == 0) {
+        node->leaf.palIndex = index;
+    } else {
+        level--;
+        for (i = 0; i < 16; i++) {
+            RwInt32 subCorner[4];
 
-                subCorner[0] = corner[0] + (((i >> 3) & 1) << (level - 1));
-                subCorner[1] = corner[1] + (((i >> 2) & 1) << (level - 1));
-                subCorner[2] = corner[2] + (((i >> 1) & 1) << (level - 1));
-                subCorner[3] = corner[3] + ((i & 1) << (level - 1));
-                fn_8048E300(node->children[i], subCorner, level - 1, box, index);
-            }
+            subCorner[0] = corner[0] + (((i >> 3) & 1) << level);
+            subCorner[1] = corner[1] + (((i >> 2) & 1) << level);
+            subCorner[2] = corner[2] + (((i >> 1) & 1) << level);
+            subCorner[3] = corner[3] + ((i & 1) << level);
+            fn_8048E300(node->children[i], subCorner, level, box, index);
         }
     }
 }
@@ -257,51 +273,67 @@ void fn_8048E300(rwPalQuantOctNode *node, RwInt32 *corner, RwInt32 level, rwPalQ
 /* Adds the statistics of the leaves of a cell (corner, 1 << level wide) that are in a box */
 void fn_8048E47C(rwPalQuantOctNode *node, RwInt32 *corner, RwInt32 level, rwPalQuantBox *box,
                  rwPalQuantLeafNode *result) {
-    if (node != NULL) {
-        RwInt32 d0 = corner[0] + (1 << level) - box->lower[0];
-        RwInt32 d1 = corner[1] + (1 << level) - box->lower[1];
-        RwInt32 d2 = corner[2] + (1 << level) - box->lower[2];
-        RwInt32 d3 = corner[3] + (1 << level) - box->lower[3];
+    rwPalQuantBox cell;
+    RwInt32 i;
+    RwInt32 d0;
+    RwInt32 d1;
+    RwInt32 d2;
+    RwInt32 d3;
 
-        /* Nothing to add unless the cell overlaps the box */
-        if (d0 <= 0 || d1 <= 0 || d2 <= 0 || d3 <= 0) {
-            return;
-        }
-        d0 = corner[0] - box->upper[0];
-        d1 = corner[1] - box->upper[1];
-        d2 = corner[2] - box->upper[2];
-        d3 = corner[3] - box->upper[3];
-        if (d0 >= 0 || d1 >= 0 || d2 >= 0 || d3 >= 0) {
-            return;
-        }
+    if (node == NULL) {
+        return;
+    }
+    cell.lower[0] = corner[0];
+    cell.lower[1] = corner[1];
+    cell.lower[2] = corner[2];
+    cell.lower[3] = corner[3];
+    cell.upper[0] = corner[0] + (1 << level);
+    cell.upper[1] = corner[1] + (1 << level);
+    cell.upper[2] = corner[2] + (1 << level);
+    cell.upper[3] = corner[3] + (1 << level);
 
-        d0 = corner[0] - box->lower[0];
-        d1 = corner[1] - box->lower[1];
-        d2 = corner[2] - box->lower[2];
-        d3 = corner[3] - box->lower[3];
+    /* Nothing to add unless the cell overlaps the box */
+    d0 = cell.upper[0] - box->lower[0];
+    d1 = cell.upper[1] - box->lower[1];
+    d2 = cell.upper[2] - box->lower[2];
+    d3 = cell.upper[3] - box->lower[3];
+    if (d0 <= 0 || d1 <= 0 || d2 <= 0 || d3 <= 0) {
+        return;
+    }
+    d0 = cell.lower[0] - box->upper[0];
+    d1 = cell.lower[1] - box->upper[1];
+    d2 = cell.lower[2] - box->upper[2];
+    d3 = cell.lower[3] - box->upper[3];
+    if (d0 >= 0 || d1 >= 0 || d2 >= 0 || d3 >= 0) {
+        return;
+    }
+
+    d0 = cell.lower[0] - box->lower[0];
+    d1 = cell.lower[1] - box->lower[1];
+    d2 = cell.lower[2] - box->lower[2];
+    d3 = cell.lower[3] - box->lower[3];
+    if (d0 >= 0 && d1 >= 0 && d2 >= 0 && d3 >= 0) {
+        d0 = box->upper[0] - cell.upper[0];
+        d1 = box->upper[1] - cell.upper[1];
+        d2 = box->upper[2] - cell.upper[2];
+        d3 = box->upper[3] - cell.upper[3];
         if (d0 >= 0 && d1 >= 0 && d2 >= 0 && d3 >= 0) {
-            d0 = box->upper[0] - ((1 << level) + corner[0]);
-            d1 = box->upper[1] - ((1 << level) + corner[1]);
-            d2 = box->upper[2] - ((1 << level) + corner[2]);
-            d3 = box->upper[3] - ((1 << level) + corner[3]);
-            if (d0 >= 0 && d1 >= 0 && d2 >= 0 && d3 >= 0) {
-                /* The cell is inside the box */
-                fn_8048D9C8(result, result, &node->leaf);
-                return;
-            }
+            /* The cell is inside the box */
+            fn_8048D9C8(result, result, &node->leaf);
+            return;
         }
-        if (level > 0) {
-            RwInt32 i;
+    }
 
-            for (i = 0; i < 16; i++) {
-                RwInt32 subCorner[4];
+    if (level > 0) {
+        level--;
+        for (i = 0; i < 16; i++) {
+            RwInt32 subCorner[4];
 
-                subCorner[0] = corner[0] + (((i >> 3) & 1) << (level - 1));
-                subCorner[1] = corner[1] + (((i >> 2) & 1) << (level - 1));
-                subCorner[2] = corner[2] + (((i >> 1) & 1) << (level - 1));
-                subCorner[3] = corner[3] + ((i & 1) << (level - 1));
-                fn_8048E47C(node->children[i], subCorner, level - 1, box, result);
-            }
+            subCorner[0] = corner[0] + (((i >> 3) & 1) << level);
+            subCorner[1] = corner[1] + (((i >> 2) & 1) << level);
+            subCorner[2] = corner[2] + (((i >> 1) & 1) << level);
+            subCorner[3] = corner[3] + ((i & 1) << level);
+            fn_8048E47C(node->children[i], subCorner, level, box, result);
         }
     }
 }
@@ -420,21 +452,20 @@ RwBool fn_8048E988(rwPalQuantOctNode *root, rwPalQuantLeafNode *whole, rwPalQuan
 }
 
 /* Turns the statistics of a cell (corner color, level) and its descendants into sums of whole
- * colors, merging them into each node */
-rwPalQuantOctNode *fn_8048EB24(rwPalQuantOctNode *node, RwRGBA *corner, RwInt32 level) {
-    RwInt32 childLevel = level - 1;
-    rwPalQuantOctNode *result = NULL;
+ * colors, merging them into each node; returns the node's statistics, NULL without a node */
+rwPalQuantLeafNode *fn_8048EB24(rwPalQuantOctNode *node, RwRGBA *corner, RwInt32 level) {
+    rwPalQuantLeafNode *leaf;
+    RwInt32 i;
 
+    leaf = NULL;
     if (node != NULL) {
-        result = node;
+        leaf = &node->leaf;
         if (level > 0) {
-            RwInt32 i;
-
-            fn_8048D880(&node->leaf);
+            fn_8048D880(leaf);
             for (i = 0; i < 16; i++) {
-                RwInt32 shift = childLevel + (8 - lbl_805EDF20);
                 RwRGBA subCorner;
-                rwPalQuantOctNode *child;
+                rwPalQuantLeafNode *child;
+                RwUInt32 shift = level - 1 + (PALQUANTCOMPONENTBITS - lbl_805EDF20);
 
                 subCorner.red = corner->red + (((i >> 3) & 1) << shift);
                 subCorner.green = corner->green + (((i >> 2) & 1) << shift);
@@ -442,14 +473,14 @@ rwPalQuantOctNode *fn_8048EB24(rwPalQuantOctNode *node, RwRGBA *corner, RwInt32 
                 subCorner.alpha = corner->alpha + ((i & 1) << shift);
                 child = fn_8048EB24(node->children[i], &subCorner, level - 1);
                 if (child != NULL) {
-                    fn_8048D9C8(&node->leaf, &node->leaf, &child->leaf);
+                    fn_8048D9C8(leaf, leaf, child);
                 }
             }
         } else {
-            fn_8048D8A8(&node->leaf, corner);
+            fn_8048D8A8(leaf, corner);
         }
     }
-    return result;
+    return leaf;
 }
 
 RwInt32 fn_8048EEFC(rwPalQuantOctNode *node, RwInt32 level) {
@@ -520,6 +551,7 @@ static inline void PalQuantSetBoxIndex(rwPalQuantOctNode *root, rwPalQuantBox *b
 /* Makes a palette of at most maxColors colors from the colors added; returns how many it has */
 RwInt32 fn_8048F5D0(RwRGBA *palette, RwInt32 maxColors, RwPalQuant *palQuant) {
     RwRGBA corner = {0, 0, 0, 0};
+    RwInt32 numColors;
     RwInt32 numLeaves;
     RwInt32 i;
 
@@ -531,14 +563,13 @@ RwInt32 fn_8048F5D0(RwRGBA *palette, RwInt32 maxColors, RwPalQuant *palQuant) {
         palette[i].alpha = 0;
     }
 
+    numColors = maxColors;
     numLeaves = fn_8048EEFC(palQuant->root, lbl_805EDF20);
-    if (numLeaves <= maxColors) {
+    if (numLeaves <= numColors) {
         /* Every leaf has its own color */
-        maxColors = numLeaves;
+        numColors = numLeaves;
         fn_8048F1E4(palQuant->root, palette, 0, lbl_805EDF20);
     } else {
-        RwInt32 numBoxes;
-
         /* One box holds every color... */
         palQuant->boxes[0].lower[0] = 0;
         palQuant->boxes[0].lower[1] = 0;
@@ -551,15 +582,17 @@ RwInt32 fn_8048F5D0(RwRGBA *palette, RwInt32 maxColors, RwPalQuant *palQuant) {
         PalQuantBoxStats(palQuant->root, &palQuant->boxes[0], &palQuant->boxStats[0]);
         palQuant->boxErrors[0] = palQuant->boxStats[0].error;
 
-        /* ...and the box of most error is cut until there are enough */
-        for (numBoxes = 1; numBoxes < maxColors; numBoxes++) {
+        /* ...and the box of most error is cut, the new box becoming box i, until there are
+         * enough, or no box can be cut */
+        for (i = 1; i < numColors; i++) {
             RwReal maxError = 0.0f;
             RwInt32 next = -1;
+            RwInt32 k;
 
-            for (i = 0; i < numBoxes; i++) {
-                if (palQuant->boxErrors[i] > maxError) {
-                    maxError = palQuant->boxErrors[i];
-                    next = i;
+            for (k = 0; k < i; k++) {
+                if (palQuant->boxErrors[k] > maxError) {
+                    maxError = palQuant->boxErrors[k];
+                    next = k;
                 }
             }
             if (next == -1) {
@@ -567,80 +600,58 @@ RwInt32 fn_8048F5D0(RwRGBA *palette, RwInt32 maxColors, RwPalQuant *palQuant) {
             }
 
             if (fn_8048E988(palQuant->root, &palQuant->boxStats[next], &palQuant->boxes[next],
-                            &palQuant->boxes[numBoxes])) {
+                            &palQuant->boxes[i])) {
                 PalQuantBoxStats(palQuant->root, &palQuant->boxes[next], &palQuant->boxStats[next]);
-                PalQuantBoxStats(palQuant->root, &palQuant->boxes[numBoxes],
-                                 &palQuant->boxStats[numBoxes]);
+                PalQuantBoxStats(palQuant->root, &palQuant->boxes[i], &palQuant->boxStats[i]);
                 palQuant->boxErrors[next] = palQuant->boxStats[next].error;
-                palQuant->boxErrors[numBoxes] = palQuant->boxStats[numBoxes].error;
+                palQuant->boxErrors[i] = palQuant->boxStats[i].error;
             } else {
                 /* The box cannot be cut usefully */
                 palQuant->boxErrors[next] = 0.0f;
-                numBoxes--;
+                i--;
             }
         }
 
         /* Each box's leaves take its index, and the palette its mean color */
-        for (i = 0; i < maxColors; i++) {
+        for (i = 0; i < numColors; i++) {
             PalQuantSetBoxIndex(palQuant->root, &palQuant->boxes[i], i);
             fn_8048DAC8(&palette[i], &palQuant->boxStats[i]);
         }
     }
-    return maxColors;
+    return numColors;
 }
 
 /* Writes an image's pixels as the palette indices of their colors: two to a byte (the first in the
  * low nibble) for packed 4-bit pixels */
 void fn_8048FAB0(RwUInt8 *pixels, RwInt32 stride, RwInt32 depth, RwBool packed,
                  RwPalQuant *palQuant, RwImage *image) {
-    RwRGBA *palette;
-    RwInt32 sourceStride;
-    RwRGBA *color;
-    RwUInt8 *sourceRow;
     RwUInt32 width;
     RwUInt32 x;
     RwUInt32 rows;
-    RwUInt8 index;
+    RwInt32 sourceStride;
+    RwUInt8 *sourceRow;
     RwUInt8 *destination;
-    RwUInt8 *source;
+    RwUInt8 index;
 
     sourceStride = image->stride;
     sourceRow = image->cpPixels;
     if (depth == 4 && packed == TRUE) {
         switch (image->depth) {
         case 4:
-        case 8:
-            palette = image->palette;
+        case 8: {
+            RwRGBA *palette = image->palette;
+
             rows = image->height;
             while (rows-- != 0) {
-                width = image->width;
-                source = sourceRow;
+                RwUInt8 *source = sourceRow;
+
                 destination = pixels;
-                for (x = 0; x < width; x++) {
-                    color = &palette[*source++];
-                    index = fn_8048F4B4(palQuant->root, PalQuantIndex(color, 8 - lbl_805EDF20),
-                                        lbl_805EDF20);
-                    if (x & 1) {
-                        *destination &= 0x0F;
-                        *destination |= (index & 0x0F) << 4;
-                        destination++;
-                    } else {
-                        *destination &= 0xF0;
-                        *destination |= index & 0x0F;
-                    }
-                }
-                sourceRow += sourceStride;
-                pixels += stride;
-            }
-            break;
-        case 32:
-            rows = image->height;
-            while (rows-- != 0) {
                 width = image->width;
-                color = (RwRGBA *)sourceRow;
-                destination = pixels;
                 for (x = 0; x < width; x++) {
-                    index = fn_8048F4B4(palQuant->root, PalQuantIndex(color++, 8 - lbl_805EDF20),
+                    RwRGBA *color = &palette[*source++];
+
+                    index = fn_8048F4B4(palQuant->root,
+                                        PalQuantIndex(color, PALQUANTCOMPONENTBITS - lbl_805EDF20),
                                         lbl_805EDF20);
                     if (x & 1) {
                         *destination &= 0x0F;
@@ -656,57 +667,95 @@ void fn_8048FAB0(RwUInt8 *pixels, RwInt32 stride, RwInt32 depth, RwBool packed,
             }
             break;
         }
+        case 32: {
+            rows = image->height;
+            while (rows-- != 0) {
+                RwRGBA *source = (RwRGBA *)sourceRow;
+
+                destination = pixels;
+                width = image->width;
+                for (x = 0; x < width; x++) {
+                    RwRGBA *color = source++;
+
+                    index = fn_8048F4B4(palQuant->root,
+                                        PalQuantIndex(color, PALQUANTCOMPONENTBITS - lbl_805EDF20),
+                                        lbl_805EDF20);
+                    if (x & 1) {
+                        *destination &= 0x0F;
+                        *destination |= (index & 0x0F) << 4;
+                        destination++;
+                    } else {
+                        *destination &= 0xF0;
+                        *destination |= index & 0x0F;
+                    }
+                }
+                sourceRow += sourceStride;
+                pixels += stride;
+            }
+            break;
+        }
+        }
     } else {
         switch (image->depth) {
         case 4:
-        case 8:
-            palette = image->palette;
+        case 8: {
+            RwRGBA *palette = image->palette;
+
             rows = image->height;
             while (rows-- != 0) {
-                width = image->width;
-                source = sourceRow;
+                RwUInt8 *source = sourceRow;
+
                 destination = pixels;
+                width = image->width;
                 while (width-- != 0) {
-                    color = &palette[*source++];
-                    *destination++ = fn_8048F4B4(
-                        palQuant->root, PalQuantIndex(color, 8 - lbl_805EDF20), lbl_805EDF20);
+                    RwRGBA *color = &palette[*source++];
+
+                    index = fn_8048F4B4(palQuant->root,
+                                        PalQuantIndex(color, PALQUANTCOMPONENTBITS - lbl_805EDF20),
+                                        lbl_805EDF20);
+                    *destination++ = index;
                 }
                 sourceRow += sourceStride;
                 pixels += stride;
             }
             break;
-        case 32:
+        }
+        case 32: {
             rows = image->height;
             while (rows-- != 0) {
-                width = image->width;
-                color = (RwRGBA *)sourceRow;
+                RwRGBA *source = (RwRGBA *)sourceRow;
+
                 destination = pixels;
+                width = image->width;
                 while (width-- != 0) {
-                    *destination++ = fn_8048F4B4(
-                        palQuant->root, PalQuantIndex(color++, 8 - lbl_805EDF20), lbl_805EDF20);
+                    RwRGBA *color = source++;
+
+                    index = fn_8048F4B4(palQuant->root,
+                                        PalQuantIndex(color, PALQUANTCOMPONENTBITS - lbl_805EDF20),
+                                        lbl_805EDF20);
+                    *destination++ = index;
                 }
                 sourceRow += sourceStride;
                 pixels += stride;
             }
             break;
+        }
         }
     }
 }
 
 /* Initializes a quantizer: the bit spreading table, the free list of tree nodes and the root */
 RwBool fn_8048FED8(RwPalQuant *palQuant) {
-    RwInt32 levels;
     RwUInt32 value;
     RwUInt32 bit;
     RwUInt32 numValues;
-    RwUInt32 bits;
 
-    levels = lbl_805EDF20;
-    numValues = 1 << levels;
+    numValues = 1 << lbl_805EDF20;
     for (value = 0; value < numValues; value++) {
-        bits = 0;
-        for (bit = 0; bit < levels; bit++) {
-            bits |= (value & (1 << bit)) ? (1 << ((levels - 1 - bit) * 4)) : 0;
+        RwUInt32 bits = 0;
+
+        for (bit = 0; bit < lbl_805EDF20; bit++) {
+            bits |= (value & (1 << bit)) ? (1 << ((lbl_805EDF20 - 1 - bit) * 4)) : 0;
         }
         lbl_805E2D58[value] = bits;
     }
