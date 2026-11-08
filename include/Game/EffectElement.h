@@ -70,6 +70,12 @@ class EffectElement {
     void SetTranslationSource(const Fn8040Vector3 *translation) {
         m_translationSource = translation;
     }
+    void SetRotationSource(const Fn8040Vector3 *rotation) {
+        m_rotationSource = rotation;
+    }
+    void SetTimeScaleSource(const float *source) {
+        m_timeScaleSource = source;
+    }
 
     /* 0x04 */ unsigned char field_0x4;
     /* 0x05 */ signed char field_0x5;
@@ -112,10 +118,15 @@ boost::weak_ptr<Effect::System::EffectElement> fn_80168C48(const Fn8040Vector3 *
  * ELEMENT_FLAG_4 (behaviour inferred). */
 boost::weak_ptr<Effect::System::EffectElement> fn_80168B38(const Fn8040Vector3 *position,
                                                            const UnkRotation3 *rotation, int id);
-/* These helpers write the base transform (names remain unknown). */
+/* These helpers write the base transform (names remain unknown). The const reference of
+ * fn_80425D94 is inferred from fn_8030536C: the vector it passes (0x80305448, USA (GUPE8P)) is at
+ * r1+0x30, below the vector fn_80016284 returned at r1+0x3C. A temporary constructed in the call
+ * gets that slot and a named local the slot above it (both measured). A pointer parameter cannot
+ * take the temporary, and fn_80425C34 passes the stored rotation without a copy, which a by-value
+ * parameter would make. */
 void fn_80425E4C(Effect::System::EffectElement *effect, const Fn8040Vector3 *position);
 void fn_80425E68(Effect::System::EffectElement *effect, const Fn8040Matrix34 *matrix);
-void fn_80425D94(Effect::System::EffectElement *effect, const Fn8040Vector3 *rotation);
+void fn_80425D94(Effect::System::EffectElement *effect, const Fn8040Vector3 &rotation);
 /* Passes the word for arg0 of the table at 0x80581394 (8-byte entries) to fn_803054D0 with the
  * other arguments (behaviour inferred from its body; the GoalRing gadget creates its colour effect
  * with it, passing its position, its rotation and an effect id). */
