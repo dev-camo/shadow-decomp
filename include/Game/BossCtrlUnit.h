@@ -71,6 +71,14 @@ class BossModeCtrlUnit : public virtual BossCtrlUnit {
     /* The unit from CreateUnit: Update calls its Update and deletes it through its virtual
      * destructor. Cleared by the constructor. */
     /* 0x08 */ BossCtrlUnit *field_0x8;
+
+  private:
+    /* Copying is disabled in this reconstructed interface because the copy contract is
+     * unrecovered: field_0x8 owns its unit (the destructor deletes it through its virtual
+     * destructor and clears the pointer, 0x80292738-0x80292760), so a memberwise copy would share
+     * the unit and both destructors would delete it. Declared and not defined. */
+    BossModeCtrlUnit(const BossModeCtrlUnit &);
+    BossModeCtrlUnit &operator=(const BossModeCtrlUnit &);
 };
 CHECK_SIZEOF(BossModeCtrlUnit, 0x1C);
 
@@ -126,5 +134,30 @@ class BossCtrlUnit_Shadow : public BossCtrlUnit {
     /* 0x10 */ u8 field_0x10[0x38 - 0x10]; /* unknown */
 };
 CHECK_SIZEOF(BossCtrlUnit_Shadow, 0x38);
+
+/* BossCtrlUnit_PlayCameraMotion: constructors at 0x802922E0 and 0x802923C4. The first builds a
+ * matrix from the vector at position and the three angles at rotation; the second takes them from
+ * the character info of param. Both then pass arg1, arg4 and arg5 to 0x80291E0C (behaviour
+ * inferred; the parameter names are inferred, and the meanings of arg1, arg4 and arg5 are
+ * unknown). */
+class BossCtrlUnit_PlayCameraMotion : public BossCtrlUnit {
+  public:
+    BossCtrlUnit_PlayCameraMotion(BossVarParam *param, int arg1, const Fn8040Vector3 *position,
+                                  const UnkRotation3 *rotation, float arg4, float arg5);
+    BossCtrlUnit_PlayCameraMotion(BossVarParam *param, int arg1, float arg4, float arg5);
+    virtual ~BossCtrlUnit_PlayCameraMotion();
+    virtual bool Update(float arg);
+
+    /* 0x0C */ u8 field_0xC[0x54 - 0xC]; /* unknown */
+
+  private:
+    /* Copying is disabled in this reconstructed interface because the copy contract is
+     * unrecovered: the destructor releases a shared count at 0x1C and a weak count at 0x14
+     * (0x8029180C, 0x80291818), which the bytes here would copy without taking a reference.
+     * Declared and not defined. */
+    BossCtrlUnit_PlayCameraMotion(const BossCtrlUnit_PlayCameraMotion &);
+    BossCtrlUnit_PlayCameraMotion &operator=(const BossCtrlUnit_PlayCameraMotion &);
+};
+CHECK_SIZEOF(BossCtrlUnit_PlayCameraMotion, 0x54);
 
 #endif

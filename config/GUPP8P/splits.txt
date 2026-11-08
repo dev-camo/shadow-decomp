@@ -1100,6 +1100,13 @@ Game/HeavyDog0410.cpp:
 	.sbss       start:0x805F1050 end:0x805F1058
 	.sdata2     start:0x805F85E8 end:0x805F8660
 
+Game/HeavyDog0410ModeCtrlUnit.cpp:
+	.text       start:0x8024F700 end:0x80251A48
+	.rodata     start:0x804F5468 end:0x804F5690
+	.data       start:0x8054A338 end:0x8054A6C8
+	.sdata      start:0x805EB390 end:0x805EB418
+	.sdata2     start:0x805F8660 end:0x805F86A0
+
 Game/HeavyDog0510.cpp:
 	.text       start:0x80253CD4 end:0x80254708
 	.ctors      start:0x804AAF48 end:0x804AAF4C
