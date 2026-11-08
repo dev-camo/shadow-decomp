@@ -1538,6 +1538,16 @@ Game/NpcSound.cpp:
 	.sdata      start:0x805ED450 end:0x805ED468
 	.sdata2     start:0x805F9DD0 end:0x805F9DD8
 
+Game/DevilDoom.cpp:
+	.text       start:0x8030C27C end:0x8030D1B0
+	.ctors      start:0x804AA620 end:0x804AA624
+	.rodata     start:0x8050C250 end:0x8050C318
+	.data       start:0x8055BD30 end:0x8055BEA0
+	.bss        start:0x80585338 end:0x80585428
+	.sdata      start:0x805ED540 end:0x805ED568
+	.sbss       start:0x805F0F78 end:0x805F0F80
+	.sdata2     start:0x805F9E58 end:0x805F9F08
+
 Game/BombingWall.cpp:
 	.text       start:0x803149B8 end:0x80315740
 	.rodata     start:0x8050CA78 end:0x8050CB90
