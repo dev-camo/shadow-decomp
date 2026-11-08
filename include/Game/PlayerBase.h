@@ -103,7 +103,9 @@ CHECK_SIZEOF(PlayerObject, 0x68);
  * 0xB8, 0xDC and 0x1C8 that Player::Behavior::Super reads, the vector at 0xE8 (the ElecFan gadget
  * scales it by -30 into the acceleration it sends the player), the owner at 0x218 (see
  * UnkOwner_80079E64) and the pointers at 0x230 (see Player::PlayerMotion), 0x244 (see
- * UnkObject_80079BA4) and 0x24C (see UnkTargetSource_80206574).
+ * UnkObject_80079BA4) and 0x24C (see UnkTargetSource_80206574). The word at 0x240 is not mapped
+ * here: Player::SoundBase's constructor stores the new sound task in it and its destructor clears
+ * it.
  *
  * Its vtable (0x80520310, 0x54 bytes) overrides the destructor and the first three CharInfo slots
  * and adds nine slots. The added slots are named after their implementations here, or, for the
