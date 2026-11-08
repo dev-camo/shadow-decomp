@@ -114,6 +114,14 @@ void fn_80425C34(Effect::System::EffectElement *effect, float deltaTime);
  * from the negated direction, and clears ELEMENT_FLAG_4 (behaviour inferred). */
 boost::weak_ptr<Effect::System::EffectElement> fn_80168C48(const Fn8040Vector3 *position,
                                                            const Fn8040Vector3 *direction, int id);
+/* Creates effect id from the global launch info with matrix as its base transform (fn_80425E68),
+ * and clears ELEMENT_FLAG_4 when the effect exists (behaviour inferred). The const reference is
+ * inferred: the BK_TANK gadget passes the matrix that BKTank::SetBKTank::GetNodeMatrix returns by
+ * value in place at its eight calls (four in Update, four in OnAttack). A pointer parameter needs
+ * a name for that result: a named matrix adds a copy of it at each call (three instructions more),
+ * and a named reference to it sets up the two arguments in the other order (two words differ at
+ * each call) (both measured). */
+boost::weak_ptr<Effect::System::EffectElement> fn_80168A50(const Fn8040Matrix34 &matrix, int id);
 /* Creates effect id from the global launch info at position with rotation, and clears
  * ELEMENT_FLAG_4 (behaviour inferred). */
 boost::weak_ptr<Effect::System::EffectElement> fn_80168B38(const Fn8040Vector3 *position,
@@ -123,9 +131,14 @@ boost::weak_ptr<Effect::System::EffectElement> fn_80168B38(const Fn8040Vector3 *
  * r1+0x30, below the vector fn_80016284 returned at r1+0x3C. A temporary constructed in the call
  * gets that slot and a named local the slot above it (both measured). A pointer parameter cannot
  * take the temporary, and fn_80425C34 passes the stored rotation without a copy, which a by-value
- * parameter would make. */
+ * parameter would make. The const reference of fn_80425E68 is inferred from BKTank::SetBKTank's
+ * Update, which passes the matrix that GetNodeMatrix returns by value in place: the effect pointer
+ * it tests is loaded before that call and reused as the first argument after it (0x8031FBE8-
+ * 0x8031FC08). A pointer parameter needs a name for that result: a named matrix adds a copy of it
+ * at each of Update's six calls (three instructions more), and a named reference to it reloads the
+ * effect pointer after the call (three words differ at each call) (both measured). */
 void fn_80425E4C(Effect::System::EffectElement *effect, const Fn8040Vector3 *position);
-void fn_80425E68(Effect::System::EffectElement *effect, const Fn8040Matrix34 *matrix);
+void fn_80425E68(Effect::System::EffectElement *effect, const Fn8040Matrix34 &matrix);
 void fn_80425D94(Effect::System::EffectElement *effect, const Fn8040Vector3 &rotation);
 /* Passes the word for arg0 of the table at 0x80581394 (8-byte entries) to fn_803054D0 with the
  * other arguments (behaviour inferred from its body; the GoalRing gadget creates its colour effect

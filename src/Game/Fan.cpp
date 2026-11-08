@@ -289,7 +289,7 @@ void Fan::UpdateModelMatrix() {
 
         if (!m_effect.expired()) {
             if (boost::shared_ptr<Effect::System::EffectElement> effect = m_effect.lock()) {
-                fn_80425E68(effect.get(), &matrix);
+                fn_80425E68(effect.get(), matrix);
             }
         }
     }

@@ -1607,6 +1607,15 @@ Game/DiablonPartsBomb.cpp:
 	.sbss       start:0x805F1BA0 end:0x805F1BB8
 	.sdata2     start:0x805FABF0 end:0x805FAC08
 
+Game/BKTank.cpp:
+	.text       start:0x8031FFB8 end:0x8032253C
+	.ctors      start:0x804AB060 end:0x804AB064
+	.rodata     start:0x8050E400 end:0x8050E620
+	.data       start:0x8055D588 end:0x8055D738
+	.sdata      start:0x805EE310 end:0x805EE360
+	.sbss       start:0x805F1BB8 end:0x805F1BD8
+	.sdata2     start:0x805FAC08 end:0x805FAC40
+
 Game/FallRoad.cpp:
 	.text       start:0x8032AD30 end:0x8032B52C
 	.rodata     start:0x8050EBF0 end:0x8050EC18

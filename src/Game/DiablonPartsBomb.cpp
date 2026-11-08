@@ -126,7 +126,7 @@ void Bomb::fn_8031E3B0() {
 
         fn_8040B034(&translation, fn_80008E1C(&position, m_position.x, 0.0f, m_position.z));
         fn_8040C148(&matrix, &translation);
-        fn_80425E68(effect.get(), &matrix);
+        fn_80425E68(effect.get(), matrix);
     }
 }
 

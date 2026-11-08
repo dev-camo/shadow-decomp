@@ -360,7 +360,7 @@ void GunLift::Update(float dt) {
 
                 fn_8040FA20(&matrix, &result.field_0x0);
                 effect->ClearFlags(Effect::System::ELEMENT_FLAG_8);
-                fn_80425E68(effect.get(), &matrix);
+                fn_80425E68(effect.get(), matrix);
             }
         } else {
             boost::shared_ptr<EffectElement> effect = m_effect.lock();
