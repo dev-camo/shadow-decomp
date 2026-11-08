@@ -2864,6 +2864,12 @@ config.libs = [
             # The compositor lacks three address-add instructions and retains register/scheduling
             # differences (4232 source bytes versus 4244 original bytes); the other 14 bodies match.
             Object(NonMatching, "Game/fn_8042E208.cpp", cflags=cflags_effect),
+            # Matching workaround: the constructor and compositor address literals independently;
+            # pooling introduces a shared rodata base. Revisit when the original flags are known.
+            # Twelve bodies match. The 1508-byte compositor differs in 51 positional words
+            # around UV setup: loads, integer conversions and literal addressing are scheduled
+            # differently. There are no unpaired words; data prefixes and exception records match.
+            Object(NonMatching, "Game/fn_8042D204.cpp", cflags=cflags_effect),
             # The vertex builder retains address-materialization, stack and instruction-layout
             # differences (2564 source bytes versus 2568 original bytes). Its exception
             # record and the parameter constructor's exception-record order also differ.
