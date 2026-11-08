@@ -791,7 +791,7 @@ bool EffCmdLaunchExec::Update(float deltaTime) {
         if ((parent->m_definitionFlags & ARRANGER_LINK_TRANSFORM) != 0) {
             child->SetMatrixSource(&m_transform);
         } else {
-            fn_80425E68(child.get(), &m_transform);
+            fn_80425E68(child.get(), m_transform);
         }
         return true;
     }

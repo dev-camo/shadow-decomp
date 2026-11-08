@@ -148,7 +148,7 @@ void ChaosSpear::UpdateEffectMatrix() {
         fn_8040B884(&matrix, angles.x);
         fn_8040B848(&matrix, angles.y);
         fn_8040B720(&matrix, m_effectScale, m_effectScale, m_effectScale);
-        fn_80425E68(effect.get(), &matrix);
+        fn_80425E68(effect.get(), matrix);
     }
 }
 

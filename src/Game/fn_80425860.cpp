@@ -132,8 +132,8 @@ bool EffectManager::fn_80425860(UnkEffectFileData *file) {
 } // namespace System
 } // namespace Effect
 
-extern "C" void fn_80425E68(Effect::System::EffectElement *effect, const Fn8040Matrix34 *matrix) {
-    fn_8040C148(&effect->m_baseTransform, matrix);
+extern "C" void fn_80425E68(Effect::System::EffectElement *effect, const Fn8040Matrix34 &matrix) {
+    fn_8040C148(&effect->m_baseTransform, &matrix);
 }
 
 extern "C" void fn_80425E4C(Effect::System::EffectElement *effect, const Fn8040Vector3 *position) {
@@ -159,7 +159,7 @@ extern "C" void fn_80425D94(Effect::System::EffectElement *effect, const Fn8040V
 
 extern "C" void fn_80425C34(Effect::System::EffectElement *effect, float deltaTime) {
     if (effect->m_matrixSource != 0) {
-        fn_80425E68(effect, effect->m_matrixSource);
+        fn_80425E68(effect, *effect->m_matrixSource);
     } else {
         if (effect->m_translationSource != 0) {
             const Fn8040Vector3 *translation = effect->m_translationSource;

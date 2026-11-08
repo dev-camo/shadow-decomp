@@ -80,7 +80,7 @@ boost::weak_ptr<EffectElement> fn_803055F8(Launcher *launcher, const Fn8040Matri
     boost::shared_ptr<EffectElement> effect(result.lock());
 
     if (effect.get() != 0) {
-        fn_80425E68(effect.get(), matrix);
+        fn_80425E68(effect.get(), *matrix);
         effect->ClearFlags(Effect::System::ELEMENT_FLAG_4);
 
         if (timeScale != 0) {
