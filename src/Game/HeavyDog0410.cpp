@@ -18,15 +18,20 @@
 #include "Game/PJSLauncher.h"
 #include "Game/ResourceOneFile.h"
 #include "Game/UnkActor_800740E4.h"
+#include "Game/UnkBossStatics.h"
 #include "Game/UnkResource_80012700.h"
 #include "Game/UnkSphere_80035CEC.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/shared_ptr.hpp"
 
+/* Matching workaround: placeholder storage before the spheres and after the vectors, see
+ * UnkBossStatics.h. */
+static UnkBossStaticHead s_unkHead;
 static UnkSphere_80035CEC s_sphere0(Fn8040Vector3(0.0f, 0.0f, 0.0f), 35.0f);
 static UnkSphere_80035CEC s_sphere1(Fn8040Vector3(0.0f, 0.0f, 0.0f), 10.0f);
 static Fn8040Vector3 s_vector0(0.0f, 0.0f, 0.0f);
 static Fn8040Vector3 s_vector1(0.0f, 37.0f, 0.0f);
+static UnkBossStaticTail s_unkTail;
 
 /* The boss parameter tables that Init hands to the variables (placeholder types, see
  * BossVarParam.h). */

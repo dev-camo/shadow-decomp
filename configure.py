@@ -2377,28 +2377,17 @@ config.libs = [
             # local copy of m_comId moves the load but leaves mr for the clrlwi).
             Object(NonMatching, "Game/ElecAccessPanel.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/HeavyDog0510ModeCtrlUnit.cpp", cflags=cflags_game_cpp),
-            # Compared as relocatable objects, 11 of 12 functions have identical words and
-            # relocation targets, and the data contents match once the linker-discarded weak and
-            # local copies are set aside (the compiled .sdata2 is writable, WA, where the original's
-            # is allocatable only, A, and the compiled .rodata and .sdata2, 0xC9 and 0x2C bytes,
-            # lack the original's section-end alignment to 0xD0 and 0x30). .bss: the original keeps
-            # 0x30 bytes before the first sphere and 0x94 bytes after the vector that no code reads
-            # or writes, so the static initialiser differs in 4 of its 32 words (the objects'
-            # offsets from the .bss start) and the parameter tables' three pointers to those objects
-            # in their relocation addends.
-            Object(NonMatching, "Game/HeavyDog0510.cpp", cflags=cflags_game_cpp),
-            # Compared as relocatable objects, 23 of 24 functions have identical words and
-            # relocation targets, and the data contents match once the linker-discarded weak and
-            # local copies are set aside, apart from two differences (the .sdata2 contents are the
-            # same 0x78 bytes, but the compiled section is writable, WA, where the original's is
-            # allocatable only, A). .bss: the original keeps 0x30 bytes before the first sphere and
-            # 0x98 bytes after the last vector that no code reads or writes, so the static
-            # initialiser differs in 6 words and the parameter tables' pointers to those objects in
-            # their relocation addends (the objects' offsets from the .bss start). .rodata: the
-            # class name "HeavyDog0410CtrlUnit" comes after "BossCtrlUnit" and "HeavyDogCtrlUnit" in
-            # the original and before them here. A USA (GUPE8P) DOL linked from this source as a
-            # diagnostic differs in nine words across three functions, with no unpaired words; the
-            # normal build links the original object.
+            Object(Matching, "Game/HeavyDog0510.cpp", cflags=cflags_game_cpp),
+            # Compared as relocatable objects, all 24 functions have identical words and relocation
+            # targets, and the data contents match once the linker-discarded weak and local copies
+            # are set aside, apart from the order of three class names in .rodata:
+            # "HeavyDog0410CtrlUnit" comes after "BossCtrlUnit" and "HeavyDogCtrlUnit" in the
+            # original and before them here, so 0x30 bytes of .rodata differ and so do the three
+            # .sdata type records' relocations to the names. (The .sdata2 contents are the same 0x78
+            # bytes, but the compiled section is writable, WA, where the original's is allocatable
+            # only, A.) A USA (GUPE8P) DOL linked from this source as a diagnostic differs in 15
+            # words, the 12 name words and the three record pointers, none in code; the normal
+            # build links the original object.
             Object(NonMatching, "Game/HeavyDog0410.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/HeavyDog0410ModeCtrlUnit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/VacuumContainer.cpp", cflags=cflags_game_cpp),
