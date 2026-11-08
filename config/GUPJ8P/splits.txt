@@ -1598,6 +1598,14 @@ Game/Researcher.cpp:
 	.sbss       start:0x805F1088 end:0x805F10A8
 	.sdata2     start:0x805FA098 end:0x805FA0C0
 
+Game/LamborghiniCamera.cpp:
+	.text       start:0x8031A608 end:0x8031BF60
+	.rodata     start:0x8050D160 end:0x8050D390
+	.data       start:0x8055C980 end:0x8055C9F8
+	.sdata      start:0x805ED7C8 end:0x805ED7E8
+	.sbss       start:0x805F10B0 end:0x805F10D0
+	.sdata2     start:0x805FA0C0 end:0x805FA0F8
+
 Game/DiablonPartsBomb.cpp:
 	.text       start:0x8031E0E4 end:0x8031EF10
 	.ctors      start:0x804AA63C end:0x804AA640

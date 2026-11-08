@@ -70,6 +70,10 @@ class CameraModeUser : public CameraMode {
     /* The arguments of the camera's update event (class name from RTTI). Its layout is not
      * mapped: the code reconstructed so far only passes it by reference. */
     class UpdateEventArgs;
+    /* The arguments of the camera's switch events (class name from RTTI: the type names of the
+     * bind objects of Game/LamborghiniCamera.cpp take it by reference). Its layout is not mapped:
+     * the code reconstructed so far only passes it by reference. */
+    class SwitchEventArgs;
 
     /* Returns -0x3FE (0x80009610). */
     virtual int UnkSlot0();
@@ -84,11 +88,28 @@ class CameraModeUser : public CameraMode {
      * delete a mode. */
     virtual ~CameraModeUser();
 
-    /* Two members of another type, constructed by 0x80009D58 (not mapped). */
-    /* 0xAC */ u8 field_0xAC[0x18];
+    /* Passes start and end to fn_8000A5D4 (name inferred).
+     * Matching workaround: this inline member stands for an unknown original helper, like
+     * CharInfo::RotateMatrix. Called through a smart pointer, it leaves the smart pointer's
+     * operator-> out of line, as LamborghiniImpl::OnCameraUpdate does (USA (GUPE8P) 0x8031A344)
+     * and as the unrecovered caller at 0x801B78F0 does before its fn_8000A5D4 call; a direct call
+     * to fn_8000A5D4 expands the operator in place (OnCameraUpdate 0xA4 bytes instead of 0xA8).
+     * Coaster::OnPathCallback does not use it: the original passes its mode pointer to
+     * fn_8000A5D4 with the operator expanded in place (through this member the function is one
+     * instruction longer: measured). Revisit when the original helper is identified. Defined
+     * after fn_8000A5D4's declaration below. */
+    inline void SetPoints(const Fn8040Vector3 &start, const Fn8040Vector3 &end);
+
+    /* The switch callbacks that UnkSlot2 (field_0xAC) and UnkSlot3 (field_0xB8) call when they
+     * are not empty, constructed by 0x80009D58. LamborghiniImpl's constructor assigns them through
+     * the function's assignment operator (0x800A6A24). */
+    /* 0xAC */ boost::function1<void, SwitchEventArgs &> field_0xAC;
+    /* 0xB8 */ boost::function1<void, SwitchEventArgs &> field_0xB8;
     /* Called with the update event arguments. */
     /* 0xC4 */ boost::function1<void, UpdateEventArgs &> m_callback;
 };
+CHECK_OFFSETOF(CameraModeUser, field_0xAC, 0xAC);
+CHECK_OFFSETOF(CameraModeUser, field_0xB8, 0xB8);
 CHECK_OFFSETOF(CameraModeUser, m_callback, 0xC4);
 /* Checks only the recovered view; the complete native extent remains unknown. */
 CHECK_SIZEOF(CameraModeUser, 0xD0);
@@ -102,6 +123,10 @@ typedef SonicteamUSA::System::Camera::CameraModeUser::UpdateEventArgs CameraUpda
 /* The type of CameraModeUser's callback (name inferred). */
 typedef boost::function1<void, CameraUpdateEventArgs &> CameraUpdateCallback;
 
+/* The type of CameraModeUser's switch callbacks (name inferred). */
+typedef boost::function1<void, SonicteamUSA::System::Camera::CameraModeUser::SwitchEventArgs &>
+    CameraSwitchCallback;
+
 extern "C" {
 /* Creates a camera mode user (behaviour inferred: fn_8026F6A4 creates a camera mode, which is
  * converted with a dynamic cast; the numbers are not understood). */
@@ -113,6 +138,15 @@ boost::shared_ptr<SonicteamUSA::System::Camera::CameraModeUser> fn_80009704(int 
  * second. */
 void fn_8000DB78(SonicteamUSA::System::Camera::CameraModeUser *mode, const Fn8040Vector3 *start);
 void fn_8000DB50(SonicteamUSA::System::Camera::CameraModeUser *mode, const Fn8040Vector3 *end);
+/* Sets the camera mode's first and second points, the vectors at 0x0 (start) and 0xC (end)
+ * (behaviour from its body). */
+void fn_8000A5D4(SonicteamUSA::System::Camera::CameraModeUser *mode, const Fn8040Vector3 *start,
+                 const Fn8040Vector3 *end);
+}
+
+inline void SonicteamUSA::System::Camera::CameraModeUser::SetPoints(const Fn8040Vector3 &start,
+                                                                    const Fn8040Vector3 &end) {
+    fn_8000A5D4(this, &start, &end);
 }
 
 #endif

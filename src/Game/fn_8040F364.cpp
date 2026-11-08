@@ -63,8 +63,8 @@ UnkRotation3 fn_80410204(const Fn8040Vector4 *quaternion, int order) {
     return UnkRotation3(0.0f, 0.0f, 0.0f);
 }
 
-Fn8040Vector3 fn_80410098(const Fn8040Vector3 *vector, const UnkRotation3 *rotation, int order) {
-    Fn8040Vector3 rotated = *vector;
+Fn8040Vector3 fn_80410098(const Fn8040Vector3 &vector, const UnkRotation3 *rotation, int order) {
+    Fn8040Vector3 rotated = vector;
 
     switch (order) {
     case 0: {

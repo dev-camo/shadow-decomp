@@ -82,8 +82,8 @@ void fn_801CE9F4(UnkFollowerManager_80099954 *manager, boost::shared_ptr<CameraM
 /* Registers the follower with the manager (the numbers are not understood). */
 void fn_801CEA54(UnkFollowerManager_80099954 *manager, boost::shared_ptr<CameraMode>, int arg2,
                  const UnkFollowerParams_8000B2C0 &params, int arg4, int arg5);
-/* Sets the start and end of the path that the follower moves along, and its up direction. */
-void fn_8000A5D4(CameraModeUser *follower, const Fn8040Vector3 *start, const Fn8040Vector3 *end);
+/* Sets the up direction of the path that the follower moves along (fn_8000A5D4, declared in
+ * Game/CameraModeUser.h, sets its start and end). */
 void fn_8000ACE4(CameraModeUser *follower, const Fn8040Vector3 *up);
 }
 
