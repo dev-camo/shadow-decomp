@@ -3,6 +3,8 @@
 
 #include <new>
 #include <cstdlib>
+#include <limits>
+#include <utility>
 
 namespace std {
 
@@ -144,6 +146,11 @@ template <class T> class allocator {
     void deallocate(pointer p, size_type n) {
         ::operator delete(p);
     }
+    /* The game has an out-of-line copy per element type (0x80225088 in the USA release, for the
+     * vector of the DEFENSE_SYSTEM gadget's targets), so its body calls an inline function. */
+    size_type max_size() const {
+        return numeric_limits<size_type>::max() / sizeof(T);
+    }
     void construct(pointer p, const T &value) {
         ::new (static_cast<void *>(p)) T(value);
     }
@@ -170,6 +177,18 @@ template <class T1, class T2> class __compressed_pair_imp : private T2 {
     T2 &second() {
         return *this;
     }
+    const T2 &second() const {
+        return *this;
+    }
+
+    /* Exchanges the first members only, so it is restricted to an empty second member, which holds
+     * no state: a pair no larger than its first member has an empty base, and any other pair fails
+     * to compile here. (Exchanging the base as well calls std::swap for the allocator out of line,
+     * which the game's swap, 0x80224E5C in the USA release, does not.) */
+    void swap(__compressed_pair_imp &x) {
+        typedef char second_member_is_empty[sizeof(__compressed_pair_imp) == sizeof(T1) ? 1 : -1];
+        std::swap(first_, x.first_);
+    }
 
   private:
     T1 first_;
@@ -185,7 +204,18 @@ template <class T1, class T2> class __compressed_pair : public __compressed_pair
     /* Declared: the game copies the node holder's pointer pair with an out-of-line call (0x800DC23C
      * in the USA release), which an implicit copy would do in place. */
     __compressed_pair(const __compressed_pair &x) : base(x) {}
+
+    void swap(__compressed_pair &x) {
+        base::swap(x);
+    }
 };
+
+/* The vector of objects exchanges its capacity pairs through this, the pair's swap and its base's
+ * (0x80224E1C, 0x80224E3C and 0x80224E5C in the USA release). */
+template <class T1, class T2>
+inline void swap(__compressed_pair<T1, T2> &x, __compressed_pair<T1, T2> &y) {
+    x.swap(y);
+}
 
 /* A pair whose second member is a reference: both are members, the reference first, so the layout
  * is the one the general pair has with its second member as a base (used by __node_holder). */

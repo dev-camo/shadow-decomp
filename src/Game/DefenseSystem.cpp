@@ -329,3 +329,15 @@ void DefenseSystem::OnAttack(AttackCallbackParam &param) {
 GadgetTypeInfo lbl_80546334 = {
     "DEFENSE_SYSTEM", fn_8022440C, fn_80224408, DefenseSystem::Create, 0, 0, 0x1388, 1, 0, 10, 0,
 };
+
+/* The two layers under the gadget's target vector: the implementation's constructor (0x802248B0
+ * in the USA release) constructs the capacity pair at 0x0 and writes the size and the data at 0x4
+ * and 0x8. Checked here, after every function of the file, so that no instantiation moves; the
+ * types are named first because the macro would split their template arguments at the comma. */
+typedef std::__vector_obj_imp<boost::shared_ptr<Target>,
+                              std::allocator<boost::shared_ptr<Target> > >
+    DefenseSystemTargetVectorImp;
+typedef std::__vector_obj<boost::shared_ptr<Target>, std::allocator<boost::shared_ptr<Target> > >
+    DefenseSystemTargetVectorLayer;
+CHECK_SIZEOF(DefenseSystemTargetVectorImp, 0xC);
+CHECK_SIZEOF(DefenseSystemTargetVectorLayer, 0xC);

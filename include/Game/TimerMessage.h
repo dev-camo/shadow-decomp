@@ -95,7 +95,7 @@ class TimerMessageManage : public MessageManage {
   private:
     /* Copying is disabled in this reconstructed interface because the copy contract is
      * unrecovered. Both lists own their storage, so a memberwise copy would have both
-     * destructors free it; std::__vector_obj restricts its own copy operations for the same
+     * destructors free it; std::__vector_obj_imp restricts its own copy operations for the same
      * reason. */
     TimerMessageManage(const TimerMessageManage &);
     TimerMessageManage &operator=(const TimerMessageManage &);
