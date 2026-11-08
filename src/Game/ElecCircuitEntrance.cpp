@@ -56,13 +56,15 @@ CHECK_SIZEOF(UnkHandle_800ABCE8, 0x8);
 namespace Player {
 
 /* Player::ElectricCircuitCommand (class name from RTTI): what the entrance sends to the character
- * that touched it. The destructor is defined elsewhere, together with the vtable. */
+ * that touched it. The destructor and the override of CharCommand's fn_801D9CFC (USA address in
+ * the comment) are defined elsewhere, together with the vtable. */
 class ElectricCircuitCommand : public PlayerCommand {
   public:
     /* The command id 0x131 is the value the original constructor loads; its meaning is unknown. */
     ElectricCircuitCommand(const UnkHandle_800ABCE8 &handle, int arg1, bool flag)
         : PlayerCommand(0x131, arg1), m_handle(handle), m_flag(flag) {}
     virtual ~ElectricCircuitCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x80099DB0 */
 
     /* 0x14 */ UnkHandle_800ABCE8 m_handle;
     /* 0x1C */ bool m_flag;
