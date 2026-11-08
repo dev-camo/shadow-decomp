@@ -531,6 +531,7 @@ RwInt32 fn_80458BAC(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor c
 /* world objects (inferred) */
 RpWorld *fn_80462130(RpWorld *world, RwCamera *camera); /* adds a camera */
 RpWorld *fn_80462184(RpWorld *world, RwCamera *camera); /* removes a camera */
+RpWorld *fn_804621B0(const RwCamera *camera);           /* the camera's world */
 RpWorld *fn_804621C0(RpWorld *world, RpAtomic *atomic); /* adds an atomic */
 RpWorld *fn_8046221C(RpWorld *world, RpAtomic *atomic); /* removes an atomic */
 RpWorld *fn_804622FC(RpWorld *world, RpClump *clump);   /* adds a clump */

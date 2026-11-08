@@ -2857,6 +2857,13 @@ config.libs = [
             # (source 32 bytes, native 72), without the original terminal tests,
             # which perform no further operation.
             Object(NonMatching, "Game/EffectRayRW3.cpp", cflags=cflags_effect),
+            # Matching workaround: separate literal addresses include lis/addi pairs; pooling
+            # shares a base. It changes the exact filter from 1380 to 1272 bytes, capture from
+            # 1732 to 1636, constructor from 800 to 784, and compositor from 4232 to 4044 bytes.
+            # Revisit when this file's original compiler settings are established.
+            # The compositor lacks three address-add instructions and retains register/scheduling
+            # differences (4232 source bytes versus 4244 original bytes); the other 14 bodies match.
+            Object(NonMatching, "Game/fn_8042E208.cpp", cflags=cflags_effect),
             # The vertex builder retains address-materialization, stack and instruction-layout
             # differences (2564 source bytes versus 2568 original bytes). Its exception
             # record and the parameter constructor's exception-record order also differ.
