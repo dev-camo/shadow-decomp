@@ -21,14 +21,35 @@ typedef struct Fn8040Vector3 {
 #ifdef __cplusplus
     Fn8040Vector3() {}
     Fn8040Vector3(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
-    /* Defined out of line (fn_800091D0.cpp). The original calls the copy constructor (0x800091EC)
-     * where a vector is initialised from another, for example in the segment's copy constructor
-     * (0x80021DE4), and the assignment (0x800091D0) where an existing vector is overwritten, for
-     * example in the segment's assignment (0x8002CCF0) and when PopFooting's
-     * UpdateCharInfoPosition stores a transformed result (0x8022BD28). Not every copy goes through
-     * them: fn_800C9F14 copies a position component by component (0x800C9F18-0x800C9F34). */
-    Fn8040Vector3(const Fn8040Vector3 &other);
-    Fn8040Vector3 &operator=(const Fn8040Vector3 &other);
+    /* The original calls the copy constructor (USA (GUPE8P) 0x800091EC) where a vector is
+     * initialised from another, for example in the segment's copy constructor (0x80021DE4), and
+     * the assignment (0x800091D0) where an existing vector is overwritten, for example in the
+     * segment's assignment (0x8002CCF0) and when PopFooting's UpdateCharInfoPosition stores a
+     * transformed result (0x8022BD28); which of the two is which is inferred from the segment's
+     * members. Not every copy goes through them: fn_800C9F14 copies a position component by
+     * component (0x800C9F18-0x800C9F34).
+     * Both are inline functions that the original calls out of line. Their copies directly
+     * follow fn_80008E2C (0x80008E2C), which has the lowest call of each in the game, and
+     * together with the copy of operator*(vector, float) (0x800091A4) they are in reverse order
+     * of their first calls in it (0x80009040, 0x80008ED4, 0x80008E94). This compiler puts the
+     * out-of-line copies of inline functions there: after the function that first calls them.
+     * Matching workaround: both bodies store the components through Set. The game is compiled
+     * with an inline depth of one, where a function whose body calls an inline function is not
+     * expanded at its uses (measured: at a depth of two both members are expanded at every use
+     * and have no copies). With the stores written in the bodies, both are expanded at every
+     * use. That the inner call is to Set is inferred: Set is the type's own inline member with
+     * these stores, and it gives the seven instructions of each copy. Inline functions that
+     * copy or assign a vector then stay calls as well, as in the original:
+     * ContainerBehavior::GetPosition (0x800EF448), the assignment of ScatteringRing's record
+     * (0x8011B0F0) and the constructor of EggBalloon's parameter block (0x80145B58). Revisit
+     * when the original vector header or a name source for its members is found. */
+    Fn8040Vector3(const Fn8040Vector3 &other) {
+        Set(other.x, other.y, other.z);
+    }
+    Fn8040Vector3 &operator=(const Fn8040Vector3 &other) {
+        Set(other.x, other.y, other.z);
+        return *this;
+    }
     /* Stores the three components (name inferred): the arguments are evaluated before the first
      * store, as the original does where a vector is assigned in place. */
     void Set(float x_, float y_, float z_) {
