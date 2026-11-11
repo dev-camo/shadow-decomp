@@ -414,9 +414,9 @@ void EffectParticle::fn_804272E8(float deltaTime) {
                 } else {
                     angle = angleRange * (static_cast<float>(i) / (quantity - 1));
                 }
-                angle -= angleRange * 0.5f;
+                angle -= angleRange / 2.0f;
             } else {
-                angle = angleRange * fn_8042A5D0()->Random() - data->angle * 0.5f;
+                angle = angleRange * fn_8042A5D0()->Random() - data->angle / 2.0f;
             }
             float radius = 0.0f;
             float spread = 0.0f;
@@ -429,8 +429,8 @@ void EffectParticle::fn_804272E8(float deltaTime) {
                 spread = data->spread * (radius / data->radius);
             }
             float sine = std::sin(angle);
-            float cosine = std::cos(angle);
             float height = 0.0f;
+            float cosine = std::cos(angle);
             if (data->height > 0.0001f) {
                 height = data->height * fn_8042A5D0()->Random();
             }
