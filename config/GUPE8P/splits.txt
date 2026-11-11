@@ -1359,6 +1359,16 @@ Game/BackDrop.cpp:
 	.sbss       start:0x805F0118 end:0x805F0120
 	.sdata2     start:0x805F7DA0 end:0x805F7DB8
 
+Game/ArkLaser.cpp:
+	.text       start:0x8026DBB4 end:0x8026EE9C
+	.ctors      start:0x804A9F10 end:0x804A9F14
+	.rodata     start:0x804F6630 end:0x804F6780
+	.data       start:0x8054CAC0 end:0x8054CC50
+	.bss        start:0x805840B8 end:0x805840C8
+	.sdata      start:0x805EA918 end:0x805EA958
+	.sbss       start:0x805F0128 end:0x805F0148
+	.sdata2     start:0x805F7E30 end:0x805F7E70
+
 Game/BossRootTask.cpp:
 	.text       start:0x8027DE0C end:0x8027E0D8
 	.ctors      start:0x804A9F50 end:0x804A9F54
