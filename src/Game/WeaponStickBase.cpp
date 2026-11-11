@@ -51,8 +51,10 @@ class WeaponStickBaseImpl {
     void ReleaseAttack();
 
     /* The two callbacks the attack object calls. The first writes the position at 0x18 of the
-     * parameters relative to the owner's character info; the second counts a hit and passes the
-     * attack at 0x8 of the parameters on to the attack object (behaviour inferred). */
+     * parameters relative to the owner's character info to 0x34 of the parameters, only when that
+     * character info still exists. The second does nothing unless bit 0 of the word at 0x54 of the
+     * parameters is set; then it passes the attack at 0x8 of the parameters on to the attack
+     * object when the attack object exists, and counts the hit either way (behaviour inferred). */
     void fn_80067B7C(AttackCallbackParam &param);
     void fn_80067B0C(AttackCallbackParam &param);
 

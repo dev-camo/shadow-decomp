@@ -158,12 +158,13 @@ struct UnkHitContext_80150BA8 {
 };
 CHECK_SIZEOF(UnkHitContext_80150BA8, 0x10);
 
-/* The bars' hit callback: sends a Player::TouchLineCommand with the bar's character info and line
- * to a player that is not in the state fn_800B7828 tests, unless the player's segment (the
- * vectors at 0xC of fn_80078CEC's results for 0 and 1, or the first point alone when they are less
- * than 0.1 apart) is more than 12 from the bar's line (squared distance above 144). When the bar's
- * line has expired, the distance test is skipped and the command is still sent (behaviour
- * inferred). */
+/* The bars' hit callback: passes the fn_801DC980 of a player that is not in the state
+ * fn_800B7828 tests a new Player::TouchLineCommand with the bar's character info and line (a
+ * request; the pointer is null when the allocation fails, and it is passed all the same), unless
+ * the player's segment (the vectors at 0xC of fn_80078CEC's results for 0 and 1, or the first
+ * point alone when they are less than 0.1 apart) is more than 12 from the bar's line (squared
+ * distance above 144). When the bar's line has expired, the distance test is skipped and the
+ * command is still sent (behaviour inferred). */
 static void fn_80152164(boost::shared_ptr<CharInfo> hit, void *arg) {
     UnkHitContext_80150BA8 *context = static_cast<UnkHitContext_80150BA8 *>(arg);
 
