@@ -261,7 +261,10 @@ void SetStretchGrass::UpdateBody(float dt) {
 
         Fn8040Vector3 tip(0.0f, 0.0f, -50.0f * m_state.m_stretch);
 
-        m_charInfo->m_position = matrix * tip;
+        /* The call by name is inferred (the inline operator* reaches the same function): the
+         * original loads m_charInfo before the call (USA (GUPE8P) 0x8014C350), the order this
+         * compiler gives a call by name and not the operator; see fn_8040_vector_types.h. */
+        m_charInfo->m_position = fn_8040B67C(matrix, tip);
 
         Fn8040Vector3 launch(0.0f, 0.0f, -50.0f * m_state.m_stretch - 5.0f);
 

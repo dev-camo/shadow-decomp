@@ -1673,18 +1673,14 @@ config.libs = [
             Object(Matching, "Game/Elevator.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/FootingMovable.cpp", cflags=cflags_game_cpp),
             # Word by word against the split original object (USA, Japan and PAL alike), with the
-            # linker-discarded weak and local copies set aside: 54 of the 58 functions have
+            # linker-discarded weak and local copies set aside: 55 of the 58 functions have
             # identical words and relocations. The preload hook (0x8014BD6C, USA) and the constructor (0x8014CB98)
             # differ in 3 words each, all immediate offsets into .rodata: the original's .rodata has
             # an unreferenced 0x40-byte table of floats (three rows of 1, 0, 0, 0 and one of zeros)
             # between the TNumEditFloat and CharaColliBaseCharInfo names, and 12 zero bytes after the
             # CharaColliBase name, which this object does not have (as in ElecCoreWall), so the
             # strings after them sit 0x40 or 0x4C lower here, which also moves the .rodata addends of
-            # the data relocations to them. UpdateBody (0x8014C108) is 220 words against 221;
-            # with the raw words aligned, 5 of the original's and 4 of this build's have no
-            # counterpart: the original loads the character info's pointer into r30 before the call
-            # of fn_8040B67C whose result it then copies there (one more saved register and one more
-            # instruction), which also changes one branch displacement. The hit callback (0x8014D324) differs in 19 of 243 words,
+            # the data relocations to them. The hit callback (0x8014D324) differs in 19 of 243 words,
             # the interpolation of the launch speed as in Spring and DashRing: the int-to-float
             # conversion of the index gets its own 8-byte stack slot (frame 0xB0 instead of 0xA0)
             # and the level and the table difference are in f3 and f2 instead of f2 and f3. In
@@ -1715,21 +1711,16 @@ config.libs = [
             # frame's matrix and passed to fn_800CCE38, below the difference vectors of the two
             # branches, as a temporary made last would be.
             Object(NonMatching, "Game/Vine.cpp", cflags=cflags_game_cpp),
-            # 104 of the 106 functions have identical instructions and relocations, and the .data,
+            # 105 of the 106 functions have identical instructions and relocations, and the .data,
             # .rodata and .sdata objects match once the linker-discarded weak and local copies are
             # set aside. The bars' hit callback (0x80152164) is one instruction longer: the original
             # passes the result of the span's copy constructor straight to fn_8040CF50, where this
-            # build copies into a local and passes its address. ElecBarSub's UpdateModelMatrix
-            # is 115 words against the original's 116, with 67 positional raw word differences
-            # and one unpaired word: the original creates the transform's result before the scaled
-            # and offset vectors it is computed from, as a nested expression does, but loads the
-            # line pointer between them, which the direct member assignments here do not
-            # reproduce. Two placement differences remain: the tree's __destroy and the
-            # allocator helpers it calls follow the tree's destructor here instead of coming first
-            # among the tree members at the end of the code, where clear also comes before insert in
-            # the original (the map units show the same placement); and the int-to-float constant of
-            # .sdata2 follows ElecBarSub::Update's literals instead of preceding
-            # ElecBarSub::UpdateModelMatrix's.
+            # build copies into a local and passes its address. Two placement differences remain:
+            # the tree's __destroy and the allocator helpers it calls follow the tree's destructor
+            # here instead of coming first among the tree members at the end of the code, where
+            # clear also comes before insert in the original (the map units show the same
+            # placement); and the int-to-float constant of .sdata2 follows ElecBarSub::Update's
+            # literals instead of preceding ElecBarSub::UpdateModelMatrix's.
             Object(NonMatching, "Game/ElecBar.cpp", cflags=cflags_game_cpp),
             # Every function but the constructor has identical instruction words, and the data,
             # symbols and relocations match once the linker-discarded weak and local copies are set
@@ -1845,8 +1836,9 @@ config.libs = [
             Object(Matching, "Game/BAShield.cpp", cflags=cflags_game_cpp),
             # 81 of the 83 functions of the original split object are identical in every word and
             # relocation (local names resolved; USA, Japan and PAL alike; addresses below are
-            # USA's). Counts: positional = word i against word i; aligned = instructions matched
-            # up, as paired-differing, original-only and source-only words.
+            # USA's), and every function starts at the original's offset. Counts: positional =
+            # word i against word i; aligned = instructions matched up, as paired-differing,
+            # original-only and source-only words.
             # - Balloon::OnCommand (0x800E6AF0), 35 words each: the original copies the command
             #   pointer to r31 inside case 0x14, after the m_type test (0x800E6B18); the compiled
             #   code copies it in the prologue. Positional: 7 words differ. Aligned: 1
@@ -1855,24 +1847,15 @@ config.libs = [
             #   later here, and the b past the case keeps its target, but its displacement is one
             #   word shorter here; which of the two pairs as differing depends on whether branch
             #   targets or raw words are compared.
-            # - Balloon::UpdateBody (0x800E6FC8), 226 words against 225: in STATE_CIRCLE the
-            #   original loads m_charInfo's pointer into r31 before it calls fn_8040B67C
-            #   (0x800E72EC), so it keeps this in r30 and saves r30-r31; the compiled code, through
-            #   the matrix-vector operator*, loads the pointer after the call, keeps this in r31
-            #   and saves only r31. In STATE_START the vector built from X, Y and Z is at sp+0xA4
-            #   in the original and at sp+0x50 here, and the other cases' vectors sit 12 bytes
-            #   higher here. Positional: 115 of the first 225 words differ and the original has 1
-            #   more; aligned: 98 paired-differing, 6 original-only, 5 source-only.
+            # - Balloon::UpdateBody (0x800E6FC8), 226 words each: in STATE_START the vector built
+            #   from X, Y and Z is at sp+0xA4 in the original and at sp+0x50 here, and the other
+            #   cases' vectors sit 12 bytes higher here. Positional: 30 words differ, all stack
+            #   offsets of addi and stfs instructions; aligned: the same 30 pairs.
             # Data: once the 100 linker-discarded copies are set aside (75 weak, 25 local; the
             # original keeps four of the weak vtables as zero-filled holes in .data), the bytes of
-            # .rodata, .data, .sdata, .sbss and .sdata2 match the original by contents. Because
-            # UpdateBody is one word shorter here, every function after it starts 4 bytes lower,
-            # and four relocations that point at them target .text offsets 4 bytes lower: the
-            # .ctors entry (__sinit_Balloon_cpp, .text+0x24EC in the original, +0x24E8 here) and
-            # the three .data entries at +0x278, +0x27C and +0x284, the VacuumBalloon
-            # sp_counted_base_impl destructor, dispose and get_deleter (for example .data+0x278
-            # targets .text+0x2198 in the original and .text+0x2194 here). The original's .sdata2
-            # is allocatable (A, 0x2) and this object's writable and allocatable (WA, 0x3).
+            # .rodata, .data, .sdata, .sbss and .sdata2 match the original by contents. The
+            # original's .sdata2 is allocatable (A, 0x2) and this object's writable and
+            # allocatable (WA, 0x3).
             Object(NonMatching, "Game/Balloon.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BlastBreak.cpp", cflags=cflags_game_cpp),
             # 8 of the 9 functions are identical in every word and relocation target. ProcessHits
@@ -2643,16 +2626,7 @@ config.libs = [
             # 0x8000AB90) emitted after UpdatePosition and discarded by the linker, where this
             # source calls fn_8000AB90 as an external function (inferred).
             Object(NonMatching, "Game/TargetSwitch.cpp", cflags=cflags_game_cpp),
-            # 59 of the 60 functions have identical instructions and relocations, and the data
-            # matches once the linker-discarded weak and local copies are set aside.
-            # UpdateModelMatrix is 122 words against the original's 123 (USA, GUPE8P): position by
-            # position 46 words differ and the original's last word has no counterpart. The
-            # original loads the segment pointer m_line into r31 before each of the two transform
-            # calls (0x80127940 and 0x80127954) and keeps the object in r30; this build reads the
-            # pointer after each call, so it saves one register fewer and the object is in r31.
-            # The functions after it start 4 bytes earlier, so the .ctors entry and three .data
-            # relocations to them (OnCollision, UpdateBody and the destructor) have addends 4 lower.
-            Object(NonMatching, "Game/UpDownReel.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/UpDownReel.cpp", cflags=cflags_game_cpp),
             # 33 of the 35 functions have identical instructions and relocations. By contents,
             # with the 95 weak and local copies this object has and the original does not set
             # aside (75 weak, 20 local), the data, symbols and relocations match, except four
@@ -2733,7 +2707,7 @@ config.libs = [
             # 0x54 and .rodata 0x25B bytes against 0x2E8, 0x68 and 0x280).
             Object(NonMatching, "Game/Weight.cpp", cflags=cflags_game_cpp),
             # Relocatable comparison (local names resolved), the same in USA (GUPE8P), Japan
-            # (GUPJ8P) and PAL (GUPP8P): 69 of the 71 functions of the original split have identical
+            # (GUPJ8P) and PAL (GUPP8P): 70 of the 71 functions of the original split have identical
             # instruction words, and all but function1<void, GadgetColliDetectArgs &>::swap have the
             # original's relocation targets.
             # - The hit callback (USA 0x800F5FAC) is 121 words against 120: it reloads the span's
@@ -2742,12 +2716,6 @@ config.libs = [
             #   word i): 73 of the 120 common words differ and 1 build word is unpaired; aligned
             #   (instructions matched up): 4 pairs differ (branches past the extra word), no word is
             #   only in the original and 1 only in this build.
-            # - CatchStick::UpdateLine (USA 0x800F4CE4) is 60 words against 61: the original loads
-            #   m_line into r31 before each matrix-vector product (0x800F4D84 and 0x800F4DA4), so it
-            #   keeps this in r30 and saves r30-r31 with stmw/lmw; through the matrix-vector
-            #   operator*, the compiled code loads m_line from this (r31) after each product and
-            #   saves only r31. Positional: 27 of the 60 common words differ and 1 original word is
-            #   unpaired; aligned: 9 paired-differing, 3 original-only and 2 source-only words.
             # - The swap calls a 32-byte local copy of std::swap<any_pointer> in this object, where
             #   the original calls the kept copy at 0x80019164 (1 relocation target; the local copy
             #   is build-only, and a source-enabled link keeps it).

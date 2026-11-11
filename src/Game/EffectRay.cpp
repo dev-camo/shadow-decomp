@@ -439,7 +439,7 @@ void EffectRay::fn_80428DFC(float deltaTime) {
         }
         }
         if ((m_definitionFlags & 0x800) == 0) {
-            ray->m_position = fn_8040B67C(&m_transform, &ray->m_position);
+            ray->m_position = fn_8040B67C(m_transform, ray->m_position);
             ray->m_velocity = fn_8040B618(m_transform, ray->m_velocity);
         }
         ray->m_origin = ray->m_position;

@@ -307,10 +307,12 @@ void UpDownReel::UpdateModelMatrix() {
         Fn8040Vector3 right(10.0f, -14.0f, 0.0f);
         Fn8040Vector3 left(-10.0f, -14.0f, 0.0f);
 
-        /* The original reads the segment pointer before each transform call; these assignments
-         * read it after the call (residual in configure.py). */
-        m_line->start = matrix * right;
-        m_line->end = matrix * left;
+        /* The call by name is inferred (the inline operator* reaches the same function): the
+         * original loads m_line before each call (USA (GUPE8P) 0x80127940 and 0x80127954), the
+         * order this compiler gives a call by name and not the operator; see
+         * fn_8040_vector_types.h. */
+        m_line->start = fn_8040B67C(matrix, right);
+        m_line->end = fn_8040B67C(matrix, left);
         m_hangPosition = (m_line->start + m_line->end) * 0.5f;
     }
 }

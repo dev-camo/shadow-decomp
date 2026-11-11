@@ -223,7 +223,10 @@ void Balloon::UpdateBody(float dt) {
 
         fn_8040B59C(&matrix, origin);
         fn_8040B848(&matrix, DegreesToRadians(angle));
-        m_charInfo->m_position = matrix * offset;
+        /* The call by name is inferred (the inline operator* reaches the same function): the
+         * original loads m_charInfo before the call (USA (GUPE8P) 0x800E72EC), the order this
+         * compiler gives a call by name and not the operator; see fn_8040_vector_types.h. */
+        m_charInfo->m_position = fn_8040B67C(matrix, offset);
         break;
     }
 
