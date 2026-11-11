@@ -8,15 +8,17 @@
 /* The global playback state. */
 MotionPlayback lbl_805E12C0;
 
-/* Converts a half-precision float (1 sign, 5 exponent and 10 mantissa bits) to a float by moving
- * the bits and rebiasing the exponent. Only 0x0000 maps to 0.0f (a negative zero becomes -2^-15);
- * denormals, infinities and NaN are not handled.
+/* Converts the half-precision float at data (1 sign, 5 exponent and 10 mantissa bits) to a float
+ * by moving the bits and rebiasing the exponent. Only 0x0000 maps to 0.0f (a negative zero becomes
+ * -2^-15); denormals, infinities and NaN are not handled.
  * Matching workaround: the else branch returns separately from the final return. With a single
  * return (or an early return for 0x0000) every caller's inlined conversion is scheduled and
  * allocated differently from the original. Revisit if another compiler version or inline setting
  * is found for this code. */
-static inline float HalfToFloat(unsigned short half) {
+static inline float HalfToFloat(const unsigned short *data) {
     float result = 0.0f;
+    unsigned int half = *data;
+
     if (half != 0) {
         unsigned int sign = (half & 0x8000) << 16;
         unsigned int magnitude = ((half & 0x7FFF) << 13) + 0x38000000;
@@ -41,10 +43,10 @@ static inline float HalfToFloat(unsigned short half) {
                                                                                                    \
         (header) = key_[0];                                                                        \
         (key).time = (float)((header) & MOTION_KEY_TIME_MASK);                                     \
-        (key).tangentIn = HalfToFloat(key_[1]);                                                    \
+        (key).tangentIn = HalfToFloat(&key_[1]);                                                   \
         (key).tangentOut =                                                                         \
-            ((header) & MOTION_KEY_SHARED_TANGENT) ? (key).tangentIn : HalfToFloat(*data_++);      \
-        (key).value = HalfToFloat(*data_++);                                                       \
+            ((header) & MOTION_KEY_SHARED_TANGENT) ? (key).tangentIn : HalfToFloat(data_++);       \
+        (key).value = HalfToFloat(data_++);                                                        \
         (position) = data_;                                                                        \
     } while (0)
 
@@ -75,7 +77,7 @@ static inline void CopyKey(MotionKey *to, const MotionKey *from) {
     do {                                                                                           \
         ResourceBlock *block_ = (block);                                                           \
         const unsigned short *position_;                                                           \
-        unsigned short header_;                                                                    \
+        int header_;                                                                               \
                                                                                                    \
         if (lbl_805E12C0.speed < 0.0f) {                                                           \
             (cursor)->index = (cursor)->keyCount - 1;                                              \
@@ -120,9 +122,9 @@ void fn_80413E38(MotionKeyCursor *cursor, ResourceBlock *block) {
 }
 
 void fn_80414120(MotionKeyCursor *cursor) {
+    int header;
     const unsigned short *position = cursor->position;
     short index = cursor->index;
-    unsigned short header;
 
     if (lbl_805E12C0.currentFrame > cursor->current.time - MOTION_FRAME_EPSILON) {
         return;
@@ -143,10 +145,10 @@ void fn_80414120(MotionKeyCursor *cursor) {
 }
 
 void fn_804142B0(MotionKeyCursor *cursor) {
+    int header;
     const unsigned short *position = cursor->position;
     short index = cursor->index;
     short keyCount = cursor->keyCount;
-    unsigned short header;
 
     if (lbl_805E12C0.currentFrame < MOTION_FRAME_EPSILON + cursor->next.time) {
         return;
@@ -170,11 +172,11 @@ void fn_804142B0(MotionKeyCursor *cursor) {
  * when it lies after the next key. Between two keys they call the interpolation functions that
  * fn_80415784 stores in the playback state. */
 void fn_80414438(float *value, float *slope, MotionKeyCursor *cursor) {
+    int header;
     MotionKey *current = &cursor->current;
     MotionKey *next = &cursor->next;
     const unsigned short *position = cursor->position;
     short index = cursor->index;
-    unsigned short header;
 
     if (cursor->flags & MOTION_CURSOR_BOTH_HELD) {
         *value = cursor->cachedValue;
@@ -231,11 +233,11 @@ void fn_80414438(float *value, float *slope, MotionKeyCursor *cursor) {
 }
 
 float fn_8041474C(MotionKeyCursor *cursor) {
+    int header;
     MotionKey *current = &cursor->current;
     MotionKey *next = &cursor->next;
     const unsigned short *position = cursor->position;
     short index = cursor->index;
-    unsigned short header;
 
     if (cursor->flags & MOTION_CURSOR_SLOPE_HELD) {
         return cursor->cachedSlope;
@@ -274,11 +276,11 @@ float fn_8041474C(MotionKeyCursor *cursor) {
 }
 
 float fn_804149E0(MotionKeyCursor *cursor) {
+    int header;
     MotionKey *current = &cursor->current;
     MotionKey *next = &cursor->next;
     const unsigned short *position = cursor->position;
     short index = cursor->index;
-    unsigned short header;
 
     if (cursor->flags & MOTION_CURSOR_VALUE_HELD) {
         return cursor->cachedValue;
@@ -326,12 +328,12 @@ float fn_804149E0(MotionKeyCursor *cursor) {
 }
 
 void fn_80414CBC(float *value, float *slope, MotionKeyCursor *cursor) {
+    int header;
     MotionKey *current = &cursor->current;
     MotionKey *next = &cursor->next;
     const unsigned short *position = cursor->position;
     short index = cursor->index;
     short keyCount = cursor->keyCount;
-    unsigned short header;
 
     if (cursor->flags & MOTION_CURSOR_BOTH_HELD) {
         *value = cursor->cachedValue;
@@ -387,12 +389,12 @@ void fn_80414CBC(float *value, float *slope, MotionKeyCursor *cursor) {
 }
 
 float fn_80414FD0(MotionKeyCursor *cursor) {
+    int header;
     MotionKey *current = &cursor->current;
     MotionKey *next = &cursor->next;
     const unsigned short *position = cursor->position;
     short index = cursor->index;
     short keyCount = cursor->keyCount;
-    unsigned short header;
 
     if (cursor->flags & MOTION_CURSOR_SLOPE_HELD) {
         return cursor->cachedSlope;
@@ -430,12 +432,12 @@ float fn_80414FD0(MotionKeyCursor *cursor) {
 }
 
 float fn_8041525C(MotionKeyCursor *cursor) {
+    int header;
     MotionKey *current = &cursor->current;
     MotionKey *next = &cursor->next;
     const unsigned short *position = cursor->position;
     short index = cursor->index;
     short keyCount = cursor->keyCount;
-    unsigned short header;
 
     if (cursor->flags & MOTION_CURSOR_VALUE_HELD) {
         return cursor->cachedValue;
