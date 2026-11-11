@@ -12,6 +12,7 @@
 #include "Game/TNumEdit.h"
 #include "Game/CharaColliBaseCharInfo.h"
 #include "Game/ElecSearchLight.h"
+#include "Game/AngleConversion.h"
 #include "Game/CharCommandUnit.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/PlayerCommands.h"
@@ -441,10 +442,8 @@ void ElecSearchLight::GetBeamAngles(UnkRotation3 *angles) {
 void ElecSearchLight::Sweep() {
     m_timer += lbl_8057D6A0.field_0x28;
 
-    float speed = m_params.rotateSpeed * (lbl_805FAD38 / 180.0f);
-    float range = m_params.rotateRange * (lbl_805FAD38 / 180.0f);
-
-    m_yaw = std::sin(speed * m_timer) * range;
+    m_yaw = std::sin(DegreesToRadians(m_params.rotateSpeed) * m_timer) *
+            DegreesToRadians(m_params.rotateRange);
 }
 
 void ElecSearchLight::StartBreakEffect() {
