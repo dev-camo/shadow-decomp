@@ -108,6 +108,10 @@ UnkParams_80051D10 fn_80069424(const Weapon::WeaponBase *weapon, Fn8040Matrix34 
                                const Fn8040Vector3 &arg);
 UnkParams_80051D10 fn_80069298(const Weapon::WeaponBase *weapon, Fn8040Matrix34 *matrix,
                                const Fn8040Vector3 &arg, const Fn8040Vector3 &target);
+/* As fn_80069424 without arg: the same position, direction and arg2, passed to the constructor at
+ * 0x80051FC8 (the third above), which fills 0x28 itself (behaviour from its body; the by-value
+ * return and the pointer and const spellings are inferred, as for fn_80069424). */
+UnkParams_80051D10 fn_80069540(const Weapon::WeaponBase *weapon, Fn8040Matrix34 *matrix);
 }
 
 #endif

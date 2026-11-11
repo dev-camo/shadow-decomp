@@ -1280,6 +1280,15 @@ Game/WeaponSpecialHealCannon.cpp:
 	.sdata      start:0x805EB078 end:0x805EB098
 	.sdata2     start:0x805F8570 end:0x805F8588
 
+Game/WeaponSpecialKatana.cpp:
+	.text       start:0x80275F2C end:0x80276684
+	.ctors      start:0x804AA568 end:0x804AA56C
+	.rodata     start:0x804F7938 end:0x804F7A28
+	.data       start:0x8054D948 end:0x8054DA08
+	.sdata      start:0x805EB098 end:0x805EB0B8
+	.sbss       start:0x805F07C8 end:0x805F07D0
+	.sdata2     start:0x805F8588 end:0x805F85B0
+
 Game/WeaponSpecialShadowRifle.cpp:
 	.text       start:0x802771F8 end:0x80277604
 	.ctors      start:0x804AA574 end:0x804AA578
