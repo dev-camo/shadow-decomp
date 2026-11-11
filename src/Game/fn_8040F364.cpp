@@ -142,7 +142,7 @@ void fn_8040FEBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const Unk
     fn_8040C148(result, &rotated);
 }
 
-void fn_8040FD8C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *axis, float angle) {
+Fn8040Matrix34 fn_8040FD8C(const Fn8040Vector3 *axis, float angle) {
     float x = axis->x;
     float y = axis->y;
     float z = axis->z;
@@ -150,11 +150,11 @@ void fn_8040FD8C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *axis, float angle)
     float cosine = std::cos(angle);
     float complement = 1.0f - cosine;
 
-    matrix->Set(x * x * complement + cosine, x * y * complement - z * sine,
-                z * x * complement + y * sine, 0.0f, x * y * complement + z * sine,
-                y * y * complement + cosine, y * z * complement - x * sine, 0.0f,
-                z * x * complement - y * sine, y * z * complement + x * sine,
-                z * z * complement + cosine, 0.0f);
+    return Fn8040Matrix34(x * x * complement + cosine, x * y * complement - z * sine,
+                          z * x * complement + y * sine, 0.0f, x * y * complement + z * sine,
+                          y * y * complement + cosine, y * z * complement - x * sine, 0.0f,
+                          z * x * complement - y * sine, y * z * complement + x * sine,
+                          z * z * complement + cosine, 0.0f);
 }
 
 /* The closest point of the segment to the point; fraction receives its position along the segment

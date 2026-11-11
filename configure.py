@@ -2258,6 +2258,7 @@ config.libs = [
             # fn_80410098, this source after them; aligned, 3 of the words are identical, 1 is
             # original-only and 1 source-only. Normal builds link the original object.
             Object(NonMatching, "Game/LamborghiniCamera.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/DiablonPartsBeam.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DiablonPartsBomb.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BKTank.cpp", cflags=cflags_game_cpp),
             # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL

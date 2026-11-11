@@ -63,11 +63,8 @@ const char *GravitySignBoard::s_name = "GravitySignBoard";
  * name inferred). */
 static void BuildTurnMatrix(Fn8040Matrix34 *matrix, const Fn8040Vector3 *direction) {
     if (!fn_8000AD08(direction, &lbl_80584360)) {
-        Fn8040Matrix34 rotation;
-
         Fn8040Vector3 axis = fn_8040CFB8(lbl_80584360, *direction);
-        fn_8040FD8C(&rotation, &axis, fn_8040F8FC(&lbl_80584360, direction));
-        fn_8040C148(matrix, &rotation);
+        *matrix = fn_8040FD8C(&axis, fn_8040F8FC(&lbl_80584360, direction));
     } else {
         fn_8040C148(matrix, &lbl_805E0720);
     }

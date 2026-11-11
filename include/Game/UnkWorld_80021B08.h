@@ -11,6 +11,7 @@
 /* The world object that owns the probes (placeholder name; see fn_80021B08). The functions below
  * create and query its probes, which are CharaColliBase objects. */
 class UnkWorld_80021B08;
+class UnkResult_80051B58;
 struct _stMtnPlayWork;
 namespace SonicteamUSA {
 namespace System {
@@ -34,6 +35,13 @@ CHECK_SIZEOF(UnkSphere_80021C04, 0x10);
 extern "C" {
 /* The single world object that owns the probes, constructed on first use (behaviour inferred). */
 UnkWorld_80021B08 *fn_80021B08(void);
+/* Locks the node's target and, when present, passes it with the attack, node and result
+ * to fn_800C6220 for the attack callbacks. The world and result are forwarded unchanged;
+ * the void result and by-value weak-pointer spelling are inferred from the callers and
+ * their copy/destruction of the argument. */
+void fn_800C40C4(UnkWorld_80021B08 *world,
+                 boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack> attack,
+                 UnkProbeNode_80021FE4 *node, UnkResult_80051B58 *result);
 /* Creates a probe sphere at position and returns it (behaviour inferred; flags, arg3, arg4 and
  * arg6 are not understood). */
 boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>
