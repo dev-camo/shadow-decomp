@@ -40,9 +40,24 @@ struct UnkRecord_802039C8 {
 };
 CHECK_SIZEOF(UnkRecord_802039C8, 0x24);
 
+/* The record at 0x60 of lbl_8057D6A0 (placeholder name, after the function that fn_800CBB10
+ * calls on it when it sets up lbl_8057D6A0). The next member that fn_800CBB10 sets up starts at
+ * 0x78, which bounds the size. Only the members that fn_8027DE0C stores are mapped. */
+struct UnkRecord_8027DE0C {
+    /* The three words are signed (inferred): fn_801E4BE0 compares the first with 0 as a signed
+     * word, and fn_80205E28 stores 1, 0 and 1 in them (meanings unknown). */
+    /* 0x00 */ s32 field_0x0;
+    /* 0x04 */ s32 field_0x4;
+    /* 0x08 */ s32 field_0x8;
+    /* 0x0C */ u8 field_0xC[0x14 - 0xC];
+    /* 0x14 */ float field_0x14;
+};
+CHECK_SIZEOF(UnkRecord_8027DE0C, 0x18);
+
 /* The 0x150-byte object at 0x8057D6A0 in .bss (placeholder name; the original name and type are
  * unknown). More than 400 functions across the game read it. Only the words at 0x18, 0x28, 0x44,
- * 0x48, 0x90, 0x94 and 0x98, the bytes at 0x84 and 0x125 and the record at 0xA8 are mapped. */
+ * 0x48, 0x90, 0x94 and 0x98, the bytes at 0x84 and 0x125 and the records at 0x60 and 0xA8 are
+ * mapped. */
 struct UnkGlobal_8057D6A0 {
     /* 0x00 */ u8 field_0x0[0x18];
     /* RollCircle divides the vector it passes to an attacked object by it, and
@@ -56,7 +71,9 @@ struct UnkGlobal_8057D6A0 {
      * words (meaning unknown). */
     /* 0x44 */ s32 field_0x44;
     /* 0x48 */ s32 field_0x48;
-    /* 0x4C */ u8 field_0x4C[0x84 - 0x4C];
+    /* 0x4C */ u8 field_0x4C[0x60 - 0x4C];
+    /* 0x60 */ UnkRecord_8027DE0C field_0x60;
+    /* 0x78 */ u8 field_0x78[0x84 - 0x78];
     /* While it is set, the SAVEPOINT gadget's CanSave returns false and its PauseWatch task clears
      * the gadget's flags 0 and 1; fn_801E2EDC clears it (meaning unknown). */
     /* 0x84 */ u8 field_0x84;
@@ -86,6 +103,16 @@ bool fn_802039E8(const UnkRecord_802039C8 *record);
 /* Sets (set true) or clears the record's field_0x20 and returns true when that changed it
  * (behaviour inferred from its body). */
 bool fn_80203970(UnkRecord_802039C8 *record, bool set);
+/* Clears the record's three words and stores lbl_805F1C08 in its float (behaviour from its body;
+ * the signature is inferred). fn_800CBB10 calls it on field_0x60. */
+void fn_8027DE0C(UnkRecord_8027DE0C *record);
 }
+
+/* A float -7 in .sdata2 (USA (GUPE8P) 0x805F1C08; name, meaning and defining file unknown).
+ * fn_801E0258 and fn_8027DE0C, which are in different files, both read this one object, so it is
+ * a variable with external linkage and not a literal. The const is measured: declared without
+ * it, fn_8027DE0C loads the float after its three word stores, where the original loads it
+ * before them (4 words differ). */
+extern const float lbl_805F1C08;
 
 #endif

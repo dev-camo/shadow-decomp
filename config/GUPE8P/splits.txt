@@ -1359,6 +1359,16 @@ Game/BackDrop.cpp:
 	.sbss       start:0x805F0118 end:0x805F0120
 	.sdata2     start:0x805F7DA0 end:0x805F7DB8
 
+Game/BossRootTask.cpp:
+	.text       start:0x8027DE0C end:0x8027E0D8
+	.ctors      start:0x804A9F50 end:0x804A9F54
+	.rodata     start:0x804F80F0 end:0x804F8100
+	.data       start:0x8054DED0 end:0x8054DEF0
+	.bss        start:0x80584278 end:0x80584288
+	.sdata      start:0x805EAC80 end:0x805EAC98
+	.sbss       start:0x805F0240 end:0x805F0248
+	.sdata2     start:0x805F8158 end:0x805F8160
+
 Game/fn_80293AC8.cpp:
 	.text       start:0x80293AC8 end:0x80293B60
 

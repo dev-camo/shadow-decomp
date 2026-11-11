@@ -100,7 +100,10 @@ class BossVarParam {
      * copies the previous mode. When Update has no unit (from the start or after that deletion),
      * it moves field_0x14 to field_0xC, even when it is zero, clears field_0x14 and passes the
      * value to CreateUnit. If field_0x14 is non-zero after CreateUnit, it deletes the new unit and
-     * takes the no-unit path again, without the copy. */
+     * takes the no-unit path again, without the copy. BossRootTask::Update also writes
+     * field_0x14: once its initialization is complete (it can complete in the same call) and it
+     * has an owner, it stores 2 there when field_0xC is 1 (on the branch where fn_800C9D0C
+     * returns 0, which is always). */
     /* 0x0C */ s32 field_0xC;
     /* 0x10 */ s32 field_0x10;
     /* 0x14 */ s32 field_0x14;
