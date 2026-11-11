@@ -2,6 +2,7 @@
 #define GAME_EFFECTRAYEXECUNIT_H
 
 #include "Game/fn_8040_vector_types.h"
+#include "Game/fn_8042A444.h"
 #include "layout_check.h"
 
 namespace Effect {
@@ -17,6 +18,16 @@ class EffectRayExecUnit {
   public:
     EffectRayExecUnit(const UnkEffectElementData6 *definition, UnkEffectPool *commandPool);
     virtual ~EffectRayExecUnit();
+
+    void fn_80429B48();
+
+    /* The original allocation and constructor-cleanup paths use the current pool. */
+    static void *operator new(unsigned long size) throw() {
+        return fn_8042A50C(fn_8042A5D0());
+    }
+    static void operator delete(void *block) {
+        fn_8042A444(fn_8042A5D0(), block);
+    }
 
     /* 0x04 */ Fn8040Vector3 m_position;
     /* 0x10 */ Fn8040Vector3 m_origin;

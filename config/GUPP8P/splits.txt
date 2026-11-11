@@ -3311,6 +3311,13 @@ Game/EffectParticle.cpp:
 	.rodata     start:0x8051BBD0 end:0x8051BD58
 	.data       start:0x8056B548 end:0x8056B708
 
+Game/EffectRay.cpp:
+	extab       start:0x80006A78 end:0x80006CF8
+	extabindex  start:0x80008660 end:0x80008714
+	.text       start:0x80429958 end:0x8042B328
+	.rodata     start:0x8051BD58 end:0x8051BF60
+	.data       start:0x8056B708 end:0x8056B968
+
 Game/fn_8042A2D8.cpp:
 	extab       start:0x80006CF8 end:0x80006D08
 	extabindex  start:0x80008714 end:0x8000872C

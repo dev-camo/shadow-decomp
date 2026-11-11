@@ -10,39 +10,6 @@
 namespace Effect {
 namespace System {
 
-/* Class identities and inheritance are recorded in the original RTTI. */
-class EffCmdTopColorExec : public EffCmdMatColorExec {
-  public:
-    EffCmdTopColorExec(const UnkCommandData *command, unsigned int *flags, int *target)
-        : EffCmdMatColorExec(command, flags, target) {}
-    virtual ~EffCmdTopColorExec();
-};
-CHECK_SIZEOF(EffCmdTopColorExec, 0x30);
-
-class EffCmdTopAlphaExec : public EffCmdMatAlphaExec {
-  public:
-    EffCmdTopAlphaExec(const UnkCommandData *command, unsigned int *flags, int *target)
-        : EffCmdMatAlphaExec(command, flags, target) {}
-    virtual ~EffCmdTopAlphaExec();
-};
-CHECK_SIZEOF(EffCmdTopAlphaExec, 0x28);
-
-class EffCmdLastColorExec : public EffCmdMatColorExec {
-  public:
-    EffCmdLastColorExec(const UnkCommandData *command, unsigned int *flags, int *target)
-        : EffCmdMatColorExec(command, flags, target) {}
-    virtual ~EffCmdLastColorExec();
-};
-CHECK_SIZEOF(EffCmdLastColorExec, 0x30);
-
-class EffCmdLastAlphaExec : public EffCmdMatAlphaExec {
-  public:
-    EffCmdLastAlphaExec(const UnkCommandData *command, unsigned int *flags, int *target)
-        : EffCmdMatAlphaExec(command, flags, target) {}
-    virtual ~EffCmdLastAlphaExec();
-};
-CHECK_SIZEOF(EffCmdLastAlphaExec, 0x28);
-
 EffectLocusExecUnit::EffectLocusExecUnit() {
     fn_8040C148(&m_transform, &lbl_805E0720);
     m_age = 0.0f;

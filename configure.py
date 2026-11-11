@@ -3068,6 +3068,10 @@ config.libs = [
             # versus 1672 original bytes). Its second protected EH PC is 0x144 versus 0x140.
             # The cleanup function and node RTTI/vtable also occupy different linked positions.
             Object(NonMatching, "Game/EffectParticle.cpp", cflags=cflags_effect),
+            # The node updater retains 21 register-word differences; spawning retains 66
+            # register-word differences, with equal 1464-byte bodies.
+            # Node RTTI/vtable and allocation-cleanup placement differ from the original.
+            Object(NonMatching, "Game/EffectRay.cpp", cflags=cflags_effect),
             Object(Matching, "Game/gcaxSndMemory.c", cflags=cflags_game_gcax),
             Object(Matching, "Game/fn_8043B25C.c", cflags=cflags_game_gcax),
             Object(Matching, "Game/fn_8043D7B4.c", cflags=cflags_game_gcax),

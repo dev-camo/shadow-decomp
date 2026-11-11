@@ -94,8 +94,8 @@ bool EffectManager::fn_80425860(UnkEffectFileData *file) {
         case 6: {
             UnkEffectElementData6 *data = static_cast<UnkEffectElementData6 *>(record);
             RelocateEffectPointer(data->field_0x54, base);
-            RelocateEffectPointer(data->field_0x6C, base);
-            RelocateEffectPointer(data->field_0x64, base);
+            RelocateEffectPointer(data->emitter.shape, base);
+            RelocateEffectPointer(data->emitter.command, base);
             break;
         }
         case 7: {

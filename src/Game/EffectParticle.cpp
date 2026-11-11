@@ -9,30 +9,6 @@
 namespace Effect {
 namespace System {
 
-/* Accessed shape prefixes. Type names, field names and qualifiers are inferred; complete
- * serialized extents are unknown. Each variant is read only after its original type test. */
-struct UnkEffectParticleShape0 : UnkEffectParticleShape {
-    /* 0x08 */ float radius;
-    /* 0x0C */ float angle;
-    /* 0x10 */ float spread;
-    /* 0x14 */ float height;
-};
-CHECK_SIZEOF(UnkEffectParticleShape0, 0x18);
-
-struct UnkEffectParticleShape1 : UnkEffectParticleShape {
-    /* 0x08 */ float radius;
-    /* 0x0C */ float angle;
-    /* 0x10 */ float spread;
-};
-CHECK_SIZEOF(UnkEffectParticleShape1, 0x14);
-
-struct UnkEffectParticleShape2 : UnkEffectParticleShape {
-    /* 0x08 */ float width;
-    /* 0x0C */ float height;
-    /* 0x10 */ float depth;
-};
-CHECK_SIZEOF(UnkEffectParticleShape2, 0x14);
-
 EffCmdGravityExec::~EffCmdGravityExec() {}
 
 EffCmdFrictionExec::~EffCmdFrictionExec() {}
