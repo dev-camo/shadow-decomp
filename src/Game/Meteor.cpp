@@ -43,12 +43,14 @@ static UnkDebugColor_802E0E84 s_startColor(0xFF, 0x4B, 0x1B, 0x1B);
 static UnkDebugColor_802E0E84 s_endColor(0xFF, 0xFF, 0x73, 0x00);
 
 /* The fragments' move speed (meaning inferred from Meteors' use of the setting).
- * Matching workaround: UnkStartupFloat_800E2570 stands in for the original type of this variable.
- * The original's start-up function in .ctors (0x8021DD64) loads the value and stores it to this
- * .sbss word (0x805EFD5C); a constant float initialiser would be emitted as initialised .sdata data
- * instead, and the shared stand-in reproduces that store. The original type is unknown. Revisit
- * when the original wrapper type is found. */
-static UnkStartupFloat_800E2570 lbl_805EFD5C(100.0f);
+ * Matching workaround: the original sets this float with its start-up function in .ctors
+ * (0x8021DD64 stores it to the .sbss word 0x805EFD5C); a constant initialiser gives no store.
+ * UnkStartupFloat_800E2570 stands in for the original initialiser expression, which is unknown,
+ * and gives the start-up function. The const qualifier (inferred) is what lets the start-up
+ * function reload the saved link register (0x8021DDA4) between the load of the value and its
+ * store, as the original does; with a non-const float the store comes before that reload.
+ * Revisit when the original initialiser is found. */
+static const float lbl_805EFD5C = UnkStartupFloat_800E2570(100.0f).value;
 
 const char *Meteor::s_name = "Meteor";
 
@@ -182,8 +184,7 @@ void Meteor::UpdateBody(float dt) {
 
                 UnkRotation3 rotateSpeed(m_params.rotateSpeedX, m_params.rotateSpeedY,
                                          m_params.rotateSpeedZ);
-                UnkMeteorsParams_8021FCE4 params(0.0f, lbl_805EFD5C.value, direction, rotateSpeed,
-                                                 3.0f);
+                UnkMeteorsParams_8021FCE4 params(0.0f, lbl_805EFD5C, direction, rotateSpeed, 3.0f);
                 new MeteorsTask(fn_801EB304(fn_8001C4F8(), 11), position, angles, params, 1);
             }
         }
