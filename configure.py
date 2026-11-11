@@ -1235,7 +1235,7 @@ config.libs = [
             # 12 source bytes versus the original 16-byte extent including trailing alignment.
             Object(NonMatching, "Game/CSD/csdMotionPalette.cpp", cflags=cflags_csd),
             # Scene objects, playback, node lookup and non-owning listeners. Of the 195 native
-            # bodies, this source emits 166 identified counterparts. The 157 instruction-identical
+            # bodies, this source emits 167 identified counterparts. The 158 instruction-identical
             # bodies include two tree methods that call the key comparator instead of distinct
             # value_compare wrappers. The source expands those wrappers into their callers; the
             # original keeps separate copies and emits the key comparator after the first wrapper.
@@ -1251,7 +1251,7 @@ config.libs = [
             # Scene initialization passes allocation line 128 rather than native 173; root-pattern
             # allocations pass 486/473 rather than 1124/1102.
             # Definitions with established native identities follow descending addresses; callback
-            # destructor placement is provisional. Among the 166 paired bodies, 129
+            # destructor placement is provisional. Among the 167 paired bodies, 130
             # retain native relative order. Generated helpers still differ: map traversal helpers
             # precede the font-handle copy constructor, while callback-list and map/reference
             # destruction helpers follow the scene destructor instead of their earlier native
