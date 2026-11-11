@@ -3070,6 +3070,10 @@ config.libs = [
                     "-inline auto,level=1",
                 ],
             ),
+            # All eleven bodies and data/exception records match by contents. The base-command
+            # destructor and command delete precede their original positions; text and
+            # exception-index ordering remain different.
+            Object(NonMatching, "Game/EffectObject.cpp", cflags=cflags_effect),
             Object(Matching, "Game/EffectArranger.cpp", cflags=cflags_effect),
             # The node updater retains 23 cursor-register differences. Spawning has 420 source
             # words versus 418 original words in each region: two source-only construction-result

@@ -20,6 +20,9 @@ class EffectObject : public EffectElement {
     virtual ~EffectObject();
     virtual void Update(float deltaTime);
 
+    /* Dispatcher signature is inferred from its caller. */
+    void fn_80421834();
+
     /* 0xFC */ unsigned int m_commandFlags;
     /* 0x100 */ unsigned int m_definitionFlags;
     /* 0x104 */ int m_color[3];

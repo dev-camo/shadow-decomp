@@ -106,10 +106,11 @@ struct UnkEffectElementData3 : UnkEffectElementData {
 };
 CHECK_SIZEOF(UnkEffectElementData3, 0x3C);
 
+/* Accessed prefix; the complete serialized extent is unknown. */
 struct UnkEffectElementData4 : UnkEffectElementData {
     /* 0x2C */ unsigned int field_0x2C;
     /* 0x30 */ int field_0x30;
-    /* 0x34 */ unsigned char field_0x34[4];
+    /* 0x34 */ float field_0x34;
     /* 0x38 */ unsigned char field_0x38;
     /* 0x39 */ unsigned char field_0x39[3];
     /* 0x3C */ void *field_0x3C;

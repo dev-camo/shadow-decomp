@@ -180,7 +180,7 @@ class EffectCommandExec {
   public:
     EffectCommandExec(const UnkCommandData *command)
         : m_command(command), m_prev(0), m_next(0), field_0x10(0) {}
-    virtual ~EffectCommandExec();
+    virtual ~EffectCommandExec() {}
     /* Advances a command; false removes it from the executor list (name inferred). */
     virtual bool Update(float deltaTime) = 0;
 
@@ -340,7 +340,6 @@ class EffCmdVector3Exec : public EffectCommandExec {
   public:
     EffCmdVector3Exec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target);
     virtual bool Update(float deltaTime);
-    virtual ~EffCmdVector3Exec();
 
     /* 0x14 */ unsigned int *m_flags;
     /* 0x18 */ Fn8040Vector3 *m_target;
@@ -355,7 +354,6 @@ class EffCmd3DPosExec : public EffCmdVector3Exec {
   public:
     EffCmd3DPosExec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target)
         : EffCmdVector3Exec(command, flags, target) {}
-    virtual ~EffCmd3DPosExec();
 };
 CHECK_SIZEOF(EffCmd3DPosExec, 0x30);
 
@@ -363,7 +361,6 @@ class EffCmd3DRotExec : public EffCmdVector3Exec {
   public:
     EffCmd3DRotExec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target)
         : EffCmdVector3Exec(command, flags, target) {}
-    virtual ~EffCmd3DRotExec();
 };
 CHECK_SIZEOF(EffCmd3DRotExec, 0x30);
 
@@ -371,7 +368,6 @@ class EffCmd3DVelExec : public EffCmdVector3Exec {
   public:
     EffCmd3DVelExec(const UnkCommandData *command, unsigned int *flags, Fn8040Vector3 *target)
         : EffCmdVector3Exec(command, flags, target) {}
-    virtual ~EffCmd3DVelExec();
 };
 CHECK_SIZEOF(EffCmd3DVelExec, 0x30);
 

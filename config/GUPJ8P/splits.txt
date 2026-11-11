@@ -3286,6 +3286,13 @@ Game/fn_804211CC.c:
 	.text       start:0x8042180C end:0x80421CAC
 	.sbss       start:0x805F19F8 end:0x805F1A10
 
+Game/EffectObject.cpp:
+	extab       start:0x8000608C end:0x800061D8
+	extabindex  start:0x80008288 end:0x8000830C
+	.text       start:0x80421CAC end:0x804226B0
+	.rodata     start:0x8051AC40 end:0x8051AD50
+	.data       start:0x8056A5D8 end:0x8056A720
+
 Game/fn_80422070.cpp:
 	extab       start:0x800061D8 end:0x800061E0
 	extabindex  start:0x8000830C end:0x80008318
