@@ -360,7 +360,7 @@ void Chao::UpdateMovement(float dt) {
                     speed = 0.0f;
                 } else {
                     const Fn8040Vector3 &moved = previous - m_data->m_position;
-                    speed = fn_8040CF50(&moved) / dt;
+                    speed = fn_8040CF50(moved) / dt;
                 }
 
                 stMtnRequestFrameSpeed(control.get(), 0,

@@ -493,7 +493,7 @@ bool Coaster::IsFinished() {
 
             if (character.get() != 0) {
                 Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
-                if (fn_8040CF50(&distance) > fn_800C9938(m_owner)) {
+                if (fn_8040CF50(distance) > fn_800C9938(m_owner)) {
                     m_flags |= 1;
                     return true;
                 }
@@ -728,7 +728,7 @@ void Coaster::OnCommand(CharCommand &command) {
             float strength = 540.0f;
 
             strength *= lbl_8057D6A0.field_0x28;
-            strength *= fn_8040CF50(&accelerate->m_vector);
+            strength *= fn_8040CF50(accelerate->m_vector);
 
             fn_8040C148(&matrix, &lbl_805E0720);
             fn_8040B80C(&matrix, m_rotation.z);

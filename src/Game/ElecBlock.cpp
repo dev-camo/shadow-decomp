@@ -146,7 +146,7 @@ bool ElecBlock::IsCharInfoInRange() {
         float rangeSquared = m_params.searchRange * m_params.searchRange;
 
         const Fn8040Vector3 &offset = m_charInfo->m_position - nearest->m_position;
-        return fn_8040CF2C(&offset) <= rangeSquared;
+        return fn_8040CF2C(offset) <= rangeSquared;
     }
 
     return false;

@@ -187,7 +187,7 @@ bool StoneStatue::IsCharacterInRange() {
     characterPosition.y = 0.0f;
     Fn8040Vector3 offset = characterPosition - statuePosition;
 
-    if (fn_8040CF50(&offset) > m_params.rangeRadius) {
+    if (fn_8040CF50(offset) > m_params.rangeRadius) {
         return false;
     }
 

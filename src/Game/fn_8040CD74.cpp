@@ -30,14 +30,15 @@ float fn_8040CF90(const Fn8040Vector3 *left, const Fn8040Vector3 *right) {
     return left->x * right->x + left->y * right->y + left->z * right->z;
 }
 
-/* Length. */
-float fn_8040CF50(const Fn8040Vector3 *vector) {
-    return std::sqrt(vector->x * vector->x + vector->y * vector->y + vector->z * vector->z);
+/* Length. The const reference is inferred from callers that pass a temporary copy (see the
+ * declaration); the code is that of a pointer parameter. */
+float fn_8040CF50(const Fn8040Vector3 &vector) {
+    return std::sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
 }
 
-/* Squared length. */
-float fn_8040CF2C(const Fn8040Vector3 *vector) {
-    return vector->x * vector->x + vector->y * vector->y + vector->z * vector->z;
+/* Squared length. The const reference is inferred in the same way. */
+float fn_8040CF2C(const Fn8040Vector3 &vector) {
+    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
 }
 
 /* Normalised copy. */
@@ -50,7 +51,7 @@ Fn8040Vector3 fn_8040CEE8(const Fn8040Vector3 &vector) {
 /* Normalises the vector in place and returns its length, or replaces it by the zero vector
  * lbl_805E07A0 and returns 0.0f when its length is below 1e-6. */
 float fn_8040CE74(Fn8040Vector3 *vector) {
-    float magnitude = fn_8040CF50(vector);
+    float magnitude = fn_8040CF50(*vector);
 
     if (magnitude < 1e-6f) {
         *vector = lbl_805E07A0;

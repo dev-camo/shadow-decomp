@@ -205,9 +205,12 @@ void ElecSearchLight::UpdateBody(float dt) {
                     fn_800A8A7C(fn_80074194(), &m_charInfo->m_position));
 
                 if (nearest.get() != 0) {
-                    Fn8040Vector3 offset = m_charInfo->m_position - nearest->m_position;
-
-                    if (fn_8040CF2C(&offset) > 10000.0f) {
+                    /* The copy of the difference is the argument, here and for type 1 below
+                     * (spelling inferred): the original calls fn_8040CF2C with the pointer that
+                     * the copy constructor returns (USA (GUPE8P) calls at 0x801547D0 and
+                     * 0x801549EC). */
+                    if (fn_8040CF2C(Fn8040Vector3(m_charInfo->m_position - nearest->m_position)) >
+                        10000.0f) {
                         m_state = 5;
                         m_timer = 0.0f;
                         m_yaw = 0.0f;
@@ -266,9 +269,8 @@ void ElecSearchLight::UpdateBody(float dt) {
                     fn_800A8A7C(fn_80074194(), &m_charInfo->m_position));
 
                 if (nearest.get() != 0) {
-                    Fn8040Vector3 offset = m_charInfo->m_position - nearest->m_position;
-
-                    if (fn_8040CF2C(&offset) > 10000.0f) {
+                    if (fn_8040CF2C(Fn8040Vector3(m_charInfo->m_position - nearest->m_position)) >
+                        10000.0f) {
                         m_state = 5;
                         m_timer = 0.0f;
                         m_yaw = 0.0f;
@@ -374,7 +376,7 @@ float ElecSearchLight::GetSegmentDistance(const Fn8040Vector3 *point,
     if (fraction != 0) {
         *fraction = 1.0f;
     }
-    return fn_8040CF2C(&offset);
+    return fn_8040CF2C(offset);
 }
 
 void ElecSearchLight::Search() {
@@ -419,7 +421,7 @@ void ElecSearchLight::PullTarget() {
     m_target->fn_801DC980(new SetPositionCommand(&position, 4));
     fn_801D53C4(fn_80053164(), 0x7230, 0, this, 2, 0, 5);
 
-    if (fn_8040CF2C(&toLight) < 2500.0f) {
+    if (fn_8040CF2C(toLight) < 2500.0f) {
         m_target->fn_801DC980(new Player::EndExternalControlCommand(4));
         m_target->fn_801DC980(new ClrVelocityCommand(4));
         m_target->fn_801DC980(new Player::HomingJumpCommand(Fn8040Vector3(0.0f, 1.5f, 0.0f), 4));

@@ -118,7 +118,7 @@ void Meteor::UpdateBody(float dt) {
             fn_800A8A7C(fn_80074194(), &m_charInfo->m_position).lock());
         if (nearest.get() != 0) {
             Fn8040Vector3 offset = nearest->m_position - m_charInfo->m_position;
-            if (fn_8040CF50(&offset) < m_params.range) {
+            if (fn_8040CF50(offset) < m_params.range) {
                 m_state = 1;
             }
         }

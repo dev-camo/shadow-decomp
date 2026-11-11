@@ -201,7 +201,7 @@ bool ElecFireWall::IsCharInfoInRange() {
         float rangeSquared = m_params.searchRange * m_params.searchRange;
 
         const Fn8040Vector3 &offset = m_charInfo->m_position - nearest->m_position;
-        return fn_8040CF2C(&offset) <= rangeSquared;
+        return fn_8040CF2C(offset) <= rangeSquared;
     }
 
     return false;
@@ -250,7 +250,7 @@ void ElecFireWall::UpdateModelMatrix() {
 
 void ElecFireWall::fn_801F6764(AttackCallbackParam &param) {
     param.field_0x34 = m_charInfo->field_0x18;
-    param.field_0x4C = fn_8040CF50(&param.field_0x34);
+    param.field_0x4C = fn_8040CF50(param.field_0x34);
     fn_8040CE74(&param.field_0x34);
 
     if (param.field_0x4C == 0.0f) {

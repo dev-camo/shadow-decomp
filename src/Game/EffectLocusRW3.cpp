@@ -163,7 +163,7 @@ void EffectLocusRW3::fn_80439B18() {
                 direction.z = 0.0f;
                 fn_8040CE74(&direction);
                 Fn8040Vector3 axis = fn_8040CFB8(reference, direction);
-                if (fn_8040CF50(&axis) > 0.0001f) {
+                if (fn_8040CF50(axis) > 0.0001f) {
                     fn_8040CE74(&axis);
                     float angle = fn_801B1DB0(fn_8040CF90(&reference, &direction));
                     Fn8040Vector4 rotationTemporary;

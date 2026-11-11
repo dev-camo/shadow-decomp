@@ -1554,19 +1554,15 @@ config.libs = [
             # .rodata+0x230 in the original and .rodata+0x1E4 here) and the .rodata addends of four
             # data relocations (the descriptor name, two RTTI names and s_name).
             Object(NonMatching, "Game/ElecCoreWall.cpp", cflags=cflags_game_cpp),
-            # 83 of the 85 functions have identical instructions and relocations once the weak and
+            # 84 of the 85 functions have identical instructions and relocations once the weak and
             # local copies are set aside. The data matches by contents in an object-relative
             # comparison that sets those copies and the alignment aside. As raw relocatable
             # sections the compiled object's .data, .rodata and .sdata are 0x204, 0x3E4 and 0x9C
             # bytes against the original object's 0x1EC, 0x2BC and 0x5C in all three regions; no
             # link with the compiled object was made, so what a link would keep is not measured.
             # Search (0x801540F0) differs in 3 words (f2 and f3 swapped for 1 - fraction and 25, and
-            # the operand order of one fmuls). UpdateBody is two instructions longer (0x408 bytes
-            # against 0x400; 180 words differ by position and 2 are unpaired): twice the original
-            # passes the result of a copy constructor straight to fn_8040CF2C, where this build
-            # loads the local's address again, and two stack temporaries are in each other's slots
-            # (0x44(r1) and 0x50(r1), 3 words); the other differing words are branch displacements.
-            # The compiled .sdata2 is writable (WA) where the original's is allocatable only (A).
+            # the operand order of one fmuls). The compiled .sdata2 is writable (WA) where the
+            # original's is allocatable only (A).
             Object(NonMatching, "Game/ElecSearchLight.cpp", cflags=cflags_game_cpp),
             # Compared as relocatable objects, with the weak and local copies the linker discards
             # removed and the local names and the data section alias (@2 against ...data.0)
@@ -1711,16 +1707,19 @@ config.libs = [
             # frame's matrix and passed to fn_800CCE38, below the difference vectors of the two
             # branches, as a temporary made last would be.
             Object(NonMatching, "Game/Vine.cpp", cflags=cflags_game_cpp),
-            # 105 of the 106 functions have identical instructions and relocations, and the .data,
+            # All 106 functions have identical instructions and relocations, and the .data,
             # .rodata and .sdata objects match once the linker-discarded weak and local copies are
-            # set aside. The bars' hit callback (0x80152164) is one instruction longer: the original
-            # passes the result of the span's copy constructor straight to fn_8040CF50, where this
-            # build copies into a local and passes its address. Two placement differences remain:
-            # the tree's __destroy and the allocator helpers it calls follow the tree's destructor
-            # here instead of coming first among the tree members at the end of the code, where
-            # clear also comes before insert in the original (the map units show the same
-            # placement); and the int-to-float constant of .sdata2 follows ElecBarSub::Update's
-            # literals instead of preceding ElecBarSub::UpdateModelMatrix's.
+            # set aside. Two placement differences remain: the tree's __destroy and the allocator
+            # helpers it calls follow the tree's destructor here instead of coming first among the
+            # tree members at the end of the code, where clear also comes before insert in the
+            # original (the map units show the same placement); and the int-to-float constant of
+            # .sdata2 follows ElecBarSub::Update's literals instead of preceding
+            # ElecBarSub::UpdateModelMatrix's. As raw relocatable sections, with those copies
+            # included, the compiled .text, .rodata, .data, .sdata, .sbss and .sdata2 are 0x3F40,
+            # 0x3B3, 0x2C4, 0x9E, 0x41 and 0x90 bytes against the original object's 0x2A18, 0x230,
+            # 0x220, 0x60, 0x28 and 0x80 in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P), and the
+            # compiled .sdata2 is writable (WA) where the original's is allocatable only (A). A
+            # normal build links the original object.
             Object(NonMatching, "Game/ElecBar.cpp", cflags=cflags_game_cpp),
             # Every function but the constructor has identical instruction words, and the data,
             # symbols and relocations match once the linker-discarded weak and local copies are set
@@ -2720,15 +2719,9 @@ config.libs = [
             # 0x54 and .rodata 0x25B bytes against 0x2E8, 0x68 and 0x280).
             Object(NonMatching, "Game/Weight.cpp", cflags=cflags_game_cpp),
             # Relocatable comparison (local names resolved), the same in USA (GUPE8P), Japan
-            # (GUPJ8P) and PAL (GUPP8P): 70 of the 71 functions of the original split have identical
+            # (GUPJ8P) and PAL (GUPP8P): all 71 functions of the original split have identical
             # instruction words, and all but function1<void, GadgetColliDetectArgs &>::swap have the
             # original's relocation targets.
-            # - The hit callback (USA 0x800F5FAC) is 121 words against 120: it reloads the span's
-            #   address for fn_8040CF50, where the original passes on the pointer that the span's
-            #   copy constructor returns (as in ElecBar's hit callback). Positional (word i against
-            #   word i): 73 of the 120 common words differ and 1 build word is unpaired; aligned
-            #   (instructions matched up): 4 pairs differ (branches past the extra word), no word is
-            #   only in the original and 1 only in this build.
             # - The swap calls a 32-byte local copy of std::swap<any_pointer> in this object, where
             #   the original calls the kept copy at 0x80019164 (1 relocation target; the local copy
             #   is build-only, and a source-enabled link keeps it).
@@ -2749,7 +2742,10 @@ config.libs = [
             # moves above. The compiled .data, .sdata, .sbss and .sdata2 end without the original's
             # alignment padding (0x1C4 against 0x1C8, 0x74 against 0x78, 0x21 against 0x28, 0x34
             # against 0x38), and .sdata2 is writable in the compiled object where the split's is
-            # read-only.
+            # read-only. As raw relocatable sections, with the discarded copies included, the
+            # compiled .text, .rodata, .data, .sdata, .sbss and .sdata2 are 0x2A00, 0x3C4, 0x1C4,
+            # 0xB4, 0x41 and 0x34 bytes against the original object's 0x19CC, 0x2C8, 0x1C8, 0x78,
+            # 0x28 and 0x38. A normal build links the original object.
             Object(NonMatching, "Game/CatchStick.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_8005A300.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80054DD0.cpp", cflags=cflags_game_cpp),

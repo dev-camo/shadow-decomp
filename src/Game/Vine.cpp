@@ -306,7 +306,7 @@ bool Vine::UpdateTarget() {
             position.y = 0.0f;
             const Fn8040Vector3 &offset = infoPosition - position;
             float radiusSq = m_params.radius * m_params.radius;
-            if (fn_8040CF2C(&offset) < radiusSq) {
+            if (fn_8040CF2C(offset) < radiusSq) {
                 m_targetInfo = info;
                 m_targetPosition = info->m_position;
                 return true;
@@ -321,7 +321,7 @@ bool Vine::UpdateTarget() {
         position = m_charInfo->m_position;
         position.y = 0.0f;
         const Fn8040Vector3 &offset = infoPosition - position;
-        if (fn_8040CF2C(&offset) > GetLoseDistanceSq()) {
+        if (fn_8040CF2C(offset) > GetLoseDistanceSq()) {
             m_targetInfo.reset();
             return false;
         }

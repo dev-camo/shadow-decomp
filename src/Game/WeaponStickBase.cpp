@@ -185,7 +185,7 @@ void WeaponStickBaseImpl::SweepAttack() {
     Fn8040Vector3 endMove = m_lines[0].end - m_lines[1].end;
 
     /* The whole movements are scaled in place to one step's movement once the count is known. */
-    int count = (int)(fn_8040CF50(&endMove) / s_sweepStep.value) + 1;
+    int count = (int)(fn_8040CF50(endMove) / s_sweepStep.value) + 1;
     float fraction = 1.0f / (float)count;
 
     fn_8040CE38(&startMove, fraction);

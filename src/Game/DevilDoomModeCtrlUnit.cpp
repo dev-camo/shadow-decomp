@@ -280,7 +280,7 @@ bool DevilDoomModeCtrlUnit_CHAOS_CONTROL::Update(float arg) {
          * m_params.field_0x4. */
         Fn8040Vector3 position(m_devilDoomParam->field_0x1D4);
         position.y = 0.0f;
-        if (fn_8040CF50(&position) > 0.0001) {
+        if (fn_8040CF50(position) > 0.0001) {
             position = fn_8040CEE8(position) * m_devilDoomParam->m_params.field_0x4;
             if (m_devilDoomParam->field_0x1F4 < m_devilDoomParam->m_params.field_0x4) {
                 position = fn_80016284(position);
@@ -301,7 +301,7 @@ bool DevilDoomModeCtrlUnit_CHAOS_CONTROL::Update(float arg) {
         }
         m_devilDoomParam->field_0x1F8 = 0.0f;
         offset.y = 0.0f;
-        m_devilDoomParam->field_0x1F4 = fn_8040CF50(&offset);
+        m_devilDoomParam->field_0x1F4 = fn_8040CF50(offset);
         if (field_0x10) {
             m_devilDoomParam->field_0x14 = 7; /* mode 7: ATK_PSYCHO_PREPARE */
         } else {

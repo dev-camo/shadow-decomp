@@ -520,7 +520,7 @@ void EffectRay::fn_80428B20(float deltaTime) {
     for (ray = m_head; ray != 0; ray = ray->m_next) {
         AddVector(&ray->m_position, ray->m_velocity * deltaTime);
         if (m_friction != 0.0f) {
-            float speed = fn_8040CF50(&ray->m_velocity);
+            float speed = fn_8040CF50(ray->m_velocity);
             if (speed > 0.0001f) {
                 float loss = speed * m_friction;
                 if (loss > speed) {

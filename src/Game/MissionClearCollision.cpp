@@ -81,7 +81,7 @@ void MissionClearCollision::UpdateBody(float dt) {
     if (character.get() != 0) {
         Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
 
-        if (fn_8040CF50(&distance) < m_params.radius) {
+        if (fn_8040CF50(distance) < m_params.radius) {
             boost::shared_ptr<Mission::Mission> mission =
                 fn_800740E4(fn_8006D6A8(), m_params.type).lock();
 

@@ -61,7 +61,7 @@ static void fn_80110320(boost::shared_ptr<CharInfo> hit, void *arg) {
 
     for (int i = 0; i < 3; i++) {
         const Fn8040Vector3 &difference = hit->m_position - context->m_launchPoints[i];
-        float distanceSquared = fn_8040CF2C(&difference);
+        float distanceSquared = fn_8040CF2C(difference);
 
         if (distanceSquared < nearestDistanceSquared) {
             nearestDistanceSquared = distanceSquared;

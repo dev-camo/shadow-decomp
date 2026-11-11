@@ -132,7 +132,7 @@ void CityBombSmall::UpdateBody(float dt) {
                 if (charInfo.get() != 0) {
                     Fn8040Vector3 offset = m_charInfo->m_position - charInfo->m_position;
 
-                    if (fn_8040CF50(&offset) < m_range) {
+                    if (fn_8040CF50(offset) < m_range) {
                         m_stateFlags.Set(FLAG_TRIGGERED);
                     }
                 }
@@ -146,7 +146,7 @@ void CityBombSmall::UpdateBody(float dt) {
             if (nearest.get() != 0) {
                 Fn8040Vector3 offset = m_charInfo->m_position - nearest->m_position;
 
-                if (fn_8040CF50(&offset) < m_range) {
+                if (fn_8040CF50(offset) < m_range) {
                     m_stateFlags.Set(FLAG_TRIGGERED);
                 }
             }

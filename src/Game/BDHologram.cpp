@@ -115,7 +115,7 @@ void BDHologram::UpdateBody(float dt) {
         point.y = 0.0f;
         const Fn8040Vector3 &difference = point - self;
 
-        if (fn_8040CF2C(&difference) < triggerDistanceSquared) {
+        if (fn_8040CF2C(difference) < triggerDistanceSquared) {
             if (m_target.get() != 0) {
                 m_target.reset();
             }

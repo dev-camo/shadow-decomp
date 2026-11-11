@@ -87,7 +87,7 @@ void FallingStone::UpdatePosition(s32 poleState, float dt) {
         move = fn_8040D0AC(move, m_pole->m_charInfo->m_rotation.y);
         AddVector(&m_charInfo->m_position, move);
 
-        float distance = fn_8040CF50(&move);
+        float distance = fn_8040CF50(move);
 
         m_rolledDistance += distance;
 
@@ -214,7 +214,7 @@ void FallingStoneHard::OnStop() {
 void FallingStoneHard::SetPushDirection(AttackCallbackParam &param) {
     param.field_0x34 = *(m_pole->GetRollVelocity());
     fn_8040CE38(&param.field_0x34, 1.0f);
-    param.field_0x4C = fn_8040CF50(&param.field_0x34);
+    param.field_0x4C = fn_8040CF50(param.field_0x34);
 
     param.field_0x34 = fn_8040D0AC(param.field_0x34, m_pole->m_charInfo->m_rotation.y);
     fn_8040CE74(&param.field_0x34);
@@ -592,7 +592,7 @@ int StonePole::IsCharacterInRange() {
     characterPosition.y = 0.0f;
     Fn8040Vector3 offset = characterPosition - polePosition;
 
-    if (fn_8040CF50(&offset) > m_holder->m_params.rangeRadius) {
+    if (fn_8040CF50(offset) > m_holder->m_params.rangeRadius) {
         return 0;
     }
 

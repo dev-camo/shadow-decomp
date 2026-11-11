@@ -74,8 +74,10 @@ static void fn_800F5FAC(boost::shared_ptr<CharInfo> hit, void *arg) {
 
                 Fn8040Vector3 first = fn_80078CEC(player, 0)->field_0xC;
                 Fn8040Vector3 second = fn_80078CEC(player, 1)->field_0xC;
-                Fn8040Vector3 span = first - second;
-                if (fn_8040CF50(&span) < 0.1f) {
+                /* The copy of the difference is the argument (spelling inferred): the original
+                 * calls fn_8040CF50 with the pointer that the copy constructor returns (USA
+                 * (GUPE8P) call at 0x800F6078). */
+                if (fn_8040CF50(Fn8040Vector3(first - second)) < 0.1f) {
                     squaredDistance = fn_8003C660(&first, line.get(), 0);
                 } else {
                     UnkSegment_80020A20 segment(first, second);

@@ -215,7 +215,7 @@ bool Rocket::Move() {
     AddVector(&m_charInfo->m_position, m_velocity);
 
     Fn8040Vector3 offset = m_charInfo->m_position - m_start;
-    if (fn_8040CF2C(&offset) > m_distanceSq) {
+    if (fn_8040CF2C(offset) > m_distanceSq) {
         return true;
     }
     return false;

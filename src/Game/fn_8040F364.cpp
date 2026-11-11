@@ -165,7 +165,7 @@ Fn8040Vector3 fn_8040FC78(float *fraction, const UnkSegment_80020A20 *segment,
     Fn8040Vector3 direction(segment->end - segment->start);
     Fn8040Vector3 toPoint(*point - segment->start);
 
-    float lengthSquared = fn_8040CF2C(&direction);
+    float lengthSquared = fn_8040CF2C(direction);
     float t = fn_8000A950(lengthSquared) ? 1.0f : fn_8040CF90(&direction, &toPoint) / lengthSquared;
     if (fraction) {
         *fraction = t;

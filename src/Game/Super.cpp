@@ -115,7 +115,7 @@ void Super::fn_802EB0C4(float dt) {
         fn_802EB060();
     } else if (fn_8006CD78(m_player->field_0xA8, 0x3C)) {
         field_0x24 = 250.0f;
-    } else if (fn_8040CF2C(&m_player->field_0xB8) < 0.9f * 0.9f) {
+    } else if (fn_8040CF2C(m_player->field_0xB8) < 0.9f * 0.9f) {
         field_0x24 = 250.0f;
     } else {
         const Fn8040Vector3 &direction = fn_8040CEE8(vectorB8);
@@ -135,7 +135,7 @@ void Super::fn_802EB0C4(float dt) {
     Fn8040Vector3 offset = m_player->field_0xDC - m_player->m_position;
     Fn8040Vector3 along;
     fn_8040F990(&along, 0, &offset, &m_player->field_0x1C8);
-    if (fn_8040CF2C(&along) > s_offsetLimit * s_offsetLimit) {
+    if (fn_8040CF2C(along) > s_offsetLimit * s_offsetLimit) {
         AddVector(&m_player->field_0x24, fn_8040CEE8(along) * 25.0f);
     }
 
@@ -147,7 +147,7 @@ void Super::fn_802EB0C4(float dt) {
         field_0x28 = 15.0f;
         fn_80093BA0(m_player, fn_80093FC0(m_player), field_0x28 * dt);
     } else {
-        float speedSquared = fn_8040CF2C(&m_player->field_0x18);
+        float speedSquared = fn_8040CF2C(m_player->field_0x18);
         if (speedSquared <= 22500.0f) {
             field_0x28 = 4.0f;
         } else if (speedSquared > 90000.0f) {
@@ -164,7 +164,7 @@ void Super::fn_802EB0C4(float dt) {
 }
 
 void Super::fn_802EB060() {
-    float factor = fn_8040CF50(&m_player->field_0x18) / s_fullSpeed;
+    float factor = fn_8040CF50(m_player->field_0x18) / s_fullSpeed;
     factor = fn_800704AC(factor, 1.0f);
     field_0x24 = 150.0f * factor + 250.0f;
 }

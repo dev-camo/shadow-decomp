@@ -244,7 +244,7 @@ void ElecSecurityCode::Chase(float dt) {
     forward = fn_8040D118(forward, m_rotation.x);
     forward = fn_8040D0AC(forward, m_rotation.y);
 
-    float distanceSquared = fn_8040CF2C(&toNearest);
+    float distanceSquared = fn_8040CF2C(toNearest);
 
     m_charInfo->field_0x24 = nearest->field_0x24;
     if (distanceSquared > 0.0f) {
@@ -276,7 +276,7 @@ void ElecSecurityCode::MoveApart(float dt) {
     forward = fn_8040D118(forward, m_rotation.x);
     forward = fn_8040D0AC(forward, m_rotation.y);
 
-    float distanceSquared = fn_8040CF2C(&toNearest);
+    float distanceSquared = fn_8040CF2C(toNearest);
 
     m_charInfo->field_0x24 = nearest->field_0x24;
     if (distanceSquared > 0.0f) {
@@ -385,7 +385,7 @@ void ElecSecurityCode::ShowBreakEffect() {
 
 void ElecSecurityCode::fn_80156344(AttackCallbackParam &param) {
     param.field_0x34 = m_charInfo->field_0x18;
-    param.field_0x4C = fn_8040CF50(&param.field_0x34);
+    param.field_0x4C = fn_8040CF50(param.field_0x34);
     fn_8040CE74(&param.field_0x34);
 
     if (param.field_0x4C == 0.0f) {

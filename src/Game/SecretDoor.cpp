@@ -142,7 +142,7 @@ void SecretDoor::UpdateBody(float dt) {
 
                     /* False for NaN. A result that is not taken here is compared again on the
                      * next update. */
-                    if (fn_8040CF2C(&offset) <= s_keyDistanceSquared.value) {
+                    if (fn_8040CF2C(offset) <= s_keyDistanceSquared.value) {
                         m_state = STATE_UNLOCK;
                         m_timer = 0.5f;
                         m_pendingLocks = keyCount - m_keyCount;
