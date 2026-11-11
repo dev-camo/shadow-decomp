@@ -21,6 +21,10 @@ class EffectRay : public EffectElement {
     virtual ~EffectRay();
     virtual void Update(float deltaTime);
 
+    void fn_80428B20(float deltaTime);
+    void fn_80428DFC(float deltaTime);
+    void fn_804293B4();
+
     /* 0xFC */ EffectRayExecUnit *m_head;
     /* 0x100 */ EffectRayExecUnit *m_tail;
     /* 0x104 */ unsigned int m_commandFlags;

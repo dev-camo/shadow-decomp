@@ -38,6 +38,30 @@ struct UnkEffectParticleShape {
 };
 CHECK_SIZEOF(UnkEffectParticleShape, 0x8);
 
+/* Accessed shape prefixes. Type names, field names and qualifiers are inferred; complete
+ * serialized extents are unknown. Each variant is read only after its original type test. */
+struct UnkEffectParticleShape0 : UnkEffectParticleShape {
+    /* 0x08 */ float radius;
+    /* 0x0C */ float angle;
+    /* 0x10 */ float spread;
+    /* 0x14 */ float height;
+};
+CHECK_SIZEOF(UnkEffectParticleShape0, 0x18);
+
+struct UnkEffectParticleShape1 : UnkEffectParticleShape {
+    /* 0x08 */ float radius;
+    /* 0x0C */ float angle;
+    /* 0x10 */ float spread;
+};
+CHECK_SIZEOF(UnkEffectParticleShape1, 0x14);
+
+struct UnkEffectParticleShape2 : UnkEffectParticleShape {
+    /* 0x08 */ float width;
+    /* 0x0C */ float height;
+    /* 0x10 */ float depth;
+};
+CHECK_SIZEOF(UnkEffectParticleShape2, 0x14);
+
 struct UnkEffectParticleData124 {
     /* 0x00 */ unsigned int flags;
     /* 0x04 */ float speed;
@@ -106,18 +130,17 @@ CHECK_SIZEOF(UnkEffectElementData5, 0x78);
 
 struct UnkEffectElementData6 : UnkEffectElementData {
     /* 0x2C */ unsigned int field_0x2C;
-    /* 0x30 */ unsigned char field_0x30[0x14];
+    /* 0x30 */ float field_0x30;
+    /* 0x34 */ float field_0x34;
+    /* 0x38 */ float field_0x38;
+    /* 0x3C */ float field_0x3C;
+    /* 0x40 */ float field_0x40;
     /* 0x44 */ float field_0x44;
     /* 0x48 */ unsigned int field_0x48;
-    /* 0x4C */ unsigned char field_0x4C[8];
+    /* 0x4C */ unsigned char field_0x4C[4];
+    /* 0x50 */ unsigned char field_0x50[4];
     /* 0x54 */ const UnkCommandData *field_0x54;
-    /* 0x58 */ unsigned int field_0x58;
-    /* 0x5C */ short field_0x5C;
-    /* 0x5E */ short field_0x5E;
-    /* 0x60 */ unsigned char field_0x60[4];
-    /* 0x64 */ const UnkCommandData *field_0x64;
-    /* 0x68 */ float field_0x68;
-    /* 0x6C */ void *field_0x6C;
+    /* 0x58 */ UnkEffectParticleData120 emitter;
 };
 CHECK_SIZEOF(UnkEffectElementData6, 0x70);
 

@@ -272,6 +272,23 @@ class EffCmdSingleExec : public EffectCommandExec {
 };
 CHECK_SIZEOF(EffCmdSingleExec, 0x28);
 
+/* Class names/base relationships come from RTTI; signatures are inferred from callers. */
+class EffCmdWidthExec : public EffCmdSingleExec {
+  public:
+    EffCmdWidthExec(const UnkCommandData *command, unsigned int *flags, float *target)
+        : EffCmdSingleExec(command, flags, target) {}
+    virtual ~EffCmdWidthExec();
+};
+CHECK_SIZEOF(EffCmdWidthExec, 0x28);
+
+class EffCmdLengthExec : public EffCmdSingleExec {
+  public:
+    EffCmdLengthExec(const UnkCommandData *command, unsigned int *flags, float *target)
+        : EffCmdSingleExec(command, flags, target) {}
+    virtual ~EffCmdLengthExec();
+};
+CHECK_SIZEOF(EffCmdLengthExec, 0x28);
+
 /* Class identities and inheritance come from RTTI; constructor signatures are inferred. */
 class EffCmd2DRotExec : public EffCmdSingleExec {
   public:
@@ -385,6 +402,39 @@ class EffCmdMatColorExec : public EffectCommandExec {
     /* 0x24 */ int m_rate[3];
 };
 CHECK_SIZEOF(EffCmdMatColorExec, 0x30);
+
+/* Class identities and inheritance come from RTTI; constructor signatures are inferred. */
+class EffCmdTopColorExec : public EffCmdMatColorExec {
+  public:
+    EffCmdTopColorExec(const UnkCommandData *command, unsigned int *flags, int *target)
+        : EffCmdMatColorExec(command, flags, target) {}
+    virtual ~EffCmdTopColorExec();
+};
+CHECK_SIZEOF(EffCmdTopColorExec, 0x30);
+
+class EffCmdTopAlphaExec : public EffCmdMatAlphaExec {
+  public:
+    EffCmdTopAlphaExec(const UnkCommandData *command, unsigned int *flags, int *target)
+        : EffCmdMatAlphaExec(command, flags, target) {}
+    virtual ~EffCmdTopAlphaExec();
+};
+CHECK_SIZEOF(EffCmdTopAlphaExec, 0x28);
+
+class EffCmdLastColorExec : public EffCmdMatColorExec {
+  public:
+    EffCmdLastColorExec(const UnkCommandData *command, unsigned int *flags, int *target)
+        : EffCmdMatColorExec(command, flags, target) {}
+    virtual ~EffCmdLastColorExec();
+};
+CHECK_SIZEOF(EffCmdLastColorExec, 0x30);
+
+class EffCmdLastAlphaExec : public EffCmdMatAlphaExec {
+  public:
+    EffCmdLastAlphaExec(const UnkCommandData *command, unsigned int *flags, int *target)
+        : EffCmdMatAlphaExec(command, flags, target) {}
+    virtual ~EffCmdLastAlphaExec();
+};
+CHECK_SIZEOF(EffCmdLastAlphaExec, 0x28);
 
 class EffCmd2DSclExec : public EffectCommandExec {
   public:
