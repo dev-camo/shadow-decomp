@@ -1926,8 +1926,8 @@ config.libs = [
             # 71 of the 73 functions have identical instructions and relocations once the weak and
             # local copies the linker discards are removed and local symbols are paired by the data
             # they refer to: the names differ (OnAttack loads the .sdata2 float that the original
-            # calls lbl_805F6E30 and this object @546) and so can the raw offsets, since this object
-            # adds data (ChangeState's lbl_8054631C at .data 0x0C is @382 at 0x3C here). The
+            # calls lbl_805F6E30 and this object @547) and so can the raw offsets, since this object
+            # adds data (ChangeState's lbl_8054631C at .data 0x0C is @383 at 0x3C here). The
             # constructor (0x80224558) differs in 44 words, register numbers only: the original
             # keeps this in r31, the owner in r28, the loop counter in r29 and 0x10000 in r30, where
             # this build uses r28, r29, r30 and r31.
@@ -2260,6 +2260,26 @@ config.libs = [
             Object(NonMatching, "Game/LamborghiniCamera.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DiablonPartsBomb.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BKTank.cpp", cflags=cflags_game_cpp),
+            # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
+            # (GUPP8P): the 8 functions of the original unit have identical instructions and
+            # relocations (0 differing words). The .data differs in the place of one discarded
+            # weak copy. After the descriptor, the original's .data has two 0x10-byte holes around
+            # a base list, then three base lists at 0x1C0, 0x1CC and 0x1F8 with 0x18-byte holes
+            # at 0x1E0 and 0x20C, and a last 0x18-byte hole at 0x224. The source object emits its
+            # weak copy of sp_counted_base's vtable (0x18 bytes) at 0x1C0, ahead of the three base
+            # lists, which are therefore at 0x1D8, 0x1E4 and 0x210, with the weak copies of the
+            # MoveStartCommand and MoveEndCommand vtables at 0x1F8 and 0x224. Measured in USA: the
+            # object has the original's order when the constructors of CharCommand and
+            # AccelerateCommand are defined in their classes and CharCommand has a weak pointer
+            # at 0xC, as their out-of-line copies at 0x8006E354-0x8006E4B8 suggest; the command
+            # headers do not model that yet. The .sdata base list pointer of GadgetCommand's RTTI
+            # record (0x24 in the original's .sdata) follows its list from .data 0x1C0 to 0x1D8:
+            # in a USA link that takes this object, the word at 0x805ED2D4 is 0x8055C808 where
+            # the original has 0x8055C7F0. The section flags of .sdata2 also differ: the original
+            # object's is read-only (A), the source object's writable (WA); its 0x2C bytes are
+            # identical to the original's, which has 4 more bytes of zero padding. Normal links
+            # use the original object.
+            Object(NonMatching, "Game/BKTankColi.cpp", cflags=cflags_game_cpp),
             # 216 of the 219 functions have identical instructions and relocations once the weak and
             # local copies that the linker discards are removed. The static initialiser differs in 5
             # words: two registers swapped and the three roll velocities addressed from the start of
@@ -2459,7 +2479,7 @@ config.libs = [
             # section-relative relocations to functions after UpdateBody (in CreateStage, Create,
             # CreateProbe and the vtable) have the same targets with addends 4 lower, and the
             # function-local static of the parameter label callback and its guard are numbered
-            # s_form$613 and init$614 here (s_form$612 and init$613 in symbols.txt).
+            # s_form$614 and init$615 here (s_form$612 and init$613 in symbols.txt).
             Object(NonMatching, "Game/Fan.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Fire.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Fruit.cpp", cflags=cflags_game_cpp),
