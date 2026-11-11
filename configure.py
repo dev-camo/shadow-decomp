@@ -2388,12 +2388,17 @@ config.libs = [
             # object.
             Object(NonMatching, "Game/Bomb.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/MissionClearCollision.cpp", cflags=cflags_game_cpp),
-            # The data matches once the weak copies the linker discards are removed, apart from
-            # .bss, where the original keeps 12 bytes that no code reads or writes before the four
-            # line segments. Differences (raw words): the static initialiser 6 (the segments'
-            # offsets from that .bss start, and the order of two startup-float loads) and
-            # DrawDebugMarker 10 (the original loads the startup radius before it saves the
-            # registers).
+            # The data matches once the extra definitions of the compiled object are set aside for
+            # the comparison (its weak copies and its local support data: TNumEdit name strings,
+            # RTTI records and base lists), apart from .bss, where the original keeps 12 bytes
+            # that no code reads or writes before the four line segments. The static initialiser
+            # differs in 4 of its 121 words (raw): the four segments' offsets from that .bss start,
+            # each 0xC more in the original. The other nine functions have identical instructions.
+            # Raw section sizes as emitted, with those extra definitions (the original's in
+            # brackets): .text 0xF4C (0x688), .rodata 0xD7
+            # (0x70), .data 0x14C (0x150), .bss 0x60 (0x70), .sdata 0x54 (0x30), .sbss 0x30 (0x30)
+            # and .sdata2 0x28 (0x28; writable here, read-only in the original), the same in USA
+            # (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P). Normal builds link the original object.
             Object(NonMatching, "Game/DebugMissionClearCollision.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/RailSwitch.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DarkSpinEntrance.cpp", cflags=cflags_game_cpp),

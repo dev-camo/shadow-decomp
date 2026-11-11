@@ -21,27 +21,29 @@
 const char *DebugMissionClearCollision::s_name = "DebugMissionClearCollision";
 
 /* The trigger radius, the half size of the M and the float passed with its lines.
- * Matching workaround: UnkStartupFloat_800E2570 stands in for the original type of these
- * variables. The original stores them with the unit's start-up function in .ctors (a constant
- * float initialiser would be emitted as initialised .sdata data instead). Revisit when the original
- * wrapper type is found. */
-static UnkStartupFloat_800E2570 s_radius(10.0f);
-static UnkStartupFloat_800E2570 s_markHalfSize(5.0f);
-static UnkStartupFloat_800E2570 s_lineArg(1.0f);
+ * Matching workaround: the original sets these floats with the unit's start-up function in
+ * .ctors, which shows only that their initialisers are not constant expressions.
+ * UnkStartupFloat_800E2570 stands in for those initialisers, which are unknown. The const
+ * qualifier (inferred) is measured on s_radius: with it DrawDebugMarker loads the radius before
+ * it saves its registers and the start-up function loads 10.0f before 0.0f, as the original
+ * does; as an UnkStartupFloat_800E2570 object the radius is loaded after the colour table's
+ * index is scaled (10 of DrawDebugMarker's 62 words differ) and the start-up function loads
+ * 0.0f first (2 more of its words differ). With s_radius const, the qualifier on the other two
+ * changes no instruction; they have it so that the file uses one form. Revisit when the original
+ * initialisers are known. */
+static const float s_radius = UnkStartupFloat_800E2570(10.0f).value;
+static const float s_markHalfSize = UnkStartupFloat_800E2570(5.0f).value;
+static const float s_lineArg = UnkStartupFloat_800E2570(1.0f).value;
 
 /* The four lines of an M in the gadget's x-y plane. */
-static UnkSegment_80020A20
-    s_markLine0(Fn8040Vector3(-s_markHalfSize.value, -s_markHalfSize.value, 0.0f),
-                Fn8040Vector3(-s_markHalfSize.value, s_markHalfSize.value, 0.0f));
-static UnkSegment_80020A20 s_markLine1(Fn8040Vector3(-s_markHalfSize.value, s_markHalfSize.value,
-                                                     0.0f),
+static UnkSegment_80020A20 s_markLine0(Fn8040Vector3(-s_markHalfSize, -s_markHalfSize, 0.0f),
+                                       Fn8040Vector3(-s_markHalfSize, s_markHalfSize, 0.0f));
+static UnkSegment_80020A20 s_markLine1(Fn8040Vector3(-s_markHalfSize, s_markHalfSize, 0.0f),
                                        Fn8040Vector3(0.0f, 0.0f, 0.0f));
 static UnkSegment_80020A20 s_markLine2(Fn8040Vector3(0.0f, 0.0f, 0.0f),
-                                       Fn8040Vector3(s_markHalfSize.value, s_markHalfSize.value,
-                                                     0.0f));
-static UnkSegment_80020A20
-    s_markLine3(Fn8040Vector3(s_markHalfSize.value, s_markHalfSize.value, 0.0f),
-                Fn8040Vector3(s_markHalfSize.value, -s_markHalfSize.value, 0.0f));
+                                       Fn8040Vector3(s_markHalfSize, s_markHalfSize, 0.0f));
+static UnkSegment_80020A20 s_markLine3(Fn8040Vector3(s_markHalfSize, s_markHalfSize, 0.0f),
+                                       Fn8040Vector3(s_markHalfSize, -s_markHalfSize, 0.0f));
 
 /* The debug colours of the types 0 (DK), 1 (NM), 2 (HR) and 3 (BOSS), for the lines and for the
  * sphere. */
@@ -106,7 +108,7 @@ void DebugMissionClearCollision::UpdateBody(float dt) {
     if (character.get() != 0) {
         Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
 
-        if (fn_8040CF50(distance) < s_radius.value) {
+        if (fn_8040CF50(distance) < s_radius) {
             u32 type = m_params.type;
 
             if (type == 3) {
@@ -144,7 +146,7 @@ void DebugMissionClearCollision::CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 }
 
 void DebugMissionClearCollision::DrawDebugMarker() {
-    fn_802E0E84(&m_charInfo->m_position, *s_sphereColors[m_params.type], s_radius.value);
+    fn_802E0E84(&m_charInfo->m_position, *s_sphereColors[m_params.type], s_radius);
 
     Fn8040Matrix34 matrix;
 
@@ -157,6 +159,6 @@ void DebugMissionClearCollision::DrawDebugMarker() {
 
         line.start = matrix * line.start;
         line.end = matrix * line.end;
-        fn_802E0AA0(line, *s_lineColors[m_params.type], s_lineArg.value);
+        fn_802E0AA0(line, *s_lineColors[m_params.type], s_lineArg);
     }
 }
