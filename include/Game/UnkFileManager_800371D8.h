@@ -21,6 +21,10 @@ void *fn_8004509C(UnkFileManager_800371D8 *manager, const char *path, u32 *size)
 /* Calls the function pointer at 0x10C of the object that lbl_805F15B4 points to with data (the
  * void return is inferred). */
 void fn_80049B34(void *data);
+/* Calls the function pointer at 0x108 of the same object with size and kind + 0x32 and returns
+ * its result; callers use the result as storage of size bytes and release it with fn_80049B34
+ * (the parameter names and types are inferred). */
+void *fn_80049B90(u32 size, int kind);
 }
 
 #endif
