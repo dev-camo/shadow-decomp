@@ -2301,6 +2301,7 @@ config.libs = [
             # differs (a branch displacement) and 4 words are only in the original. Normal builds
             # link the original object.
             Object(NonMatching, "Game/TPjsEventActionFade.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/PjsEventCen.cpp", cflags=cflags_game_cpp),
             # 216 of the 219 functions have identical instructions and relocations once the weak and
             # local copies that the linker discards are removed. The static initialiser differs in 5
             # words: two registers swapped and the three roll velocities addressed from the start of

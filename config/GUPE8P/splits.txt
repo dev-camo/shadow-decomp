@@ -1757,6 +1757,11 @@ Game/TPjsEventActionFade.cpp:
 	.sbss       start:0x805F0B58 end:0x805F0B68
 	.sdata2     start:0x805F9C80 end:0x805F9CA8
 
+Game/PjsEventCen.cpp:
+	.text       start:0x80328F30 end:0x80329524
+	.data       start:0x8055CEA8 end:0x8055CF20
+	.sdata2     start:0x805F9CA8 end:0x805F9CB8
+
 Game/FallRoad.cpp:
 	.text       start:0x803296D8 end:0x80329ED4
 	.rodata     start:0x8050D9A8 end:0x8050D9D0
