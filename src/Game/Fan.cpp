@@ -1,12 +1,14 @@
 /* Fan::Fan (class name from RTTI; the gadget's descriptors are "FAN" and "FAN STAGE", which differ
  * in the first argument the constructor passes to fn_8015F800 with FAN.BIN): a fan with a cylinder
- * or box probe. While the fan runs, the character infos its probe touches are pushed along the
- * fan's axis by the parameter "power" (for an upward fan, less the higher they are above it), and,
- * when fn_800B7938 is false for the character info nearest to the fan, every character info its
- * probe touches whose word at 0x50 is 1 is put in a stream (Player::StreamCommand; m_target keeps
- * the last one) that UpdateBody ends again (behaviour inferred). File name inferred from
- * the namespace. Method names marked "(name inferred)" are not original. Definitions are in
- * reverse address order (deferred inlining emits functions last-defined first).
+ * or box probe. While the fan runs, every character info its probe touches is sent an
+ * AccelerateCommand along the fan's axis scaled by the parameter "power" (for an upward fan, less
+ * the higher it is above the fan; none once the fan's own character info has expired), and, when
+ * fn_800B7938 is false for the character info nearest to the fan, every character info its probe
+ * touches whose word at 0x50 is 1 is sent a ClrVelocityCommand and a Player::StreamCommand
+ * (m_target keeps the last one) that UpdateBody ends again. Each command is a request: the pointer
+ * passed is null when its allocation fails (behaviour inferred). File name inferred from the
+ * namespace. Method names marked "(name inferred)" are not original. Definitions are in reverse
+ * address order (deferred inlining emits functions last-defined first).
  *
  * The probe's collision callback is a boost::function object built with
  * boost::bind(&Fan::OnCollision, this, _1); its manager, invoker and copy functions come from the
@@ -43,16 +45,18 @@ struct UnkHitContext_80103098 {
     UnkHitContext_80103098() : m_params(0), m_hit(false) {}
 
     /* 0x00 */ boost::weak_ptr<GadgetCharInfo> m_charInfo;
-    /* 0x08 */ boost::weak_ptr<CharInfo> m_target; /* the character info the callback pushed */
+    /* 0x08 */ boost::weak_ptr<CharInfo> m_target; /* the last character info sent a command */
     /* 0x10 */ FanParams *m_params;
-    /* 0x14 */ bool m_hit; /* set when the callback pushed a character info */
+    /* 0x14 */ bool m_hit; /* set when the callback sent a command */
 };
 CHECK_SIZEOF(UnkHitContext_80103098, 0x18);
 
-/* The hit callback while the fan runs: pushes the character info along the fan's axis by the
- * parameter "power"; for an upward fan the push is scaled by (top - height) / top, where height is
- * the character's height above the fan (at least 0) and top is twice "Z" plus 5 times the cosine
- * of the float at 0x98 of lbl_8057D6A0 (behaviour inferred). */
+/* The hit callback while the fan runs: returns at once when the fan's character info has
+ * expired; otherwise passes the character info's fn_801DC980 a new AccelerateCommand (null when
+ * the allocation fails) along the fan's axis scaled by the parameter "power", for an upward fan
+ * also by (top - height) / top, where height is the character's height above the fan (at least 0)
+ * and top is twice "Z" plus 5 times the cosine of the float at 0x98 of lbl_8057D6A0, then sets
+ * m_hit and m_target whether or not the allocation succeeded (behaviour inferred). */
 static void fn_80103D44(boost::shared_ptr<CharInfo> hit, void *arg) {
     UnkHitContext_80103098 *context = static_cast<UnkHitContext_80103098 *>(arg);
     boost::shared_ptr<GadgetCharInfo> charInfo(context->m_charInfo.lock());
@@ -85,8 +89,10 @@ static void fn_80103D44(boost::shared_ptr<CharInfo> hit, void *arg) {
     context->m_target = hit;
 }
 
-/* The hit callback that starts a character's stream: clears the velocity of a character info
- * whose word at 0x50 is 1 and passes it a Player::StreamCommand (behaviour inferred). */
+/* The hit callback that starts a character's stream: for a character info whose word at 0x50 is
+ * 1, passes its fn_801DC980 a new ClrVelocityCommand, then a new Player::StreamCommand (each null
+ * when its allocation fails), then sets m_hit and m_target whether or not the allocations
+ * succeeded (behaviour inferred). */
 static void fn_80103C4C(boost::shared_ptr<CharInfo> hit, void *arg) {
     UnkHitContext_80103098 *context = static_cast<UnkHitContext_80103098 *>(arg);
 

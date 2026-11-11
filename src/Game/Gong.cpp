@@ -61,8 +61,9 @@ const char *Gong::Gong::s_name = "Gong";
  * once the model has hit before. Otherwise it is 670 times the ratio of the character's speed (the
  * length of its vector at 0x18) to the "speed" parameter, capped at 1, scaled by 1 within a
  * horizontal distance of 5 from the gadget, by 0.4 from a distance of 50 and by
- * 0.4 + (0.6 - distance / 50) in between (0.9 just beyond 5, falling towards 0 near 50), and at
- * least 560. */
+ * 0.4 + (0.6 - distance / 50) in between (0.9 just beyond 5, falling towards 0 near 50), and
+ * raised to 560 when below it. The comparisons leave a NaN unchanged: a zero character speed with
+ * a zero "speed" parameter gives a NaN ratio and so a NaN speed. */
 static void fn_80138338(boost::shared_ptr<CharInfo> hit, void *arg) {
     UnkHitContext_801373F4 *context = static_cast<UnkHitContext_801373F4 *>(arg);
     boost::shared_ptr<GadgetCharInfo> gongInfo = context->m_charInfo.lock();
