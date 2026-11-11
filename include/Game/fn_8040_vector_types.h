@@ -98,6 +98,7 @@ typedef struct Fn8040Matrix34 {
 #ifdef __cplusplus
     Fn8040Matrix34() {}
     Fn8040Matrix34(const Fn8040Matrix34 &other);
+    Fn8040Matrix34 &operator=(const Fn8040Matrix34 &other);
     /* Stores the elements itself: delegating to Set changes the startup code of the identity and
      * zero matrices (37 instead of 29 instructions). */
     Fn8040Matrix34(float m00, float m01, float m02, float m03, float m10, float m11, float m12,
@@ -380,8 +381,11 @@ Fn8040Vector3 fn_8040FB08(Fn8040Matrix34 *matrix);
 Fn8040Vector3 fn_8040FC3C(const UnkSegment_80020A20 *segment, const Fn8040Vector3 *point);
 Fn8040Vector3 fn_8040FC78(float *fraction, const UnkSegment_80020A20 *segment,
                           const Fn8040Vector3 *point);
-/* Builds the matrix that rotates by angle about the axis. */
-void fn_8040FD8C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *axis, float angle);
+/* Returns the matrix that rotates by angle about the axis (by-value result inferred). Callers
+ * copy the result into a matrix or use it directly. The by-value boundary keeps Aim's argument
+ * calls out of line: USA (GUPE8P) 0x8031D320 and 0x8031D338, Japan (GUPJ8P) 0x8031D8D0,
+ * and PAL (GUPP8P) 0x8031E978. A plain output-pointer call expands them. */
+Fn8040Matrix34 fn_8040FD8C(const Fn8040Vector3 *axis, float angle);
 /* result = matrix rotated by a rotation vector, and by its inverse (fn_8040FEBC). */
 void fn_8040FFBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const UnkRotation3 *rotation,
                  int order);
@@ -405,6 +409,15 @@ extern Fn8040Matrix34 lbl_805E0750; /* zero */
 
 inline Fn8040Matrix34::Fn8040Matrix34(const Fn8040Matrix34 &other) {
     fn_8040C148(this, &other);
+}
+
+/* Copy assignment (inferred). GravitySignBoard's BuildTurnMatrix uses it to store a by-value
+ * rotation through a pointer. The original copies a stack matrix filled by fn_800635A4 into
+ * existing storage at USA (GUPE8P) 0x80328224 and 0x80328310. These copies compile to the same
+ * code as direct fn_8040C148 calls, so they do not distinguish the operator spelling. */
+inline Fn8040Matrix34 &Fn8040Matrix34::operator=(const Fn8040Matrix34 &other) {
+    fn_8040C148(this, &other);
+    return *this;
 }
 
 /* The matrix applied to vector, with the translation, returned by value (inferred; fn_8040B618

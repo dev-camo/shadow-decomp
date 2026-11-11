@@ -1715,6 +1715,15 @@ Game/LamborghiniCamera.cpp:
 	.sbss       start:0x805F0AA8 end:0x805F0AC8
 	.sdata2     start:0x805F9A98 end:0x805F9AD0
 
+Game/DiablonPartsBeam.cpp:
+	.text       start:0x8031C5C4 end:0x8031DB34
+	.ctors      start:0x804A9FF8 end:0x804A9FFC
+	.rodata     start:0x8050CF48 end:0x8050D080
+	.data       start:0x8055C410 end:0x8055C448
+	.sdata      start:0x805ED230 end:0x805ED248
+	.sbss       start:0x805F0AD8 end:0x805F0AF8
+	.sdata2     start:0x805F9B00 end:0x805F9B28
+
 Game/DiablonPartsBomb.cpp:
 	.text       start:0x8031DB34 end:0x8031E960
 	.ctors      start:0x804A9FFC end:0x804AA000

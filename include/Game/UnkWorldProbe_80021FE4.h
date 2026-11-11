@@ -119,6 +119,9 @@ class CollisionResultList {
     /* The first node and the end marker, which iteration compares against (behaviour inferred). */
     UnkProbeNode_80021FE4 *fn_8001EE04();
     UnkProbeNode_80021FE4 *fn_8001EDEC();
+    /* Returns first unless bit 0x2 of its flags is set, in which case it returns null.
+     * The original does not test first for null. Behaviour and member spelling inferred. */
+    UnkProbeNode_80021FE4 *fn_8002735C();
 
     /* 0x00 */ u32 field_0x0;
     /* 0x04 */ s32 field_0x4;
@@ -172,6 +175,8 @@ void fn_80027398(UnkProbeIterator_80027374 *iterator);
 UnkProbeIterator_80027374 fn_80027374(UnkProbeIterator_80027374 *iterator, int arg1);
 /* The vector stored at 0xC of the hit (behaviour inferred). */
 Fn8040Vector3 *fn_8001E9BC(UnkProbeHit_8001E9BC *hit);
+/* The vector stored at 0x20 of the hit (behaviour inferred). */
+Fn8040Vector3 *fn_800266D4(UnkProbeHit_8001E9BC *hit);
 /* A weak pointer to the object a node refers to, built from the weak pointer at the node's start
  * (behaviour inferred). */
 boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>

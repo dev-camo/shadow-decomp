@@ -309,13 +309,7 @@ void LamborghiniImpl::UpdatePoints(float dt) {
             m_lookPoint = offset + followPoint;
         } else {
             Fn8040Vector3 axis = fn_8040CEE8(fn_8040CFB8(oldDirection, newDirection));
-            /* The original keeps two matrices here, turn in the higher stack slot, and copies
-             * axisTurn into turn with fn_8040C148 (a turn copy-constructed from axisTurn takes the
-             * lower slot instead: measured). */
-            Fn8040Matrix34 turn;
-            Fn8040Matrix34 axisTurn;
-            fn_8040FD8C(&axisTurn, &axis, maxTurn);
-            fn_8040C148(&turn, &axisTurn);
+            Fn8040Matrix34 turn = fn_8040FD8C(&axis, maxTurn);
             Fn8040Vector3 offset = m_lookPoint - m_followPoint;
             offset = turn * offset;
             m_lookPoint = offset + followPoint;

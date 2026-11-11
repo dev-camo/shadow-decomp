@@ -383,10 +383,7 @@ void Helicopter::UpdateTilt(float dt) {
                     axis = up;
                 }
 
-                Fn8040Matrix34 turn;
-
-                fn_8040FD8C(&turn, &axis, angle);
-                forward = turn * forward;
+                forward = fn_8040FD8C(&axis, angle) * forward;
                 m_charInfo->m_rotation.y = fn_8040F7F8(&forward).y;
             } else {
                 m_turnSpeed = 0.0f;
