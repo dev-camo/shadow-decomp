@@ -19,8 +19,9 @@ Game/fn_80008D48.c:
 Game/fn_80008DA4.c:
 	.text       start:0x80008DA4 end:0x80008DA8
 
-Game/fn_80008E1C.c:
-	.text       start:0x80008E1C end:0x80008E2C
+Game/fn_80008DA8.cpp:
+	.text       start:0x80008DA8 end:0x80009208
+	.sdata2     start:0x805F16E0 end:0x805F1708
 
 Game/fn_8000A950.cpp:
 	.text       start:0x8000A950 end:0x8000A980

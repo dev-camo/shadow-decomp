@@ -25,7 +25,8 @@ namespace Camera {
  * pointer with __dynamic_cast, passing 0xA8 as the offset of the vtable pointer, and
  * CameraModeUser's constructor (0x80009CC0) stores its vtable at 0xA8 after it has called this
  * class's constructor (0x8000E9BC) and constructs its own first member at 0xAC, so this class ends
- * at 0xAC. None of the members before the vtable pointer are mapped.
+ * at 0xAC. Of the members before the vtable pointer, only the two points and the float after them
+ * are mapped.
  *
  * The virtual functions are declared in the order of this class's vtable (0x8051C598, stored by
  * the constructor and by the destructor at 0x8000E954): its first four entries are null (pure),
@@ -39,7 +40,14 @@ namespace Camera {
  * not use r3), the pointer spelling of the entry parameters and the parameter names. */
 class CameraMode {
   public:
-    /* 0x00 */ u8 field_0x0[0xA8];
+    /* The two points that fn_8000A5D4 sets (names inferred). They are placed in this class
+     * because that function is called for CameraModeUser and CameraModeMtnViewer objects alike;
+     * a base class of this one that owns them is not ruled out. */
+    /* 0x00 */ Fn8040Vector3 m_start;
+    /* 0x0C */ Fn8040Vector3 m_end;
+    /* CameraModeMtnViewer's UnkSlot2 stores 0 (0x80008DCC); not read in the recovered code. */
+    /* 0x18 */ float field_0x18;
+    /* 0x1C */ u8 field_0x1C[0x8C];
     /* 0xA8: vtable */
 
     /* Returns a constant per class: -0x3FF in CameraModeMtnViewer (0x80008D40), -0x400 in
@@ -139,8 +147,9 @@ boost::shared_ptr<SonicteamUSA::System::Camera::CameraModeUser> fn_80009704(int 
 void fn_8000DB78(SonicteamUSA::System::Camera::CameraModeUser *mode, const Fn8040Vector3 *start);
 void fn_8000DB50(SonicteamUSA::System::Camera::CameraModeUser *mode, const Fn8040Vector3 *end);
 /* Sets the camera mode's first and second points, the vectors at 0x0 (start) and 0xC (end)
- * (behaviour from its body). */
-void fn_8000A5D4(SonicteamUSA::System::Camera::CameraModeUser *mode, const Fn8040Vector3 *start,
+ * (behaviour from its body). It takes the base class: CameraModeMtnViewer's functions call it
+ * for their own object as well (0x80008DE0, 0x80009174). */
+void fn_8000A5D4(SonicteamUSA::System::Camera::CameraMode *mode, const Fn8040Vector3 *start,
                  const Fn8040Vector3 *end);
 }
 
