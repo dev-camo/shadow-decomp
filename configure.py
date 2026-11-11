@@ -3089,10 +3089,11 @@ config.libs = [
                 ],
             ),
             Object(Matching, "Game/EffectArranger.cpp", cflags=cflags_effect),
-            # The node updater retains 23 cursor-register differences. Spawning retains two
-            # construction-result copies and 112 aligned instruction differences in each region
-            # (1680 source bytes versus 1672 original bytes). Its second protected EH PC is
-            # 0x144 versus 0x140.
+            # The node updater retains 23 cursor-register differences. Spawning has 420 source
+            # words versus 418 original words in each region: two source-only construction-result
+            # copies, 109 paired register-operand differences and one branch displacement difference
+            # make 112 aligned differences. Positionally, 359 of the first 418 words differ after
+            # masking relocations. Its second protected EH PC is 0x144 versus 0x140.
             # The cleanup function and node RTTI/vtable also occupy different linked positions.
             Object(NonMatching, "Game/EffectParticle.cpp", cflags=cflags_effect),
             # The node updater retains 21 register-word differences; spawning retains 66
