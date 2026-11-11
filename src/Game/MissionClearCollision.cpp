@@ -22,11 +22,13 @@ static UnkDebugColor_802E0E84 s_colorHR(0x80, 0x35, 0xAD, 0xFF);
 static UnkDebugColor_802E0E84 *s_sphereColors[] = {&s_colorDK, &s_colorNM, &s_colorHR};
 
 /* How far above the gadget the object is placed.
- * Matching workaround: UnkStartupFloat_800E2570 stands in for the original type of this variable.
- * The original stores it with the unit's start-up function in .ctors (a constant float
- * initialiser would be emitted as initialised .sdata data instead). Revisit when the original
- * wrapper type is found. */
-static UnkStartupFloat_800E2570 s_objectHeight(40.0f);
+ * Matching workaround: the original sets this float with the unit's start-up function in .ctors;
+ * a constant initialiser gives no store. UnkStartupFloat_800E2570 stands in for the original
+ * initialiser expression, which is unknown, and gives the start-up function. The const qualifier
+ * (inferred) is what lets the start-up function reload the saved link register (0x80231AF4)
+ * between the load of the value and its store, as the original does; with a non-const float the
+ * store comes before that reload. Revisit when the original initialiser is found. */
+static const float s_objectHeight = UnkStartupFloat_800E2570(40.0f).value;
 
 MissionClearCollision::MissionClearCollision(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
     : Gadget(parent, owner) {
@@ -38,7 +40,7 @@ MissionClearCollision::MissionClearCollision(Task *parent, UnkGadgetOwner_800C9C
         m_object = fn_802B4254(m_params.type, 0);
         fn_802B4510(m_object.get(), 1);
 
-        Fn8040Vector3 offset(0.0f, s_objectHeight.value, 0.0f);
+        Fn8040Vector3 offset(0.0f, s_objectHeight, 0.0f);
 
         const Fn8040Vector3 &position = m_charInfo->m_position + offset;
         fn_802B44C8(m_object.get(), &position);

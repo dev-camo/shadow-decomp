@@ -2386,11 +2386,7 @@ config.libs = [
             # (WA, 0x3) where the original's is allocatable (A, 0x2). Normal links use the original
             # object.
             Object(NonMatching, "Game/Bomb.cpp", cflags=cflags_game_cpp),
-            # Every function but the static initialiser is identical, and the data matches once
-            # the weak copies the linker discards are removed. The static initialiser differs in 2
-            # words: the original loads the saved link register before it stores the startup float
-            # (0x80231AF4), this build after it.
-            Object(NonMatching, "Game/MissionClearCollision.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/MissionClearCollision.cpp", cflags=cflags_game_cpp),
             # The data matches once the weak copies the linker discards are removed, apart from
             # .bss, where the original keeps 12 bytes that no code reads or writes before the four
             # line segments. Differences (raw words): the static initialiser 6 (the segments'
