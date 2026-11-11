@@ -1749,6 +1749,14 @@ Game/BKTankController.cpp:
 	.sbss       start:0x805F0B40 end:0x805F0B50
 	.sdata2     start:0x805F9BA8 end:0x805F9BC0
 
+Game/TPjsEventActionFade.cpp:
+	.text       start:0x803285EC end:0x80328F30
+	.rodata     start:0x8050D8B0 end:0x8050D988
+	.data       start:0x8055CE80 end:0x8055CEA8
+	.sdata      start:0x805ED3B8 end:0x805ED3D0
+	.sbss       start:0x805F0B58 end:0x805F0B68
+	.sdata2     start:0x805F9C80 end:0x805F9CA8
+
 Game/FallRoad.cpp:
 	.text       start:0x803296D8 end:0x80329ED4
 	.rodata     start:0x8050D9A8 end:0x8050D9D0
