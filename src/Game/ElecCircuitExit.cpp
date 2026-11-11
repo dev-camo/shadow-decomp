@@ -14,8 +14,6 @@
 #include <cstring>
 #include "layout_check.h"
 
-extern "C" void fn_800635A4(void *dst, RwMatrix *matrix);
-
 /* fn_802C7FC0 to fn_802C8068 precede the gadget in this unit. Their owning class and real (C++)
  * link names are unknown, so they keep their placeholder names through C linkage. */
 
@@ -111,9 +109,12 @@ GadgetTypeInfo lbl_80557B00 = {
     "ELEC_EXIT", fn_802C8100, fn_802C80FC, ElecCircuitExit::Create, 0, 0, 0x7EA, 1, 0, 10, 0,
 };
 
-extern "C" void fn_802C8068(void *dst, RwFrame *frame) {
+/* Returns the frame's world matrix as a Fn8040Matrix34. The return by value is inferred: its five
+ * callers in USA (GUPE8P), in code that is not recovered yet, pass the address of a stack slot as
+ * the first argument. */
+extern "C" Fn8040Matrix34 fn_802C8068(RwFrame *frame) {
     RwMatrix *ltm = RwFrameGetLTM(frame);
-    fn_800635A4(dst, ltm);
+    return fn_800635A4(ltm);
 }
 
 extern "C" void fn_802C8034(UnkState_802C7FC0 *state) {

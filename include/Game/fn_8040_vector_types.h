@@ -420,6 +420,14 @@ inline Fn8040Matrix34 &Fn8040Matrix34::operator=(const Fn8040Matrix34 &other) {
     return *this;
 }
 
+struct RwMatrix;
+/* Returns the RenderWare matrix as a Fn8040Matrix34 whose columns are its right, up, at and pos
+ * vectors. The return by value is inferred: every caller in USA (GUPE8P) passes the address of a
+ * stack slot as the first argument (eight in code that is not recovered yet, and the calls at
+ * 0x80328218 and 0x80328304), except fn_802C8068, which passes on the address it was given and
+ * so has the same code with either spelling. The const is inferred (the matrix is only read). */
+extern "C" Fn8040Matrix34 fn_800635A4(const RwMatrix *matrix);
+
 /* The matrix applied to vector, with the translation, returned by value (inferred; fn_8040B618
  * below applies only the rotation). The inline operator* below wraps it, and the operator's
  * out-of-line copy (USA (GUPE8P) 0x8007E4E8) calls it as well (0x8007E4FC), so a call of this
