@@ -1,5 +1,6 @@
 /* Animation control, matrix map and event callback; original class and filename unknown.
- * NonMatching: several owner methods and a template instance retain instruction differences. */
+ * NonMatching: fn_801A44DC and fn_801A4548 are longer than the original's and the matrix map's
+ * __find_or_insert instance is shorter; see the note in configure.py. */
 #include "Game/fn_801A4430.h"
 
 Unk801A4430Callback::Unk801A4430Callback() {}
@@ -110,7 +111,8 @@ void Unk801A4430::fn_801A4640(const Fn8040Vector3 &position, const Fn8040Vector3
 }
 
 void Unk801A4430::fn_801A4604(const Fn8040Matrix34 &matrix) {
-    const Fn8040Matrix34 &converted = fn_800163F4(&matrix);
+    Fn8040Matrix34 converted;
+    fn_800163F4(&converted, &matrix);
     fn_804172D8(m_control, &converted);
 }
 
@@ -120,7 +122,8 @@ void Unk801A4430::fn_801A45E0(const Fn8040Vector3 *offset) {
 
 void Unk801A4430::fn_801A4584(const Fn8040Vector3 &rotation) {
     Fn8040Matrix34 matrix = fn_801A4430(rotation);
-    const Fn8040Matrix34 &converted = fn_800163F4(&matrix);
+    Fn8040Matrix34 converted;
+    fn_800163F4(&converted, &matrix);
     fn_8041734C(m_control, &converted);
 }
 

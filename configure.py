@@ -1517,6 +1517,13 @@ config.libs = [
             Object(Matching, "Game/CaptureCage.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A1FA0.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A35AC.cpp", cflags=cflags_game_cpp),
+            # fn_801A44DC is 0x74 bytes against the original's 0x6C, fn_801A4548 0x40 against 0x3C
+            # and the map's __find_or_insert instance 0xEC against 0xF0; the other functions of
+            # the original unit have identical instructions. As emitted in USA, .text is 0x14F4
+            # bytes (0x10B8 in the original) and .rodata 0xC2 (0x38); the object also has .data
+            # (0x50) and .sdata (0x18) sections that the original unit does not have, and its
+            # .sdata2 is 4 bytes and writable (WA) where the original's is 8 bytes and allocatable
+            # only (A). Normal builds link the original object.
             Object(NonMatching, "Game/fn_801A4430.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A54E8.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A61E4.cpp", cflags=cflags_game_cpp),

@@ -220,7 +220,11 @@ void fn_80016370(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* The vector counterpart of fn_80016370: assigns source to destination through the vector's
  * assignment (0x800091D0). Its C++ member identity is unknown. */
 void fn_80016350(Fn8040Vector3 *destination, const Fn8040Vector3 *source);
-Fn8040Matrix34 fn_800163F4(const Fn8040Matrix34 *source);
+/* Has the same instructions as fn_80016370; the destination and source arguments are inferred
+ * from its callers, which copy into an existing matrix: in USA (GUPE8P) the matrix at 0(r30) is
+ * passed to fn_80015DE0 at 0x800B16FC and then reloaded as this function's destination at
+ * 0x800B1708. */
+void fn_800163F4(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Returns the address of the element at the given row and column. */
 float *fn_8040C17C(Fn8040Matrix34 *matrix, int row, int column);
 /* Returns the element at the given row and column. */
