@@ -1669,6 +1669,11 @@ Game/PjsEventCen.cpp:
 	.data       start:0x8055DFB0 end:0x8055E028
 	.sdata2     start:0x805FAD70 end:0x805FAD80
 
+Game/PjsEventCt.cpp:
+	.text       start:0x8032AB7C end:0x8032AC4C
+	.sdata      start:0x805EE480 end:0x805EE488
+	.sdata2     start:0x805FAD80 end:0x805FAD88
+
 Game/FallRoad.cpp:
 	.text       start:0x8032AD30 end:0x8032B52C
 	.rodata     start:0x8050EBF0 end:0x8050EC18
