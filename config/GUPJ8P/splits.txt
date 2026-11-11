@@ -1631,6 +1631,14 @@ Game/BKTank.cpp:
 	.sbss       start:0x805F1118 end:0x805F1138
 	.sdata2     start:0x805FA168 end:0x805FA1A0
 
+Game/BKTankColi.cpp:
+	.text       start:0x80321494 end:0x80321938
+	.rodata     start:0x8050DA78 end:0x8050DB68
+	.data       start:0x8055CCB8 end:0x8055CEF8
+	.sdata      start:0x805ED8C0 end:0x805ED8E8
+	.sbss       start:0x805F1138 end:0x805F1148
+	.sdata2     start:0x805FA1A0 end:0x805FA1D0
+
 Game/FallRoad.cpp:
 	.text       start:0x80329C88 end:0x8032A484
 	.rodata     start:0x8050E048 end:0x8050E070

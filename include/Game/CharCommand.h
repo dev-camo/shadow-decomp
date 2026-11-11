@@ -16,7 +16,7 @@ template <class T> class weak_ptr;
  * argument at 0x8, constructs the member at 0xC (fn_8006E4A8) and clears the bytes at 0x6 and 0x7;
  * only the id and the byte at 0x7 are named. Its operator new only calls fn_80049B90 with the
  * size and 2 (purpose unknown). The deleting destructors call its class operator delete(void *,
- * size_t), fn_801D9C64, which is not declared here. */
+ * size_t) (0x801D9C64) with the size of their class. */
 class CharCommand {
   public:
     CharCommand(u16 id, int arg1);
@@ -34,6 +34,7 @@ class CharCommand {
     virtual const char *fn_801D9CA8();
 
     static void *operator new(size_t size);
+    static void operator delete(void *command, size_t size);
 
     /* 0x04 */ u16 m_type; /* the id (handlers switch on it) */
     /* 0x06 */ u8 field_0x6;

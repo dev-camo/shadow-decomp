@@ -11,7 +11,7 @@
 //
 //  Copyright (c) 2001-2004 Peter Dimov and Multi Media Ltd.
 //
-//  bind/bind_mf_cc.hpp
+//  bind/bind_cc.hpp, bind/bind_mf_cc.hpp
 //
 //  Copyright (c) 2001 Peter Dimov and Multi Media Ltd.
 //
@@ -28,15 +28,15 @@
 //  Adapted from Boost 1.32: the include guard follows this project's naming, and boost/bind.hpp is
 //  merged with the pieces of boost/bind/ it includes, resolved for a compiler with void returns and
 //  a single calling convention, and cut to what the reconstructed units use (bind(&C::f, this, _1)
-//  with a member function of one argument, see boost/mem_fn.hpp, and bind(f, _1, a, b) with a
-//  function of three arguments): the argument lists of up to three bound arguments, bind_t's call
-//  operators for up to two call-time arguments (the bind object is invoked with at most two; the
-//  bound function itself can take three), the member function overload of bind() for two arguments,
-//  the function pointer overload for three, and the placeholders. The other overloads for function
-//  pointers and those for const member functions are left out (the game also uses bind(f, _1) with
-//  a function pointer and cmf1, in units not yet reconstructed), as are boost::reference_wrapper
-//  and data member support. The bodies stay in the classes as in Boost: the game's inlining depends
-//  on them (see cflags_game_cpp in configure.py).
+//  with a member function of one argument, see boost/mem_fn.hpp, bind(f, _1) with a function of
+//  one argument, and bind(f, _1, a, b) with a function of three arguments): the argument lists of
+//  up to three bound arguments, bind_t's call operators for up to two call-time arguments (the bind
+//  object is invoked with at most two; the bound function itself can take three), the member
+//  function overload of bind() for two arguments, the function pointer overloads for one and for
+//  three, and the placeholders. The other overloads for function pointers and those for const
+//  member functions are left out (the game also uses cmf1), as are boost::reference_wrapper and
+//  data member support. The bodies stay in the classes as in Boost: the game's inlining depends on
+//  them (see cflags_game_cpp in configure.py).
 //
 
 #include "boost/mem_fn.hpp"
@@ -438,6 +438,11 @@ template <class R, class F, class L> struct add_value<bind_t<R, F, L> > {
 
 // list_av_N
 
+template <class A1> struct list_av_1 {
+    typedef typename add_value<A1>::type B1;
+    typedef list1<B1> type;
+};
+
 template <class A1, class A2> struct list_av_2 {
     typedef typename add_value<A1>::type B1;
     typedef typename add_value<A2>::type B2;
@@ -452,6 +457,15 @@ template <class A1, class A2, class A3> struct list_av_3 {
 };
 
 } // namespace _bi
+
+// bind(function, argument)
+
+template <class R, class B1, class A1>
+_bi::bind_t<R, R (*)(B1), typename _bi::list_av_1<A1>::type> bind(R (*f)(B1), A1 a1) {
+    typedef R (*F)(B1);
+    typedef typename _bi::list_av_1<A1>::type list_type;
+    return _bi::bind_t<R, F, list_type>(f, list_type(a1));
+}
 
 // bind(function, argument, argument, argument)
 

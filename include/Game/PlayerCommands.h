@@ -120,7 +120,7 @@ class UseCommand : public CharCommand {
      * rocket sends it to its base's character info with its own character info as user. */
     UseCommand(const boost::weak_ptr<CharInfo> &user);
     /* Defined elsewhere (0x801DC484): destroys the weak pointers at 0x1C and 0x14 and releases
-     * the command through fn_801D9C64 with the size 0x24 (behaviour inferred from the bytes). */
+     * the command through CharCommand's operator delete with the size 0x24 (from the bytes). */
     virtual ~UseCommand();
     virtual const char *fn_801D9CA8(); /* 0x801DB414 */
 
@@ -182,7 +182,7 @@ CHECK_SIZEOF(DeadCommand, 0x14);
 class WallJumpCommand : public CharCommand {
   public:
     /* Defined elsewhere (USA 0x801DC5D4): destroys the weak pointer at 0x14 and releases the
-     * command through fn_801D9C64 with size 0x28 (behaviour inferred from the bytes). */
+     * command through CharCommand's operator delete with size 0x28 (from the bytes). */
     virtual ~WallJumpCommand();
     virtual UnkString_8004F888 fn_801D9CB0(); /* 0x801DB6A8 */
     virtual const char *fn_801D9CA8();        /* 0x801DB69C */
