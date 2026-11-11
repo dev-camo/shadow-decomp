@@ -17,12 +17,16 @@ static const char *s_modelFile = "SUCTIONPILLAR.BIN";
 
 /* The value that the constructor stores in the float at 0x20 of each object, and the height at
  * which the pillar stops rising (names inferred).
- * Matching workaround: UnkStartupFloat_800E2570 stands in for the original type of these
- * variables. The original sets them with a start-up function in .ctors (a constant float
- * initialiser would be emitted as initialised .sdata data instead), and the shared stand-in
- * reproduces that function. Revisit when the original wrapper type is found. */
-static UnkStartupFloat_800E2570 s_objectField20(40.0f);
-static UnkStartupFloat_800E2570 s_riseLimit(80.0f);
+ * Matching workaround: the original sets these floats with the unit's start-up function in
+ * .ctors, which shows only that their initialisers are not constant expressions.
+ * UnkStartupFloat_800E2570 stands in for those initialisers, which are unknown. The const
+ * qualifier (inferred) is measured on each: with it the constructor loads s_objectField20 once
+ * before its loop and UpdateBody loads s_riseLimit before the store to m_rise, as the original
+ * does; as UnkStartupFloat_800E2570 objects the constructor loads its value in every iteration
+ * (22 of its 175 words differ) and UpdateBody after that store (6 of 100). Revisit when the
+ * original initialisers are known. */
+static const float s_objectField20 = UnkStartupFloat_800E2570(40.0f).value;
+static const float s_riseLimit = UnkStartupFloat_800E2570(80.0f).value;
 
 namespace SuctionPillar {
 
@@ -41,7 +45,7 @@ SuctionPillar::SuctionPillar(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gad
 
     for (int i = 0; i < 2; i++) {
         m_objects[i] = fn_801E7128(boost::weak_ptr<CharInfo>(m_charInfo), 0x80);
-        m_objects[i]->SetField20(s_objectField20.value);
+        m_objects[i]->SetField20(s_objectField20);
     }
 
     if (m_model.get() != 0) {
@@ -80,8 +84,8 @@ void SuctionPillar::UpdateBody(float dt) {
     case 1:
         if (m_flags.Test(0)) {
             m_rise += 25.0f * dt;
-            if (m_rise > s_riseLimit.value) {
-                m_rise = s_riseLimit.value;
+            if (m_rise > s_riseLimit) {
+                m_rise = s_riseLimit;
                 m_state = 2;
                 fn_8034DB60(m_commandObject);
                 fn_801D54F4(fn_80053164(), 0x793F, &m_charInfo->m_position, 0, 1);
@@ -114,7 +118,7 @@ void SuctionPillar::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         /* Draws a debug line between two points in the pillar's frame, the second at the rise
          * limit along z (behaviour inferred). */
         Fn8040Vector3 start(0.0f, 60.0f, 40.0f);
-        Fn8040Vector3 end(0.0f, 60.0f, s_riseLimit.value);
+        Fn8040Vector3 end(0.0f, 60.0f, s_riseLimit);
         Fn8040Matrix34 matrix;
 
         fn_8040B6F8(&matrix);
