@@ -158,8 +158,12 @@ void CatchStick::UpdateLine() {
     fn_8040B884(&matrix, m_charInfo->m_rotation.x);
     fn_8040B80C(&matrix, m_charInfo->m_rotation.z);
     fn_8040B720(&matrix, 0.0f, 0.0f, 0.5f * m_length);
-    m_line->start = matrix * front;
-    m_line->end = matrix * back;
+    /* The call by name is inferred (the inline operator* reaches the same function): the
+     * original loads m_line before each call (USA (GUPE8P) 0x800F4D84 and 0x800F4DA4), the
+     * order this compiler gives a call by name and not the operator; see
+     * fn_8040_vector_types.h. */
+    m_line->start = fn_8040B67C(matrix, front);
+    m_line->end = fn_8040B67C(matrix, back);
 }
 
 void CatchStick::OnCommand(CharCommand &command) {}

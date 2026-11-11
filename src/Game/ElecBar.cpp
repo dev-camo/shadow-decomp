@@ -349,13 +349,14 @@ void ElecBarSub::UpdateModelMatrix() {
     fn_8040B848(&matrix, m_charInfo->m_rotation.y);
     fn_8040B59C(&matrix, offset);
 
-    Fn8040Vector3 inset(3.75f, 0.0f, 0.0f);
-    const Fn8040Vector3 &start = right * m_parent->m_params.scale - inset;
-    m_line->start = matrix * start;
-
-    Fn8040Vector3 endInset(3.75f, 0.0f, 0.0f);
-    const Fn8040Vector3 &end = left * m_parent->m_params.scale + endInset;
-    m_line->end = matrix * end;
+    /* The call by name is inferred (the inline operator* reaches the same function): the
+     * original loads m_line before each call (USA (GUPE8P) 0x80150D4C and 0x80150DA4), the
+     * order this compiler gives a call by name and not the operator; see
+     * fn_8040_vector_types.h. */
+    m_line->start =
+        fn_8040B67C(matrix, right * m_parent->m_params.scale - Fn8040Vector3(3.75f, 0.0f, 0.0f));
+    m_line->end =
+        fn_8040B67C(matrix, left * m_parent->m_params.scale + Fn8040Vector3(3.75f, 0.0f, 0.0f));
 
     fn_8040B720(&matrix, m_parent->m_params.scale, 0.75f, 0.75f);
     if (m_model != 0) {

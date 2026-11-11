@@ -244,9 +244,6 @@ void fn_8040B33C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *eye, const Fn8040V
 void fn_8040B4D0(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Translates the matrix by an offset that the matrix's rotation turns first. */
 void fn_8040B52C(Fn8040Matrix34 *matrix, float x, float y, float z);
-/* The matrix applied to vector, with the translation, returned by value (inferred; game code
- * reaches it through operator* below; fn_8040B618 below applies only the rotation). */
-Fn8040Vector3 fn_8040B67C(const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector);
 /* Copy constructor or assignment operator of the matrix class (inferred), out of line (the
  * original has its weak instance at 0x80325384): calls fn_8040C148 and returns destination. */
 Fn8040Matrix34 *fn_80325384(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
@@ -406,6 +403,23 @@ inline Fn8040Matrix34::Fn8040Matrix34(const Fn8040Matrix34 &other) {
     fn_8040C148(this, &other);
 }
 
+/* The matrix applied to vector, with the translation, returned by value (inferred; fn_8040B618
+ * below applies only the rotation). The inline operator* below wraps it, and the operator's
+ * out-of-line copy (USA (GUPE8P) 0x8007E4E8) calls it as well (0x8007E4FC), so a call of this
+ * function does not show which of the two the source used. CatchStick, UpDownReel, ElecBar,
+ * Balloon and StretchGrass call it by name where they assign the result through a smart
+ * pointer. That spelling is inferred from the order of the code: the original loads the
+ * pointer into a saved register before the call, as in CatchStick::UpdateLine (lwz r31 at
+ * 0x800F4D84, bl fn_8040B67C at 0x800F4D94). At each of those statements this compiler gives
+ * that order for a call by name and loads the pointer after the call when the operator is
+ * used. Helicopter::UpdateModelMatrix has the second order in the original (call at
+ * 0x802F7EF0, load of the target's pointer for fn_800CCE38 at 0x802F7EF4) and matches with the
+ * operator. The const references are inferred (the code is that of pointer parameters):
+ * ElecBarSub::UpdateModelMatrix builds the vector argument at sp+0x50, below the result at
+ * sp+0x5C (0x80150D3C and 0x80150D50), which a temporary passed to the call reproduces and a
+ * named vector does not. */
+extern "C" Fn8040Vector3 fn_8040B67C(const Fn8040Matrix34 &matrix, const Fn8040Vector3 &vector);
+
 /* Vector arithmetic around the cores fn_8040CDD0 (add), fn_8040CD74 (subtract), fn_8040CDA8
  * (scale) and fn_8040B67C (transform by a matrix), declared to return their results by value
  * (inferred from the callers' temporaries and stack layout; the code is the same as with a
@@ -431,7 +445,7 @@ inline Fn8040Vector3 operator*(const Fn8040Vector3 &vector, float factor) {
 }
 
 inline Fn8040Vector3 operator*(const Fn8040Matrix34 &matrix, const Fn8040Vector3 &vector) {
-    return fn_8040B67C(&matrix, &vector);
+    return fn_8040B67C(matrix, vector);
 }
 
 /* Vector operations that return their result by value and take their vectors by const reference

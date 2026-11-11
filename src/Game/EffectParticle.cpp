@@ -482,7 +482,7 @@ void EffectParticle::fn_804272E8(float deltaTime) {
         }
         }
         if ((m_definitionFlags & 0x800) == 0) {
-            particle->m_position = fn_8040B67C(&m_transform, &particle->m_position);
+            particle->m_position = fn_8040B67C(m_transform, particle->m_position);
             particle->m_velocity = fn_8040B618(m_transform, particle->m_velocity);
             if (translationSpeed > 0.0001f) {
                 float projection = fn_8040CF90(&particle->m_velocity, &m_translationVelocity);

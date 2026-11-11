@@ -235,13 +235,13 @@ void fn_8040B6F8(Fn8040Matrix34 *matrix) {
     fn_80325384(matrix, &lbl_805E0720);
 }
 
-Fn8040Vector3 fn_8040B67C(const Fn8040Matrix34 *matrix, const Fn8040Vector3 *vector) {
-    return Fn8040Vector3(matrix->values[0][0] * vector->x + matrix->values[0][1] * vector->y +
-                             matrix->values[0][2] * vector->z + matrix->values[0][3],
-                         matrix->values[1][0] * vector->x + matrix->values[1][1] * vector->y +
-                             matrix->values[1][2] * vector->z + matrix->values[1][3],
-                         matrix->values[2][0] * vector->x + matrix->values[2][1] * vector->y +
-                             matrix->values[2][2] * vector->z + matrix->values[2][3]);
+Fn8040Vector3 fn_8040B67C(const Fn8040Matrix34 &matrix, const Fn8040Vector3 &vector) {
+    return Fn8040Vector3(matrix.values[0][0] * vector.x + matrix.values[0][1] * vector.y +
+                             matrix.values[0][2] * vector.z + matrix.values[0][3],
+                         matrix.values[1][0] * vector.x + matrix.values[1][1] * vector.y +
+                             matrix.values[1][2] * vector.z + matrix.values[1][3],
+                         matrix.values[2][0] * vector.x + matrix.values[2][1] * vector.y +
+                             matrix.values[2][2] * vector.z + matrix.values[2][3]);
 }
 
 Fn8040Vector3 fn_8040B618(const Fn8040Matrix34 &matrix, const Fn8040Vector3 &vector) {
