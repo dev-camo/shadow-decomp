@@ -49,6 +49,10 @@ bool fn_801FAAC8(UnkManager_80109D64 *manager, int id);
 /* Stores 1 in the mission's word at 0xC and calls fn_8016B058 with the mission, which it takes in
  * r3 (behaviour inferred from its body; whether it is a Mission::Mission member is not known). */
 void fn_8016B2A4(Mission::Mission *mission);
+/* Unless the mission's word at 0xC is 1, stores 2 there and calls fn_8016AF4C with the mission,
+ * which it takes in r3 (behaviour inferred from its body; whether it is a Mission::Mission member
+ * is not known). */
+void fn_8016B270(Mission::Mission *mission);
 /* Passes a mission of the manager to fn_8016B2A4 and returns true, or returns false when none
  * qualifies (behaviour inferred from its body; the selection by the missions' state is not
  * understood). The GoalRing gadget calls it when a character touches the ring. */
