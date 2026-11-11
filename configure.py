@@ -1556,17 +1556,19 @@ config.libs = [
             # .rodata+0x230 in the original and .rodata+0x1E4 here) and the .rodata addends of four
             # data relocations (the descriptor name, two RTTI names and s_name).
             Object(NonMatching, "Game/ElecCoreWall.cpp", cflags=cflags_game_cpp),
-            # 82 of the 85 functions have identical instructions and relocations once the weak and
-            # local copies the linker discards are removed. The data matches by contents in an
-            # object-relative comparison that sets those copies and the alignment aside; a
-            # source-enabled link places the unit's data differently (in USA its .data, .rodata and
-            # .sdata take 0x204, 0x3E4 and 0x9C bytes against 0x1EC, 0x2BC and 0x5C). Search
-            # (0x801540F0) differs in 3 words (f2 and f3 swapped for 1 - fraction and 25, and the
-            # operand order of one fmuls) and Sweep (0x80153CE8) in 5 words (f1 and f2 swapped for
-            # the range and the speed product, and the operand order of two fmuls). UpdateBody is
-            # two instructions longer (182 raw words differ by position): twice the original passes
-            # the result of a copy constructor straight to fn_8040CF2C, where this build copies
-            # into a local and passes its address.
+            # 83 of the 85 functions have identical instructions and relocations once the weak and
+            # local copies are set aside. The data matches by contents in an object-relative
+            # comparison that sets those copies and the alignment aside. As raw relocatable
+            # sections the compiled object's .data, .rodata and .sdata are 0x204, 0x3E4 and 0x9C
+            # bytes against the original object's 0x1EC, 0x2BC and 0x5C in all three regions; no
+            # link with the compiled object was made, so what a link would keep is not measured.
+            # Search (0x801540F0) differs in 3 words (f2 and f3 swapped for 1 - fraction and 25, and
+            # the operand order of one fmuls). UpdateBody is two instructions longer (0x408 bytes
+            # against 0x400; 180 words differ by position and 2 are unpaired): twice the original
+            # passes the result of a copy constructor straight to fn_8040CF2C, where this build
+            # loads the local's address again, and two stack temporaries are in each other's slots
+            # (0x44(r1) and 0x50(r1), 3 words); the other differing words are branch displacements.
+            # The compiled .sdata2 is writable (WA) where the original's is allocatable only (A).
             Object(NonMatching, "Game/ElecSearchLight.cpp", cflags=cflags_game_cpp),
             # Compared as relocatable objects, with the weak and local copies the linker discards
             # removed and the local names and the data section alias (@2 against ...data.0)
