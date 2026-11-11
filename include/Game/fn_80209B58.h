@@ -31,7 +31,8 @@ CHECK_SIZEOF(UnkParams_80145B58, 0x24);
 extern "C" {
 /* Creates a 0xD4-byte object with kind (constructor 0x8020CAAC), passes params to its virtual
  * function at vtable offset 0xC and creates a 0x30-byte task under parent for it (0x80209CA8)
- * when that allocation succeeds (behaviour from its body; what the objects are is unknown). */
+ * when that allocation succeeds (behaviour from its body). The object is a ThrowBombImpl (class
+ * name from RTTI; see ThrowBomb.h). */
 void fn_80209B58(Task *parent, int kind, const UnkParams_80145B58 *params);
 }
 

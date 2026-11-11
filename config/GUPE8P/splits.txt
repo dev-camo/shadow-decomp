@@ -1359,6 +1359,13 @@ Game/BackDrop.cpp:
 	.sbss       start:0x805F0118 end:0x805F0120
 	.sdata2     start:0x805F7DA0 end:0x805F7DB8
 
+Game/HeavyDog0510CtrlUnit.cpp:
+	.text       start:0x8026B718 end:0x8026C4C8
+	.rodata     start:0x804F6420 end:0x804F64E0
+	.data       start:0x8054C7F8 end:0x8054C8F8
+	.sdata      start:0x805EA878 end:0x805EA8B0
+	.sdata2     start:0x805F7DB8 end:0x805F7DF0
+
 Game/ArkLaser.cpp:
 	.text       start:0x8026DBB4 end:0x8026EE9C
 	.ctors      start:0x804A9F10 end:0x804A9F14

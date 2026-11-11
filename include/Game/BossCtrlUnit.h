@@ -11,9 +11,9 @@ class BossVarParam;
  * control units and hands them to its BossVarParam (BossVarParam::AddCtrlUnit). Most unit classes
  * have BossCtrlUnit as a virtual base, so their constructors also take the compiler's flag that says
  * whether to construct the virtual base. Besides the constructors and destructors, Update and the
- * pure methods that BossModeCtrlUnit and BossCtrlUnit_CheckMotionAttribute add are declared;
- * BossCtrlUnit_FixLookCharCamera's own further virtual method is not declared yet. Regions marked
- * as unknown are set up by the constructors and not mapped yet. */
+ * pure methods that BossModeCtrlUnit and BossCtrlUnit_CheckMotionAttribute add and
+ * BossCtrlUnit_FixLookCharCamera's own further virtual method are declared. Regions marked as
+ * unknown are set up by the constructors and not mapped yet. */
 class BossCtrlUnit {
   public:
     /* Inline: every derived constructor expands it. */
@@ -99,8 +99,19 @@ class BossCtrlUnit_FixLookCharCamera : public virtual BossCtrlUnit {
     BossCtrlUnit_FixLookCharCamera(BossVarParam *param);
     virtual ~BossCtrlUnit_FixLookCharCamera();
     virtual bool Update(float arg);
+    /* Update (0x8029120C) calls it while BossVarParam::field_0x1A is not zero and tests the low
+     * byte of the result (bool inferred). The implementation of this class (0x80291514) returns
+     * true; placeholder name after it. */
+    virtual bool fn_80291514();
 
-    /* 0x08 */ u8 field_0x8[0x30 - 0x8]; /* unknown */
+    /* The two floats and the vector are what HeavyDog0510CtrlUnit_FixLookCharCamera's override
+     * of fn_80291514 sets. Update reads the floats and passes the vector's address to
+     * 0x8029148C. Their meanings are unknown. */
+    /* 0x08 */ float field_0x8;
+    /* 0x0C */ float field_0xC;
+    /* 0x10 */ u8 field_0x10[0x18 - 0x10]; /* unknown */
+    /* 0x18 */ Fn8040Vector3 field_0x18;
+    /* 0x24 */ u8 field_0x24[0x30 - 0x24]; /* unknown */
 };
 CHECK_SIZEOF(BossCtrlUnit_FixLookCharCamera, 0x40);
 
