@@ -247,9 +247,8 @@ void Vine::UpdateModelMatrix() {
 
     if (m_launchFrame != 0 && m_target.get() != 0) {
         RwMatrix *ltm = RwFrameGetLTM(m_launchFrame);
-        Fn8040Vector3 position(ltm->pos.x, ltm->pos.y, ltm->pos.z);
 
-        fn_800CCE38(m_target.get(), position);
+        fn_800CCE38(m_target.get(), Fn8040Vector3(ltm->pos.x, ltm->pos.y, ltm->pos.z));
     }
 }
 

@@ -1682,7 +1682,7 @@ config.libs = [
             # earlier. In .data the original keeps the discarded weak vtables between the kept
             # base-class lists as zero-filled holes, as in Spring.
             Object(NonMatching, "Game/StretchGrass.cpp", cflags=cflags_game_cpp),
-            # 91 of the 96 functions have identical instruction words and relocations in USA, Japan
+            # 92 of the 96 functions have identical instruction words and relocations in USA, Japan
             # and PAL. The original's .rodata has two blocks that this object lacks, of unknown
             # source: after the TNumEdit type names, three 16-byte groups that each start with
             # 1.0f followed by 16 zero bytes (the 1.0f groups follow the TNumEdit names in four
@@ -1694,15 +1694,14 @@ config.libs = [
             # original, which moves the functions in between by 0x48 bytes. ~Vine differs in 8 raw
             # words: the original sets the loop counter to zero and copies it to the
             # offset and to the stored null; this build loads zero into the offset and the counter
-            # separately and copies the offset's zero to the null. In GetLoseDistanceSq (2 words)
-            # the original loads the radius before the 10.0f constant. UpdateClumpPosition is 19
-            # words against the original's 23 (13 of 24 aligned rows differ: 12 of the original's
-            # words and 8 of this build's): the original calls the smart pointer's operator-> out of
-            # line for the character info's position, keeping the object in the saved r31; this
-            # build loads the pointer inline and saves no register. UpdateModelMatrix differs in
-            # 10 words, all stack offsets: the original keeps the target's position, built from the
-            # frame's matrix and passed to fn_800CCE38, below the difference vectors of the two
-            # branches, as a temporary made last would be.
+            # separately and copies the offset's zero to the null. The original UpDownReel
+            # destructor (0x801282B8, USA) has this build's form for the same loop. In
+            # GetLoseDistanceSq (2 words) the original loads the radius before the 10.0f constant.
+            # FireBall::UpdateClumpPosition is 19 words against the original's 23 (0x4C bytes
+            # against 0x5C; 17 of the 19 common positions differ): the original calls the smart
+            # pointer's operator-> out of line for the character info's position (0x8014E46C, USA)
+            # and keeps the object in the saved r31; this build loads the pointer inline and saves
+            # no register. Both copy the same three floats to the same stack slots.
             Object(NonMatching, "Game/Vine.cpp", cflags=cflags_game_cpp),
             # All 106 functions have identical instructions and relocations, and the .data,
             # .rodata and .sdata objects match once the linker-discarded weak and local copies are
