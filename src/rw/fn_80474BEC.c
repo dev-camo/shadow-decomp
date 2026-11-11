@@ -25,13 +25,13 @@ Rt2dPath *fn_80474BEC(Rt2dPath *path) {
     return next;
 }
 
-/* Adds a line to a subpath, averaging the normal at the previous point with the line's */
+/* Adds a line to a subpath, averaging the normal at the previous point with the line's; normal_ is
+ * the line's unscaled normal (x = dy, y = -dx) */
 #define PATHADDLINE(subpath, px, py)                                                               \
     do {                                                                                           \
         RwInt32 numPoints_ = fn_8047E03C((subpath)->points);                                       \
         rt2dPathNode *node_ = fn_8047DDBC((subpath)->points, rwMEMHINTDUR_EVENT | rwID_2DPLUGIN);  \
-        RwReal dy_;                                                                                \
-        RwReal dx_;                                                                                \
+        RwV2d normal_;                                                                             \
         RwReal lengthSq_;                                                                          \
         RwReal length_;                                                                            \
         RwReal recip_;                                                                             \
@@ -39,13 +39,13 @@ Rt2dPath *fn_80474BEC(Rt2dPath *path) {
         node_->type = rt2dLINETO;                                                                  \
         node_->pos.x = (px);                                                                       \
         node_->pos.y = (py);                                                                       \
-        dy_ = (py) - node_[-1].pos.y;                                                              \
-        dx_ = node_[-1].pos.x - (px);                                                              \
-        lengthSq_ = dy_ * dy_ + dx_ * dx_;                                                         \
+        normal_.x = (py) - node_[-1].pos.y;                                                        \
+        normal_.y = node_[-1].pos.x - (px);                                                        \
+        lengthSq_ = normal_.x * normal_.x + normal_.y * normal_.y;                                 \
         length_ = fn_80482340(lengthSq_);                                                          \
         recip_ = fn_80482394(lengthSq_);                                                           \
-        node_->normal.x = dy_ * recip_;                                                            \
-        node_->normal.y = dx_ * recip_;                                                            \
+        node_->normal.x = normal_.x * recip_;                                                      \
+        node_->normal.y = normal_.y * recip_;                                                      \
         node_->dist = node_[-1].dist + length_;                                                    \
         if (numPoints_ > 1) {                                                                      \
             RwReal sumX_;                                                                          \
@@ -87,11 +87,11 @@ Rt2dPath *fn_80474EA0(Rt2dPath *path, RwReal x, RwReal y) {
     return path;
 }
 
-/* Sets a curve point: its type, position, normal and path length, from the point before it */
+/* Sets a curve point: its type, position, normal and path length, from the point before it;
+ * normal_ is the segment's unscaled normal (x = dy, y = -dx) */
 #define CURVEPOINT(node, prev, px, py)                                                             \
     do {                                                                                           \
-        RwReal dy_;                                                                                \
-        RwReal dx_;                                                                                \
+        RwV2d normal_;                                                                             \
         RwReal lengthSq_;                                                                          \
         RwReal length_;                                                                            \
         RwReal recip_;                                                                             \
@@ -99,13 +99,13 @@ Rt2dPath *fn_80474EA0(Rt2dPath *path, RwReal x, RwReal y) {
         (node)->type = rt2dCURVETO;                                                                \
         (node)->pos.x = (px);                                                                      \
         (node)->pos.y = (py);                                                                      \
-        dy_ = (py) - (prev)->pos.y;                                                                \
-        dx_ = (prev)->pos.x - (px);                                                                \
-        lengthSq_ = dy_ * dy_ + dx_ * dx_;                                                         \
+        normal_.x = (py) - (prev)->pos.y;                                                          \
+        normal_.y = (prev)->pos.x - (px);                                                          \
+        lengthSq_ = normal_.x * normal_.x + normal_.y * normal_.y;                                 \
         length_ = fn_80482340(lengthSq_);                                                          \
         recip_ = fn_80482394(lengthSq_);                                                           \
-        (node)->normal.x = dy_ * recip_;                                                           \
-        (node)->normal.y = dx_ * recip_;                                                           \
+        (node)->normal.x = normal_.x * recip_;                                                     \
+        (node)->normal.y = normal_.y * recip_;                                                     \
         (node)->dist = (prev)->dist + length_;                                                     \
     } while (0)
 
@@ -185,13 +185,18 @@ void fn_804754F4(Rt2dPath *path, const RwV2d *bezier, RwInt32 depth) {
     RwV2d control;
     RwV2d left[4];
     RwV2d right[4];
+    RwReal chordSq;
+    RwReal controlSq;
+    RwReal dot;
     RwBool flat;
     RwBool depthUsedUp;
 
     /* Matching workaround: the depth test is computed as a value before it is branched on.
      * `if (--depth < 0)` compiles to an addic. and a branch on the condition register instead of
-     * the original's sign-bit test, and fn_804754F4 then differs in 231 words instead of 121.
-     * Revisit when the original form of the test is found. */
+     * the original's sign-bit test (srwi.). fn_804754F4 is then 0x3DC bytes and 229 of the
+     * original's 245 words differ by position (aligned: 57 pairs differ, 15 words are only in the
+     * original and 17 only in the build); with the value it is 0x3E0 bytes and 110 words differ by
+     * position (aligned: 55, 14 and 17). Revisit when the original form of the test is found. */
     depthUsedUp = --depth < 0;
     if (depthUsedUp) {
         PATHADDLINE(path, bezier[3].x, bezier[3].y);
@@ -202,17 +207,16 @@ void fn_804754F4(Rt2dPath *path, const RwV2d *bezier, RwInt32 depth) {
     chord.y = bezier[3].y - bezier[0].y;
     control.x = bezier[1].x - bezier[0].x;
     control.y = bezier[1].y - bezier[0].y;
-    flat =
-        (chord.x * chord.x + chord.y * chord.y) *
-            ((control.x * control.x + control.y * control.y) - lbl_805E1950.pixelSizeSq) <
-        (control.x * chord.x + control.y * chord.y) * (control.x * chord.x + control.y * chord.y);
+    chordSq = chord.x * chord.x + chord.y * chord.y;
+    controlSq = control.x * control.x + control.y * control.y;
+    dot = control.x * chord.x + control.y * chord.y;
+    flat = chordSq * (controlSq - lbl_805E1950.pixelSizeSq) < dot * dot;
     if (flat) {
         control.x = bezier[2].x - bezier[0].x;
         control.y = bezier[2].y - bezier[0].y;
-        flat = (chord.x * chord.x + chord.y * chord.y) *
-                   ((control.x * control.x + control.y * control.y) - lbl_805E1950.pixelSizeSq) <
-               (control.x * chord.x + control.y * chord.y) *
-                   (control.x * chord.x + control.y * chord.y);
+        controlSq = control.x * control.x + control.y * control.y;
+        dot = control.x * chord.x + control.y * chord.y;
+        flat = chordSq * (controlSq - lbl_805E1950.pixelSizeSq) < dot * dot;
     }
     if (flat) {
         PATHADDLINE(path, bezier[3].x, bezier[3].y);
@@ -254,10 +258,7 @@ Rt2dPath *fn_804758C8(Rt2dPath *flat, const Rt2dPath *path) {
     } else {
         node = path->points;
     }
-    numPoints = path->numPoints;
-    if (numPoints == rt2dPATHLOCKED) {
-        numPoints = fn_8047E03C(path->points);
-    }
+    numPoints = path->numPoints == rt2dPATHLOCKED ? fn_8047E03C(path->points) : path->numPoints;
     for (i = 0; i < numPoints; i++, node++) {
         if (node->type == rt2dCURVETO) {
             RwV2d bezier[4];
@@ -353,10 +354,12 @@ Rt2dPath *fn_80476510(Rt2dPath *path) {
             } else {
                 points = path->points;
             }
-            numPoints = path->numPoints;
-            if (numPoints == rt2dPATHLOCKED) {
-                numPoints = fn_8047E03C(path->points);
-            }
+            /* Written as an if statement like points above, this assignment makes fn_80476510
+             * differ from the original in 30 words; points as a conditional expression too, in 16.
+             * fn_804758C8 selects the same two values and compiles to the same code with either
+             * form of either, so it is written like this function. */
+            numPoints =
+                path->numPoints == rt2dPATHLOCKED ? fn_8047E03C(path->points) : path->numPoints;
             if (numPoints != 0) {
                 void *entries = fn_8047DEA0(list, numPoints, rwMEMHINTDUR_EVENT | rwID_2DPATH);
 
@@ -365,7 +368,7 @@ Rt2dPath *fn_80476510(Rt2dPath *path) {
                 }
                 RwFree(points);
             }
-            path->numPoints = -1;
+            path->numPoints = rt2dPATHLOCKED;
             path->points = list;
             fn_80476510(path->next);
         } else {

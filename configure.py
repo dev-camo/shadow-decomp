@@ -571,13 +571,22 @@ config.libs = [
                 Object(NonMatching, "rw/fn_8046D8C8.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_8046EE8C.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80470AC4.c", cflags=cflags_game),
-                # fn_80474C7C and fn_80476830 expand their own recursive call one level deeper than
-                # the original (49 and 39 words; 0x294 and 0x210 bytes against 0x224 and 0x1DC).
-                # fn_80474FF8, fn_80475260 and fn_80476510 differ in register numbers only (16, 10
-                # and 30 words). fn_804754F4 differs in 121 words and is 0x3E0 bytes against the
-                # original 0x3D4: the flatness test's arithmetic is ordered differently, and the
-                # halving loads bezier[0].y and bezier[1] again where the original reuses the
-                # flatness test's loads (19 float loads from bezier against 16).
+                # fn_80474C7C expands its own recursive call one level deeper than the original (5
+                # copies of the body against 4): it is 0x294 bytes against 0x224, with 21 words
+                # differing by position over the original's length and 28 unpaired. fn_80475260
+                # differs in 7 of its 139 words, in register numbers only: the two differences and
+                # the zero of the closing test take other float registers, with the same loads,
+                # offsets and operand order. fn_804754F4 is 0x3E0 bytes against the original 0x3D4
+                # (110 words differ by position and 3 are unpaired; aligned, 55 pairs differ, 14
+                # words are only in the original and 17 only in the build): the flatness test has
+                # the original's operations in the original's order with other float register
+                # numbers (31 words), and the halving loads bezier[0].y and bezier[1] again where
+                # the original keeps the flatness test's loads in registers (19 float loads from
+                # bezier against 16), which also changes the order of its arithmetic. fn_80476830
+                # also expands its own recursive call deeper than the original: it is 0x210 bytes
+                # against 0x1DC, with 26 words differing by position and 13 unpaired. The other 12
+                # functions are identical. The compiled .sdata2 is writable (WA) where the
+                # original's is allocatable only (A).
                 Object(NonMatching, "rw/fn_80474BEC.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80476ABC.c", cflags=cflags_game),
                 Object(NonMatching, "rw/fn_80477344.c", cflags=cflags_game),
