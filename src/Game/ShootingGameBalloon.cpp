@@ -223,7 +223,7 @@ void BalloonGenerator::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
     Fn8040Vector3 center = m_charInfo->m_position;
     center.y += halfHeight;
-    fn_802E0C60(&center, &rotation, 0, halfHeight, m_params.radius);
+    fn_802E0C60(center, rotation, 0, halfHeight, m_params.radius);
 }
 
 void BalloonGenerator::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {

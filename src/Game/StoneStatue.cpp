@@ -291,7 +291,7 @@ void StoneStatue::DrawRange() {
 
     UnkRotation3 rotation(0.5f * lbl_805FAD38, 0.0f, 0.0f);
 
-    fn_802E0C60(&center, &rotation, 0, halfHeight, m_params.rangeRadius);
+    fn_802E0C60(center, rotation, 0, halfHeight, m_params.rangeRadius);
 }
 
 static GadgetParamInfo s_paramInfo[] = {

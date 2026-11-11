@@ -185,7 +185,7 @@ void Elevator::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     Fn8040Vector3 center(m_charInfo->m_position);
     UnkRotation3 rotation = m_charInfo->m_rotation;
     rotation.x += DegreesToRadians(90.0f);
-    fn_802E0C60(&center, &rotation, 0, 10.0f, m_params.range);
+    fn_802E0C60(center, rotation, 0, 10.0f, m_params.range);
 
     m_model->fn_8016108C();
 }

@@ -250,7 +250,7 @@ void Balloon::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
             UnkRotation3 rotation(0.0f, 0.0f, 0.0f);
 
             rotation.x = DegreesToRadians(90.0f);
-            fn_802E0C60(&m_charInfo->m_position, &rotation, 0, 5.0f, m_params.radius);
+            fn_802E0C60(m_charInfo->m_position, rotation, 0, 5.0f, m_params.radius);
         } else {
             Fn8040Vector3 start = m_charInfo->m_position;
             Fn8040Vector3 end(m_params.x, m_params.y, m_params.z);

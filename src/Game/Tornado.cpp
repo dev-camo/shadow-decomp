@@ -385,18 +385,11 @@ void Tornado::RemoveTowing(TornadoTowing *towing) {
 }
 
 void Tornado::DrawRange() {
-    /* Matching workaround: direction is declared first, and set after the line, because the order
-     * of declaration places the stack slots of direction and rotation (declared at its use, 13
-     * words differ). Revisit if the debug shapes turn out to take their vectors by reference, so
-     * that the rotation could be a temporary of the call. */
-    Fn8040Vector3 direction;
-    float pitch = DegreesToRadians(90.0f);
-    UnkRotation3 rotation(pitch, 0.0f, 0.0f);
-
-    fn_802E0C60(&m_charInfo->m_position, &rotation, 0, m_params.cylinderY, m_params.cylinderRadius);
+    fn_802E0C60(m_charInfo->m_position, UnkRotation3(DegreesToRadians(90.0f), 0.0f, 0.0f), 0,
+                m_params.cylinderY, m_params.cylinderRadius);
 
     UnkSegment_80020A20 line;
-    direction.Set(0.0f, 0.0f, 1.0f);
+    Fn8040Vector3 direction(0.0f, 0.0f, 1.0f);
 
     line.start = m_charInfo->m_position;
     line.start.y += m_params.cylinderY;
