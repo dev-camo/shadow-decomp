@@ -45,7 +45,7 @@ bool HeavyDog0410ModeCtrlUnit_ATK_BARRIER::Update(float arg) {
 
     switch (m_state) {
     case 0:
-        if (m_timer > 1.5f && fn_8040CF50(&m_heavyDog0410Param->field_0x11C) <
+        if (m_timer > 1.5f && fn_8040CF50(m_heavyDog0410Param->field_0x11C) <
                                   m_heavyDog0410Param->m_params.field_0x14) {
             Fn8040Vector3 position(m_heavyDog0410Param->m_charInfo->m_position);
             if (m_heavyDog0410Param->field_0x194.y > 40.0f) {
@@ -161,7 +161,7 @@ bool HeavyDog0410ModeCtrlUnit_ESCAPE::Update(float arg) {
     for (i = 0; i < 4; i++) {
         offset = corners[i] - m_heavyDog0410Param->field_0x194;
         offset.y = 0.0f;
-        float distance = fn_8040CF50(&offset);
+        float distance = fn_8040CF50(offset);
         if (distance < nearestDistance) {
             nearest = i;
             nearestDistance = distance;

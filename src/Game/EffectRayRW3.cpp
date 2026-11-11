@@ -55,7 +55,7 @@ void EffectRayRW3::Render() {
             Fn8040Vector3 cameraDirection;
             position = ray->m_position;
             direction = position - ray->m_origin;
-            float length = fn_8040CF50(&direction);
+            float length = fn_8040CF50(direction);
             if (length < 0.0001f) {
                 continue;
             }
@@ -71,10 +71,10 @@ void EffectRayRW3::Render() {
             direction = position - endpoint;
             cameraDirection = endpoint - cameraPosition;
             Fn8040Vector3 side = fn_8040CFB8(direction, cameraDirection);
-            if (fn_8040CF50(&side) < 0.0001f) {
+            if (fn_8040CF50(side) < 0.0001f) {
                 cameraDirection = position - cameraPosition;
                 side = fn_8040CFB8(direction, cameraDirection);
-                if (fn_8040CF50(&side) < 0.0001f) {
+                if (fn_8040CF50(side) < 0.0001f) {
                     continue;
                 }
             }

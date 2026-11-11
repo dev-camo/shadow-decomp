@@ -359,7 +359,7 @@ void EffectParticle::fn_804272E8(float deltaTime) {
     }
     float translationSpeed = 0.0f;
     if ((m_definitionFlags & 0x1000) != 0) {
-        translationSpeed = fn_8040CF50(&m_translationVelocity);
+        translationSpeed = fn_8040CF50(m_translationVelocity);
     }
     for (int i = 0; i < quantity; ++i) {
         if (m_maxCount == m_count) {
@@ -486,7 +486,7 @@ void EffectParticle::fn_804272E8(float deltaTime) {
             particle->m_velocity = fn_8040B618(m_transform, particle->m_velocity);
             if (translationSpeed > 0.0001f) {
                 float projection = fn_8040CF90(&particle->m_velocity, &m_translationVelocity);
-                float velocityLength = fn_8040CF50(&particle->m_velocity);
+                float velocityLength = fn_8040CF50(particle->m_velocity);
                 float alignment = projection / (translationSpeed * velocityLength);
                 AddVector(&particle->m_velocity,
                           m_translationVelocity * (alignment > 0.0 ? alignment : -alignment));
@@ -568,7 +568,7 @@ void EffectParticle::fn_80426FF4(float deltaTime) {
     for (particle = m_head; particle != 0; particle = particle->m_next) {
         AddVector(&particle->m_position, particle->m_velocity * deltaTime);
         if (field_0x118 != 0.0f) {
-            float speed = fn_8040CF50(&particle->m_velocity);
+            float speed = fn_8040CF50(particle->m_velocity);
             if (speed > 0.0001f) {
                 float loss = speed * field_0x118;
                 if (loss > speed) {

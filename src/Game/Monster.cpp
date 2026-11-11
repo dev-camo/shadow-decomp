@@ -170,7 +170,7 @@ void Monster::UpdateBody(float dt) {
             /* The step of the last update (the length of the movement in field_0x18) moves
              * towards the step of the minimum or maximum speed by at most the deceleration or
              * acceleration over dt. */
-            float lastStep = fn_8040CF50(&m_charInfo->field_0x18);
+            float lastStep = fn_8040CF50(m_charInfo->field_0x18);
             float targetStep;
 
             if (distance < m_leadDistance) {
@@ -275,7 +275,7 @@ bool Monster::IsFinished() {
 
             if (character.get() != 0) {
                 Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
-                if (fn_8040CF50(&distance) > fn_800C9938(m_owner)) {
+                if (fn_8040CF50(distance) > fn_800C9938(m_owner)) {
                     m_flags |= 1;
                     return true;
                 }

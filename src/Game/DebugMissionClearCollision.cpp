@@ -106,7 +106,7 @@ void DebugMissionClearCollision::UpdateBody(float dt) {
     if (character.get() != 0) {
         Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
 
-        if (fn_8040CF50(&distance) < s_radius.value) {
+        if (fn_8040CF50(distance) < s_radius.value) {
             u32 type = m_params.type;
 
             if (type == 3) {

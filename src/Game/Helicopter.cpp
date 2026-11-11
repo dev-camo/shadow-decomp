@@ -392,7 +392,7 @@ void Helicopter::UpdateTilt(float dt) {
                 m_turnSpeed = 0.0f;
             }
 
-            float lean = fn_8040CF50(&horizontal) / 60.0f;
+            float lean = fn_8040CF50(horizontal) / 60.0f;
 
             lean = fn_80070460(lean, 0.0f, 1.0f);
             m_charInfo->m_rotation.x = lean * DegreesToRadians(16.0f);

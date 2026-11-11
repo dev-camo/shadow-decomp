@@ -96,7 +96,7 @@ void HeavyDog0510::Init() {
 
     Fn8040Vector3 horizontal(m_varParam.field_0xEC);
     horizontal.y = 0.0f;
-    m_varParam.field_0x1F4 = fn_8040CF50(&horizontal);
+    m_varParam.field_0x1F4 = fn_8040CF50(horizontal);
     m_varParam.field_0x110 = fn_80016260(-horizontal.x, -horizontal.z);
     m_varParam.field_0x104 = m_varParam.field_0x110;
     m_varParam.field_0x200 = this;

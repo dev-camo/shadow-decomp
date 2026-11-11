@@ -154,7 +154,7 @@ void RollCircleObj::Break() {
 void RollCircleObj::fn_800D61C4(AttackCallbackParam &param) {
     param.field_0x34 = m_charInfo->field_0x18;
     fn_8040CE38(&param.field_0x34, 1.0f / lbl_8057D6A0.field_0x18);
-    param.field_0x4C = fn_8040CF50(&param.field_0x34);
+    param.field_0x4C = fn_8040CF50(param.field_0x34);
     fn_8040CE74(&param.field_0x34);
     param.field_0x50 = 1.0f;
 }

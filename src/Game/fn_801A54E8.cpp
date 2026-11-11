@@ -140,7 +140,7 @@ void EnemyMoveCommon::fn_8019B43C(float delta) {
         movement.x = field_0x2C.x - fn_8017C690(m_enemy)->x;
         movement.z = field_0x2C.z - fn_8017C690(m_enemy)->z;
     }
-    float distanceSquared = fn_8040CF2C(&movement);
+    float distanceSquared = fn_8040CF2C(movement);
     if (field_0x5C) {
         int mode;
         if (field_0x8.fn_801A5758() || !fn_8019588C() || distanceSquared > 0.5f) {
@@ -236,7 +236,7 @@ Fn8040Vector3 EnemyMoveCommon::fn_801A54E8(float delta) {
             field_0x50.z = 0.0f;
         }
     }
-    if (fn_8000B044(fn_8040CF2C(&field_0x50))) {
+    if (fn_8000B044(fn_8040CF2C(field_0x50))) {
         field_0x5D = false;
     }
     field_0x5E = false;

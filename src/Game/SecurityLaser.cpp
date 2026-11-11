@@ -248,7 +248,7 @@ void SetSecurityLaser::UpdateMotion(float dt) {
 
         float phase = m_moveSpeed * m_moveTimer;
         Fn8040Vector3 move(m_moveX, m_moveY, m_moveZ);
-        float distance = fn_8040CF50(&move);
+        float distance = fn_8040CF50(move);
 
         move = fn_8040CEE8(move);
         /* fn_8000AB90 converts degrees to radians as DegreesToRadians does; the original calls it
@@ -304,7 +304,7 @@ void SetSecurityLaser::UpdateBeam() {
             if (node != 0) {
                 Fn8040Vector3 hitPosition = *fn_8001E9BC(node->hit);
                 const Fn8040Vector3 &difference = start - hitPosition;
-                m_beamLength = fn_8040CF50(&difference);
+                m_beamLength = fn_8040CF50(difference);
                 end = hitPosition;
                 hit = true;
                 delete node;

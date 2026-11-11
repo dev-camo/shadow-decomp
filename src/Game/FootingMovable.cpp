@@ -145,7 +145,7 @@ void FootingMovable::UpdateNormal(float dt) {
     fn_8040CFF8(&end, &m_start);
 
     Fn8040Vector3 direction = end - m_start;
-    float halfLength = 0.5f * fn_8040CF50(&direction);
+    float halfLength = 0.5f * fn_8040CF50(direction);
 
     direction = fn_8040CEE8(direction);
     m_angle += m_params.acc;
@@ -264,7 +264,7 @@ void FootingMovable::MoveNormalSync(float time) {
     fn_8040CFF8(&end, &m_start);
 
     Fn8040Vector3 direction = end - m_start;
-    float halfLength = 0.5f * fn_8040CF50(&direction);
+    float halfLength = 0.5f * fn_8040CF50(direction);
 
     direction = fn_8040CEE8(direction);
     fn_8040CE38(&direction, halfLength - halfLength * std::cos(fn_8000AB90(m_angle)));
@@ -458,7 +458,7 @@ void FootingMovable::MovePause(float dt) {
      * 0x80149E6C); without it the function is 93 words with two calls fewer instead of 100.
      * Revisit when the original's use of end is understood. */
     Fn8040Vector3 end = m_start + offset;
-    float halfLength = 0.5f * fn_8040CF50(&offset);
+    float halfLength = 0.5f * fn_8040CF50(offset);
 
     offset = fn_8040CEE8(offset);
     if (m_flags.Test(FLAG_TO_END)) {
@@ -496,7 +496,7 @@ void FootingMovable::UpdateSound(float dt) {
                 m_charInfo->field_0x18 = (m_charInfo->m_position - m_lastPosition) * (1.0f / dt);
             }
 
-            if (fn_8040CF50(&m_charInfo->field_0x18) > s_moveSoundSpeed) {
+            if (fn_8040CF50(m_charInfo->field_0x18) > s_moveSoundSpeed) {
                 if (m_sound.field_0x0 == 0) {
                     m_sound = fn_801D3C38(m_moveSound, &m_charInfo->m_position, this);
                 }

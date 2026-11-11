@@ -175,13 +175,11 @@ extern UnkRotation3 lbl_805E07B8;
 extern Fn8040Vector4 lbl_805E0780;
 extern Fn8040Vector4 lbl_805E0790;
 
-/* Lengths of a 2D and a 3D vector, through MSL <cmath>'s inline std::sqrt(float). Retail calls the
- * out-of-line copy of std::sqrt at 0x8000FEE4, which calls the copy of sqrtf at 0x8000FF04. The E3
- * 2005 prototype (G9SJ8P) expands sqrtf inside both helpers instead. */
+/* Lengths of a 2D and a 3D vector (fn_8040CF50, declared with the C++ functions below), through
+ * MSL <cmath>'s inline std::sqrt(float). Retail calls the out-of-line copy of std::sqrt at
+ * 0x8000FEE4, which calls the copy of sqrtf at 0x8000FF04. The E3 2005 prototype (G9SJ8P) expands
+ * sqrtf inside both helpers instead. */
 float fn_8040CCEC(const Fn8040Vector2 *vector);
-float fn_8040CF50(const Fn8040Vector3 *vector);
-/* Squared length. */
-float fn_8040CF2C(const Fn8040Vector3 *vector);
 /* Squared length of a 4-float vector. */
 float fn_8040CA84(const Fn8040Vector4 *vector);
 /* Stores sin(angle) and cos(angle) through the two pointers. The E3 2005 prototype (G9SJ8P) calls
@@ -464,6 +462,18 @@ extern "C" Fn8040Vector3 fn_8040D0AC(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_8040D118(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_8040D044(const Fn8040Vector3 &vector, float angle);
 extern "C" Fn8040Vector3 fn_80016284(const Fn8040Vector3 &vector);
+
+/* Length (see fn_8040CCEC above) and squared length of a 3D vector. The const references are
+ * inferred; the code is that of pointer parameters. Evidence: at four calls of each function the
+ * original builds a difference with fn_8040CD74, copies it with the vector's copy constructor
+ * (0x800091EC) and calls the function with the pointer that the copy constructor returns still in
+ * r3. In USA (GUPE8P) those calls are at 0x800F6078, 0x80152240, 0x802A2B64 and 0x8031FA34 for
+ * fn_8040CF50 and at 0x801547D0, 0x801549EC, 0x802A9A48 and 0x803447CC for fn_8040CF2C. A copy
+ * written as the argument, Fn8040Vector3(a - b), gives that code with this compiler. A named
+ * copy gives a second load of its address before the call, which is the code of the callers that
+ * copy a difference into a named vector, and a - b as the argument gives no copy. */
+extern "C" float fn_8040CF50(const Fn8040Vector3 &vector);
+extern "C" float fn_8040CF2C(const Fn8040Vector3 &vector);
 
 /* The rotation vector of a forward and an up direction in order 2 (see fn_8040F5F4 above). The
  * references are inferred from VacuumContainer::Container::Update, which passes two temporaries

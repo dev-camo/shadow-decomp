@@ -88,7 +88,7 @@ class HeavyDog0510ModeCtrlUnit_CHASE : public HeavyDog0510CtrlUnit {
             m_heavyDog0510Param->field_0xF8.y = 200.0f;
         }
 
-        if (fn_8040CF50(&m_heavyDog0510Param->field_0x17C) < 10.0f) {
+        if (fn_8040CF50(m_heavyDog0510Param->field_0x17C) < 10.0f) {
             m_heavyDog0510Param->field_0x104 = m_heavyDog0510Param->field_0x1B8 + lbl_805FAD38;
         } else {
             m_heavyDog0510Param->field_0x104 = m_heavyDog0510Param->field_0x1B8;
@@ -387,7 +387,7 @@ class HeavyDog0510ModeCtrlUnit_ATK_BARRIER : public HeavyDog0510CtrlUnit {
 
         switch (field_0x14) {
         case 0:
-            if (field_0x10 > 1.5f && fn_8040CF50(&m_heavyDog0510Param->field_0x11C) <
+            if (field_0x10 > 1.5f && fn_8040CF50(m_heavyDog0510Param->field_0x11C) <
                                          m_heavyDog0510Param->m_params.field_0x14) {
                 Fn8040Vector3 position(m_heavyDog0510Param->m_charInfo->m_position);
                 position.y += 0.5f * m_heavyDog0510Param->m_params.field_0x60;

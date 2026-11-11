@@ -84,7 +84,7 @@ static void fn_80138338(boost::shared_ptr<CharInfo> hit, void *arg) {
     if (context->m_hitCount > 0) {
         speed = 560.0f;
     } else {
-        float ratio = fn_8040CF50(&hit->field_0x18) / context->m_params->speed;
+        float ratio = fn_8040CF50(hit->field_0x18) / context->m_params->speed;
 
         if (ratio >= 1.0f) {
             ratio = 1.0f;
@@ -96,7 +96,7 @@ static void fn_80138338(boost::shared_ptr<CharInfo> hit, void *arg) {
         gongPosition.y = 0.0f;
         const Fn8040Vector3 &difference = hitPosition - gongPosition;
 
-        float distance = fn_8040CF50(&difference);
+        float distance = fn_8040CF50(difference);
         float scale;
 
         if (distance <= 5.0f) {

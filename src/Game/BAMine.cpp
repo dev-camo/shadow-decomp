@@ -163,7 +163,7 @@ void BAMine::UpdateMove(float dt) {
 
     float angle = m_angleSpeed * m_timer;
     Fn8040Vector3 offset(m_params.x, m_params.y, m_params.z);
-    float length = fn_8040CF50(&offset);
+    float length = fn_8040CF50(offset);
 
     offset = fn_8040CEE8(offset);
 

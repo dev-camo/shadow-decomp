@@ -467,7 +467,7 @@ bool Fan::IsInRange(Fn8040Vector3 *position, Fn8040Vector3 *center) {
 
         const Fn8040Vector3 &offset = flatPosition - flatCenter;
 
-        if (fn_8040CF50(&offset) <= 7.5f + m_params.x) {
+        if (fn_8040CF50(offset) <= 7.5f + m_params.x) {
             inRange = true;
         }
         break;

@@ -165,7 +165,7 @@ void TargetSwitch::UpdatePosition(float angle) {
     fn_8040CFF8(&end, &start);
 
     Fn8040Vector3 offset(m_params.x, m_params.y, m_params.z);
-    float halfLength = 0.5f * fn_8040CF50(&offset);
+    float halfLength = 0.5f * fn_8040CF50(offset);
 
     offset = fn_8040CEE8(offset);
 

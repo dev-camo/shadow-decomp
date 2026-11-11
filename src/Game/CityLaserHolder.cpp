@@ -171,7 +171,7 @@ void CityLaser::Update(float dt) {
 
         if (character.get() != 0) {
             Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
-            if (fn_8040CF50(&distance) < m_holder->m_params.rangeLength) {
+            if (fn_8040CF50(distance) < m_holder->m_params.rangeLength) {
                 SetState(1);
             }
         }
@@ -254,7 +254,7 @@ void CityLaser::Update(float dt) {
                                     const Fn8040Vector3 *position = target->GetPosition();
                                     Fn8040Vector3 point = fn_8040FC3C(&segment, position);
                                     Fn8040Vector3 clamped = *position - point;
-                                    if (fn_8040CF50(&clamped) > s_hitRadius.value) {
+                                    if (fn_8040CF50(clamped) > s_hitRadius.value) {
                                         fn_8040CE74(&clamped);
                                         fn_8040CE38(&clamped, s_hitRadius.value);
                                     }

@@ -47,7 +47,7 @@ TornadoTowing::TornadoTowing(Task *parent, Tornado *tornado, boost::shared_ptr<C
     center.y = 0.0f;
     Fn8040Vector3 toCenter = center - position;
 
-    float distance = fn_8040CF50(&toCenter);
+    float distance = fn_8040CF50(toCenter);
 
     if (distance > m_tornado->m_params.cylinderRadius) {
         /* Outside the cylinder the start is the point where a tangent from the character touches
@@ -147,8 +147,8 @@ bool TornadoTowing::MoveToCylinder(boost::shared_ptr<CharInfo> charInfo, float d
 
     float step = m_tornado->m_params.turnSpeed * dt;
 
-    if (fn_8040CF50(&toStart) <= step) {
-        step = fn_8040CF50(&toStart);
+    if (fn_8040CF50(toStart) <= step) {
+        step = fn_8040CF50(toStart);
         reached = true;
     }
 
@@ -192,7 +192,7 @@ bool TornadoTowing::Circle(boost::shared_ptr<CharInfo> charInfo, float dt) {
     Fn8040Vector3 offset = m_position - m_top;
     offset.y = 0.0f;
 
-    float radius = fn_8040CF50(&offset) - upStep;
+    float radius = fn_8040CF50(offset) - upStep;
 
     if (radius <= turnStep) {
         return true;

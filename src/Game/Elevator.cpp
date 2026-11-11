@@ -221,7 +221,7 @@ bool Elevator::IsNearestAway() {
         other.y = 0.0f;
 
         const Fn8040Vector3 &difference = other - self;
-        if (fn_8040CF2C(&difference) >= m_params.range * m_params.range) {
+        if (fn_8040CF2C(difference) >= m_params.range * m_params.range) {
             return true;
         }
     }

@@ -145,7 +145,7 @@ void Balloon::UpdateBody(float dt) {
         if (m_params.type == TYPE_STRAIGHT) {
             m_velocity = Fn8040Vector3(m_params.x, m_params.y, m_params.z);
 
-            float speed = fn_8040CF50(&m_velocity);
+            float speed = fn_8040CF50(m_velocity);
 
             if (m_params.sec != 0.0f) {
                 speed /= m_params.sec;
@@ -198,7 +198,7 @@ void Balloon::UpdateBody(float dt) {
         fn_8040CFF8(&end, &origin);
 
         Fn8040Vector3 offset = end - origin;
-        float halfLength = 0.5f * fn_8040CF50(&offset);
+        float halfLength = 0.5f * fn_8040CF50(offset);
 
         offset = fn_8040CEE8(offset);
         fn_8040CE38(&offset, halfLength - halfLength * std::cos(fn_8000AB90(angle)));

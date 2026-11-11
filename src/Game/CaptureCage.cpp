@@ -57,7 +57,7 @@ static void fn_800F48A8(boost::shared_ptr<CharInfo> hit, void *arg) {
 
     if (context != 0) {
         const Fn8040Vector3 &offset = context->m_position - hit->m_position;
-        float distanceSquared = fn_8040CF2C(&offset);
+        float distanceSquared = fn_8040CF2C(offset);
 
         if (distanceSquared < context->m_distanceSquared) {
             context->m_distanceSquared = distanceSquared;

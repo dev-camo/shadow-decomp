@@ -274,7 +274,7 @@ bool ThreatObj::IsCharacterInRange() {
     if (character.get() != 0) {
         Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
 
-        if (fn_8040CF50(&distance) < m_holder->m_params.radius) {
+        if (fn_8040CF50(distance) < m_holder->m_params.radius) {
             return true;
         }
     }

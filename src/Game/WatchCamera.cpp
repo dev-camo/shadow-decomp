@@ -373,7 +373,7 @@ void SetWatchCamera::WanderSight() {
     case 1: {
         fn_8040CFF8(&m_sightPosition, &m_sightVelocity);
         const Fn8040Vector3 &difference = m_sightPosition - m_sightGoal;
-        if (fn_8040CF50(&difference) <= 5.0f) {
+        if (fn_8040CF50(difference) <= 5.0f) {
             m_sightState = 0;
         }
         break;
