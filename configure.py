@@ -685,13 +685,16 @@ config.libs = [
                 # of the character info (the second branch skips the cast check), and the single
                 # natural test compiles to one branch fewer.
                 Object(NonMatching, "Game/TornadoCollision.cpp", cflags=cflags_game_cpp),
-                # 77 of the 78 functions have identical instructions (some refer to symbols that
-                # keep placeholder names). checked_delete<CityLaser> is a local symbol here where
-                # the original's is weak. SetState differs in 5 words (the order of the stack
-                # argument of the probe call and the moves around it). 63 of the 78 functions are
-                # in the original's relative order: among others, the vector implementation's clear
-                # (0x800E2404) is emitted after the vector's clear here, and remove_copy_if
-                # (0x800E24E4) after find_if.
+                # All 78 functions have identical instructions (some refer to symbols that keep
+                # placeholder names). checked_delete<CityLaser> is a local symbol here where the
+                # original's is weak. 63 of the 78 functions are in the original's relative order:
+                # among others, the vector implementation's clear (0x800E2404) is emitted after
+                # the vector's clear here, and remove_copy_if (0x800E24E4) after find_if. Raw
+                # section sizes as emitted, with the weak copies that the link discards (the
+                # original's in brackets): .text 0x30A8 (0x2000), .rodata 0x1B2 (0x168), .data
+                # 0x188 (0x128), .sdata 0x4C (0x38), .sbss 0x11 (0x18) and .sdata2 0x38 (0x38;
+                # writable here, read-only in the original). The unit is split in USA (GUPE8P)
+                # only. Normal builds link the original object.
                 Object(NonMatching, "Game/CityLaserHolder.cpp", cflags=cflags_game_cpp),
                 # All 11 functions have identical instructions, and the whole object matches once
                 # the 14 weak and local copies the linker discards are set aside, except the order

@@ -7,9 +7,8 @@
  * Definitions are ordered so that deferred inlining emits the functions at their original
  * addresses.
  *
- * NonMatching: SetState differs in five words (the order of the stack argument of fn_800C7A84 and
- * the moves around it), checked_delete<CityLaser> is a local symbol where the original's is weak,
- * and some functions are not in the original's order; see the notes in configure.py. */
+ * NonMatching: checked_delete<CityLaser> is a local symbol where the original's is weak, and some
+ * functions are not in the original's order; see the notes in configure.py. */
 #include "Game/AngleConversion.h"
 #include "Game/CharInfo.h"
 #include "Game/CommonBomb.h"
@@ -42,12 +41,20 @@ class CityLaserHolder;
 
 /* The height of the segment that goes up from the laser, and the radius around it that the bombs
  * are placed in: each bomb goes to the target's position, moved towards the nearest point of the
- * segment until it is at most s_hitRadius away from it (names inferred). */
-static UnkStartupFloat_800E2570 s_hitHeight(1000.0f);
-static UnkStartupFloat_800E2570 s_hitRadius(10.0f);
+ * segment until it is at most s_hitRadius away from it (names inferred).
+ * Matching workaround: the original sets these two floats and the two below with the unit's
+ * start-up function in .ctors (0x800E2570), which shows only that their initialisers are not
+ * constant expressions. UnkStartupFloat_800E2570 stands in for those initialisers, which are
+ * unknown. The const qualifier (inferred) is measured on s_beamRadius: with it SetState sets up
+ * the arguments of the fn_800C7A84 call in the original's order; as an UnkStartupFloat_800E2570
+ * object the load of s_beamRadius comes two instructions later and 5 of SetState's 221 words
+ * differ. On the other three the qualifier changes no instruction; they have it so that the file
+ * uses one form. Revisit when the original initialisers are known. */
+static const float s_hitHeight = UnkStartupFloat_800E2570(1000.0f).value;
+static const float s_hitRadius = UnkStartupFloat_800E2570(10.0f).value;
 /* The length and radius of the beam's probe (names inferred). */
-static UnkStartupFloat_800E2570 s_beamLength(500.0f);
-static UnkStartupFloat_800E2570 s_beamRadius(10.0f);
+static const float s_beamLength = UnkStartupFloat_800E2570(500.0f).value;
+static const float s_beamRadius = UnkStartupFloat_800E2570(10.0f).value;
 
 /* The gadget parameters in the order of the descriptor's table below. */
 struct CityLaserParams {
@@ -214,8 +221,7 @@ void CityLaser::Update(float dt) {
 
                     const Fn8040Vector3 &position = m_charInfo->m_position;
                     UnkSegment_80020A20 segment(
-                        Fn8040Vector3(position.x, s_hitHeight.value + position.y, position.z),
-                        position);
+                        Fn8040Vector3(position.x, s_hitHeight + position.y, position.z), position);
 
                     for (UnkProbeIterator_80027374 iterator(hits->fn_8001EE04());
                          iterator.node != hits->fn_8001EDEC(); fn_80027374(&iterator, 0)) {
@@ -254,9 +260,9 @@ void CityLaser::Update(float dt) {
                                     const Fn8040Vector3 *position = target->GetPosition();
                                     Fn8040Vector3 point = fn_8040FC3C(&segment, position);
                                     Fn8040Vector3 clamped = *position - point;
-                                    if (fn_8040CF50(clamped) > s_hitRadius.value) {
+                                    if (fn_8040CF50(clamped) > s_hitRadius) {
                                         fn_8040CE74(&clamped);
-                                        fn_8040CE38(&clamped, s_hitRadius.value);
+                                        fn_8040CE38(&clamped, s_hitRadius);
                                     }
                                     fn_8040CFF8(&point, &clamped);
                                     SpawnBomb(&point);
@@ -324,12 +330,12 @@ void CityLaser::SetState(int state) {
         m_model->fn_80160C28(1);
         m_model->fn_80160B18(1);
 
-        float halfLength = 0.5f * s_beamLength.value;
+        float halfLength = 0.5f * s_beamLength;
         Fn8040Vector3 offset(0.0f, halfLength, 0.0f);
         UnkRotation3 rotation(fn_8000AB90(90.0f), 0.0f, 0.0f);
 
         m_probe = fn_800C7A84(fn_80021B08(), boost::weak_ptr<CharInfo>(m_charInfo), halfLength,
-                              s_beamRadius.value, 0x40000, 15, 0, &offset, &rotation, 0);
+                              s_beamRadius, 0x40000, 15, 0, &offset, &rotation, 0);
         fn_801690D0(fn_800CB69C(), m_tag, 1);
         SpawnBomb(&m_charInfo->m_position);
         UpdateModelMatrix();
@@ -377,7 +383,7 @@ void CityLaser::DrawRange() {
     fn_802E0E84(&m_charInfo->m_position, lbl_805F06D8, m_holder->m_params.rangeLength);
     fn_802E0E84(&m_charInfo->m_position, UnkDebugColor_802E0E84(0xC0, 0xFF, 0xFF, 0), 50.0f);
 
-    halfLength = 0.5f * s_beamLength.value;
+    halfLength = 0.5f * s_beamLength;
     up.x = 0.0f;
     up.y = halfLength;
     up.z = 0.0f;
@@ -386,9 +392,9 @@ void CityLaser::DrawRange() {
     rotation.z = 0.0f;
     const Fn8040Vector3 &center = m_charInfo->m_position + up;
     fn_802E0B7C(&center, &rotation, UnkDebugColor_802E0E84(0xC0, 0xFF, 0xFF, 0), 0, halfLength,
-                s_beamRadius.value);
+                s_beamRadius);
 
-    halfLength = 0.5f * s_hitHeight.value;
+    halfLength = 0.5f * s_hitHeight;
     hitUp.x = 0.0f;
     hitUp.y = halfLength;
     hitUp.z = 0.0f;
@@ -397,7 +403,7 @@ void CityLaser::DrawRange() {
     hitRotation.z = 0.0f;
     const Fn8040Vector3 &hitCenter = m_charInfo->m_position + hitUp;
     fn_802E0B7C(&hitCenter, &hitRotation, UnkDebugColor_802E0E84(0x80, 0, 0, 0xFF), 0, halfLength,
-                s_hitRadius.value);
+                s_hitRadius);
 }
 
 void CityLaserHolder::CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
