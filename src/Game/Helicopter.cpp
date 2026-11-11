@@ -225,11 +225,8 @@ void Helicopter::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
         fn_800C9F14(owner, &center);
 
-        /* Bound to a const reference so the temporary is used in place, as in the original (the
-         * rotation sits below the named locals on the stack). */
-        const UnkRotation3 &rotation = UnkRotation3(0.5f * lbl_805FAD38, 0.0f, 0.0f);
-
-        fn_802E0C60(&center, &rotation, 0, 2.5f, m_params.moveParam0);
+        fn_802E0C60(center, UnkRotation3(0.5f * lbl_805FAD38, 0.0f, 0.0f), 0, 2.5f,
+                    m_params.moveParam0);
         break;
     }
     }

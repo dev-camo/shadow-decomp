@@ -607,7 +607,7 @@ int StonePole::IsCharacterInRange() {
 void StonePole::DrawRange() {
     UnkRotation3 rotation(0.5f * lbl_805FAD38, 0.0f, 0.0f);
 
-    fn_802E0C60(&m_charInfo->m_position, &rotation, 0, m_holder->m_params.rangeHeight,
+    fn_802E0C60(m_charInfo->m_position, rotation, 0, m_holder->m_params.rangeHeight,
                 m_holder->m_params.rangeRadius);
 }
 

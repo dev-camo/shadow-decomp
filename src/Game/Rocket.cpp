@@ -332,7 +332,7 @@ void RocketBase::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
         fn_802E0B58(UnkSegment_80020A20(start, end), lbl_805F06D8);
 
         UnkRotation3 rotation(fn_8000AB90(90.0f), 0.0f, 0.0f);
-        fn_802E0C60(&end, &rotation, 0, m_params.distance, lbl_805F8560);
+        fn_802E0C60(end, rotation, 0, m_params.distance, lbl_805F8560);
     }
 }
 

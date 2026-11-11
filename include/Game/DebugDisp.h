@@ -47,8 +47,16 @@ void fn_802E0B7C(const Fn8040Vector3 *center, const UnkRotation3 *rotation,
 void fn_802E0D6C(const Fn8040Vector3 *position, const UnkRotation3 *rotation, int arg2, float arg3,
                  float arg4);
 /* Forwards to fn_802E0B7C (a cylinder) with the colour lbl_805F06D8 and arg2 as its integer flag
- * (behaviour inferred from the 0x28-byte wrapper; the original function name is unknown). */
-void fn_802E0C60(const Fn8040Vector3 *center, const UnkRotation3 *rotation, int arg2,
+ * (behaviour inferred from the 0x28-byte wrapper; the original function name is unknown). The
+ * const reference parameters are inferred from ElecFan's range drawing, which matches the original
+ * only with the centre and the rotation as temporaries of the call: with either or both bound to a
+ * named const reference first (the forms a pointer parameter would need), or with both as named
+ * objects, it differs in 10 stack offsets or is one to four instructions longer. Helicopter and
+ * Tornado build the rotation as a temporary of the call too, but compile to the same code with the
+ * temporary bound to a named const reference, and the callers that pass named objects compile to
+ * the same code with pointer parameters. fn_802E0B7C and fn_802E0D6C keep pointers: their known
+ * callers pass named objects only. */
+void fn_802E0C60(const Fn8040Vector3 &center, const UnkRotation3 &rotation, int arg2,
                  float halfLength, float radius);
 /* Forwards to fn_802E0D94 with the colour lbl_805F06D8; that function creates a
  * SonicteamUSA::System::DebugDispBox (class name from RTTI) and queues it (behaviour inferred). The
