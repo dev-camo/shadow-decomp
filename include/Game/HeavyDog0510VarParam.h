@@ -37,8 +37,9 @@ class HeavyDog0510VarParam : public HeavyDogVarParam {
     /* 0x1F0 */ float field_0x1F0;
     /* Init stores the length of field_0xEC with its y set to 0 (fn_8040CF50). */
     /* 0x1F4 */ float field_0x1F4;
-    /* A float the function at 0x8026BF54 (USA) stores at 0x8026C024 and loads for arithmetic at
-     * 0x8026C030. */
+    /* HeavyDog0510CtrlUnit_Move's Update stores the horizontal distance of the boss from the
+     * origin here and then moves the value by a signed step towards field_0x1F4 (a negative step
+     * moves it away). */
     /* 0x1F8 */ float field_0x1F8;
     /* 0x1FC */ float field_0x1FC;
     /* 0x200 */ HeavyDog0510 *field_0x200; /* the boss task, stored by its Init */
