@@ -1780,8 +1780,8 @@ config.libs = [
             # 33 of the 34 functions have the original's words. The hit callback (0x8010F028)
             # differs in 22 words: the frame is 0xE0 instead of 0xD0 because the two int-to-float
             # conversions of the level index get their own 8-byte stack slots (the original reuses
-            # the float-to-int slot), and the level and the difference of the two table entries
-            # are in f3 and f2 instead of f2 and f3.
+            # the float-to-int slot), and the level and the difference of the two table entries are
+            # in f3 and f2 instead of f2 and f3.
             Object(NonMatching, "Game/JumpBoard.cpp", cflags=cflags_game_cpp),
             # The data matches once the linker-discarded weak and local copies are set aside, and
             # 33 of the 34 functions have the original's words (the function-local statics of
@@ -1899,13 +1899,13 @@ config.libs = [
             # Constructor temporary cleanup, rotation registers, and literal order still differ.
             # Constructor temporary cleanup and float literal pool order still differ.
             Object(NonMatching, "Game/ElecSmallCube.cpp", cflags=cflags_game_cpp),
-            # Every function but UpdateBody and the range drawing (fn_800CBC1C) is identical in
-            # every word and relocation. UpdateBody (0x80266BAC) differs in 6 of its 174 words: two
-            # loads take f0 and f1 the other way round, which changes the registers and operand
-            # order of the three floating-point multiplications that use them.
-            # fn_800CBC1C differs in 10 words, all stack offsets: the original's centre is made
-            # before the offset and rotation vectors it is computed from, as temporaries of a
-            # nested call would be; the debug shape functions take pointers here.
+            # 33 of the 34 functions have the original's words and relocations, with local symbols
+            # paired. UpdateBody (0x80266BAC) differs in 6 of its 174 words, in register numbers
+            # only: the loads from 0x48(r1) and 0x50(r1) take f1 and f0 where the original has f0
+            # and f1, the load from 0x44(r31) takes f3 instead of f0, and the three multiplications
+            # that square these values read those registers; the offsets and the registers of the
+            # three squares are the same. The compiled .sdata2 is writable (WA) where the original's
+            # is allocatable only (A).
             Object(NonMatching, "Game/ElecFan.cpp", cflags=cflags_game_cpp),
             # 34 of 35 functions and all data match once the weak copies the linker discards are
             # removed. __sinit_Meteor_cpp differs in 2 words: the original loads the saved link
