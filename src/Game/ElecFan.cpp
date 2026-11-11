@@ -97,13 +97,9 @@ void ElecFan::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 }
 
 void ElecFan::fn_800CBC1C(float) {
-    Fn8040Vector3 offset;
-    UnkRotation3 rotation;
-
-    rotation.Set(0.5f * lbl_805FAD38, 0.0f, 0.0f);
-    offset.Set(0.0f, 0.5f * m_params.height, 0.0f);
-    const Fn8040Vector3 &center = m_charInfo->m_position + offset;
-    fn_802E0C60(center, rotation, 0, 0.5f * m_params.height, m_params.radius);
+    fn_802E0C60(m_charInfo->m_position + Fn8040Vector3(0.0f, 0.5f * m_params.height, 0.0f),
+                UnkRotation3(0.5f * lbl_805FAD38, 0.0f, 0.0f), 0, 0.5f * m_params.height,
+                m_params.radius);
 }
 
 void ElecFan::CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
