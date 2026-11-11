@@ -1815,6 +1815,13 @@ Game/DiablonPartsCameraControl.cpp:
 	.sdata      start:0x805ED330 end:0x805ED358
 	.sdata2     start:0x805F9BC0 end:0x805F9BF8
 
+Game/FrameEffectPool.cpp:
+	.text       start:0x80328048 end:0x803285EC
+	.ctors      start:0x804AA004 end:0x804AA008
+	.rodata     start:0x8050D888 end:0x8050D8B0
+	.bss        start:0x80584F50 end:0x80585760
+	.sbss       start:0x805F0B50 end:0x805F0B58
+
 Game/TPjsEventActionFade.cpp:
 	.text       start:0x803285EC end:0x80328F30
 	.rodata     start:0x8050D8B0 end:0x8050D988

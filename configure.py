@@ -2281,6 +2281,7 @@ config.libs = [
             # read-only (A) and the source object's writable (WA), with identical 0x18 bytes.
             # Normal links use the original object.
             Object(NonMatching, "Game/BKTankController.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/FrameEffectPool.cpp", cflags=cflags_game_cpp),
             # 24 of the 26 functions have identical instructions and relocations; the other two
             # are shorter than the original's, the same in every region.
             # TPjsEventActionFade::Update is 0xD0 bytes in the original and 0xCC here: after
