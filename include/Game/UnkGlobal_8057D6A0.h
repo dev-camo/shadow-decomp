@@ -24,7 +24,11 @@ struct UnkRecord_802039C8 {
     /* CityChaosEmerald and GoalRing (unless its colour is 7) set it to 1 in their collision
      * callbacks (meaning unknown). */
     /* 0x19 */ u8 field_0x19;
-    /* 0x1A */ u8 field_0x1A[0x20 - 0x1A];
+    /* 0x1A */ u8 field_0x1A[0x1C - 0x1A];
+    /* In the branch of the .CEN reader's Update that takes an indexed position from the current
+     * record of fn_800CBAA4's object, it is the index when field_0x9 is clear; the other
+     * branches do not read it (meaning unknown). */
+    /* 0x1C */ s32 field_0x1C;
     /* While it is set, ElecSecurityCode's update returns true right after its model update (the
      * model's fn_80162FB0, called only when the model pointer is not null), skipping its state,
      * model matrix and part updates (meaning unknown). WarpHole's ManagerTask sets it through
