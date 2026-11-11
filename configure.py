@@ -2245,6 +2245,7 @@ config.libs = [
             Object(Matching, "Game/BombServer.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/GunLift.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Researcher.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/EnemyTarget.cpp", cflags=cflags_game_cpp),
             # 60 of the 61 functions have identical instructions and relocations, and the retained
             # data and relocations match, once the weak and local definitions (58 weak copies and
             # 18 local ones: boost and math helpers, vtables, RTTI records, string and float
