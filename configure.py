@@ -1174,8 +1174,9 @@ config.libs = [
                 extra_cflags=["-Cpp_exceptions on"],
                 extab_padding=b"\xac\x02",
             ),
-            # All 46 functions except LoadFile match individually; its allocation passes line 47
-            # instead of 137. The map helpers emit in a different order, and an extra weak
+            # 45 of its 46 functions match individually. LoadFile (57 words, 228 bytes) differs
+            # in one allocation immediate: it passes line 47 instead of 137. The map helpers emit
+            # in a different order, and an extra weak
             # CMemoryAlloc::FreeObject copy is emitted without a reference from this unit.
             # Weak byte-holder and CFunctorBase destructors and their 12-byte and 16-byte tables
             # are also emitted. They shift the CTexList table: source .data is 66 bytes versus
