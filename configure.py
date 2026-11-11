@@ -2912,6 +2912,27 @@ config.libs = [
             # lacks the original's last 8 bytes (the 1.0 and 5.0 that its start-up function
             # loads). Normal builds link the original object.
             Object(NonMatching, "Game/WeaponSpecialShadowRifle.cpp", cflags=cflags_game_cpp),
+            # (GUPP8P): eight of the 10 functions have identical words and relocation targets once
+            # one extra definition in the compiled object is set aside for the comparison: the weak
+            # copy of Fn8040Vector3's copy constructor, which the original calls but does not
+            # define. PlayShotEffects is 92 bytes against the original's 96: the original copies the
+            # pointer to the frame's matrix that fn_80063234 returns to r0, sets r3 to the result
+            # slot and then moves r0 to r4, where this build moves it to r4 directly. Aligned, 1
+            # paired word differs and 1 word is original-only; compared position by position, 16
+            # of the 23 paired words differ (15 raw words and one branch with a different
+            # relocation target). The start-up function is 28 bytes against 52: the original also
+            # stores 1.0 and 5.0 into both descriptions at 0x10 and 0x14, which are static data
+            # here. Aligned, the two stores of the names differ (stw here, stwu in the original)
+            # and 6 words are original-only (two lfs and four stfs); position by position, 3 of
+            # the 7 paired words differ. Raw section sizes, the original's first: .text 0x280 and
+            # 0x280, .ctors 4 and 4, .rodata 0x138 and 0x131, .data 0xC0 and 0xBC, .sdata 0x20 and
+            # 0x20, .sdata2 0x18 and 0xC. The section flags are the same except .sdata2, which is
+            # writable (WA) here and allocatable only (A) in the original. The data match by
+            # contents and relocation targets except the descriptions' four floats, which are
+            # zero in the original's .data, and .sdata2, which lacks the original's 1.0 and 5.0;
+            # the other size differences are zero bytes at the section ends (7 in .rodata, 4 in
+            # .data and 4 in .sdata2). Normal builds link the original object.
+            Object(NonMatching, "Game/WeaponSpecialHealCannon.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BossRootTask.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EscapePlane.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EscapePlaneRail.cpp", cflags=cflags_game_cpp),

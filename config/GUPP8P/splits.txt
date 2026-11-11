@@ -1272,6 +1272,14 @@ Game/ArkLaser.cpp:
 	.sbss       start:0x805F11D0 end:0x805F11F0
 	.sdata2     start:0x805F8EB8 end:0x805F8EF8
 
+Game/WeaponSpecialHealCannon.cpp:
+	.text       start:0x80275C38 end:0x80275EB8
+	.ctors      start:0x804AAF84 end:0x804AAF88
+	.rodata     start:0x804F8238 end:0x804F8370
+	.data       start:0x8054E308 end:0x8054E3C8
+	.sdata      start:0x805EBB18 end:0x805EBB38
+	.sdata2     start:0x805F8FD0 end:0x805F8FE8
+
 Game/WeaponSpecialShadowRifle.cpp:
 	.text       start:0x802771EC end:0x802775F8
 	.ctors      start:0x804AAF94 end:0x804AAF98
