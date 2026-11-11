@@ -2289,6 +2289,18 @@ config.libs = [
             # read-only (A) and the source object's writable (WA), with identical 0x18 bytes.
             # Normal links use the original object.
             Object(NonMatching, "Game/BKTankController.cpp", cflags=cflags_game_cpp),
+            # 24 of the 26 functions have identical instructions and relocations; the other two
+            # are shorter than the original's, the same in every region.
+            # TPjsEventActionFade::Update is 0xD0 bytes in the original and 0xCC here: after
+            # testing m_kind against 3 the original loads it again for the switch, where this
+            # source keeps the first load in r3. Aligned, 6 word pairs differ and 1 word is only
+            # in the original. fn_80328DDC is 0x70 bytes in the original and 0x60 here: after the
+            # original loads the manager pointer and tests it, it replaces a null pointer by a
+            # null constant and tests the result again (cmplwi r31,0; beq; b; li r31,0 before the
+            # second cmplwi); this source tests the loaded pointer once. Aligned, 1 word pair
+            # differs (a branch displacement) and 4 words are only in the original. Normal builds
+            # link the original object.
+            Object(NonMatching, "Game/TPjsEventActionFade.cpp", cflags=cflags_game_cpp),
             # 216 of the 219 functions have identical instructions and relocations once the weak and
             # local copies that the linker discards are removed. The static initialiser differs in 5
             # words: two registers swapped and the three roll velocities addressed from the start of

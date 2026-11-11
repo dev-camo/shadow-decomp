@@ -37,8 +37,8 @@ struct UnkRecord_802039C8 {
 CHECK_SIZEOF(UnkRecord_802039C8, 0x24);
 
 /* The 0x150-byte object at 0x8057D6A0 in .bss (placeholder name; the original name and type are
- * unknown). More than 400 functions across the game read it. Only the words at 0x18, 0x28, 0x90,
- * 0x94 and 0x98, the record at 0xA8 and the byte at 0x125 are mapped. */
+ * unknown). More than 400 functions across the game read it. Only the words at 0x18, 0x28, 0x44,
+ * 0x48, 0x90, 0x94 and 0x98, the bytes at 0x84 and 0x125 and the record at 0xA8 are mapped. */
 struct UnkGlobal_8057D6A0 {
     /* 0x00 */ u8 field_0x0[0x18];
     /* RollCircle divides the vector it passes to an attacked object by it, and
@@ -47,7 +47,12 @@ struct UnkGlobal_8057D6A0 {
     /* 0x18 */ float field_0x18;
     /* 0x1C */ u8 field_0x1C[0x28 - 0x1C];
     /* 0x28 */ float field_0x28; /* Coaster multiplies it by 540 (meaning unknown) */
-    /* 0x2C */ u8 field_0x2C[0x84 - 0x2C];
+    /* 0x2C */ u8 field_0x2C[0x44 - 0x2C];
+    /* TPjsEventActionFade takes the width and the height of the rectangle it fills from these two
+     * words (meaning unknown). */
+    /* 0x44 */ s32 field_0x44;
+    /* 0x48 */ s32 field_0x48;
+    /* 0x4C */ u8 field_0x4C[0x84 - 0x4C];
     /* While it is set, the SAVEPOINT gadget's CanSave returns false and its PauseWatch task clears
      * the gadget's flags 0 and 1; fn_801E2EDC clears it (meaning unknown). */
     /* 0x84 */ u8 field_0x84;

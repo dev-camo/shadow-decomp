@@ -28,6 +28,8 @@ void fn_800446D0(UnkManager_80044254 *manager, float value, int arg2, int arg3);
  * when arg2 is 0 it also stores 1.0f at 0x0 and never skips. WarpHole passes 1 (meaning
  * unknown). */
 void fn_800447B8(UnkManager_80044254 *manager, float value, int arg2);
+/* Returns the word at 0x14 of fn_80044254's manager. */
+s32 fn_80044E10(void);
 }
 
 #endif
