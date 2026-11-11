@@ -26,7 +26,7 @@ struct VineParams {
     VineParams() : radius(0.0f), attackSec(0.0f), reviveSec(0.0f) {}
 
     /* When the vine has no target, the nearest character (by distance in x, y and z) becomes it if
-     * its horizontal distance is within this. */
+     * its squared horizontal distance is less than this value squared. */
     /* 0x0 */ float radius;
     /* 0x4 */ float attackSec; /* the wait before each attack */
     /* 0x8 */ float reviveSec; /* how long the vine stays down before it grows again */
@@ -35,14 +35,14 @@ CHECK_SIZEOF(VineParams, 0xC);
 
 /* Vine::Vine (class name from RTTI; the gadget's descriptor is "FIRE_VINE"): a plant of two models
  * of VINE.BIN, the vine and its seed, each playing a motion sequence table. While it waits and its
- * target has expired, it takes the nearest character (chosen by full xyz distance) if that is
- * within its radius horizontally (x/z distance), and it keeps that target until the horizontal
- * distance exceeds the radius plus 10; losing the target leaves the stored target position
- * unchanged. It updates that position while waiting and turns towards the stored position while
- * waiting or attacking. After "attack sec" with a target it plays its attack motion, which shoots
- * a Vine::FireBall towards the stored position from the vine's frame with id 1. Attacks take its
- * health of 3; when that is used up it dies, stays down for "revive sec" and grows again
- * (behaviour inferred). Method and member names are inferred. */
+ * target has expired, it takes the nearest character (chosen by full xyz distance) if its squared
+ * horizontal (x/z) distance is less than the radius squared, and it keeps that target until the
+ * squared horizontal distance exceeds (radius + 10) squared; losing the target leaves the stored
+ * target position unchanged. It updates that position while waiting and turns towards the stored
+ * position while waiting or attacking. After "attack sec" with a target it plays its attack
+ * motion, which shoots a Vine::FireBall towards the stored position from the vine's frame with
+ * id 1. Attacks take its health of 3; when that is used up it dies, stays down for "revive sec"
+ * and grows again (behaviour inferred). Method and member names are inferred. */
 class Vine : public Gadget {
   public:
     /* m_state values (names inferred from what each state does). Nothing in this file enters
@@ -98,10 +98,10 @@ class Vine : public Gadget {
      * speed of 3, and plays sound 0x7543 there; otherwise it does nothing. */
     void ShootFireBall();
     /* Keeps m_targetInfo and m_targetPosition up to date and returns whether there is a target.
-     * Without a target it takes the character nearest to the character info when that is within
-     * the radius; it drops a target that has moved further than GetLoseDistanceSq allows. These two
-     * checks use the horizontal (x/z) distance; the nearest character is chosen by full xyz
-     * distance. */
+     * Without a target it takes the character nearest to the character info when its squared
+     * distance is less than the radius squared; it drops a target whose squared distance exceeds
+     * GetLoseDistanceSq, (radius + 10) squared. These two checks use the horizontal (x/z)
+     * distance; the nearest character is chosen by full xyz distance. */
     bool UpdateTarget();
     /* The squared distance beyond which a target is dropped: the radius plus 10, squared. */
     float GetLoseDistanceSq();
@@ -159,20 +159,24 @@ struct FireBallParam_8014EDBC {
     FireBallParam_8014EDBC &operator=(const FireBallParam_8014EDBC &other);
 
     /* 0x00 */ Fn8040Vector3 m_position;
-    /* 0x0C */ Fn8040Vector3 m_velocity; /* added to the position at each update */
+    /* Added to the position at each flying update whose segment meets no world. */
+    /* 0x0C */ Fn8040Vector3 m_velocity;
     /* 0x18 */ float m_lifetime;
 };
 CHECK_SIZEOF(FireBallParam_8014EDBC, 0x1C);
 
 /* Vine::FireBall (class name from RTTI): the fire ball that the vine shoots. A clone of the clump
- * JG0000FVINEBALL.DFF with the collision of JG0000FVINEBALL.CCL; each update it moves along its
- * velocity unless the segment to its next position meets the world, in which case it moves to the
- * hit point and marks a blast; its probe's collision callback also marks a blast while it flies.
- * A marked blast creates a Vine::FireBallBlast at the next update and enters state 3. When the
- * lifetime becomes negative the update also enters state 3 (still updating the clump and handles
- * that time); in an update where the segment hits and the lifetime runs out, the expiry overwrites
- * the marked blast and no blast is created. State 3 sets the task's finished flag at the next
- * update (behaviour inferred). Method and member names are inferred. */
+ * JG0000FVINEBALL.DFF with the collision of JG0000FVINEBALL.CCL. Its first update sets the flying
+ * state (1) without moving it; the clump and the collision handle are still updated in that update,
+ * and the handle can already call the collision callback. Each flying update adds its velocity to
+ * the position unless the segment to its next position meets the world, in which case it moves to
+ * the hit point and marks a blast; its probe's collision callback also marks a blast while it
+ * flies. A marked blast creates a Vine::FireBallBlast at the next update and enters state 3. When
+ * the lifetime, which only flying updates reduce, becomes negative the update also enters state 3
+ * (still updating the clump and handles that time); in an update where the segment hits and the
+ * lifetime runs out, the expiry overwrites the marked blast and no blast is created. State 3 sets
+ * the task's finished flag at the next update (behaviour inferred). Method and member names are
+ * inferred. */
 class FireBall : public Task {
   public:
     FireBall(Task *parent, const FireBallParam_8014EDBC &param);
@@ -201,9 +205,11 @@ class FireBall : public Task {
 CHECK_SIZEOF(FireBall, 0x68);
 
 /* Vine::FireBallBlast (class name from RTTI): the blast of a fire ball, a probe sphere at a fixed
- * position. It plays sound 0x7544 and starts effect 0x1A; after 0.13 seconds it gives the probe an
- * attack object and grows its radius from 5 to 15 over the next 0.87 seconds, then finishes
- * (behaviour inferred). Method and member names are inferred. */
+ * position. It plays sound 0x7544 and starts effect 0x1A. After 0.13 seconds, if it has a handle,
+ * it requests an attack object for the handle's probe, configures the attack only if the returned
+ * weak pointer locks, and sizes the probe to the radius. The radius, 5 from its first update,
+ * grows to 15 over the next 0.87 seconds, resizing the probe only when the handle exists; then it
+ * finishes (behaviour inferred). Method and member names are inferred. */
 class FireBallBlast : public Task {
   public:
     FireBallBlast(Task *parent, const Fn8040Vector3 *position);
