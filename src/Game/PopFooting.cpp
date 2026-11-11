@@ -4,11 +4,7 @@
  * each copy with a character info of its own, and plays a sound while it is in motion. The
  * parameters are the model number and the waiting times. File name inferred from the class.
  * Method names marked "(name inferred)" are not original. Definitions are in reverse address
- * order (deferred inlining emits functions last-defined first).
- *
- * NonMatching: 11 of the 12 functions have identical instructions. UpdateBody differs in 8 of
- * its 125 words, all in the case that moves the footing back: the original keeps the hidden depth
- * in f0 and the height in f1 (here f2 and f0), with the same instructions and order. */
+ * order (deferred inlining emits functions last-defined first). */
 #include "Game/CharInfo.h"
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
@@ -26,8 +22,14 @@
 static const char *s_modelFile = "POPFOOTING.BIN";
 
 /* Two floats that the original builds at startup (names inferred from their uses): the distance
- * back along its own z axis at which the footing waits hidden, and the speed at which it moves. */
-static UnkStartupFloat_800E2570 s_hiddenDepth(80.0f);
+ * back along its own z axis at which the footing waits hidden, and the speed at which it moves.
+ * Matching workaround: the original sets the depth with a start-up function in .ctors (a constant
+ * initialiser would be emitted as initialised .sdata data instead). UnkStartupFloat_800E2570
+ * stands in for the original initialiser expression and gives the start-up function; the const
+ * qualifier is what lets UpdateBody load the depth before it stores the new height when the
+ * footing moves back, as the original does (a non-const object may alias that store, and is then
+ * loaded after it). Revisit when the original initialiser is found. */
+static const float s_hiddenDepth = UnkStartupFloat_800E2570(80.0f).value;
 static UnkStartupFloat_800E2570 s_speed(10.0f);
 
 namespace PopFooting {
@@ -113,13 +115,11 @@ void SetPopFooting::UpdateBody(float dt) {
     }
 
     switch (m_state) {
-    case 0: {
-        float hiddenDepth = s_hiddenDepth.value;
+    case 0:
         m_timer = m_secBegin;
-        m_height = -hiddenDepth;
+        m_height = -s_hiddenDepth;
         m_state = 1;
         break;
-    }
 
     case 1:
         m_timer -= dt;
@@ -147,17 +147,15 @@ void SetPopFooting::UpdateBody(float dt) {
         }
         break;
 
-    case 4: {
-        float hiddenDepth = s_hiddenDepth.value;
+    case 4:
         m_height -= s_speed.value * dt;
-        if (m_height < -hiddenDepth) {
-            m_height = -hiddenDepth;
+        if (m_height < -s_hiddenDepth) {
+            m_height = -s_hiddenDepth;
             m_state = 1;
             m_timer = m_secBegin;
             m_flags.Reset(0);
         }
         break;
-    }
 
     case 5:
         break;

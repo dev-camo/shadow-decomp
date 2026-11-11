@@ -692,10 +692,7 @@ config.libs = [
                 # .sdata2 relocations of the functions point at other offsets.
                 Object(NonMatching, "Game/ElecCube.cpp", cflags=cflags_game_cpp),
                 Object(NonMatching, "Game/GrindGadget.cpp", cflags=cflags_game_cpp),
-                # 11 of 12 functions have identical instructions. UpdateBody differs in 8 words, all
-                # register numbers in the case that moves the footing back (the hidden depth and the
-                # height are in f2 and f0 here, f0 and f1 in the original).
-                Object(NonMatching, "Game/PopFooting.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/PopFooting.cpp", cflags=cflags_game_cpp),
                 # All 33 functions have identical words. The data sections are not compared: the
                 # compiled object's .data and .sbss are 0x104 and 0x2D bytes against the original's
                 # 0xC0 and 0x10.
