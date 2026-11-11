@@ -197,8 +197,10 @@ static inline RwMatrix *MatFXEnvMapMatrix(RwFrame *frame, RwMatrix *ltm, RwMatri
 }
 
 /* Loads a texture matrix that maps normals into an environment map projected from a frame (or the
- * camera) (name inferred). Not inline: its out-of-line copy, which the linker strips, comes first in
- * the unit and so places its literals first. */
+ * camera) (name inferred). An ordinary static function: both calls are expanded under the unit's
+ * inline_max_size(400) setting, and the unused body the compiler still emits comes first in the
+ * unit, so its literals come first in .sdata2, as in the original. Declared inline, the body is not
+ * emitted and the literal order and four local relocation targets change. */
 static void MatFXLoadEnvMapMatrix(Mtx texMatrix, RwFrame *frame, RwMatrix *ltm, u32 id) {
     RwMatrix objectMatrix;
     RwMatrix frameMatrix;
