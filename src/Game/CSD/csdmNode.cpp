@@ -200,7 +200,7 @@ void CNode::fn_8036A728() {
     }
 }
 
-void CNode::fn_8036A44C(const ChannelMap::iterator &node) {
+void CNode::fn_8036A44C(ChannelMap::iterator &node) {
     switch (node->first) {
     case CHANNEL_HIDDEN:
         SetHidden(node->second->GetHidden());
