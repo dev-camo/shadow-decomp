@@ -2280,6 +2280,15 @@ config.libs = [
             # identical to the original's, which has 4 more bytes of zero padding. Normal links
             # use the original object.
             Object(NonMatching, "Game/BKTankColi.cpp", cflags=cflags_game_cpp),
+            # 27 of the 28 functions have identical instructions and relocations in all three
+            # regions. BKTankController::Controller::OnCommand is 0x310 bytes here and 0x308 in the
+            # original: in the AccelerateCommand case the original loads the path control pointer
+            # once for the three stores of the speed and acceleration statements, this source loads
+            # it before each of them (two more loads), and the saved registers of this and the
+            # command are exchanged. In all three regions the original object's .sdata2 is
+            # read-only (A) and the source object's writable (WA), with identical 0x18 bytes.
+            # Normal links use the original object.
+            Object(NonMatching, "Game/BKTankController.cpp", cflags=cflags_game_cpp),
             # 216 of the 219 functions have identical instructions and relocations once the weak and
             # local copies that the linker discards are removed. The static initialiser differs in 5
             # words: two registers swapped and the three roll velocities addressed from the start of
