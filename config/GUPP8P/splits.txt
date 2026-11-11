@@ -1272,6 +1272,14 @@ Game/ArkLaser.cpp:
 	.sbss       start:0x805F11D0 end:0x805F11F0
 	.sdata2     start:0x805F8EB8 end:0x805F8EF8
 
+Game/WeaponSpecialShadowRifle.cpp:
+	.text       start:0x802771EC end:0x802775F8
+	.ctors      start:0x804AAF94 end:0x804AAF98
+	.rodata     start:0x804F8650 end:0x804F87A8
+	.data       start:0x8054E620 end:0x8054E6B8
+	.sdata      start:0x805EBBA8 end:0x805EBBC8
+	.sdata2     start:0x805F9040 end:0x805F9058
+
 Game/BossRootTask.cpp:
 	.text       start:0x8027E200 end:0x8027E4CC
 	.ctors      start:0x804AAFB0 end:0x804AAFB4

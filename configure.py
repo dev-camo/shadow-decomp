@@ -2897,6 +2897,27 @@ config.libs = [
             Object(Matching, "Game/BackDrop.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/HeavyDog0510CtrlUnit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ArkLaser.cpp", cflags=cflags_game_cpp),
+            # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
+            # (GUPP8P): nine of the 11 functions have identical words and relocation targets once
+            # eight extra definitions in the compiled object are set aside for the comparison: six
+            # weak ones (the weak_ptr<EffectElement> and weak_count destructors, Fn8040Vector3's
+            # copy constructor and sp_counted_base's destructor, destruct and vtable) and two local
+            # ones (sp_counted_base's RTTI record and name string). PlayShotEffects is 156 bytes
+            # against the original's 160: the original copies the pointer to the frame's matrix that
+            # fn_80063234 returns to r0, sets r3 to the result slot and then moves r0 to r4, where
+            # this build moves it to r4 directly.
+            # Aligned, 1 paired word differs and 1 word is original-only; compared position by
+            # position, 30 of the 39 paired words differ (29 raw words and one branch with a
+            # different relocation target). The start-up function is 16 bytes against 32: the
+            # original also stores 1.0 and 5.0 into the description at 0x10 and 0x14, which are
+            # static data here (2 of the 4 paired words differ and 4 words are original-only). Raw
+            # section sizes, the original's first: .text 0x40C and 0x554, .ctors 4 and 4, .rodata
+            # 0x158 and 0x177, .data 0x98 and 0xAC, .sdata 0x20 and 0x24, .sdata2 0x18 and 0x10.
+            # With those eight definitions set aside, the data match by contents except the
+            # description's two floats, which are zero in the original's .data, and .sdata2, which
+            # lacks the original's last 8 bytes (the 1.0 and 5.0 that its start-up function
+            # loads). Normal builds link the original object.
+            Object(NonMatching, "Game/WeaponSpecialShadowRifle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BossRootTask.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EscapePlane.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EscapePlaneRail.cpp", cflags=cflags_game_cpp),
