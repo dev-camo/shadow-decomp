@@ -29,10 +29,11 @@ typedef struct Fn8040Vector3 {
      * members. Not every copy goes through them: fn_800C9F14 copies a position component by
      * component (0x800C9F18-0x800C9F34).
      * Both are inline functions that the original calls out of line. Their copies directly
-     * follow fn_80008E2C (0x80008E2C), which has the lowest call of each in the game, and
-     * together with the copy of operator*(vector, float) (0x800091A4) they are in reverse order
-     * of their first calls in it (0x80009040, 0x80008ED4, 0x80008E94). This compiler puts the
-     * out-of-line copies of inline functions there: after the function that first calls them.
+     * follow CameraModeMtnViewer's UnkSlot1 (0x80008E2C, fn_80008DA8.cpp), which has the lowest
+     * call of each in the game, and together with the copy of operator*(vector, float)
+     * (0x800091A4) they are in reverse order of their first calls in it (0x80009040, 0x80008ED4,
+     * 0x80008E94). This compiler puts the out-of-line copies of inline functions there: after
+     * the function that first calls them.
      * Matching workaround: both bodies store the components through Set. The game is compiled
      * with an inline depth of one, where a function whose body calls an inline function is not
      * expanded at its uses (measured: at a depth of two both members are expanded at every use
@@ -230,7 +231,7 @@ void fn_8040CFF8(Fn8040Vector3 *result, const Fn8040Vector3 *value);
 float fn_8040D180(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 /* The length of a - b (behaviour inferred). */
 float fn_8040D1B4(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
-/* Stores the three components and returns vector (fn_80008E1C.c; many callers in the original
+/* Stores the three components and returns vector (fn_80008DA8.cpp; many callers in the original
  * pass the returned address on). */
 Fn8040Vector3 *fn_80008E1C(Fn8040Vector3 *vector, float x, float y, float z);
 /* Matrix helpers of the segment in fn_8040B034.cpp. Their original names are unknown and their

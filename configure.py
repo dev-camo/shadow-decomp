@@ -2872,7 +2872,7 @@ config.libs = [
             Object(NonMatching, "Game/EffectLocusRW3.cpp", cflags=cflags_effect_rw3),
             Object(Matching, "Game/fn_80008D48.c"),
             Object(Matching, "Game/fn_80008DA4.c"),
-            Object(Matching, "Game/fn_80008E1C.c"),
+            Object(Matching, "Game/fn_80008DA8.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/WeaponStickBase.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/FallBuildingHolder.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ChaoHolder.cpp", cflags=cflags_game_cpp),

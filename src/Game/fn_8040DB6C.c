@@ -1,10 +1,5 @@
+#include "Game/fn_8040DB6C.h"
 #include "layout_check.h"
-
-/* A 44-byte array element; its contents are unknown. */
-typedef struct Fn8040DB6CEntry {
-    /* 0x00 */ char data[44];
-} Fn8040DB6CEntry;
-CHECK_SIZEOF(Fn8040DB6CEntry, 0x2C);
 
 /* Returns &base[index]. */
 Fn8040DB6CEntry *fn_8040DB6C(Fn8040DB6CEntry *base, unsigned int index) {
