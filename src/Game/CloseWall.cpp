@@ -5,11 +5,7 @@
  * move towards the position by "speed" times dt at each update, requesting sound 0x7849, until
  * they are s_closedOffset away from it (behaviour inferred). File name inferred from the class.
  * Method names marked "(name inferred)" are not original. Definitions are in reverse address order
- * (deferred inlining emits functions last-defined first).
- *
- * NonMatching: 6 of UpdateBody's 91 words differ. The original loads s_closedOffset into f2 before
- * the store to m_offset; this source loads it into f1 after that store and the reload of m_offset,
- * so four words are shifted by one and the compare and the store that use the value name f1. */
+ * (deferred inlining emits functions last-defined first). */
 /* TNumEdit.h comes before CharaColliBaseCharInfo.h, in the order their names appear in the unit's
  * .rodata (alphabetical order would reverse them). */
 #include "Game/TNumEdit.h"
@@ -27,12 +23,13 @@
 #include "boost/weak_ptr.hpp"
 
 /* The distance from the position at which the walls stop closing (name inferred).
- * Matching workaround: UnkStartupFloat_800E2570 stands in for the original type of this variable.
- * The original sets it with a start-up function in .ctors (a constant float initialiser would be
- * emitted as initialised .sdata data instead). The original also loads it in UpdateBody before the
- * store to m_offset, which a const float with a start-up initialiser reproduces and this stand-in
- * does not. Revisit when the original type or initialiser is found. */
-static UnkStartupFloat_800E2570 s_closedOffset(40.0f);
+ * Matching workaround: the original sets this float with the unit's start-up function in .ctors,
+ * which shows only that its initialiser is not a constant expression. UnkStartupFloat_800E2570
+ * stands in for that initialiser, which is unknown. The const qualifier (inferred) lets UpdateBody
+ * load the value before the store to m_offset, as the original does; as an
+ * UnkStartupFloat_800E2570 object it is loaded after that store (6 of UpdateBody's 91 words
+ * differ). Revisit when the original initialiser is known. */
+static const float s_closedOffset = UnkStartupFloat_800E2570(40.0f).value;
 
 namespace CloseWall {
 
@@ -85,8 +82,8 @@ void SetCloseWall::UpdateBody(float dt) {
 
     case 2: {
         m_offset -= m_params.speed * dt;
-        if (m_offset <= s_closedOffset.value) {
-            m_offset = s_closedOffset.value;
+        if (m_offset <= s_closedOffset) {
+            m_offset = s_closedOffset;
             m_state = 3;
         }
 

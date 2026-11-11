@@ -1885,8 +1885,7 @@ config.libs = [
             # 0x213 (0x1C8), and .sdata2 is writable where the original's is read-only. Normal
             # builds link the original object.
             Object(NonMatching, "Game/BASwitch.cpp", cflags=cflags_game_cpp),
-            # UpdateBody loads the startup float after the store to the offset (6 of 91 words).
-            Object(NonMatching, "Game/CloseWall.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/CloseWall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DefenseWall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecCircuitColli.cpp", cflags=cflags_game_cpp),
             # Constructor temporary cleanup, rotation registers, and literal order still differ.
