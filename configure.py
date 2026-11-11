@@ -1279,11 +1279,9 @@ config.libs = [
             # calls and operations. Rotation, pattern and the three value cases expand the arrows
             # to six words instead of four, adding eight bytes per case. All 97 native functions
             # are emitted, with 95 identical instruction bodies. In USA (GUPE8P), Japan (GUPJ8P)
-            # and PAL (GUPP8P), the switch is 760 bytes versus 720, with 128 differing positional
-            # words and 10 extra words. Besides the five expanded cases and default/epilogue branch
-            # displacements, the prologue load order differs: the original saves LR and r31 and
-            # runs mr r31,r3 before lwz r5,0(r4); the source puts the load at +0x8, before
-            # stw r0,52(r1). The constructor differs in its allocation line (45 versus 51).
+            # and PAL (GUPP8P), the switch is 760 bytes versus 720, with 124 differing positional
+            # words and 10 extra source words. The five expanded cases and default/epilogue branch
+            # displacements remain. The constructor differs in its allocation line (45 versus 51).
             # The callback reference destructor has the original 0x198-byte body. The object also
             # emits a 0x20-byte weak typed-pointer remove copy, whose native definition is in Scene
             # at 0x803655D0 in USA, and a 0x1C-byte weak RCPtr<CNode>::operator-> copy that the

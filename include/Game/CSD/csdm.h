@@ -164,7 +164,7 @@ class CNode : public CElementDataRef, public CNodeListenerSource, public CBase {
     void fn_8036A728();
     void fn_8036A954();
     /* Transfers the selected channel from the referenced node (signature inferred). */
-    void fn_8036A44C(const ChannelMap::iterator &node);
+    void fn_8036A44C(ChannelMap::iterator &node);
 
     /* The accessors forward to the entry's CMotionPattern (names inferred). The translation is
      * in screen units. */
