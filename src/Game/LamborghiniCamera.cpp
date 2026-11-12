@@ -50,10 +50,10 @@ class LamborghiniImpl {
     void Start(const UnkCameraParams_8000B31C *params);
     /* The offset setters copy the offset into the offset that GetPoint uses and into field_0x44
      * or field_0x5C, which this file does not read otherwise. */
-    void SetFirstOffset(const Fn8040Vector3 *offset);
-    void SetFirstLimits(const Fn8040Vector2 *limits);
-    void SetSecondOffset(const Fn8040Vector3 *offset);
-    void SetSecondLimits(const Fn8040Vector2 *limits);
+    void SetFirstOffset(const Fn8040Vector3 &offset);
+    void SetFirstLimits(const Fn8040Vector2 &limits);
+    void SetSecondOffset(const Fn8040Vector3 &offset);
+    void SetSecondLimits(const Fn8040Vector2 &limits);
     /* Returns point with its y clamped to target's y +- limits.y (fn_80070460), then, when it is
      * more than limits.x from target, moved to target plus limits.x times the unit direction from
      * target to it. */
@@ -194,22 +194,22 @@ void LamborghiniImpl::Start(const UnkCameraParams_8000B31C *params) {
     }
 }
 
-void LamborghiniImpl::SetFirstOffset(const Fn8040Vector3 *offset) {
-    field_0x44 = *offset;
-    m_firstOffset = *offset;
+void LamborghiniImpl::SetFirstOffset(const Fn8040Vector3 &offset) {
+    field_0x44 = offset;
+    m_firstOffset = offset;
 }
 
-void LamborghiniImpl::SetFirstLimits(const Fn8040Vector2 *limits) {
-    m_firstLimits = *limits;
+void LamborghiniImpl::SetFirstLimits(const Fn8040Vector2 &limits) {
+    m_firstLimits = limits;
 }
 
-void LamborghiniImpl::SetSecondOffset(const Fn8040Vector3 *offset) {
-    field_0x5C = *offset;
-    m_secondOffset = *offset;
+void LamborghiniImpl::SetSecondOffset(const Fn8040Vector3 &offset) {
+    field_0x5C = offset;
+    m_secondOffset = offset;
 }
 
-void LamborghiniImpl::SetSecondLimits(const Fn8040Vector2 *limits) {
-    m_secondLimits = *limits;
+void LamborghiniImpl::SetSecondLimits(const Fn8040Vector2 &limits) {
+    m_secondLimits = limits;
 }
 
 Fn8040Vector3 LamborghiniImpl::ClampPoint(const Fn8040Vector3 &point, const Fn8040Vector3 &target,
@@ -364,19 +364,19 @@ void Lamborghini::Update(float dt) {
     m_impl->Update(dt);
 }
 
-void Lamborghini::SetFirstOffset(const Fn8040Vector3 *offset) {
+void Lamborghini::SetFirstOffset(const Fn8040Vector3 &offset) {
     m_impl->SetFirstOffset(offset);
 }
 
-void Lamborghini::SetFirstLimits(const Fn8040Vector2 *limits) {
+void Lamborghini::SetFirstLimits(const Fn8040Vector2 &limits) {
     m_impl->SetFirstLimits(limits);
 }
 
-void Lamborghini::SetSecondOffset(const Fn8040Vector3 *offset) {
+void Lamborghini::SetSecondOffset(const Fn8040Vector3 &offset) {
     m_impl->SetSecondOffset(offset);
 }
 
-void Lamborghini::SetSecondLimits(const Fn8040Vector2 *limits) {
+void Lamborghini::SetSecondLimits(const Fn8040Vector2 &limits) {
     m_impl->SetSecondLimits(limits);
 }
 

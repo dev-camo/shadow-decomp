@@ -1683,6 +1683,13 @@ Game/BKTankController.cpp:
 	.sbss       start:0x805F1BE8 end:0x805F1BF8
 	.sdata2     start:0x805FAC70 end:0x805FAC88
 
+Game/DiablonPartsCameraControl.cpp:
+	.text       start:0x80323BE8 end:0x803240C8
+	.rodata     start:0x8050E8B8 end:0x8050E958
+	.data       start:0x8055DA38 end:0x8055DA78
+	.sdata      start:0x805EE3E0 end:0x805EE408
+	.sdata2     start:0x805FAC88 end:0x805FACC0
+
 Game/TPjsEventActionFade.cpp:
 	.text       start:0x80329C44 end:0x8032A588
 	.rodata     start:0x8050EAF8 end:0x8050EBD0
