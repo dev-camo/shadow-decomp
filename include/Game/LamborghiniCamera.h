@@ -32,15 +32,15 @@ class Lamborghini {
     void Stop();
     void Update(float dt);
     /* The offset added to the first character's position (default the zero vector). */
-    void SetFirstOffset(const Fn8040Vector3 *offset);
+    void SetFirstOffset(const Fn8040Vector3 &offset);
     /* The distance (x) and height (y) by which the follow point may differ from the first
      * character's position plus its offset (defaults 10 and 20). */
-    void SetFirstLimits(const Fn8040Vector2 *limits);
+    void SetFirstLimits(const Fn8040Vector2 &limits);
     /* The offset added to the second character's position (default the zero vector). */
-    void SetSecondOffset(const Fn8040Vector3 *offset);
+    void SetSecondOffset(const Fn8040Vector3 &offset);
     /* The distance (x) and height (y) by which the look point may differ from the second
      * character's position plus its offset (defaults 80 and 20). */
-    void SetSecondLimits(const Fn8040Vector2 *limits);
+    void SetSecondLimits(const Fn8040Vector2 &limits);
     /* The lowest and highest pitch, in radians, of the look point seen from the follow point
      * (defaults -45 and 15 degrees). */
     void SetPitchLimits(float low, float high);

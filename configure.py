@@ -2261,6 +2261,12 @@ config.libs = [
             Object(NonMatching, "Game/LamborghiniCamera.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DiablonPartsBeam.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DiablonPartsBomb.cpp", cflags=cflags_game_cpp),
+            # The part destructor has one extra pointer reload (164 versus 160 bytes).
+            # Combining the two task clears in an inline member removes it, but no other
+            # original site or out-of-line copy establishes that member.
+            # Data agrees by contents/references; .sdata2 lacks three trailing zero
+            # bytes and has a writable flag.
+            Object(NonMatching, "Game/DiablonPartsCameraControl.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BKTank.cpp", cflags=cflags_game_cpp),
             # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
             # (GUPP8P): the 8 functions of the original unit have identical instructions and
