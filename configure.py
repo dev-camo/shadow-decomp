@@ -1935,6 +1935,7 @@ config.libs = [
             # .rodata (the type name and the tables and strings after it), 13 in .data and 26 in
             # .sdata (pointers to those strings) and 3 in .sdata2. The other four are BkWingSmall's.
             Object(NonMatching, "Game/BkWorm.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/PlayerOption.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerWatch.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerWeaponBase.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CharaColliBaseCharInfo.cpp", cflags=cflags_game_cpp),
