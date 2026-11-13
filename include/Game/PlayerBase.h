@@ -18,12 +18,20 @@ class UnkPlayerShared_80076D24;
 class Target;
 
 namespace Player {
+class Controller;
 class PlayerMotion;
 class WeaponBase;
 class Attack;
 class Effect;
 class SoundBase;
 } // namespace Player
+
+/* The 4-byte object that the pointer at 0x248 of a Player::PlayerBase refers to (placeholder name).
+ * Its constructor (fn_80095BD4, which the Player::Shadow constructor calls at 0x800ADB5C in USA
+ * (GUPE8P), and 13 other functions) allocates a 0x2C-byte object, constructs it with fn_80096954
+ * and keeps it in its only word; the functions below pass that object on. Declared incomplete:
+ * nothing recovered constructs, copies or destroys one. */
+class UnkObject_80095BD4;
 
 /* A partial view of the object at 0x24C of a Player::PlayerBase (placeholder name). The code at
  * 0x800AD4BC-0x800AD4C4 (USA) stores a Player::Shadow::PlayerTarget there, whose
@@ -133,11 +141,12 @@ CHECK_SIZEOF(PlayerObject, 0x68);
  * bit set at 0xA8 (the TornadoCollision gadget tests bit 0x14 of the set), the vectors at
  * 0xB8, 0xDC and 0x1C8 that Player::Behavior::Super reads, the vector at 0xE8 (the ElecFan gadget
  * scales it by -30 into the acceleration it sends the player), the owner at 0x218 (see
- * UnkOwner_80079E64) and the pointers at 0x22C (see UnkObject_800A78FC), 0x230 (see
- * Player::PlayerMotion), 0x244 (see UnkObject_80079BA4) and 0x24C (see
- * UnkTargetSource_80206574). Player::SoundBase's constructor stores the new sound task at 0x240
- * and its destructor clears it. The motion task dispatches events through the callback at 0x74
- * and mirrors its work flags at 0xB4; the attack and effect tasks occupy 0x234 and 0x23C.
+ * UnkOwner_80079E64) and the pointers at 0x224 (the Player::Controller task), 0x22C (see
+ * UnkObject_800A78FC), 0x230 (see Player::PlayerMotion), 0x244 (see UnkObject_80079BA4), 0x248
+ * (see UnkObject_80095BD4) and 0x24C (see UnkTargetSource_80206574). Player::SoundBase's
+ * constructor stores the new sound task at 0x240 and its destructor clears it. The motion task
+ * dispatches events through the callback at 0x74 and mirrors its work flags at 0xB4; the attack
+ * and effect tasks occupy 0x234 and 0x23C.
  *
  * Its vtable (0x80520310, 0x54 bytes) overrides the destructor and the first three CharInfo slots
  * and adds nine slots. The added slots are named after their implementations here, or, for the
@@ -193,7 +202,11 @@ class PlayerBase : public PlayerObject {
     /* 0x1C8 */ Fn8040Vector3 field_0x1C8;
     /* 0x1D4 */ u8 field_0x1D4[0x218 - 0x1D4];
     /* 0x218 */ UnkOwner_80079E64 field_0x218;
-    /* 0x21C */ u8 field_0x21C[0x22C - 0x21C];
+    /* 0x21C */ u8 field_0x21C[0x224 - 0x21C];
+    /* The constructor clears it. Player::Controller's constructor stores the new task here
+     * (0x8009ED98). */
+    /* 0x224 */ Controller *field_0x224;
+    /* 0x228 */ u8 field_0x228[0x22C - 0x228];
     /* May be null. The command handlers of Player::ExternalOption and Player::InternalOption pass
      * it to fn_800A78FC with a command of type 0x1C. */
     /* 0x22C */ UnkObject_800A78FC *field_0x22C;
@@ -208,7 +221,10 @@ class PlayerBase : public PlayerObject {
     /* The constructor clears it (0x8007A108). The destructor, when it is not null, calls its
      * destructor (fn_800A25E0) with flag 1, freeing it, and clears it (0x80079BA4-0x80079BBC). */
     /* 0x244 */ UnkObject_80079BA4 *field_0x244;
-    /* 0x248 */ u8 field_0x248[0x24C - 0x248];
+    /* The constructor clears it; the Player::Shadow constructor (0x800ADB64) and the 13 other
+     * callers of fn_80095BD4 store a new object here. fn_80078B54, when it is not null, calls its
+     * destructor (fn_80095B18) with flag 1, freeing it, and clears it (0x80078BA8-0x80078BC0). */
+    /* 0x248 */ UnkObject_80095BD4 *field_0x248;
     /* 0x24C */ UnkTargetSource_80206574 *field_0x24C;
     /* 0x250 */ u8 field_0x250[0x290 - 0x250];
 };
@@ -221,6 +237,7 @@ CHECK_OFFSETOF(PlayerBase, field_0xB8, 0xB8);
 CHECK_OFFSETOF(PlayerBase, field_0xDC, 0xDC);
 CHECK_OFFSETOF(PlayerBase, field_0x1C8, 0x1C8);
 CHECK_OFFSETOF(PlayerBase, field_0x218, 0x218);
+CHECK_OFFSETOF(PlayerBase, field_0x224, 0x224);
 CHECK_OFFSETOF(PlayerBase, field_0x22C, 0x22C);
 CHECK_OFFSETOF(PlayerBase, field_0x230, 0x230);
 CHECK_OFFSETOF(PlayerBase, field_0x234, 0x234);
@@ -228,6 +245,7 @@ CHECK_OFFSETOF(PlayerBase, field_0x238, 0x238);
 CHECK_OFFSETOF(PlayerBase, field_0x23C, 0x23C);
 CHECK_OFFSETOF(PlayerBase, field_0x240, 0x240);
 CHECK_OFFSETOF(PlayerBase, field_0x244, 0x244);
+CHECK_OFFSETOF(PlayerBase, field_0x248, 0x248);
 CHECK_OFFSETOF(PlayerBase, field_0x24C, 0x24C);
 
 } // namespace Player
@@ -286,6 +304,14 @@ boost::weak_ptr<CharInfo> fn_800B75DC(const boost::weak_ptr<CharInfo> &charInfo)
  * of its 0x3FC bytes is not described here. The void return is inferred: the two callers in
  * PlayerOption.cpp ignore the result. */
 void fn_800A78FC(UnkObject_800A78FC *object, CharCommand *command);
+/* Functions of the object at 0x248 of a player, which only pass on to functions of the 0x2C-byte
+ * object it keeps (behaviour from their bodies; the void results are inferred). fn_80095A10
+ * returns a copy of that object's weak pointer at 0x8 (fn_80095F9C); its three callers lock the
+ * result as a weak pointer to a character info. fn_80095A40 resets that object's weak pointer at
+ * 0x10 (fn_80095FC0) and fn_80095A64 assigns info to it (fn_80095FE4). */
+boost::weak_ptr<CharInfo> fn_80095A10(UnkObject_80095BD4 *object);
+void fn_80095A40(UnkObject_80095BD4 *object);
+void fn_80095A64(UnkObject_80095BD4 *object, const boost::weak_ptr<CharInfo> &info);
 }
 
 #endif

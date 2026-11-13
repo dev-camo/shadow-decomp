@@ -124,6 +124,13 @@ Game/fn_80096B64.cpp:
 Game/PlayerControl.cpp:
 	.text       start:0x8009E08C end:0x8009E0DC
 
+Game/PlayerControlApproach.cpp:
+	.text       start:0x8009E0DC end:0x8009E6F0
+	.rodata     start:0x804B33D8 end:0x804B3468
+	.data       start:0x80522708 end:0x80522740
+	.sdata      start:0x805E58A8 end:0x805E58D0
+	.sdata2     start:0x805F3B50 end:0x805F3B60
+
 Game/PlayerMotion.cpp:
 	.text       start:0x800AA204 end:0x800AB104
 	.rodata     start:0x804B3D80 end:0x804B3DA8

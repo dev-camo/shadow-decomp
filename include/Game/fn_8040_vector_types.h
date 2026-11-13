@@ -573,7 +573,11 @@ extern "C" float fn_8040CF2C(const Fn8040Vector3 &vector);
  * the 13 calls in USA (GUPE8P) where both arguments are such results, for example 0x8001E910,
  * 0x8003BB58 and 0x802EB1BC, the original produces the second argument first and gives it the
  * lower stack slot. Two temporaries written in the call give that order and those slots in
- * Player::Behavior::Super::fn_802EB0C4 (0x802EB1BC). */
+ * Player::Behavior::Super::fn_802EB0C4 (0x802EB1BC). At 0x8009DEE8,
+ * Player::Control::Approach::Update loads the address of a named vector and then that of
+ * fn_800796DC's result, which it passes in place. The result written in the call gives that
+ * order; bound to a const reference local, which a pointer parameter would need, its address is
+ * loaded first (measured). */
 extern "C" float fn_8040CF90(const Fn8040Vector3 &left, const Fn8040Vector3 &right);
 
 /* The rotation vector of a forward and an up direction in order 2 (see fn_8040F5F4 above). The
