@@ -12,6 +12,9 @@ UnkObject_8003F8D4 *fn_8003F8D4(void);
  * buffer (behaviour inferred from its body, which reads neither object nor arg2; the callers pass
  * 1 as arg2). */
 const char *fn_8004237C(UnkObject_8003F8D4 *object, const char *name, int arg2);
+/* Formats name with "%s.gncp" into a static buffer of its own and returns the buffer (behaviour
+ * from its body, which reads neither object nor arg2; the callers pass 0 as arg2). */
+const char *fn_800423B8(UnkObject_8003F8D4 *object, const char *name, int arg2);
 }
 
 #endif

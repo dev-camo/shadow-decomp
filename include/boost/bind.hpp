@@ -28,14 +28,14 @@
 //  Adapted from Boost 1.32: the include guard follows this project's naming, and boost/bind.hpp is
 //  merged with the pieces of boost/bind/ it includes, resolved for a compiler with void returns and
 //  a single calling convention, and cut to what the reconstructed units use (bind(&C::f, this, _1)
-//  with a member function of one argument, see boost/mem_fn.hpp, bind(f, _1) with a function of
-//  one argument, and bind(f, _1, a, b) with a function of three arguments): the argument lists of
-//  up to three bound arguments, bind_t's call operators for up to two call-time arguments (the bind
-//  object is invoked with at most two; the bound function itself can take three), the member
-//  function overload of bind() for two arguments, the function pointer overloads for one and for
-//  three, and the placeholders. The other overloads for function pointers and those for const
-//  member functions are left out (the game also uses cmf1), as are boost::reference_wrapper and
-//  data member support. The bodies stay in the classes as in Boost: the game's inlining depends on
+//  with a const or non-const member function of one argument, see boost/mem_fn.hpp, bind(f, _1)
+//  with a function of one argument, and bind(f, _1, a, b) with a function of three arguments): the
+//  argument lists of up to three bound arguments, bind_t's call operators for up to two call-time
+//  arguments (the bind object is invoked with at most two; the bound function itself can take
+//  three), the two member function overloads of bind() for two arguments, the function pointer
+//  overloads for one and for three, and the placeholders. The other overloads for function
+//  pointers and for member functions are left out, as are boost::reference_wrapper and data member
+//  support. The bodies stay in the classes as in Boost: the game's inlining depends on
 //  them (see cflags_game_cpp in configure.py).
 //
 
@@ -483,6 +483,14 @@ template <class R, class T, class B1, class A1, class A2>
 _bi::bind_t<R, _mfi::mf1<R, T, B1>, typename _bi::list_av_2<A1, A2>::type> bind(R (T::*f)(B1),
                                                                                 A1 a1, A2 a2) {
     typedef _mfi::mf1<R, T, B1> F;
+    typedef typename _bi::list_av_2<A1, A2>::type list_type;
+    return _bi::bind_t<R, F, list_type>(F(f), list_type(a1, a2));
+}
+
+template <class R, class T, class B1, class A1, class A2>
+_bi::bind_t<R, _mfi::cmf1<R, T, B1>, typename _bi::list_av_2<A1, A2>::type>
+bind(R (T::*f)(B1) const, A1 a1, A2 a2) {
+    typedef _mfi::cmf1<R, T, B1> F;
     typedef typename _bi::list_av_2<A1, A2>::type list_type;
     return _bi::bind_t<R, F, list_type>(F(f), list_type(a1, a2));
 }
