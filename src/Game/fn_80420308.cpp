@@ -9,30 +9,34 @@
  * of the first curve once and keeps it in a saved register (an inline helper taking the curves
  * gives the shorter code as well). Revisit if the track types turn out to be classes with the
  * curves as one member. */
-void fn_80420308(MotionVectorTrack *track) {
+void fn_80420308(void *data) {
+    MotionVectorTrack *track = (MotionVectorTrack *)data;
+
     MotionKeyCursor *curves = track->curves;
 
     if (curves[0].position != 0) {
-        track->value.x = 1.0f / lbl_805F13D0(&curves[0]);
+        track->value.x = 1.0f / motionControlCurveEvaluator0(&curves[0]);
     }
     if (curves[1].position != 0) {
-        track->value.y = 1.0f / lbl_805F13D0(&curves[1]);
+        track->value.y = 1.0f / motionControlCurveEvaluator0(&curves[1]);
     }
     if (curves[2].position != 0) {
-        track->value.z = 1.0f / lbl_805F13D0(&curves[2]);
+        track->value.z = 1.0f / motionControlCurveEvaluator0(&curves[2]);
     }
 }
 
-void fn_804203AC(MotionVectorTrack *track) {
+void fn_804203AC(void *data) {
+    MotionVectorTrack *track = (MotionVectorTrack *)data;
+
     MotionKeyCursor *curves = track->curves;
 
     if (curves[0].position != 0) {
-        track->value.x = lbl_805F13D0(&curves[0]);
+        track->value.x = motionControlCurveEvaluator0(&curves[0]);
     }
     if (curves[1].position != 0) {
-        track->value.y = lbl_805F13D0(&curves[1]);
+        track->value.y = motionControlCurveEvaluator0(&curves[1]);
     }
     if (curves[2].position != 0) {
-        track->value.z = lbl_805F13D0(&curves[2]);
+        track->value.z = motionControlCurveEvaluator0(&curves[2]);
     }
 }

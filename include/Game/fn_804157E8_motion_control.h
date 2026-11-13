@@ -10,7 +10,8 @@
 
 /* The motion control: one original C++ file (its name is unknown) at 0x804157E8-0x80420724 with
  * the pooled float constants at 0x805FAE00-0x805FAE30, the .sbss variables at 0x805F13D0 and the
- * static initializer fn_804206A4. Until all of it matches, the file is built as consecutive units
+ * static initializer __sinit_fn_8042043C_cpp. All 100 functions have source. The file is kept as
+ * consecutive units
  * with one source file each: Game/fn_804157E8.cpp, fn_8041583C.c, fn_80415854.cpp, fn_80416198.cpp,
  * fn_8041FD6C.c, fn_8041FD70.cpp, fn_8041FF08.c, fn_8041FF0C.cpp, fn_804202B8.c, fn_80420308.cpp,
  * fn_80420438.c and fn_8042043C.cpp, so that the units that already match keep their own objects.
@@ -36,6 +37,10 @@
 /* Makes stMtnRequestBlendRatio try the first ratio of the blend (it falls back to the second when
  * the first kind is not 1 or 2). */
 #define MOTION_PLAYER_BLEND_FIRST 0x200
+/* Additional state bits used by the request handlers (original names unknown). */
+#define MOTION_PLAYER_STATE_2 0x2
+#define MOTION_PLAYER_STATE_4 0x4
+
 /* The bits that stMtnControlWorkFlag reads or changes (meaning unknown): 0x400 is its flag 2, 0x800
  * is changed by its flag 7, and 0x1000 and 0x4000 are set when its flags 1 and 0 change a bit of
  * MotionPlayer.flags. */
@@ -61,6 +66,15 @@
 /* With this bit fn_804188A0 also runs the second callback of each track of the player (the meaning
  * of the bit is not known). */
 #define MOTION_PLAYER_FLAG_8 0x8
+/* Additional player flag bits (original names unknown). */
+#define MOTION_PLAYER_FLAG_10 0x10
+#define MOTION_PLAYER_FLAG_10000 0x10000
+#define MOTION_PLAYER_FLAG_40000 0x40000
+#define MOTION_PLAYER_FLAG_80000 0x80000
+#define MOTION_PLAYER_FLAG_100000 0x100000
+#define MOTION_PLAYER_FLAG_200000 0x200000
+#define MOTION_PLAYER_FLAG_800000 0x800000
+#define MOTION_PLAYER_FLAG_1000000 0x1000000
 /* The speed of the range is replaced by 0. */
 #define MOTION_PLAYER_ZERO_SPEED 0x20000
 /* Unless MOTION_PLAYER_ZERO_SPEED is set, this bit makes the speed of the range
@@ -87,10 +101,17 @@ typedef struct MotionWorkVector {
 } MotionWorkVector;
 CHECK_SIZEOF(MotionWorkVector, 0x10);
 
-/* A transform of a control: a matrix followed by data that is not mapped yet. */
+/* The step callbacks receive the second matrix and its scale together (name inferred). */
+typedef struct MotionTransformState {
+    /* 0x00 */ Fn8040Matrix34 matrix;
+    /* 0x30 */ MotionWorkVector unknown30;
+} MotionTransformState;
+CHECK_SIZEOF(MotionTransformState, 0x40);
+
+/* A transform of a control: the traversals write both matrices and the scale of the second. */
 typedef struct MotionTransform {
     /* 0x00 */ Fn8040Matrix34 matrix;
-    /* 0x30 */ unsigned char unknown30[0x40];
+    /* 0x30 */ MotionTransformState state;
 } MotionTransform;
 CHECK_SIZEOF(MotionTransform, 0x70);
 
@@ -107,7 +128,18 @@ typedef struct MotionNodeEntry {
 } MotionNodeEntry;
 CHECK_SIZEOF(MotionNodeEntry, 0x20);
 
-/* A node of the tree of a control (partial layout: the size is not known): the functions that
+/* The node callback receives the current matrix, its registered argument, and the pack node ID
+ * (name inferred from the call in fn_804186A0). */
+typedef struct MotionNodeCallbackData {
+    /* 0x00 */ Fn8040Matrix34 *matrix;
+    /* 0x04 */ void *argument;
+    /* 0x08 */ unsigned int nodeId;
+} MotionNodeCallbackData;
+CHECK_SIZEOF(MotionNodeCallbackData, 0xC);
+
+typedef void (*MotionNodeCallback)(MotionNodeCallbackData *data);
+
+/* A node of the tree of a control: the functions that
  * search or walk the tree follow its two child links recursively. Its definition is the node of
  * the pack that the tree is built from (fn_8041B980 starts at the root node of the pack entry and
  * fn_8041BE30 stores each pack node here while it follows the links of the pack nodes); the
@@ -120,20 +152,22 @@ typedef struct MotionNode {
     /* 0x08 */ struct MotionNodeStep *steps;
     /* 0x0C */ PackNode *definition;
     /* 0x10 */ MotionTransform *transform;
-    /* 0x14 */ unsigned char unknown14[4];
+    /* 0x14 */ struct MotionBlend *blends;
     /* 0x18 */ MotionNodeEntry *entries;
-    /* 0x1C */ int unknown1C;
-    /* 0x20 */ int unknown20;
+    /* 0x1C */ MotionNodeCallback callback;
+    /* 0x20 */ void *callbackArgument;
     /* 0x24 */ struct MotionNode *first;
     /* 0x28 */ struct MotionNode *second;
+    /* 0x2C */ unsigned char unknown2C[8];
 } MotionNode;
 CHECK_OFFSETOF(MotionNode, second, 0x28);
-/* The modelled prefix only: fn_8041BE30 places the first step of a node at 0x34. */
-CHECK_SIZEOF(MotionNode, 0x2C);
+CHECK_SIZEOF(MotionNode, 0x34);
 
-/* The values of a blend that a player keeps (partial layout: the size is not known; it comes from
- * the functions that set them). stMtnRequestBlendRatio writes a ratio only when its kind is 1 or
- * 2. */
+#define MOTION_BLEND_FLAG_1 0x1
+#define MOTION_BLEND_FLAG_2 0x2
+
+/* The values of a blend that a player keeps. fn_8041B980 allocates 0x2C bytes for each player.
+ * stMtnRequestBlendRatio writes a ratio only when its kind is 1 or 2. */
 typedef struct MotionBlend {
     /* 0x00 */ unsigned int flags;
     /* 0x04 */ int kindFirst;
@@ -143,21 +177,18 @@ typedef struct MotionBlend {
     /* 0x14 */ unsigned char unknown14[4];
     /* 0x18 */ float frames;
     /* 0x1C */ float speed;
+    /* 0x20 */ float unknown20;
+    /* 0x24 */ unsigned char unknown24[8];
 } MotionBlend;
 CHECK_OFFSETOF(MotionBlend, speed, 0x1C);
-/* The modelled prefix only (the size of a blend is not known). */
-CHECK_SIZEOF(MotionBlend, 0x20);
-
-/* The data that a track node holds after its header. Its layout depends on the node; the
- * callbacks of the node know it. */
-struct MotionTrackData;
+CHECK_SIZEOF(MotionBlend, 0x2C);
 
 /* A node of the chain of tracks of a player: two callbacks, the link to the next node, and the
  * data of the track, which follows the node. fn_804188A0 runs the first callback of every node,
  * and the second one as well when the player has MOTION_PLAYER_FLAG_8. */
 typedef struct MotionTrackNode {
-    /* 0x00 */ void (*first)(struct MotionTrackData *data);
-    /* 0x04 */ void (*second)(struct MotionTrackData *data);
+    /* 0x00 */ void (*first)(void *data);
+    /* 0x04 */ void (*second)(void *data);
     /* 0x08 */ struct MotionTrackNode *next;
     /* 0x0C */ unsigned int unknown0C;
 } MotionTrackNode;
@@ -165,12 +196,19 @@ CHECK_SIZEOF(MotionTrackNode, 0x10);
 
 /* A player: the state of one motion in a control. */
 typedef struct MotionPlayer {
-    /* 0x00 */ unsigned char unknown00[0x90];
+    /* 0x00 */ Fn8040Matrix34 unknown00;
+    /* 0x30 */ Fn8040Matrix34 unknown30;
+    /* 0x60 */ Fn8040Matrix34 unknown60;
     /* 0x90 */ unsigned int flags;
     /* 0x94 */ unsigned int stateFlags;
-    /* 0x98 */ unsigned char unknown98[8];
+    /* 0x98 */ float firstFrame;
+    /* 0x9C */ float lastFrame;
     /* 0xA0 */ MotionRange range;
-    /* 0xB0 */ unsigned char unknownB0[0x50];
+    /* 0xB0 */ MotionWorkVector unknownB0;
+    /* 0xC0 */ MotionWorkVector unknownC0;
+    /* 0xD0 */ MotionWorkVector unknownD0;
+    /* 0xE0 */ MotionWorkVector unknownE0;
+    /* 0xF0 */ MotionWorkVector unknownF0;
     /* 0x100 */ MotionRange requestedRange; /* stored by the stMtnRequest frame and speed setters */
     /* 0x110 */ unsigned short requestedMotionId;
     /* 0x112 */ unsigned char unknown112[0xE];
@@ -182,7 +220,17 @@ typedef struct MotionPlayer {
 } MotionPlayer;
 CHECK_SIZEOF(MotionPlayer, 0x130);
 
-/* The control (partial layout: the size is not known). The original names it _stMtnPlayWork: the
+/* The step callbacks receive this block at control+0x20. The list and its two index maps are
+ * shared by every step of the control (name inferred). */
+typedef struct MotionPlayerList {
+    /* 0x00 */ int count;
+    /* 0x04 */ int *listedIndices;
+    /* 0x08 */ int *playerIndexOfId;
+    /* 0x0C */ int *unknown0C;
+} MotionPlayerList;
+CHECK_SIZEOF(MotionPlayerList, 0x10);
+
+/* The control. The original names it _stMtnPlayWork: the
  * code at 0x80160DA4 wraps the result of fn_8041B908 in a shared_ptr with the deleter fn_8041B884,
  * and the RTTI of that shared_ptr's count names
  * "boost::detail::sp_counted_base_impl<_stMtnPlayWork *, void (*)(_stMtnPlayWork *)>";
@@ -191,46 +239,33 @@ CHECK_SIZEOF(MotionPlayer, 0x130);
 typedef struct _stMtnPlayWork {
     /* 0x00 */ int transformCount;
     /* 0x04 */ MotionTransform *transforms;
-    /* 0x08 */ unsigned char unknown08[4];
+    /* 0x08 */ PackEntryInfo *info;
     /* 0x0C */ MotionNode *rootNode;
     /* 0x10 */ MotionPlayer *players;
     /* 0x14 */ unsigned int flags;
     /* 0x18 */ unsigned char unknown18[8];
-    /* 0x20 */ int playerCount;
-    /* 0x24 */ int *listedIndices; /* indices of players, ended by -1 (meaning inferred) */
-    /* 0x28 */ int *playerIndexOfId;
-    /* 0x2C */ int *unknown2C;
-    /* 0x30 */ unsigned char unknown30[0x60];
+    /* 0x20 */ MotionPlayerList playerList;
+    /* 0x30 */ Fn8040Matrix34 unknown30;
+    /* 0x60 */ Fn8040Matrix34 unknown60;
     /* 0x90 */ Fn8040Matrix34 matrix;
-    /* 0xC0 */ unsigned char unknownC0[0x30];
+    /* 0xC0 */ Fn8040Matrix34 unknownC0;
     /* 0xF0 */ MotionWorkVector vectors[7]; /* at least 7: index 6 is the highest used */
 } _stMtnPlayWork;
-CHECK_OFFSETOF(_stMtnPlayWork, playerIndexOfId, 0x28);
+CHECK_SIZEOF(_stMtnPlayWork, 0x160);
+CHECK_OFFSETOF(_stMtnPlayWork, playerList, 0x20);
 CHECK_OFFSETOF(_stMtnPlayWork, matrix, 0x90);
 CHECK_OFFSETOF(_stMtnPlayWork, vectors, 0xF0);
 
-/* The data of the tracks that apply a scale (fn_8041E420, fn_8041FD0C), a translation
- * (fn_8041E5E0, fn_8041FED0) or a rotation (fn_8041FD70) to the matrix on top of the matrix
- * stack. */
-typedef struct MotionScaleStep {
-    /* 0x00 */ const Fn8040Vector3 *scale;
-} MotionScaleStep;
-CHECK_SIZEOF(MotionScaleStep, 0x4);
-
-typedef struct MotionRotationStep {
-    /* 0x00 */ const Fn8040Vector3 *rotation;
-} MotionRotationStep;
-CHECK_SIZEOF(MotionRotationStep, 0x4);
+/* The fixed matrix-step payload: a pointer to its scale, translation or rotation vector. */
+typedef struct MotionStaticStepData {
+    /* 0x00 */ const Fn8040Vector3 *value;
+} MotionStaticStepData;
+CHECK_SIZEOF(MotionStaticStepData, 0x4);
 
 /* A full turn in the 16-bit angle units that the rotation steps fn_8041E480 and fn_8041FD70
  * truncate their angles to, and in radians. */
 #define MOTION_ANGLE_UNITS_PER_TURN 65536.0f
 #define MOTION_RADIANS_PER_TURN 6.2831855f
-
-typedef struct MotionOffsetStep {
-    /* 0x00 */ const Fn8040Vector3 *offset;
-} MotionOffsetStep;
-CHECK_SIZEOF(MotionOffsetStep, 0x4);
 
 /* Selected by fn_804188A0 from the direction of the playback: the evaluators of a curve cursor
  * (two that return a float and one that returns two). */
@@ -319,18 +354,22 @@ typedef union MotionStepTrackData {
 } MotionStepTrackData;
 CHECK_SIZEOF(MotionStepTrackData, 0x4);
 
-/* The track of a player in a step of a node: its data, whose kind depends on the step, and 0x2C
- * bytes of the player's state in the node (not mapped yet). */
+/* The track of a player in a step of a node: its data, whose kind depends on the step, and the
+ * player's blend state. */
 typedef struct MotionStepTrack {
     /* 0x00 */ MotionStepTrackData data;
-    /* 0x04 */ void *state;
+    /* 0x04 */ MotionBlend *state;
 } MotionStepTrack;
 CHECK_SIZEOF(MotionStepTrack, 0x8);
 
 /* The data of a step of a node, after its header: for a step with tracks, two words and the tracks
- * (see MotionNodeStep); for a step without, a MotionScaleStep, MotionRotationStep or
- * MotionOffsetStep. Its layout depends on the step; the callback of the step knows it. */
-struct MotionStepData;
+ * (see MotionNodeStep); for a step without, a MotionStaticStepData. Its layout depends on the step; the callback of the step knows it. */
+typedef struct MotionDynamicStepData {
+    /* 0x00 */ MotionPlayerList *playerList;
+    /* 0x04 */ MotionTransformState *state;
+    /* 0x08 */ MotionStepTrack tracks[1];
+} MotionDynamicStepData;
+CHECK_SIZEOF(MotionDynamicStepData, 0x10);
 
 /* A step of a node (partial layout, names inferred): fn_804186A0 runs the callback of every step
  * of a node on the data that follows the header of the step, at 0x08. The flags of the node say
@@ -342,14 +381,48 @@ struct MotionStepData;
  * MOTION_NODE_TRACK_400 and MOTION_NODE_TRACK_380. fn_8041AFCC and fn_8041B6FC skip the step of
  * MOTION_NODE_TRACK_40. */
 typedef struct MotionNodeStep {
-    /* 0x00 */ void (*apply)(struct MotionStepData *data);
+    /* 0x00 */ void (*apply)(void *data);
     /* 0x04 */ struct MotionNodeStep *next;
-    /* 0x08 */ unsigned char unknown08[8];
-    /* 0x10 */ MotionStepTrack tracks[1]; /* one for each player */
+    /* 0x08 */ MotionDynamicStepData data;
 } MotionNodeStep;
-CHECK_OFFSETOF(MotionNodeStep, tracks, 0x10);
+CHECK_OFFSETOF(MotionNodeStep, data, 0x08);
 /* A view with one track: a step has one track for each player. */
 CHECK_SIZEOF(MotionNodeStep, 0x18);
+
+/* The two-word header is shared by fixed and per-player steps. Fixed steps store one pack-row
+ * pointer; dynamic steps store the player list, second matrix, and one track per player. */
+typedef struct MotionStaticStep {
+    /* 0x00 */ void (*apply)(void *data);
+    /* 0x04 */ MotionNodeStep *next;
+    /* 0x08 */ MotionStaticStepData data;
+} MotionStaticStep;
+CHECK_SIZEOF(MotionStaticStep, 0xC);
+
+/* Only the translation step of a type-4 pack node has this trailer, after its player tracks. */
+typedef struct MotionStepExtra {
+    /* 0x00 */ MotionTransform *transform;
+    /* 0x04 */ const float *first;
+    /* 0x08 */ const float *second;
+} MotionStepExtra;
+CHECK_SIZEOF(MotionStepExtra, 0xC);
+
+typedef struct MotionVectorTrackStorage {
+    /* 0x00 */ MotionTrackNode node;
+    /* 0x10 */ MotionVectorTrack data;
+} MotionVectorTrackStorage;
+CHECK_SIZEOF(MotionVectorTrackStorage, 0xE0);
+
+typedef struct MotionScaledTrackStorage {
+    /* 0x00 */ MotionTrackNode node;
+    /* 0x10 */ MotionScaledVectorTrack data;
+} MotionScaledTrackStorage;
+CHECK_SIZEOF(MotionScaledTrackStorage, 0xF0);
+
+typedef struct MotionReflectedTrackStorage {
+    /* 0x00 */ MotionTrackNode node;
+    /* 0x10 */ MotionReflectedVectorTrack data;
+} MotionReflectedTrackStorage;
+CHECK_SIZEOF(MotionReflectedTrackStorage, 0xF0);
 
 #ifdef __cplusplus
 extern "C" {
@@ -357,26 +430,72 @@ extern "C" {
 
 /* The factor that fn_80415854 and fn_80415A18 apply to the speed of a range, set by fn_804157E8. */
 extern float lbl_805EDD60;
-extern MotionCurveEvaluator lbl_805F13D0;
-extern MotionCurveEvaluator lbl_805F13D4;
-extern MotionCurveBothEvaluator lbl_805F13D8;
+/* Common-source aliases select the regional symbols; these names are inferred. */
+#if defined(VERSION_GUPJ8P)
+#define motionControlCurveEvaluator0 lbl_805F19E0
+#define motionControlCurveEvaluator1 lbl_805F19E4
+#define motionControlCurveBothEvaluator lbl_805F19E8
+#define motionControlLastPlayer0 lbl_805F19EC
+#define motionControlLastPlayer1 lbl_805F19F0
+#elif defined(VERSION_GUPP8P)
+#define motionControlCurveEvaluator0 lbl_805F2478
+#define motionControlCurveEvaluator1 lbl_805F247C
+#define motionControlCurveBothEvaluator lbl_805F2480
+#define motionControlLastPlayer0 lbl_805F2484
+#define motionControlLastPlayer1 lbl_805F2488
+#else
+#define motionControlCurveEvaluator0 lbl_805F13D0
+#define motionControlCurveEvaluator1 lbl_805F13D4
+#define motionControlCurveBothEvaluator lbl_805F13D8
+#define motionControlLastPlayer0 lbl_805F13DC
+#define motionControlLastPlayer1 lbl_805F13E0
+#endif
+extern MotionCurveEvaluator motionControlCurveEvaluator0;
+extern MotionCurveEvaluator motionControlCurveEvaluator1;
+extern MotionCurveBothEvaluator motionControlCurveBothEvaluator;
 /* The players that fn_80415A18 and fn_80415854 acted on last (see Game/fn_804157E8.cpp). */
-extern MotionPlayer *lbl_805F13DC;
-extern MotionPlayer *lbl_805F13E0;
+extern MotionPlayer *motionControlLastPlayer0;
+extern MotionPlayer *motionControlLastPlayer1;
+
+/* Work arrays used while combining the players' transforms. The initializer constructs the
+ * two matrix arrays and the vector array; the traversal functions use the index flags and save or
+ * replace existing ratios. */
+extern Fn8040Matrix34 lbl_805E12E0[5];
+extern Fn8040Matrix34 lbl_805E13D0[4];
+extern Fn8040Vector3 lbl_805E1490[4];
+extern int lbl_805E14C0[4];
+extern int lbl_805E14D0[4];
+extern int lbl_805E14E0[4];
+extern float lbl_805E14F0[4];
 
 /* The prototypes are inferred from the callers. */
 void fn_80418044(_stMtnPlayWork *control);
+void fn_804186A0(_stMtnPlayWork *control, MotionNode *node);
 void fn_804175C8(_stMtnPlayWork *control);
 void fn_804188A0(_stMtnPlayWork *control);
 void fn_80418A4C(_stMtnPlayWork *control);
 void fn_804192EC(_stMtnPlayWork *control);
+void fn_804194B8(MotionNode *node);
+void fn_8041966C(MotionNode *node);
+void fn_804198E4(_stMtnPlayWork *control, int playerIndex);
+void fn_80419BA8(Fn8040Vector3 *result, MotionPlayer *player, MotionRange *range, int reset);
+void fn_80419D5C(_stMtnPlayWork *control, int playerIndex);
 void fn_80419F5C(_stMtnPlayWork *control);
+void fn_8041A440(_stMtnPlayWork *control);
+void fn_8041A83C(_stMtnPlayWork *control, MotionNode *node);
 void fn_8041AB3C(_stMtnPlayWork *control, int index);
 void fn_8041AFCC(MotionNode *node, int playerIndex);
 void fn_8041B6FC(MotionNode *node, int playerIndex);
 _stMtnPlayWork *fn_8041B980(PackEntryInfo *info, int arg1);
+void fn_8041BE30(_stMtnPlayWork *control, MotionNode **nextNode, MotionBlend *blends,
+                 MotionNodeEntry **nextEntries, MotionTransform **nextTransform,
+                 MotionTrackNode **tracks, PackNode *definition);
+void fn_8041C2E0(PackNode *node, PackNode *root, MotionTrackNode **track,
+                 MotionTrackNode *firstTrack);
+PackNode *fn_8041C5A8(PackNode *node, MotionTrackNode **track, unsigned int id);
+void fn_8041C854(MotionTrackNode **next, MotionTrackNode **last, PackNode *node);
 int fn_8041CFB0(MotionNode *node, int playerIndex, unsigned int nodeId, float arg3, float arg4);
-int fn_8041D1A0(MotionNode *node, unsigned int nodeId, int arg2, int arg3);
+int fn_8041D1A0(MotionNode *node, unsigned int nodeId, MotionNodeCallback callback, void *argument);
 MotionTransform *fn_8041D31C(const MotionNode *node, unsigned int nodeId);
 
 /* The functions that fn_8042062C calls, defined in Game/fn_80420724.cpp (behaviour inferred): the
@@ -401,7 +520,8 @@ void stMtnRequestEndFrame(_stMtnPlayWork *control, int id, float frame);
 void stMtnRequestStartFrame(_stMtnPlayWork *control, int id, float frame);
 
 float fn_804157E8(float scale);
-int fn_80415808(_stMtnPlayWork *control, unsigned int nodeId, int arg2, int arg3);
+int fn_80415808(_stMtnPlayWork *control, unsigned int nodeId, MotionNodeCallback callback,
+                void *argument);
 int fn_8041583C(_stMtnPlayWork *control);
 int fn_80415854(_stMtnPlayWork *control, int id, unsigned short *eventId, void **payload,
                 int repeats);
@@ -425,6 +545,9 @@ void fn_804173A8(_stMtnPlayWork *control, const Fn8040Vector3 *position,
 int fn_8041AD94(MotionRange *range, MotionRange *request, float firstFrame, float lastFrame);
 void fn_8041AED0(_stMtnPlayWork *control, int playerIndex);
 void fn_8041AF1C(MotionNode *node, int playerIndex);
+int fn_8041B170(_stMtnPlayWork *control, int playerIndex, unsigned short motionId);
+void fn_8041B2BC(_stMtnPlayWork *control, PackNode *definition, int playerIndex,
+                 unsigned short motionId, float scale);
 void fn_8041B884(_stMtnPlayWork *control);
 _stMtnPlayWork *fn_8041B908(unsigned int id, int arg1);
 void fn_8041CA78(int *trackBytes, int *nodeBytes, int *transformCount, int playerCount,
@@ -437,26 +560,40 @@ void fn_8041CD6C(const MotionNode *node, int playerIndex);
 void fn_8041CE74(const MotionNode *node, int playerIndex);
 MotionNode *fn_8041D448(MotionNode *node, unsigned int nodeId);
 
-void fn_8041E420(MotionScaleStep *step);
-void fn_8041E480(MotionRotationStep *step);
-void fn_8041E5E0(MotionOffsetStep *step);
-void fn_8041FD0C(MotionScaleStep *step);
-void fn_8041FD70(MotionRotationStep *step);
-void fn_8041FED0(MotionOffsetStep *step);
+void fn_8041D580(void *data);
+void fn_8041D89C(void *data);
+void fn_8041DBD4(void *data);
+void fn_8041E124(void *data);
+void fn_8041E618(void *data);
+void fn_8041E9C4(void *data);
+void fn_8041ED8C(void *data);
+void fn_8041F290(void *data);
+void fn_8041F6F0(void *data);
+void fn_8041F7D0(void *data);
+void fn_8041FA20(void *data);
+void fn_8041FAD8(void *data);
+void fn_8041FB4C(void *data);
+void fn_8041FCC0(void *data);
+void fn_8041E420(void *data);
+void fn_8041E480(void *data);
+void fn_8041E5E0(void *data);
+void fn_8041FD0C(void *data);
+void fn_8041FD70(void *data);
+void fn_8041FED0(void *data);
 /* The empty callbacks ignore their data: fn_8041FD6C is the callback of a step without tracks
  * (fn_8041BE30 installs it in place of fn_8041FD70 for a node whose values[4] is 6), fn_8041FF08
  * and fn_80420438 sit in track slots. */
-void fn_8041FD6C(struct MotionStepData *data);
-void fn_8041FF08(struct MotionTrackData *data);
-void fn_8041FF0C(MotionReflectedVectorTrack *track);
-void fn_80420158(MotionReflectedVectorTrack *track);
-void fn_804201C0(MotionScaledVectorTrack *track);
-void fn_804202B8(MotionScaledVectorTrack *track);
-void fn_80420308(MotionVectorTrack *track);
-void fn_804203AC(MotionVectorTrack *track);
-void fn_80420438(struct MotionTrackData *data);
-void fn_8042043C(MotionReflectedVectorTrack *track);
-void fn_804204C8(MotionScaledVectorTrack *track);
+void fn_8041FD6C(void *data);
+void fn_8041FF08(void *data);
+void fn_8041FF0C(void *data);
+void fn_80420158(void *data);
+void fn_804201C0(void *data);
+void fn_804202B8(void *data);
+void fn_80420308(void *data);
+void fn_804203AC(void *data);
+void fn_80420438(void *data);
+void fn_8042043C(void *data);
+void fn_804204C8(void *data);
 /* Blends two matrices (behaviour inferred): t = 0 gives b and t = 1 gives a. */
 void fn_80420590(Fn8040Matrix34 *result, Fn8040Matrix34 *a, Fn8040Matrix34 *b, float t);
 void fn_8042062C(Fn8040Matrix34 *result, const Fn8040Matrix34 *a, const Fn8040Matrix34 *b, float t);
@@ -467,7 +604,7 @@ void fn_8042062C(Fn8040Matrix34 *result, const Fn8040Matrix34 *a, const Fn8040Ma
 
 /* The player of an id, or null when the id names no player. */
 static inline MotionPlayer *FindPlayer(_stMtnPlayWork *control, int id) {
-    int index = control->playerIndexOfId[id];
+    int index = control->playerList.playerIndexOfId[id];
 
     if (index == -1) {
         return 0;
