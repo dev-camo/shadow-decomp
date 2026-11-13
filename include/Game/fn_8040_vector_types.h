@@ -291,8 +291,14 @@ void fn_8040B8FC(Fn8040Matrix34 *result, const Fn8040Matrix34 *left, const Fn804
 void fn_8040BAC4(Fn8040Matrix34 *matrix, const Fn8040Matrix34 *other);
 /* Inverts the matrix in place; a matrix without an inverse stays unchanged. */
 void fn_8040BCD4(Fn8040Matrix34 *matrix);
-/* Stores the inverse of source in destination, or a copy of source when it has no inverse. */
-void fn_8040BEF8(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
+/* Returns the inverse of source, or a copy of source when it has no inverse. The by-value result
+ * is inferred; the code is that of a result pointer. In each region 43 of the 44 call sites pass a
+ * stack slot for the result and the other one passes on the result pointer it was given (USA
+ * (GUPE8P) 0x802CA564). 18 copy the slot with fn_8040C148 (17 right after the call), 19 pass it
+ * straight to fn_8040B67C and never use it again, and 6 pass it to another matrix function.
+ * Helicopter::OnCollision copies the result into a second stack matrix (0x802F77AC), which a
+ * matrix initialised from a by-value result reproduces and a result pointer does not. */
+Fn8040Matrix34 fn_8040BEF8(const Fn8040Matrix34 *source);
 /* Applies the three angles of rotation in the axis order selected by order, 0 to 2 (behaviour
  * inferred). */
 void fn_8001E070(Fn8040Matrix34 *matrix, const UnkRotation3 *rotation, int order);

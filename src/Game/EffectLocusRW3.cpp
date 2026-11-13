@@ -154,10 +154,8 @@ void EffectLocusRW3::fn_80439B18() {
             }
             if ((m_definitionFlags & 0x4000) != 0) {
                 Fn8040Vector3 reference(1.0f, 0.0f, 0.0f);
-                Fn8040Matrix34 inverse;
-                fn_8040BEF8(&inverse, &matrix);
                 Fn8040Vector3 direction;
-                direction = inverse * cameraPosition;
+                direction = fn_8040BEF8(&matrix) * cameraPosition;
                 direction.z = 0.0f;
                 fn_8040CE74(&direction);
                 Fn8040Vector3 axis = fn_8040CFB8(reference, direction);
