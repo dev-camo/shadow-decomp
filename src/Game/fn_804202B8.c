@@ -3,6 +3,8 @@
 #include "Game/fn_804157E8_motion_control.h"
 
 /* Negates the components of a vector as its options say. */
-void fn_804202B8(MotionScaledVectorTrack *track) {
+void fn_804202B8(void *data) {
+    MotionScaledVectorTrack *track = (MotionScaledVectorTrack *)data;
+
     NegateVector(&track->value, track->options);
 }

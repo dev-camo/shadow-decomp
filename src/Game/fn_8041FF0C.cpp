@@ -39,7 +39,9 @@ static inline void MirrorVector(Fn8040Vector3 *value, const PackNode *options,
 /* The second callback of a track whose node has a mirror: when the mirror node has a track of the
  * same kind, moves each of the two vectors to the other node and exchanges them; otherwise reflects
  * the vector of the track as fn_80420158 does. */
-void fn_8041FF0C(MotionReflectedVectorTrack *track) {
+void fn_8041FF0C(void *data) {
+    MotionReflectedVectorTrack *track = (MotionReflectedVectorTrack *)data;
+
     PackNode *options = track->options;
     PackNode *mirrorOptions = track->mirrorOptions;
     MotionTrackNode *mirrorTrackNode = track->mirrorTrackNode;
@@ -59,14 +61,18 @@ void fn_8041FF0C(MotionReflectedVectorTrack *track) {
     }
 }
 
-void fn_80420158(MotionReflectedVectorTrack *track) {
+void fn_80420158(void *data) {
+    MotionReflectedVectorTrack *track = (MotionReflectedVectorTrack *)data;
+
     ReflectVector(&track->value, track->options);
 }
 
 /* The second callback of a scaled track whose node has a mirror: negates the vector of the track as
  * fn_804202B8 does, and when the mirror node has a track of the same kind, negates the mirror's
  * vector as its options say and exchanges the two vectors. */
-void fn_804201C0(MotionScaledVectorTrack *track) {
+void fn_804201C0(void *data) {
+    MotionScaledVectorTrack *track = (MotionScaledVectorTrack *)data;
+
     PackNode *options = track->options;
     PackNode *mirrorOptions = track->mirrorOptions;
     MotionTrackNode *mirrorTrackNode = track->mirrorTrackNode;

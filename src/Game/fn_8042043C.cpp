@@ -1,35 +1,47 @@
-/* Control of motions: fn_8042043C to the static initializer fn_804206A4 (see
+/* Control of motions: fn_8042043C through __sinit_fn_8042043C_cpp (see
  * Game/fn_804157E8_motion_control.h for the file and its pieces). */
 #include "Game/fn_804157E8_motion_control.h"
+
+Fn8040Matrix34 lbl_805E12E0[5];
+Fn8040Matrix34 lbl_805E13D0[4];
+Fn8040Vector3 lbl_805E1490[4];
+int lbl_805E14C0[4];
+int lbl_805E14D0[4];
+int lbl_805E14E0[4];
+float lbl_805E14F0[4];
 
 /* fn_8042043C and fn_804204C8 read the curves through a local pointer.
  * Matching workaround: the same form as fn_80420308 and fn_804203AC, for the reason given in
  * Game/fn_80420308.cpp. */
-void fn_8042043C(MotionReflectedVectorTrack *track) {
+void fn_8042043C(void *data) {
+    MotionReflectedVectorTrack *track = (MotionReflectedVectorTrack *)data;
+
     MotionKeyCursor *curves = track->curves;
 
     if (curves[0].position != 0) {
-        track->value.x = lbl_805F13D0(&curves[0]);
+        track->value.x = motionControlCurveEvaluator0(&curves[0]);
     }
     if (curves[1].position != 0) {
-        track->value.y = lbl_805F13D0(&curves[1]);
+        track->value.y = motionControlCurveEvaluator0(&curves[1]);
     }
     if (curves[2].position != 0) {
-        track->value.z = lbl_805F13D0(&curves[2]);
+        track->value.z = motionControlCurveEvaluator0(&curves[2]);
     }
 }
 
-void fn_804204C8(MotionScaledVectorTrack *track) {
+void fn_804204C8(void *data) {
+    MotionScaledVectorTrack *track = (MotionScaledVectorTrack *)data;
+
     MotionKeyCursor *curves = track->curves;
 
     if (curves[0].position != 0) {
-        track->value.x = lbl_805F13D0(&curves[0]);
+        track->value.x = motionControlCurveEvaluator0(&curves[0]);
     }
     if (curves[1].position != 0) {
-        track->value.y = lbl_805F13D0(&curves[1]);
+        track->value.y = motionControlCurveEvaluator0(&curves[1]);
     }
     if (curves[2].position != 0) {
-        track->value.z = lbl_805F13D0(&curves[2]);
+        track->value.z = motionControlCurveEvaluator0(&curves[2]);
     }
     if (track->scale > 0.0f) {
         track->value.x *= track->scale;

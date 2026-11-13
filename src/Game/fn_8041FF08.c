@@ -2,4 +2,4 @@
  * for the file and its pieces). */
 #include "Game/fn_804157E8_motion_control.h"
 
-void fn_8041FF08(struct MotionTrackData *data) {}
+void fn_8041FF08(void *data) {}

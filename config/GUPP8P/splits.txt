@@ -3478,20 +3478,65 @@ Game/fn_8041116C.cpp:
 	.sbss       start:0x805F2450 end:0x805F2458
 	.sdata2     start:0x805FBE30 end:0x805FBE38
 
+Game/fn_804157E8.cpp:
+	extab       start:0x80005D74 end:0x80005D7C
+	extabindex  start:0x80007DE4 end:0x80007DF0
+	.text       start:0x80416838 end:0x8041688C
+	.sdata      start:0x805EEE10 end:0x805EEE18
+	.sbss       start:0x805F2478 end:0x805F2490
+	.sdata2     start:0x805FBE78 end:0x805FBE7C
+
 Game/fn_8041583C.c:
 	.text       start:0x8041688C end:0x804168A4
+
+Game/fn_80415854.cpp:
+	extab       start:0x80005D7C end:0x80005DC4
+	extabindex  start:0x80007DF0 end:0x80007E5C
+	.text       start:0x804168A4 end:0x804171E8
+	.sdata2     start:0x805FBE7C end:0x805FBE84
+
+Game/fn_80416198.cpp:
+	extab       start:0x80005DC4 end:0x80005F9C
+	extabindex  start:0x80007E5C end:0x80008120
+	.text       start:0x804171E8 end:0x80420DBC
+	.rodata     start:0x8051B670 end:0x8051B6B8
+	.data       start:0x8056AFE8 end:0x8056B018
+	.sdata2     start:0x805FBE84 end:0x805FBEA4
 
 Game/fn_8041FD6C.c:
 	.text       start:0x80420DBC end:0x80420DC0
 
+Game/fn_8041FD70.cpp:
+	extab       start:0x80005F9C end:0x80005FAC
+	extabindex  start:0x80008120 end:0x80008138
+	.text       start:0x80420DC0 end:0x80420F58
+
 Game/fn_8041FF08.c:
 	.text       start:0x80420F58 end:0x80420F5C
+
+Game/fn_8041FF0C.cpp:
+	extab       start:0x80005FAC end:0x80005FBC
+	extabindex  start:0x80008138 end:0x80008150
+	.text       start:0x80420F5C end:0x80421308
+	.sdata2     start:0x805FBEA4 end:0x805FBEA8
 
 Game/fn_804202B8.c:
 	.text       start:0x80421308 end:0x80421358
 
+Game/fn_80420308.cpp:
+	extab       start:0x80005FBC end:0x80005FCC
+	extabindex  start:0x80008150 end:0x80008168
+	.text       start:0x80421358 end:0x80421488
+
 Game/fn_80420438.c:
 	.text       start:0x80421488 end:0x8042148C
+
+Game/fn_8042043C.cpp:
+	extab       start:0x80005FCC end:0x80005FF4
+	extabindex  start:0x80008168 end:0x800081A4
+	.text       start:0x8042148C end:0x80421774
+	.ctors      start:0x804AB0C4 end:0x804AB0C8
+	.bss        start:0x805E23A0 end:0x805E25C0
 
 Game/fn_80420C30.c:
 	extab       start:0x8000600C end:0x8000604C

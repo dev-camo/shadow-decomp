@@ -5,7 +5,7 @@
 /* The number of players of a control. */
 int fn_8041583C(_stMtnPlayWork *control) {
     if (control != 0) {
-        return control->playerCount;
+        return control->playerList.count;
     }
     return 0;
 }

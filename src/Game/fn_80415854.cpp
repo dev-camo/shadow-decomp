@@ -9,7 +9,7 @@
  * and the target has the lookup expanded in every caller. Revisit if another inline setting is
  * found for this code. */
 static inline MotionPlayer *FindActivePlayer(_stMtnPlayWork *control, int id) {
-    int index = control->playerIndexOfId[id];
+    int index = control->playerList.playerIndexOfId[id];
     MotionPlayer *player;
 
     if (index == -1) {
@@ -37,13 +37,13 @@ int fn_80415854(_stMtnPlayWork *control, int id, unsigned short *eventId, void *
 
     if (control != 0) {
         player = FindActivePlayer(control, id);
-        lbl_805F13E0 = player;
+        motionControlLastPlayer1 = player;
         if (player == 0) {
             return 0;
         }
         motionId = player->motionId;
     }
-    player = lbl_805F13E0;
+    player = motionControlLastPlayer1;
     if (player == 0) {
         return 0;
     }
@@ -92,13 +92,13 @@ int fn_80415A18(_stMtnPlayWork *control, int id, unsigned short eventId, void *d
 
     if (control != 0) {
         player = FindActivePlayer(control, id);
-        lbl_805F13DC = player;
+        motionControlLastPlayer0 = player;
         if (player == 0) {
             return 0;
         }
         motionId = player->motionId;
     }
-    player = lbl_805F13DC;
+    player = motionControlLastPlayer0;
     if (player == 0) {
         return 0;
     }
@@ -229,25 +229,6 @@ MotionTransform *fn_80415E70(_stMtnPlayWork *control, unsigned int nodeId) {
     return 0;
 }
 
-/* The step of a listed player when a control is updated: clears the high half of its flags, runs
- * fn_8041AB3C and, for an active player, copies the current frame of its range to unknown12C. */
-/* Matching workaround: the step is an inline function. With these statements written in the loop
- * of fn_80415EA4 the loop counter and the player pointer swap callee-saved registers (10 words
- * differ; with the inline 1 word still differs). A static per-player update function is a
- * plausible original form: the unit is built with -inline auto,level=1, which expands such a small
- * static function at its single call, and the expansion fits the target code far closer than the
- * statements written in the loop. Revisit if another compiler version or inline setting is found
- * for this code. */
-static inline void UpdateListedPlayer(_stMtnPlayWork *control, int index) {
-    MotionPlayer *player = &control->players[index];
-
-    player->flags &= 0xFFFF;
-    fn_8041AB3C(control, index);
-    if (player->flags & MOTION_PLAYER_ACTIVE) {
-        player->unknown12C = player->range.currentFrame;
-    }
-}
-
 /* Updates a control (behaviour inferred): clears bits 16 to 23 of its flags, steps each listed
  * player (the list ends at -1), and then runs the six update functions for the whole control. All
  * of it happens on a matrix pushed onto the matrix stack and set to the identity by fn_8040B6F8,
@@ -263,13 +244,18 @@ void fn_80415EA4(_stMtnPlayWork *control) {
     fn_8040B6F8(TopMatrix());
 
     control->flags &= ~0x00FF0000;
-    for (i = 0; i < control->playerCount; i++) {
-        int index = control->listedIndices[i];
+    for (i = 0; i < control->playerList.count; i++) {
+        int index = control->playerList.listedIndices[i];
 
         if (index == -1) {
             break;
         }
-        UpdateListedPlayer(control, index);
+        MotionPlayer *player = &control->players[index];
+        player->flags &= 0xFFFF;
+        fn_8041AB3C(control, index);
+        if (player->flags & MOTION_PLAYER_ACTIVE) {
+            player->unknown12C = player->range.currentFrame;
+        }
     }
 
     fn_80419F5C(control);
@@ -290,7 +276,8 @@ void fn_80415F98(_stMtnPlayWork *control, int id, unsigned int nodeId, float arg
     if (control != 0) {
         player = FindPlayer(control, id);
         if (player != 0) {
-            fn_8041CFB0(control->rootNode, control->playerIndexOfId[id], nodeId, arg3, arg4);
+            fn_8041CFB0(control->rootNode, control->playerList.playerIndexOfId[id], nodeId, arg3,
+                        arg4);
             player->stateFlags |= MOTION_PLAYER_REQUESTED;
             player->stateFlags |= MOTION_PLAYER_STATE_2000;
         }

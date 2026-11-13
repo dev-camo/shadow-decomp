@@ -903,144 +903,6 @@ config.libs = [
                         "-inline auto,level=1",
                     ],
                 ),
-                # Control of motions: the pieces of one original C++ file (0x804157E8-0x80420724,
-                # see Game/fn_804157E8_motion_control.h) that do not match yet, kept as separate
-                # units around the Matching pieces Game/fn_8041583C.c, fn_8041FD6C.c, fn_8041FF08.c,
-                # fn_804202B8.c and fn_80420438.c until the whole file matches. The flags follow the
-                # neighbouring library code. The pieces that do not match yet are C++, the language
-                # of the file (it has a static initializer, and fn_80415854.cpp calls the vector's
-                # out-of-line assignment). Game/fn_804157E8.cpp has the original's .text and
-                # exception tables, and its .sdata and .sbss hold the original's variables at the
-                # original offsets (the original's sections end with 4 more bytes of alignment
-                # padding; a C compile gives the .sbss variables in reverse definition order). It
-                # cannot link yet: it owns the file's first .sdata2 constant (0x805FAE00, 0.0f),
-                # which fn_80415854.cpp, fn_80416198.cpp and fn_8042043C.cpp read by name, and here
-                # it is a local literal.
-                Object(
-                    NonMatching,
-                    "Game/fn_804157E8.cpp",
-                    extra_cflags=[
-                        "-Cpp_exceptions on",
-                        "-O4,s",
-                        "-use_lmw_stmw on",
-                        "-str reuse,readonly",
-                        "-inline auto,level=1",
-                    ],
-                ),
-                # The .text bytes of thirteen of the fourteen functions and the exception tables
-                # are identical to the original; fn_80415EA4 differs in one word (li r30,0 where the
-                # original copies mr r30,r28 before its player loop). Not complete: the original reads 0.0f from the file's first
-                # pooled constant 0x805FAE00 (Game/fn_804157E8.cpp), and other pieces of the file
-                # read this unit's 0x805FAE04 (fn_80416198.cpp) and 0x805FAE08 (fn_80416198.cpp,
-                # fn_80420308.cpp, fn_8042043C.cpp) by name. Here 0.0f is a literal of this unit, so
-                # .sdata2 is 0xC bytes (0.0f, the epsilon, 1.0f) instead of 0x8, and 16 relocations
-                # name other targets: the ten 0.0f loads of fn_80415854, fn_80415A18 and the three
-                # stMtnRequestBlend functions, and the four epsilon and two 1.0f loads, whose
-                # literals sit 4 bytes further on. Revisit when the pieces of the file are merged
-                # into one unit.
-                Object(
-                    NonMatching,
-                    "Game/fn_80415854.cpp",
-                    extra_cflags=[
-                        "-Cpp_exceptions on",
-                        "-O4,s",
-                        "-use_lmw_stmw on",
-                        "-str reuse,readonly",
-                        "-inline auto,level=1",
-                    ],
-                ),
-                # stMtnAbortBlend to fn_8041FD0C: 29 of the 67 functions are written. A word differs
-                # when its instruction or its relocation target (symbol, or section and offset)
-                # differs; the words are counted positionally and, where noted, as the larger length
-                # minus the exact longest common subsequence (LCS). 16 are identical. Many loads of
-                # 0.0f, 0.0001f and 1.0f differ only in their target: the original takes these from
-                # the shared pool of Game/fn_804157E8.c and fn_80415854.cpp. The other constants of
-                # this unit have the original values but sit 4 bytes later in its .sdata2 (the unit
-                # defines the pool values itself and lacks the constants of the missing functions).
-                # fn_804172D8 and fn_8041734C differ in 2 pool loads each, fn_8041E420 and
-                # fn_8041FD0C in 1, fn_8041CC18 and fn_8041CD6C in 4, fn_8041AD94 in 8 (6 pool loads
-                # and 2 loads of -0.0001f) and fn_804188A0 in 2 (a pool load and the conversion
-                # constant), and stMtnControlWorkFlag only in the 2 words that address its jump
-                # table, which the original keeps in .data at 0x80569F28. The others:
-                # stMtnRequestMotion is 28 words against 30 in the original (25 positional, 2 by
-                # LCS: the original tests the control a second time before the lookup of the
-                # player); fn_8041E480 32 words (19 by LCS; the loads of the conversion constant and
-                # of the matrix stack are scheduled in another order, as in fn_8041FD70, and 4 loads
-                # of the angle constants differ in placement); fn_8041AFCC 18 words (14 by LCS) and
-                # fn_8041B6FC 94 words against 98 (85 positional, 41 by LCS): the original forms the
-                # address of the tracks of a step (0x10) before indexing them, and fn_8041B6FC also
-                # keeps the address of the curves of each track in a register. The .bss at
-                # 0x805E12E0 that many of the missing functions use is constructed by the static
-                # initializer of the file, which this unit does not have yet.
-                Object(
-                    NonMatching,
-                    "Game/fn_80416198.cpp",
-                    extra_cflags=[
-                        "-Cpp_exceptions on",
-                        "-O4,s",
-                        "-use_lmw_stmw on",
-                        "-str reuse,readonly",
-                        "-inline auto,level=1",
-                    ],
-                ),
-                Object(
-                    NonMatching,
-                    "Game/fn_8041FD70.cpp",
-                    extra_cflags=[
-                        "-Cpp_exceptions on",
-                        "-O4,s",
-                        "-use_lmw_stmw on",
-                        "-str reuse,readonly",
-                        "-inline auto,level=1",
-                    ],
-                ),
-                # The instructions of all three functions, the exception tables and the relocation
-                # types are identical to the original; the six 2.0f loads are relocated against this
-                # unit's own literal instead of the shared pool's 0x805FAE2C. That literal is the
-                # last of the original file's shared .sdata2 pool (0x805FAE00-0x805FAE30), and this
-                # unit's 8-aligned pool cannot begin at 0x805FAE2C (4 mod 8). Revisit when the
-                # pool-owning functions are merged into one unit.
-                Object(
-                    NonMatching,
-                    "Game/fn_8041FF0C.cpp",
-                    extra_cflags=[
-                        "-Cpp_exceptions on",
-                        "-O4,s",
-                        "-use_lmw_stmw on",
-                        "-str reuse,readonly",
-                        "-inline auto,level=1",
-                    ],
-                ),
-                Object(
-                    NonMatching,
-                    "Game/fn_80420308.cpp",
-                    extra_cflags=[
-                        "-Cpp_exceptions on",
-                        "-O4,s",
-                        "-use_lmw_stmw on",
-                        "-str reuse,readonly",
-                        "-inline auto,level=1",
-                    ],
-                ),
-                # fn_8042043C, fn_804204C8, fn_80420590 and fn_8042062C have the original's
-                # instructions, but the 0.0f of fn_804204C8 and the 1.0f of fn_80420590 are local
-                # literals here, while the original reads them from the file's shared .sdata2 pool
-                # (0x805FAE00 in Game/fn_804157E8.cpp and 0x805FAE08 in Game/fn_80415854.cpp). The
-                # static initializer fn_804206A4 (0x80 bytes) is missing: it constructs nine
-                # matrices and four 0xC-byte objects (constructor fn_80028BA0) in lbl_805E12E0, which
-                # is in the .bss of Game/fn_80416198.cpp. Revisit when the pieces of the file are
-                # merged into one unit.
-                Object(
-                    NonMatching,
-                    "Game/fn_8042043C.cpp",
-                    extra_cflags=[
-                        "-Cpp_exceptions on",
-                        "-O4,s",
-                        "-use_lmw_stmw on",
-                        "-str reuse,readonly",
-                        "-inline auto,level=1",
-                    ],
-                ),
                 # Quaternion helpers that follow the control of motions in the same library. All
                 # three functions are identical to the original, but the pool of float literals
                 # (.sdata2 0x805FAE30-0x805FAE48) is in another order: the original's is 0, 2, 1,
@@ -2930,6 +2792,130 @@ config.libs = [
                 Matching,
                 "Game/fn_8041116C.cpp",
                 cflags=[*cflags_base, *msl_includes],
+                extra_cflags=[
+                    "-Cpp_exceptions on",
+                    "-O4,s",
+                    "-use_lmw_stmw on",
+                    "-str reuse,readonly",
+                    "-inline auto,level=1",
+                ],
+            ),
+            # All 100 motion-control functions have source in USA (GUPE8P), Japan (GUPJ8P)
+            # and PAL (GUPP8P). Keep the five Matching fragments separate. The seven fragments
+            # below retain original-object fallbacks; per-function comparisons by literal
+            # contents do not establish whole-object matching or behavioral equivalence.
+            # Their section sizes and alignments have the same residuals in all three regions.
+            # MWCC's writable .sdata2 flag is normalized separately from literal contents,
+            # alignment and placement; it is not itself a reason to mark a unit NonMatching.
+            # fn_804157E8: both bodies and their exception tables agree. The source .sdata is
+            # 4 bytes and .sbss is 0x14 bytes, each four bytes shorter than the padded original.
+            # Its zero literal is local, while other original fragments reference that pool slot.
+            Object(
+                NonMatching,
+                "Game/fn_804157E8.cpp",
+                extra_cflags=[
+                    "-Cpp_exceptions on",
+                    "-O4,s",
+                    "-use_lmw_stmw on",
+                    "-str reuse,readonly",
+                    "-inline auto,level=1",
+                ],
+            ),
+            # Thirteen of fourteen bodies agree by literal contents. In the direct player loop
+            # of fn_80415EA4, ten words differ: player/counter register assignments and the
+            # offset register's zero initialization. The exception tables agree. The source
+            # emits a 28-byte weak vector assignment and a 12-byte literal pool versus 8 bytes
+            # in the original; the extra zero and displaced epsilon/one loads remain distinct.
+            Object(
+                NonMatching,
+                "Game/fn_80415854.cpp",
+                extra_cflags=[
+                    "-Cpp_exceptions on",
+                    "-O4,s",
+                    "-use_lmw_stmw on",
+                    "-str reuse,readonly",
+                    "-inline auto,level=1",
+                ],
+            ),
+            # All 67 bodies are present; 32 agree by literal contents and 35 retain instruction
+            # differences. These include branches, address formation, register allocation,
+            # scheduling and stack layout, not a register-only residual. fn_804175C8 has a
+            # 0x80-byte frame versus the original's 0x90 and retains its conditionally assigned
+            # reference local; the precondition for reading it remains unproved.
+            # Four callbacks retain the native uninitialized-result paths with different storage:
+            # fn_8041DBD4 keeps a 0xC0 frame, but the result is at r1+0x38 versus original r1+0x08.
+            # fn_8041E124 uses a 0x40 frame versus original 0x50; both results are at r1+0x14.
+            # fn_8041ED8C keeps a 0xD0 frame, but the result is at r1+0x38 versus original r1+0x08.
+            # fn_8041F290 uses a 0x90 frame versus original 0xA0, with its result at r1+0x08
+            # versus original r1+0x2C. These storage effects remain NonMatching.
+            # The 11-entry switch table occupies 0x2C bytes versus the original's padded 0x30;
+            # the three strings occupy 0x42 versus 0x48. The source .sdata2 is 0x30 versus 0x20,
+            # with shared literals now local and a different order. A 28-byte weak vector
+            # assignment is also emitted. The 14 differing extab bytes encode saved-GPR
+            # counts; its size remains 0x1D8. All 59 extabindex entries keep the function names
+            # and extab offsets, with size fields reflecting changed bodies (0x2C4 bytes total).
+            Object(
+                NonMatching,
+                "Game/fn_80416198.cpp",
+                extra_cflags=[
+                    "-Cpp_exceptions on",
+                    "-O4,s",
+                    "-use_lmw_stmw on",
+                    "-str reuse,readonly",
+                    "-inline auto,level=1",
+                ],
+            ),
+            # fn_8041FED0 agrees. The 0x160-byte rotation callback fn_8041FD70 differs in
+            # 28 instruction words by literal contents (15 by longest common subsequence):
+            # conversion/stack loads and matrix-stack address loads have a different schedule.
+            # Its exception tables agree; the source emits 0x10 bytes of local angle/conversion
+            # literals where the original references the central fragment's shared pool.
+            Object(
+                NonMatching,
+                "Game/fn_8041FD70.cpp",
+                extra_cflags=[
+                    "-Cpp_exceptions on",
+                    "-O4,s",
+                    "-use_lmw_stmw on",
+                    "-str reuse,readonly",
+                    "-inline auto,level=1",
+                ],
+            ),
+            # All three bodies and exception tables agree. The source additionally emits the
+            # 28-byte weak vector assignment. Its 2.0f literal has the original contents, but
+            # .sdata2 is eight-aligned rather than four-aligned; the original slot begins four
+            # bytes past an eight-byte boundary in the complete file's pool.
+            Object(
+                NonMatching,
+                "Game/fn_8041FF0C.cpp",
+                extra_cflags=[
+                    "-Cpp_exceptions on",
+                    "-O4,s",
+                    "-use_lmw_stmw on",
+                    "-str reuse,readonly",
+                    "-inline auto,level=1",
+                ],
+            ),
+            # Both bodies agree by literal contents and the exception tables agree. The source
+            # emits four bytes for 1.0f; the original reads the shared pool owned by fn_80415854.
+            Object(
+                NonMatching,
+                "Game/fn_80420308.cpp",
+                extra_cflags=[
+                    "-Cpp_exceptions on",
+                    "-O4,s",
+                    "-use_lmw_stmw on",
+                    "-str reuse,readonly",
+                    "-inline auto,level=1",
+                ],
+            ),
+            # All five bodies agree by literal contents, including the 0x80-byte initializer.
+            # The 0x220-byte BSS layout, constructor entry and exception tables agree. The source
+            # emits two four-byte weak default constructors and eight bytes of local zero/one
+            # literals; the original reads those literals from the earlier fragments' pool.
+            Object(
+                NonMatching,
+                "Game/fn_8042043C.cpp",
                 extra_cflags=[
                     "-Cpp_exceptions on",
                     "-O4,s",

@@ -3654,7 +3654,7 @@ Game/fn_80416198.cpp:
 	extabindex  start:0x80007E5C end:0x80008120
 	.text       start:0x80416198 end:0x8041FD6C
 	.rodata     start:0x8051A558 end:0x8051A5A0
-	.bss        start:0x805E12E0 end:0x805E1500
+	.data       start:0x80569F28 end:0x80569F58
 	.sdata2     start:0x805FAE0C end:0x805FAE2C
 
 Game/fn_8041FD6C.c:
@@ -3690,6 +3690,7 @@ Game/fn_8042043C.cpp:
 	extabindex  start:0x80008168 end:0x800081A4
 	.text       start:0x8042043C end:0x80420724
 	.ctors      start:0x804AA064 end:0x804AA068
+	.bss        start:0x805E12E0 end:0x805E1500
 
 Game/fn_80420724.cpp:
 	extab       start:0x80005FF4 end:0x8000600C
