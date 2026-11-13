@@ -239,6 +239,8 @@ void fn_8040CE38(Fn8040Vector3 *vector, float scale);
 void fn_8040CE60(Fn8040Vector3 *vector);
 /* Zeroes the vector (behaviour inferred). */
 void fn_8040E970(UnkRotation3 *vector);
+/* Sets both components to the float at USA (GUPE8P) 0x8051A4E8, 0.0f (behaviour from its body). */
+void fn_8040E988(Fn8040Vector2 *vector);
 /* result += value (behaviour inferred). */
 void fn_8040CFF8(Fn8040Vector3 *result, const Fn8040Vector3 *value);
 /* Squared distance between two 3D vectors (behaviour inferred). */

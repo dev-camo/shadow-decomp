@@ -21,9 +21,16 @@ class EffectElement;
 namespace Player {
 class PlayerBase;
 struct IKEventArgs;
-/* The addressed three-word input of SetExternalMotionCommand. Its type name and full layout
- * remain unknown; the const reference used by the virtual slot is inferred. */
-struct UnkExternalMotionArgs_8009A6A4;
+/* The addressed three-word input of SetExternalMotionCommand (the command's words at 0x14 to 0x1F,
+ * passed by the code at USA (GUPE8P) 0x8009A6A8). Its type name and the meaning of the last two
+ * words remain unknown; Player::Shadow::ShadowMotion's implementation of the slot (0x800B4F98)
+ * makes the first word its motion index. The const reference used by the virtual slot is
+ * inferred. */
+struct UnkExternalMotionArgs_8009A6A4 {
+    /* 0x0 */ int field_0x0;
+    /* 0x4 */ u8 field_0x4[8]; /* Unrecovered storage. */
+};
+CHECK_SIZEOF(UnkExternalMotionArgs_8009A6A4, 0xC);
 
 /* The records at PlayerMotion +0xD0 have stride 0x38. Their matrix pointer is assigned by the
  * derived motion task; their vectors are updated by fn_800AAB78. Names and flag types inferred. */
@@ -98,7 +105,7 @@ class PlayerMotion : public Task {
     /* 0x070 */ Fn8040Matrix34 field_0x70;
     /* 0x0A0 */ Fn8040Matrix34 field_0xA0;
     /* 0x0D0 */ UnkMotionRecord_800AAB74 field_0xD0[14];
-    /* 0x3E0 */ int field_0x3E0;
+    /* 0x3E0 */ unsigned int field_0x3E0;
     /* 0x3E4 */ int field_0x3E4;
     /* 0x3E8 */ _stMtnPlayWork *field_0x3E8;
     /* 0x3EC */ unsigned int field_0x3EC;

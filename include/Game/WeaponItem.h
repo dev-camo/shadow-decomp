@@ -71,6 +71,9 @@ const char *fn_8005BEEC(int type);
 /* Returns the two floats at 0x10 and 0x14 of the type's description, or lbl_805F1358 when the type
  * has none (the SET_WEAPON gadget sizes the weapon's probe with them). */
 Fn8040Vector2 fn_8005B898(int type);
+/* Returns the float at 0x28 of the type's description, or the float at USA (GUPE8P) 0x805F1E38
+ * when the type has none (behaviour from its body). */
+float fn_8005B904(int type);
 }
 
 /* A weapon type's description, which the type table's records point to (placeholder name; the

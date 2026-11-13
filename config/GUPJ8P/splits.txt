@@ -152,6 +152,16 @@ Game/PlayerShadowBehavior.cpp:
 	.sdata      start:0x805E5070 end:0x805E50A8
 	.sbss       start:0x805EEBC8 end:0x805EEBD0
 
+Game/PlayerShadowMotion.cpp:
+	.text       start:0x800B1478 end:0x800B5F3C
+	.ctors      start:0x804AA330 end:0x804AA334
+	.rodata     start:0x804B3E60 end:0x804B43B0
+	.data       start:0x80522550 end:0x805229C8
+	.bss        start:0x80576FA8 end:0x80576FB8
+	.sdata      start:0x805E5120 end:0x805E5158
+	.sbss       start:0x805EEBE8 end:0x805EEC00
+	.sdata2     start:0x805F32D8 end:0x805F3378
+
 Game/PlayerWatch.cpp:
 	.text       start:0x800B86BC end:0x800B89C8
 	.rodata     start:0x804B4440 end:0x804B4498
