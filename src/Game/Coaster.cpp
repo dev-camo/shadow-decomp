@@ -559,10 +559,6 @@ void Coaster::BuildMatrices() {
     Fn8040Vector3 origin;
     Fn8040Matrix34 rotation;
     Fn8040Matrix34 translation;
-    Fn8040Matrix34 rolled;
-    Fn8040Matrix34 rolled2;
-    Fn8040Matrix34 moved;
-    Fn8040Matrix34 moved2;
 
     fn_8040C148(&m_matrix, &lbl_805E0720);
     fn_8040B80C(&m_matrix, m_rotation.z);
@@ -584,20 +580,16 @@ void Coaster::BuildMatrices() {
         axis.Set(0.0f, 0.0f, 1.0f);
         axis = m_matrix * axis;
         fn_800498A0(&rotation, &axis, m_roll);
-        fn_8001E044(&rolled, &rotation, &m_matrix);
-        fn_8040C148(&m_matrix, &rolled);
-        fn_8001E044(&rolled2, &rotation, &m_matrix2);
-        fn_8040C148(&m_matrix2, &rolled2);
+        m_matrix = fn_8001E044(&rotation, &m_matrix);
+        m_matrix2 = fn_8001E044(&rotation, &m_matrix2);
     }
 
     fn_800493C4(&m_charInfo->m_rotation, &m_matrix);
 
     fn_8040C148(&translation, &lbl_805E0720);
     fn_8040B59C(&translation, m_charInfo->m_position);
-    fn_8001E044(&moved, &translation, &m_matrix);
-    fn_8040C148(&m_matrix, &moved);
-    fn_8001E044(&moved2, &translation, &m_matrix2);
-    fn_8040C148(&m_matrix2, &moved2);
+    m_matrix = fn_8001E044(&translation, &m_matrix);
+    m_matrix2 = fn_8001E044(&translation, &m_matrix2);
 
     origin.Set(0.0f, s_stage->field_0x4, 0.0f);
     m_position = m_matrix * origin;

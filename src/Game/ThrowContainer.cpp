@@ -89,10 +89,7 @@ void Container::Update(float dt) {
 
     fn_8040B884(&turn, m_spin * dt);
 
-    Fn8040Matrix34 turned;
-
-    fn_8001E044(&turned, &m_rotation, &turn);
-    m_rotation = turned;
+    m_rotation = fn_8001E044(&m_rotation, &turn);
 
     UpdateModel();
 
@@ -124,20 +121,9 @@ void Container::OnHit() {
 void Container::UpdateModel() {
     if (m_model.get() != 0) {
         Fn8040Vector3 position = GetPosition();
-        /* Matching workaround: matrix is declared before translation. The original keeps
-         * translation at the lower stack offset (0x50, matrix at 0x80), which this compiler gives
-         * the later of two locals; declared the other way round, the offsets swap (7 words).
-         * Revisit if translation turns out to be the result of a function of its own. */
-        Fn8040Matrix34 matrix;
-        Fn8040Matrix34 translation;
+        Fn8040Matrix34 matrix(fn_8040B034(position));
 
-        fn_8040B034(&translation, &position);
-        matrix = translation;
-
-        Fn8040Matrix34 product;
-
-        fn_8001E044(&product, &matrix, &m_rotation);
-        matrix = product;
+        matrix = fn_8001E044(&matrix, &m_rotation);
         fn_8040B720(&matrix, m_scale, m_scale, m_scale);
 
         m_model->fn_801633DC(&matrix);

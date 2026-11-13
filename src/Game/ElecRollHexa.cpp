@@ -81,9 +81,7 @@ void ElecRollHexa::fn_80267334() {
         Fn8040Vector3 position;
         fn_80008E1C(&position, m_charInfo->m_position.x, m_heightOffset + m_charInfo->m_position.y,
                     m_charInfo->m_position.z);
-        Fn8040Matrix34 translation;
-        fn_8040B034(&translation, &position);
-        Fn8040Matrix34 matrix(translation);
+        Fn8040Matrix34 matrix(fn_8040B034(position));
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         m_model->fn_801633DC(&matrix);
     }

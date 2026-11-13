@@ -59,11 +59,7 @@ void DarkSpinEntrance::fn_80258910() {
     if (m_handle.get() != 0) {
         fn_8015BE64(m_handle.get());
 
-        Fn8040Matrix34 matrix;
-        Fn8040Matrix34 translation;
-
-        MakeTranslationMatrix(&translation, m_charInfo->m_position);
-        fn_8040C148(&matrix, &translation);
+        Fn8040Matrix34 matrix(fn_8040B034(m_charInfo->m_position));
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
         fn_8040B80C(&matrix, m_charInfo->m_rotation.z);

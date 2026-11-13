@@ -254,8 +254,6 @@ float *fn_8040C17C(Fn8040Matrix34 *matrix, int row, int column);
 float fn_8040C168(Fn8040Matrix34 *matrix, int row, int column);
 /* A second copy of fn_8040C148 in the original. */
 void fn_8040BCB4(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
-/* Sets matrix to the identity rotation with the given translation. */
-void fn_8040B034(Fn8040Matrix34 *matrix, const Fn8040Vector3 *translation);
 /* Builds a scale matrix from the components of the vector. */
 void fn_8040B07C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *scale);
 /* Build the rotation matrices about the z, y and x axes (the angle is passed to the sine and
@@ -303,9 +301,15 @@ void fn_8001E070(Fn8040Matrix34 *matrix, const UnkRotation3 *rotation, int order
  * (behaviour inferred from its body). */
 void fn_800193B8(Fn8040Matrix34 *matrix, const UnkRotation3 *rotation, int order);
 /* Matrix helpers below 0x80050000 called by game units (descriptions inferred from the callers). */
-/* result = left * right, applying right first (a by-value wrapper that keeps the result pointer and
- * calls fn_8040B8FC). */
-void fn_8001E044(Fn8040Matrix34 *result, const Fn8040Matrix34 *left, const Fn8040Matrix34 *right);
+/* Returns left * right, applying right first. The by-value result is inferred; the code is that
+ * of a result pointer, which the function passes on to fn_8040B8FC. In USA (GUPE8P) all 55
+ * call sites pass a stack slot for the result: 49 copy it with fn_8040C148 right after the call
+ * and the other 6 pass it on to another call. In ThrowContainer::Container's UpdateModel that slot
+ * (0x8027B508) lies below the slot of fn_8040B034's result from the statement before
+ * (0x8027B4F0), which is where this compiler puts the temporary of a later statement. A named
+ * matrix filled through a result pointer is placed above that temporary instead (measured: 4
+ * words differ). */
+Fn8040Matrix34 fn_8001E044(const Fn8040Matrix34 *left, const Fn8040Matrix34 *right);
 /* Stores the angles of the matrix's rotation in angles (fn_800494F8), and the same angles in the
  * order the rotation vector of a character info uses (fn_800493C4). */
 void fn_800494F8(UnkRotation3 *angles, const Fn8040Matrix34 *matrix);
@@ -408,9 +412,17 @@ Fn8040Vector3 fn_8040FC78(float *fraction, const UnkSegment_80020A20 *segment,
  * calls out of line: USA (GUPE8P) 0x8031D320 and 0x8031D338, Japan (GUPJ8P) 0x8031D8D0,
  * and PAL (GUPP8P) 0x8031E978. A plain output-pointer call expands them. */
 Fn8040Matrix34 fn_8040FD8C(const Fn8040Vector3 *axis, float angle);
-/* result = matrix rotated by a rotation vector, and by its inverse (fn_8040FEBC). */
-void fn_8040FFBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const UnkRotation3 *rotation,
-                 int order);
+/* Returns the matrix rotated by a rotation vector in the given rotation order. The by-value
+ * result is inferred; the code is that of a result pointer. In USA (GUPE8P) 12 of its 13 call
+ * sites pass a stack slot for the result and copy it with fn_8040C148 right after the call, for
+ * example Weapon::ChaosSpear::ChaosSpear's UpdateMatrix at 0x802F0B30 and 0x802F0B3C; the
+ * thirteenth (0x80237FDC) passes on the result pointer it was given. In UpdateMatrix and in
+ * Katana's RequestBullet (0x80275E50) the slot lies below the slot of fn_8040B034's result from
+ * the statement before, which is where this compiler puts the temporary of a later statement. A
+ * named matrix filled through a result pointer is placed above that temporary instead (measured:
+ * 4 words differ in each of the two functions). */
+Fn8040Matrix34 fn_8040FFBC(const Fn8040Matrix34 *matrix, const UnkRotation3 *rotation, int order);
+/* result = matrix rotated by the inverse of a rotation vector. */
 void fn_8040FEBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const UnkRotation3 *rotation,
                  int order);
 /* A segment helper outside fn_8040F364.cpp: the distance from point to the closest point of the
@@ -589,17 +601,25 @@ extern "C" float fn_8003C660(const Fn8040Vector3 *point, const UnkSegment_80020A
 extern "C" float fn_8003C4C4(const UnkSegment_80020A20 *a, const UnkSegment_80020A20 *b,
                              Fn8040Vector3 *closestA, Fn8040Vector3 *closestB);
 
-/* Matching workaround: MakeTranslationMatrix and AddVector are inline wrappers so that a smart
- * pointer's operator-> supplying the vector is called out of line, as in the original; that
- * happens for an argument of an inline call, whereas a direct call to the function expands it in
- * place. The original inline functions are unknown. Revisit when they are identified.
- *
- * Sets matrix to the identity rotation with the given translation (name inferred). */
-inline void MakeTranslationMatrix(Fn8040Matrix34 *matrix, const Fn8040Vector3 &translation) {
-    fn_8040B034(matrix, &translation);
-}
+/* Returns the matrix with the identity rotation and the given translation. The by-value result
+ * and the const reference are inferred; the code is that of a result pointer and a pointer
+ * parameter. In USA (GUPE8P) all 77 call sites pass a stack slot for the result, and 65 of
+ * them copy that slot with fn_8040C148 right after the call into the matrix they go on to use,
+ * for example Weapon::ChaosSpear::ChaosSpear's UpdateMatrix at 0x802F0AF0 and 0x802F0AFC. Where
+ * the translation comes through a smart pointer, the original calls the pointer's operator->
+ * out of line before the call (0x802F0AE4). This compiler does that for the arguments of an
+ * inline function that is called as a statement of its own, here the matrix's copy constructor
+ * or assignment; a statement that calls this function with a result pointer has the operator
+ * expanded in place (measured in ElecPillar's and ElecWakka's UpdateModelMatrix). Five call sites
+ * build the vector for the call with fn_80008E1C and pass on the pointer it returns, for example
+ * Boss::Diablon::Parts::Bomb's fn_8031E3B0 at 0x8031E440-0x8031E44C. */
+extern "C" Fn8040Matrix34 fn_8040B034(const Fn8040Vector3 &translation);
 
-/* result += value (name inferred): a wrapper of fn_8040CFF8 for the same reason (see above). */
+/* result += value (name inferred).
+ * Matching workaround: AddVector is an inline wrapper of fn_8040CFF8 so that a smart pointer's
+ * operator-> supplying the vector is called out of line, as in the original; that happens for
+ * an argument of an inline call, whereas a direct call to the function expands it in place. The
+ * original inline function is unknown. Revisit when it is identified. */
 inline void AddVector(Fn8040Vector3 *result, const Fn8040Vector3 &value) {
     fn_8040CFF8(result, &value);
 }

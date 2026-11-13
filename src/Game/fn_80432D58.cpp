@@ -287,9 +287,7 @@ void EffectParticle3DRW3::Update(float deltaTime) {
                 fn_8040B884(&transform, particle->m_rotation.x);
                 fn_8040B790(&transform, particle->m_scale);
                 if ((m_definitionFlags & 0x800) != 0) {
-                    Fn8040Matrix34 combined;
-                    fn_8001E044(&combined, &m_transform, &transform);
-                    fn_8040C148(&transform, &combined);
+                    transform = fn_8001E044(&m_transform, &transform);
                 }
                 RwFrame *frame = static_cast<RwFrame *>(m_particles[i].clump->object.parent);
                 RwMatrix *matrix = &frame->modelling;
@@ -322,9 +320,7 @@ void EffectParticle3DRW3::Update(float deltaTime) {
                 fn_8040B884(&transform, particle->m_rotation.x);
                 fn_8040B790(&transform, particle->m_scale);
                 if ((m_definitionFlags & 0x800) != 0) {
-                    Fn8040Matrix34 combined;
-                    fn_8001E044(&combined, &m_transform, &transform);
-                    fn_8040C148(&transform, &combined);
+                    transform = fn_8001E044(&m_transform, &transform);
                 }
                 for (int corner = 0; corner < 4; corner++) {
                     Fn8040Vector3 position;

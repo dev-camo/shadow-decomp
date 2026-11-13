@@ -90,8 +90,7 @@ Fn8040Vector3 fn_80410098(const Fn8040Vector3 &vector, const UnkRotation3 *rotat
     return rotated;
 }
 
-void fn_8040FFBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const UnkRotation3 *rotation,
-                 int order) {
+Fn8040Matrix34 fn_8040FFBC(const Fn8040Matrix34 *matrix, const UnkRotation3 *rotation, int order) {
     Fn8040Matrix34 rotated;
     fn_8040C148(&rotated, matrix);
 
@@ -113,7 +112,7 @@ void fn_8040FFBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const Unk
         break;
     }
 
-    fn_8040C148(result, &rotated);
+    return rotated;
 }
 
 void fn_8040FEBC(Fn8040Matrix34 *result, const Fn8040Matrix34 *matrix, const UnkRotation3 *rotation,
