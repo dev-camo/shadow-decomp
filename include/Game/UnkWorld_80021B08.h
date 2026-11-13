@@ -42,6 +42,14 @@ UnkWorld_80021B08 *fn_80021B08(void);
 void fn_800C40C4(UnkWorld_80021B08 *world,
                  boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack> attack,
                  UnkProbeNode_80021FE4 *node, UnkResult_80051B58 *result);
+/* Calls fn_800C40C4 with a copy of attack and result for every node of hits, from the node that
+ * fn_8001EE04 returns up to the one that fn_8001EDEC returns (behaviour from its body). The
+ * by-value spelling of attack is inferred: the body copies it for each call, which fits a
+ * by-value or a const-reference parameter. */
+void fn_800C4190(UnkWorld_80021B08 *world,
+                 boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack> attack,
+                 SonicteamUSA::System::Collision::CollisionResultList *hits,
+                 UnkResult_80051B58 *result);
 /* Creates a probe sphere at position and returns it (behaviour inferred; flags, arg3, arg4 and
  * arg6 are not understood). */
 boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>
