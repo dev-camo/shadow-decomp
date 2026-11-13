@@ -6,6 +6,7 @@
  * (deferred inlining emits functions last-defined first), except fn_8005C0DC, whose in-class
  * definition is emitted before all of them. */
 #include "Game/UnkSoundManager_80053164.h"
+#include "Game/UnkStartupFloat_800E2570.h"
 #include "Game/UnkWeaponModel_800631FC.h"
 #include "Game/WeaponCannonBase.h"
 #include "Game/WeaponItem.h"
@@ -127,14 +128,20 @@ Weapon::Item *HealCannon::CreateItem02() {
 /* The descriptions of the two weapon types (layout in WeaponItem.h). The first words of the
  * records of weapon types 0x41 and 0x42 in the weapon type table at 0x8051DF38 (the words at
  * 0x8051E348 and 0x8051E358, USA (GUPE8P)) point to them. They differ in the name, the two creators
- * and field_0x18. */
+ * and field_0x18.
+ * Matching workaround: the original's start-up function (0x80275A90, USA (GUPE8P)) loads 1.0
+ * and 5.0 from .sdata2 once each and stores them at 0x10 and 0x14 of both descriptions, where its
+ * .data has zeros; the other members are initialised data, apart from the names, which the same
+ * function copies. A constant initialiser gives no store. UnkStartupFloat_800E2570 stands in for
+ * the original initialiser expression, which is unknown; it is written in each record, as in
+ * WeaponSpecialKatana.cpp. Revisit when the original initialiser is found. */
 UnkWeaponDescription_8005B9D4 lbl_8054D200 = {
     HealCannon::s_name01,
     HealCannon::Create01,
     HealCannon::CreateItem01,
     0,
-    1.0f,
-    5.0f,
+    UnkStartupFloat_800E2570(1.0f).value,
+    UnkStartupFloat_800E2570(5.0f).value,
     0xA,
     2,
     0x2002,
@@ -148,8 +155,8 @@ UnkWeaponDescription_8005B9D4 lbl_8054D230 = {
     HealCannon::Create02,
     HealCannon::CreateItem02,
     0,
-    1.0f,
-    5.0f,
+    UnkStartupFloat_800E2570(1.0f).value,
+    UnkStartupFloat_800E2570(5.0f).value,
     0x14,
     2,
     0x2002,

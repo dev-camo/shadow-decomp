@@ -5,6 +5,7 @@
  * reverse address order (deferred inlining emits functions last-defined first). */
 #include "Game/UnkParams_80051D10.h"
 #include "Game/UnkSoundManager_80053164.h"
+#include "Game/UnkStartupFloat_800E2570.h"
 #include "Game/UnkWeaponModel_800631FC.h"
 #include "Game/WeaponGunBase.h"
 #include "Game/WeaponItem.h"
@@ -156,14 +157,20 @@ Weapon::Item *ShadowRifle::CreateItem() {
 
 /* The shadow rifle's weapon type description (layout in WeaponItem.h). The first word of the
  * record of weapon type 0x43 in the weapon type table at 0x8051DF38 (the word at 0x8051E368, USA
- * (GUPE8P)) points to it. */
+ * (GUPE8P)) points to it.
+ * Matching workaround: the original's start-up function (0x802771E4, USA (GUPE8P)) loads 1.0
+ * and 5.0 from .sdata2 and stores them at 0x10 and 0x14 of the description, where its .data has
+ * zeros; the other members are initialised data, apart from the name, which the same function
+ * copies. A constant initialiser gives no store. UnkStartupFloat_800E2570 stands in for the
+ * original initialiser expression, which is unknown; it is written in the record, as in
+ * WeaponSpecialKatana.cpp. Revisit when the original initialiser is found. */
 UnkWeaponDescription_8005B9D4 lbl_8054D518 = {
     ShadowRifle::s_name,
     ShadowRifle::Create,
     ShadowRifle::CreateItem,
     0,
-    1.0f,
-    5.0f,
+    UnkStartupFloat_800E2570(1.0f).value,
+    UnkStartupFloat_800E2570(5.0f).value,
     0x14,
     3,
     0x2002,
