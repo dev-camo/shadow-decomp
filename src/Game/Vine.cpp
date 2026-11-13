@@ -124,14 +124,28 @@ Vine::Vine(Task *parent, UnkGadgetOwner_800C9CD0 *owner) : Gadget(parent, owner)
     UpdateModelMatrix();
 }
 
-Vine::~Vine() {
-    fn_801E7108(m_target);
+/* Matching workaround: the destructor's cleanup loop is in an inline function that the
+ * destructor expands. Its name and its form as a member (and not a free function) are inferred;
+ * the original has no out-of-line copy of it. The original loads zero into the loop's counter and
+ * copies the counter's register into the sequence offset and into the stored null before the loop
+ * (USA 0x8014FF1C-0x8014FF24). That fits a counter that is a compiler temporary, which the local
+ * of an expanded inline function is (other compiler transformations can produce such a temporary
+ * too). With the loop written in the destructor the counter is an ordinary local and the build
+ * loads zero into the offset and the counter separately and copies the offset's zero to the null
+ * (8 of the destructor's 67 words differ). Revisit when the class's original source is found, or
+ * another source form gives the copies. */
+inline void Vine::DeleteSequences() {
     for (int i = 0; i < 2; i++) {
         if (m_sequences[i] != 0) {
             delete m_sequences[i];
             m_sequences[i] = 0;
         }
     }
+}
+
+Vine::~Vine() {
+    fn_801E7108(m_target);
+    DeleteSequences();
 }
 
 void Vine::UpdateBody(float dt) {

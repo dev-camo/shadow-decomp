@@ -61,6 +61,9 @@ class Vine : public Gadget {
 
     Vine(Task *parent, UnkGadgetOwner_800C9CD0 *owner);
     virtual ~Vine();
+    /* Deletes the two motion sequences and clears their pointers. Matching workaround: see its
+     * definition. */
+    void DeleteSequences();
     /* Advances both models and both motion sequences by dt, runs the state function of m_state
      * and places the models. */
     virtual void UpdateBody(float dt);
