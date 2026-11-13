@@ -2,6 +2,7 @@
 #define GAME_PLAYERBASE_H
 
 #include "Game/CharInfo.h"
+#include "Game/PlayerMotionEventArgs.h"
 #include "Game/UnkBitFlags_80014E04.h"
 #include "Game/fn_8040_vector_types.h"
 #include "boost/shared_ptr.hpp"
@@ -19,6 +20,9 @@ class Target;
 namespace Player {
 class PlayerMotion;
 class WeaponBase;
+class Attack;
+class Effect;
+class SoundBase;
 } // namespace Player
 
 /* A partial view of the object at 0x24C of a Player::PlayerBase (placeholder name). The code at
@@ -131,8 +135,9 @@ CHECK_SIZEOF(PlayerObject, 0x68);
  * scales it by -30 into the acceleration it sends the player), the owner at 0x218 (see
  * UnkOwner_80079E64) and the pointers at 0x22C (see UnkObject_800A78FC), 0x230 (see
  * Player::PlayerMotion), 0x244 (see UnkObject_80079BA4) and 0x24C (see
- * UnkTargetSource_80206574). The word at 0x240 is not mapped here: Player::SoundBase's
- * constructor stores the new sound task in it and its destructor clears it.
+ * UnkTargetSource_80206574). Player::SoundBase's constructor stores the new sound task at 0x240
+ * and its destructor clears it. The motion task dispatches events through the callback at 0x74
+ * and mirrors its work flags at 0xB4; the attack and effect tasks occupy 0x234 and 0x23C.
  *
  * Its vtable (0x80520310, 0x54 bytes) overrides the destructor and the first three CharInfo slots
  * and adds nine slots. The added slots are named after their implementations here, or, for the
@@ -166,7 +171,10 @@ class PlayerBase : public PlayerObject {
      * 0 for that object. */
     virtual bool fn_80079770();
 
-    /* 0x068 */ u8 field_0x68[0xA0 - 0x68];
+    /* 0x068 */ u8 field_0x68[0x74 - 0x68];
+    /* The motion task dispatches its decoded events through this callback. */
+    /* 0x074 */ MotionEventCallback field_0x74;
+    /* 0x080 */ u8 field_0x80[0xA0 - 0x80];
     /* Player::Behavior::Super sets bits 2, 7 and 9 when it starts and resets them when it ends. */
     /* 0x0A0 */ UnkBitFlags_80014E04 field_0xA0;
     /* 0x0A4 */ u8 field_0xA4[0xA8 - 0xA4];
@@ -174,7 +182,8 @@ class PlayerBase : public PlayerObject {
      * is in word n / 32 (fn_8006CD78). fn_80079770 tests bits 0x24 and 0x20 of the set, the
      * TornadoCollision gadget bit 0x14 and Player::Behavior::Super bits 0x1B and 0x3C. */
     /* 0x0A8 */ u32 field_0xA8[3];
-    /* 0x0B4 */ u8 field_0xB4[0xB8 - 0xB4];
+    /* The motion task mirrors its sixteen control work flags here. */
+    /* 0x0B4 */ UnkBitFlags_80014E04 field_0xB4;
     /* 0x0B8 */ Fn8040Vector3 field_0xB8;
     /* 0x0C4 */ u8 field_0xC4[0xDC - 0xC4];
     /* 0x0DC */ Fn8040Vector3 field_0xDC;
@@ -190,11 +199,12 @@ class PlayerBase : public PlayerObject {
     /* 0x22C */ UnkObject_800A78FC *field_0x22C;
     /* The constructor clears it; Player::PlayerMotion's destructor clears it too. */
     /* 0x230 */ PlayerMotion *field_0x230;
-    /* 0x234 */ u8 field_0x234[0x238 - 0x234];
+    /* 0x234 */ Attack *field_0x234;
     /* Player::WeaponBase's constructor stores the new object here through its owner pointer, and
      * its destructor clears it. */
     /* 0x238 */ WeaponBase *field_0x238;
-    /* 0x23C */ u8 field_0x23C[0x244 - 0x23C];
+    /* 0x23C */ Effect *field_0x23C;
+    /* 0x240 */ SoundBase *field_0x240;
     /* The constructor clears it (0x8007A108). The destructor, when it is not null, calls its
      * destructor (fn_800A25E0) with flag 1, freeing it, and clears it (0x80079BA4-0x80079BBC). */
     /* 0x244 */ UnkObject_80079BA4 *field_0x244;
@@ -203,15 +213,20 @@ class PlayerBase : public PlayerObject {
     /* 0x250 */ u8 field_0x250[0x290 - 0x250];
 };
 CHECK_SIZEOF(PlayerBase, 0x290);
+CHECK_OFFSETOF(PlayerBase, field_0x74, 0x74);
 CHECK_OFFSETOF(PlayerBase, field_0xA0, 0xA0);
 CHECK_OFFSETOF(PlayerBase, field_0xA8, 0xA8);
+CHECK_OFFSETOF(PlayerBase, field_0xB4, 0xB4);
 CHECK_OFFSETOF(PlayerBase, field_0xB8, 0xB8);
 CHECK_OFFSETOF(PlayerBase, field_0xDC, 0xDC);
 CHECK_OFFSETOF(PlayerBase, field_0x1C8, 0x1C8);
 CHECK_OFFSETOF(PlayerBase, field_0x218, 0x218);
 CHECK_OFFSETOF(PlayerBase, field_0x22C, 0x22C);
 CHECK_OFFSETOF(PlayerBase, field_0x230, 0x230);
+CHECK_OFFSETOF(PlayerBase, field_0x234, 0x234);
 CHECK_OFFSETOF(PlayerBase, field_0x238, 0x238);
+CHECK_OFFSETOF(PlayerBase, field_0x23C, 0x23C);
+CHECK_OFFSETOF(PlayerBase, field_0x240, 0x240);
 CHECK_OFFSETOF(PlayerBase, field_0x244, 0x244);
 CHECK_OFFSETOF(PlayerBase, field_0x24C, 0x24C);
 
