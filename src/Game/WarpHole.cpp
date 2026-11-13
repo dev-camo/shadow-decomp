@@ -21,12 +21,15 @@
 #include "Game/UnkManager_80117514.h"
 #include "Game/UnkObject_8003A52C.h"
 #include "Game/UnkObject_800BADE8.h"
-#include "Game/UnkSingleton.h"
+#include "Game/Singleton.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/UnkWorld_80021B08.h"
 #include "Game/fn_800B8000.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"
+
+using Sonicteam::System::CreateStatic;
+using Sonicteam::System::Singleton;
 
 using SonicteamUSA::System::CharaColli::CharaColliBase;
 
@@ -207,7 +210,8 @@ ManagerTask::~ManagerTask() {
         /* Japan and PAL test fn_80342284 here; the USA build has no copy of that function and tests
          * fn_802E5810 instead. */
 #if defined(VERSION_GUPE8P)
-        if (fn_802E5810(UnkSingleton<UnkManager_80117514>::Instance())) {
+        if (fn_802E5810(
+                Singleton<UnkManager_80117514, CreateStatic<UnkManager_80117514> >::Instance())) {
 #else
         if (fn_80342284() != 1) {
 #endif
@@ -221,7 +225,8 @@ ManagerTask::~ManagerTask() {
 }
 
 void ManagerTask::Update(float dt) {
-    if (!fn_802E5810(UnkSingleton<UnkManager_80117514>::Instance())) {
+    if (!fn_802E5810(
+            Singleton<UnkManager_80117514, CreateStatic<UnkManager_80117514> >::Instance())) {
         fn_800BADE8()->field_0x30 = 1;
     }
 

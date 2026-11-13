@@ -76,9 +76,9 @@ class SavePoint : public Gadget {
      * in state 2; nothing else happens (name inferred). */
     void OnCommand(CharCommand &command);
     /* Whether a save may start: false while the byte at 0x84 of lbl_8057D6A0 is set, when
-     * fn_8020261C is false for the UnkSingleton<UnkManager_80117578> instance, or when the word at
-     * 0x8 of the manager of fn_80074470 is 6; otherwise whether fn_802E5810 is true for the
-     * UnkSingleton<UnkManager_80117514> instance, tested in that order (name inferred). */
+     * fn_8020261C is false for the singleton UnkManager_80117578, or when the word at 0x8 of the
+     * manager of fn_80074470 is 6; otherwise whether fn_802E5810 is true for the singleton
+     * UnkManager_80117514, tested in that order (name inferred). */
     bool CanSave();
 
     static const char *s_name;
