@@ -24,7 +24,7 @@ void fn_8040C148(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source) {
     }
 }
 
-void fn_8040BEF8(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source) {
+Fn8040Matrix34 fn_8040BEF8(const Fn8040Matrix34 *source) {
     float m00 = source->values[0][0];
     float m01 = source->values[0][1];
     float m02 = source->values[0][2];
@@ -38,29 +38,27 @@ void fn_8040BEF8(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source) {
     float determinant = m00 * (m11 * m22 - m12 * m21) + m01 * (m12 * m20 - m10 * m22) +
                         m02 * (m10 * m21 - m11 * m20);
     if (determinant == 0.0f) {
-        fn_8040BCB4(destination, source);
-        return;
+        /* The original calls fn_8040BCB4 here with the result pointer it was given. The matrix's
+         * copy constructor calls fn_8040C148, the other copy of the same code. */
+        return *source;
     }
 
     float m03 = source->values[0][3];
     float m13 = source->values[1][3];
     float m23 = source->values[2][3];
     float scale = 1.0f / determinant;
-    destination->values[0][0] = scale * (m11 * m22 - m12 * m21);
-    destination->values[0][1] = scale * -(m01 * m22 - m02 * m21);
-    destination->values[0][2] = scale * (m01 * m12 - m02 * m11);
-    destination->values[0][3] = scale * -(m02 * m13 * m21 + m01 * m12 * m23 + m03 * m11 * m22 -
-                                          m03 * m12 * m21 - m02 * m11 * m23 - m01 * m13 * m22);
-    destination->values[1][0] = scale * -(m10 * m22 - m12 * m20);
-    destination->values[1][1] = scale * (m00 * m22 - m02 * m20);
-    destination->values[1][2] = scale * -(m00 * m12 - m02 * m10);
-    destination->values[1][3] = scale * (m02 * m13 * m20 + m00 * m12 * m23 + m03 * m10 * m22 -
-                                         m03 * m12 * m20 - m02 * m10 * m23 - m00 * m13 * m22);
-    destination->values[2][0] = scale * (m10 * m21 - m11 * m20);
-    destination->values[2][1] = scale * -(m00 * m21 - m01 * m20);
-    destination->values[2][2] = scale * (m00 * m11 - m01 * m10);
-    destination->values[2][3] = scale * -(m01 * m13 * m20 + m00 * m11 * m23 + m03 * m10 * m21 -
-                                          m03 * m11 * m20 - m01 * m10 * m23 - m00 * m13 * m21);
+    return Fn8040Matrix34(scale * (m11 * m22 - m12 * m21), scale * -(m01 * m22 - m02 * m21),
+                          scale * (m01 * m12 - m02 * m11),
+                          scale * -(m02 * m13 * m21 + m01 * m12 * m23 + m03 * m11 * m22 -
+                                    m03 * m12 * m21 - m02 * m11 * m23 - m01 * m13 * m22),
+                          scale * -(m10 * m22 - m12 * m20), scale * (m00 * m22 - m02 * m20),
+                          scale * -(m00 * m12 - m02 * m10),
+                          scale * (m02 * m13 * m20 + m00 * m12 * m23 + m03 * m10 * m22 -
+                                   m03 * m12 * m20 - m02 * m10 * m23 - m00 * m13 * m22),
+                          scale * (m10 * m21 - m11 * m20), scale * -(m00 * m21 - m01 * m20),
+                          scale * (m00 * m11 - m01 * m10),
+                          scale * -(m01 * m13 * m20 + m00 * m11 * m23 + m03 * m10 * m21 -
+                                    m03 * m11 * m20 - m01 * m10 * m23 - m00 * m13 * m21));
 }
 
 /* The in-place form of fn_8040BEF8: the same formula, with the matrix as both source and

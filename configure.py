@@ -839,10 +839,12 @@ config.libs = [
                 # and registers with three neighbouring pairs in the other order. The inverses
                 # (fn_8040BCD4, 140 words; fn_8040BEF8, 145 words) differ in scheduling, registers
                 # and saved registers: fn_8040BEF8 has the target's arithmetic opcodes and saves 1
-                # more FPR (152 instructions instead of 148); fn_8040BCD4 reuses the determinant's
-                # products m10 * m22 and m12 * m20 for element [1][0], which the target computes
-                # again (2 fsubs and 1 fneg where the target has 1 fmsubs and 1 fnmsubs), and saves
-                # 2 more FPRs (146 instructions instead of 137).
+                # more FPR (152 instructions instead of 148), and its singular path copies the
+                # source with fn_8040C148 where the target calls fn_8040BCB4 (one relocation
+                # target); fn_8040BCD4 reuses the determinant's products m10 * m22 and m12 * m20
+                # for element [1][0], which the target computes again (2 fsubs and 1 fneg where
+                # the target has 1 fmsubs and 1 fnmsubs), and saves 2 more FPRs (146 instructions
+                # instead of 137).
                 Object(
                     NonMatching,
                     "Game/fn_8040B034.cpp",
@@ -1852,17 +1854,10 @@ config.libs = [
             Object(Matching, "Game/ChaosSpear.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DarkHammer.cpp", cflags=cflags_game_cpp),
             # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
-            # (GUPP8P): 73 of the 75 functions have identical words and relocation targets once the
+            # (GUPP8P): 74 of the 75 functions have identical words and relocation targets once the
             # copies the linker discards (92 weak and 3 local functions, the _2 to _9 placeholders,
             # 13 local RTTI records and names, sqrtf's two weak locals and three weak vtables, which
-            # stay zero-filled holes in .data) are set aside. OnCollision is 0x264 bytes against
-            # 0x270: the original copies the inverse matrix into a second stack matrix (a
-            # fn_8040C148 call, 3 words this source lacks) and transforms the hang position with
-            # the copy, as an inline function returning the inverse by value would; aligned, 19
-            # paired words differ (the frame size and stack offsets, the frame being 0x30 bytes
-            # larger in the original, and branch displacements across the missing words) and 3
-            # original words are unpaired (compared position by position, 51 paired positions differ
-            # and the original's last 3 words are unpaired). The static initialiser
+            # stay zero-filled holes in .data) are set aside. The static initialiser
             # differs in 9 words: it addresses the four bar objects from the start of .bss, and
             # they start there here but 0xC bytes later in the original. Data: the original's .bss
             # is 0x168 bytes, with 0xC bytes before the bar objects and 0x114 after them that no

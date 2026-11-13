@@ -496,11 +496,7 @@ void SetEggBalloon::AimAt(int first, int last) {
         matrix.values[2][2] = ltm->at.z;
         matrix.values[2][3] = ltm->pos.z;
 
-        Fn8040Matrix34 inverse;
-
-        fn_8040BEF8(&inverse, &matrix);
-
-        Fn8040Vector3 local = inverse * target;
+        Fn8040Vector3 local = fn_8040BEF8(&matrix) * target;
         UnkRotation3 angles = fn_8040F7F8(&local);
 
         if (angles.y < minY) {

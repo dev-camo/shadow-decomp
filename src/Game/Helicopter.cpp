@@ -440,15 +440,10 @@ void Helicopter::OnCollision(ColliDetectArgs &args, bool barA) {
 
             m_hangPosition = fn_8040FC3C(&line, &m_charInfo->m_position);
 
-            /* The original copies the inverse into a second stack matrix (fn_8040C148) and
-             * transforms with the copy, as an inline function returning the inverse by value
-             * would (the function at USA (GUPE8P) 0x802388B8 has the same shape). Written as such
-             * a function, the call is kept out of line here (the local matrix's inline default
-             * constructor counts against the inlining limit), so the source transforms with the
-             * inverse directly; see the unit's entry in configure.py. */
-            Fn8040Matrix34 inverse;
+            /* The original copies fn_8040BEF8's result into a second stack matrix
+             * (fn_8040C148 at USA (GUPE8P) 0x802F77AC) and transforms with the copy. */
+            Fn8040Matrix34 inverse = fn_8040BEF8(&matrix);
 
-            fn_8040BEF8(&inverse, &matrix);
             m_hangOffset = inverse * m_hangPosition;
             SendTouchHang(player);
             m_states.Set(STATE_TOUCHED);

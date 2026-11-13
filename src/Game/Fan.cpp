@@ -448,14 +448,12 @@ bool Fan::IsInRange(Fn8040Vector3 *position, Fn8040Vector3 *center) {
         Fn8040Vector3 offset(position->x, 0.0f, position->z);
         Fn8040Vector3 flatCenter(center->x, 0.0f, center->z);
         Fn8040Matrix34 matrix;
-        Fn8040Matrix34 inverse;
 
         fn_8040CE04(&offset, &flatCenter);
         fn_8040B6F8(&matrix);
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         fn_8040B884(&matrix, m_charInfo->m_rotation.x);
-        fn_8040BEF8(&inverse, &matrix);
-        fn_8040C148(&matrix, &inverse);
+        matrix = fn_8040BEF8(&matrix);
         offset = matrix * offset;
 
         float halfWidth = 7.5f + m_params.x;
