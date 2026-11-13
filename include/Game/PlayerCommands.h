@@ -68,12 +68,14 @@ class ClrVelocityCommand : public CharCommand {
 };
 CHECK_SIZEOF(ClrVelocityCommand, 0x14);
 
-/* The command with the id 1. Its constructor (0x801DBE84) receives a vector by address (the bytes
- * do not show whether as a pointer or a reference) and the base constructor's second argument,
- * and copies the vector to 0x14. The Coaster gadget scales the roll of its ride by the length of
- * the vector and its direction. */
+/* The command with the id 1. Its constructor (0x801DBE84) passes 1 and arg1 to the base
+ * constructor and copies the vector to 0x14. The vector is taken by const reference (inferred):
+ * two of the 14 callers build it into an argument temporary after the allocation (0x8018CEFC and
+ * 0x80294B94), as a reference bound to a by-value expression would. The Coaster gadget scales the
+ * roll of its ride by the length of the vector and its direction. */
 class AccelerateInputCommand : public CharCommand {
   public:
+    AccelerateInputCommand(const Fn8040Vector3 &vector, int arg1);
     virtual UnkString_8004F888 fn_801D9CB0(); /* 0x801DBE10 */
     virtual const char *fn_801D9CA8();        /* 0x801DBE04 */
 

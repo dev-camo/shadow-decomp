@@ -1915,6 +1915,7 @@ config.libs = [
             # .sdata2. The other four are BkWingSmall's.
             Object(NonMatching, "Game/BkWorm.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerControl.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/PlayerControlApproach.cpp", cflags=cflags_game_cpp),
             # Player::PlayerMotion: all 32 bodies have identical instructions and resolved
             # relocation targets in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P). The filename is
             # inferred from RTTI. With discarded copies set aside, .sdata2 starts with Task,
