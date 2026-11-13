@@ -52,7 +52,7 @@ class UnkTarget_80166AF4 {
      * only when the entry's effect element at 0x44 has expired: creates a new element when the
      * entry's word at 0x0 is 0 (fn_80168C48) or 1 (fn_8015D7DC), then passes the element and the
      * entry's data at 0x14 to fn_80425E68 and sets bit 2 of the entry's word at 0x8, or calls
-     * fn_800A31F0 when there is no element (behaviour inferred from its body). */
+     * EffectManagerPJS::Instance when there is no element (behaviour inferred from its body). */
     void fn_801672E4(int arg0);
 
     /* 0x00 */ u8 field_0x0[0x10];

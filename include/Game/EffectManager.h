@@ -39,10 +39,4 @@ CHECK_SIZEOF(EffectManager, 0x2C);
 } // namespace System
 } // namespace Effect
 
-/* Returns the game's effect manager, which fn_800A3224 constructs on the first call (a
- * function-local static of a class whose destructor calls EffectManagerRW3's); the pointer is
- * cached in a static (behaviour from their bodies; the return type is inferred from the virtual
- * Create calls made through it). */
-extern "C" Effect::System::EffectManager *fn_800A31F0(void);
-
 #endif

@@ -66,10 +66,22 @@ CHECK_SIZEOF(UnkTargetSource_80206574, 0x14);
  * fn_800A8784, its destructor, frees it when its flag is positive. Nothing else is recovered. */
 class UnkObject_80079F8C;
 
-/* The object that the pointer at 0x244 of a Player::PlayerBase refers to (placeholder name). Its
- * destructor, fn_800A25E0, destroys a member at 0x10 (fn_800A2630) and frees it when its flag is
- * positive. Its size and the code that creates it are not recovered. */
+/* The object that the pointer at 0x244 of a Player::PlayerBase refers to (placeholder name;
+ * defined in Game/PlayerEffect.h). */
 class UnkObject_80079BA4;
+
+/* The record that the pointer at 0x278 of a Player::PlayerBase refers to (placeholder name). Only
+ * the members that Game/PlayerEffect.cpp reads are mapped: two vectors, which it passes to the
+ * effect it creates at a step as the position and the direction, and an index into its effect
+ * table. The full size is not known. */
+struct UnkPlayerRecord_800A2FC8 {
+    /* 0x00 */ Fn8040Vector3 field_0x0;
+    /* 0x0C */ Fn8040Vector3 field_0xC;
+    /* 0x18 */ u8 field_0x18[0x1C - 0x18];
+    /* 0x1C */ s32 field_0x1C;
+};
+/* Checks only the recovered view; the complete native extent remains unknown. */
+CHECK_SIZEOF(UnkPlayerRecord_800A2FC8, 0x20);
 
 /* The one-word owner at 0x218 of a Player::PlayerBase (placeholder name; owner inferred). In USA
  * (GUPE8P), PlayerBase's constructor stores the new UnkObject_80079F8C straight into its word at
@@ -140,13 +152,16 @@ CHECK_SIZEOF(PlayerObject, 0x68);
  * character info they act on to it. Few members are mapped: the flags at 0xA0, the three-word
  * bit set at 0xA8 (the TornadoCollision gadget tests bit 0x14 of the set), the vectors at
  * 0xB8, 0xDC and 0x1C8 that Player::Behavior::Super reads, the vector at 0xE8 (the ElecFan gadget
- * scales it by -30 into the acceleration it sends the player), the owner at 0x218 (see
+ * scales it by -30 into the acceleration it sends the player), the matrix at 0x1E4 and the float
+ * at 0x274 that Game/PlayerEffect.cpp's camera demo uses, the owner at 0x218 (see
  * UnkOwner_80079E64) and the pointers at 0x224 (the Player::Controller task), 0x22C (see
- * UnkObject_800A78FC), 0x230 (see Player::PlayerMotion), 0x244 (see UnkObject_80079BA4), 0x248
- * (see UnkObject_80095BD4) and 0x24C (see UnkTargetSource_80206574). Player::SoundBase's
- * constructor stores the new sound task at 0x240 and its destructor clears it. The motion task
- * dispatches events through the callback at 0x74 and mirrors its work flags at 0xB4; the attack
- * and effect tasks occupy 0x234 and 0x23C.
+ * UnkObject_800A78FC), 0x230 (see Player::PlayerMotion), 0x234 (Player::Attack), 0x238
+ * (Player::WeaponBase), 0x23C (Player::Effect), 0x240 (Player::SoundBase), 0x244 (see
+ * UnkObject_80079BA4), 0x248 (see UnkObject_80095BD4), 0x24C (see UnkTargetSource_80206574) and
+ * 0x278 (see UnkPlayerRecord_800A2FC8). Player::SoundBase's constructor stores the new sound task
+ * at 0x240 and its destructor clears it; Player::Effect's constructor stores the effect task at
+ * 0x23C and its destructor clears it. The motion task dispatches events through the callback at
+ * 0x74 and mirrors its work flags at 0xB4.
  *
  * Its vtable (0x80520310, 0x54 bytes) overrides the destructor and the first three CharInfo slots
  * and adds nine slots. The added slots are named after their implementations here, or, for the
@@ -200,7 +215,10 @@ class PlayerBase : public PlayerObject {
     /* 0x0F4 */ u8 field_0xF4[0x1C8 - 0xF4];
     /* Passed as the onto vector of fn_8040F990, which takes it to be of unit length. */
     /* 0x1C8 */ Fn8040Vector3 field_0x1C8;
-    /* 0x1D4 */ u8 field_0x1D4[0x218 - 0x1D4];
+    /* 0x1D4 */ u8 field_0x1D4[0x1E4 - 0x1D4];
+    /* Game/PlayerEffect.cpp's camera demo multiplies its camera matrix by it. */
+    /* 0x1E4 */ Fn8040Matrix34 field_0x1E4;
+    /* 0x214 */ u8 field_0x214[0x218 - 0x214];
     /* 0x218 */ UnkOwner_80079E64 field_0x218;
     /* 0x21C */ u8 field_0x21C[0x224 - 0x21C];
     /* The constructor clears it. Player::Controller's constructor stores the new task here
@@ -219,14 +237,18 @@ class PlayerBase : public PlayerObject {
     /* 0x23C */ Effect *field_0x23C;
     /* 0x240 */ SoundBase *field_0x240;
     /* The constructor clears it (0x8007A108). The destructor, when it is not null, calls its
-     * destructor (fn_800A25E0) with flag 1, freeing it, and clears it (0x80079BA4-0x80079BBC). */
+     * destructor (0x800A25E0) with flag 1, freeing it, and clears it (0x80079BA4-0x80079BBC). */
     /* 0x244 */ UnkObject_80079BA4 *field_0x244;
     /* The constructor clears it; the Player::Shadow constructor (0x800ADB64) and the 13 other
      * callers of fn_80095BD4 store a new object here. fn_80078B54, when it is not null, calls its
      * destructor (fn_80095B18) with flag 1, freeing it, and clears it (0x80078BA8-0x80078BC0). */
     /* 0x248 */ UnkObject_80095BD4 *field_0x248;
     /* 0x24C */ UnkTargetSource_80206574 *field_0x24C;
-    /* 0x250 */ u8 field_0x250[0x290 - 0x250];
+    /* 0x250 */ u8 field_0x250[0x274 - 0x250];
+    /* Game/PlayerEffect.cpp's camera demo lowers its camera matrix by it. */
+    /* 0x274 */ float field_0x274;
+    /* 0x278 */ UnkPlayerRecord_800A2FC8 *field_0x278;
+    /* 0x27C */ u8 field_0x27C[0x290 - 0x27C];
 };
 CHECK_SIZEOF(PlayerBase, 0x290);
 CHECK_OFFSETOF(PlayerBase, field_0x74, 0x74);
@@ -236,6 +258,7 @@ CHECK_OFFSETOF(PlayerBase, field_0xB4, 0xB4);
 CHECK_OFFSETOF(PlayerBase, field_0xB8, 0xB8);
 CHECK_OFFSETOF(PlayerBase, field_0xDC, 0xDC);
 CHECK_OFFSETOF(PlayerBase, field_0x1C8, 0x1C8);
+CHECK_OFFSETOF(PlayerBase, field_0x1E4, 0x1E4);
 CHECK_OFFSETOF(PlayerBase, field_0x218, 0x218);
 CHECK_OFFSETOF(PlayerBase, field_0x224, 0x224);
 CHECK_OFFSETOF(PlayerBase, field_0x22C, 0x22C);
@@ -247,6 +270,8 @@ CHECK_OFFSETOF(PlayerBase, field_0x240, 0x240);
 CHECK_OFFSETOF(PlayerBase, field_0x244, 0x244);
 CHECK_OFFSETOF(PlayerBase, field_0x248, 0x248);
 CHECK_OFFSETOF(PlayerBase, field_0x24C, 0x24C);
+CHECK_OFFSETOF(PlayerBase, field_0x274, 0x274);
+CHECK_OFFSETOF(PlayerBase, field_0x278, 0x278);
 
 } // namespace Player
 
@@ -312,6 +337,18 @@ void fn_800A78FC(UnkObject_800A78FC *object, CharCommand *command);
 boost::weak_ptr<CharInfo> fn_80095A10(UnkObject_80095BD4 *object);
 void fn_80095A40(UnkObject_80095BD4 *object);
 void fn_80095A64(UnkObject_80095BD4 *object, const boost::weak_ptr<CharInfo> &info);
+}
+
+/* Player functions that Game/PlayerEffect.cpp calls (names, the void returns and the bool
+ * parameters are inferred; the behaviour comes from their bodies). */
+extern "C" {
+/* Adds 1 to (add true) or subtracts 1 from the word index of the counters at 0x280 of player. */
+void fn_80078F2C(Player::PlayerBase *player, int index, bool add);
+/* Add 1 to (add true) or subtract 1 from the counter at 0x84 (fn_80079334) or 0x80 (fn_8007939C)
+ * of player, then set bit 0x3F (fn_80079334) or 0x17 (fn_8007939C) of the bit set at 0xA8 while
+ * the counter is positive and reset it otherwise. */
+void fn_80079334(Player::PlayerBase *player, bool add);
+void fn_8007939C(Player::PlayerBase *player, bool add);
 }
 
 #endif

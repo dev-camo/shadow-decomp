@@ -131,6 +131,16 @@ Game/PlayerControlApproach.cpp:
 	.sdata      start:0x805E47E8 end:0x805E4810
 	.sdata2     start:0x805F2AA8 end:0x805F2AB8
 
+Game/PlayerEffect.cpp:
+	.text       start:0x800A25E0 end:0x800A72E4
+	.rodata     start:0x804B25B0 end:0x804B2AD8
+	.data       start:0x805217E0 end:0x805219F8
+	.bss        start:0x805768C0 end:0x80576928
+	.sdata      start:0x805E48D8 end:0x805E4938
+	.sbss       start:0x805EE568 end:0x805EE588
+	.sdata2     start:0x805F2B10 end:0x805F2BB0
+	.sbss2      start:0x805FB510 end:0x805FB518
+
 Game/PlayerMotion.cpp:
 	.text       start:0x800A9E1C end:0x800AAD1C
 	.rodata     start:0x804B2CB0 end:0x804B2CD8

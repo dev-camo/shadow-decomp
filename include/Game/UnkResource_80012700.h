@@ -57,6 +57,9 @@ int fn_800128D8(UnkResourceManager_800122D4 *manager, Resource *resource);
  * when present, returns its named file payload through resource virtual slot 0x1C, otherwise null.
  * Payload types vary by file kind; callers select the corresponding type. */
 void *fn_80012700(UnkResourceManager_800122D4 *manager, int arg1, const char *name);
+/* As fn_80012700, but returns the payload with the given id through resource virtual slot 0x30
+ * (behaviour inferred from its body). */
+void *fn_80012510(UnkResourceManager_800122D4 *manager, int arg1, int id);
 /* Returns the record of resource whose word at 0x4 equals id, or null (behaviour inferred). */
 UnkResourceRecord_80208848 *fn_80208848(UnkResource_80012700 *resource, int id);
 /* Returns the record whose name equals name (strcmp), or null (behaviour inferred). */

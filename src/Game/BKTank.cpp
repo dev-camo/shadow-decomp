@@ -21,7 +21,7 @@
 #include "Game/CharInfo.h"
 #include "Game/CharaColliAttack.h"
 #include "Game/EffectElement.h"
-#include "Game/EffectManager.h"
+#include "Game/EffectManagerPJS.h"
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
 #include "Game/GadgetTypeInfo.h"
@@ -381,7 +381,8 @@ void SetBKTank::OnAttack(AttackCallbackParam &param) {
 
         if (149.98999f < m_health) {
             m_effects[3] = fn_80168C48(&param.field_0x18, &param.field_0x24, 0x71);
-            fn_800A31F0(); /* the effect manager is fetched and not used */
+            /* The effect manager is fetched and not used. */
+            Effect::PJS::EffectManagerPJS::Instance();
             fn_801D54F4(fn_80053164(), 0x7150, &m_charInfo->m_position, 0, 1);
         } else if (50.0f < m_health) {
             m_effects[4] = fn_80168C48(&param.field_0x18, &param.field_0x24, 0x64);

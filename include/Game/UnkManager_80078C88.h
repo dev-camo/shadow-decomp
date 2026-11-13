@@ -17,6 +17,9 @@ bool fn_8027AAA4(UnkManager_80078C88 *manager, int index);
  * 0x10-byte entries that the manager's first word points to. */
 void fn_8027AA4C(UnkManager_80078C88 *manager, int index);
 void fn_8027AA78(UnkManager_80078C88 *manager, int index);
+/* Returns the word at 0x4 of entry index of those entries, which callers pass to fn_80012700 and
+ * fn_80012510 as the resource key (behaviour from its body; fn_8027AB54 returns the entries). */
+int fn_8027AB1C(UnkManager_80078C88 *manager, int index);
 }
 
 #endif

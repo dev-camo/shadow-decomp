@@ -482,6 +482,12 @@ struct RwMatrix;
  * 0x80328218 and 0x80328304), except fn_802C8068, which passes on the address it was given and
  * so has the same code with either spelling. The const is inferred (the matrix is only read). */
 extern "C" Fn8040Matrix34 fn_800635A4(const RwMatrix *matrix);
+/* The converse of fn_800635A4: returns the RenderWare matrix whose right, up, at and pos vectors
+ * are the matrix's columns (behaviour inferred from its body). The by-value result and the const
+ * reference are inferred; the code is that of a result pointer and a pointer parameter.
+ * Game/PlayerEffect.cpp's Jet passes the product that fn_8001E044 returns, from the slot above its
+ * rotation matrix, and copies the result into a frame's modelling matrix. */
+extern "C" RwMatrix fn_800591F0(const Fn8040Matrix34 &matrix);
 
 /* The matrix applied to vector, with the translation, returned by value (inferred; fn_8040B618
  * below applies only the rotation). The inline operator* below wraps it, and the operator's

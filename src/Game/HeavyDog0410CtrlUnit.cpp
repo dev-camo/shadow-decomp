@@ -5,7 +5,7 @@
 #include "Game/BossCtrlUnit.h"
 #include "Game/CharaColliAttack.h"
 #include "Game/CommonBomb.h"
-#include "Game/EffectManager.h"
+#include "Game/EffectManagerPJS.h"
 #include "Game/HeavyDog0410CtrlUnit.h"
 #include "Game/HeavyDogCtrlUnit.h"
 #include "Game/HeavyDogVarParam.h"
@@ -280,7 +280,7 @@ void HeavyDog0410CtrlUnit_Mine::fn_8023357C(AttackCallbackParam &param) {
 HeavyDog0410CtrlUnit_Dust::HeavyDog0410CtrlUnit_Dust(HeavyDog0410VarParam *param)
     : BossCtrlUnit(param), HeavyDog0410CtrlUnit(param) {
     field_0x4 = 3;
-    m_effect = fn_800A31F0()->Create(
+    m_effect = Effect::PJS::EffectManagerPJS::Instance()->Create(
         boost::shared_ptr<EffectLaunchInfo>(m_heavyDog0410Param->field_0x6C), 0x16);
 
     boost::shared_ptr<EffectElement> effect(m_effect.lock());

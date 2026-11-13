@@ -145,7 +145,11 @@ void fn_80425D94(Effect::System::EffectElement *effect, const Fn8040Vector3 &rot
  * with it, passing its position, its rotation and an effect id). */
 boost::weak_ptr<Effect::System::EffectElement> fn_801D2B38(int arg0, const Fn8040Vector3 *position,
                                                            const UnkRotation3 *rotation, int id,
-                                                           int arg4);
+                                                           const float *timeScale);
+/* Passes the word for arg0 of the table at 0x80581394 (8-byte entries) to fn_803056F8 with id and
+ * timeScale and returns the effect it creates (behaviour inferred from its body). */
+boost::weak_ptr<Effect::System::EffectElement> fn_801D2BB0(int arg0, int id,
+                                                           const float *timeScale);
 /* Passes the word for arg0 of the table at 0x80581394 (8-byte entries) to fn_803057EC with the
  * other arguments and returns the effect it creates (behaviour inferred from its body; the
  * arguments are spelled as fn_803057EC takes them). */

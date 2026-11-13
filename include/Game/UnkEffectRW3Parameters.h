@@ -42,8 +42,13 @@ struct UnkEffectRW3Param1 {
 CHECK_SIZEOF(UnkEffectRW3Param1, 0x10);
 
 struct UnkEffectRW3Param2 {
-    UnkEffectRW3Param2(unsigned char field0 = 0, unsigned char field1 = 0,
-                       unsigned char field2 = 0);
+    UnkEffectRW3Param2(unsigned char field0 = 0, unsigned char field1 = 0, unsigned char field2 = 0)
+        : field_0x0(field0), field_0x1(field1), field_0x2(field2) {
+        RwRGBA white = {0xFF, 0xFF, 0xFF, 0xFF};
+        field_0x3 = white;
+        RwRGBA black = {0, 0, 0, 0};
+        field_0x7 = black;
+    }
 
     /* 0x00 */ unsigned char field_0x0;
     /* 0x01 */ unsigned char field_0x1;
