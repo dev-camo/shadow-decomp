@@ -1714,7 +1714,7 @@ config.libs = [
             # original (the map units show the same placement); and the int-to-float constant of
             # .sdata2 follows ElecBarSub::Update's literals instead of preceding
             # ElecBarSub::UpdateModelMatrix's. As raw relocatable sections, with those copies
-            # included, the compiled .text, .rodata, .data, .sdata, .sbss and .sdata2 are 0x3F40,
+            # included, the compiled .text, .rodata, .data, .sdata, .sbss and .sdata2 are 0x41CC,
             # 0x3B3, 0x2C4, 0x9E, 0x41 and 0x90 bytes against the original object's 0x2A18, 0x230,
             # 0x220, 0x60, 0x28 and 0x80 in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P), and the
             # compiled .sdata2 is writable (WA) where the original's is allocatable only (A). A
@@ -2027,7 +2027,7 @@ config.libs = [
             Object(Matching, "Game/DarkHammer.cpp", cflags=cflags_game_cpp),
             # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
             # (GUPP8P): 73 of the 75 functions have identical words and relocation targets once the
-            # copies the linker discards (86 weak and 3 local functions, the _2 to _9 placeholders,
+            # copies the linker discards (92 weak and 3 local functions, the _2 to _9 placeholders,
             # 13 local RTTI records and names, sqrtf's two weak locals and three weak vtables, which
             # stay zero-filled holes in .data) are set aside. OnCollision is 0x264 bytes against
             # 0x270: the original copies the inverse matrix into a second stack matrix (a
@@ -2217,26 +2217,7 @@ config.libs = [
             # bytes and has a writable flag.
             Object(NonMatching, "Game/DiablonPartsCameraControl.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BKTank.cpp", cflags=cflags_game_cpp),
-            # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
-            # (GUPP8P): the 8 functions of the original unit have identical instructions and
-            # relocations (0 differing words). The .data differs in the place of one discarded
-            # weak copy. After the descriptor, the original's .data has two 0x10-byte holes around
-            # a base list, then three base lists at 0x1C0, 0x1CC and 0x1F8 with 0x18-byte holes
-            # at 0x1E0 and 0x20C, and a last 0x18-byte hole at 0x224. The source object emits its
-            # weak copy of sp_counted_base's vtable (0x18 bytes) at 0x1C0, ahead of the three base
-            # lists, which are therefore at 0x1D8, 0x1E4 and 0x210, with the weak copies of the
-            # MoveStartCommand and MoveEndCommand vtables at 0x1F8 and 0x224. Measured in USA: the
-            # object has the original's order when the constructors of CharCommand and
-            # AccelerateCommand are defined in their classes and CharCommand has a weak pointer
-            # at 0xC, as their out-of-line copies at 0x8006E354-0x8006E4B8 suggest; the command
-            # headers do not model that yet. The .sdata base list pointer of GadgetCommand's RTTI
-            # record (0x24 in the original's .sdata) follows its list from .data 0x1C0 to 0x1D8:
-            # in a USA link that takes this object, the word at 0x805ED2D4 is 0x8055C808 where
-            # the original has 0x8055C7F0. The section flags of .sdata2 also differ: the original
-            # object's is read-only (A), the source object's writable (WA); its 0x2C bytes are
-            # identical to the original's, which has 4 more bytes of zero padding. Normal links
-            # use the original object.
-            Object(NonMatching, "Game/BKTankColi.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/BKTankColi.cpp", cflags=cflags_game_cpp),
             # 27 of the 28 functions have identical instructions and relocations in all three
             # regions. BKTankController::Controller::OnCommand is 0x310 bytes here and 0x308 in the
             # original: in the AccelerateCommand case the original loads the path control pointer
@@ -2399,7 +2380,7 @@ config.libs = [
             Object(NonMatching, "Game/DevilDoomModeCtrlUnit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/VacuumContainer.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BaseDoor.cpp", cflags=cflags_game_cpp),
-            # 35 of 38 functions have identical words and relocations, and the data matches once the
+            # 37 of 38 functions have identical words and relocations, and the data matches once the
             # linker-discarded weak and local copies are set aside. Differences (raw words in a USA
             # DOL linked from this source object, a diagnostic only: the build links the original
             # object): the hit callback (29 of its 304 words differ as a relocatable object), its frame 0x170 instead of 0x160 (the original
@@ -2407,10 +2388,8 @@ config.libs = [
             # the index in one 8-byte slot, this build gives each its own), the first interpolation
             # holding the level in f3 and loading the next table entry into f0 where the original
             # uses f2 and f3, the panel-space offset built in place where the original calls the
-            # out-of-line three-float constructor (0x80008E1C) for it, vectors at other stack
-            # offsets, and three calls whose targets swapped places; the CancelBehaviorCommand
-            # constructor defined in the file (see its note) follows the converting
-            # weak_ptr<CharInfo> constructor instead of preceding it (12 and 13 words).
+            # out-of-line three-float constructor (0x80008E1C) for it, and vectors at other stack
+            # offsets.
             Object(NonMatching, "Game/DashPanel.cpp", cflags=cflags_game_cpp),
             # 33 of 34 functions have identical words and relocations, and the data matches once
             # the linker-discarded weak and local copies are set aside. Differences (raw words in
@@ -2717,13 +2696,12 @@ config.libs = [
             # - The swap calls a 32-byte local copy of std::swap<any_pointer> in this object, where
             #   the original calls the kept copy at 0x80019164 (1 relocation target; the local copy
             #   is build-only, and a source-enabled link keeps it).
-            # - The function order differs in two places (see the note in the source): fn_800F5980
+            # - The function order differs in one place (see the note in the source): fn_800F5980
             #   and the four function1<void, GadgetColliDetectArgs &> members it calls (0x188 bytes)
             #   follow the constructor's other out-of-line functions instead of coming after the
-            #   sp_counted_base_impl constructor, and the TouchLineCommand constructor follows the
-            #   weak_ptr<CharInfo> conversion after the hit callback instead of preceding it.
-            # Data, compared by contents with the 96 copies that a source-enabled link discards set
-            # aside (63 weak and 2 local functions; 5 weak vtables in .data, which the original
+            #   sp_counted_base_impl constructor.
+            # Data, compared by contents with the 102 copies that a source-enabled link discards set
+            # aside (69 weak and 2 local functions; 5 weak vtables in .data, which the original
             # keeps as zero-filled holes; 10 .rodata, 8 .sdata and 8 .sbss locals): every original
             # object matches in bytes, relocations and place except the last two .rodata strings,
             # the RTTI names of the segment's sp_counted_base_impl and checked_deleter. The original
@@ -2735,7 +2713,7 @@ config.libs = [
             # alignment padding (0x1C4 against 0x1C8, 0x74 against 0x78, 0x21 against 0x28, 0x34
             # against 0x38), and .sdata2 is writable in the compiled object where the split's is
             # read-only. As raw relocatable sections, with the discarded copies included, the
-            # compiled .text, .rodata, .data, .sdata, .sbss and .sdata2 are 0x2A00, 0x3C4, 0x1C4,
+            # compiled .text, .rodata, .data, .sdata, .sbss and .sdata2 are 0x2BE8, 0x3C4, 0x1C4,
             # 0xB4, 0x41 and 0x34 bytes against the original object's 0x19CC, 0x2C8, 0x1C8, 0x78,
             # 0x28 and 0x38. A normal build links the original object.
             Object(NonMatching, "Game/CatchStick.cpp", cflags=cflags_game_cpp),

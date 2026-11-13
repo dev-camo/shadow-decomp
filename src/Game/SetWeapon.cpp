@@ -112,16 +112,6 @@ void Arms::UpdateModels() {
     }
 }
 
-/* Matching workaround: the constructor of Player::AddWeaponCommand is defined here as an ordinary
- * function. The original's copy at this address may be an out-of-line copy of an inline from the
- * commands' header (the files of other gadgets hold such copies of the constructors of the
- * commands they send, for example 0x8010DFD0), but defined in the class it is inlined into
- * Arms::OnCommand (0x118 bytes instead of 0xFC), and with an inline PlayerCommand constructor as
- * well it stays out of line but expands that constructor (0x60 bytes instead of 0x54) where the
- * original calls it. Revisit when CharCommand's members at 0x8 and 0xC are typed. */
-Player::AddWeaponCommand::AddWeaponCommand(int weaponType, int arg1, int arg2)
-    : PlayerCommand(0x11A, arg2), m_weaponType(weaponType), field_0x18(arg1) {}
-
 void Arms::OnCommand(CharCommand &command) {
     switch (command.m_type) {
     case 0xD:

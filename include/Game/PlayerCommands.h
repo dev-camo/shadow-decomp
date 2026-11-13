@@ -16,11 +16,14 @@ class Target;
  * virtual functions that its original vtable holds, under CharCommand's placeholder names and with
  * the USA address of the override in a comment; the overrides are defined elsewhere. The
  * constructors and destructors are defined elsewhere too, together with the vtables, except the
- * constructors of CancelBehaviorCommand, AddWeaponCommand, IgnoreInputCommand(int, float),
- * InvincibleCommand and SwitchCommand, which gadget files define, and the constructors of
- * SetVelocityCommand, Player::HomingJumpCommand, Player::StartExternalControlCommand and
- * Player::TouchHangCommand, which are defined in their classes here (see the classes); the
- * argument meanings are inferred from the stores in the constructors.
+ * constructors that are defined in their classes here (see the classes): those of
+ * SetVelocityCommand, AccelerateCommand and SwitchCommand and, in Player, of
+ * IgnoreInputCommand(int, float), TouchHangCommand, AddWeaponCommand, CancelBehaviorCommand,
+ * StartExternalControlCommand, HomingJumpCommand, TouchLineCommand and InvincibleCommand. The
+ * original has one copy of each of those, after the first function in the link that constructs the
+ * command, where an inline function's out-of-line copy goes. None is expanded at its uses, because
+ * each calls the inline constructor of its base class (Game/CharCommand.h). The argument meanings
+ * are inferred from the stores in the constructors.
  * SetPositionCommand, SetVelocityCommand and LaunchCommand pass their last argument to the base
  * constructor as its second argument, and ClrVelocityCommand its only argument;
  * IgnoreInputCommand passes 0. Most callers pass 4 there (0 and 2 also occur). */
@@ -94,14 +97,17 @@ class SetTransparentCommand : public CharCommand {
 };
 CHECK_SIZEOF(SetTransparentCommand, 0x20);
 
-/* Accelerates the character info (the constructor at 0x8006E354 passes 6 as the command id and
- * copies the vector to 0x14). The ElecFan gadget sends it to push the character info it blows.
- * The vector is taken by const reference (inferred): where ElecFan scales a vector for it, the
- * original builds the scaled vector into an argument temporary after the allocation, as a
- * reference bound to a by-value expression would. */
+/* Accelerates the character info (the constructor passes 6 as the command id and copies the vector
+ * to 0x14). The constructor is defined in the class: its only copy (0x8006E354) is among the
+ * out-of-line copies that follow fn_8006E014, the first of its twelve callers in the link. The
+ * ElecFan gadget sends the command to push the character info it blows. The vector is taken by
+ * const reference (inferred): where ElecFan scales a vector for it, the original builds the scaled
+ * vector into an argument temporary after the allocation, as a reference bound to a by-value
+ * expression would. */
 class AccelerateCommand : public CharCommand {
   public:
-    AccelerateCommand(const Fn8040Vector3 &acceleration, int arg1);
+    AccelerateCommand(const Fn8040Vector3 &acceleration, int arg1)
+        : CharCommand(6, arg1), m_acceleration(acceleration) {}
     virtual ~AccelerateCommand();
     virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x801DB948 */
     virtual UnkString_8004F888 fn_801D9CB0();                     /* 0x801DB8D4 */
@@ -229,11 +235,12 @@ namespace Player {
 
 /* Makes the player ignore input for a time (the first member holds the time; the gadgets that
  * send it pass a time in seconds). The constructor that takes the time sets the word at 0x18 to 0
- * and stores its integer at 0x1C; it is defined in Tornado.cpp, which holds the copy that the
- * original keeps (see the note there). */
+ * and stores its integer at 0x1C; it is defined in the class: its only copy (0x800DE704) follows
+ * TornadoTowing::Launch (Tornado.cpp), the first of its nine callers in the link. */
 class IgnoreInputCommand : public PlayerCommand {
   public:
-    IgnoreInputCommand(int arg0, float seconds);
+    IgnoreInputCommand(int arg0, float seconds)
+        : PlayerCommand(0x127, 0), m_seconds(seconds), field_0x18(0), m_arg0(arg0) {}
     /* The second constructor (0x800774C4) stores arg0 at 0x18 and arg1 at 0x1C and leaves the time
      * unset (the callers pass 1 to 3 and 0 or 1; meanings unknown). */
     IgnoreInputCommand(int arg0, int arg1);
@@ -296,12 +303,14 @@ class TouchHangCommand : public PlayerCommand {
 CHECK_SIZEOF(TouchHangCommand, 0x28);
 
 /* The command that the SET_WEAPON gadget sends to the character that takes its weapon (id 0x11A).
- * The constructor (0x8011F478, in the SET_WEAPON gadget's file) passes 0x11A and arg2 to the base
- * constructor and stores the weapon type and arg1 (the weapon item's word at 0xC, meaning unknown);
- * the destructor and the vtable are elsewhere. */
+ * The constructor passes 0x11A and arg2 to the base constructor and stores the weapon type and
+ * arg1 (the weapon item's word at 0xC, meaning unknown). It is defined in the class: its only copy
+ * (0x8011F478) follows Arms::OnCommand in the SET_WEAPON gadget's file, its only caller. The
+ * destructor and the vtable are elsewhere. */
 class AddWeaponCommand : public PlayerCommand {
   public:
-    AddWeaponCommand(int weaponType, int arg1, int arg2);
+    AddWeaponCommand(int weaponType, int arg1, int arg2)
+        : PlayerCommand(0x11A, arg2), m_weaponType(weaponType), field_0x18(arg1) {}
     virtual ~AddWeaponCommand();
     virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009B70C */
 
@@ -337,12 +346,12 @@ class PressGroundCommand : public PlayerCommand {
 CHECK_SIZEOF(PressGroundCommand, 0x14);
 
 /* The command with the id 0x101. Its destructor (0x8009DBB4) and vtable are defined elsewhere; the
- * constructor passes 0x101 and its argument to the base constructor and is defined in
- * DashPanel.cpp, which holds the copy that the original keeps (see the note there). The Spring
- * gadget sends it with 4 to the character it launches. */
+ * constructor passes 0x101 and its argument to the base constructor and is defined in the class:
+ * its only copy (0x80100030) follows the DashPanel gadget's hit callback, the first of its three
+ * callers in the link. The Spring gadget sends it with 4 to the character it launches. */
 class CancelBehaviorCommand : public PlayerCommand {
   public:
-    CancelBehaviorCommand(int arg1);
+    CancelBehaviorCommand(int arg1) : PlayerCommand(0x101, arg1) {}
     virtual ~CancelBehaviorCommand();
     virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009CB90 */
 };
@@ -504,14 +513,16 @@ CHECK_SIZEOF(RideCommand, 0x28);
 namespace Player {
 
 /* The command that the ELEC_BAR gadget's bars and the CATCHSTICK gadget send to a player whose
- * movement comes near their line (meaning inferred from those uses). The constructor at 0x800F618C
- * (defined in CatchStick.cpp) passes 0x111 as the command id and arg2 to the base constructor and
- * copies the two weak pointers to 0x14 and 0x1C. Passing them by value follows the bars' call,
- * which constructs a temporary for each. */
+ * movement comes near their line (meaning inferred from those uses). The constructor passes 0x111
+ * as the command id and arg2 to the base constructor and copies the two weak pointers to 0x14 and
+ * 0x1C. It is defined in the class: its only copy (0x800F618C) follows the CATCHSTICK gadget's hit
+ * callback, the first of its two callers in the link. Passing the weak pointers by value follows
+ * the bars' call, which constructs a temporary for each. */
 class TouchLineCommand : public PlayerCommand {
   public:
     TouchLineCommand(boost::weak_ptr<CharInfo> charInfo, boost::weak_ptr<UnkSegment_80020A20> line,
-                     int arg2);
+                     int arg2)
+        : PlayerCommand(0x111, arg2), m_charInfo(charInfo), m_line(line) {}
     virtual ~TouchLineCommand();
     virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009BF04 */
 
@@ -532,13 +543,14 @@ class StartActionCommand : public PlayerCommand {
 CHECK_SIZEOF(StartActionCommand, 0x14);
 
 /* The command with the id 0x126 (class name from the RTTI of its vtable at 0x80521024); the
- * destructor and the vtable are elsewhere. The constructor, defined in Tornado.cpp, passes 0x126
- * and arg1 to the base constructor and stores the bool at 0x14. The Tornado gadget's towing task
- * sends it with true when it takes a character and with false when it lets it go (meaning
- * inferred from that use and the class name). */
+ * destructor and the vtable are elsewhere. The constructor passes 0x126 and arg1 to the base
+ * constructor and stores the bool at 0x14. It is defined in the class: its only copy (0x800DE768)
+ * follows TornadoTowing::Launch (Tornado.cpp), the first of its three callers. The Tornado
+ * gadget's towing task sends it with true when it takes a character and with false when it lets
+ * it go (meaning inferred from that use and the class name). */
 class InvincibleCommand : public PlayerCommand {
   public:
-    InvincibleCommand(bool enable, int arg1);
+    InvincibleCommand(bool enable, int arg1) : PlayerCommand(0x126, arg1), m_enable(enable) {}
     virtual ~InvincibleCommand();
     virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009A8F8 */
 
@@ -564,15 +576,16 @@ CHECK_SIZEOF(StartJumpCommand, 0x20);
 } // namespace Player
 
 /* SwitchCommand (class name from the RTTI of its vtable at 0x8053D404, with CharCommand as its
- * only base); the destructor and the vtable are elsewhere. The constructor, defined in
- * RailSwitch.cpp, passes 9 and 4 to the base constructor and stores its argument at 0x14. The RAIL
- * SWITCH gadget allocates one with its "route" parameter and passes it to a character info (a null
- * pointer when the allocation fails); the command handler fn_8025E9C0 uses the word at 0x14 as an
- * index into the table at 0x8054B8E0 under the conditions given in Game/UnkRailRoute_8054B8E0.h
- * (the member name is inferred from these uses). */
+ * only base); the destructor and the vtable are elsewhere. The constructor passes 9 and 4 to the
+ * base constructor and stores its argument at 0x14. It is defined in the class: its only copy
+ * (0x80257C94) follows SetRailSwitch::OnAttack, its only caller. The RAIL SWITCH gadget allocates
+ * one with its "route" parameter and passes it to a character info (a null pointer when the
+ * allocation fails); the command handler fn_8025E9C0 uses the word at 0x14 as an index into the
+ * table at 0x8054B8E0 under the conditions given in Game/UnkRailRoute_8054B8E0.h (the member name
+ * is inferred from these uses). */
 class SwitchCommand : public CharCommand {
   public:
-    SwitchCommand(s32 route);
+    SwitchCommand(s32 route) : CharCommand(9, 4), m_route(route) {}
     virtual ~SwitchCommand();
     virtual UnkString_8004F888 fn_801D9CB0(); /* 0x801DB780 */
     virtual const char *fn_801D9CA8();        /* 0x801DB7EC */

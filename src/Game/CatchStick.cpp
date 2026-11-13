@@ -32,25 +32,6 @@ struct UnkHitContext_800F4B60 {
 };
 CHECK_SIZEOF(UnkHitContext_800F4B60, 0x10);
 
-/* Matching workaround: this constructor and UnkCallbackSlot_800F5980::fn_800F5980 below are
- * defined here, out of line, as strong globals. The original has one copy of each, in this file's
- * code, and the other units that use them call these copies. Each copy sits among the out-of-line
- * functions that its first caller here emits after itself, in the reverse order of that caller's
- * calls (this constructor between the hit callback and its weak_ptr<CharInfo> conversion,
- * fn_800F5980 among the constructor's), which is where MWCC puts an inline function's out-of-line
- * copy. Made inline in PlayerCommands.h, this constructor takes that place; as strong globals,
- * this constructor follows the conversion instead of preceding it, and fn_800F5980 with the four
- * function1 members it calls (0x188 bytes) follows the constructor's other out-of-line functions
- * instead of sitting among them. With both defined inline in their headers (PlayerCommands.h and
- * UnkHandleBTarget_8015BE64.h), this file's function order is the original's and the USA
- * (GUPE8P) DOL still links identically, but more than a hundred other objects change: most only
- * renumber their @N labels, and some also emit weak copies of fn_800F5980, of function1 members
- * or of this constructor, which the linker discards.
- * Revisit with a change of its own that defines both inline in those headers. */
-Player::TouchLineCommand::TouchLineCommand(boost::weak_ptr<CharInfo> charInfo,
-                                           boost::weak_ptr<UnkSegment_80020A20> line, int arg2)
-    : PlayerCommand(0x111, arg2), m_charInfo(charInfo), m_line(line) {}
-
 /* The hit callback that OnCollision passes to fn_8015AE44. When there is a character info and a
  * context and the character info is a Player::PlayerBase, it passes the character info's
  * fn_801DC980 a new Player::TouchLineCommand (a request; the pointer is null when the allocation
@@ -96,6 +77,15 @@ static void fn_800F5FAC(boost::shared_ptr<CharInfo> hit, void *arg) {
     }
 }
 
+/* Matching workaround: UnkCallbackSlot_800F5980::fn_800F5980 is defined here, out of line, as a
+ * strong global. The original has one copy, in this file's code, and the other units that use it
+ * call that copy. It sits among the out-of-line functions that CatchStick's constructor, its first
+ * caller here, emits after itself, which is where MWCC puts an inline function's out-of-line copy;
+ * as a strong global, it and the four function1 members it calls (0x188 bytes) follow the
+ * constructor's other out-of-line functions instead of sitting among them. Defined inline in its
+ * header (UnkHandleBTarget_8015BE64.h), it takes that place and this file's function order is the
+ * original's, but other objects then emit weak copies of it and of function1 members, which the
+ * linker discards. Revisit with a change of its own that defines it inline in that header. */
 UnkCallbackSlot_800F5980 &
 UnkCallbackSlot_800F5980::fn_800F5980(const GadgetColliDetectCallback &callback) {
     m_callback = callback;

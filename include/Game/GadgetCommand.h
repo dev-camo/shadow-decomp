@@ -18,9 +18,8 @@ namespace GadgetCommand {
  * (inferred): the original's one copy (0x8025E758) lies among the functions of the E_P_COLI
  * gadget's file, between the constructors of MoveEndCommand and MoveStartCommand, which call it,
  * far from the destructor (0x8015D6AC) and fn_801D9CA8, which are defined out of line with the
- * vtable. The original's two callers call that copy. Here the constructor is expanded in them
- * instead, because CharCommand's constructor is not defined in its class (see MoveStartCommand
- * for where those callers are emitted). */
+ * vtable. It is not expanded in them, because it calls CharCommand's inline constructor (see
+ * MoveStartCommand for where those callers are emitted). */
 class GadgetCommand : public CharCommand {
   public:
     GadgetCommand(int id, int arg1) : CharCommand(id, arg1) {}
