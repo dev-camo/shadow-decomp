@@ -12,10 +12,13 @@ class CharInfo;
 /* LineTarget (class name from the RTTI record at 0x805E8CF8, with Target as its base): the
  * 0x50-byte object that fn_801E29D8 creates. Its constructor (0x801E2D18) runs Target's
  * constructor at 0x801E7490, sets the vtable at 0x8053D86C and default-constructs the segment at
- * 0x38. The vtable also overrides Target's first slot (0x801E2C4C), which is not declared here
- * because nothing in the reconstructed code calls it. */
+ * 0x38. */
 class LineTarget : public Target {
   public:
+    /* Overrides Target's first slot (0x801E2C4C): passes point and the segment to fn_8040FC3C,
+     * stores the result (the segment's point closest to point, behaviour inferred) and returns a
+     * copy of it. Defined elsewhere; the pointer form and the const are inferred, as on Target. */
+    virtual Fn8040Vector3 fn_801E73EC(const Fn8040Vector3 *point);
     /* Defined elsewhere (0x801E2CC0). */
     virtual ~LineTarget();
 
