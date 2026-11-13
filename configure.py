@@ -1519,6 +1519,12 @@ config.libs = [
             Object(NonMatching, "Game/Cage.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CaptureCage.cpp", cflags=cflags_game_cpp),
             Object(NonMatching, "Game/fn_801A1FA0.cpp", cflags=cflags_game_cpp),
+            # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
+            # (GUPP8P): 28 of the 32 functions have identical words. fn_801A35AC is 33 words
+            # against the original's 34, fn_801A3CE4 is 87 against 89 and fn_801A3F0C is 32
+            # against 33. fn_801A3FB0 has the original's size and differs in 4 of its 101 words
+            # (USA 0x801A4090-0x801A40A0): where it compares field_0x14 with field_0x10 and
+            # copies the second to the first, the two values are in each other's registers.
             Object(NonMatching, "Game/fn_801A35AC.cpp", cflags=cflags_game_cpp),
             # fn_801A44DC is 0x74 bytes against the original's 0x6C, fn_801A4548 0x40 against 0x3C
             # and the map's __find_or_insert instance 0xEC against 0xF0; the other functions of
@@ -2764,12 +2770,7 @@ config.libs = [
             Object(Matching, "Game/SpaceGadget.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BackDrop.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/HeavyDog0510CtrlUnit.cpp", cflags=cflags_game_cpp),
-            # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
-            # (GUPP8P): 22 of the 23 functions have identical words. In HeavyDog0410CtrlUnit_Mine's
-            # constructor 7 of the 243 words differ (USA 0x8026CE70-0x8026CEA0): where it moves
-            # each clump to its world, the original keeps the clump in r30 and the world in r27,
-            # and the build has the two registers the other way round.
-            Object(NonMatching, "Game/HeavyDog0410CtrlUnit.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/HeavyDog0410CtrlUnit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ArkLaser.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/WeaponSpecialShadowRifle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/WeaponSpecialHealCannon.cpp", cflags=cflags_game_cpp),

@@ -5,6 +5,7 @@
 #include "Game/fn_80038198.h"
 #include "Game/fn_8003A840.h"
 #include "Game/fn_80169350.h"
+#include "Game/SetClumpWorld.h"
 #include "Game/UnkResource_80012700.h"
 #include "Game/fn_80038E84.h"
 
@@ -31,14 +32,7 @@ void Unk801A35ACItem::fn_801A4298(int resourceKey, int index) {
                     field_0x10 = selector;
                     field_0x14 = selector;
                 }
-                RpClump *clump = m_clump;
-                RpWorld *current = fn_8046256C(clump);
-                if (current != world) {
-                    if (current != 0) {
-                        fn_804623EC(current, clump);
-                    }
-                    fn_804622FC(world, clump);
-                }
+                SetClumpWorld(world, m_clump);
                 m_parameters.field_0x24 = 8;
                 fn_80038198(m_clump, &m_parameters);
             }
@@ -101,14 +95,7 @@ void Unk801A35ACItem::fn_801A3FB0(float value) {
                     fn_804623EC(current, m_clump);
                 }
                 RpWorld *world = fn_800593D0(fn_8003A840(), field_0x14);
-                RpClump *clump = m_clump;
-                current = fn_8046256C(clump);
-                if (current != world) {
-                    if (current != 0) {
-                        fn_804623EC(current, clump);
-                    }
-                    fn_804622FC(world, clump);
-                }
+                SetClumpWorld(world, m_clump);
                 if (m_frame != 0) {
                     if (field_0x8 != 0) {
                         field_0x8->fn_800159AC();
@@ -124,14 +111,7 @@ void Unk801A35ACItem::fn_801A3FB0(float value) {
                 fn_804623EC(current, m_clump);
             }
             RpWorld *world = fn_800593D0(fn_8003A840(), field_0x14);
-            RpClump *clump = m_clump;
-            current = fn_8046256C(clump);
-            if (current != world) {
-                if (current != 0) {
-                    fn_804623EC(current, clump);
-                }
-                fn_804622FC(world, clump);
-            }
+            SetClumpWorld(world, m_clump);
             if (m_frame != 0) {
                 if (field_0x8 != 0) {
                     field_0x8->fn_800159AC();
