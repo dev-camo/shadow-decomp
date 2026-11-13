@@ -53,7 +53,13 @@ static void fn_80142C88(boost::shared_ptr<CharInfo> user, UnkLaunchContext_80142
     float speed = s_launchSpeeds[index];
 
     if (index < 15) {
-        speed += (s_launchSpeeds[index + 1] - speed) * (level - index);
+        /* The step to the next entry is formed in a variable of its own in two statements
+         * (spelling inferred): the original keeps the entry and the step in one register while
+         * the index is converted, and reuses one stack slot for its conversions, which the step
+         * written inside the last expression does not give. */
+        float step = s_launchSpeeds[index + 1];
+        step -= speed;
+        speed += step * (level - index);
     }
 
     Fn8040Matrix34 matrix;
