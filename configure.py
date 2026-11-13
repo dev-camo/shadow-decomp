@@ -2508,6 +2508,11 @@ config.libs = [
             Object(Matching, "Game/fn_80054DD0.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80096B64.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/TGiHPGaugeBoss.cpp", cflags=cflags_game_cpp),
+            # 23 of the 24 functions have identical instruction words and relocations. Update
+            # differs in 5 of its 96 words: the pointer to the manager's state is in r29 and the
+            # loop counter in r28, the other way round from the original. Normal links use the
+            # original object.
+            Object(NonMatching, "Game/TGiHdGage.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_800532F8.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80422070.cpp", cflags=cflags_effect),
             Object(Matching, "Game/fn_804220CC.cpp", cflags=cflags_effect),
