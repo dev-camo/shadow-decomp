@@ -1371,8 +1371,7 @@ config.libs = [
             Object(Matching, "Game/fn_80160B18.cpp", cflags=cflags_game_cpp),
             # Part cleanup retains one extra element-address addi and register differences.
             Object(NonMatching, "Game/fn_80162804.cpp", cflags=cflags_game_cpp),
-            # Only the constructor differs (239 words against 240): the model and crash-information
-            # loads before the first fn_802087D8 call are swapped, and the model pointer is loaded
+            # Only the constructor differs (239 words against 240): the model pointer is loaded
             # inline where the original calls the 8-byte accessor fn_800E590C. That accessor is not
             # emitted, so the source object cannot be linked; normal builds link the original.
             Object(NonMatching, "Game/BreakableOrnament.cpp", cflags=cflags_game_cpp),
@@ -1496,15 +1495,7 @@ config.libs = [
             ),
             Object(Matching, "Game/fn_8015AA84.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SecurityLaser.cpp", cflags=cflags_game_cpp),
-            # Every function but the constructor has identical instructions and relocations, and
-            # the data, symbols and relocations match once the linker-discarded weak and local
-            # copies are set aside. The constructor (0x801414E4, USA) differs in 2 of its 230
-            # words: for its call of GadgetModelInfo::fn_801629D8 with the crash information's
-            # fn_802087D8 name, the original loads m_crashInfo's pointer before m_model's and this
-            # build loads them the other way round (the same instructions, registers and
-            # relocations otherwise), as in SuperComputer's constructor. Writing the call with get()
-            # or operator* on either pointer gives the same order.
-            Object(NonMatching, "Game/BreakWall.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/BreakWall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Catapult.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DamageBlock.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Door.cpp", cflags=cflags_game_cpp),
@@ -1554,13 +1545,7 @@ config.libs = [
             # compiled .sdata2 is writable (WA) where the original's is allocatable only (A). A
             # normal build links the original object.
             Object(NonMatching, "Game/ElecBar.cpp", cflags=cflags_game_cpp),
-            # Every function but the constructor has identical instruction words, and the data,
-            # symbols and relocations match once the linker-discarded weak and local copies are set
-            # aside. The constructor (0x8022E698, USA) differs in 6 of its 189 words: for each of its
-            # three calls of a GadgetModelInfo method with a CrashInfoCtrl name as the argument, the
-            # original loads m_crashInfo's pointer before m_model's, this build loads them the other
-            # way round (the same instructions, registers and relocations otherwise).
-            Object(NonMatching, "Game/SuperComputer.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/SuperComputer.cpp", cflags=cflags_game_cpp),
             # Compared as relocatable objects, all 54 functions have identical instructions and
             # relocations once one local alias is resolved: the constructor's two relocations of the
             # 0xC-byte local object at .data+0 name it @2 in the original and the section symbol
@@ -1716,14 +1701,11 @@ config.libs = [
             Object(NonMatching, "Game/ElecRollHexa.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/WatchCamera.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DefenseShield.cpp", cflags=cflags_game_cpp),
-            # 71 of the 73 functions have identical instructions and relocations once the weak and
+            # 72 of the 73 functions have identical instructions and relocations once the weak and
             # local copies the linker discards are removed and local symbols are paired by the data
             # they refer to: the names differ (OnAttack loads the .sdata2 float that the original
             # calls lbl_805F6E30 and this object @547) and so can the raw offsets, since this object
-            # adds data (ChangeState's lbl_8054631C at .data 0x0C is @383 at 0x3C here). The
-            # constructor (0x80224558) differs in 44 words, register numbers only: the original
-            # keeps this in r31, the owner in r28, the loop counter in r29 and 0x10000 in r30, where
-            # this build uses r28, r29, r30 and r31.
+            # adds data (ChangeState's lbl_8054631C at .data 0x0C is @383 at 0x3C here).
             # fn_8022440C differs in 3 words, the offsets of the two break-model records and the
             # model file name from the unit's .rodata base: the original's .rodata has two blocks of
             # zero bytes, 0x1C after the TNumEdit type names and 0xC after the CharaColliBase name,
@@ -1897,11 +1879,9 @@ config.libs = [
             # match once the linker-discarded definitions (44 weak copies and nine local ones,
             # among them a converting constructor, RTTI records and literals) are set aside. Normal
             # builds link the original object; the source object was linked only as a separate
-            # diagnostic. UpdateBody differs in 7 words, all
-            # register colouring: the landing test's two float loads, its compare and its store
-            # use f0 and f1 the other way round, and the bounce update's subtraction, 0.8 literal
-            # load and multiply-add use f1 and f2 the other way round. Opcodes, relocations and
-            # load/store counts are identical.
+            # diagnostic. UpdateBody differs in 3 words, all register colouring: the bounce
+            # update's subtraction, 0.8 literal load and multiply-add use f1 and f2 the other way
+            # round. Opcodes, relocations and load/store counts are identical.
             Object(NonMatching, "Game/FallRoad.cpp", cflags=cflags_game_cpp),
             # All 60 functions have identical instructions and the data bytes match, but the 0.0f
             # and 120.0f literals are pooled in the opposite order. Linked from source as a
@@ -1913,19 +1893,18 @@ config.libs = [
             # The split covers the whole original file: USA (GUPE8P) .text 0x80191CF0-0x80193434 (67
             # functions: the static initialiser at 0x80193314 and 29 adjustment thunks among them)
             # with its .ctors, .rodata, .data, .bss, .sdata, .sbss and .sdata2. Relocatable
-            # comparison: 66 functions have identical instructions and relocation targets;
-            # fn_80192394 differs in 13 of its 95 words, register allocation only (this takes r27
-            # where the original has r31, and the four loop values each sit one register higher).
+            # comparison: all 67 functions have identical instructions and relocation targets.
             # Data by contents, with the linker-discarded copies set aside: .sdata2 pools 0.0f,
             # 0.5f, the empty string and -1.0f in another order (original 0.0f, 0.5f, "", -1.0f;
             # this build "", 0.0f, -1.0f, 0.5f), and .rodata has the BkWormBase type name before
             # the model tables, where this build places it among the other type names. The compiled
             # .sdata2 section is writable (WA) where the original's is allocatable only (A). Linked
             # from source as a diagnostic together with BkWingSmall (normal builds link the original
-            # object), the USA DOL differs in 232 words, 228 of them in this file's ranges: 24 in
-            # .text (fn_80192394 and 11 references to the moved literals and tables), 162 in
-            # .rodata (the type name and the tables and strings after it), 13 in .data and 26 in
-            # .sdata (pointers to those strings) and 3 in .sdata2. The other four are BkWingSmall's.
+            # object) while fn_80192394 still differed in 13 words, the USA DOL differed in 232
+            # words, 228 of them in this file's ranges: 24 in .text (fn_80192394 and 11 references
+            # to the moved literals and tables), 162 in .rodata (the type name and the tables and
+            # strings after it), 13 in .data and 26 in .sdata (pointers to those strings) and 3 in
+            # .sdata2. The other four are BkWingSmall's.
             Object(NonMatching, "Game/BkWorm.cpp", cflags=cflags_game_cpp),
             # Player::PlayerMotion: all 32 bodies have identical instructions and resolved
             # relocation targets in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P). The filename is
@@ -2397,7 +2376,7 @@ config.libs = [
             # source calls fn_8000AB90 as an external function (inferred).
             Object(NonMatching, "Game/TargetSwitch.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/UpDownReel.cpp", cflags=cflags_game_cpp),
-            # 33 of the 35 functions have identical instructions and relocations. By contents,
+            # 34 of the 35 functions have identical instructions and relocations. By contents,
             # with the 96 weak and local copies this object has and the original does not set
             # aside (76 weak, 20 local), the data, symbols and relocations match, except four
             # relocations that point 8 or 4 bytes lower: the jump table's entries for states 5 and
@@ -2410,11 +2389,7 @@ config.libs = [
             # relocatable objects 54 of the 259 common words differ positionally: 8 earlier
             # branches to the code after the switch, and 46 of the 48 words from the branch before
             # the first block to the end, which this build has one word earlier after the first
-            # block and two after the second; 15 of the 54 original words are branches. The constructor (0x80122C5C) differs in 2 of its 226 words: for its
-            # call of GadgetModelInfo::fn_801629D8 with the crash information's fn_802087D8 name,
-            # the original loads m_crashInfo's pointer before m_model's and this build loads them
-            # the other way round (the same instructions, registers and relocations otherwise), as
-            # in BreakWall's and SuperComputer's constructors.
+            # block and two after the second; 15 of the 54 original words are branches.
             Object(NonMatching, "Game/Stick.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/TurnOver.cpp", cflags=cflags_game_cpp),
             # 51 of 54 functions are identical in every word and relocation in USA, Japan and PAL.

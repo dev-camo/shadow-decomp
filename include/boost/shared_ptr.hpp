@@ -23,8 +23,9 @@
 //  follows boost/config.hpp. Threads, debug hooks and allocator overrides remain disabled
 //  (no BOOST_HAS_THREADS, no BOOST_SP_ENABLE_DEBUG_HOOKS, no allocator override);
 //  The selected MWCC Boost configuration also defines
-//  BOOST_NO_MEMBER_TEMPLATE_FRIENDS. BOOST_ASSERT is resolved for an NDEBUG build, so the checks
-//  in reset(), operator* and operator-> are left out. The workarounds for other compilers are
+//  BOOST_NO_MEMBER_TEMPLATE_FRIENDS. BOOST_ASSERT has its expansion for a build without
+//  assertions (boost/assert.hpp). operator-> keeps Boost's check (see the comment there); the
+//  checks in reset() and operator* are left out. The workarounds for other compilers are
 //  dropped. Left out, because the reconstructed units use none of them: the auto_ptr constructor
 //  and assignment, operator!, the polymorphic_cast_tag constructor, the deprecated
 //  shared_*_cast functions, operator<< and the free get_deleter function. The conversion to bool
@@ -34,6 +35,7 @@
 //
 
 #include "boost/config.hpp"
+#include "boost/assert.hpp"
 #include "boost/checked_delete.hpp"
 #include "boost/throw_exception.hpp"
 #include <exception>
@@ -391,6 +393,10 @@ template <class T> class shared_ptr {
 
     T *operator->() const // never throws
     {
+        // Boost's check, ((void)0) in this build. The statement still changes the code: with it the
+        // constructors of BreakWall and SetSuperComputer load the crash information's pointer
+        // before the model's, as the original does; without it they load the model's first.
+        BOOST_ASSERT(px != 0);
         return px;
     }
 
