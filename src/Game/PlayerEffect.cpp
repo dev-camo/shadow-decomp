@@ -459,13 +459,19 @@ void CameraDemo::fn_800A5E8C() {
     m_request = fn_801CED24(m_cameraMode, 0, 0, 0, -1, 0, 0);
 }
 
+/* Stores value in the pair at 0x1C of the parameter block (behaviour from its body; fn_800A5C74 is
+ * its only caller). */
+void fn_800A5E78(UnkCameraModeParams_8000EBB0 *params, const Fn8040Vector2 &value) {
+    params->field_0x1C = value;
+}
+
 void CameraDemo::fn_800A5C74() {
     fn_801CEAD4(m_request);
     fn_802039D0(&lbl_8057D6A0.field_0xA8, 0);
     /* The angle, the six floats and the two parameter pairs are camera settings whose meanings
      * are unknown, as are fn_8026F6A4's 0xB and 0. */
     UnkCameraModeParams_8000EBB0 params;
-    params.SetField0x1C(fn_8000F2E8(DegreesToRadians(140.0f)));
+    fn_800A5E78(&params, fn_8000F2E8(DegreesToRadians(140.0f)));
     params.field_0x4C[0] = 200.0f;
     params.field_0x4C[1] = 15.0f;
     params.field_0x4C[2] = 10.0f;
