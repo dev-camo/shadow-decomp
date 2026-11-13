@@ -839,7 +839,9 @@ config.libs = [
                 # and registers with three neighbouring pairs in the other order. The inverses
                 # (fn_8040BCD4, 140 words; fn_8040BEF8, 145 words) differ in scheduling, registers
                 # and saved registers: fn_8040BEF8 has the target's arithmetic opcodes and saves 1
-                # more FPR (152 instructions instead of 148), and its singular path copies the
+                # more FPR (152 instructions instead of 148), rounds different terms before the
+                # fused additions of the translation (USA 0x8040BFEC, 0x8040C01C), so element
+                # [0][3] can differ in the last bit, and its zero-determinant path copies the
                 # source with fn_8040C148 where the target calls fn_8040BCB4 (one relocation
                 # target); fn_8040BCD4 reuses the determinant's products m10 * m22 and m12 * m20
                 # for element [1][0], which the target computes again (2 fsubs and 1 fneg where

@@ -289,9 +289,12 @@ void fn_8040B8C0(Fn8040Matrix34 *matrix, const Fn8040Vector4 *quaternion);
 void fn_8040B8FC(Fn8040Matrix34 *result, const Fn8040Matrix34 *left, const Fn8040Matrix34 *right);
 /* matrix = matrix * other, applying other first. */
 void fn_8040BAC4(Fn8040Matrix34 *matrix, const Fn8040Matrix34 *other);
-/* Inverts the matrix in place; a matrix without an inverse stays unchanged. */
+/* Inverts the matrix in place; when the computed single-precision determinant is zero the matrix
+ * stays unchanged (USA (GUPE8P) test at 0x8040BD74; rounding can make a singular matrix's computed
+ * determinant nonzero). */
 void fn_8040BCD4(Fn8040Matrix34 *matrix);
-/* Returns the inverse of source, or a copy of source when it has no inverse. The by-value result
+/* Returns the inverse of source, or a copy of source when the computed single-precision
+ * determinant is zero (test at 0x8040BFAC). The by-value result
  * is inferred; the code is that of a result pointer. In each region 43 of the 44 call sites pass a
  * stack slot for the result and the other one passes on the result pointer it was given (USA
  * (GUPE8P) 0x802CA564). 18 copy the slot with fn_8040C148 (17 right after the call), 19 pass it
