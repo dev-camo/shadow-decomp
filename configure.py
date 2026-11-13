@@ -2939,32 +2939,10 @@ config.libs = [
             # the other size differences are zero bytes at the section ends (7 in .rodata, 4 in
             # .data and 4 in .sdata2). Normal builds link the original object.
             Object(NonMatching, "Game/WeaponSpecialHealCannon.cpp", cflags=cflags_game_cpp),
-            # (GUPP8P): 16 of the 17 functions have identical words and relocation targets once
-            # 34 extra definitions in the compiled object are set aside for the comparison: 25 weak
-            # ones (22 functions: the shared_ptr<CharInfo>, weak_ptr<CharInfo>, shared_count,
-            # weak_count, sp_counted_base, bad_weak_ptr and std::exception members and
-            # Fn8040Vector3's default constructor, copy constructor and copy assignment, and
-            # the vtables of std::exception, bad_weak_ptr and sp_counted_base) and 9 local ones
-            # (shared_ptr's converting constructor from a weak_ptr, the RTTI records and name
-            # strings of those three classes, std::exception's what() text and bad_weak_ptr's base
-            # list). The start-up function is 72 bytes against the original's 96: the original
-            # also stores 1.0 and 5.0 into both descriptions at 0x10 and 0x14, which are static
-            # data here.
-            # Aligned, 2 paired words differ (an stw for each of the original's two stwu) and 6
-            # words are original-only (two lfs and four stfs); compared position by position, 6 of
-            # the 18 paired words differ and the original's last 6 words are unpaired. Raw section
-            # sizes, the original's first: .text 0x758 and 0xC48, .ctors 4 and 4, .rodata 0xF0 and
-            # 0x13F, .data 0xC0 and 0x100, .sdata 0x20 and 0x38, .sbss 8 and 4, .sdata2 0x28 and
-            # 0x1C. With those copies set aside, the data match by contents except the two floats
-            # of each description, which are zero in the original's .data, and .sdata2, which
-            # lacks the original's last 0xC bytes (the 1.0 and 5.0 that its start-up function
-            # loads and 4 zero bytes of end alignment) and is writable (WA) where the original's
-            # is allocatable only (A). The original's .data and .sbss each end in 4 bytes of
-            # alignment that this object lacks. Normal builds link the original object.
-            Object(NonMatching, "Game/WeaponSpecialKatana.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BulletSatelliteLaser.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/lbl_8054DB70.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Magma.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/WeaponSpecialKatana.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BossRootTask.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Parachute.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EscapePlane.cpp", cflags=cflags_game_cpp),
