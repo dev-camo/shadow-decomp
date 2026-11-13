@@ -75,7 +75,13 @@ static void fn_800FFB70(boost::shared_ptr<CharInfo> hit, void *arg) {
     float speed = s_launchSpeeds[index];
 
     if (index < 15) {
-        speed += (s_launchSpeeds[index + 1] - speed) * (level - index);
+        /* The step to the next entry is formed in a variable of its own in two statements
+         * (spelling inferred): the original keeps the entry and the step in one register while
+         * the index is converted, and reuses one stack slot for its conversions, which the step
+         * written inside the last expression does not give. */
+        float step = s_launchSpeeds[index + 1];
+        step -= speed;
+        speed += step * (level - index);
     }
 
     Fn8040Vector3 front = matrix * Fn8040Vector3(0.0f, 0.0f, -1.0f);
@@ -91,7 +97,9 @@ static void fn_800FFB70(boost::shared_ptr<CharInfo> hit, void *arg) {
     float factor = s_pushFactors[index];
 
     if (index < 15) {
-        factor += (s_pushFactors[index + 1] - factor) * (context->m_params->level - index);
+        float step = s_pushFactors[index + 1];
+        step -= factor;
+        factor += step * (context->m_params->level - index);
     }
 
     Fn8040Vector3 push(0.0f, 0.0f, -1.0f);
