@@ -1297,6 +1297,20 @@ Game/WeaponSpecialShadowRifle.cpp:
 	.sdata      start:0x805EBBA8 end:0x805EBBC8
 	.sdata2     start:0x805F9040 end:0x805F9058
 
+Game/BulletSatelliteLaser.cpp:
+	.text       start:0x8027B290 end:0x8027B718
+	.ctors      start:0x804AAF9C end:0x804AAFA0
+	.rodata     start:0x804F8EF0 end:0x804F8F28
+	.data       start:0x8054EC30 end:0x8054EC78
+	.sdata      start:0x805EBC78 end:0x805EBC88
+	.sdata2     start:0x805F9118 end:0x805F9138
+
+Game/lbl_8054DB70.cpp:
+	.text       start:0x8027B718 end:0x8027B72C
+	.ctors      start:0x804AAFA0 end:0x804AAFA4
+	.data       start:0x8054EC78 end:0x8054EC90
+	.sdata2     start:0x805F9138 end:0x805F9140
+
 Game/BossRootTask.cpp:
 	.text       start:0x8027E200 end:0x8027E4CC
 	.ctors      start:0x804AAFB0 end:0x804AAFB4
