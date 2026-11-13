@@ -1930,8 +1930,11 @@ config.libs = [
             Object(Matching, "Game/PlayerWeaponBase.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CharaColliBaseCharInfo.cpp", cflags=cflags_game_cpp),
             # The split covers the whole original file: USA (GUPE8P) .text 0x800A25E0-0x800A72E4
-            # (174 functions) with its .rodata, .data, .bss, .sdata, .sbss, .sdata2 and .sbss2,
-            # whose data objects all match. 165 functions match and nine do not. Seven differ (raw
+            # (174 functions) with its .rodata, .data, .bss, .sdata, .sbss, .sdata2 and .sbss2.
+            # Paired by symbol, 165 functions have the original's instructions (relocated fields
+            # aside); 163 of them also have its relocation targets, while the two boost::function1
+            # swap functions call this object's local copy of std::swap for boost's any_pointer,
+            # where the original calls the external one at 0x80019164. Seven functions differ (raw
             # differing words, the same in all three regions): Awake's constructor (33: this, the
             # player reference and the slot pointer are kept in other registers),
             # Jet::fn_800A530C (22, one word longer: the original stores m_visible = false from
@@ -1942,12 +1945,20 @@ config.libs = [
             # finishes loading a string address one instruction earlier), CameraDemo::fn_800A6DF4
             # (41, one word shorter: the original calls shared_ptr's operator-> to pass the
             # player's matrix at 0x1E4, which this build expands) and the two boost::function1
-            # assignment operators (20 each: the original's are 0x30-byte wrappers, this build's
-            # are 0x58-byte functions). The other two are the 0x58-byte bodies that the original's
-            # wrappers call (0x800A676C and 0x800A6A54), which have no counterpart in this build.
-            # This build also keeps a local 0x20-byte copy of std::swap for boost's any_pointer,
-            # where the original calls the one at 0x80019164. The file's code is 0x40 bytes
-            # shorter than the original's, which moves everything linked after it.
+            # assignment operators (20 each: the original's are 0x30-byte wrappers that call
+            # 0x58-byte bodies at 0x800A676C and 0x800A6A54; this build compiles each operator as
+            # one 0x58-byte function with the body's code, and has no separate wrapper and body).
+            # Each of the original's data objects has a counterpart with the same bytes and
+            # relocations. Four of the original's split extents include trailing zero padding
+            # that the compiled object's do not: CameraDemo's vtable (0x14, 0x10 compiled), the
+            # guard of CreateStatic's local static (7, 1), the last .sdata2 constant and the
+            # .sbss2 object (8, 4 each). The compiled object also has the RTTI records, vtables
+            # and strings of std::exception, boost::bad_weak_ptr and sp_counted_base, boost's
+            # placeholders _2 to _9 and the singleton's weak instance pointer, which the
+            # original's object lacks, and its .sdata2 is writable where the original's is
+            # read-only. As objects, the counterparts of the original's functions and the local
+            # std::swap total 0x4CC4 bytes of code, 0x40 fewer than the original's 0x4D04; the
+            # normal link uses the original object, so no later code moves.
             Object(NonMatching, "Game/PlayerEffect.cpp", cflags=cflags_game_cpp),
             # The split covers the whole original file: USA (GUPE8P) .text 0x800CBC1C-0x800D216C
             # (255 functions, the static initialiser at 0x800D202C among them) with its .ctors,

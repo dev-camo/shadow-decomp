@@ -1,8 +1,11 @@
 /* RW3 Shimmer and parameter-state methods; original filename unknown. */
-/* <cmath> comes first: sqrtf's two weak constants then start .rodata, ahead of the two that
- * UnkEffectRW3Param2's inline constructor adds through fn_804342CC.h. With the constructor's
- * constants first, this compiler addresses the file's floating-point constants from one base
- * register, where the original loads each from its own address (measured). */
+/* Matching workaround: <cmath> comes first, so sqrtf's two weak constants start .rodata, ahead
+ * of the two local ones that UnkEffectRW3Param2's inline constructor adds through
+ * fn_804342CC.h. With the constructor's constants first, this compiler loads the section's
+ * address into a register and reaches the file's floating-point constants as offsets from it,
+ * where the original loads each from its own address: 14 of the unit's 21 functions then match
+ * instead of 17 (measured). Revisit when the file's original include order is recovered, or when
+ * UnkEffectRW3Param2's constructor no longer adds its constants to this file. */
 #include <cmath>
 #include "Game/fn_804342CC.h"
 #include "Game/EffectShimmerRW3.h"
