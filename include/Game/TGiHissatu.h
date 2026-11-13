@@ -22,8 +22,9 @@ class TGiHissatu : public Task {
     void LoadProjects();
     /* Releases each display's project. Matching workaround: see its definition. */
     void ReleaseProjects();
-    /* The draw layer's callback: draws the two displays while lbl_8057D6A0's byte at 0x148 is
-     * set. */
+    /* The draw layer's callback: while lbl_8057D6A0's byte at 0x148 is set, calls each display's
+     * draw routine (fn_8003FDF4), which has its own checks: it draws only when the display has a
+     * project and the byte at 0x805E3780 (USA) is set. */
     void OnDraw(RednerDrawArgs &args);
 
     struct Display {
