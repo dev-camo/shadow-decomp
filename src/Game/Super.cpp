@@ -177,8 +177,8 @@ Behavior *Super::Create(const boost::shared_ptr<PlayerBase> &player) {
 } // namespace Player
 
 /* The record's second function, an empty function (only blr). The parameter is the one that
- * Player::Shadow::ShadowBehavior's constructor passes to every record's second function; the void
- * result is inferred (that caller ignores it). */
+ * Player::Shadow::ShadowBehavior's constructor passes to each record's second function when it is
+ * not null; the void result is inferred (that caller ignores it). */
 extern "C" void fn_802EB014(const boost::shared_ptr<Player::PlayerBase> &) {}
 
 const Player::Behavior::UnkBehaviorRecord_80521CC8 lbl_80507B50 = {Player::Behavior::Super::Create,
