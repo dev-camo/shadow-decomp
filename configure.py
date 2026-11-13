@@ -2038,23 +2038,7 @@ config.libs = [
             Object(Matching, "Game/CityGadget.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CityBombSmall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ChaosSpear.cpp", cflags=cflags_game_cpp),
-            # Relocatable-object comparison: the 13 functions other than the start-up function
-            # match, words and relocations. The original sets the name and the floats at 0x10 and
-            # 0x14 (1.0 and 5.0, two .sdata2 literals) of the weapon description in the start-up
-            # function (10 words) and has zeros there in .data; this build stores only the name at
-            # start-up (6 words) and keeps 1.0 and 5.0 in .data, so .sdata2 is 0x18 bytes against
-            # 0x20. Of the 6 paired start-up words 5 differ (the two lis in the other order, an stw
-            # and a blr where the original has its two lfs, and an stw for the original's stwu),
-            # and the original's last 4 words (an stw, two stfs and the blr) have no counterpart.
-            # A constant initialiser is folded into the static data, as for Game/fn_801F6488.cpp
-            # above. The original's .sdata also ends in 4 zero bytes that this object lacks (0x1C
-            # bytes against 0x20). The rest of the data matches once Fn8040Vector3's default
-            # constructor, a weak copy the linker discards, is set aside. Normal builds link the
-            # original object. In a USA diagnostic link of this object, the .sdata tail comes back
-            # as alignment fill and 1.0 and 5.0 stay in the linked description where the original
-            # has zeros; the later code and data land lower, so 17 more words in 8 of the other
-            # functions differ, all in relocated fields.
-            Object(NonMatching, "Game/DarkHammer.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/DarkHammer.cpp", cflags=cflags_game_cpp),
             # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
             # (GUPP8P): 73 of the 75 functions have identical words and relocation targets once the
             # copies the linker discards (86 weak and 3 local functions, the _2 to _9 placeholders,
