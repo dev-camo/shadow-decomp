@@ -2070,21 +2070,16 @@ config.libs = [
             # sit 4 bytes lower and the section ends at 0x20 against the original's 0x24 plus 4
             # bytes of end alignment.
             Object(NonMatching, "Game/HintController.cpp", cflags=cflags_game_cpp),
-            # Relocatable-object comparison: nine of 11 functions have identical words and
-            # relocation targets. The start-up function and the description's floats at 0x10 and
-            # 0x14 differ as in Game/DarkHammer.cpp above: 24 bytes against 40, with 5 of the 6
-            # paired words different and 4 original-only words. .sdata2 is 0x10 bytes marked
-            # writable (WA) against the original's 0x18 bytes, allocatable only (A); the original's
-            # last 8 bytes are the 1.0 and 5.0 that its start-up function stores. PlayShotEffects
-            # is 152 bytes against 156, with 28 of the 38 paired words different and 1
+            # Relocatable-object comparison: ten of 11 functions have identical words and
+            # relocation targets. PlayShotEffects is 152 bytes against 156, with 28 of the 38 paired
+            # words different, one more that differs only in its relocation target and 1
             # original-only word: the original copies the frame pointer that fn_80063234 returns
             # to r0, sets r3 to the result slot and then moves r0 to r4, while this build moves it
-            # to r4 directly. The weak copies set aside are the weak_ptr<EffectElement> and
-            # weak_count destructors and sp_counted_base's destructor, destruct and vtable with its
-            # RTTI record and name string. Normal builds link the original object. In a USA
-            # diagnostic link of this object, PlayShotEffects has 29 differing paired words and 1
-            # original-only word, and 30 words of the other nine functions differ, all in
-            # relocated fields.
+            # to r4 directly. .sdata2 is 0x18 bytes in both, marked writable (WA) here and
+            # allocatable only (A) in the original. The weak copies set aside are the
+            # weak_ptr<EffectElement> and weak_count destructors and sp_counted_base's destructor,
+            # destruct and vtable with its RTTI record and name string. Normal builds link the
+            # original object.
             Object(NonMatching, "Game/HeavyShot.cpp", cflags=cflags_game_cpp),
             # The data match by contents once the 63 definitions the linker discards are set aside
             # (47 weak copies, such as boost::bad_weak_ptr's vtable, and 16 local ones, such as the
