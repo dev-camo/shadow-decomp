@@ -9,6 +9,7 @@
 #include "Game/HeavyDog0410CtrlUnit.h"
 #include "Game/HeavyDogCtrlUnit.h"
 #include "Game/HeavyDogVarParam.h"
+#include "Game/SetClumpWorld.h"
 #include "Game/UnkGlobal_8057D6A0.h"
 #include "Game/UnkResource_80012700.h"
 #include "Game/UnkSoundManager_80053164.h"
@@ -94,14 +95,7 @@ HeavyDog0410CtrlUnit_Mine::HeavyDog0410CtrlUnit_Mine(HeavyDog0410VarParam *param
         if (m_clumps[i] != 0) {
             int index = fn_80169350(fn_80169364(m_clumps[i]));
             RpWorld *world = fn_800593D0(fn_8003A840(), index);
-            RpClump *clump = m_clumps[i];
-            RpWorld *current = fn_8046256C(clump);
-            if (current != world) {
-                if (current != 0) {
-                    fn_804623EC(current, clump);
-                }
-                fn_804622FC(world, clump);
-            }
+            SetClumpWorld(world, m_clumps[i]);
 
             m_frames[i] = static_cast<RwFrame *>(m_clumps[i]->object.parent);
             if (m_frames[i] != 0) {
