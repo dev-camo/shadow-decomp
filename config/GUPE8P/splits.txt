@@ -1430,8 +1430,21 @@ Game/BossRootTask.cpp:
 	.sbss       start:0x805F0240 end:0x805F0248
 	.sdata2     start:0x805F8158 end:0x805F8160
 
+Game/Parachute.cpp:
+	.text       start:0x80292A64 end:0x80293928
+	.ctors      start:0x804A9F60 end:0x804A9F64
+	.rodata     start:0x804FA068 end:0x804FA158
+	.data       start:0x805525D0 end:0x805525F8
+	.sdata      start:0x805EB400 end:0x805EB420
+	.sbss       start:0x805F0328 end:0x805F0340
+	.sdata2     start:0x805F8560 end:0x805F8590
+
 Game/fn_80293AC8.cpp:
-	.text       start:0x80293AC8 end:0x80293B60
+	.text       start:0x80293928 end:0x80293C80
+	.ctors      start:0x804A9F64 end:0x804A9F68
+	.bss        start:0x80584360 end:0x805843B8
+	.sbss       start:0x805F0340 end:0x805F0348
+	.sdata2     start:0x805F8590 end:0x805F85A0
 
 Game/EscapePlaneRail.cpp:
 	.text       start:0x802ABA94 end:0x802ABE8C
