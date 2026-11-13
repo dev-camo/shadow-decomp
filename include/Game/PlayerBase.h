@@ -80,15 +80,41 @@ class UnkOwner_80079E64 {
 };
 CHECK_SIZEOF(UnkOwner_80079E64, 0x4);
 
+/* The object that the pointer at 0x22C of a Player::PlayerBase refers to (placeholder name);
+ * nothing of it is recovered. */
+class UnkObject_800A78FC;
+
 namespace Player {
 
 /* Player::PlayerObject (class name from RTTI, with CharInfo as its only base): 0x68 bytes. Its
- * constructor, inlined into PlayerBase's (0x80079F30-54), installs its vtable (0x80520388) and
- * clears the word at 0x64. The vtable overrides only the destructor (0x8007A418); every other slot
- * is CharInfo's. */
+ * constructor, inlined into PlayerBase's (0x80079F30-54) and into those of Player::ExternalOption
+ * and Player::InternalOption (0x800AB49C-0x800AB4C0, 0x800AB65C-0x800AB680), installs its vtable
+ * (0x80520388) and clears the word at 0x64. The vtable overrides only the destructor (0x8007A418);
+ * every other slot is CharInfo's. The destructor is defined in the class: the option destructors
+ * expand it (0x800AB430-0x800AB44C, 0x800AB5F0-0x800AB60C). */
 class PlayerObject : public CharInfo {
   public:
-    virtual ~PlayerObject();
+    PlayerObject(int arg0) : CharInfo(arg0) {
+        field_0x64 = 0;
+    }
+    virtual ~PlayerObject() {}
+
+    /* Returns the word at 0x64 (name inferred). The original has one copy, at 0x8008769C in USA
+     * (GUPE8P), with four callers: 0x80087278, 0x80087DF0 and the constructors of
+     * Player::ExternalOption and Player::InternalOption (0x800AB4F4 and 0x800AB6B4). */
+    s32 GetField0x64() const {
+        return field_0x64;
+    }
+    /* Stores value in the word at 0x64 (name inferred).
+     * Matching workaround: this inline member stands for an unknown original accessor, like
+     * CharInfo::SetField0x5C. The option constructors call the smart pointer's operator-> and
+     * GetField0x64 out of line for the value they store here (0x800AB4EC-0x800AB4F8), which this
+     * compiler does only for the arguments of an inline call that is a whole statement; a plain
+     * member store expands both in place (each constructor 0x98 bytes against 0x9C). Revisit
+     * when the original accessor is identified. */
+    void SetField0x64(s32 value) {
+        field_0x64 = value;
+    }
 
     /* PlayerBase's constructor stores its second argument here. The HintController file compares
      * it with 9 as a signed word and indexes a table of 20 message ids by it. */
@@ -103,10 +129,10 @@ CHECK_SIZEOF(PlayerObject, 0x68);
  * bit set at 0xA8 (the TornadoCollision gadget tests bit 0x14 of the set), the vectors at
  * 0xB8, 0xDC and 0x1C8 that Player::Behavior::Super reads, the vector at 0xE8 (the ElecFan gadget
  * scales it by -30 into the acceleration it sends the player), the owner at 0x218 (see
- * UnkOwner_80079E64) and the pointers at 0x230 (see Player::PlayerMotion), 0x244 (see
- * UnkObject_80079BA4) and 0x24C (see UnkTargetSource_80206574). The word at 0x240 is not mapped
- * here: Player::SoundBase's constructor stores the new sound task in it and its destructor clears
- * it.
+ * UnkOwner_80079E64) and the pointers at 0x22C (see UnkObject_800A78FC), 0x230 (see
+ * Player::PlayerMotion), 0x244 (see UnkObject_80079BA4) and 0x24C (see
+ * UnkTargetSource_80206574). The word at 0x240 is not mapped here: Player::SoundBase's
+ * constructor stores the new sound task in it and its destructor clears it.
  *
  * Its vtable (0x80520310, 0x54 bytes) overrides the destructor and the first three CharInfo slots
  * and adds nine slots. The added slots are named after their implementations here, or, for the
@@ -158,7 +184,10 @@ class PlayerBase : public PlayerObject {
     /* 0x1C8 */ Fn8040Vector3 field_0x1C8;
     /* 0x1D4 */ u8 field_0x1D4[0x218 - 0x1D4];
     /* 0x218 */ UnkOwner_80079E64 field_0x218;
-    /* 0x21C */ u8 field_0x21C[0x230 - 0x21C];
+    /* 0x21C */ u8 field_0x21C[0x22C - 0x21C];
+    /* May be null. The command handlers of Player::ExternalOption and Player::InternalOption pass
+     * it to fn_800A78FC with a command of type 0x1C. */
+    /* 0x22C */ UnkObject_800A78FC *field_0x22C;
     /* The constructor clears it; Player::PlayerMotion's destructor clears it too. */
     /* 0x230 */ PlayerMotion *field_0x230;
     /* 0x234 */ u8 field_0x234[0x238 - 0x234];
@@ -180,6 +209,7 @@ CHECK_OFFSETOF(PlayerBase, field_0xB8, 0xB8);
 CHECK_OFFSETOF(PlayerBase, field_0xDC, 0xDC);
 CHECK_OFFSETOF(PlayerBase, field_0x1C8, 0x1C8);
 CHECK_OFFSETOF(PlayerBase, field_0x218, 0x218);
+CHECK_OFFSETOF(PlayerBase, field_0x22C, 0x22C);
 CHECK_OFFSETOF(PlayerBase, field_0x230, 0x230);
 CHECK_OFFSETOF(PlayerBase, field_0x238, 0x238);
 CHECK_OFFSETOF(PlayerBase, field_0x244, 0x244);
@@ -237,6 +267,10 @@ void fn_8009728C(const boost::shared_ptr<Player::PlayerBase> &player, int arg1);
  * pointer for the object at 0x254 of the player (not tested here) and 1; otherwise an empty pointer
  * (behaviour from its body). The EggLastMech boss uses the result as the owner of its shots. */
 boost::weak_ptr<CharInfo> fn_800B75DC(const boost::weak_ptr<CharInfo> &charInfo);
+/* Takes the object at 0x22C of a player and a command and switches on the command's type; the rest
+ * of its 0x3FC bytes is not described here. The void return is inferred: the two callers in
+ * PlayerOption.cpp ignore the result. */
+void fn_800A78FC(UnkObject_800A78FC *object, CharCommand *command);
 }
 
 #endif

@@ -56,6 +56,28 @@ class CharInfo {
     void SetField0x5C(s32 value) {
         field_0x5C = value;
     }
+    /* Returns the word at 0x5C (name inferred). The original has one copy, at 0x800AB514 in USA
+     * (GUPE8P), after the constructor of Player::ExternalOption, the first function in the link
+     * that calls it (0x800AB4D4). */
+    s32 GetField0x5C() const {
+        return field_0x5C;
+    }
+    /* Returns the pointer at 0x60 (name inferred). The original has one copy, at 0x80087F84 in
+     * USA (GUPE8P), with three callers: 0x80087E64 and 0x800AAEB8 through a shared pointer to a
+     * Player::PlayerBase and 0x801B682C through a shared pointer to a CharInfo. */
+    const float *GetField0x60() const {
+        return field_0x60;
+    }
+    /* Stores value in the pointer at 0x60 (name inferred).
+     * Matching workaround: as SetField0x5C, this inline member stands for an unknown original
+     * accessor. fn_800AAE14 of PlayerOption.cpp calls the operator-> of both smart pointers and
+     * GetField0x60 out of line where it copies this pointer (0x800AAEB4-0x800AAEC8), which this
+     * compiler does only for the arguments of an inline call that is a whole statement; a plain
+     * member store expands them in place (fn_800AAE14 0xDC bytes against 0xE8). Revisit with
+     * SetField0x5C. */
+    void SetField0x60(const float *value) {
+        field_0x60 = value;
+    }
     /* Stores value in the word at 0x50 (name inferred).
      * Matching workaround: as SetField0x5C, this inline member stands for an unknown original
      * accessor; the Catapult gadget's command handler calls the operator-> of its character info
@@ -68,7 +90,8 @@ class CharInfo {
      * gadget's name; GadgetPickup::PickupBaseTask uses these characters as its task name. */
     void fn_801DC984(const char *name);
 
-    /* 0x3C */ u8 field_0x3C[0x50 - 0x3C];
+    /* The characters that fn_801DC984 stores. */
+    /* 0x3C */ char field_0x3C[0x50 - 0x3C];
     /* 0x50 */ s32 field_0x50; /* the constructor's arg0 */
     /* 0x54 */ s32 field_0x54; /* set by fn_8007A4CC; PlayerBase compares it with 0 as signed */
     /* 0x58 */ u8 field_0x58[0x5C - 0x58];

@@ -121,6 +121,13 @@ Game/fn_8007D770.cpp:
 Game/fn_80096B64.cpp:
 	.text       start:0x80096E54 end:0x80096E8C
 
+Game/PlayerOption.cpp:
+	.text       start:0x800AB104 end:0x800ABCA4
+	.rodata     start:0x804B3DA8 end:0x804B3F60
+	.data       start:0x80522BE8 end:0x80522CC8
+	.sdata      start:0x805E5A68 end:0x805E5AB0
+	.sbss       start:0x805EF638 end:0x805EF640
+
 Game/PlayerWatch.cpp:
 	.text       start:0x800B86F8 end:0x800B8A04
 	.rodata     start:0x804B4E78 end:0x804B4ED0
