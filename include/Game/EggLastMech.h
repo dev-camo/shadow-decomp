@@ -262,13 +262,9 @@ extern "C" {
  * fn_802DFA00 returns false. fn_8019A890 returns the resource that fn_8001277C gives for key and
  * index, or null, after storing 0x202 in the word at 0x8 of each of its 0x10-byte entries up to
  * the one whose word at 0x4 is 0; the boss passes it to fn_800C7F7C as the probe's collision data.
- * fn_800BE2DC and fn_800BE2EC store their argument in .sbss and return the previous value; the
- * boss passes its health divided by 150 to the first on every update, and true to the second from
- * Init and false from its destructor. fn_80356400 is passed a position, a direction and a size. */
+ * fn_80356400 is passed a position, a direction and a size. */
 bool fn_802DFA00(void);
 void *fn_8019A890(int key, int index);
-float fn_800BE2DC(float value);
-bool fn_800BE2EC(bool value);
 void fn_80356400(const Fn8040Vector3 &position, const Fn8040Vector3 &direction, float size);
 /* Allocates a 0x40-byte object (constructor fn_80336A58) under parent with the parameters and the
  * four floats and returns it, null when the allocation fails (behaviour from its body). The boss
