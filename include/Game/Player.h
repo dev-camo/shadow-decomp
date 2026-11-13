@@ -27,6 +27,8 @@ extern "C" {
 bool fn_8006CD78(const u32 *bits, int bit);
 /* Returns bit 3 of the player's motion work flags (behaviour and signature inferred). */
 bool fn_800A9E1C(const boost::shared_ptr<Player::PlayerBase> &player);
+/* Sets bit number bit of the bit set starting at bits (behaviour from its body). */
+void fn_80076CA8(u32 *bits, int bit);
 /* Clears bit number bit of the bit set starting at bits (behaviour from its body). */
 void fn_80076CC8(u32 *bits, int bit);
 /* Return fn_8006CD78 for bit 10 (fn_800B78B0), bit 15 (fn_800B7938), bit 2 (fn_800B7AD0) or

@@ -1926,6 +1926,20 @@ config.libs = [
             Object(NonMatching, "Game/PlayerMotion.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerOption.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerShadowBehavior.cpp", cflags=cflags_game_cpp),
+            # Player::Shadow::ShadowMotion (class name from RTTI; the filename is inferred from the
+            # class). In USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P), 103 of the 110 bodies have
+            # identical instruction words: 92 of them with the same relocation targets, and 11 that
+            # differ only in where .sdata2 places 1.0f (the original puts it before the IK segment
+            # lengths 1.6750001f and 2.525f). Of the other seven, fn_800B1838, fn_800B1D34,
+            # fn_800B1FB0 and fn_800B21A8 differ in stack offsets, fn_800B1308 also in instruction
+            # order, fn_800B23B0 also in size (two out-of-line operator-> calls, see the source)
+            # and fn_800B36F8 in two registers swapped; all of them but fn_800B1838 and
+            # fn_800B1308 also load 1.0f from its moved slot. With the discarded copies set aside,
+            # the function1 operator() copy follows its first caller instead of the file's end, the
+            # std::exception and std::runtime_error names are in the opposite order, and the weak
+            # exception records at the end of .data are laid out differently. The normal link
+            # retains the original object.
+            Object(NonMatching, "Game/PlayerShadowMotion.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerWatch.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerWeaponBase.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CharaColliBaseCharInfo.cpp", cflags=cflags_game_cpp),

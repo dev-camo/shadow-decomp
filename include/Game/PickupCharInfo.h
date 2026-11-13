@@ -44,6 +44,9 @@ class PickupCharInfo : public CharInfo {
      * flags | 0x2020, then stores value in the target's float at 0x20 (behaviour inferred from its
      * body; the parameter names and the const reference are inferred). */
     void fn_801E4160(const boost::weak_ptr<CharInfo> &owner, int flags, float value);
+    /* Calls the grab position handler at 0x74 with matrix when the handler is set (behaviour
+     * inferred from its body; the const is inferred). */
+    void fn_801E41C4(const Fn8040Matrix34 *matrix);
 
     /* 0x64 */ boost::shared_ptr<CharCommandUnit> m_commandUnit;
     /* 0x6C */ boost::shared_ptr<Target> m_target;
