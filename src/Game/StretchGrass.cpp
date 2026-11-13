@@ -6,11 +6,12 @@
  * built with boost::bind(&SetStretchGrass::method, this, _1); their managers, invokers and copy
  * functions come from the boost headers. */
 /* Matching workaround: the unit's .data holds the base lists of the type records of TNumEdit's and
- * CharaColliBase's derived classes, which these two headers emit through their stand-in inline
- * functions (see TNumEdit.h). TNumEdit.h comes before CharaColliBaseCharInfo.h, in the order their
- * names appear in the unit's .rodata (alphabetical order would reverse them). Revisit when the
- * original inline functions or their real callers are recovered. */
+ * CharaColliBase's derived classes, which TNumEdit.h and CharaColliBaseCharInfo.h emit through
+ * their stand-in inline functions (see TNumEdit.h). The three headers come first, in the order of
+ * what they put in the unit's .rodata: the TNumEdit names, the axes, then the CharaColliBase
+ * names. Revisit when the original inline functions or their real callers are recovered. */
 #include "Game/TNumEdit.h"
+#include "Game/FrameRotationAxes.h"
 #include "Game/CharaColliBaseCharInfo.h"
 #include "Game/StretchGrass.h"
 #include "Game/AngleConversion.h"
@@ -27,8 +28,6 @@
 #include "Game/UnkWorldProbe_80021FE4.h"
 #include "Game/fn_80037A80.h"
 #include "Game/fn_8006_resource_list.h"
-#include "Game/fn_800E9CEC.h"
-#include "Game/fn_80109AF8.h"
 #include "Game/fn_8000A950_near_zero.h"
 #include "Game/fn_8040_vector_types.h"
 #include "rw/rpdmorph.h"

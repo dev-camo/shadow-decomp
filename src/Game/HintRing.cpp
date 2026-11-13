@@ -29,15 +29,12 @@
 #include "Game/UnkString_8004F888.h"
 #include "Game/fn_8005AE20.h"
 #include "Game/fn_8006_resource_list.h"
-#include "Game/fn_800E9CEC.h"
-#include "Game/fn_80109AF8.h"
 #include "Game/fn_8040_vector_types.h"
 #include "rw/rpworld.h"
 #include "rw/rwcore.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"
 #include "boost/weak_ptr.hpp"
-#include <cmath>
 
 const char *HintRing::SetHintRing::s_name = "SetHintRing";
 
@@ -65,10 +62,10 @@ HintRing::SetHintRing::SetHintRing(Task *parent, UnkGadgetOwner_800C9CD0 *owner)
     UpdateModelMatrix();
 }
 
-/* Matching workaround: fn_8010A458, fn_80109D64, fn_80109B80 and fn_80109AF8 are defined here as
- * ordinary functions, at the addresses of the original's copies. Every call to them from other
- * files comes from a higher address, as if they were out-of-line copies of inline functions that
- * the linker kept from the first file that uses them; the headers that declare them keep the plain
+/* Matching workaround: fn_8010A458, fn_80109D64 and fn_80109B80 are defined here as ordinary
+ * functions, at the addresses of the original's copies. Every call to them from other files comes
+ * from a higher address, as if they were out-of-line copies of inline functions that the linker
+ * kept from the first file that uses them; the headers that declare them keep the plain
  * declarations their other callers use. Revisit when their original header is recovered. */
 
 /* Builds the registry on the first call and caches its address. */
@@ -286,11 +283,6 @@ void HintRing::SetHintRing::OnCollision(ColliDetectArgs &args) {
  * (behaviour inferred). The BDTrue gadget and OnDraw above use them as rotation angles. */
 extern "C" UnkRotation3 fn_80109B80(UnkManager_80009548 *manager, int index) {
     return fn_8000A610(&fn_8000D0F0(manager, index)->field_0x8);
-}
-
-extern "C" void fn_80109AF8(RwFrame *frame, int combine, float angle) {
-    fn_8047ECD4(&frame->modelling, &s_zAxis, combine, 1.0f - std::cos(angle), std::sin(angle));
-    fn_8048722C(frame);
 }
 
 void HintRing::SetHintRing::OnDraw(RednerDrawArgs &args) {

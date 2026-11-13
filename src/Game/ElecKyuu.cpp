@@ -6,12 +6,12 @@
  * functions last-defined first). */
 #include "Game/ElecKyuu.h"
 #include "Game/CharInfo.h"
+#include "Game/FrameRotationAxes.h"
 #include "Game/GadgetTypeInfo.h"
 #include "Game/SharedConstants.h"
 #include "Game/UnkResource_80012700.h"
 #include "Game/UnkWorld_80021B08.h"
 #include "Game/fn_8006_resource_list.h"
-#include "Game/fn_800E9CEC.h"
 #include "rw/rpworld.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"

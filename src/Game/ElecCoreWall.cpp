@@ -11,8 +11,10 @@
  * The callbacks it hands to the draw layer and the handle target are boost::function objects built
  * with boost::bind(&ElecCoreWall::method, this, _1); their manager, invoker and copy functions come
  * from the boost headers. */
-/* TNumEdit.h comes before CharaColliBaseCharInfo.h, in the order their names appear in the unit's
- * .rodata (alphabetical order would reverse them). */
+/* FrameRotationAxes.h comes first and TNumEdit.h before CharaColliBaseCharInfo.h: the unit's
+ * .rodata has the axes, then the TNumEdit names, then the CharaColliBase names (alphabetical
+ * order would give the opposite). */
+#include "Game/FrameRotationAxes.h"
 #include "Game/TNumEdit.h"
 #include "Game/CharaColliBaseCharInfo.h"
 #include "Game/ElecCoreWall.h"
@@ -23,7 +25,6 @@
 #include "Game/UnkWorld_80021B08.h"
 #include "Game/fn_80037A80.h"
 #include "Game/fn_8006_resource_list.h"
-#include "Game/fn_800E9CEC.h"
 #include "Game/fn_8040_vector_types.h"
 #include "rw/rpdmorph.h"
 #include "rw/rpworld.h"
