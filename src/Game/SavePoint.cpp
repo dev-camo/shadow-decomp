@@ -30,7 +30,7 @@
 #include "Game/UnkManager_80117514.h"
 #include "Game/UnkManager_80117578.h"
 #include "Game/UnkObject_800BADE8.h"
-#include "Game/UnkSingleton.h"
+#include "Game/Singleton.h"
 #include "Game/UnkSoundManager_80053164.h"
 #include "Game/UnkStartupFloat_800E2570.h"
 #include "Game/WarpHole.h"
@@ -42,6 +42,9 @@
 #include "boost/shared_ptr.hpp"
 #include "boost/weak_ptr.hpp"
 #include "layout_check.h"
+
+using Sonicteam::System::CreateStatic;
+using Sonicteam::System::Singleton;
 
 /* The height above the gadget, in its frame, of the position that a save records (name inferred).
  * Matching workaround: UnkStartupFloat_800E2570 stands in for the original type of this variable.
@@ -118,7 +121,7 @@ static void fn_80118F68(boost::shared_ptr<CharInfo> hit, void *arg) {
         fn_80074AEC(fn_8006F754());
         fn_8016DFF8(fn_8006D6A8());
         fn_800CB508(fn_800C9B84());
-        UnkSingleton<Unk801A2AF4>::Instance()->fn_801A23F4();
+        Singleton<Unk801A2AF4, CreateStatic<Unk801A2AF4> >::Instance()->fn_801A23F4();
         fn_801690F8(fn_800CB69C());
 
         int value = fn_8016F280(&fn_80178B5C(fn_80079808(), 0)->field_0x28);
@@ -337,7 +340,8 @@ bool SavePoint::CanSave() {
         return false;
     }
 
-    if (!fn_8020261C(UnkSingleton<UnkManager_80117578>::Instance())) {
+    if (!fn_8020261C(
+            Singleton<UnkManager_80117578, CreateStatic<UnkManager_80117578> >::Instance())) {
         return false;
     }
 
@@ -345,7 +349,8 @@ bool SavePoint::CanSave() {
         return false;
     }
 
-    if (fn_802E5810(UnkSingleton<UnkManager_80117514>::Instance())) {
+    if (fn_802E5810(
+            Singleton<UnkManager_80117514, CreateStatic<UnkManager_80117514> >::Instance())) {
         return true;
     }
 

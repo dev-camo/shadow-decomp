@@ -4,10 +4,10 @@
 #include "Game/Task.h"
 #include "layout_check.h"
 
-/* The object that UnkSingleton<UnkManager_80117578>::Instance (USA (GUPE8P) 0x80117578, kept in
- * Game/SavePoint.cpp with its creating function at 0x801175AC and called from other units)
- * returns (placeholder name after that address; the original class is unknown). Only the task
- * pointer at 0x0 is known: fn_8020261C reads it. */
+/* The object that the singleton accessor Sonicteam::System::Singleton<UnkManager_80117578, ...>::
+ * Instance (USA (GUPE8P) 0x80117578, kept in Game/SavePoint.cpp with its creating function at
+ * 0x801175AC and called from other units) returns (placeholder name after that address; the
+ * original class is unknown). Only the task pointer at 0x0 is known: fn_8020261C reads it. */
 class UnkManager_80117578 {
   public:
     UnkManager_80117578() : field_0x0(0) {}
