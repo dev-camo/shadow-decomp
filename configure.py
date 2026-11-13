@@ -1934,6 +1934,7 @@ config.libs = [
             # .sdata (pointers to those strings) and 3 in .sdata2. The other four are BkWingSmall's.
             Object(NonMatching, "Game/BkWorm.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerOption.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/PlayerShadowBehavior.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerWatch.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerWeaponBase.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CharaColliBaseCharInfo.cpp", cflags=cflags_game_cpp),

@@ -128,6 +128,13 @@ Game/PlayerOption.cpp:
 	.sdata      start:0x805E5A68 end:0x805E5AB0
 	.sbss       start:0x805EF638 end:0x805EF640
 
+Game/PlayerShadowBehavior.cpp:
+	.text       start:0x800AE718 end:0x800AEEF8
+	.rodata     start:0x804B4248 end:0x804B4408
+	.data       start:0x80522DE8 end:0x80522EF0
+	.sdata      start:0x805E5B10 end:0x805E5B48
+	.sbss       start:0x805EF668 end:0x805EF670
+
 Game/PlayerWatch.cpp:
 	.text       start:0x800B86F8 end:0x800B8A04
 	.rodata     start:0x804B4E78 end:0x804B4ED0
