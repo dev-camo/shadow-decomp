@@ -55,8 +55,8 @@ struct UnkRecord_8027DE0C {
 CHECK_SIZEOF(UnkRecord_8027DE0C, 0x18);
 
 /* The 0x150-byte object at 0x8057D6A0 in .bss (placeholder name; the original name and type are
- * unknown). More than 400 functions across the game read it. Only the words at 0x18, 0x28, 0x44,
- * 0x48, 0x90, 0x94 and 0x98, the bytes at 0x84 and 0x125 and the records at 0x60 and 0xA8 are
+ * unknown). More than 400 functions across the game read it. Only the words at 0x18, 0x24, 0x28,
+ * 0x44, 0x48, 0x90, 0x94 and 0x98, the bytes at 0x84 and 0x125 and the records at 0x60 and 0xA8 are
  * mapped. */
 struct UnkGlobal_8057D6A0 {
     /* 0x00 */ u8 field_0x0[0x18];
@@ -64,7 +64,10 @@ struct UnkGlobal_8057D6A0 {
      * HeavyDog0510ModeCtrlUnit_GET_ATK's Update adds it to its field_0x10 while
      * BossVarParam::field_0x18 is non-zero (meaning unknown). */
     /* 0x18 */ float field_0x18;
-    /* 0x1C */ u8 field_0x1C[0x28 - 0x1C];
+    /* 0x1C */ u8 field_0x1C[0x24 - 0x1C];
+    /* HeavyDog0410CtrlUnit_Dust gives its address to its effect as the source of the effect's
+     * time scale (meaning otherwise unknown). */
+    /* 0x24 */ float field_0x24;
     /* 0x28 */ float field_0x28; /* Coaster multiplies it by 540 (meaning unknown) */
     /* 0x2C */ u8 field_0x2C[0x44 - 0x2C];
     /* TPjsEventActionFade takes the width and the height of the rectangle it fills from these two
