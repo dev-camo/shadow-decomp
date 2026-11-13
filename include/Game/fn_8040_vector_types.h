@@ -228,8 +228,6 @@ void fn_80031568(float *sine, float *cosine, float angle);
 /* Normalises the vector in place and returns its previous length, or sets it to the zero vector
  * and returns 0 when it is too short to normalise (behaviour inferred). */
 float fn_8040CE74(Fn8040Vector3 *vector);
-/* Dot product (behaviour inferred). */
-float fn_8040CF90(const Fn8040Vector3 *left, const Fn8040Vector3 *right);
 /* Returns a - b by value (behaviour and by-value form inferred). Game code reaches it
  * through operator- below. */
 Fn8040Vector3 fn_8040CD74(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
@@ -569,6 +567,13 @@ extern "C" Fn8040Vector3 fn_80410098(const Fn8040Vector3 &vector, const UnkRotat
  * copy a difference into a named vector, and a - b as the argument gives no copy. */
 extern "C" float fn_8040CF50(const Fn8040Vector3 &vector);
 extern "C" float fn_8040CF2C(const Fn8040Vector3 &vector);
+/* Dot product (behaviour inferred). The const references are inferred; the code is that of
+ * pointer parameters. Evidence: many callers pass the result of another function in place. At
+ * the 13 calls in USA (GUPE8P) where both arguments are such results, for example 0x8001E910,
+ * 0x8003BB58 and 0x802EB1BC, the original produces the second argument first and gives it the
+ * lower stack slot. Two temporaries written in the call give that order and those slots in
+ * Player::Behavior::Super::fn_802EB0C4 (0x802EB1BC). */
+extern "C" float fn_8040CF90(const Fn8040Vector3 &left, const Fn8040Vector3 &right);
 
 /* The rotation vector of a forward and an up direction in order 2 (see fn_8040F5F4 above). The
  * references are inferred from VacuumContainer::Container::Update, which passes two temporaries

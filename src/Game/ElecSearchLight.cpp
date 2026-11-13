@@ -343,10 +343,10 @@ float ElecSearchLight::GetSegmentDistance(const Fn8040Vector3 *point,
     Fn8040Vector3 direction = segment->end - segment->start;
     Fn8040Vector3 offset = *point - segment->start;
 
-    float projection = fn_8040CF90(&offset, &direction);
+    float projection = fn_8040CF90(offset, direction);
 
     if (projection > 0.0f) {
-        float lengthSquared = fn_8040CF90(&direction, &direction);
+        float lengthSquared = fn_8040CF90(direction, direction);
 
         if (projection >= lengthSquared) {
             if (closest != 0) {

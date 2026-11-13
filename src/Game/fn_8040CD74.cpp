@@ -25,9 +25,10 @@ Fn8040Vector3 fn_8040CFB8(const Fn8040Vector3 &left, const Fn8040Vector3 &right)
                          left.x * right.y - left.y * right.x);
 }
 
-/* Dot product. */
-float fn_8040CF90(const Fn8040Vector3 *left, const Fn8040Vector3 *right) {
-    return left->x * right->x + left->y * right->y + left->z * right->z;
+/* Dot product. The const references are inferred (see the declaration); the code is that of
+ * pointer parameters. */
+float fn_8040CF90(const Fn8040Vector3 &left, const Fn8040Vector3 &right) {
+    return left.x * right.x + left.y * right.y + left.z * right.z;
 }
 
 /* Length. The const reference is inferred from callers that pass a temporary copy (see the

@@ -165,7 +165,7 @@ Fn8040Vector3 fn_8040FC78(float *fraction, const UnkSegment_80020A20 *segment,
     Fn8040Vector3 toPoint(*point - segment->start);
 
     float lengthSquared = fn_8040CF2C(direction);
-    float t = fn_8000A950(lengthSquared) ? 1.0f : fn_8040CF90(&direction, &toPoint) / lengthSquared;
+    float t = fn_8000A950(lengthSquared) ? 1.0f : fn_8040CF90(direction, toPoint) / lengthSquared;
     if (fraction) {
         *fraction = t;
     }
@@ -186,13 +186,11 @@ Fn8040Vector3 fn_8040FC3C(const UnkSegment_80020A20 *segment, const Fn8040Vector
 bool fn_8040FB88(const UnkSegment_80020A20 *segment, const Fn8040Vector3 *point) {
     Fn8040Vector3 direction = segment->end - segment->start;
 
-    const Fn8040Vector3 &fromStart = *point - segment->start;
-    if (fn_8040CF90(&fromStart, &direction) < 0.0f) {
+    if (fn_8040CF90(*point - segment->start, direction) < 0.0f) {
         return false;
     }
 
-    const Fn8040Vector3 &fromEnd = *point - segment->end;
-    if (fn_8040CF90(&fromEnd, &direction) > 0.0f) {
+    if (fn_8040CF90(*point - segment->end, direction) > 0.0f) {
         return false;
     }
     return true;
@@ -217,7 +215,7 @@ void fn_8040FA20(Fn8040Matrix34 *matrix, const Fn8040Vector3 *translation) {
 
 void fn_8040F990(Fn8040Vector3 *parallel, Fn8040Vector3 *perpendicular, const Fn8040Vector3 *vector,
                  const Fn8040Vector3 *onto) {
-    float length = fn_8040CF90(vector, onto);
+    float length = fn_8040CF90(*vector, *onto);
     Fn8040Vector3 projection = *onto * length;
 
     if (perpendicular) {
@@ -232,7 +230,7 @@ float fn_8040F8FC(const Fn8040Vector3 *a, const Fn8040Vector3 *b) {
     Fn8040Vector3 normalizedA = fn_8040CEE8(*a);
     Fn8040Vector3 normalizedB = fn_8040CEE8(*b);
 
-    float cosine = fn_8040CF90(&normalizedA, &normalizedB);
+    float cosine = fn_8040CF90(normalizedA, normalizedB);
     if (cosine > 1.0f) {
         cosine = 1.0f;
     } else if (cosine < -1.0f) {

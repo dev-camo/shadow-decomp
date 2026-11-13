@@ -1751,13 +1751,13 @@ config.libs = [
             # aside (std::sqrt, sqrtf with its two weak locals and three literals, the scaled-vector
             # operator* and shared_ptr::operator->); .rodata is 0x3F bytes against 0x40 (alignment
             # padding), and the compiled .sdata2 is writable (WA) where the original's is
-            # allocatable only (A). fn_802EB0C4 is 183 words against 182: by position 128 of the 182
-            # paired words differ and 1 word is source-only; aligned, 9 paired words differ, 1 is
-            # original-only and 2 are source-only, with the same relocation targets in the same
-            # order. In the facing test the original builds the facing vector at r1+0x50 and passes
-            # r1+0x50 and r1+0x44 to fn_8040CF90 directly, saving only r31. This build builds the
-            # facing vector at r1+0x44 and keeps the normalised vector's address, r1+0x50, in r30
-            # (addi r30,r1,0x50; stmw/lmw r30), passing it from there (mr r4,r30).
+            # allocatable only (A). fn_802EB0C4 is 183 words against 182: by position 131 of the 182
+            # paired words differ and 1 word is source-only, with the same relocation targets in
+            # the same order. In the facing test the original and this build both normalise into
+            # r1+0x44, build the facing vector at r1+0x50 and pass r1+0x50 and r1+0x44 to
+            # fn_8040CF90 directly. The original loads the player pointer into r4 after the call of
+            # fn_8040CEE8 and saves only r31. This build loads it into r30 before that call (lwz
+            # r30,4(r31); stmw/lmw r30) and passes it from there (mr r4,r30).
             # Normal builds link the original object.
             Object(NonMatching, "Game/Super.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/TimerCountMission.cpp", cflags=cflags_game_cpp),
