@@ -2898,7 +2898,7 @@ config.libs = [
             Object(Matching, "Game/HeavyDog0510CtrlUnit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ArkLaser.cpp", cflags=cflags_game_cpp),
             # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
-            # (GUPP8P): nine of the 11 functions have identical words and relocation targets once
+            # (GUPP8P): ten of the 11 functions have identical words and relocation targets once
             # eight extra definitions in the compiled object are set aside for the comparison: six
             # weak ones (the weak_ptr<EffectElement> and weak_count destructors, Fn8040Vector3's
             # copy constructor and sp_counted_base's destructor, destruct and vtable) and two local
@@ -2908,17 +2908,13 @@ config.libs = [
             # this build moves it to r4 directly.
             # Aligned, 1 paired word differs and 1 word is original-only; compared position by
             # position, 30 of the 39 paired words differ (29 raw words and one branch with a
-            # different relocation target). The start-up function is 16 bytes against 32: the
-            # original also stores 1.0 and 5.0 into the description at 0x10 and 0x14, which are
-            # static data here (2 of the 4 paired words differ and 4 words are original-only). Raw
-            # section sizes, the original's first: .text 0x40C and 0x554, .ctors 4 and 4, .rodata
-            # 0x158 and 0x177, .data 0x98 and 0xAC, .sdata 0x20 and 0x24, .sdata2 0x18 and 0x10.
-            # With those eight definitions set aside, the data match by contents except the
-            # description's two floats, which are zero in the original's .data, and .sdata2, which
-            # lacks the original's last 8 bytes (the 1.0 and 5.0 that its start-up function
-            # loads). Normal builds link the original object.
+            # different relocation target). Raw section sizes, the original's first: .text 0x40C
+            # and 0x564, .ctors 4 and 4, .rodata 0x158 and 0x177, .data 0x98 and 0xAC, .sdata 0x20
+            # and 0x24, .sdata2 0x18 and 0x18. With those eight definitions set aside, the data
+            # match by contents. Normal builds link the original object.
             Object(NonMatching, "Game/WeaponSpecialShadowRifle.cpp", cflags=cflags_game_cpp),
-            # (GUPP8P): eight of the 10 functions have identical words and relocation targets once
+            # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
+            # (GUPP8P): nine of the 10 functions have identical words and relocation targets once
             # one extra definition in the compiled object is set aside for the comparison: the weak
             # copy of Fn8040Vector3's copy constructor, which the original calls but does not
             # define. PlayShotEffects is 92 bytes against the original's 96: the original copies the
@@ -2926,17 +2922,11 @@ config.libs = [
             # slot and then moves r0 to r4, where this build moves it to r4 directly. Aligned, 1
             # paired word differs and 1 word is original-only; compared position by position, 16
             # of the 23 paired words differ (15 raw words and one branch with a different
-            # relocation target). The start-up function is 28 bytes against 52: the original also
-            # stores 1.0 and 5.0 into both descriptions at 0x10 and 0x14, which are static data
-            # here. Aligned, the two stores of the names differ (stw here, stwu in the original)
-            # and 6 words are original-only (two lfs and four stfs); position by position, 3 of
-            # the 7 paired words differ. Raw section sizes, the original's first: .text 0x280 and
-            # 0x280, .ctors 4 and 4, .rodata 0x138 and 0x131, .data 0xC0 and 0xBC, .sdata 0x20 and
-            # 0x20, .sdata2 0x18 and 0xC. The section flags are the same except .sdata2, which is
+            # relocation target). Raw section sizes, the original's first: .text 0x280 and 0x298,
+            # .ctors 4 and 4, .rodata 0x138 and 0x131, .data 0xC0 and 0xBC, .sdata 0x20 and 0x20,
+            # .sdata2 0x18 and 0x14. The section flags are the same except .sdata2, which is
             # writable (WA) here and allocatable only (A) in the original. The data match by
-            # contents and relocation targets except the descriptions' four floats, which are
-            # zero in the original's .data, and .sdata2, which lacks the original's 1.0 and 5.0;
-            # the other size differences are zero bytes at the section ends (7 in .rodata, 4 in
+            # contents; the size differences are zero bytes at the section ends (7 in .rodata, 4 in
             # .data and 4 in .sdata2). Normal builds link the original object.
             Object(NonMatching, "Game/WeaponSpecialHealCannon.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BulletSatelliteLaser.cpp", cflags=cflags_game_cpp),
