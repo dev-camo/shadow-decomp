@@ -141,6 +141,47 @@ typedef boost::function1<void, CameraUpdateEventArgs &> CameraUpdateCallback;
 typedef boost::function1<void, SonicteamUSA::System::Camera::CameraModeUser::SwitchEventArgs &>
     CameraSwitchCallback;
 
+/* The parameter block that fn_8026F6A4 takes (placeholder name; the original class is unknown).
+ * Its constructor (0x8000EBB0) builds the 0x24-byte part at 0x0 with fn_8000B4AC (which copies
+ * two vectors and a float from constants and the two floats at 0x1C from another), clears the
+ * words at 0x24 and 0x28 and the eight bytes at 0x2C, stores one constant in the six floats at
+ * 0x34 and clears the 0x20 bytes at 0x4C; its destructor (0x8000EAE8) destroys the part at 0x0
+ * (0x8000B428). Only the members that Game/PlayerEffect.cpp's camera demo writes are mapped: the
+ * pair at 0x1C and the first six floats at 0x4C (meanings unknown). */
+class UnkCameraModeParams_8000EBB0 {
+  public:
+    UnkCameraModeParams_8000EBB0();
+    ~UnkCameraModeParams_8000EBB0();
+
+    /* Stores value at 0x1C (name inferred).
+     * Matching workaround: an inline member whose name and owner are inferred. The original has
+     * an out-of-line copy of a function that does this store (USA (GUPE8P) 0x800A5E78), after
+     * its caller, the camera demo function at 0x800A5C74, and the two weak_ptr functions that
+     * the caller uses. This compiler emits such a copy for an inline function whose body makes
+     * an inline call (here the vector's implicit assignment); the same store written in the
+     * caller leaves no copy. Revisit when the original class is identified. */
+    void SetField0x1C(const Fn8040Vector2 &value) {
+        field_0x1C = value;
+    }
+
+    /* 0x00 */ u8 field_0x0[0x1C];
+    /* 0x1C */ Fn8040Vector2 field_0x1C;
+    /* 0x24 */ u8 field_0x24[0x4C - 0x24];
+    /* 0x4C */ float field_0x4C[8];
+};
+CHECK_SIZEOF(UnkCameraModeParams_8000EBB0, 0x6C);
+
+/* A camera motion that fn_80012510 returns from the resources (placeholder name; the original
+ * class is unknown). fn_80011B7C reads the flags at 0x0 and the times at 0x4 and 0x8; only those
+ * are mapped. */
+struct UnkCameraMotion_80012510 {
+    /* 0x0 */ u32 field_0x0;
+    /* 0x4 */ float field_0x4; /* the start time (inferred) */
+    /* 0x8 */ float field_0x8; /* the end time (inferred) */
+};
+/* Checks only the recovered view; the complete native extent remains unknown. */
+CHECK_SIZEOF(UnkCameraMotion_80012510, 0xC);
+
 extern "C" {
 /* Creates a camera mode user (behaviour inferred: fn_8026F6A4 creates a camera mode, which is
  * converted with a dynamic cast; the numbers are not understood). */
@@ -157,6 +198,20 @@ void fn_8000DB50(SonicteamUSA::System::Camera::CameraModeUser *mode, const Fn804
  * for their own object as well (0x80008DE0, 0x80009174). */
 void fn_8000A5D4(SonicteamUSA::System::Camera::CameraMode *mode, const Fn8040Vector3 *start,
                  const Fn8040Vector3 *end);
+/* Creates a camera mode from the parameter block (behaviour inferred; arg0 and arg2 are not
+ * understood: the camera demo of Game/PlayerEffect.cpp passes 0xB and 0). */
+boost::shared_ptr<SonicteamUSA::System::Camera::CameraMode>
+fn_8026F6A4(int arg0, const UnkCameraModeParams_8000EBB0 *params, int arg2);
+/* Returns two floats computed from angle (through fn_8000F3F8, tan and cos; meaning unknown). */
+Fn8040Vector2 fn_8000F2E8(float angle);
+/* Advances time by speed within the motion's times (field_0x4 and field_0x8), by the mode in the
+ * flags, and returns 1 when it reached an end, otherwise 0 (behaviour inferred from its body; it
+ * may also reverse speed). */
+int fn_80011B7C(const UnkCameraMotion_80012510 *motion, float *time, float *speed);
+/* Applies the camera motion at time, transformed by matrix, to the camera mode (behaviour
+ * inferred; the by-value pointer and the const qualifiers are inferred). */
+void fn_8000FBFC(boost::shared_ptr<SonicteamUSA::System::Camera::CameraMode> mode,
+                 const UnkCameraMotion_80012510 *motion, const Fn8040Matrix34 *matrix, float time);
 }
 
 inline void SonicteamUSA::System::Camera::CameraMode::SetPoints(const Fn8040Vector3 &start,

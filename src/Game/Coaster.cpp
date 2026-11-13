@@ -22,6 +22,7 @@
 #include "Game/CharCommandUnit.h"
 #include "Game/CharInfo.h"
 #include "Game/DebugDisp.h"
+#include "Game/ExternalCameraRequest.h"
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
 #include "Game/GadgetModelInfo.h"
@@ -58,17 +59,6 @@ using SonicteamUSA::System::CharaColli::CharaColliBase;
 using SonicteamUSA::System::Camera::CameraMode;
 using SonicteamUSA::System::Camera::CameraModeUser;
 
-/* A value that the constructor at 0x8000B2C0 builds from a float for the registration of the
- * follower (placeholder name; the original class is unknown). */
-class UnkFollowerParams_8000B2C0 {
-  public:
-    UnkFollowerParams_8000B2C0(float value);
-    ~UnkFollowerParams_8000B2C0();
-
-    /* 0x00 */ u8 field_0x0[0x30];
-};
-CHECK_SIZEOF(UnkFollowerParams_8000B2C0, 0x30);
-
 class UnkFollowerManager_80099954;
 
 extern "C" {
@@ -81,7 +71,7 @@ UnkFollowerManager_80099954 *fn_80099954(void);
 void fn_801CE9F4(UnkFollowerManager_80099954 *manager, boost::shared_ptr<CameraMode>);
 /* Registers the follower with the manager (the numbers are not understood). */
 void fn_801CEA54(UnkFollowerManager_80099954 *manager, boost::shared_ptr<CameraMode>, int arg2,
-                 const UnkFollowerParams_8000B2C0 &params, int arg4, int arg5);
+                 const UnkCameraParams_8000B31C &params, int arg4, int arg5);
 /* Sets the up direction of the path that the follower moves along (fn_8000A5D4, declared in
  * Game/CameraModeUser.h, sets its start and end). */
 void fn_8000ACE4(CameraModeUser *follower, const Fn8040Vector3 *up);
@@ -682,7 +672,7 @@ void Coaster::OnCommand(CharCommand &command) {
             m_timer = 0.4f;
 
             {
-                UnkFollowerParams_8000B2C0 params(s_stage->field_0x24);
+                UnkCameraParams_8000B31C params(s_stage->field_0x24);
 
                 fn_801CEA54(fn_80099954(), m_follower, 2, params, 0, 1);
             }

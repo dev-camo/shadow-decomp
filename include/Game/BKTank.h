@@ -116,8 +116,8 @@ class SetBKTank : public PathObject {
      * of m_target's flags (the pointer is not tested) and returns with the result still 5.
      * Otherwise it subtracts param's float at 0x50 from m_health, sets m_hitTimer to 0.05 and
      * field_0x28 to 2, and creates an effect at param's field_0x18 and field_0x24 (fn_80168C48):
-     * effect 3 (0x71) when m_health is now above 149.98999 (it also calls fn_800A31F0 and
-     * discards the result), effect 4 (0x64) when it is above 50 and effect 6 (0x7F) otherwise,
+     * effect 3 (0x71) when m_health is now above 149.98999 (it also fetches the effect manager
+     * and discards it), effect 4 (0x64) when it is above 50 and effect 6 (0x7F) otherwise,
      * playing the sound 0x7150 for the first two and 0x7152 for the last. When field_0xA8 is
      * clear, it creates effect 1 (0x12) when m_health is above 149.98999, or effect 2 (0x63) when
      * it is above 50, and sets field_0xA8 in either case. When field_0xA8 is set and m_health has

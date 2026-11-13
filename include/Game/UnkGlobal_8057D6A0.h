@@ -56,8 +56,8 @@ CHECK_SIZEOF(UnkRecord_8027DE0C, 0x18);
 
 /* The 0x150-byte object at 0x8057D6A0 in .bss (placeholder name; the original name and type are
  * unknown). More than 400 functions across the game read it. Only the words at 0x18, 0x24, 0x28,
- * 0x44, 0x48, 0x90, 0x94 and 0x98, the bytes at 0x84, 0x125 and 0x148 and the records at 0x60 and
- * 0xA8 are mapped. */
+ * 0x30, 0x44, 0x48, 0x90, 0x94 and 0x98, the bytes at 0x84, 0x125 and 0x148 and the records at 0x60
+ * and 0xA8 are mapped. */
 struct UnkGlobal_8057D6A0 {
     /* 0x00 */ u8 field_0x0[0x18];
     /* RollCircle divides the vector it passes to an attacked object by it, and
@@ -69,7 +69,11 @@ struct UnkGlobal_8057D6A0 {
      * time scale (meaning otherwise unknown). */
     /* 0x24 */ float field_0x24;
     /* 0x28 */ float field_0x28; /* Coaster multiplies it by 540 (meaning unknown) */
-    /* 0x2C */ u8 field_0x2C[0x44 - 0x2C];
+    /* 0x2C */ u8 field_0x2C[0x30 - 0x2C];
+    /* Player::Effect's slow task stores the same value here as in field_0x24 (meaning
+     * unknown). */
+    /* 0x30 */ float field_0x30;
+    /* 0x34 */ u8 field_0x34[0x44 - 0x34];
     /* TPjsEventActionFade takes the width and the height of the rectangle it fills from these two
      * words (meaning unknown). */
     /* 0x44 */ s32 field_0x44;
@@ -114,6 +118,10 @@ bool fn_80203970(UnkRecord_802039C8 *record, bool set);
 /* Clears the record's three words and stores lbl_805F1C08 in its float (behaviour from its body;
  * the signature is inferred). fn_800CBB10 calls it on field_0x60. */
 void fn_8027DE0C(UnkRecord_8027DE0C *record);
+/* Store value in the record's byte at 0x23 (fn_802039C0) or 0x22 (fn_802039D0) (behaviour from
+ * their bodies; the bool type is inferred: Game/PlayerEffect.cpp passes 0 and 1). */
+void fn_802039C0(UnkRecord_802039C8 *record, bool value);
+void fn_802039D0(UnkRecord_802039C8 *record, bool value);
 }
 
 /* A float -7 in .sdata2 (USA (GUPE8P) 0x805F1C08; name, meaning and defining file unknown).

@@ -42,6 +42,11 @@ UnkSoundHandle_801D3DC8 fn_801D3EF0(u16 id, void *owner);
  * handle, with owner stored in it; for the id 0xFFFF it starts nothing and returns a
  * default-constructed handle (behaviour inferred from its body). */
 UnkSoundHandle_801D3DC8 fn_801D3C38(u16 id, const Fn8040Vector3 *position, void *owner);
+/* For index 0 to 5, fn_801D3888 starts and fn_801D3838 stops a sound selected by index (from the
+ * table at 0x8053CD28 and the word at 0x40 of lbl_8057D6A0 in fn_801D3888; through fn_801D3950 or
+ * fn_801D5118 in fn_801D3838) (behaviour inferred from their bodies). */
+void fn_801D3888(int index);
+void fn_801D3838(int index);
 }
 
 #endif

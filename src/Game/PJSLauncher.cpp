@@ -3,7 +3,7 @@
  * functions last-defined first). */
 #include "Game/PJSLauncher.h"
 #include "Game/EffectElement.h"
-#include "Game/EffectManager.h"
+#include "Game/EffectManagerPJS.h"
 #include "Game/ResourceOneFile.h"
 #include "Game/UnkResource_80012700.h"
 
@@ -15,7 +15,7 @@ boost::weak_ptr<EffectElement> fn_80305900(Launcher *launcher, const Fn8040Matri
                                            const float *timeScale) {
     boost::weak_ptr<EffectElement> result;
 
-    result = fn_800A31F0()->Create(launcher, id);
+    result = Effect::PJS::EffectManagerPJS::Instance()->Create(launcher, id);
 
     boost::shared_ptr<EffectElement> effect(result.lock());
 
@@ -36,7 +36,7 @@ boost::weak_ptr<EffectElement> fn_803057EC(Launcher *launcher, const Fn8040Vecto
                                            const float *timeScale) {
     boost::weak_ptr<EffectElement> result;
 
-    result = fn_800A31F0()->Create(launcher, id);
+    result = Effect::PJS::EffectManagerPJS::Instance()->Create(launcher, id);
 
     boost::shared_ptr<EffectElement> effect(result.lock());
 
@@ -56,7 +56,7 @@ boost::weak_ptr<EffectElement> fn_803057EC(Launcher *launcher, const Fn8040Vecto
 boost::weak_ptr<EffectElement> fn_803056F8(Launcher *launcher, int id, const float *timeScale) {
     boost::weak_ptr<EffectElement> result;
 
-    result = fn_800A31F0()->Create(launcher, id);
+    result = Effect::PJS::EffectManagerPJS::Instance()->Create(launcher, id);
 
     boost::shared_ptr<EffectElement> effect(result.lock());
 
@@ -75,7 +75,7 @@ boost::weak_ptr<EffectElement> fn_803055F8(Launcher *launcher, const Fn8040Matri
                                            const float *timeScale) {
     boost::weak_ptr<EffectElement> result;
 
-    result = fn_800A31F0()->Create(launcher, id);
+    result = Effect::PJS::EffectManagerPJS::Instance()->Create(launcher, id);
 
     boost::shared_ptr<EffectElement> effect(result.lock());
 
@@ -96,7 +96,7 @@ boost::weak_ptr<EffectElement> fn_803054D0(Launcher *launcher, const Fn8040Vecto
                                            const float *timeScale) {
     boost::weak_ptr<EffectElement> result;
 
-    result = fn_800A31F0()->Create(launcher, id);
+    result = Effect::PJS::EffectManagerPJS::Instance()->Create(launcher, id);
 
     boost::shared_ptr<EffectElement> effect(result.lock());
 
@@ -118,7 +118,7 @@ boost::weak_ptr<EffectElement> fn_8030536C(Launcher *launcher, const Fn8040Vecto
                                            const float *timeScale) {
     boost::weak_ptr<EffectElement> result;
 
-    result = fn_800A31F0()->Create(launcher, id);
+    result = Effect::PJS::EffectManagerPJS::Instance()->Create(launcher, id);
 
     boost::shared_ptr<EffectElement> effect(result.lock());
 

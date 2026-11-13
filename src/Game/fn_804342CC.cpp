@@ -1,10 +1,14 @@
 /* RW3 Shimmer and parameter-state methods; original filename unknown. */
+/* <cmath> comes first: sqrtf's two weak constants then start .rodata, ahead of the two that
+ * UnkEffectRW3Param2's inline constructor adds through fn_804342CC.h. With the constructor's
+ * constants first, this compiler addresses the file's floating-point constants from one base
+ * register, where the original loads each from its own address (measured). */
+#include <cmath>
 #include "Game/fn_804342CC.h"
 #include "Game/EffectShimmerRW3.h"
 #include "Game/EffectSystemRW3.h"
 #include "Game/UnkEffectFileData.h"
 #include "Game/SharedConstants.h"
-#include <cmath>
 
 namespace Effect {
 namespace RW3 {

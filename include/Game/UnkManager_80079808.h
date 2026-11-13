@@ -70,6 +70,10 @@ UnkManager_80079808 *fn_80079808(void);
  * (called with pointers to that word, the word at 0x805E6808 and the entry's second word)
  * (behaviour inferred from its body). The attack callback of FallBuildingHolder passes 1 and 900. */
 void fn_8016F0CC(UnkState_8016F0CC *state, int index, int amount);
+/* Subtract 1 from the third word of entry index when it is positive (fn_8016F094), or add 1 to it
+ * (fn_8016F0B4) (behaviour from their bodies). */
+void fn_8016F094(UnkState_8016F0CC *state, int index);
+void fn_8016F0B4(UnkState_8016F0CC *state, int index);
 /* Returns the entry of the table at 0x728 with the given index, or null for a negative index
  * (behaviour inferred). */
 UnkEntry_80178B5C *fn_80178B5C(UnkManager_80079808 *manager, int index);

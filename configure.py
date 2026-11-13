@@ -1929,6 +1929,26 @@ config.libs = [
             Object(Matching, "Game/PlayerWatch.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerWeaponBase.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CharaColliBaseCharInfo.cpp", cflags=cflags_game_cpp),
+            # The split covers the whole original file: USA (GUPE8P) .text 0x800A25E0-0x800A72E4
+            # (174 functions) with its .rodata, .data, .bss, .sdata, .sbss, .sdata2 and .sbss2,
+            # whose data objects all match. 165 functions match and nine do not. Seven differ (raw
+            # differing words, the same in all three regions): Awake's constructor (33: this, the
+            # player reference and the slot pointer are kept in other registers),
+            # Jet::fn_800A530C (22, one word longer: the original stores m_visible = false from
+            # the hide loop's zeroed counter and copies the show loop's counter into its offset
+            # register), Jet::fn_800A53D0 (47: 21 address the rotation, product and RwMatrix
+            # temporaries in other stack slots, and 26 hold the loop counter, the array pointer
+            # and the frame pointer in rotated registers), Jet's constructor (2: this build
+            # finishes loading a string address one instruction earlier), CameraDemo::fn_800A6DF4
+            # (41, one word shorter: the original calls shared_ptr's operator-> to pass the
+            # player's matrix at 0x1E4, which this build expands) and the two boost::function1
+            # assignment operators (20 each: the original's are 0x30-byte wrappers, this build's
+            # are 0x58-byte functions). The other two are the 0x58-byte bodies that the original's
+            # wrappers call (0x800A676C and 0x800A6A54), which have no counterpart in this build.
+            # This build also keeps a local 0x20-byte copy of std::swap for boost's any_pointer,
+            # where the original calls the one at 0x80019164. The file's code is 0x40 bytes
+            # shorter than the original's, which moves everything linked after it.
+            Object(NonMatching, "Game/PlayerEffect.cpp", cflags=cflags_game_cpp),
             # The split covers the whole original file: USA (GUPE8P) .text 0x800CBC1C-0x800D216C
             # (255 functions, the static initialiser at 0x800D202C among them) with its .ctors,
             # .rodata, .data, .bss, .sdata, .sbss and .sdata2. Code in that range addresses the
