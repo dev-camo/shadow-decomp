@@ -10,6 +10,8 @@
 #include "layout_check.h"
 
 class CharCommand;
+struct Fn8040DB6CEntry;
+class UnkPlayerHistory_800A83D0;
 
 /* The object that a PlayerBase subclass shares through the slot fn_80073604 (placeholder; Player::Player,
  * vtable 0x805200AC, returns a copy of its shared pointer at 0x290). */
@@ -23,6 +25,9 @@ class WeaponBase;
 class Attack;
 class Effect;
 class SoundBase;
+namespace Behavior {
+class Behavior;
+}
 } // namespace Player
 
 /* A partial view of the object at 0x24C of a Player::PlayerBase (placeholder name). The code at
@@ -55,8 +60,29 @@ CHECK_SIZEOF(UnkTargetSource_80206574, 0x14);
 
 /* The 0x88-byte object that PlayerBase's constructor creates for the owner at 0x218 (placeholder
  * name; USA, GUPE8P): it calls operator new(0x88) and fn_800A87C0 at 0x80079F8C-0x80079FA4.
- * fn_800A8784, its destructor, frees it when its flag is positive. Nothing else is recovered. */
-class UnkObject_80079F8C;
+ * fn_800A8784, its destructor, frees it when its flag is positive. With an entry present, its
+ * update copies the two vectors and maps the flags through the 22 masks; without an entry,
+ * it clears both vectors and the current flag word at 0x18. */
+class UnkObject_80079F8C {
+  public:
+    UnkObject_80079F8C();
+    ~UnkObject_80079F8C();
+    void fn_800A871C(int index);
+    void fn_800A85B0(float dt);
+
+    /* 0x00 */ Fn8040Vector2 field_0x0;
+    /* 0x08 */ Fn8040Vector2 field_0x8;
+    /* 0x10 */ Fn8040DB6CEntry *field_0x10;
+    /* 0x14 */ u32 field_0x14;
+    /* 0x18 */ u32 field_0x18;
+    /* 0x1C */ u32 field_0x1C;
+    /* 0x20 */ u32 field_0x20;
+    /* 0x24 */ u32 field_0x24;
+    /* 0x28 */ u32 field_0x28;
+    /* 0x2C */ u32 field_0x2C[22];
+    /* 0x84 */ float field_0x84;
+};
+CHECK_SIZEOF(UnkObject_80079F8C, 0x88);
 
 /* The object that the pointer at 0x244 of a Player::PlayerBase refers to (placeholder name). Its
  * destructor, fn_800A25E0, destroys a member at 0x10 (fn_800A2630) and frees it when its flag is
@@ -84,8 +110,8 @@ class UnkOwner_80079E64 {
 };
 CHECK_SIZEOF(UnkOwner_80079E64, 0x4);
 
-/* The object that the pointer at 0x22C of a Player::PlayerBase refers to (placeholder name);
- * nothing of it is recovered. */
+/* The object at PlayerBase offset 0x22C (placeholder name). fn_80074200 returns its shared
+ * behaviour at 0x30; the remaining layout is not mapped here. */
 class UnkObject_800A78FC;
 
 namespace Player {
@@ -177,7 +203,7 @@ class PlayerBase : public PlayerObject {
     /* 0x080 */ u8 field_0x80[0xA0 - 0x80];
     /* Player::Behavior::Super sets bits 2, 7 and 9 when it starts and resets them when it ends. */
     /* 0x0A0 */ UnkBitFlags_80014E04 field_0xA0;
-    /* 0x0A4 */ u8 field_0xA4[0xA8 - 0xA4];
+    /* 0x0A4 */ UnkBitFlags_80014E04 field_0xA4;
     /* A bit set of three words, which the constructor initialises at 0xA8, 0xAC and 0xB0; bit n
      * is in word n / 32 (fn_8006CD78). fn_80079770 tests bits 0x24 and 0x20 of the set, the
      * TornadoCollision gadget bit 0x14 and Player::Behavior::Super bits 0x1B and 0x3C. */
@@ -210,11 +236,14 @@ class PlayerBase : public PlayerObject {
     /* 0x244 */ UnkObject_80079BA4 *field_0x244;
     /* 0x248 */ u8 field_0x248[0x24C - 0x248];
     /* 0x24C */ UnkTargetSource_80206574 *field_0x24C;
-    /* 0x250 */ u8 field_0x250[0x290 - 0x250];
+    /* Owned: fn_80079AB0 allocates this ring, and PlayerBase's destructor frees it. */
+    /* 0x250 */ UnkPlayerHistory_800A83D0 *field_0x250;
+    /* 0x254 */ u8 field_0x254[0x290 - 0x254];
 };
 CHECK_SIZEOF(PlayerBase, 0x290);
 CHECK_OFFSETOF(PlayerBase, field_0x74, 0x74);
 CHECK_OFFSETOF(PlayerBase, field_0xA0, 0xA0);
+CHECK_OFFSETOF(PlayerBase, field_0xA4, 0xA4);
 CHECK_OFFSETOF(PlayerBase, field_0xA8, 0xA8);
 CHECK_OFFSETOF(PlayerBase, field_0xB4, 0xB4);
 CHECK_OFFSETOF(PlayerBase, field_0xB8, 0xB8);
@@ -229,25 +258,81 @@ CHECK_OFFSETOF(PlayerBase, field_0x23C, 0x23C);
 CHECK_OFFSETOF(PlayerBase, field_0x240, 0x240);
 CHECK_OFFSETOF(PlayerBase, field_0x244, 0x244);
 CHECK_OFFSETOF(PlayerBase, field_0x24C, 0x24C);
+CHECK_OFFSETOF(PlayerBase, field_0x250, 0x250);
 
 } // namespace Player
 
-/* A 0x70-byte record of the ring that the pointer at 0x250 of a Player::PlayerBase refers to
- * (records at its +0x4, newest index at its +0x8, 0x78 records of 0x70 bytes; placeholder name).
- * Only the vector at 0xC is mapped: the ELEC_BAR gadget takes the vectors of the two newest
- * records as the ends of a segment of the player's movement (inferred). */
+/* Three words of flags used by player history records (placeholder type). The native
+ * constructor at 0x8007A4D4 clears three words, and fn_80095364 copies three words. */
+class UnkPlayerFlags_8007A4D4 {
+  public:
+    UnkPlayerFlags_8007A4D4();
+    void fn_80095364(const u32 *bits);
+
+    /* 0x0 */ u32 field_0x0[3];
+};
+CHECK_SIZEOF(UnkPlayerFlags_8007A4D4, 0xC);
+
+/* One record of the player's 120-entry history (placeholder name). Several vectors are copied
+ * from PlayerBase; field_0x3C is the derived result of fn_800796DC. */
 struct UnkPlayerRecord_80078CEC {
-    /* 0x00 */ u8 field_0x0[0xC];
+    UnkPlayerRecord_80078CEC();
+    ~UnkPlayerRecord_80078CEC();
+    void fn_800A849C(Player::PlayerBase *player);
+
+    /* 0x00 */ Fn8040Vector3 field_0x0;
     /* 0x0C */ Fn8040Vector3 field_0xC;
-    /* 0x18 */ u8 field_0x18[0x70 - 0x18];
+    /* 0x18 */ Fn8040Vector3 field_0x18;
+    /* 0x24 */ Fn8040Vector3 field_0x24;
+    /* 0x30 */ Fn8040Vector3 field_0x30;
+    /* 0x3C */ Fn8040Vector3 field_0x3C;
+    /* 0x48 */ UnkRotation3 field_0x48;
+    /* 0x54 */ const char *field_0x54;
+    /* 0x58 */ UnkPlayerFlags_8007A4D4 field_0x58;
+    /* 0x64 */ UnkBitFlags_80014E04 field_0x64;
+    /* 0x68 */ u32 field_0x68;
+    /* 0x6C */ float field_0x6C;
 };
 CHECK_SIZEOF(UnkPlayerRecord_80078CEC, 0x70);
+
+/* The 120-record ring owned at PlayerBase offset 0x250 (placeholder name). The update uses
+ * its player pointer, newest index and records; the query indexes relative to the newest record. */
+class UnkPlayerHistory_800A83D0 {
+  public:
+    explicit UnkPlayerHistory_800A83D0(Player::PlayerBase *player);
+    ~UnkPlayerHistory_800A83D0();
+    void fn_800A82EC();
+    void fn_800A82E8();
+    UnkPlayerRecord_80078CEC *fn_800A82C8(int index);
+
+    /* 0x00 */ Player::PlayerBase *field_0x0;
+    /* 0x04 */ UnkPlayerRecord_80078CEC *field_0x4;
+    /* 0x08 */ int field_0x8;
+    /* 0x0C */ int field_0xC;
+    /* 0x10 */ float field_0x10;
+    /* 0x14 */ int field_0x14;
+    /* 0x18 */ int field_0x18;
+    /* 0x1C */ int field_0x1C;
+
+  private:
+    /* Reconstruction safeguards: the native copy contract of this array owner is unknown. */
+    UnkPlayerHistory_800A83D0(const UnkPlayerHistory_800A83D0 &);
+    UnkPlayerHistory_800A83D0 &operator=(const UnkPlayerHistory_800A83D0 &);
+};
+CHECK_SIZEOF(UnkPlayerHistory_800A83D0, 0x20);
 
 /* Returns the record index places before the newest one in the ring that the pointer at 0x250 of
  * player refers to (behaviour inferred). fn_800A82C8 subtracts index from the ring's newest index
  * and adds 120 (0x78) once if the result is negative, so only indices 0 to 119 are supported; the
  * ELEC_BAR gadget passes 0 and 1. */
 extern "C" UnkPlayerRecord_80078CEC *fn_80078CEC(Player::PlayerBase *player, int index);
+
+/* Signatures inferred from the original callers and bodies. fn_80074200 returns the
+ * shared behaviour at offset 0x30 of the object at PlayerBase::field_0x22C. */
+extern "C" boost::shared_ptr<Player::Behavior::Behavior> fn_80074200(UnkObject_800A78FC *object);
+extern "C" void fn_80078B54(Player::PlayerBase *player);
+extern "C" void fn_80079404(Player::PlayerBase *player);
+extern "C" void fn_800794C8(Player::PlayerBase *player);
 
 /* Player functions that Player::Behavior::Super calls. Their names, the void returns and the
  * const qualifiers are not known (inferred); the behaviour comes from their bodies. */

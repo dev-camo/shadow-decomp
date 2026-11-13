@@ -219,6 +219,11 @@ extern Fn8040Vector4 lbl_805E0790;
  * 0x8000FEE4, which calls the copy of sqrtf at 0x8000FF04. The E3 2005 prototype (G9SJ8P) expands
  * sqrtf inside both helpers instead. */
 float fn_8040CCEC(const Fn8040Vector2 *vector);
+/* Two-component helpers: clear the vector, normalise it in place, and return its squared
+ * length, respectively (behaviour and signatures inferred from their original bodies). */
+void fn_8040CC5C(Fn8040Vector2 *vector);
+void fn_8040CC6C(Fn8040Vector2 *vector);
+float fn_8040CCD4(Fn8040Vector2 *vector);
 /* Squared length of a 4-float vector. */
 float fn_8040CA84(const Fn8040Vector4 *vector);
 /* Stores sin(angle) and cos(angle) through the two pointers. The E3 2005 prototype (G9SJ8P) calls

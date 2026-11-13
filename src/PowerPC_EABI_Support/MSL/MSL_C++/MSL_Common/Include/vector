@@ -266,6 +266,7 @@ template <class T, class Allocator> class __vector_obj_imp {
     bool empty() const {
         return size_ == 0;
     }
+    iterator erase(iterator position);
     iterator erase(iterator first, iterator last);
     void clear() {
         iterator first = data_;
@@ -325,6 +326,17 @@ template <class T, class Allocator> __vector_obj_imp<T, Allocator>::~__vector_ob
     if (__data() != 0) {
         __alloc().deallocate(__data(), __cap());
     }
+}
+
+template <class T, class Allocator>
+typename __vector_obj_imp<T, Allocator>::iterator
+__vector_obj_imp<T, Allocator>::erase(iterator position) {
+    iterator old_end = end();
+    if (old_end - position - 1 != 0) {
+        __copy_objects(position + 1, old_end, position);
+    }
+    __alloc().destroy(data_ + --size_);
+    return position;
 }
 
 template <class T, class Allocator>
@@ -480,6 +492,9 @@ template <class T, class Allocator> class vector : private __vector_obj<T, Alloc
     }
     void pop_back() {
         base::pop_back();
+    }
+    iterator erase(iterator position) {
+        return base::erase(position);
     }
     iterator erase(iterator first, iterator last) {
         return base::erase(first, last);
