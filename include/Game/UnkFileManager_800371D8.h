@@ -2,12 +2,22 @@
 #define GAME_UNKFILEMANAGER_800371D8_H
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 /* The object that fn_800371D8 returns (placeholder class name; the original class is unknown): a
  * static object (at 0x805EE0C8 in the USA release, GUPE8P) that the function constructs
  * (fn_80045290) on the first call, registering its destructor (fn_80045254), and caches in a
- * static pointer. Its layout is not mapped. */
-class UnkFileManager_800371D8;
+ * static pointer. Only the word at 0x4 is mapped. */
+class UnkFileManager_800371D8 {
+  public:
+    /* 0x0 */ u8 field_0x0[0x4];
+    /* The constructor stores fn_80044E80 here, which returns whether fn_8047A67C returns non-zero
+     * for the path (the parameter and result types are inferred). TGiPause calls it with the copy
+     * that fn_80051810 makes of a texture dictionary's path before it reads the file. */
+    /* 0x4 */ bool (*field_0x4)(const char *path);
+};
+/* Checks only the mapped prefix, not the object's size. */
+CHECK_SIZEOF(UnkFileManager_800371D8, 0x8);
 
 /* The names, the parameter types and the const qualifiers are not known (inferred); the
  * behaviour comes from the bodies. */

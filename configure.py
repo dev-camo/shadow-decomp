@@ -1928,6 +1928,16 @@ config.libs = [
             Object(Matching, "Game/PlayerShadowBehavior.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerWatch.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerWeaponBase.cpp", cflags=cflags_game_cpp),
+            # 55 of the 56 functions have identical instruction words and relocations, and .data,
+            # .bss, .sdata, .sbss and .sdata2 match once the linker-discarded copies are removed.
+            # LoadTextures is one instruction shorter (0xDC, original 0xE0): the original copies the
+            # file manager's address into r4 and loads the function pointer at 0x4 from there, this
+            # build loads it from r3. In .rodata, where the original also keeps the strings that no
+            # code references (LoadProjects reaches its strings from the section's start address),
+            # the type names of RCPtr<CScene>'s holder and of its functor base come before
+            # RCPtr<CTexList>'s instead of at the end of the section. Normal links use the original
+            # object.
+            Object(NonMatching, "Game/TGiPause.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CharaColliBaseCharInfo.cpp", cflags=cflags_game_cpp),
             # The split covers the whole original file: USA (GUPE8P) .text 0x800CBC1C-0x800D216C
             # (255 functions, the static initialiser at 0x800D202C among them) with its .ctors,
