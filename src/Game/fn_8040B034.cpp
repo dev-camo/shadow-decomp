@@ -285,8 +285,8 @@ void fn_8040B33C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *eye, const Fn8040V
 
     Fn8040Vector3 yAxis = fn_8040CFB8(zAxis, xAxis);
 
-    matrix->Set(xAxis.x, xAxis.y, xAxis.z, -fn_8040CF90(eye, &xAxis), yAxis.x, yAxis.y, yAxis.z,
-                -fn_8040CF90(eye, &yAxis), zAxis.x, zAxis.y, zAxis.z, -fn_8040CF90(eye, &zAxis));
+    matrix->Set(xAxis.x, xAxis.y, xAxis.z, -fn_8040CF90(*eye, xAxis), yAxis.x, yAxis.y, yAxis.z,
+                -fn_8040CF90(*eye, yAxis), zAxis.x, zAxis.y, zAxis.z, -fn_8040CF90(*eye, zAxis));
 }
 
 void fn_8040B228(Fn8040Matrix34 *matrix, const Fn8040Vector4 *quaternion) {

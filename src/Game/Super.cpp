@@ -118,9 +118,7 @@ void Super::fn_802EB0C4(float dt) {
     } else if (fn_8040CF2C(m_player->field_0xB8) < 0.9f * 0.9f) {
         field_0x24 = 250.0f;
     } else {
-        const Fn8040Vector3 &direction = fn_8040CEE8(vectorB8);
-        const Fn8040Vector3 &facing = fn_800796DC(m_player.get());
-        float dot = fn_8040CF90(&facing, &direction);
+        float dot = fn_8040CF90(fn_800796DC(m_player.get()), fn_8040CEE8(vectorB8));
         float factor;
         if (dot < 0.766f) {
             factor = 0.0f;

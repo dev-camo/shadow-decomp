@@ -177,7 +177,7 @@ bool HeavyDog0410ModeCtrlUnit_ESCAPE::Update(float arg) {
             cornerOffset = corners[i] - m_heavyDog0410Param->field_0x194;
             cornerOffset.y = 0.0f;
             fn_8040CE74(&cornerOffset);
-            float dot = fn_8040CF90(&offset, &cornerOffset);
+            float dot = fn_8040CF90(offset, cornerOffset);
             if (dot > bestDot) {
                 chosen = i;
                 bestDot = dot;

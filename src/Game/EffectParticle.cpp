@@ -485,7 +485,7 @@ void EffectParticle::fn_804272E8(float deltaTime) {
             particle->m_position = fn_8040B67C(m_transform, particle->m_position);
             particle->m_velocity = fn_8040B618(m_transform, particle->m_velocity);
             if (translationSpeed > 0.0001f) {
-                float projection = fn_8040CF90(&particle->m_velocity, &m_translationVelocity);
+                float projection = fn_8040CF90(particle->m_velocity, m_translationVelocity);
                 float velocityLength = fn_8040CF50(particle->m_velocity);
                 float alignment = projection / (translationSpeed * velocityLength);
                 AddVector(&particle->m_velocity,

@@ -70,8 +70,8 @@ Fn8040Vector3 fn_8026F0BC(Fn8040Vector3 *velocity, const Fn8040Vector3 *motion,
     for (iterator = hits->fn_8001EE04(); iterator.node != hits->fn_8001EDEC();
          fn_80027374(&iterator, 0)) {
         Fn8040Vector3 normal(*fn_800266D4(iterator.node->hit));
-        float motionAlong = fn_8040CF90(&result, &normal);
-        float velocityAlong = fn_8040CF90(velocity, &normal);
+        float motionAlong = fn_8040CF90(result, normal);
+        float velocityAlong = fn_8040CF90(*velocity, normal);
 
         if (motionAlong > 0.0f) {
             continue;
