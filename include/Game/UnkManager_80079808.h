@@ -24,13 +24,18 @@ class UnkCounters_8016F5B8 {
 };
 CHECK_SIZEOF(UnkCounters_8016F5B8, 0x18);
 
-/* An entry of the table of 0x4C-byte entries at 0x728 (placeholder name). Three members are
- * mapped: the word at 0x20 that fn_8016EF84 returns, the word at 0x28 that fn_8016F280 returns
- * (the SAVEPOINT gadget reads it for entry 0) and the counters at 0x2C that the attack callback
- * of FallBuildingHolder uses. */
+/* An entry of the table of 0x4C-byte entries at 0x728 (placeholder name). Four members are
+ * mapped: the word at 0xC that fn_8016EEC0 returns, the word at 0x20 that fn_8016EF84 returns, the
+ * word at 0x28 that fn_8016F280 returns (the SAVEPOINT gadget reads it for entry 0) and the
+ * counters at 0x2C that the attack callback of FallBuildingHolder uses. */
 class UnkEntry_80178B5C {
   public:
-    /* 0x00 */ u8 field_0x0[0x20];
+    /* 0x00 */ u8 field_0x0[0xC];
+    /* fn_8016EEC0 returns it. TGiHissatu opens its hero display while it is 2 for entry 0 and
+     * its dark display while it is 1 (meaning unknown; signed because TGiHissatu compares it as
+     * a signed word). */
+    /* 0x0C */ s32 field_0xC;
+    /* 0x10 */ u8 field_0x10[0x20 - 0x10];
     /* fn_8016EF84 returns it; fn_8016EF8C adds to it. The EggLastMech boss tests it for entry 0
      * (meaning unknown). */
     /* 0x20 */ s32 field_0x20;
@@ -68,6 +73,9 @@ void fn_8016F0CC(UnkState_8016F0CC *state, int index, int amount);
 /* Returns the entry of the table at 0x728 with the given index, or null for a negative index
  * (behaviour inferred). */
 UnkEntry_80178B5C *fn_80178B5C(UnkManager_80079808 *manager, int index);
+/* Returns the entry's word at 0xC (behaviour from its body; the parameter type is inferred from
+ * TGiHissatu::Update, its only caller, which passes the entry that fn_80178B5C returns). */
+s32 fn_8016EEC0(const UnkEntry_80178B5C *entry);
 /* Returns *value (behaviour from its body). */
 s32 fn_8016EF84(const s32 *value);
 /* Returns at once when amount is 0. Otherwise adds amount to field_0x0[index] when index is 0 to
