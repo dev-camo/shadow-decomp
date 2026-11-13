@@ -654,14 +654,12 @@ config.libs = [
                 # All 85 functions have identical instructions. The RTTI and vtable records differ
                 # in layout, and the object has additional weak template instances.
                 Object(NonMatching, "Game/Coaster.cpp", cflags=cflags_game_cpp),
-                # Every function but the ThreatObj constructor is instruction-identical, and the
-                # functions are in the original's order. The constructor's two table loads (model
-                # table and holder) use r6 and r7 the other way round (four words). ThreatObj's
-                # destructor is a global symbol here (a plain out-of-class definition under
-                # auto_inline) where the original's is weak. The object also has a 32-byte local
-                # copy of std::swap<any_pointer> (called by the weak boost::function1 swap) that
-                # the original unit does not have. The data matches except for records the
-                # original unit does not have: the std::exception type record in .sdata and its
+                # Every function is instruction-identical, and the functions are in the original's
+                # order. ThreatObj's destructor is a global symbol here (a plain out-of-class
+                # definition under auto_inline) where the original's is weak. The object also has a
+                # 32-byte local copy of std::swap<any_pointer> (called by the weak boost::function1
+                # swap) that the original unit does not have. The data matches except for records
+                # the original unit does not have: the std::exception type record in .sdata and its
                 # two name strings in .rodata come before those of checked_deleter<ThreatObj>
                 # (moving them 8 and 0x1C bytes later), and the std::exception and sp_counted_base
                 # vtables are appended to .data.
@@ -2062,15 +2060,10 @@ config.libs = [
             Object(NonMatching, "Game/TPjsEventActionFade.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PjsEventCen.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PjsEventCt.cpp", cflags=cflags_game_cpp),
-            # 216 of the 219 functions have identical instructions and relocations once the weak and
+            # 218 of the 219 functions have identical instructions and relocations once the weak and
             # local copies that the linker discards are removed. The static initialiser differs in 5
             # words: two registers swapped and the three roll velocities addressed from the start of
             # .bss here, 0x3C bytes after it in the original (see below).
-            # StonePole::CreateStones (5 words) and StonePole::Update (3 words) load a stone kind
-            # from the step table differently: the original adds the step offset to the holder's
-            # address and loads at 0x50 from it, this source adds 0x50 to the offset and uses an
-            # indexed load (in CreateStones the argument set-up around it is also ordered
-            # differently). These three bodies have 13 differing positional words in total.
             # The data match by contents (the original object's absent copies set aside); .sdata2
             # also has the original order once the weak sqrtf statics of <cmath> are discarded (the
             # weak fn_8000B044 copy places 0.0001 before 1 and 70). One difference remains: the

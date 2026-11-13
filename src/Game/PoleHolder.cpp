@@ -81,7 +81,7 @@ void FallingStone::UpdatePosition(s32 poleState, float dt) {
             fn_80049690(&m_charInfo->m_position, &matrix);
             fn_800493C4(&m_charInfo->m_rotation, &matrix);
         }
-    } else if (m_pole->m_holder->m_params.type != 0) {
+    } else if (m_pole->m_holder->GetParams()->type != 0) {
         Fn8040Vector3 move = *(m_pole->GetRollVelocity());
         fn_8040CE38(&move, dt);
         move = fn_8040D0AC(move, m_pole->m_charInfo->m_rotation.y);
@@ -91,18 +91,18 @@ void FallingStone::UpdatePosition(s32 poleState, float dt) {
 
         m_rolledDistance += distance;
 
-        if (m_pole->m_holder->m_params.type == 1) {
+        if (m_pole->m_holder->GetParams()->type == 1) {
             float angle = 2.0f * (distance / s_rollRadius.value);
 
-            if (m_pole->m_holder->m_params.fall != 0) {
+            if (m_pole->m_holder->GetParams()->fall != 0) {
                 m_charInfo->m_rotation.y += angle;
             } else {
                 m_charInfo->m_rotation.y -= angle;
             }
         }
 
-        if (m_rolledDistance > m_pole->m_holder->m_params.rollingDistance) {
-            if (m_pole->m_holder->m_params.type == 1) {
+        if (m_rolledDistance > m_pole->m_holder->GetParams()->rollingDistance) {
+            if (m_pole->m_holder->GetParams()->type == 1) {
                 Break();
             }
             m_pole->QueueStoneRemoval(m_index);
@@ -161,7 +161,7 @@ void FallingStoneHard::UpdateAttachments() {
         fn_800CCE38(m_object.get(), m_charInfo->m_position);
     }
 
-    if (m_pole->m_holder->m_params.type == 1 && m_sound.field_0x0 != 0) {
+    if (m_pole->m_holder->GetParams()->type == 1 && m_sound.field_0x0 != 0) {
         m_sound.fn_800CCE14(&m_charInfo->m_position);
     }
 }
@@ -174,7 +174,7 @@ void FallingStoneHard::Break() {
     breakEffect.field_0x34 = 1.0f;
     breakEffect.field_0x54 = 1;
 
-    if (m_pole->m_holder->m_params.type == 0) {
+    if (m_pole->m_holder->GetParams()->type == 0) {
         breakEffect.field_0x4A = 1;
         breakEffect.field_0x40 = m_pole->m_charInfo->m_position.y;
     } else {
@@ -198,7 +198,7 @@ void FallingStoneHard::OnFallStart() {
 }
 
 void FallingStoneHard::OnFallEnd() {
-    if (m_pole->m_holder->m_params.type == 1) {
+    if (m_pole->m_holder->GetParams()->type == 1) {
         m_sound = fn_801D3DC8(0x7334, &m_charInfo->m_position, this);
     }
 }
@@ -314,15 +314,15 @@ StonePole::StonePole(PoleHolder *holder, UnkGadgetOwner_800C9CD0 *owner)
     m_charInfo->field_0x30 = 1;
 
     m_model = fn_8015F800(1, "STONEPOLE.BIN");
-    m_model->fn_80162A68(m_holder->m_params.type, 0);
+    m_model->fn_80162A68(m_holder->GetParams()->type, 0);
     CreateCollision();
-    m_model->fn_80160C28(m_holder->m_params.type);
-    m_model->fn_80160B18(m_holder->m_params.type);
-    m_motion = m_model->fn_801602B4(m_holder->m_params.type);
+    m_model->fn_80160C28(m_holder->GetParams()->type);
+    m_model->fn_80160B18(m_holder->GetParams()->type);
+    m_motion = m_model->fn_801602B4(m_holder->GetParams()->type);
 
     boost::shared_ptr<_stMtnPlayWork> motion = m_motion.lock();
 
-    if (m_holder->m_params.fall != 0) {
+    if (m_holder->GetParams()->fall != 0) {
         stMtnControlWorkFlag(motion.get(), 0, 7, 0);
     }
     stMtnRequestFrameSpeed(motion.get(), 0, 0.0f);
@@ -373,7 +373,7 @@ void StonePole::Update(float dt) {
 
     if (m_state == 0) {
         if (!m_motionFlagSet) {
-            m_model->fn_80160480(m_holder->m_params.type);
+            m_model->fn_80160480(m_holder->GetParams()->type);
             m_motionFlagSet = true;
         }
 
@@ -394,7 +394,7 @@ void StonePole::Update(float dt) {
                 for (int i = 0;
                      i < sizeof(m_holder->m_params.steps) / sizeof(m_holder->m_params.steps[0]);
                      i++) {
-                    if (m_holder->m_params.steps[i] == 0) {
+                    if (m_holder->GetParams()->steps[i] == 0) {
                         FallingStone *stone = FindStone(i);
 
                         if (stone != 0) {
@@ -412,7 +412,7 @@ void StonePole::Update(float dt) {
         if (m_state == 1) {
             if (stMtnControlWorkFlag(m_motion.lock().get(), 0, 3, 1)) {
                 m_state = 3;
-                m_model->fn_80160480(m_holder->m_params.type);
+                m_model->fn_80160480(m_holder->GetParams()->type);
                 m_motionFlagSet = true;
                 OnFallEnd();
 
@@ -434,7 +434,7 @@ void StonePole::Update(float dt) {
 
 void StonePole::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     if (m_motionFlagSet) {
-        m_model->fn_80160384(m_holder->m_params.type);
+        m_model->fn_80160384(m_holder->GetParams()->type);
         m_motionFlagSet = false;
     }
 
@@ -504,7 +504,7 @@ void StonePole::CreateStones() {
      * compares unsigned and tests before the first iteration, which an int bound of 5 folds away. */
     for (int i = 0; i < sizeof(m_holder->m_params.steps) / sizeof(m_holder->m_params.steps[0]);
          i++) {
-        m_stones.push_back(FallingStone::Create(m_owner, this, i, m_holder->m_params.steps[i]));
+        m_stones.push_back(FallingStone::Create(m_owner, this, i, m_holder->GetParams()->steps[i]));
     }
 }
 
@@ -536,7 +536,7 @@ void StonePole::Fall() {
     UnkSlot7();
     fn_801D54F4(fn_80053164(), 0x7335, &m_charInfo->m_position, 0, 1);
     stMtnRequestFrameSpeed(m_motion.lock().get(), 0, 1.0f);
-    m_model->fn_80160384(m_holder->m_params.type);
+    m_model->fn_80160384(m_holder->GetParams()->type);
     m_motionFlagSet = false;
 
     m_target = fn_80166AF4();
@@ -592,12 +592,12 @@ int StonePole::IsCharacterInRange() {
     characterPosition.y = 0.0f;
     Fn8040Vector3 offset = characterPosition - polePosition;
 
-    if (fn_8040CF50(offset) > m_holder->m_params.rangeRadius) {
+    if (fn_8040CF50(offset) > m_holder->GetParams()->rangeRadius) {
         return 0;
     }
 
     if (fn_8000A980(character->m_position.y - m_charInfo->m_position.y) >
-        m_holder->m_params.rangeHeight) {
+        m_holder->GetParams()->rangeHeight) {
         return 0;
     }
 
@@ -607,8 +607,8 @@ int StonePole::IsCharacterInRange() {
 void StonePole::DrawRange() {
     UnkRotation3 rotation(0.5f * lbl_805FAD38, 0.0f, 0.0f);
 
-    fn_802E0C60(m_charInfo->m_position, rotation, 0, m_holder->m_params.rangeHeight,
-                m_holder->m_params.rangeRadius);
+    fn_802E0C60(m_charInfo->m_position, rotation, 0, m_holder->GetParams()->rangeHeight,
+                m_holder->GetParams()->rangeRadius);
 }
 
 StonePoleFlat::~StonePoleFlat() {}

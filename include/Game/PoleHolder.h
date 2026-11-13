@@ -306,6 +306,16 @@ class PoleHolder : public Gadget {
     void CreatePole(UnkGadgetOwner_800C9CD0 *owner);
     /* Reads the parameters from the owner (name inferred). */
     void ReadParams(UnkGadgetOwner_800C9CD0 *owner);
+    /* The parameters (name inferred; so are the pointer return and the definition in the class).
+     * Matching workaround: an inferred inline accessor of the same form as ChaoHolder's (see
+     * ChaoHolder.cpp), used wherever the pole and its stones read the parameters. Through it,
+     * StonePole::Update and StonePole::CreateStones load a stone kind as the original does: the
+     * step offset added to the holder's address, then a load at 0x50 from it; with the member
+     * read directly they add 0x50 to the offset and use an indexed load. Revisit when the
+     * original accessor is found. */
+    const PoleHolderParams *GetParams() {
+        return &m_params;
+    }
 
     /* The class name the constructor stores in m_name (name inferred). */
     static const char *s_name;
