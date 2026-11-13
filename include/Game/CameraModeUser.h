@@ -153,17 +153,6 @@ class UnkCameraModeParams_8000EBB0 {
     UnkCameraModeParams_8000EBB0();
     ~UnkCameraModeParams_8000EBB0();
 
-    /* Stores value at 0x1C (name inferred).
-     * Matching workaround: an inline member whose name and owner are inferred. The original has
-     * an out-of-line copy of a function that does this store (USA (GUPE8P) 0x800A5E78), after
-     * its caller, the camera demo function at 0x800A5C74, and the two weak_ptr functions that
-     * the caller uses. This compiler emits such a copy for an inline function whose body makes
-     * an inline call (here the vector's implicit assignment); the same store written in the
-     * caller leaves no copy. Revisit when the original class is identified. */
-    void SetField0x1C(const Fn8040Vector2 &value) {
-        field_0x1C = value;
-    }
-
     /* 0x00 */ u8 field_0x0[0x1C];
     /* 0x1C */ Fn8040Vector2 field_0x1C;
     /* 0x24 */ u8 field_0x24[0x4C - 0x24];

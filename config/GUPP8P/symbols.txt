@@ -6191,7 +6191,7 @@ __ct<Q26Player10PlayerBase>__Q25boost31weak_ptr<Q26Player10PlayerBase>FRCQ25boos
 fn_800A5C74__Q226@unnamed@PlayerEffect_cpp@10CameraDemoFv = .text:0x800A605C; // type:function size:0x174 scope:local
 __as__Q25boost45weak_ptr<Q29PJSCamera21ExternalCameraRequest>FRCQ25boost45weak_ptr<Q29PJSCamera21ExternalCameraRequest> = .text:0x800A61D0; // type:function size:0x40 scope:weak
 __dt__Q25boost45weak_ptr<Q29PJSCamera21ExternalCameraRequest>Fv = .text:0x800A6210; // type:function size:0x50 scope:weak
-SetField0x1C__28UnkCameraModeParams_8000EBB0FRC13Fn8040Vector2 = .text:0x800A6260; // type:function size:0x14 scope:weak
+fn_800A5E78__26@unnamed@PlayerEffect_cpp@FP28UnkCameraModeParams_8000EBB0RC13Fn8040Vector2 = .text:0x800A6260; // type:function size:0x14 scope:local
 fn_800A5E8C__Q226@unnamed@PlayerEffect_cpp@10CameraDemoFv = .text:0x800A6274; // type:function size:0x80 scope:local
 __ct<Q412SonicteamUSA6System6Camera14CameraModeUser>__Q25boost54shared_ptr<Q412SonicteamUSA6System6Camera10CameraMode>FRCQ25boost58shared_ptr<Q412SonicteamUSA6System6Camera14CameraModeUser> = .text:0x800A62F4; // type:function size:0x40 scope:local
 fn_800A5F4C__Q226@unnamed@PlayerEffect_cpp@10CameraDemoFv = .text:0x800A6334; // type:function size:0x9C scope:local
