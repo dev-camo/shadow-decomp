@@ -1,7 +1,9 @@
 /* 3x4 matrix helpers (the unit's original file name is unknown): matrices of translation, scale and
  * rotation, products, inverses, and the identity and zero matrices that are built at startup.
  * Function names stay fn_ placeholders; descriptions of behaviour are inferred. Definitions are in
- * reverse address order (deferred inlining emits functions last-defined first). */
+ * reverse address order (deferred inlining emits functions last-defined first). The file is
+ * compiled with automatic inlining (see configure.py), so fn_8040C148 below is expanded where it is
+ * called and the matrix's copy constructor and assignment, which call it, stay calls. */
 #include "Game/fn_8040_vector_types.h"
 
 extern "C" {
@@ -38,8 +40,6 @@ Fn8040Matrix34 fn_8040BEF8(const Fn8040Matrix34 *source) {
     float determinant = m00 * (m11 * m22 - m12 * m21) + m01 * (m12 * m20 - m10 * m22) +
                         m02 * (m10 * m21 - m11 * m20);
     if (determinant == 0.0f) {
-        /* The original calls fn_8040BCB4 here with the result pointer it was given. The matrix's
-         * copy constructor calls fn_8040C148, the other copy of the same code. */
         return *source;
     }
 
@@ -102,18 +102,8 @@ void fn_8040BCD4(Fn8040Matrix34 *matrix) {
                                      m03 * m11 * m20 - m01 * m10 * m23 - m00 * m13 * m21);
 }
 
-/* The same code as fn_8040C148: the original has two copies of the function. */
-void fn_8040BCB4(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source) {
-    float *to = destination->values[0];
-    const float *from = source->values[0];
-    for (int i = 0; i < 12; i++) {
-        to[i] = from[i];
-    }
-}
-
 void fn_8040BAC4(Fn8040Matrix34 *matrix, const Fn8040Matrix34 *other) {
-    Fn8040Matrix34 previous;
-    fn_8040BCB4(&previous, matrix);
+    Fn8040Matrix34 previous(*matrix);
 
     matrix->values[0][0] = previous.values[0][0] * other->values[0][0] +
                            previous.values[0][1] * other->values[1][0] +
@@ -230,7 +220,7 @@ void fn_8040B720(Fn8040Matrix34 *matrix, float x, float y, float z) {
 }
 
 void fn_8040B6F8(Fn8040Matrix34 *matrix) {
-    fn_80325384(matrix, &lbl_805E0720);
+    *matrix = lbl_805E0720;
 }
 
 Fn8040Vector3 fn_8040B67C(const Fn8040Matrix34 &matrix, const Fn8040Vector3 &vector) {

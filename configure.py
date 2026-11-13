@@ -838,19 +838,27 @@ config.libs = [
                 # and registers with three neighbouring pairs in the other order. The inverses
                 # (fn_8040BCD4, 140 words; fn_8040BEF8, 145 words) differ in scheduling, registers
                 # and saved registers: fn_8040BEF8 has the target's arithmetic opcodes and saves 1
-                # more FPR (152 instructions instead of 148), rounds different terms before the
+                # more FPR (152 instructions instead of 148) and rounds different terms before the
                 # fused additions of the translation (USA 0x8040BFEC, 0x8040C01C), so element
-                # [0][3] can differ in the last bit, and its zero-determinant path copies the
-                # source with fn_8040C148 where the target calls fn_8040BCB4 (one relocation
-                # target); fn_8040BCD4 reuses the determinant's products m10 * m22 and m12 * m20
-                # for element [1][0], which the target computes again (2 fsubs and 1 fneg where
-                # the target has 1 fmsubs and 1 fnmsubs), and saves 2 more FPRs (146 instructions
-                # instead of 137).
+                # [0][3] can differ in the last bit; fn_8040BCD4 reuses the determinant's products
+                # m10 * m22 and m12 * m20 for element [1][0], which the target computes again (2
+                # fsubs and 1 fneg where the target has 1 fmsubs and 1 fnmsubs), and saves 2 more
+                # FPRs (146 instructions instead of 137).
+                # Matching workaround: -inline auto added to the game flags for this unit (the
+                # library code at 0x80410630 below also uses automatic inlining). The original has
+                # an out-of-line copy of the matrix's copy constructor directly after fn_8040BAC4
+                # (0x8040BCB4, with fn_8040C148's loop expanded in it; fn_8040BAC4 and fn_8040BEF8
+                # call it) and calls an out-of-line assignment (0x80325384) in fn_8040B6F8. Without
+                # the flag all three sites compile to fn_8040C148 calls; with it fn_8040C148 is
+                # expandable, the two members that call it stay calls, and the build calls them at
+                # those sites. The unit also emits a weak copy of the assignment (with the loop
+                # expanded) that the original does not have in this range. Revisit if the flags of
+                # this part of the library are recovered.
                 Object(
                     NonMatching,
                     "Game/fn_8040B034.cpp",
                     cflags=cflags_game_cpp,
-                    extra_cflags=["-Cpp_exceptions on"],
+                    extra_cflags=["-Cpp_exceptions on", "-inline auto"],
                 ),
                 # The library code at 0x80410630-0x8042166C is built with one flag set (-O4,s,
                 # -use_lmw_stmw on, -str reuse,readonly, -inline auto,level=1), taken as the
