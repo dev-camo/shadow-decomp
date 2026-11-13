@@ -117,9 +117,7 @@ void Bomb::fn_8031E3B0() {
     effect = weakEffect.lock();
 
     if (effect.get() != 0) {
-        Fn8040Vector3 position;
-        Fn8040Matrix34 matrix(
-            fn_8040B034(*fn_80008E1C(&position, m_position.x, 0.0f, m_position.z)));
+        Fn8040Matrix34 matrix(fn_8040B034(Fn8040Vector3(m_position.x, 0.0f, m_position.z)));
         fn_80425E68(effect.get(), matrix);
     }
 }

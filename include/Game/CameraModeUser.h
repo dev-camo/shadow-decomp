@@ -67,6 +67,24 @@ class CameraMode {
      * 0 and 1 come from two flag tests. */
     virtual void UnkSlot4(int flags);
     virtual ~CameraMode();
+
+    /* Passes start and end to fn_8000A5D4 (name inferred).
+     * Matching workaround: this inline member stands for an unknown original helper, like
+     * AddVector in fn_8040_vector_types.h. The calls in its arguments stay calls, as in the
+     * original. CameraModeMtnViewer's UnkSlot2 constructs each new point with the out-of-line
+     * copy of the vector's three-float constructor before it calls fn_8000A5D4 (USA (GUPE8P)
+     * 0x80008DD0 and 0x80008DF4); with the point declared as a local and fn_8000A5D4 called
+     * directly, the components are stored in place (measured). Called through a smart pointer,
+     * it leaves the smart pointer's operator-> out of line, as LamborghiniImpl::OnCameraUpdate
+     * does (0x8031A344) and as the unrecovered caller at 0x801B78F0 does before its
+     * fn_8000A5D4 call; a direct call to fn_8000A5D4 expands the operator in place
+     * (OnCameraUpdate 0xA4 bytes instead of 0xA8). It is a member of this class because
+     * CameraModeMtnViewer derives from it and not from CameraModeUser.
+     * Coaster::OnPathCallback does not use it: the original passes its mode pointer to
+     * fn_8000A5D4 with the operator expanded in place (through this member the function is one
+     * instruction longer: measured). Revisit when the original helper is identified. Defined
+     * after fn_8000A5D4's declaration below. */
+    inline void SetPoints(const Fn8040Vector3 &start, const Fn8040Vector3 &end);
 };
 CHECK_SIZEOF(CameraMode, 0xAC);
 
@@ -95,19 +113,6 @@ class CameraModeUser : public CameraMode {
     /* The deleting destructor (0x80009A50); 0x8026F928 calls it through the vtable with 1 to
      * delete a mode. */
     virtual ~CameraModeUser();
-
-    /* Passes start and end to fn_8000A5D4 (name inferred).
-     * Matching workaround: this inline member stands for an unknown original helper, like
-     * AddVector in fn_8040_vector_types.h. Called through a smart pointer, it leaves the smart
-     * pointer's operator-> out of line, as LamborghiniImpl::OnCameraUpdate does (USA (GUPE8P)
-     * 0x8031A344) and as the unrecovered caller at 0x801B78F0 does before its fn_8000A5D4 call;
-     * a direct call to fn_8000A5D4 expands the operator in place (OnCameraUpdate 0xA4 bytes
-     * instead of 0xA8).
-     * Coaster::OnPathCallback does not use it: the original passes its mode pointer to
-     * fn_8000A5D4 with the operator expanded in place (through this member the function is one
-     * instruction longer: measured). Revisit when the original helper is identified. Defined
-     * after fn_8000A5D4's declaration below. */
-    inline void SetPoints(const Fn8040Vector3 &start, const Fn8040Vector3 &end);
 
     /* The switch callbacks that UnkSlot2 (field_0xAC) and UnkSlot3 (field_0xB8) call when they
      * are not empty, constructed by 0x80009D58. LamborghiniImpl's constructor assigns them through
@@ -154,8 +159,8 @@ void fn_8000A5D4(SonicteamUSA::System::Camera::CameraMode *mode, const Fn8040Vec
                  const Fn8040Vector3 *end);
 }
 
-inline void SonicteamUSA::System::Camera::CameraModeUser::SetPoints(const Fn8040Vector3 &start,
-                                                                    const Fn8040Vector3 &end) {
+inline void SonicteamUSA::System::Camera::CameraMode::SetPoints(const Fn8040Vector3 &start,
+                                                                const Fn8040Vector3 &end) {
     fn_8000A5D4(this, &start, &end);
 }
 

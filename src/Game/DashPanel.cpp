@@ -64,10 +64,11 @@ static void fn_800FFB70(boost::shared_ptr<CharInfo> hit, void *arg) {
     fn_8040B884(&matrix, panelInfo->m_rotation.x);
     fn_8040B80C(&matrix, panelInfo->m_rotation.z);
 
-    /* 5 units above the panel along its up direction. */
+    /* 5 units above the panel along its up direction. fn_8040B67C is called by name: the
+     * original calls it directly here (0x800FFCDC), and in AddVector's argument the inline
+     * operator* is a call of its out-of-line copy instead (measured: one word differs). */
     Fn8040Vector3 position = panelInfo->m_position;
-    const Fn8040Vector3 &offset = matrix * Fn8040Vector3(0.0f, 5.0f, 0.0f);
-    fn_8040CFF8(&position, &offset);
+    AddVector(&position, fn_8040B67C(matrix, Fn8040Vector3(0.0f, 5.0f, 0.0f)));
     hit->fn_801DC980(new SetPositionCommand(&position, 4));
 
     float level = context->m_params->level;

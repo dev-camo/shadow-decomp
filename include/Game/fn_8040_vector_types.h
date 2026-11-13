@@ -20,6 +20,22 @@ CHECK_SIZEOF(Fn8040Vector2, 0x8);
 typedef struct Fn8040Vector3 {
 #ifdef __cplusplus
     Fn8040Vector3() {}
+    /* The original has an out-of-line copy of this constructor at 0x80008E1C in USA (GUPE8P), Japan
+     * (GUPJ8P) and PAL (GUPP8P), directly after CameraModeMtnViewer's UnkSlot2 (0x80008DA8,
+     * fn_80008DA8.cpp), which has its two lowest calls. It calls the copy at 48 places and stores
+     * the components in place everywhere else. What follows each of the 48 calls fits a vector
+     * constructed in the arguments of an inline function called as a statement of its own (the
+     * expressions are inferred): the function that adds or subtracts a vector (26 places,
+     * fn_8040CFF8 or fn_8040CE04 follows), the member-by-member assignment of a rotation (12), a
+     * matrix copy (5, fn_8040C148 follows), a returned transform (2, fn_8040B67C is called with the
+     * function's own result pointer), and wrappers of fn_8000A5D4 (2) and of fn_80010010 (1, not
+     * identified). Measured with this compiler on DashPanel's hit callback and the AddVector and
+     * SetPoints statements: an inline call that is the whole statement is expanded and the calls in
+     * its arguments stay calls, while in a statement whose outermost call is this vector's copy
+     * constructor or assignment (neither is expanded, see below) the vector constructor is
+     * expanded. DashPanel's hit callback has both forms: the offset it adds to the position is
+     * constructed by a call (0x800FFCCC), and the two vectors whose transformed copies initialise
+     * named vectors are stored in place (0x800FFD8C, 0x800FFDBC). */
     Fn8040Vector3(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
     /* The original calls the copy constructor (USA (GUPE8P) 0x800091EC) where a vector is
      * initialised from another, for example in the segment's copy constructor (0x80021DE4), and
@@ -231,9 +247,6 @@ void fn_8040CFF8(Fn8040Vector3 *result, const Fn8040Vector3 *value);
 float fn_8040D180(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
 /* The length of a - b (behaviour inferred). */
 float fn_8040D1B4(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
-/* Stores the three components and returns vector (fn_80008DA8.cpp; many callers in the original
- * pass the returned address on). */
-Fn8040Vector3 *fn_80008E1C(Fn8040Vector3 *vector, float x, float y, float z);
 /* Matrix helpers of the segment in fn_8040B034.cpp. Their original names are unknown and their
  * descriptions are inferred from the code. */
 /* Copies source to destination. */
@@ -482,7 +495,9 @@ extern "C" Fn8040Matrix34 fn_800635A4(const RwMatrix *matrix);
  * that order for a call by name and loads the pointer after the call when the operator is
  * used. Helicopter::UpdateModelMatrix has the second order in the original (call at
  * 0x802F7EF0, load of the target's pointer for fn_800CCE38 at 0x802F7EF4) and matches with the
- * operator. The const references are inferred (the code is that of pointer parameters):
+ * operator. DashPanel's hit callback calls it by name in the argument of AddVector, where the
+ * original calls it directly (0x800FFCDC) and the operator would be a call of its out-of-line
+ * copy. The const references are inferred (the code is that of pointer parameters):
  * ElecBarSub::UpdateModelMatrix builds the vector argument at sp+0x50, below the result at
  * sp+0x5C (0x80150D3C and 0x80150D50), which a temporary passed to the call reproduces and a
  * named vector does not. */
@@ -494,10 +509,16 @@ extern "C" Fn8040Vector3 fn_8040B67C(const Fn8040Matrix34 &matrix, const Fn8040V
  * destination pointer; operator names inferred). The original has out-of-line copies of these
  * inline functions that keep the hidden result pointer and call the core (USA addresses): the
  * sum at 0x80093204, the difference at 0x8000AD64, the scaled vector at 0x800091A4 and the
- * transformed vector at 0x8007E4E8. It calls them where the result is returned (fn_8040F268,
- * fn_8040FC78) or is the argument of AddVector; nested sums assigned to a vector call the cores
- * directly (fn_804103E8). The condition that selects the copy is not established. A copy of a
- * result into a named vector goes through the out-of-line copy constructor. Callers that use a
+ * transformed vector at 0x8007E4E8. It calls a copy where the operator is in the arguments of
+ * an inline function that is called as a statement of its own and expanded there, and expands
+ * the operator, so that the core is called, in every other statement. This compiler does the
+ * same (see the three-float constructor of Fn8040Vector3). fn_8040F268 returns
+ * `*from + (*to - *from) * t`: the returned sum is expanded (fn_8040CDD0 at 0x8040F2F4) and the
+ * difference and the product in its arguments are calls of the copies (0x8040F2D4,
+ * 0x8040F2E4). The scaled vectors that CameraModeMtnViewer's UnkSlot1 passes to AddVector are
+ * calls of the copy (0x80009040, 0x8000905C). The sums that fn_804103E8 assigns to a vector
+ * call the cores, because the vector's assignment is not expanded. A copy of a result into a
+ * named vector goes through the out-of-line copy constructor. Callers that use a
  * result in place pass it on or bind it to a const reference, also when they pass its address to
  * a pointer parameter, so the temporary is used in place without a copy, as in the original. */
 inline Fn8040Vector3 operator+(const Fn8040Vector3 &left, const Fn8040Vector3 &right) {
@@ -620,15 +641,20 @@ extern "C" float fn_8003C4C4(const UnkSegment_80020A20 *a, const UnkSegment_8002
  * inline function that is called as a statement of its own, here the matrix's copy constructor
  * or assignment; a statement that calls this function with a result pointer has the operator
  * expanded in place (measured in ElecPillar's and ElecWakka's UpdateModelMatrix). Five call sites
- * build the vector for the call with fn_80008E1C and pass on the pointer it returns, for example
- * Boss::Diablon::Parts::Bomb's fn_8031E3B0 at 0x8031E440-0x8031E44C. */
+ * construct the vector for the call with the out-of-line copy of its three-float constructor
+ * and pass on the pointer that the constructor returns, for example Boss::Diablon::Parts::Bomb's
+ * fn_8031E3B0 at 0x8031E440-0x8031E44C; a constructor call written as the argument gives that
+ * code. */
 extern "C" Fn8040Matrix34 fn_8040B034(const Fn8040Vector3 &translation);
 
 /* result += value (name inferred).
- * Matching workaround: AddVector is an inline wrapper of fn_8040CFF8 so that a smart pointer's
- * operator-> supplying the vector is called out of line, as in the original; that happens for
- * an argument of an inline call, whereas a direct call to the function expands it in place. The
- * original inline function is unknown. Revisit when it is identified. */
+ * Matching workaround: AddVector is an inline wrapper of fn_8040CFF8 so that the inline calls in
+ * its argument stay calls, as in the original: a smart pointer's operator-> supplying the
+ * vector, the out-of-line copies of the vector operators, and the out-of-line copy of the
+ * three-float constructor (0x80008E1C; 23 of its 48 calls construct a vector that is added
+ * with fn_8040CFF8 right after, directly or through a function it is passed to). That happens
+ * for an argument of an inline call, whereas a direct call to fn_8040CFF8 expands them in
+ * place. The original inline function is unknown. Revisit when it is identified. */
 inline void AddVector(Fn8040Vector3 *result, const Fn8040Vector3 &value) {
     fn_8040CFF8(result, &value);
 }
