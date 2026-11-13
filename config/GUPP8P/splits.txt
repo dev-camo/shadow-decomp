@@ -176,6 +176,15 @@ Game/PlayerWeaponBase.cpp:
 	.sdata      start:0x805E5C48 end:0x805E5C58
 	.sdata2     start:0x805F3E58 end:0x805F3E60
 
+Game/TGiPause.cpp:
+	.text       start:0x800B8ACC end:0x800B9F14
+	.rodata     start:0x804B4EE8 end:0x804B5428
+	.data       start:0x80523550 end:0x805235E8
+	.bss        start:0x805779F8 end:0x80577A18
+	.sdata      start:0x805E5C58 end:0x805E5CA8
+	.sbss       start:0x805EF6B0 end:0x805EF6CC
+	.sdata2     start:0x805F3E60 end:0x805F3E68
+
 Game/TGiHdGage.cpp:
 	.text       start:0x800BD38C end:0x800BDD38
 	.rodata     start:0x804B6210 end:0x804B6320

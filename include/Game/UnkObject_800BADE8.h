@@ -5,8 +5,8 @@
 #include "layout_check.h"
 
 /* The object whose address fn_800BADE8 returns from a static pointer (placeholder name; the
- * original class and function names are unknown). Only the word at 0x30 is mapped; the size is
- * unknown. */
+ * original class and function names are unknown). fn_801E3F24, the only function that sets the
+ * pointer, allocates 0x58 bytes for it. Only the word at 0x30 and the byte at 0x4D are mapped. */
 class UnkObject_800BADE8 {
   public:
     /* 0x00 */ u8 field_0x0[0x30];
@@ -15,9 +15,30 @@ class UnkObject_800BADE8 {
      * sets it to 0 when it opens a SavePointSelectTask and to 1 in that task's cancel callback
      * (meaning unknown). */
     /* 0x30 */ s32 field_0x30;
+    /* 0x34 */ u8 field_0x34[0x4D - 0x34];
+    /* When its projects are loaded and the object exists, TGiPause's update sets it to 0 when the
+     * update of its folderPause or its folderStoryRoute returns true, otherwise to 1; without
+     * loaded projects the update only sets the task's finished flag and leaves it unchanged
+     * (meaning unknown). */
+    /* 0x4D */ u8 field_0x4D;
+
+  private:
+    /* Reconstruction safeguards: the view is only borrowed through the static pointer and covers
+     * only a prefix of the 0x58-byte object. The native constructor (fn_801E3FF4, 0x801E3FF4-
+     * 0x801E4068 in the USA release) calls base constructors and installs polymorphic tables, and
+     * the native copy contract is unknown, so construction, copying, assignment and destruction
+     * are declared private and left undefined. */
+    UnkObject_800BADE8();
+    UnkObject_800BADE8(const UnkObject_800BADE8 &);
+    UnkObject_800BADE8 &operator=(const UnkObject_800BADE8 &);
+    ~UnkObject_800BADE8();
 };
 /* Checks only the mapped prefix, not the object's size. */
-CHECK_SIZEOF(UnkObject_800BADE8, 0x34);
+CHECK_SIZEOF(UnkObject_800BADE8, 0x50);
+
+/* The static pointer that fn_800BADE8 returns (placeholder name; 0x805EF9F4 in the USA release),
+ * null until fn_801E3F24 creates the object. TGiPause's update reads it directly. */
+extern UnkObject_800BADE8 *lbl_805EF9F4;
 
 extern "C" {
 UnkObject_800BADE8 *fn_800BADE8(void);

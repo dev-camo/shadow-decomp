@@ -2,12 +2,32 @@
 #define GAME_UNKFILEMANAGER_800371D8_H
 
 #include <dolphin/types.h>
+#include "layout_check.h"
 
 /* The object that fn_800371D8 returns (placeholder class name; the original class is unknown): a
  * static object (at 0x805EE0C8 in the USA release, GUPE8P) that the function constructs
  * (fn_80045290) on the first call, registering its destructor (fn_80045254), and caches in a
- * static pointer. Its layout is not mapped. */
-class UnkFileManager_800371D8;
+ * static pointer. Only the word at 0x4 is mapped. */
+class UnkFileManager_800371D8 {
+  public:
+    /* 0x0 */ u8 field_0x0[0x4];
+    /* The constructor stores fn_80044E80 here, which returns whether fn_8047A67C returns non-zero
+     * for the path (the parameter and result types are inferred). TGiPause calls it with the copy
+     * that fn_80051810 makes of a texture dictionary's path before it reads the file. */
+    /* 0x4 */ bool (*field_0x4)(const char *path);
+
+  private:
+    /* Reconstruction safeguards: the view is only borrowed through fn_800371D8's pointer. The
+     * native constructor (fn_80045290) installs the function at 0x4 (the store at 0x80045298 in
+     * the USA release) and the native copy contract is unknown, so construction, copying,
+     * assignment and destruction are declared private and left undefined. */
+    UnkFileManager_800371D8();
+    UnkFileManager_800371D8(const UnkFileManager_800371D8 &);
+    UnkFileManager_800371D8 &operator=(const UnkFileManager_800371D8 &);
+    ~UnkFileManager_800371D8();
+};
+/* Checks only the mapped prefix, not the object's size. */
+CHECK_SIZEOF(UnkFileManager_800371D8, 0x8);
 
 /* The names, the parameter types and the const qualifiers are not known (inferred); the
  * behaviour comes from the bodies. */
