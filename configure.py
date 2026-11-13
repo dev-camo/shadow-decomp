@@ -2373,13 +2373,9 @@ config.libs = [
             # 37 of 38 functions have identical words and relocations, and the data matches once the
             # linker-discarded weak and local copies are set aside. Differences (raw words in a USA
             # DOL linked from this source object, a diagnostic only: the build links the original
-            # object): the hit callback (29 of its 304 words differ as a relocatable object), its frame 0x170 instead of 0x160 (the original
-            # keeps the float-to-int conversion of the level and both int-to-float conversions of
-            # the index in one 8-byte slot, this build gives each its own), the first interpolation
-            # holding the level in f3 and loading the next table entry into f0 where the original
-            # uses f2 and f3, the panel-space offset built in place where the original calls the
-            # out-of-line three-float constructor (0x80008E1C) for it, and vectors at other stack
-            # offsets.
+            # object): the hit callback (7 of its 304 words differ as a relocatable object) builds
+            # the panel-space offset in place where the original calls the out-of-line three-float
+            # constructor (0x80008E1C) for it.
             Object(NonMatching, "Game/DashPanel.cpp", cflags=cflags_game_cpp),
             # 33 of 34 functions have identical words and relocations, and the data matches once
             # the linker-discarded weak and local copies are set aside. Differences (raw words in
