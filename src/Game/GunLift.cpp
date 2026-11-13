@@ -358,7 +358,7 @@ void GunLift::Update(float dt) {
             if (effect) {
                 Fn8040Matrix34 matrix(m_gunMatrix);
 
-                fn_8040FA20(&matrix, &result.field_0x0);
+                fn_8040FA20(&matrix, result.field_0x0);
                 effect->ClearFlags(Effect::System::ELEMENT_FLAG_8);
                 fn_80425E68(effect.get(), matrix);
             }

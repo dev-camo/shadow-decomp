@@ -123,10 +123,7 @@ void GravitySignBoard::UpdateBody(float dt) {
             BuildTurnMatrix(&m_turn, fn_80293B60(m_gravityIndex));
             m_state = 0;
         } else {
-            Fn8040Matrix34 turn;
-
-            fn_8040EFA4(&turn, &m_turnFrom, &m_turnTo, m_timer / 0.5f);
-            fn_8040C148(&m_turn, &turn);
+            m_turn = fn_8040EFA4(&m_turnFrom, &m_turnTo, m_timer / 0.5f);
         }
         UpdateModelMatrix();
         break;

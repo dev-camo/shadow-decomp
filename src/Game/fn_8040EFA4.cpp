@@ -56,11 +56,11 @@ UnkRotation3 fn_8040F16C(const UnkRotation3 *from, const UnkRotation3 *to, int o
 /* Interpolates a rotation matrix from one to another by t (0 to 1): the rotations through
  * quaternions, the translations linearly. The original stores each quaternion from fn_8040C55C in
  * a temporary and copies it with fn_801B1DD4. */
-void fn_8040EFA4(Fn8040Matrix34 *result, Fn8040Matrix34 *from, Fn8040Matrix34 *to, float t) {
+Fn8040Matrix34 fn_8040EFA4(Fn8040Matrix34 *from, Fn8040Matrix34 *to, float t) {
     if (t <= 0.0f) {
-        fn_8040C148(result, from);
+        return *from;
     } else if (t >= 1.0f) {
-        fn_8040C148(result, to);
+        return *to;
     } else {
         Fn8040Matrix34 interpolated;
         /* Matching workaround: the four quaternions are declared together in this order, as in
@@ -89,7 +89,7 @@ void fn_8040EFA4(Fn8040Matrix34 *result, Fn8040Matrix34 *from, Fn8040Matrix34 *t
             fromWeight * fn_8040C168(from, 1, 3) + t * fn_8040C168(to, 1, 3);
         *fn_8040C17C(&interpolated, 2, 3) =
             fromWeight * fn_8040C168(from, 2, 3) + t * fn_8040C168(to, 2, 3);
-        fn_8040C148(result, &interpolated);
+        return interpolated;
     }
 }
 }
