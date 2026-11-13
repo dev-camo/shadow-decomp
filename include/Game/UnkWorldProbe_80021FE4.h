@@ -21,7 +21,6 @@ class CharaColliBase;
 } // namespace CharaColli
 } // namespace System
 } // namespace SonicteamUSA
-class UnkProbeHit_8001E9BC;
 struct UnkSphere_80021C04;
 
 /* The record supplied to probe predicates (names inferred from its producers). */
@@ -34,6 +33,45 @@ struct UnkProbeFilterRecord {
 };
 CHECK_SIZEOF(UnkProbeFilterRecord, 0x14);
 typedef bool (*UnkProbePredicate)(const UnkProbeFilterRecord *record);
+
+/* The part of a hit at 0xC (placeholder name; neither its type nor its size is known). The
+ * original passes its address, the hit's plus 0xC, to fn_8001E9E8, which returns the float at
+ * 0x10 of it (USA (GUPE8P) calls at 0x8001E8B8, 0x8017922C, 0x801A82E0 and 0x8026EFFC).
+ * fn_8001E9BC returns the same address as the vector at 0xC of the hit, so the vector is declared
+ * as this part's first member. Only what code reads is declared, as for the hit below. */
+struct UnkProbeHitPart_8001E9E8 {
+    /* 0x00 */ Fn8040Vector3 field_0x0;
+    /* 0x0C */ u8 field_0xC[0x10 - 0xC];
+    /* While this is negative, fn_8026EF38 adds the hit's vector at 0x20 times its negation; when
+     * the hit's word at 0x38 is 0, 3 or 4, fn_8001E858 returns the vector of fn_8001E9C4 times
+     * its negation. */
+    /* 0x10 */ float field_0x10;
+};
+CHECK_OFFSETOF(UnkProbeHitPart_8001E9E8, field_0x10, 0x10);
+CHECK_SIZEOF(UnkProbeHitPart_8001E9E8, 0x14);
+
+/* What a node's pointer at 0x14 refers to: one hit of a collision test (placeholder name; the
+ * class is not identified). Layout from the accessors declared below, which return a member's
+ * address or value. Only those members are declared: the checks cover this 0x44-byte view, and
+ * the size of the complete object is unknown. */
+struct UnkProbeHit_8001E9BC {
+    /* 0x00 */ u8 field_0x0[0xC];
+    /* 0x0C */ UnkProbeHitPart_8001E9E8 field_0xC;
+    /* 0x20: fn_800266D4 returns this vector, and fn_8001E9C4 does unless the word at 0x38 is 1
+     * or 2. */
+    /* 0x20 */ Fn8040Vector3 field_0x20;
+    /* 0x2C: fn_8001E9C4 returns this vector when the word at 0x38 is 1 or 2. */
+    /* 0x2C */ Fn8040Vector3 field_0x2C;
+    /* 0x38: returned by fn_8001E9F0. */
+    /* 0x38 */ int field_0x38;
+    /* 0x3C */ u8 field_0x3C[0x40 - 0x3C];
+    /* 0x40: returned by fn_80099080. */
+    /* 0x40 */ int field_0x40;
+};
+CHECK_OFFSETOF(UnkProbeHit_8001E9BC, field_0xC, 0xC);
+CHECK_OFFSETOF(UnkProbeHit_8001E9BC, field_0x20, 0x20);
+CHECK_OFFSETOF(UnkProbeHit_8001E9BC, field_0x40, 0x40);
+CHECK_SIZEOF(UnkProbeHit_8001E9BC, 0x44);
 
 /* The object that a node refers to at 0x0C (placeholder name; the class is not identified). The
  * node's destructor calls its vtable slot at 0x2C with 1 (a deleting destructor, inferred) when bit
@@ -122,6 +160,8 @@ class CollisionResultList {
     /* Returns first unless bit 0x2 of its flags is set, in which case it returns null.
      * The original does not test first for null. Behaviour and member spelling inferred. */
     UnkProbeNode_80021FE4 *fn_8002735C();
+    /* The word at 0x4 (0x8026F0B4, defined in fn_8026EE9C.cpp; see the note there). */
+    s32 fn_8026F0B4();
 
     /* 0x00 */ u32 field_0x0;
     /* 0x04 */ s32 field_0x4;
@@ -157,10 +197,13 @@ fn_80021CA4(UnkWorld_80020D40 *world, const UnkSphere_80021C04 *sphere, int flag
 /* Collects the hits of the sphere moved along motion (behaviour inferred): bits 0 and 1 of flags
  * select its two tests. Bit 0 runs a loop over 0xA8 entries that passes arg5 and !arg8 to
  * fn_80021480; bit 1 calls fn_800C4DE0 with arg4 and, when arg8 is set, arg5 (otherwise 0). The
- * meanings of arg4, arg5 and arg8 are unknown. */
+ * meanings of arg4, arg5 and arg8 are unknown. arg5 is a list: fn_8026F204 calls this function in
+ * a loop, passes the list that the previous call returned (null the first time) and deletes
+ * that list after the call. */
 SonicteamUSA::System::Collision::CollisionResultList *
 fn_80021934(UnkWorld_80020D40 *world, const UnkSphere_80021C04 *sphere, const Fn8040Vector3 *motion,
-            int flags, int arg4, int arg5, UnkProbePredicate predicate, void *context, bool arg8);
+            int flags, int arg4, SonicteamUSA::System::Collision::CollisionResultList *arg5,
+            UnkProbePredicate predicate, void *context, bool arg8);
 Fn8040Vector3 *fn_8001E9C4(UnkProbeHit_8001E9BC *hit);
 int fn_8001E9F0(UnkProbeHit_8001E9BC *hit);
 void fn_8001E9F8(SonicteamUSA::System::Collision::CollisionResultList *hits);
@@ -177,6 +220,10 @@ UnkProbeIterator_80027374 fn_80027374(UnkProbeIterator_80027374 *iterator, int a
 Fn8040Vector3 *fn_8001E9BC(UnkProbeHit_8001E9BC *hit);
 /* The vector stored at 0x20 of the hit (behaviour inferred). */
 Fn8040Vector3 *fn_800266D4(UnkProbeHit_8001E9BC *hit);
+/* The float at 0x10 of the part at 0xC of a hit. */
+float fn_8001E9E8(UnkProbeHitPart_8001E9E8 *part);
+/* The word at 0x40 of the hit. */
+int fn_80099080(UnkProbeHit_8001E9BC *hit);
 /* A weak pointer to the object a node refers to, built from the weak pointer at the node's start
  * (behaviour inferred). */
 boost::weak_ptr<SonicteamUSA::System::CharaColli::CharaColliBase>

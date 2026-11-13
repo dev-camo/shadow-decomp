@@ -2637,6 +2637,7 @@ config.libs = [
             Object(Matching, "Game/HeavyDog0510CtrlUnit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/HeavyDog0410CtrlUnit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ArkLaser.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/fn_8026EE9C.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/WeaponSpecialShadowRifle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/WeaponSpecialHealCannon.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/WeaponSpecialKatana.cpp", cflags=cflags_game_cpp),

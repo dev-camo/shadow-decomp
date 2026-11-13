@@ -1405,6 +1405,10 @@ Game/ArkLaser.cpp:
 	.sbss       start:0x805F0128 end:0x805F0148
 	.sdata2     start:0x805F7E30 end:0x805F7E70
 
+Game/fn_8026EE9C.cpp:
+	.text       start:0x8026EE9C end:0x8026F444
+	.sdata2     start:0x805F7E70 end:0x805F7E90
+
 Game/WeaponSpecialHealCannon.cpp:
 	.text       start:0x80275844 end:0x80275AC4
 	.ctors      start:0x804A9F24 end:0x804A9F28

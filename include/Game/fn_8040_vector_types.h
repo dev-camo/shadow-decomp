@@ -609,7 +609,9 @@ inline void AddVector(Fn8040Vector3 *result, const Fn8040Vector3 &value) {
  * subtract a scaled vector that the out-of-line copy of operator* above computes (calls at USA
  * (GUPE8P) 0x8026D2A0 and 0x8026CAA0), which happens for an argument of an inline call; in a
  * direct call of fn_8040CE04 the product is expanded to a call of fn_8040CDA8 (one word differs
- * in each function). The original inline function is unknown. Revisit when it is identified. */
+ * in each function). fn_8026F0BC subtracts two such products (calls of the copy at 0x8026F17C
+ * and 0x8026F198); with named products passed to fn_8040CE04 it is 0x160 bytes against the
+ * original's 0x148. The original inline function is unknown. Revisit when it is identified. */
 inline void SubtractVector(Fn8040Vector3 *result, const Fn8040Vector3 &value) {
     fn_8040CE04(result, &value);
 }
