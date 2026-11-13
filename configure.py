@@ -637,18 +637,19 @@ config.libs = [
                 Object(Matching, "Game/CircusBall.cpp", cflags=cflags_game_cpp),
                 # 23 of 29 functions are identical in every word and relocation (target and section
                 # offset). The other six differ only in where data sits in the unit's sections. The
-                # original has an unreferenced 0x40-byte table of floats (0, 0, 0, 0 and three rows of
-                # 0, 0, 0, 1) in front of the TNumEdit names, which this build does not reproduce, so
-                # the strings sit 0x40 lower in .rodata: 3 immediate words differ in 0x801307D8 and 6
-                # in the constructor, and relocation offsets in the destructor and the allocator's
-                # allocate. The TNumEdit and CharaColliBase type records that the headers add put
-                # 0x30 bytes in front of .data and .sdata, which moves relocation offsets in the
-                # constructor, the destructor and the functor manager. The registry accessor's guard
-                # byte is the second byte of .sbss in the original and follows the pointer here (two
-                # relocation offsets). The original's .rodata ends with the string
-                # "string constructor: n > max_size\n", which this object does not have. This object
-                # has a 32-byte local copy of std::swap (called by the weak boost::function1 swap)
-                # and the sp_counted_base vtable and RTTI, which the original unit does not have.
+                # original's .rodata starts with 0x1C unreferenced zero bytes, in front of the three
+                # axes of FrameRotationAxes.h and the TNumEdit names, which this build does not
+                # reproduce, so the axes and the strings sit 0x1C lower in .rodata: 3 immediate
+                # words differ in 0x801307D8 and 6 in the constructor, and relocation offsets in the
+                # destructor and the allocator's allocate. The TNumEdit and CharaColliBase type
+                # records that the headers add put 0x30 bytes in front of .data and .sdata, which
+                # moves relocation offsets in the constructor, the destructor and the functor
+                # manager. The registry accessor's guard byte is the second byte of .sbss in the
+                # original and follows the pointer here (two relocation offsets). The original's
+                # .rodata ends with the string "string constructor: n > max_size\n", which this
+                # object does not have. This object has a 32-byte local copy of std::swap (called by
+                # the weak boost::function1 swap) and the sp_counted_base vtable and RTTI, which the
+                # original unit does not have.
                 Object(NonMatching, "Game/CircusPole.cpp", cflags=cflags_game_cpp),
                 # All 85 functions have identical instructions. The RTTI and vtable records differ
                 # in layout, and the object has additional weak template instances.
@@ -1424,13 +1425,13 @@ config.libs = [
             # All 49 functions have identical instructions apart from 14 raw differing words, all
             # immediate offsets into .rodata (6 in the preload hook 0x802647B8, 8 in the
             # constructor 0x802655E0), and the other sections match once the linker-discarded weak
-            # and local copies are set aside. The original's .rodata has 0x4C bytes this object
-            # does not: an unreferenced 0x40-byte table of floats (0, 0, 0, 0 and three rows of 0,
-            # 0, 0, 1) in front of the TNumEdit names, as in CircusPole, and 12 zero bytes after
-            # the CharaColliBase name. The strings after them sit 0x40 or 0x4C lower here. That
-            # moves those 14 offsets, the targets of the code relocations into that part of .rodata
-            # (they reach the same data, e.g. OnDraw's pair at .text+0x142/0x14A reaches
-            # .rodata+0x230 in the original and .rodata+0x1E4 here) and the .rodata addends of four
+            # and local copies are set aside. The original's .rodata has 0x28 unreferenced zero
+            # bytes this object does not: 0x1C at its start, in front of the three axes of
+            # FrameRotationAxes.h and the TNumEdit names, as in CircusPole, and 12 after the
+            # CharaColliBase name. The axes and the strings after them sit 0x1C or 0x28 lower here.
+            # That moves those 14 offsets, the targets of the code relocations into that part of
+            # .rodata (they reach the same data, e.g. OnDraw's pair at .text+0x142/0x14A reaches
+            # .rodata+0x230 in the original and .rodata+0x208 here) and the .rodata addends of four
             # data relocations (the descriptor name, two RTTI names and s_name).
             Object(NonMatching, "Game/ElecCoreWall.cpp", cflags=cflags_game_cpp),
             # 84 of the 85 functions have identical instructions and relocations once the weak and
@@ -1517,15 +1518,12 @@ config.libs = [
             # linker-discarded weak and local copies set aside: 56 of the 58 functions have
             # identical words and relocations. The preload hook (0x8014BD6C, USA) and the constructor (0x8014CB98)
             # differ in 3 words each, all immediate offsets into .rodata: the original's .rodata has
-            # 0x40 unreferenced bytes between the TNumEditFloat and CharaColliBaseCharInfo names
-            # (the unit vectors (1, 0, 0), (0, 1, 0) and (0, 0, 1), then 0x1C zero bytes), and 12
-            # zero bytes after the CharaColliBase name, which this object does not have (as in
-            # ElecCoreWall), so the strings after them sit 0x40 or 0x4C lower here, which also
-            # moves the .rodata addends of the data relocations to them. In
-            # .sdata2 the original places 1.0f after 0.0f (0x805F4744), this build after 0.063f
-            # (first used in the hit callback), so the 12 literals between them sit one slot
-            # earlier. In .data the original keeps the discarded weak vtables between the kept
-            # base-class lists as zero-filled holes, as in Spring.
+            # 0x1C unreferenced zero bytes after the three axes of FrameRotationAxes.h, between the
+            # TNumEditFloat and CharaColliBaseCharInfo names, and 12 zero bytes after the
+            # CharaColliBase name, which this object does not have (as in ElecCoreWall), so the
+            # strings after them sit 0x1C or 0x28 lower here, which also moves the .rodata addends
+            # of the data relocations to them. In .data the original keeps the discarded weak
+            # vtables between the kept base-class lists as zero-filled holes, as in Spring.
             Object(NonMatching, "Game/StretchGrass.cpp", cflags=cflags_game_cpp),
             # 92 of the 96 functions have identical instruction words and relocations in USA, Japan
             # and PAL. The original's .rodata has two blocks that this object lacks, of unknown
