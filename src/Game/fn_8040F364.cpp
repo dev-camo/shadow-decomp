@@ -207,10 +207,10 @@ void fn_8040FAA0(Fn8040Vector3 *translation, Fn8040Matrix34 *matrix) {
     translation->z = fn_8040C168(matrix, 2, 3);
 }
 
-void fn_8040FA20(Fn8040Matrix34 *matrix, const Fn8040Vector3 *translation) {
-    *fn_8040C17C(matrix, 0, 3) = translation->x;
-    *fn_8040C17C(matrix, 1, 3) = translation->y;
-    *fn_8040C17C(matrix, 2, 3) = translation->z;
+void fn_8040FA20(Fn8040Matrix34 *matrix, const Fn8040Vector3 &translation) {
+    *fn_8040C17C(matrix, 0, 3) = translation.x;
+    *fn_8040C17C(matrix, 1, 3) = translation.y;
+    *fn_8040C17C(matrix, 2, 3) = translation.z;
 }
 
 void fn_8040F990(Fn8040Vector3 *parallel, Fn8040Vector3 *perpendicular, const Fn8040Vector3 *vector,

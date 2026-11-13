@@ -296,7 +296,7 @@ bool ArkCannon::TurnToTarget(boost::shared_ptr<CharInfo> target, float dt) {
     fn_8040CE74(&axis);
 
     Fn8040Matrix34 axisTurn;
-    fn_80049778(&axisTurn, &axis, angle);
+    fn_80049778(&axisTurn, axis, angle);
     fn_8040C148(&turn, &axisTurn);
 
     matrix = fn_8001E044(&turn, &matrix);

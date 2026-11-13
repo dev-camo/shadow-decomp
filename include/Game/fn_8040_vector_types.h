@@ -341,9 +341,6 @@ void fn_80049290(UnkRotation3 *angles, const Fn8040Matrix34 *matrix);
 float fn_8004924C(float from, float to, float a, float b);
 /* Builds the matrix that rotates by angle about axis. */
 void fn_800498A0(Fn8040Matrix34 *matrix, const Fn8040Vector3 *axis, float angle);
-/* Builds the same rotation as fn_800498A0, storing the elements directly instead of through
- * fn_8040C17C (behaviour inferred from its body). */
-void fn_80049778(Fn8040Matrix34 *matrix, const Fn8040Vector3 *axis, float angle);
 /* Quaternion, vector, interpolation and rotation-vector helpers used by the matrix and vector
  * math units, wherever they are defined. Their original names are unknown and the descriptions
  * are inferred from the code. A rotation vector holds the angles about the x, y and z axes; order
@@ -366,8 +363,11 @@ void fn_804102F4(Fn8040Vector4 *quaternion, const UnkRotation3 *rotation, int or
 UnkRotation3 fn_80410204(const Fn8040Vector4 *quaternion, int order);
 /* Interpolation of the segment in fn_8040EFA4.cpp: matrices through quaternions with a linear
  * translation, rotation vectors through quaternions, positions linearly, and angles the shorter
- * way round. */
-void fn_8040EFA4(Fn8040Matrix34 *result, Fn8040Matrix34 *from, Fn8040Matrix34 *to, float t);
+ * way round. The matrix interpolation returns its result by value (inferred; the code is that of
+ * a result pointer): GravitySignBoard copies the result into its member with fn_8040C148, and
+ * Player::Shadow::ShadowMotion copies it into a second stack matrix (USA (GUPE8P) 0x800B2018),
+ * which a result temporary reproduces. */
+Fn8040Matrix34 fn_8040EFA4(Fn8040Matrix34 *from, Fn8040Matrix34 *to, float t);
 UnkRotation3 fn_8040F16C(const UnkRotation3 *from, const UnkRotation3 *to, int order, float t);
 Fn8040Vector3 fn_8040F268(const Fn8040Vector3 *from, const Fn8040Vector3 *to, float t);
 float fn_8040F314(float from, float to, float t);
@@ -412,9 +412,8 @@ float fn_8040F8FC(const Fn8040Vector3 *a, const Fn8040Vector3 *b);
  * output may be null. onto is assumed to be of unit length; it is not normalised. */
 void fn_8040F990(Fn8040Vector3 *parallel, Fn8040Vector3 *perpendicular, const Fn8040Vector3 *vector,
                  const Fn8040Vector3 *onto);
-/* Writes the translation column of the matrix from a vector (fn_8040FA20), and reads it into one
- * (fn_8040FAA0, and fn_8040FB08 that returns it). */
-void fn_8040FA20(Fn8040Matrix34 *matrix, const Fn8040Vector3 *translation);
+/* Reads the translation column of the matrix into a vector (fn_8040FAA0, and fn_8040FB08 that
+ * returns it); fn_8040FA20 below writes it. */
 void fn_8040FAA0(Fn8040Vector3 *translation, Fn8040Matrix34 *matrix);
 Fn8040Vector3 fn_8040FB08(Fn8040Matrix34 *matrix);
 /* The closest point of a segment to a point, with its fraction along the segment when requested
@@ -656,6 +655,18 @@ extern "C" float fn_8003C4C4(const UnkSegment_80020A20 *a, const UnkSegment_8002
  * fn_8031E3B0 at 0x8031E440-0x8031E44C; a constructor call written as the argument gives that
  * code. */
 extern "C" Fn8040Matrix34 fn_8040B034(const Fn8040Vector3 &translation);
+
+/* Writes the translation column of the matrix from a vector (see fn_8040FAA0 above). The const
+ * reference is inferred (the code is that of a pointer parameter): Player::Shadow::ShadowMotion
+ * passes vectors built for the call in place, for example the sum at USA (GUPE8P) 0x800B4974 and
+ * the zero vector at 0x800B2080-0x800B2098. */
+extern "C" void fn_8040FA20(Fn8040Matrix34 *matrix, const Fn8040Vector3 &translation);
+
+/* Builds the same rotation as fn_800498A0, storing the elements directly instead of through
+ * fn_8040C17C (behaviour inferred from its body). The const reference is inferred (the code is
+ * that of a pointer parameter): Player::Shadow::ShadowMotion passes the normalised axis that
+ * fn_8040CEE8 returns in place (USA (GUPE8P) 0x800B213C-0x800B2154). */
+extern "C" void fn_80049778(Fn8040Matrix34 *matrix, const Fn8040Vector3 &axis, float angle);
 
 /* result += value (name inferred).
  * Matching workaround: AddVector is an inline wrapper of fn_8040CFF8 so that the inline calls in

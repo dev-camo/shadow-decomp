@@ -106,7 +106,7 @@ void Unk801A4430::fn_801A469C(Fn8040Vector3 *vector) {
 
 void Unk801A4430::fn_801A4640(const Fn8040Vector3 &position, const Fn8040Vector3 &rotation) {
     Fn8040Matrix34 matrix = fn_801A4430(rotation);
-    fn_8040FA20(&matrix, &position);
+    fn_8040FA20(&matrix, position);
     fn_801A4604(matrix);
 }
 

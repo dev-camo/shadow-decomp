@@ -427,7 +427,7 @@ void Monitor::Update(float dt) {
         fn_8040CE74(&direction);
         fn_8040CE38(&direction, distance);
         const Fn8040Vector3 &modelPosition = matrixPosition + direction;
-        fn_8040FA20(&matrix, &modelPosition);
+        fn_8040FA20(&matrix, modelPosition);
 
         UnkRecord_8000DCC0 *record = fn_8000DCC0()->field_0x0;
 
