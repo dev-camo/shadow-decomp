@@ -1933,6 +1933,14 @@ config.libs = [
             # .rodata (the type name and the tables and strings after it), 13 in .data and 26 in
             # .sdata (pointers to those strings) and 3 in .sdata2. The other four are BkWingSmall's.
             Object(NonMatching, "Game/BkWorm.cpp", cflags=cflags_game_cpp),
+            # Player::PlayerMotion: all 32 bodies have identical instructions and resolved
+            # relocation targets in USA (GUPE8P), Japan (GUPJ8P) and PAL (GUPP8P). The filename is
+            # inferred from RTTI. With discarded copies set aside, .sdata2 starts with Task,
+            # 0.0f and 1.0f in the original order. The remaining differences are the function1
+            # operator() copy after fn_800AA344 instead of the file's end, extra weak code/data
+            # (including 1e-4f and the sqrtf doubles), and .sdata2 flags WA instead of A. The
+            # normal link retains the original object.
+            Object(NonMatching, "Game/PlayerMotion.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerOption.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerShadowBehavior.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerWatch.cpp", cflags=cflags_game_cpp),
