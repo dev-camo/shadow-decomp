@@ -121,6 +121,15 @@ Game/fn_8007D770.cpp:
 Game/fn_80096B64.cpp:
 	.text       start:0x80096E18 end:0x80096E50
 
+Game/CharaColliBaseCharInfo.cpp:
+	.text       start:0x800C0A4C end:0x800C0B74
+	.ctors      start:0x804AA334 end:0x804AA338
+	.rodata     start:0x804B60C0 end:0x804B6130
+	.data       start:0x80522D28 end:0x80522DC8
+	.bss        start:0x8057AED0 end:0x8057AEE8
+	.sdata      start:0x805E5290 end:0x805E52A0
+	.sbss       start:0x805EECA0 end:0x805EECB0
+
 Game/FleetHolder.cpp:
 	.text       start:0x800CBFC8 end:0x800D2518
 	.ctors      start:0x804AA340 end:0x804AA344
