@@ -2,6 +2,7 @@
 #define GAME_CHARINFO_H
 
 #include "Game/fn_8040_vector_types.h"
+#include "Game/PlayerManage.h"
 #include "boost/weak_ptr.hpp"
 #include <dolphin/types.h>
 #include "layout_check.h"
@@ -102,9 +103,6 @@ class CharInfo {
 };
 CHECK_SIZEOF(CharInfo, 0x64);
 
-/* The manager returned by fn_80074194 keeps a list of character infos. */
-class UnkManager_80074194;
-
 /* An empty shared pointer that callers pass where no character info is wanted (behaviour inferred
  * from its uses). */
 extern boost::shared_ptr<CharInfo> lbl_805EE698;
@@ -114,23 +112,6 @@ extern boost::shared_ptr<CharInfo> lbl_805EE698;
 extern boost::shared_ptr<CharInfo> lbl_805EF980;
 
 extern "C" {
-/* Returns the manager (behaviour inferred): constructs a function-local static manager on first
- * use, registers its destructor and caches its address in a static pointer. The E3 2005
- * prototype (G9SJ8P) expands this sequence in its callers (62 copies), which suggests a header
- * inline accessor. */
-UnkManager_80074194 *fn_80074194(void);
-/* Returns the listed character info nearest to position, or an empty pointer when the list is
- * empty (behaviour inferred). */
-boost::weak_ptr<CharInfo> fn_800A8A7C(UnkManager_80074194 *manager, const Fn8040Vector3 *position);
-/* Returns the listed character info nearest to the segment (by fn_8003C660's distance), or an
- * empty pointer when the list is empty (behaviour inferred). The segment is taken by const
- * reference (inferred): the ELEC_LIGHT gadget passes a temporary whose constructor's result it
- * hands on. */
-boost::weak_ptr<CharInfo> fn_800A8810(UnkManager_80074194 *manager,
-                                      const UnkSegment_80020A20 &segment);
-/* Returns the listed character info whose object has the word id at 0x298, or an empty pointer
- * when there is none (behaviour inferred). */
-boost::weak_ptr<CharInfo> fn_800A8B74(UnkManager_80074194 *manager, s32 id);
 /* Returns 0 for arg1 0x27, otherwise fn_802063BC's result (return type inferred, the gadgets
  * ignore it). */
 int fn_8020642C(const boost::shared_ptr<CharInfo> &charInfo, int arg1);
@@ -142,8 +123,5 @@ void fn_8015CEA0(const CharInfo *info, Fn8040Matrix34 *matrix);
  * order at 0x30 through it to fn_8040FFBC. */
 int fn_801DBD00(int value);
 }
-
-/* The id that callers pass to fn_800A8B74 (the meaning is unknown; 43 functions read it). */
-extern s32 lbl_805EE588;
 
 #endif

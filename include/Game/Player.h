@@ -13,16 +13,29 @@ namespace Player {
  * as its bases). The type record that the cast helper at 0x8009DC3C (USA, GUPE8P) passes to
  * __dynamic_cast for it (0x805E47E0) names it, and so does the record at 0x805E4060 that its
  * vtable (0x805200AC) points to. Gadgets and player commands cast the shared CharInfo of the
- * character they look at to it, and the TornadoCollision gadget reads the bit set at 0xA8. None of
- * its own members are mapped: the view declared here is its 0x290-byte PlayerBase part, while the
- * object is larger (fn_80076D24, in its vtable, returns a copy of the shared pointer at 0x290),
- * and its full size is unknown. */
-class Player : public PlayerBase {};
-CHECK_SIZEOF(Player, 0x290);
+ * character they look at to it, and the TornadoCollision gadget reads the bit set at 0xA8. Only
+ * the shared pointer at 0x290 and the signed id at 0x298 are mapped here. The full native class
+ * extent is not established. Construction, copying and destruction are not recovered
+ * through this view. */
+class Player : public PlayerBase {
+  public:
+    /* 0x290 */ boost::shared_ptr<UnkPlayerShared_80076D24> field_0x290;
+    /* 0x298 */ s32 field_0x298;
+
+  private:
+    Player();
+    Player(const Player &);
+    Player &operator=(const Player &);
+    virtual ~Player();
+};
+/* Checks only the recovered borrowed view. */
+CHECK_SIZEOF(Player, 0x29C);
 
 } // namespace Player
 
 extern "C" {
+/* Stores id at 0x298 (behaviour and signature inferred). */
+void fn_80077294(Player::Player *player, s32 id);
 /* True when bit number bit of the bit set starting at bits is set (behaviour inferred). */
 bool fn_8006CD78(const u32 *bits, int bit);
 /* Returns bit 3 of the player's motion work flags (behaviour and signature inferred). */
@@ -37,11 +50,6 @@ bool fn_800B78B0(const boost::shared_ptr<CharInfo> &charInfo);
 bool fn_800B7938(const boost::shared_ptr<CharInfo> &charInfo);
 bool fn_800B7AD0(const boost::shared_ptr<CharInfo> &charInfo);
 bool fn_800B7828(const boost::shared_ptr<CharInfo> &charInfo);
-/* Erases from the list of the manager that fn_80074194 returns the first element whose pointee's
- * first word equals the pointer that player holds (behaviour from its body, which reads only the
- * first word at player). The destructor of PlayerWatch.cpp's Watch task passes the address of its
- * shared pointer member; the reference to a shared pointer is inferred from that one caller. */
-void fn_800A8E5C(UnkManager_80074194 *manager, const boost::shared_ptr<Player::Player> &player);
 }
 
 #endif

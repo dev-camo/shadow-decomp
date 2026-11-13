@@ -2,6 +2,7 @@
 #define GAME_MISSIONCLEARCOLLISION_H
 
 #include "Game/CharInfo.h"
+#include "Game/PlayerManage.h"
 #include "Game/Gadget.h"
 #include "Game/GadgetCharInfo.h"
 #include "boost/shared_ptr.hpp"
@@ -9,13 +10,6 @@
 #include "layout_check.h"
 
 class UnkObject_802B4254;
-
-extern "C" {
-/* Returns the listed character info whose object (the pointer at 0x0 of the character info) has
- * the word id at 0x54, or an empty pointer when there is none (behaviour inferred from its body;
- * the mission clear gadgets pass 0). */
-boost::weak_ptr<CharInfo> fn_800A8C54(UnkManager_80074194 *manager, s32 id);
-}
 
 /* The gadget parameters in the order of the descriptor's table. */
 struct MissionClearCollisionParams {
