@@ -27,10 +27,10 @@ class SoundBase;
 } // namespace Player
 
 /* The 4-byte object that the pointer at 0x248 of a Player::PlayerBase refers to (placeholder name).
- * Its constructor (fn_80095BD4, which the Player::Shadow constructor calls at 0x800ADB5C in USA
- * (GUPE8P), and 13 other functions) allocates a 0x2C-byte object, constructs it with fn_80096954
- * and keeps it in its only word; the functions below pass that object on. Declared incomplete:
- * nothing recovered constructs, copies or destroys one. */
+ * Its constructor (fn_80095BD4, called by a virtual function of Player::PlayerShadow (USA (GUPE8P)
+ * 0x800AD3F8, at 0x800ADB5C) and by 13 other functions) allocates a 0x2C-byte object, constructs
+ * it with fn_80096954 and keeps it in its only word; the functions below pass that object on.
+ * Declared incomplete: nothing recovered constructs, copies or destroys one. */
 class UnkObject_80095BD4;
 
 /* A partial view of the object at 0x24C of a Player::PlayerBase (placeholder name). The code at
@@ -239,9 +239,10 @@ class PlayerBase : public PlayerObject {
     /* The constructor clears it (0x8007A108). The destructor, when it is not null, calls its
      * destructor (0x800A25E0) with flag 1, freeing it, and clears it (0x80079BA4-0x80079BBC). */
     /* 0x244 */ UnkObject_80079BA4 *field_0x244;
-    /* The constructor clears it; the Player::Shadow constructor (0x800ADB64) and the 13 other
-     * callers of fn_80095BD4 store a new object here. fn_80078B54, when it is not null, calls its
-     * destructor (fn_80095B18) with flag 1, freeing it, and clears it (0x80078BA8-0x80078BC0). */
+    /* The constructor clears it; a virtual function of Player::PlayerShadow (0x800AD3F8, at
+     * 0x800ADB64) and the 13 other callers of fn_80095BD4 store a new object here. fn_80078B54,
+     * when it is not null, calls its destructor (fn_80095B18) with flag 1, freeing it, and clears
+     * it (0x80078BA8-0x80078BC0). */
     /* 0x248 */ UnkObject_80095BD4 *field_0x248;
     /* 0x24C */ UnkTargetSource_80206574 *field_0x24C;
     /* 0x250 */ u8 field_0x250[0x274 - 0x250];
