@@ -111,7 +111,15 @@ float ShadowRifle::ShootAt(const Fn8040Vector3 &arg, const Fn8040Vector3 &target
 }
 
 void ShadowRifle::PlayShotEffects() {
-    Fn8040Vector3 position = fn_8040FB08(fn_80063234(field_0x1C, 0));
+    /* Matching workaround: the frame's matrix is a named local. The original copies the pointer
+     * that fn_80063234 returns to r0 before it sets up the fn_8040FB08 call (0x80276F74, USA
+     * (GUPE8P)), as MWCC does for a named variable; passing the call's result directly, also
+     * through an inline helper, moves it straight to r4 and gives 156 bytes against 160
+     * (measured). The second fn_80063234 result below goes straight to r4 in the original
+     * (0x80276FC0). Whether the original names the pointer is not known. Revisit when another
+     * form with the same code is found. */
+    Fn8040Matrix34 *matrix = fn_80063234(field_0x1C, 0);
+    Fn8040Vector3 position = fn_8040FB08(matrix);
 
     fn_801D53C4(fn_80053164(), 0xE030, &position, 0, 1, 0, 0);
     fn_8005E418(fn_80063234(field_0x1C, 0), 0x27D, m_owner);

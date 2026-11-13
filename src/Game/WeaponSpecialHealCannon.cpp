@@ -82,7 +82,14 @@ inline HealCannon::HealCannon(const boost::weak_ptr<CharInfo> &owner, int type)
 HealCannon::~HealCannon() {}
 
 void HealCannon::PlayShotEffects() {
-    Fn8040Vector3 position = fn_8040FB08(fn_80063234(field_0x1C, 0));
+    /* Matching workaround: the frame's matrix is a named local. The original copies the pointer
+     * that fn_80063234 returns to r0 before it sets up the fn_8040FB08 call (0x802759F0, USA
+     * (GUPE8P)), as MWCC does for a named variable; passing the call's result directly, also
+     * through an inline helper, moves it straight to r4 and gives 92 bytes against 96
+     * (measured). Whether the original names the pointer is not known. Revisit when
+     * another form with the same code is found. */
+    Fn8040Matrix34 *matrix = fn_80063234(field_0x1C, 0);
+    Fn8040Vector3 position = fn_8040FB08(matrix);
 
     fn_801D54F4(fn_80053164(), 0xE02D, &position, 0, 1);
 }
