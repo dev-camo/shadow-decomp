@@ -12,12 +12,16 @@ class PlayerBase;
 
 namespace Test {
 
+/* The 0x24-byte object that EffBelt's constructor creates with fn_802DE6E8 (placeholder name; its
+ * class is unknown and its members are not mapped). */
+class UnkEffBeltObject_802DE6E8;
+
 /* Test::EffBelt (class name and base from RTTI; its task name is "Eff::Belt"): a 0x30-byte task
  * whose constructor (USA (GUPE8P) 0x802DDEBC) creates a 0x24-byte object at 0x28 from its
  * arguments and sets bit 0x100 of the task flags. The parent is the task that fn_80046178's
- * manager holds at 0x20 (0x802DDEE4-0x802DDEF0). This is a view: the object at 0x28 is not mapped, and the meanings of
- * the arguments are not known (the belt of Game/PlayerEffect.cpp passes 0x3C, a colour from the
- * player's character table and its own float). */
+ * manager holds at 0x20 (0x802DDEE4-0x802DDEF0). The meanings of the arguments are not known
+ * (the belt of Game/PlayerEffect.cpp passes 0x3C, a colour from the player's character table and
+ * its own float). */
 class EffBelt : public Task {
   public:
     EffBelt(const boost::weak_ptr<Player::PlayerBase> &player, int arg1,
@@ -29,7 +33,7 @@ class EffBelt : public Task {
     /* Passes the player to fn_802DE4B4 for the object at 0x28 (the parameter type is inferred). */
     void fn_802DDCC8(Player::PlayerBase *player);
 
-    /* 0x28 */ u8 field_0x28[0x30 - 0x28];
+    /* 0x28 */ UnkEffBeltObject_802DE6E8 *field_0x28;
 
   private:
     EffBelt(const EffBelt &);
