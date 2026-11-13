@@ -275,9 +275,9 @@ void SetBKTank::Update(float dt) {
         m_effects[8] = fn_80168A50(GetNodeMatrix(), 0x70);
     }
 
-    bool stationary = m_previousPosition.x == m_charInfo->m_position.x &&
-                      m_previousPosition.y == m_charInfo->m_position.y &&
-                      m_previousPosition.z == m_charInfo->m_position.z;
+    const Fn8040Vector3 &position = m_charInfo->m_position;
+    bool stationary = m_previousPosition.x == position.x && m_previousPosition.y == position.y &&
+                      m_previousPosition.z == position.z;
 
     if (stationary) {
         if (!m_stationary) {
