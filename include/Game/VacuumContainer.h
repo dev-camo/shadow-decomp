@@ -12,11 +12,12 @@ class VacuumCommand;
 namespace VacuumContainer {
 
 /* VacuumContainer::Container (class name from RTTI, with VacuumObject as its only base): the
- * CONTAINER gadget's model while a character pulls it in (inferred from the names). It keeps the
- * container's model and its "model", "select" and "value" parameters. While it is pulled in it
- * turns its model from its rotation towards the one that fn_8040F364 builds from m_forward and m_up
- * (see Update) and spins it about its x axis. Member names and the names of the methods that are
- * not virtual are inferred from the code. */
+ * CONTAINER or SECRET CONTAINER gadget's model while a character pulls it in (inferred from the
+ * names). It keeps the container's model and the three values that its container passes: the
+ * CONTAINER's "model", "select" and "value" parameters, or 0, 6 and the SECRET CONTAINER's
+ * "weapon" parameter. While it is pulled in it turns its model from its rotation towards the one
+ * that fn_8040F364 builds from m_forward and m_up (see Update) and spins it about its x axis.
+ * Member names and the names of the methods that are not virtual are inferred from the code. */
 class Container : public VacuumObject {
   public:
     Container(VacuumCommand *command, const boost::shared_ptr<GadgetModelInfo> &model,
@@ -64,7 +65,8 @@ class Container : public VacuumObject {
     /* The rotation that fn_80238268 was last given; the constructor zeroes it. */
     /* 0x20 */ UnkRotation3 m_rotation;
     /* 0x2C */ boost::shared_ptr<GadgetModelInfo> m_model;
-    /* The container's "model", "select" and "value" parameters (see Container.h). */
+    /* The container's "model", "select" and "value" parameters (see Container.h), or 0, 6 and
+     * the "weapon" parameter (see ContainerSecret.h). */
     /* 0x34 */ s32 m_modelIndex;
     /* 0x38 */ s32 m_select;
     /* 0x3C */ s32 m_value;
@@ -83,7 +85,9 @@ CHECK_SIZEOF(Container, 0x48);
  * a VacuumObjectTask for it, which is constructed only when the task's own allocation succeeds
  * (behaviour inferred from the body; the original name is unknown). The CONTAINER gadget's
  * container calls it for a VacuumCommand, with its "model", "select" and "value" parameters, its
- * own position and rotation and an id.
+ * own position and rotation and an id; the SECRET CONTAINER gadget's container
+ * (Game/ContainerSecret.h) passes 0, 6 and its "weapon" parameter in place of the three
+ * parameters.
  *
  * The signature is inferred: the bytes give the eight integer register arguments, but not the
  * parameter types, the pointer or reference spellings or the const qualifiers. */

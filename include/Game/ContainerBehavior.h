@@ -42,12 +42,12 @@ CHECK_SIZEOF(UnkState_800F9570, 0x20);
 /* ContainerBehavior (class name from RTTI, with no base class): a 0x44-byte object with a position
  * and a rotation. Unless Update returns early, it steps the position's y, may raise y to a stored
  * hit height and, when it has a probe, moves the probe to the position (conditions at Update). The
- * BOMB and CONTAINER gadgets each keep one in a shared pointer; copies of that shared pointer's
- * functions and its control block's constructor are in the BOMB gadget's file (the first at USA
- * (GUPE8P) 0x800EED84), and the CONTAINER gadget's file has its own local copies of the two
- * constructors that take the raw pointer (0x800F7BE0). Its out-of-line functions
- * (0x800F8D2C-0x800F95C0), vtable (0x80525560) and RTTI follow the CONTAINER gadget's file in a
- * file of their own (Game/ContainerBehavior.cpp).
+ * BOMB, CONTAINER and SECRET CONTAINER gadgets each keep one in a shared pointer; copies of that
+ * shared pointer's functions and its control block's constructor are in the BOMB gadget's file
+ * (the first at USA (GUPE8P) 0x800EED84), and the CONTAINER and SECRET CONTAINER gadgets' files
+ * each have their own local copies of the two constructors that take the raw pointer (0x800F7BE0
+ * and 0x80278F04). Its out-of-line functions (0x800F8D2C-0x800F95C0), vtable (0x80525560) and
+ * RTTI follow the CONTAINER gadget's file in a file of their own (Game/ContainerBehavior.cpp).
  *
  * The layout comes from the constructor (0x800F9354) and the virtual destructor (0x800F9290).
  * Method names are inferred from what the bodies do, and so are the parameters' pointer and const
@@ -56,9 +56,9 @@ class ContainerBehavior {
   public:
     /* Copies *position to the state's position, keeps model in m_model, builds field_0xC for the
      * position and wraps a new box probe at the state's position and rotation in field_0x14
-     * (0x800F9354; the parameter types are inferred: the BOMB and CONTAINER gadgets pass their
-     * character info's position and a copy of their model pointer that they destroy after the
-     * call). */
+     * (0x800F9354; the parameter types are inferred: the BOMB, CONTAINER and SECRET CONTAINER
+     * gadgets pass their character info's position and a copy of their model pointer that they
+     * destroy after the call). */
     ContainerBehavior(const Fn8040Vector3 *position, boost::shared_ptr<GadgetModelInfo> model);
     /* 0x800F9290. */
     virtual ~ContainerBehavior();

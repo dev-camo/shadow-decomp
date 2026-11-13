@@ -13,7 +13,9 @@ class GadgetModelInfo;
  * its body; what the object does and the original name are unknown). The CONTAINER gadget's
  * container calls it when it is thrown, with the thrower, its model, its "model", "select" and
  * "value" parameters, its character info's position, the angles of its grab matrix, its character
- * info's velocity, a scaled vector, an id and 0, 1 and 600.
+ * info's velocity, a scaled vector, an id and 0, 1 and 600. The SECRET CONTAINER gadget's
+ * container (Game/ContainerSecret.h) calls it in the same way, with 0, 6 and its "weapon"
+ * parameter in place of the three parameters.
  *
  * The signature is inferred: the bytes give the eight integer register arguments, the two stack
  * words and the three floats, but not the parameter types, the pointer or reference spellings or

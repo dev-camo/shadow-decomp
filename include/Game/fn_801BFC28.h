@@ -16,8 +16,9 @@
  * 0x800FD424, 0x80107FD8, 0x80278448 and 0x80292BE4) all call fn_80021B08 first and discard its
  * result, then load the arguments in the same order, which suggests a shared inline wrapper that is
  * not recovered. The recovered callers among them (Bomb::Bomb::UpdateMotion at 0x800EE8DC,
- * Container::ContainerNormal::UpdateMotion at 0x800F7028 and HealingUnit::HealingUnit::UpdateMotion
- * at 0x80107FD8) write the getter call as its own statement. */
+ * Container::ContainerNormal::UpdateMotion at 0x800F7028, HealingUnit::HealingUnit::UpdateMotion
+ * at 0x80107FD8, Container::ContainerSecret::UpdateMotion at 0x80278448 and
+ * Parachute::Parachute::UpdateMotion at 0x80292BE4) write the getter call as its own statement. */
 /* movement is not const: fn_801BFC68 passes it on to fn_801BFFD8, which zeroes it, adds to it and
  * assigns it on some paths (USA (GUPE8P) 0x801C0240, 0x801C02B0 and 0x801C02C0). */
 extern "C" bool fn_801BFC28(void *arg0, Fn8040Vector3 *position, Fn8040Vector3 *movement,

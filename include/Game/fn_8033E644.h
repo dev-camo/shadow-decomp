@@ -15,8 +15,9 @@ extern "C" {
  * words that are not zero, the position and the rotation (behaviour only partly read; the
  * original name is unknown). The CONTAINER gadget's container calls it when it breaks, with a
  * copy of its model pointer that it destroys after the call, its "model" parameter and its
- * character info's position and rotation. The signature is inferred, as are the by-value model
- * pointer and the pointer spellings. */
+ * character info's position and rotation; the SECRET CONTAINER gadget's container
+ * (Game/ContainerSecret.h) calls it in the same way with 0 for modelIndex. The signature is
+ * inferred, as are the by-value model pointer and the pointer spellings. */
 void fn_8033E644(boost::shared_ptr<GadgetModelInfo> model, int modelIndex,
                  const Fn8040Vector3 *position, const UnkRotation3 *rotation);
 /* Chooses by select, through a jump table, what to create (behaviour from its body; the callees'
@@ -31,7 +32,8 @@ void fn_8033E644(boost::shared_ptr<GadgetModelInfo> model, int modelIndex,
  * - 5: EnergyCore::EnergyCoreTask::Create with value, copies of position and rotation, and 500.
  * - 6: fn_8033E9A0 with position, rotation, the vector (0, 1, 0) and value.
  * The CONTAINER gadget's container calls it when it breaks, with its "select" and "value"
- * parameters and its character info's position and rotation. The signature is inferred. */
+ * parameters and its character info's position and rotation; the SECRET CONTAINER gadget's
+ * container calls it with 6 and its "weapon" parameter. The signature is inferred. */
 void fn_8033E828(int select, int value, const Fn8040Vector3 *position,
                  const UnkRotation3 *rotation);
 }
