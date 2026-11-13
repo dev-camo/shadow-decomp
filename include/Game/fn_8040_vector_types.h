@@ -603,6 +603,16 @@ inline void MakeTranslationMatrix(Fn8040Matrix34 *matrix, const Fn8040Vector3 &t
 inline void AddVector(Fn8040Vector3 *result, const Fn8040Vector3 &value) {
     fn_8040CFF8(result, &value);
 }
+
+/* result -= value (name inferred): a wrapper of fn_8040CE04 of the same kind.
+ * Matching workaround: HeavyDog0410CtrlUnit_Move's and HeavyDog0410CtrlUnit_Mine's Update
+ * subtract a scaled vector that the out-of-line copy of operator* above computes (calls at USA
+ * (GUPE8P) 0x8026D2A0 and 0x8026CAA0), which happens for an argument of an inline call; in a
+ * direct call of fn_8040CE04 the product is expanded to a call of fn_8040CDA8 (one word differs
+ * in each function). The original inline function is unknown. Revisit when it is identified. */
+inline void SubtractVector(Fn8040Vector3 *result, const Fn8040Vector3 &value) {
+    fn_8040CE04(result, &value);
+}
 #endif
 
 #endif

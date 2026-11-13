@@ -1262,6 +1262,14 @@ Game/HeavyDog0510CtrlUnit.cpp:
 	.sdata      start:0x805EB928 end:0x805EB960
 	.sdata2     start:0x805F8E40 end:0x805F8E78
 
+Game/HeavyDog0410CtrlUnit.cpp:
+	.text       start:0x8026C8BC end:0x8026D930
+	.rodata     start:0x804F75B0 end:0x804F7658
+	.data       start:0x8054DA00 end:0x8054DB00
+	.sdata      start:0x805EB960 end:0x805EB998
+	.sbss       start:0x805F11C8 end:0x805F11D0
+	.sdata2     start:0x805F8E78 end:0x805F8E90
+
 Game/ArkLaser.cpp:
 	.text       start:0x8026DFA8 end:0x8026F290
 	.ctors      start:0x804AAF70 end:0x804AAF74

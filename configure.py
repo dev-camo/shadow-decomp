@@ -2861,6 +2861,12 @@ config.libs = [
             Object(Matching, "Game/SpaceGadget.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BackDrop.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/HeavyDog0510CtrlUnit.cpp", cflags=cflags_game_cpp),
+            # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
+            # (GUPP8P): 22 of the 23 functions have identical words. In HeavyDog0410CtrlUnit_Mine's
+            # constructor 7 of the 243 words differ (USA 0x8026CE70-0x8026CEA0): where it moves
+            # each clump to its world, the original keeps the clump in r30 and the world in r27,
+            # and the build has the two registers the other way round.
+            Object(NonMatching, "Game/HeavyDog0410CtrlUnit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ArkLaser.cpp", cflags=cflags_game_cpp),
             # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
             # (GUPP8P): ten of the 11 functions have identical words and relocation targets once
