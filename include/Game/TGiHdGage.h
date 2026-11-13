@@ -14,10 +14,10 @@ class CProject;
 } // namespace Chao
 
 /* TGiHdGage (class name from RTTI): a task of the in-game display that shows the CSD projects
- * HeroGauge and DarkGauge through a draw layer. Each update it moves each gauge's value towards
- * the first word of the matching entry of UnkManager_80079808::field_0x70C and sets the frame of
- * the gauge's scene from it. TGameInfomation's constructor creates it. Member and method names
- * are inferred. */
+ * HeroGauge and DarkGauge through a draw layer. Each update, for each gauge whose project has
+ * its scene, it moves the gauge's value towards the first word of the matching entry of
+ * UnkManager_80079808::field_0x70C and sets the frame of the scene from it. TGameInfomation's
+ * constructor creates it. Member and method names are inferred. */
 class TGiHdGage : public Task {
   public:
     TGiHdGage(Task *parent);
@@ -40,6 +40,7 @@ class TGiHdGage : public Task {
     /* 0x28 */ boost::shared_ptr<UnkLayer_8004DFB0> m_layer;
     /* 0x30 */ Gauge m_gauges[2];
 };
+CHECK_SIZEOF(TGiHdGage::Gauge, 0x8);
 CHECK_SIZEOF(TGiHdGage, 0x40);
 
 #endif
