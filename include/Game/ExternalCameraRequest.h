@@ -14,14 +14,17 @@
  * constant, from the one argument twice, or from the two arguments), clear the word at 0x8 and the
  * 0x10 bytes at 0xC and at 0x1C; the destructor (0x8000B228) does nothing. The size is the
  * distance between two such blocks on the stack of Game/PlayerEffect.cpp's camera demo (USA
- * (GUPE8P) 0x800A5C74, at r1+0x30 and r1+0x5C). Its members are not mapped. */
+ * (GUPE8P) 0x800A5C74, at r1+0x30 and r1+0x5C). Only the two floats are mapped (meanings
+ * unknown); the rest is not. */
 class UnkCameraParams_8000B31C {
   public:
     UnkCameraParams_8000B31C(float value);
     UnkCameraParams_8000B31C(float value0, float value4);
     ~UnkCameraParams_8000B31C();
 
-    /* 0x00 */ u8 field_0x0[0x2C];
+    /* 0x00 */ float field_0x0;
+    /* 0x04 */ float field_0x4;
+    /* 0x08 */ u8 field_0x8[0x2C - 0x8];
 };
 CHECK_SIZEOF(UnkCameraParams_8000B31C, 0x2C);
 

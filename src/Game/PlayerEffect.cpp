@@ -71,6 +71,7 @@ struct UnkRangeEffectEntry_804B26CC {
     /* 0x0 */ int record;
     /* 0x4 */ int id;
 };
+CHECK_SIZEOF(UnkRangeEffectEntry_804B26CC, 0x8);
 const UnkRangeEffectEntry_804B26CC s_rangeEffects[3] = {{6, 0x38}, {4, 0x38}, {8, 0x1E}};
 
 /* The table that the effects use, indexed by the type at 0x1C of the player's record at 0x278. */
@@ -144,6 +145,7 @@ struct UnkAwakeParams_804B2904 {
     /* 0x18 */ int field_0x18;
     /* 0x1C */ const char *field_0x1C;
 };
+CHECK_SIZEOF(UnkAwakeParams_804B2904, 0x20);
 
 class Awake : public Task {
   public:
