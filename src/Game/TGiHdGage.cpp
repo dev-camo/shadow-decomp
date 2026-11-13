@@ -36,12 +36,11 @@ TGiHdGage::TGiHdGage(Task *parent) : Task(parent) {
  * destructor expands. Its name and its form as a member (and not a free function) are inferred;
  * the original has no out-of-line copy of it. The original loads zero into the loop's counter and
  * copies the counter's register into the gauge offset before the loop. That fits a counter that
- * is a compiler temporary, which the local of an expanded inline function is. In all of the USA
- * .text 40 counted loops copy their zeroed counter's register like this (20 of them in functions
- * that test their first argument for null on entry, as destructors do), against 373 counted
- * loops that load zero into both registers (22 in such functions). With the loop written in the
- * destructor the build loads zero twice (2 of the destructor's 41 words differ). Revisit when the
- * class's original source is found, or another source form gives the copy. */
+ * is a compiler temporary, which the local of an expanded inline function is (other compiler
+ * transformations can produce such a temporary too). With the loop written in the destructor the
+ * counter is an ordinary local and the build loads zero twice (2 of the destructor's 41 words
+ * differ). Revisit when the class's original source is found, or another source form gives the
+ * copy. */
 inline void TGiHdGage::ReleaseProjects() {
     for (int i = 0; i < 2; i++) {
         delete m_gauges[i].project;
