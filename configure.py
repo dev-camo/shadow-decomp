@@ -2779,6 +2779,7 @@ config.libs = [
             Object(Matching, "Game/ContainerSecret.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BulletSatelliteLaser.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/lbl_8054DB70.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/ThrowContainer.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Magma.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ThrowObject.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BossRootTask.cpp", cflags=cflags_game_cpp),
