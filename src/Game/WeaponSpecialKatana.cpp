@@ -14,6 +14,7 @@
 #include "Game/Task.h"
 #include "Game/UnkParams_80051D10.h"
 #include "Game/UnkSoundManager_80053164.h"
+#include "Game/UnkStartupFloat_800E2570.h"
 #include "Game/UnkWeaponModel_800631FC.h"
 #include "Game/WeaponItem.h"
 #include "Game/WeaponStickBase.h"
@@ -253,14 +254,21 @@ Weapon::Item *Katana::CreateKatana02Item() {
 
 } // namespace
 
-/* The weapon type descriptions of the two katanas (layout in WeaponItem.h). */
+/* The weapon type descriptions of the two katanas (layout in WeaponItem.h).
+ * Matching workaround: the original's start-up function (0x80276224, USA (GUPE8P)) loads 1.0
+ * and 5.0 from .sdata2 once each and stores them at 0x10 and 0x14 of both descriptions, where its
+ * .data has zeros; the other members are initialised data, apart from the names, which the same
+ * function copies. A constant initialiser gives no store. UnkStartupFloat_800E2570 stands in for
+ * the original initialiser expression, which is unknown. It is written in each record because
+ * named static floats get stores and .sbss variables of their own, which the original does not
+ * have. Revisit when the original initialiser is found. */
 UnkWeaponDescription_8005B9D4 lbl_8054D2C0 = {
     s_katana01Name,
     Katana::CreateKatana01,
     Katana::CreateKatana01Item,
     0,
-    1.0f,
-    5.0f,
+    UnkStartupFloat_800E2570(1.0f).value,
+    UnkStartupFloat_800E2570(5.0f).value,
     4,
     3,
     0x2001,
@@ -274,8 +282,8 @@ UnkWeaponDescription_8005B9D4 lbl_8054D2F0 = {
     Katana::CreateKatana02,
     Katana::CreateKatana02Item,
     0,
-    1.0f,
-    5.0f,
+    UnkStartupFloat_800E2570(1.0f).value,
+    UnkStartupFloat_800E2570(5.0f).value,
     8,
     3,
     0x2001,
