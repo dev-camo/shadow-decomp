@@ -2062,8 +2062,11 @@ config.libs = [
             Object(Matching, "Game/PjsEventCt.cpp", cflags=cflags_game_cpp),
             # 218 of the 219 functions have identical instructions and relocations once the weak and
             # local copies that the linker discards are removed. The static initialiser differs in 5
-            # words: two registers swapped and the three roll velocities addressed from the start of
-            # .bss here, 0x3C bytes after it in the original (see below).
+            # words. Two are its first two constant loads in the other order: the original loads 30
+            # into f1 and then zero into f0 (USA 0x800DC37C and 0x800DC38C), this object loads zero
+            # into f0 first; each value keeps its register. The other three address the three roll
+            # velocities from the start of .bss here, 0x3C bytes after it in the original (see
+            # below).
             # The data match by contents (the original object's absent copies set aside); .sdata2
             # also has the original order once the weak sqrtf statics of <cmath> are discarded (the
             # weak fn_8000B044 copy places 0.0001 before 1 and 70). One difference remains: the
