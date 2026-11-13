@@ -18,7 +18,9 @@
  * not recovered. The recovered callers among them (Bomb::Bomb::UpdateMotion at 0x800EE8DC,
  * Container::ContainerNormal::UpdateMotion at 0x800F7028 and HealingUnit::HealingUnit::UpdateMotion
  * at 0x80107FD8) write the getter call as its own statement. */
-extern "C" bool fn_801BFC28(void *arg0, Fn8040Vector3 *position, const Fn8040Vector3 *movement,
+/* movement is not const: fn_801BFC68 passes it on to fn_801BFFD8, which zeroes it, adds to it and
+ * assigns it on some paths (USA (GUPE8P) 0x801C0240, 0x801C02B0 and 0x801C02C0). */
+extern "C" bool fn_801BFC28(void *arg0, Fn8040Vector3 *position, Fn8040Vector3 *movement,
                             UnkBitFlags_80014E04 *flags, int arg4, float radius);
 
 #endif
