@@ -77,7 +77,7 @@ static void fn_80130364(boost::shared_ptr<CharInfo> hit, void *arg) {
 
     hit->fn_801DC980(new Player::IgnoreInputCommand(0, context->m_params->noControlTime));
     hit->fn_801DC980(new ClrVelocityCommand(4));
-    hit->fn_801DC980(new SetPositionCommand(context->m_position, 4));
+    hit->fn_801DC980(new SetPositionCommand(*context->m_position, 4));
 
     float level = context->m_params->level;
     int index = (int)level;

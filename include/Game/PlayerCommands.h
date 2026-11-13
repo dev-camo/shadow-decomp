@@ -28,10 +28,13 @@ class Target;
  * constructor as its second argument, and ClrVelocityCommand its only argument;
  * IgnoreInputCommand passes 0. Most callers pass 4 there (0 and 2 also occur). */
 
-/* Moves the character info to a position. */
+/* Moves the character info to a position. The position is taken by const reference (inferred):
+ * Player::Control::Bukuu's Update builds it into an argument temporary after the allocation
+ * (fn_8040CDD0 at 0x8009E4D0 in USA (GUPE8P)), as a reference bound to a by-value expression
+ * would. */
 class SetPositionCommand : public CharCommand {
   public:
-    SetPositionCommand(const Fn8040Vector3 *position, int arg1);
+    SetPositionCommand(const Fn8040Vector3 &position, int arg1);
     virtual ~SetPositionCommand();
     virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x801DBD84 */
     virtual UnkString_8004F888 fn_801D9CB0();                     /* 0x801DBD10 */

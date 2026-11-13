@@ -333,7 +333,7 @@ void Coaster::UpdateBody(float dt) {
 
             character->fn_801DC980(new Player::IgnoreInputCommand(0, m_params.noControlTime));
             character->fn_801DC980(new ClrVelocityCommand(4));
-            character->fn_801DC980(new SetPositionCommand(&m_position, 4));
+            character->fn_801DC980(new SetPositionCommand(m_position, 4));
             character->fn_801DC980(new SetVelocityCommand(&launch, 4));
             character->fn_801DC980(new Player::LaunchCommand(0, 4));
 

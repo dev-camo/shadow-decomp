@@ -153,7 +153,7 @@ bool TornadoTowing::MoveToCylinder(boost::shared_ptr<CharInfo> charInfo, float d
     }
 
     AddVector(&m_position, m_direction * step);
-    charInfo->fn_801DC980(new SetPositionCommand(&m_position, 4));
+    charInfo->fn_801DC980(new SetPositionCommand(m_position, 4));
     return reached;
 }
 
@@ -182,7 +182,7 @@ bool TornadoTowing::Rise(boost::shared_ptr<CharInfo> charInfo, float dt) {
     }
 
     m_position = offset;
-    charInfo->fn_801DC980(new SetPositionCommand(&m_position, 4));
+    charInfo->fn_801DC980(new SetPositionCommand(m_position, 4));
     return reached;
 }
 
@@ -210,7 +210,7 @@ bool TornadoTowing::Circle(boost::shared_ptr<CharInfo> charInfo, float dt) {
 
     fn_8040CE38(&offset, radius);
     m_position = m_top + offset;
-    charInfo->fn_801DC980(new SetPositionCommand(&m_position, 4));
+    charInfo->fn_801DC980(new SetPositionCommand(m_position, 4));
     return false;
 }
 
@@ -219,7 +219,7 @@ void TornadoTowing::Launch(boost::shared_ptr<CharInfo> charInfo) {
     charInfo->fn_801DC980(new Player::InvincibleCommand(false, 4));
     charInfo->fn_801DC980(new Player::IgnoreInputCommand(0, m_tornado->m_params.noControl));
     charInfo->fn_801DC980(new ClrVelocityCommand(4));
-    charInfo->fn_801DC980(new SetPositionCommand(&m_top, 4));
+    charInfo->fn_801DC980(new SetPositionCommand(m_top, 4));
     charInfo->fn_801DC980(new SetAngleCommand(
         UnkRotation3(0.0f, m_tornado->m_params.launchY - lbl_805FAD38, 0.0f), 2, 4));
 

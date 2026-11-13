@@ -72,7 +72,7 @@ static void fn_8015A260(boost::shared_ptr<CharInfo> hit, void *arg) {
 
     hit->fn_801DC980(new Player::IgnoreInputCommand(1, context->m_params->noControlTime));
     hit->fn_801DC980(new ClrVelocityCommand(4));
-    hit->fn_801DC980(new SetPositionCommand(context->m_position, 4));
+    hit->fn_801DC980(new SetPositionCommand(*context->m_position, 4));
 
     /* The character keeps its x and z rotations and takes the panel's y rotation. */
     UnkRotation3 angles = hit->m_rotation;

@@ -70,7 +70,7 @@ static void fn_801213E8(boost::shared_ptr<CharInfo> hit, void *arg) {
     hit->fn_801DC980(new Player::IgnoreInputCommand(1, context->m_params->noControlTime));
     hit->fn_801DC980(new Player::CancelBehaviorCommand(4));
     hit->fn_801DC980(new ClrVelocityCommand(4));
-    hit->fn_801DC980(new SetPositionCommand(context->m_position, 4));
+    hit->fn_801DC980(new SetPositionCommand(*context->m_position, 4));
 
     /* The angles the character is turned to: those of the forward (0, 0, -1) and up (0, 1, 0)
      * directions in the spring's frame turned a further quarter turn about its x axis (behaviour

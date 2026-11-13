@@ -69,7 +69,7 @@ static void fn_800FFB70(boost::shared_ptr<CharInfo> hit, void *arg) {
      * operator* is a call of its out-of-line copy instead (measured: one word differs). */
     Fn8040Vector3 position = panelInfo->m_position;
     AddVector(&position, fn_8040B67C(matrix, Fn8040Vector3(0.0f, 5.0f, 0.0f)));
-    hit->fn_801DC980(new SetPositionCommand(&position, 4));
+    hit->fn_801DC980(new SetPositionCommand(position, 4));
 
     float level = context->m_params->level;
     int index = (int)level;
