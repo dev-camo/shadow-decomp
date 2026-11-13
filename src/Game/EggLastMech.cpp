@@ -24,6 +24,7 @@
 #include "Game/Gadget.h"
 #include "Game/LockonTarget.h"
 #include "Game/PlayerBase.h"
+#include "Game/TGiHPGaugeBoss.h"
 #include "Game/Target.h"
 #include "Game/Unk802CD448.h"
 #include "Game/UnkActor_800740E4.h"

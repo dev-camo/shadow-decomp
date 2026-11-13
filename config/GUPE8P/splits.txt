@@ -142,6 +142,14 @@ Game/PlayerWeaponBase.cpp:
 	.sdata      start:0x805E4B88 end:0x805E4B98
 	.sdata2     start:0x805F2DB0 end:0x805F2DB8
 
+Game/TGiHPGaugeBoss.cpp:
+	.text       start:0x800BE2DC end:0x800BECB0
+	.rodata     start:0x804B53D0 end:0x804B54D0
+	.data       start:0x80522610 end:0x80522638
+	.sdata      start:0x805E4C28 end:0x805E4C40
+	.sbss       start:0x805EE658 end:0x805EE670
+	.sdata2     start:0x805F3020 end:0x805F3030
+
 Game/CharaColliBaseCharInfo.cpp:
 	.text       start:0x800C06A0 end:0x800C07C8
 	.ctors      start:0x804A9CF4 end:0x804A9CF8
