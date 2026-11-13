@@ -103,6 +103,10 @@ class CProject : public CResourceBase<Project>, public CBase {
      * names no base, so CBase is a base of CProject itself. */
     explicit CProject(const CResourceBase<Project> &resource);
 
+    /* Builds an empty project: constructs the members and calls fn_8036E39C (behaviour from the
+     * game's copy at 0x8003E808 in the USA release, which every caller in the game uses). */
+    CProject();
+
     /* Takes every scene out of the project with RemoveScene (name inferred). */
     void RemoveAllScenes();
 

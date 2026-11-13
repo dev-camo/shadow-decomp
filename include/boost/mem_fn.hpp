@@ -19,9 +19,9 @@
 //
 //  Adapted from Boost 1.32 (the include guard follows this project's naming): the mf1 class of
 //  boost/bind/mem_fn_template.hpp as instantiated by boost/mem_fn.hpp for a compiler with void
-//  returns and a single calling convention. It is the only member function adapter the
-//  reconstructed units use. The other arities, the const adapters (the game also uses cmf1, in
-//  units not yet reconstructed) and the mem_fn() overloads are left out.
+//  returns and a single calling convention, and its const counterpart cmf1. They are the only
+//  member function adapters the reconstructed units use. The other arities and the mem_fn()
+//  overloads are left out.
 //
 
 #include "boost/get_pointer.hpp"
@@ -71,6 +71,46 @@ template <class R, class T, class A1> class mf1 {
     }
 
     bool operator!=(mf1 const &rhs) const {
+        return f_ != rhs.f_;
+    }
+};
+
+// cmf1
+
+template <class R, class T, class A1> class cmf1 {
+  public:
+    typedef R result_type;
+    typedef T const *first_argument_type;
+    typedef A1 second_argument_type;
+
+  private:
+    typedef R (T::*F)(A1) const;
+    F f_;
+
+    template <class U, class B1> R call(U &u, T const *, B1 &b1) const {
+        return (u.*f_)(b1);
+    }
+
+    template <class U, class B1> R call(U &u, void const *, B1 &b1) const {
+        return (get_pointer(u)->*f_)(b1);
+    }
+
+  public:
+    explicit cmf1(F f) : f_(f) {}
+
+    template <class U> R operator()(U const &u, A1 a1) const {
+        return call(u, &u, a1);
+    }
+
+    R operator()(T const &t, A1 a1) const {
+        return (t.*f_)(a1);
+    }
+
+    bool operator==(cmf1 const &rhs) const {
+        return f_ == rhs.f_;
+    }
+
+    bool operator!=(cmf1 const &rhs) const {
         return f_ != rhs.f_;
     }
 };

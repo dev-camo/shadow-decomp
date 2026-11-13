@@ -56,8 +56,8 @@ CHECK_SIZEOF(UnkRecord_8027DE0C, 0x18);
 
 /* The 0x150-byte object at 0x8057D6A0 in .bss (placeholder name; the original name and type are
  * unknown). More than 400 functions across the game read it. Only the words at 0x18, 0x24, 0x28,
- * 0x44, 0x48, 0x90, 0x94 and 0x98, the bytes at 0x84 and 0x125 and the records at 0x60 and 0xA8 are
- * mapped. */
+ * 0x44, 0x48, 0x90, 0x94 and 0x98, the bytes at 0x84, 0x125 and 0x148 and the records at 0x60 and
+ * 0xA8 are mapped. */
 struct UnkGlobal_8057D6A0 {
     /* 0x00 */ u8 field_0x0[0x18];
     /* RollCircle divides the vector it passes to an attacked object by it, and
@@ -92,7 +92,12 @@ struct UnkGlobal_8057D6A0 {
     /* The Researcher and ElecAccessPanel gadgets pass 1 to fn_800740E4 when it is set, otherwise 2;
      * CityBombBig passes 1 when it is set, otherwise 0 (meaning unknown). */
     /* 0x125 */ u8 field_0x125;
-    /* 0x126 */ u8 field_0x126[0x150 - 0x126];
+    /* 0x126 */ u8 field_0x126[0x148 - 0x126];
+    /* The draw callbacks of the in-game display's gauge tasks (the functions at 0x800BCFA4,
+     * 0x800BD950 and 0x800BE468 in the USA release) draw only while it is non-zero (meaning
+     * unknown). */
+    /* 0x148 */ u8 field_0x148;
+    /* 0x149 */ u8 field_0x149[0x150 - 0x149];
 };
 CHECK_SIZEOF(UnkGlobal_8057D6A0, 0x150);
 
