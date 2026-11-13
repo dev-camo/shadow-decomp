@@ -1311,6 +1311,13 @@ Game/lbl_8054DB70.cpp:
 	.data       start:0x8054EC78 end:0x8054EC90
 	.sdata2     start:0x805F9138 end:0x805F9140
 
+Game/Magma.cpp:
+	.text       start:0x8027BD00 end:0x8027C308
+	.rodata     start:0x804F8F50 end:0x804F8F78
+	.data       start:0x8054ECC8 end:0x8054EDD0
+	.sdata      start:0x805EBCA0 end:0x805EBCC0
+	.sdata2     start:0x805F9158 end:0x805F9188
+
 Game/BossRootTask.cpp:
 	.text       start:0x8027E200 end:0x8027E4CC
 	.ctors      start:0x804AAFB0 end:0x804AAFB4
