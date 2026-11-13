@@ -263,8 +263,6 @@ void fn_800163F4(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 float *fn_8040C17C(Fn8040Matrix34 *matrix, int row, int column);
 /* Returns the element at the given row and column. */
 float fn_8040C168(Fn8040Matrix34 *matrix, int row, int column);
-/* A second copy of fn_8040C148 in the original. */
-void fn_8040BCB4(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Builds a scale matrix from the components of the vector. */
 void fn_8040B07C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *scale);
 /* Build the rotation matrices about the z, y and x axes (the angle is passed to the sine and
@@ -281,9 +279,6 @@ void fn_8040B33C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *eye, const Fn8040V
 void fn_8040B4D0(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Translates the matrix by an offset that the matrix's rotation turns first. */
 void fn_8040B52C(Fn8040Matrix34 *matrix, float x, float y, float z);
-/* Copy constructor or assignment operator of the matrix class (inferred), out of line (the
- * original has its weak instance at 0x80325384): calls fn_8040C148 and returns destination. */
-Fn8040Matrix34 *fn_80325384(Fn8040Matrix34 *destination, const Fn8040Matrix34 *source);
 /* Sets the matrix to the identity. */
 void fn_8040B6F8(Fn8040Matrix34 *matrix);
 /* Scales the matrix's three rotation columns by x, y and z (fn_8040B790 below takes them as a
@@ -461,6 +456,10 @@ extern Fn8040Matrix34 lbl_805E0750; /* zero */
 #ifdef __cplusplus
 }
 
+/* Copy constructor (inferred). The original has an out-of-line copy of it in
+ * fn_8040B034.cpp (USA (GUPE8P) 0x8040BCB4, called at 0x8040BAF4 and 0x8040BFB4) that holds
+ * fn_8040C148's loop. That file is built with automatic inlining (inferred from this copy, see
+ * configure.py), where a function that calls fn_8040C148 is not expanded. */
 inline Fn8040Matrix34::Fn8040Matrix34(const Fn8040Matrix34 &other) {
     fn_8040C148(this, &other);
 }
@@ -468,7 +467,9 @@ inline Fn8040Matrix34::Fn8040Matrix34(const Fn8040Matrix34 &other) {
 /* Copy assignment (inferred). GravitySignBoard's BuildTurnMatrix uses it to store a by-value
  * rotation through a pointer. The original copies a stack matrix filled by fn_800635A4 into
  * existing storage at USA (GUPE8P) 0x80328224 and 0x80328310. These copies compile to the same
- * code as direct fn_8040C148 calls, so they do not distinguish the operator spelling. */
+ * code as direct fn_8040C148 calls, so they do not distinguish the operator spelling. An
+ * out-of-line copy at USA (GUPE8P) 0x80325384 calls fn_8040C148 and returns the destination; its
+ * two callers are the inner assignment of a chained one at 0x80324FD0 and fn_8040B6F8. */
 inline Fn8040Matrix34 &Fn8040Matrix34::operator=(const Fn8040Matrix34 &other) {
     fn_8040C148(this, &other);
     return *this;
