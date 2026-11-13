@@ -124,18 +124,6 @@ void SetRailSwitch::UpdateModelMatrix() {
     }
 }
 
-} // namespace RailSwitch
-
-/* Matching workaround: the SwitchCommand constructor is defined here as an ordinary function. The
- * original's only copy is here, after OnAttack, its only caller, while the command's destructor
- * and vtable are elsewhere; it may be the out-of-line copy of an inline from the commands' header,
- * as other gadget files hold for the commands they send. Defined in the class, it is expanded
- * into OnAttack (0x278 bytes instead of 0x25C) and no copy is left. Revisit when the command
- * constructors are modelled in the headers. */
-SwitchCommand::SwitchCommand(s32 route) : CharCommand(9, 4), m_route(route) {}
-
-namespace RailSwitch {
-
 void SetRailSwitch::OnAttack(AttackCallbackParam &param) {
     param.field_0x54 = 5;
     if (m_hitDelay > 0.0f) {

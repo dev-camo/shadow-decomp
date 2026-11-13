@@ -39,20 +39,6 @@ static const float s_launchSpeeds[16] = {300.0f,  600.0f,  900.0f,  1200.0f, 150
 static const float s_pushFactors[16] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
                                         1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f};
 
-/* Matching workaround: the constructor is defined here, out of line, as a strong global. The
- * original has a single copy, here after the hit callback, which two other units also call (at
- * 0x80121500 and 0x80292FB8, USA addresses). That fits the out-of-line copy of an inline
- * constructor that every constructing unit emits and the linker keeps from the first unit in link
- * order. Several other command constructors also sit shortly after a function that calls them
- * (SetAngleCommand's at 0x800B81F8 follows its caller fn_800B8000). That the command and
- * base constructors were inline in the original headers is inferred, not established; if they
- * were, the original copy is weak and this definition's binding differs, so the unit cannot be
- * promoted until the headers model them. The project's headers declare the base constructors out
- * of line, so an inline definition here is expanded into the callback and leaves no copy, and this
- * definition is emitted after the converting weak_ptr<CharInfo> constructor instead of before it.
- * Revisit when the command headers model those constructors. */
-Player::CancelBehaviorCommand::CancelBehaviorCommand(int arg1) : PlayerCommand(0x101, arg1) {}
-
 /* The callback that fn_8015B004 calls for each character info in the collision results: sends a
  * character that has not been dealt with the commands that place it on the panel and launch it
  * along the panel's direction. arg is the hit context that OnCollision passes. */

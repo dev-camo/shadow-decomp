@@ -214,22 +214,6 @@ bool TornadoTowing::Circle(boost::shared_ptr<CharInfo> charInfo, float dt) {
     return false;
 }
 
-/* Matching workaround: the two command constructors below are defined here, out of line, as
- * strong globals. The original has a single copy of each, here after the towing task's launch
- * function, their first caller; other units call the copy of the IgnoreInputCommand constructor.
- * That fits the out-of-line copy of an inline constructor that every constructing unit emits and
- * the linker keeps from the first unit in link order (see DashPanel.cpp's CancelBehaviorCommand),
- * as the copy of the SetVelocityCommand constructor between the launch function and these two is
- * (PlayerCommands.h). Defined in their classes these two are expanded into the launch function
- * (168 words instead of 149) and no copies are emitted. That they were inline in the original
- * headers is inferred, not established. Revisit when the command headers model those
- * constructors. */
-Player::InvincibleCommand::InvincibleCommand(bool enable, int arg1)
-    : PlayerCommand(0x126, arg1), m_enable(enable) {}
-
-Player::IgnoreInputCommand::IgnoreInputCommand(int arg0, float seconds)
-    : PlayerCommand(0x127, 0), m_seconds(seconds), field_0x18(0), m_arg0(arg0) {}
-
 void TornadoTowing::Launch(boost::shared_ptr<CharInfo> charInfo) {
     charInfo->fn_801DC980(new Player::IgnoreInputCommand(3, 0));
     charInfo->fn_801DC980(new Player::InvincibleCommand(false, 4));
