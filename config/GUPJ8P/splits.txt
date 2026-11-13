@@ -1326,6 +1326,15 @@ Game/Magma.cpp:
 	.sdata      start:0x805EB200 end:0x805EB220
 	.sdata2     start:0x805F86F8 end:0x805F8728
 
+Game/ThrowObject.cpp:
+	.text       start:0x8027D150 end:0x8027E20C
+	.ctors      start:0x804AA58C end:0x804AA590
+	.rodata     start:0x804F8698 end:0x804F8788
+	.data       start:0x8054E518 end:0x8054E558
+	.sdata      start:0x805EB278 end:0x805EB290
+	.sbss       start:0x805F0830 end:0x805F0848
+	.sdata2     start:0x805F8760 end:0x805F8780
+
 Game/BossRootTask.cpp:
 	.text       start:0x8027E20C end:0x8027E4D8
 	.ctors      start:0x804AA590 end:0x804AA594

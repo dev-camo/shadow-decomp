@@ -2842,6 +2842,7 @@ config.libs = [
             Object(Matching, "Game/lbl_8054DB70.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Magma.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/WeaponSpecialKatana.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/ThrowObject.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BossRootTask.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Parachute.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EscapePlane.cpp", cflags=cflags_game_cpp),
