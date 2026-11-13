@@ -98,10 +98,11 @@ class CameraModeUser : public CameraMode {
 
     /* Passes start and end to fn_8000A5D4 (name inferred).
      * Matching workaround: this inline member stands for an unknown original helper, like
-     * CharInfo::RotateMatrix. Called through a smart pointer, it leaves the smart pointer's
-     * operator-> out of line, as LamborghiniImpl::OnCameraUpdate does (USA (GUPE8P) 0x8031A344)
-     * and as the unrecovered caller at 0x801B78F0 does before its fn_8000A5D4 call; a direct call
-     * to fn_8000A5D4 expands the operator in place (OnCameraUpdate 0xA4 bytes instead of 0xA8).
+     * AddVector in fn_8040_vector_types.h. Called through a smart pointer, it leaves the smart
+     * pointer's operator-> out of line, as LamborghiniImpl::OnCameraUpdate does (USA (GUPE8P)
+     * 0x8031A344) and as the unrecovered caller at 0x801B78F0 does before its fn_8000A5D4 call;
+     * a direct call to fn_8000A5D4 expands the operator in place (OnCameraUpdate 0xA4 bytes
+     * instead of 0xA8).
      * Coaster::OnPathCallback does not use it: the original passes its mode pointer to
      * fn_8000A5D4 with the operator expanded in place (through this member the function is one
      * instruction longer: measured). Revisit when the original helper is identified. Defined

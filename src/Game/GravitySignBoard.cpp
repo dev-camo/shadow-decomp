@@ -162,22 +162,18 @@ void GravitySignBoard::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
 void GravitySignBoard::UpdateModelMatrix() {
     Fn8040Matrix34 rotation;
     Fn8040Matrix34 placed;
-    Fn8040Matrix34 turned;
-    Fn8040Matrix34 product;
 
     fn_8040C148(&rotation, &lbl_805E0720);
     fn_800C9ED4(m_owner, &m_charInfo->m_rotation);
     fn_8040B848(&rotation, m_charInfo->m_rotation.y);
     fn_8040B884(&rotation, m_charInfo->m_rotation.x);
     fn_8040B80C(&rotation, m_charInfo->m_rotation.z);
-    fn_8001E044(&turned, &m_turn, &rotation);
-    fn_8040C148(&rotation, &turned);
+    rotation = fn_8001E044(&m_turn, &rotation);
     fn_800494F8(&m_charInfo->m_rotation, &rotation);
 
     fn_8040C148(&placed, &lbl_805E0720);
     fn_8040B59C(&placed, m_charInfo->m_position);
-    fn_8001E044(&product, &placed, &rotation);
-    fn_8040C148(&placed, &product);
+    placed = fn_8001E044(&placed, &rotation);
     m_model->fn_801633DC(&placed);
 }
 

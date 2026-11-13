@@ -148,9 +148,7 @@ void EffectLocusRW3::fn_80439B18() {
         } else {
             updatePositions = true;
             if ((m_definitionFlags & 0x800) != 0) {
-                Fn8040Matrix34 transformed;
-                fn_8001E044(&transformed, &m_transform, &unit->m_transform);
-                fn_8040C148(&matrix, &transformed);
+                matrix = fn_8001E044(&m_transform, &unit->m_transform);
             } else {
                 fn_8040C148(&matrix, &unit->m_transform);
             }

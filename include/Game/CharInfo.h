@@ -63,21 +63,6 @@ class CharInfo {
     void SetField0x50(s32 value) {
         field_0x50 = value;
     }
-    /* Stores in result the matrix rotated by m_rotation in the given rotation order (fn_8040FFBC;
-     * name inferred).
-     * Matching workaround: this inline member stands for an unknown original helper, like
-     * MakeTranslationMatrix in fn_8040_vector_types.h. Called through a smart pointer, it leaves
-     * the smart pointer's operator-> out of line and takes the rotation's address inside its
-     * expansion, as Weapon::ChaosSpear::ChaosSpear's UpdateMatrix does (USA (GUPE8P)
-     * 0x802F0B18-0x802F0B2C). A direct call to fn_8040FFBC expands the operator in place
-     * (UpdateMatrix 200 bytes against 220, 20 differing words and 5 extra original words); a free
-     * inline taking the rotation adds its offset right after the operator-> call, where the
-     * original copies the pointer and adds the offset just before the call (216 bytes against 220:
-     * 14 paired words differ and one original word is missing). Revisit when the original helper
-     * is identified. */
-    void RotateMatrix(Fn8040Matrix34 *result, const Fn8040Matrix34 &matrix, int order) const {
-        fn_8040FFBC(result, &matrix, &m_rotation, order);
-    }
     /* Copies at most 15 characters of name to the bytes at 0x3C and clears the byte at 0x4C
      * (0x801DC984, behaviour from its body). The gadget character info factories pass the
      * gadget's name; GadgetPickup::PickupBaseTask uses these characters as its task name. */

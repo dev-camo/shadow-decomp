@@ -135,9 +135,7 @@ void Beam::StartBeam() {
 }
 
 void Beam::UpdateMatrix() {
-    Fn8040Matrix34 translation;
-    fn_8040B034(&translation, &m_position);
-    fn_8040C148(&m_matrix, &translation);
+    m_matrix = fn_8040B034(m_position);
 
     UnkRotation3 angles = fn_8040F7F8(&m_direction);
     fn_8040B848(&m_matrix, angles.y);

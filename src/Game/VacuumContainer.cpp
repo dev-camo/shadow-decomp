@@ -134,15 +134,7 @@ void Container::UpdateModelMatrix() {
         /* The original fetches the rotation here as well and leaves it unused (0x8025462C);
          * ApplyRotation fetches it again. */
         UnkRotation3 rotation = fn_80238248();
-        /* Matching workaround: matrix is declared before translation. The original keeps
-         * translation at the lower stack offset (0x2C, matrix at 0x5C), which this compiler gives
-         * the later of two locals; declared the other way round, the offsets swap (6 words).
-         * Revisit if translation turns out to be the result of a function of its own. */
-        Fn8040Matrix34 matrix;
-        Fn8040Matrix34 translation;
-
-        fn_8040B034(&translation, &position);
-        fn_8040C148(&matrix, &translation);
+        Fn8040Matrix34 matrix(fn_8040B034(position));
         ApplyRotation(&matrix);
         fn_8040B720(&matrix, s_scale, s_scale, s_scale);
         m_model->fn_801633DC(&matrix);

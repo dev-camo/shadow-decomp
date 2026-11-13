@@ -137,11 +137,7 @@ void ChaosSpear::UpdateEffectMatrix() {
     boost::shared_ptr<EffectElement> effect(m_effect.lock());
 
     if (effect.get() != 0) {
-        Fn8040Matrix34 matrix;
-        Fn8040Matrix34 translation;
-
-        fn_8040B034(&translation, &m_motion.position);
-        fn_8040C148(&matrix, &translation);
+        Fn8040Matrix34 matrix(fn_8040B034(m_motion.position));
 
         Fn8040Vector2 angles = fn_8040F664(fn_80016284(m_motion.velocity));
 

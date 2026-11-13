@@ -335,9 +335,9 @@ void fn_8040B07C(Fn8040Matrix34 *matrix, const Fn8040Vector3 *scale) {
     matrix->Set(scale->x, 0.0f, 0.0f, 0.0f, 0.0f, scale->y, 0.0f, 0.0f, 0.0f, 0.0f, scale->z, 0.0f);
 }
 
-void fn_8040B034(Fn8040Matrix34 *matrix, const Fn8040Vector3 *translation) {
-    matrix->Set(1.0f, 0.0f, 0.0f, translation->x, 0.0f, 1.0f, 0.0f, translation->y, 0.0f, 0.0f,
-                1.0f, translation->z);
+Fn8040Matrix34 fn_8040B034(const Fn8040Vector3 &translation) {
+    return Fn8040Matrix34(1.0f, 0.0f, 0.0f, translation.x, 0.0f, 1.0f, 0.0f, translation.y, 0.0f,
+                          0.0f, 1.0f, translation.z);
 }
 }
 

@@ -105,10 +105,7 @@ void Bomb::StopEffect() {
 
 void Bomb::UpdateMatrix() {
     float scale = m_radius / s_baseRadius.value;
-    Fn8040Matrix34 translation;
-
-    fn_8040B034(&translation, &m_position);
-    fn_8040C148(&m_matrix, &translation);
+    m_matrix = fn_8040B034(m_position);
     fn_8040B720(&m_matrix, scale, scale, scale);
 }
 
@@ -121,11 +118,8 @@ void Bomb::fn_8031E3B0() {
 
     if (effect.get() != 0) {
         Fn8040Vector3 position;
-        Fn8040Matrix34 matrix;
-        Fn8040Matrix34 translation;
-
-        fn_8040B034(&translation, fn_80008E1C(&position, m_position.x, 0.0f, m_position.z));
-        fn_8040C148(&matrix, &translation);
+        Fn8040Matrix34 matrix(
+            fn_8040B034(*fn_80008E1C(&position, m_position.x, 0.0f, m_position.z)));
         fn_80425E68(effect.get(), matrix);
     }
 }

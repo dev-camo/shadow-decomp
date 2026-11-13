@@ -76,11 +76,7 @@ void ElecWakka::CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
 
 void ElecWakka::UpdateModelMatrix() {
     if (m_model != 0) {
-        Fn8040Matrix34 matrix;
-        Fn8040Matrix34 translation;
-
-        MakeTranslationMatrix(&translation, m_charInfo->m_position);
-        fn_8040C148(&matrix, &translation);
+        Fn8040Matrix34 matrix(fn_8040B034(m_charInfo->m_position));
         fn_8040B848(&matrix, m_charInfo->m_rotation.y);
         m_model->fn_801633DC(&matrix);
     }

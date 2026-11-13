@@ -119,10 +119,7 @@ float ChaosSpear::fn_8005C0CC(const Fn8040Vector3 &arg) {
 
     fn_801D560C(fn_80053164(), sound, 0, 0);
 
-    Fn8040Matrix34 matrix;
-    Fn8040Matrix34 translation;
-    fn_8040B034(&translation, &position);
-    fn_8040C148(&matrix, &translation);
+    Fn8040Matrix34 matrix(fn_8040B034(position));
     fn_8040B848(&matrix, rotation.y);
     fn_8040B884(&matrix, rotation.x);
     fn_8040B80C(&matrix, rotation.z);
@@ -159,13 +156,9 @@ void ChaosSpear::UpdateMatrix() {
     boost::shared_ptr<CharInfo> charInfo(GetOwner().lock());
 
     if (charInfo.get() != 0) {
-        Fn8040Matrix34 translation;
-        MakeTranslationMatrix(&translation, charInfo->m_position);
-        fn_8040C148(&m_matrix, &translation);
+        m_matrix = fn_8040B034(charInfo->m_position);
 
-        Fn8040Matrix34 rotated;
-        charInfo->RotateMatrix(&rotated, m_matrix, fn_801DBD00(charInfo->field_0x30));
-        fn_8040C148(&m_matrix, &rotated);
+        m_matrix = fn_8040FFBC(&m_matrix, &charInfo->m_rotation, fn_801DBD00(charInfo->field_0x30));
     }
 }
 

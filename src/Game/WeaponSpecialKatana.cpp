@@ -178,14 +178,9 @@ void Katana::PlaySound(int index) {
 void Katana::RequestBullet() {
     boost::shared_ptr<CharInfo> owner(m_owner.lock());
 
-    Fn8040Matrix34 matrix;
-    Fn8040Matrix34 translation;
-    MakeTranslationMatrix(&translation, owner->m_position);
-    fn_8040C148(&matrix, &translation);
+    Fn8040Matrix34 matrix(fn_8040B034(owner->m_position));
 
-    Fn8040Matrix34 rotated;
-    owner->RotateMatrix(&rotated, matrix, fn_801DBD00(owner->field_0x30));
-    fn_8040C148(&matrix, &rotated);
+    matrix = fn_8040FFBC(&matrix, &owner->m_rotation, fn_801DBD00(owner->field_0x30));
     fn_8040B848(&matrix, DegreesToRadians(180.0f));
 
     fn_80051C34(field_0x14, fn_80069540(this, &matrix));
