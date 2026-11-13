@@ -392,6 +392,23 @@ class SetMotionCommand : public PlayerCommand {
 };
 CHECK_SIZEOF(SetMotionCommand, 0x1C);
 
+/* The command with the id 0x12D (class name from the RTTI of its vtable at 0x80520F48); the
+ * destructor and the vtable are elsewhere. The constructor at 0x8009A368 passes 0x12D and arg1 to
+ * the base constructor and stores the direction with the length 1 (fn_8040CEE8), or (0, 1, 0)
+ * when the squared length of direction is below 0.0001. The code that sets the stage's gravity
+ * direction (0x80293928) sends it with 4 to the character infos it finds. The direction is taken
+ * by address; the bytes do not show whether as a pointer or a reference. */
+class SetGravityCommand : public PlayerCommand {
+  public:
+    SetGravityCommand(const Fn8040Vector3 *direction, int arg1);
+    virtual ~SetGravityCommand();
+    virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009A298 */
+    virtual UnkString_8004F888 fn_801D9CB0();                     /* 0x8009A224 */
+
+    /* 0x14 */ Fn8040Vector3 m_direction;
+};
+CHECK_SIZEOF(SetGravityCommand, 0x20);
+
 namespace Npc {
 
 /* Player::Npc::NpcCommand (class name from RTTI, with CharCommand as its only base). Its

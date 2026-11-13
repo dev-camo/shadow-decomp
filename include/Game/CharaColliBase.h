@@ -139,7 +139,9 @@ class CharaColliBase {
         field_0x2C = value;
     }
 
-    /* 0x04 */ s16 field_0x4;
+    /* The constructor's first argument. Unsigned: the predicate of the Parachute task's probe
+     * reads it with a zero-extending load (USA (GUPE8P) 0x802937F0) and rejects 1, 2 and 13. */
+    /* 0x04 */ u16 field_0x4;
     /* 0x06 */ s16 field_0x6;
     /* 0x08 */ float field_0x8; /* not initialised by the constructor; slot 12 returns it */
     /* 0x0C */ Collision::CollisionResultList hits;
