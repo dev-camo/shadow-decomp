@@ -164,6 +164,14 @@ Game/TGiHdGage.cpp:
 	.sbss       start:0x805EE638 end:0x805EE648
 	.sdata2     start:0x805F3008 end:0x805F3018
 
+Game/TGiHissatu.cpp:
+	.text       start:0x800BD950 end:0x800BE2DC
+	.rodata     start:0x804B5250 end:0x804B53D0
+	.data       start:0x805225E8 end:0x80522610
+	.sdata      start:0x805E4C10 end:0x805E4C28
+	.sbss       start:0x805EE648 end:0x805EE658
+	.sdata2     start:0x805F3018 end:0x805F3020
+
 Game/TGiHPGaugeBoss.cpp:
 	.text       start:0x800BE2DC end:0x800BECB0
 	.rodata     start:0x804B53D0 end:0x804B54D0

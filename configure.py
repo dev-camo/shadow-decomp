@@ -2488,6 +2488,10 @@ config.libs = [
             # loop counter in r28, the other way round from the original. Normal links use the
             # original object.
             Object(NonMatching, "Game/TGiHdGage.cpp", cflags=cflags_game_cpp),
+            # 24 of the 25 functions have identical instruction words and relocations. Update
+            # differs in 6 of its 73 words: the manager's entry is in r31 and the loop counter in
+            # r30, the other way round from the original. Normal links use the original object.
+            Object(NonMatching, "Game/TGiHissatu.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_800532F8.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/fn_80422070.cpp", cflags=cflags_effect),
             Object(Matching, "Game/fn_804220CC.cpp", cflags=cflags_effect),
