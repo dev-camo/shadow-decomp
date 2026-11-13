@@ -19,6 +19,11 @@
 extern "C" {
 boost::weak_ptr<Effect::System::EffectElement> fn_8005E418(const Fn8040Matrix34 *matrix, int id,
                                                            const boost::weak_ptr<CharInfo> &owner);
+/* Creates effect id through fn_801D2BB0 and returns it: as fn_8005E418 without a matrix (0x8005E3D0
+ * passes the result address, 0, id and fn_8005E4B8's pointer for owner; behaviour from its body).
+ * BulletSatelliteLaser::SatelliteLaser sets the position of the returned effect itself. */
+boost::weak_ptr<Effect::System::EffectElement> fn_8005E3D0(int id,
+                                                           const boost::weak_ptr<CharInfo> &owner);
 /* The time-scale source of the effects created for owner (see above): the pointer at 0x60 of the
  * owner's character info plus 4 bytes, or the address 0x1C bytes into lbl_8057D6A0 when the owner
  * has expired (behaviour from its body). */

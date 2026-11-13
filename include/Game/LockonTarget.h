@@ -20,6 +20,10 @@ class LockonTarget {
     LockonTarget();
     ~LockonTarget();
 
+    /* Returns field_0x0: the body at 0x80061050 only returns, leaving the object's address as
+     * the result, and BulletSatelliteLaser::SatelliteLaser's constructor locks that result as a
+     * weak pointer to a Target. The const qualifiers are inferred. */
+    const boost::weak_ptr<Target> &fn_80061050() const;
     /* Assigns object to field_0x0 (behaviour inferred from its body; the const reference is
      * inferred, as the bytes do not distinguish it from a pointer). */
     void fn_80061054(const boost::weak_ptr<Target> &object);
