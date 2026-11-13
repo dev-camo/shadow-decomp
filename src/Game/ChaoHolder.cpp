@@ -152,8 +152,19 @@ class ChaoHolder : public Gadget {
     void ReadParams(UnkGadgetOwner_800C9CD0 *owner);
     /* Replaces the Chao with a new one (name inferred). */
     void CreateChao(UnkGadgetOwner_800C9CD0 *owner);
-    /* The parameters; the Chao calls it out of line (name inferred). */
-    const ChaoParams *GetParams();
+    /* The parameters (name inferred, as are the pointer return and the definition in the class;
+     * a reference return gives the same code).
+     * Matching workaround: an inferred inline accessor. The original has an 8-byte function that
+     * returns the address of the parameters (USA (GUPE8P) 0x8012E700) directly after its only
+     * caller, Chao::ResetPosition, which builds a vector from the negated radius it returns.
+     * With the call in the arguments of the vector's constructor, as here, the compiler keeps
+     * that call of the inline function and emits a copy of it after the caller, as in the
+     * original. The Chao's other reads use the accessor as well and are expanded. ThreatObjHolder
+     * and PoleHolder read their parameters through accessors of the same form. Revisit when the
+     * original accessor is found. */
+    const ChaoParams *GetParams() {
+        return &m_params;
+    }
 
     static const char *s_name;
 
@@ -168,7 +179,7 @@ CHECK_SIZEOF(ChaoHolder, 0x48);
 static const u16 s_idleSounds[2] = {0x7447, 0x745D};
 
 Chao::Chao(ChaoHolder *holder, UnkGadgetOwner_800C9CD0 *owner)
-    : m_holder(holder), m_entry(&s_modelEntries[m_holder->m_params.type]),
+    : m_holder(holder), m_entry(&s_modelEntries[m_holder->GetParams()->type]),
       m_rotation(0.0f, 0.0f, 0.0f), m_touched(false), m_motion(0) {
     m_charInfo = fn_8015CD90(0x3C, 4);
     fn_800C9F14(owner, &m_center);
@@ -184,7 +195,7 @@ Chao::Chao(ChaoHolder *holder, UnkGadgetOwner_800C9CD0 *owner)
         m_data = dynamic_cast<ChaoData *>(owner->m_adapterState);
     }
 
-    if (m_holder->m_params.type == 1) {
+    if (m_holder->GetParams()->type == 1) {
         if (m_data->m_flags.Test(0)) {
             m_state = 1;
         } else {
@@ -238,7 +249,7 @@ Chao::~Chao() {}
 void Chao::Update(float dt) {
     if (fn_8015D2EC(m_probe->GetHits())) {
         if (!m_touched) {
-            if (m_holder->m_params.type == 1) {
+            if (m_holder->GetParams()->type == 1) {
                 if (m_state != 1 && m_state != 2) {
                     SetMotion(&m_entry->motions[1], false);
                     m_state = 1;
@@ -319,10 +330,6 @@ void Chao::ReadOwner(UnkGadgetOwner_800C9CD0 *owner) {
     m_model->fn_80162EF4();
 }
 
-const ChaoParams *ChaoHolder::GetParams() {
-    return &m_params;
-}
-
 void Chao::ResetPosition() {
     Fn8040Vector3 offset(0.0f, 0.0f, -m_holder->GetParams()->moveRadius);
 
@@ -334,15 +341,16 @@ void Chao::ResetPosition() {
 void Chao::UpdateMovement(float dt) {
     switch (m_state) {
     case 0:
-        if (!fn_8000B044(m_holder->m_params.moveRadius) &&
-            !fn_8000B044(m_holder->m_params.moveSpeed)) {
-            float angleStep = dt * m_holder->m_params.moveSpeed / m_holder->m_params.moveRadius;
+        if (!fn_8000B044(m_holder->GetParams()->moveRadius) &&
+            !fn_8000B044(m_holder->GetParams()->moveSpeed)) {
+            float angleStep =
+                dt * m_holder->GetParams()->moveSpeed / m_holder->GetParams()->moveRadius;
 
             Fn8040Vector3 previous = m_data->m_position;
             Fn8040Vector3 direction = m_data->m_position - m_center;
             fn_8040CE74(&direction);
             direction = fn_8040D0AC(direction, angleStep);
-            fn_8040CE38(&direction, m_holder->m_params.moveRadius);
+            fn_8040CE38(&direction, m_holder->GetParams()->moveRadius);
             fn_8040CFF8(&direction, &m_center);
             Fn8040Vector3 heading = direction - m_data->m_position;
             heading.y = 0.0f;

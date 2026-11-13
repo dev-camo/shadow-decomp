@@ -7,10 +7,10 @@
  * The callback is a boost::function object built with boost::bind(&ThreatObj::fn_8013F390, this,
  * _1); its manager, invoker and copy functions come from the boost headers.
  *
- * NonMatching: the ThreatObj constructor has an r6/r7 swap, ThreatObj's destructor is a global
- * symbol where the original's is weak (see the note at the destructor), and this object defines a
- * local std::swap<any_pointer> and the std::exception type record and name strings, which the
- * original unit does not have; see the note in configure.py. */
+ * NonMatching: ThreatObj's destructor is a global symbol where the original's is weak (see the
+ * note at the destructor), and this object defines a local std::swap<any_pointer> and the
+ * std::exception type record and name strings, which the original unit does not have; see the
+ * note in configure.py. */
 #include <algorithm>
 #include <dolphin/types.h>
 #include "Game/CharInfo.h"
@@ -113,6 +113,15 @@ class ThreatObjHolder : public Gadget {
     void ReadParams(UnkGadgetOwner_800C9CD0 *owner);
     /* Replaces the ThreatObj with a new one (name inferred). */
     void CreateThreatObj(UnkGadgetOwner_800C9CD0 *owner);
+    /* The parameters (name inferred; so are the pointer return and the definition in the class).
+     * Matching workaround: an inferred inline accessor of the same form as ChaoHolder's (see
+     * ChaoHolder.cpp), used wherever the ThreatObj reads the parameters. Through it, the holder
+     * and model-table loads in ThreatObj's constructor (USA (GUPE8P) 0x8013FF84) use r7 and r6
+     * as the original's do; with the member read directly they use r6 and r7 the other way
+     * round. Revisit when the original accessor is found. */
+    const ThreatObjParams *GetParams() {
+        return &m_params;
+    }
 
     static const char *s_name;
     /* The setting in use, chosen when the gadget type loads (name inferred). */
@@ -149,10 +158,10 @@ ThreatObj::ThreatObj(ThreatObjHolder *holder, UnkGadgetOwner_800C9CD0 *owner) : 
     m_state = 0;
     m_health = 2.0f;
     m_recordValue = -1;
-    m_modelEntry = &ThreatObjHolder::s_modelTable->models[m_holder->m_params.modelType];
+    m_modelEntry = &ThreatObjHolder::s_modelTable->models[m_holder->GetParams()->modelType];
     m_charInfo = fn_8015CD90(0x44, 4);
     m_model = fn_8015F800(1, "THREATOBJ.BIN");
-    m_model->fn_80162A68(m_holder->m_params.modelType, 0);
+    m_model->fn_80162A68(m_holder->GetParams()->modelType, 0);
     m_model->fn_80162790();
 
     UnkResourceRecord_80208848 *record = fn_80208848(
@@ -186,14 +195,14 @@ void ThreatObj::Update(float dt) {
     case 0:
         if (IsCharacterInRange()) {
             m_model->fn_8016271C();
-            m_model->fn_80160C28(m_holder->m_params.modelType);
+            m_model->fn_80160C28(m_holder->GetParams()->modelType);
             m_model->fn_8015FF60();
-            m_model->fn_80160A84(m_holder->m_params.modelType, m_modelEntry->field_0x0);
-            m_model->fn_80161FC8(m_holder->m_params.modelType, m_charInfo);
+            m_model->fn_80160A84(m_holder->GetParams()->modelType, m_modelEntry->field_0x0);
+            m_model->fn_80161FC8(m_holder->GetParams()->modelType, m_charInfo);
 
             {
                 boost::shared_ptr<CharaColliAttack> attack =
-                    m_model->fn_80161428(m_holder->m_params.modelType).lock();
+                    m_model->fn_80161428(m_holder->GetParams()->modelType).lock();
 
                 if (attack.get() != 0) {
                     attack->field_0x54 = 0;
@@ -217,14 +226,14 @@ void ThreatObj::Update(float dt) {
 
     case 1: {
         boost::shared_ptr<_stMtnPlayWork> motion =
-            m_model->fn_801602B4(m_holder->m_params.modelType).lock();
+            m_model->fn_801602B4(m_holder->GetParams()->modelType).lock();
 
         if (motion.get() != 0) {
             if (stMtnControlWorkFlag(motion.get(), 0, 3, 1)) {
                 if (m_modelEntry->field_0x4 != -1) {
-                    m_model->fn_80160A84(m_holder->m_params.modelType, m_modelEntry->field_0x4);
+                    m_model->fn_80160A84(m_holder->GetParams()->modelType, m_modelEntry->field_0x4);
                 } else {
-                    m_model->fn_80160480(m_holder->m_params.modelType);
+                    m_model->fn_80160480(m_holder->GetParams()->modelType);
                 }
             }
         }
@@ -249,7 +258,7 @@ void ThreatObj::ResetFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
     CopyFromOwner(owner);
     UpdateModelMatrix();
     m_model->fn_80162EF4();
-    fn_802E0E84(&m_charInfo->m_position, lbl_805F06D8, m_holder->m_params.radius);
+    fn_802E0E84(&m_charInfo->m_position, lbl_805F06D8, m_holder->GetParams()->radius);
 }
 
 void ThreatObj::CopyFromOwner(UnkGadgetOwner_800C9CD0 *owner) {
@@ -274,7 +283,7 @@ bool ThreatObj::IsCharacterInRange() {
     if (character.get() != 0) {
         Fn8040Vector3 distance = character->m_position - m_charInfo->m_position;
 
-        if (fn_8040CF50(distance) < m_holder->m_params.radius) {
+        if (fn_8040CF50(distance) < m_holder->GetParams()->radius) {
             return true;
         }
     }
