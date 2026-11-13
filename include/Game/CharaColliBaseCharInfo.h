@@ -63,6 +63,11 @@ inline CharaColliBaseCharInfo *CastToCharaColliBaseCharInfo(CharaColliBase *coll
 } // namespace System
 } // namespace SonicteamUSA
 
+/* An empty shared pointer that CharaColliBaseCharInfo.cpp constructs at startup next to
+ * lbl_805EE698 (see Game/CharInfo.h). The code at 0x80021D8C, 0x80021F60 and 0x800220F8 passes its
+ * address to fn_80021BC4 to build the temporary it hands on (uses not recovered). */
+extern boost::shared_ptr<SonicteamUSA::System::CharaColli::CharaColliAttack> lbl_805EE6A0;
+
 extern "C" {
 /* Returns a copy of the collider's owner, the weak pointer at 0x30 (behaviour inferred from its
  * body). */

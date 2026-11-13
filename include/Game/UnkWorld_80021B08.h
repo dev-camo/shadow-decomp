@@ -154,6 +154,14 @@ fn_800C86A8(UnkWorld_80021B08 *world, void *collision, const Fn8040Vector3 *posi
 /* Tests the segment from start to end against the world; when it meets something, stores the
  * point in hit (unless hit is null) and returns true (behaviour inferred from its body). */
 bool fn_8015D61C(Fn8040Vector3 *hit, const Fn8040Vector3 &start, const Fn8040Vector3 &end);
+/* Called by CharaColliBaseCharInfo's destructor with the probe being destroyed. From the world's
+ * list for the probe's halfword at 0x4 it removes the entries that have expired or refer to the
+ * probe; then, in each list whose word at 0x4 is nonzero and for which fn_80039CA0 is true with
+ * that halfword, it removes the expired entries and takes such entries out of the hit lists of
+ * the remaining probes (behaviour inferred from its body). The pointer is typed as the base
+ * class: the body reads only that halfword through it and compares it with the probes that the
+ * entries refer to. */
+void fn_800C46DC(UnkWorld_80021B08 *world, SonicteamUSA::System::CharaColli::CharaColliBase *probe);
 /* Builds a 0x70-byte probe (constructor at 0x800C3B4C) for the character info that owner refers
  * to from the collision data collision and the motion control motion, registers it with the world
  * and returns it (behaviour inferred from its body; arg4, which the constructor receives as a
