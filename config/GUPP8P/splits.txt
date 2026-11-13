@@ -121,6 +121,13 @@ Game/fn_8007D770.cpp:
 Game/fn_80096B64.cpp:
 	.text       start:0x80096E54 end:0x80096E8C
 
+Game/PlayerWatch.cpp:
+	.text       start:0x800B86F8 end:0x800B8A04
+	.rodata     start:0x804B4E78 end:0x804B4ED0
+	.data       start:0x805234B8 end:0x805234F0
+	.sdata      start:0x805E5C30 end:0x805E5C48
+	.sdata2     start:0x805F3E40 end:0x805F3E58
+
 Game/CharaColliBaseCharInfo.cpp:
 	.text       start:0x800C0A88 end:0x800C0BB0
 	.ctors      start:0x804AAD54 end:0x804AAD58

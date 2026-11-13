@@ -35,6 +35,11 @@ bool fn_800B78B0(const boost::shared_ptr<CharInfo> &charInfo);
 bool fn_800B7938(const boost::shared_ptr<CharInfo> &charInfo);
 bool fn_800B7AD0(const boost::shared_ptr<CharInfo> &charInfo);
 bool fn_800B7828(const boost::shared_ptr<CharInfo> &charInfo);
+/* Erases from the list of the manager that fn_80074194 returns the first element whose pointee's
+ * first word equals the pointer that player holds (behaviour from its body, which reads only the
+ * first word at player). The destructor of PlayerWatch.cpp's Watch task passes the address of its
+ * shared pointer member; the reference to a shared pointer is inferred from that one caller. */
+void fn_800A8E5C(UnkManager_80074194 *manager, const boost::shared_ptr<Player::Player> &player);
 }
 
 #endif
