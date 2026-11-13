@@ -15,13 +15,30 @@ namespace CSD {
 
 /* A handle of a resource with its file data: a counted reference to the block that holds the data
  * and the data's address. The other handles of the library (CSceneDataRef and the like) have this
- * shape; the game's RTTI names this one. Only the members that CProject uses are modelled. */
+ * shape; the game's RTTI names this one. Only the members that CProject uses are modelled. The
+ * constructor, the destructor, Copy and Clear are inline: the game has out-of-line copies of them
+ * for CResourceBase<Project> (USA 0x8003F404, 0x8003F1C0, 0x80040088 and 0x8003F44C). */
 template <class T> class CResourceBase {
   public:
-    CResourceBase();
-    virtual ~CResourceBase();
-    /* Shares the other handle's reference and copies its data address. */
-    virtual void Copy(const CResourceBase &other);
+    CResourceBase() {
+        Clear();
+    }
+    virtual ~CResourceBase() {
+        m_data = NULL;
+    }
+    /* Assigns the other handle's counted reference, then copies its data address. RCPtr's
+     * assignment compares the held blocks and keeps this handle's holder when they are equal (USA
+     * 0x80041640-0x8004164C), so two distinct holders of one block keep their own counts. */
+    virtual void Copy(const CResourceBase &other) {
+        m_ref = other.m_ref;
+        m_data = other.m_data;
+    }
+
+    /* Drops the reference and the data address (name inferred). */
+    void Clear() {
+        m_ref.Reset(NULL);
+        m_data = NULL;
+    }
 
     /* Takes the data and a block that holds it, to be released with Free. */
     void Attach(T *data, unsigned char *block, typename RCPtr<unsigned char>::FreeRelease release) {
@@ -103,9 +120,12 @@ class CProject : public CResourceBase<Project>, public CBase {
      * names no base, so CBase is a base of CProject itself. */
     explicit CProject(const CResourceBase<Project> &resource);
 
-    /* Builds an empty project: constructs the members and calls fn_8036E39C (behaviour from the
-     * game's copy at 0x8003E808 in the USA release, which every caller in the game uses). */
-    CProject();
+    /* Builds an empty project: constructs the members and calls fn_8036E39C. Inline: the game's
+     * copy at 0x8003E808 in the USA release, which every caller in the game uses, is an out-of-line
+     * copy of it. */
+    CProject() {
+        fn_8036E39C();
+    }
 
     /* Takes every scene out of the project with RemoveScene (name inferred). */
     void RemoveAllScenes();
