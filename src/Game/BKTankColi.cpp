@@ -116,7 +116,7 @@ static void fn_803210B8(CommandCollision::Args &args) {
                     position.y = params->field_0x14;
                     position.z = 0.0f;
 
-                    charInfo->fn_801DC980(new SetPositionCommand(&position, 4));
+                    charInfo->fn_801DC980(new SetPositionCommand(position, 4));
                     break;
                 }
                 }

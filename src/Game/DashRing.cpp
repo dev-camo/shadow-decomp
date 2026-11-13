@@ -52,7 +52,7 @@ static void fn_80100CBC(boost::shared_ptr<CharInfo> hit, void *arg) {
 
     hit->fn_801DC980(new Player::IgnoreInputCommand(0, context->m_params->noControlTime));
     hit->fn_801DC980(new ClrVelocityCommand(4));
-    hit->fn_801DC980(new SetPositionCommand(&ringInfo->m_position, 4));
+    hit->fn_801DC980(new SetPositionCommand(ringInfo->m_position, 4));
 
     float level = context->m_params->level;
     int index = (int)level;

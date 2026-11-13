@@ -82,7 +82,7 @@ static void fn_80110320(boost::shared_ptr<CharInfo> hit, void *arg) {
         speed += step * (context->m_params->level - index);
     }
 
-    hit->fn_801DC980(new SetPositionCommand(&context->m_launchPoints[nearest], 4));
+    hit->fn_801DC980(new SetPositionCommand(context->m_launchPoints[nearest], 4));
 
     Fn8040Matrix34 matrix;
 

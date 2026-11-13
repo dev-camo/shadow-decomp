@@ -86,7 +86,7 @@ static void fn_8012C544(boost::shared_ptr<CharInfo> hit, void *arg) {
     if (hit.get() != 0) {
         Fn8040Vector3 position = hit->m_position;
         position.y = s_catchHeight + context->m_height;
-        hit->fn_801DC980(new SetPositionCommand(&position, 4));
+        hit->fn_801DC980(new SetPositionCommand(position, 4));
         hit->fn_801DC980(new DamageCommand(1.0f, 4));
         hit->fn_801DC980(new Player::StartExternalControlCommand(0, 4));
         hit->fn_801DC980(new ClrVelocityCommand(4));

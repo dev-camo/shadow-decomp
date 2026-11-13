@@ -410,7 +410,7 @@ void ElecSearchLight::Catch(const Fn8040Vector3 *position) {
     m_target->fn_801DC980(new ClrVelocityCommand(4));
     m_target->fn_801DC980(new Player::StartExternalControlCommand(0, 2));
     m_target->fn_801DC980(new Player::SetMotionCommand(0x26, 0.0f, 2));
-    m_target->fn_801DC980(new SetPositionCommand(position, 4));
+    m_target->fn_801DC980(new SetPositionCommand(*position, 4));
     m_target->fn_801DC980(new SetAngleCommand(angles, 2, 4));
     m_state = 2;
 }
@@ -418,7 +418,7 @@ void ElecSearchLight::Catch(const Fn8040Vector3 *position) {
 void ElecSearchLight::PullTarget() {
     Fn8040Vector3 toLight = m_charInfo->m_position - m_target->m_position;
     Fn8040Vector3 position = m_target->m_position + fn_8040CEE8(toLight) * 20.0f;
-    m_target->fn_801DC980(new SetPositionCommand(&position, 4));
+    m_target->fn_801DC980(new SetPositionCommand(position, 4));
     fn_801D53C4(fn_80053164(), 0x7230, 0, this, 2, 0, 5);
 
     if (fn_8040CF2C(toLight) < 2500.0f) {

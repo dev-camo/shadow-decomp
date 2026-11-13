@@ -61,7 +61,7 @@ static void fn_8010F028(boost::shared_ptr<CharInfo> hit, void *arg) {
 
     Fn8040Vector3 position = boardInfo->m_position;
     position.y += 5.0f;
-    hit->fn_801DC980(new SetPositionCommand(&position, 4));
+    hit->fn_801DC980(new SetPositionCommand(position, 4));
 
     int index = (int)context->m_params->level;
     float speed = s_launchSpeeds[index];

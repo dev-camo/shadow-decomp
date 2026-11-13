@@ -117,7 +117,7 @@ static void fn_80138338(boost::shared_ptr<CharInfo> hit, void *arg) {
 
     Fn8040Vector3 position = context->m_position;
     position.y += 5.0f;
-    hit->fn_801DC980(new SetPositionCommand(&position, 4));
+    hit->fn_801DC980(new SetPositionCommand(position, 4));
 
     Fn8040Matrix34 matrix;
 
@@ -154,7 +154,7 @@ static void fn_801380C0(boost::shared_ptr<CharInfo> hit, void *arg) {
 
         hit->fn_801DC980(new Player::IgnoreInputCommand(1, 0));
         hit->fn_801DC980(new ClrVelocityCommand(4));
-        hit->fn_801DC980(new SetPositionCommand(&context->m_position, 4));
+        hit->fn_801DC980(new SetPositionCommand(context->m_position, 4));
 
         Fn8040Vector3 velocity(0.0f, 400.0f, 0.0f);
 
