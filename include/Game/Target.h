@@ -18,8 +18,11 @@ class Target {
   public:
     /* The vtable slots in their original order: 0x801E73EC, then the destructor 0x801E7434.
      * fn_801E73EC returns a copy of the position (behaviour inferred from its body; name
-     * unknown). */
-    virtual Fn8040Vector3 fn_801E73EC();
+     * unknown). Target's body does not use the point; LineTarget's override (0x801E2C4C) passes it
+     * on to fn_8040FC3C as the point to compare with its segment, and fn_8005751C forwards the
+     * bullet's motion position to this slot (0x800575A0). The pointer form and the const are
+     * inferred. */
+    virtual Fn8040Vector3 fn_801E73EC(const Fn8040Vector3 *point);
     virtual ~Target();
 
     /* Matching workaround: these inline members stand for an unknown original accessor. Called as
