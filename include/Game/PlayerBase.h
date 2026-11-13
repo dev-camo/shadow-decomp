@@ -18,7 +18,8 @@ class Target;
 
 namespace Player {
 class PlayerMotion;
-}
+class WeaponBase;
+} // namespace Player
 
 /* A partial view of the object at 0x24C of a Player::PlayerBase (placeholder name). The code at
  * 0x800AD4BC-0x800AD4C4 (USA) stores a Player::Shadow::PlayerTarget there, whose
@@ -160,7 +161,11 @@ class PlayerBase : public PlayerObject {
     /* 0x21C */ u8 field_0x21C[0x230 - 0x21C];
     /* The constructor clears it; Player::PlayerMotion's destructor clears it too. */
     /* 0x230 */ PlayerMotion *field_0x230;
-    /* 0x234 */ u8 field_0x234[0x244 - 0x234];
+    /* 0x234 */ u8 field_0x234[0x238 - 0x234];
+    /* Player::WeaponBase's constructor stores the new object here through its owner pointer, and
+     * its destructor clears it. */
+    /* 0x238 */ WeaponBase *field_0x238;
+    /* 0x23C */ u8 field_0x23C[0x244 - 0x23C];
     /* The constructor clears it (0x8007A108). The destructor, when it is not null, calls its
      * destructor (fn_800A25E0) with flag 1, freeing it, and clears it (0x80079BA4-0x80079BBC). */
     /* 0x244 */ UnkObject_80079BA4 *field_0x244;
@@ -176,6 +181,7 @@ CHECK_OFFSETOF(PlayerBase, field_0xDC, 0xDC);
 CHECK_OFFSETOF(PlayerBase, field_0x1C8, 0x1C8);
 CHECK_OFFSETOF(PlayerBase, field_0x218, 0x218);
 CHECK_OFFSETOF(PlayerBase, field_0x230, 0x230);
+CHECK_OFFSETOF(PlayerBase, field_0x238, 0x238);
 CHECK_OFFSETOF(PlayerBase, field_0x244, 0x244);
 CHECK_OFFSETOF(PlayerBase, field_0x24C, 0x24C);
 

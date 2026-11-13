@@ -128,6 +128,13 @@ Game/PlayerWatch.cpp:
 	.sdata      start:0x805E4B70 end:0x805E4B88
 	.sdata2     start:0x805F2D98 end:0x805F2DB0
 
+Game/PlayerWeaponBase.cpp:
+	.text       start:0x800B861C end:0x800B86E4
+	.rodata     start:0x804B3E00 end:0x804B3E18
+	.data       start:0x805223D0 end:0x80522430
+	.sdata      start:0x805E4B88 end:0x805E4B98
+	.sdata2     start:0x805F2DB0 end:0x805F2DB8
+
 Game/CharaColliBaseCharInfo.cpp:
 	.text       start:0x800C06A0 end:0x800C07C8
 	.ctors      start:0x804A9CF4 end:0x804A9CF8
