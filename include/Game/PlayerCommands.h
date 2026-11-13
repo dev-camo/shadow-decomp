@@ -16,12 +16,11 @@ class Target;
  * virtual functions that its original vtable holds, under CharCommand's placeholder names and with
  * the USA address of the override in a comment; the overrides are defined elsewhere. The
  * constructors and destructors are defined elsewhere too, together with the vtables, except the
- * constructors of CancelBehaviorCommand, AddWeaponCommand, SetVelocityCommand,
- * IgnoreInputCommand(int, float), InvincibleCommand, SwitchCommand and Player::HomingJumpCommand
- * (ItemBox.cpp), which gadget files define, and the constructors of
- * Player::StartExternalControlCommand and Player::TouchHangCommand, which are defined in their
- * classes here (see the classes); the argument meanings are inferred from the stores in the
- * constructors.
+ * constructors of CancelBehaviorCommand, AddWeaponCommand, IgnoreInputCommand(int, float),
+ * InvincibleCommand and SwitchCommand, which gadget files define, and the constructors of
+ * SetVelocityCommand, Player::HomingJumpCommand, Player::StartExternalControlCommand and
+ * Player::TouchHangCommand, which are defined in their classes here (see the classes); the
+ * argument meanings are inferred from the stores in the constructors.
  * SetPositionCommand, SetVelocityCommand and LaunchCommand pass their last argument to the base
  * constructor as its second argument, and ClrVelocityCommand its only argument;
  * IgnoreInputCommand passes 0. Most callers pass 4 there (0 and 2 also occur). */
@@ -39,11 +38,14 @@ class SetPositionCommand : public CharCommand {
 };
 CHECK_SIZEOF(SetPositionCommand, 0x20);
 
-/* Sets the velocity of the character info. Its constructor is defined in Tornado.cpp, which holds
- * the copy that the original keeps (see the note there). */
+/* Sets the velocity of the character info. The constructor is defined in the class: its only copy
+ * (0x800DE6B4) is emitted after TornadoTowing::Launch (Tornado.cpp), the first function in the
+ * link to construct one, and the gadgets that come later call that copy. It is not expanded at its
+ * uses because its body calls the vector's inline copy constructor. */
 class SetVelocityCommand : public CharCommand {
   public:
-    SetVelocityCommand(const Fn8040Vector3 *velocity, int arg1);
+    SetVelocityCommand(const Fn8040Vector3 *velocity, int arg1)
+        : CharCommand(5, arg1), m_velocity(*velocity) {}
     virtual ~SetVelocityCommand();
     virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x801DBA50 */
     virtual UnkString_8004F888 fn_801D9CB0();                     /* 0x801DB9DC */
@@ -448,10 +450,14 @@ CHECK_SIZEOF(EndExternalControlCommand, 0x14);
 
 /* The constructor at 0x8010DFD0 passes 0x10B as the command id and arg1 to the base constructor and
  * copy-constructs the vector at 0x14. The vector is taken by const reference (inferred):
- * the ELEC_LIGHT gadget builds it into an argument temporary after the allocation. */
+ * the ELEC_LIGHT gadget builds it into an argument temporary after the allocation. The constructor
+ * is defined in the class: its only copy is emitted after fn_8010DE60 of the item box's file, the
+ * first function in the link to construct one, and the ELEC_LIGHT gadget calls that copy. It is
+ * not expanded at its uses because its body calls the vector's inline copy constructor. */
 class HomingJumpCommand : public PlayerCommand {
   public:
-    HomingJumpCommand(const Fn8040Vector3 &vector, int arg1);
+    HomingJumpCommand(const Fn8040Vector3 &vector, int arg1)
+        : PlayerCommand(0x10B, arg1), m_vector(vector) {}
     virtual ~HomingJumpCommand();
     virtual void fn_801D9CFC(boost::weak_ptr<CharInfo> receiver); /* 0x8009C4FC */
 

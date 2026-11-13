@@ -8125,7 +8125,7 @@ Create__7TornadoFP23UnkGadgetOwner_800C9CD0 = .text:0x800DE788; // type:function
 fn_800DE430 = .text:0x800DE7DC; // type:function size:0x4
 fn_800DE434 = .text:0x800DE7E0; // type:function size:0x2C
 Launch__13TornadoTowingFQ25boost21shared_ptr<8CharInfo> = .text:0x800DE80C; // type:function size:0x254
-__ct__18SetVelocityCommandFPC13Fn8040Vector3i = .text:0x800DEA60; // type:function size:0x50
+__ct__18SetVelocityCommandFPC13Fn8040Vector3i = .text:0x800DEA60; // type:function size:0x50 scope:weak
 __ct__Q26Player18IgnoreInputCommandFif = .text:0x800DEAB0; // type:function size:0x64
 __ct__Q26Player17InvincibleCommandFbi = .text:0x800DEB14; // type:function size:0x48
 Circle__13TornadoTowingFQ25boost21shared_ptr<8CharInfo>f = .text:0x800DEB5C; // type:function size:0x164
@@ -9781,7 +9781,7 @@ assign_to<Q35boost3_bi143bind_t<v,Q35boost4_mfi40mf1<v,Q27SetItem7ItemBox,R11Cha
 assign_to<Q35boost3_bi143bind_t<v,Q35boost4_mfi40mf1<v,Q27SetItem7ItemBox,R11CharCommand>,Q35boost3_bi63list2<Q35boost3_bi26value<PQ27SetItem7ItemBox>,Q25boost6arg<1>>>>__Q25boost70function1<v,R11CharCommand,Q23std34allocator<Q25boost13function_base>>FQ35boost3_bi143bind_t<v,Q35boost4_mfi40mf1<v,Q27SetItem7ItemBox,R11CharCommand>,Q35boost3_bi63list2<Q35boost3_bi26value<PQ27SetItem7ItemBox>,Q25boost6arg<1>>>Q45boost6detail8function16function_obj_tag = .text:0x8010E14C; // type:function size:0x90 scope:local
 __ct__Q27SetItem11ItemBoxIconFv = .text:0x8010E1DC; // type:function size:0x30 scope:weak
 fn_8010DE60__FQ25boost21shared_ptr<8CharInfo>Pv = .text:0x8010E20C; // type:function size:0x170 scope:local
-__ct__Q26Player17HomingJumpCommandFRC13Fn8040Vector3i = .text:0x8010E37C; // type:function size:0x50
+__ct__Q26Player17HomingJumpCommandFRC13Fn8040Vector3i = .text:0x8010E37C; // type:function size:0x50 scope:weak
 __dt__Q35boost6detail87sp_counted_base_impl<PQ27SetItem7ItemBox,Q25boost35checked_deleter<Q27SetItem7ItemBox>>Fv = .text:0x8010E3CC; // type:function size:0x5C scope:weak
 __dt__Q35boost6detail101sp_counted_base_impl<PQ27SetItem13VacuumItemBox,Q25boost42checked_deleter<Q27SetItem13VacuumItemBox>>Fv = .text:0x8010E428; // type:function size:0x5C scope:weak
 dispose__Q35boost6detail101sp_counted_base_impl<PQ27SetItem13VacuumItemBox,Q25boost42checked_deleter<Q27SetItem13VacuumItemBox>>Fv = .text:0x8010E484; // type:function size:0x28 scope:weak

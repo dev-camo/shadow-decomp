@@ -214,12 +214,14 @@ bool TornadoTowing::Circle(boost::shared_ptr<CharInfo> charInfo, float dt) {
     return false;
 }
 
-/* Matching workaround: the three command constructors below are defined here, out of line, as
+/* Matching workaround: the two command constructors below are defined here, out of line, as
  * strong globals. The original has a single copy of each, here after the towing task's launch
- * function, their first caller; other units call the copies of the SetVelocityCommand and
- * IgnoreInputCommand constructors. That fits the out-of-line copy of an inline constructor that
- * every constructing unit emits and the linker keeps from the first unit in link order (see
- * DashPanel.cpp's CancelBehaviorCommand). That the constructors were inline in the original
+ * function, their first caller; other units call the copy of the IgnoreInputCommand constructor.
+ * That fits the out-of-line copy of an inline constructor that every constructing unit emits and
+ * the linker keeps from the first unit in link order (see DashPanel.cpp's CancelBehaviorCommand),
+ * as the copy of the SetVelocityCommand constructor between the launch function and these two is
+ * (PlayerCommands.h). Defined in their classes these two are expanded into the launch function
+ * (168 words instead of 149) and no copies are emitted. That they were inline in the original
  * headers is inferred, not established. Revisit when the command headers model those
  * constructors. */
 Player::InvincibleCommand::InvincibleCommand(bool enable, int arg1)
@@ -227,9 +229,6 @@ Player::InvincibleCommand::InvincibleCommand(bool enable, int arg1)
 
 Player::IgnoreInputCommand::IgnoreInputCommand(int arg0, float seconds)
     : PlayerCommand(0x127, 0), m_seconds(seconds), field_0x18(0), m_arg0(arg0) {}
-
-SetVelocityCommand::SetVelocityCommand(const Fn8040Vector3 *velocity, int arg1)
-    : CharCommand(5, arg1), m_velocity(*velocity) {}
 
 void TornadoTowing::Launch(boost::shared_ptr<CharInfo> charInfo) {
     charInfo->fn_801DC980(new Player::IgnoreInputCommand(3, 0));

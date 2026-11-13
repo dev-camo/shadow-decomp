@@ -70,14 +70,6 @@ struct GiveItemContext {
 };
 CHECK_SIZEOF(GiveItemContext, 0x14);
 
-/* Matching workaround: the constructor of Player::HomingJumpCommand is defined here as an ordinary
- * function, as SetWeapon.cpp does for Player::AddWeaponCommand. The original's copy at this address
- * may be an out-of-line copy of an inline from the commands' header, but defined in the class it is
- * inlined into fn_8010DE60 (0x18C bytes instead of 0x170) and no copy is emitted. Revisit with
- * SetWeapon.cpp's note. */
-Player::HomingJumpCommand::HomingJumpCommand(const Fn8040Vector3 &vector, int arg1)
-    : PlayerCommand(0x10B, arg1), m_vector(vector) {}
-
 /* Requests the item for a character info (placeholder name): the callback that fn_8015B004 calls
  * for each qualifying hit in the collision results (see ItemBox::OnCollision), also called
  * directly with a single character info. Unless context's done is set, it passes the item's
