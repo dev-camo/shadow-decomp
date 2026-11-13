@@ -1525,7 +1525,7 @@ config.libs = [
             # of the data relocations to them. In .data the original keeps the discarded weak
             # vtables between the kept base-class lists as zero-filled holes, as in Spring.
             Object(NonMatching, "Game/StretchGrass.cpp", cflags=cflags_game_cpp),
-            # 92 of the 96 functions have identical instruction words and relocations in USA, Japan
+            # 93 of the 96 functions have identical instruction words and relocations in USA, Japan
             # and PAL. The original's .rodata has two blocks that this object lacks, of unknown
             # source: after the TNumEdit type names, three 16-byte groups that each start with
             # 1.0f followed by 16 zero bytes (the 1.0f groups follow the TNumEdit names in four
@@ -1534,12 +1534,8 @@ config.libs = [
             # words that address its strings from the unit's .rodata base. The MotionSequenceModule
             # destructor (inline: EnemyMotionSequenceModule's destructor at 0x8018EAA4 expands it)
             # is emitted after ~Vine here and between UpdateSequences and SetupSequences in the
-            # original, which moves the functions in between by 0x48 bytes. ~Vine differs in 8 raw
-            # words: the original sets the loop counter to zero and copies it to the
-            # offset and to the stored null; this build loads zero into the offset and the counter
-            # separately and copies the offset's zero to the null. The original UpDownReel
-            # destructor (0x801282B8, USA) has this build's form for the same loop. In
-            # GetLoseDistanceSq (2 words) the original loads the radius before the 10.0f constant.
+            # original, which moves the functions in between by 0x48 bytes. In GetLoseDistanceSq
+            # (2 words) the original loads the radius before the 10.0f constant.
             # FireBall::UpdateClumpPosition is 19 words against the original's 23 (0x4C bytes
             # against 0x5C; 17 of the 19 common positions differ): the original calls the smart
             # pointer's operator-> out of line for the character info's position (0x8014E46C, USA)
