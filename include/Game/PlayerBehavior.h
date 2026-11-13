@@ -53,11 +53,12 @@ CHECK_SIZEOF(Behavior, 0x1C);
 
 /* A behaviour record (placeholder name). The table at 0x80521CC8 (USA, GUPE8P) holds a pointer to
  * the record of each of the 35 behaviour ids, followed by two null pointers. create returns a new
- * behaviour for the player. Player::Shadow::ShadowBehavior calls field_0x4 of every record from
- * its constructor and field_0x8 from its destructor, each with the address of its shared pointer
- * to the player, which is also what it passes to create. Their parameter type is inferred from
- * create's and their void results from the unused results. field_0x4 is an empty function in 29
- * records and null in six (ids 3, 4, 21, 22, 31 and 32); field_0x8 is null in all 35. */
+ * behaviour for the player. Player::Shadow::ShadowBehavior's constructor calls field_0x4 and its
+ * destructor field_0x8 of each record, skipping null records and null function pointers, with the
+ * address of its shared pointer to the player, which it also passes to create. Their parameter
+ * type is inferred from create's and their void results from the unused results. field_0x4 is an
+ * empty function in 29 records and null in six (ids 3, 4, 21, 22, 31 and 32); field_0x8 is null in
+ * all 35. */
 struct UnkBehaviorRecord_80521CC8 {
     /* 0x0 */ Behavior *(*create)(const boost::shared_ptr<PlayerBase> &player);
     /* 0x4 */ void (*field_0x4)(const boost::shared_ptr<PlayerBase> &player);

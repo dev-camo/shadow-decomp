@@ -18,9 +18,10 @@ class ShadowBehavior : public Behavior::Factory {
     ShadowBehavior(const boost::shared_ptr<PlayerBase> &player);
     virtual ~ShadowBehavior();
     /* Returns a new behaviour made by the record of id in the behaviour table, with its weak
-     * pointer at 0x14 pointing at itself, or an empty pointer when the table has no record for id
-     * or the record has no creating function. While bit 0x25 of the player's bit set at 0xA8 is
-     * set, ids 0, 2 and 3 give the behaviour of id 0x22 (Player::Behavior::Super) instead. */
+     * pointer at 0x14 pointing at itself, or an empty pointer when the table entry for id is null
+     * or the record has no creating function (id is used as an index without a range check). While
+     * bit 0x25 of the player's bit set at 0xA8 is set, ids 0, 2 and 3 give the behaviour of id
+     * 0x22 (Player::Behavior::Super) instead. */
     virtual boost::shared_ptr<Behavior::Behavior> Create(int id);
 
     /* 0x4 */ boost::shared_ptr<PlayerBase> m_player; /* name inferred */
