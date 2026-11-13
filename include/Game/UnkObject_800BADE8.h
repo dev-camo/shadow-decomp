@@ -16,9 +16,22 @@ class UnkObject_800BADE8 {
      * (meaning unknown). */
     /* 0x30 */ s32 field_0x30;
     /* 0x34 */ u8 field_0x34[0x4D - 0x34];
-    /* TGiPause's update sets it to 0 when the update of its folderPause or its folderStoryRoute
-     * returns true, otherwise to 1 (meaning unknown). */
+    /* When its projects are loaded and the object exists, TGiPause's update sets it to 0 when the
+     * update of its folderPause or its folderStoryRoute returns true, otherwise to 1; without
+     * loaded projects the update only sets the task's finished flag and leaves it unchanged
+     * (meaning unknown). */
     /* 0x4D */ u8 field_0x4D;
+
+  private:
+    /* Reconstruction safeguards: the view is only borrowed through the static pointer and covers
+     * only a prefix of the 0x58-byte object. The native constructor (fn_801E3FF4, 0x801E3FF4-
+     * 0x801E4068 in the USA release) calls base constructors and installs polymorphic tables, and
+     * the native copy contract is unknown, so construction, copying, assignment and destruction
+     * are declared private and left undefined. */
+    UnkObject_800BADE8();
+    UnkObject_800BADE8(const UnkObject_800BADE8 &);
+    UnkObject_800BADE8 &operator=(const UnkObject_800BADE8 &);
+    ~UnkObject_800BADE8();
 };
 /* Checks only the mapped prefix, not the object's size. */
 CHECK_SIZEOF(UnkObject_800BADE8, 0x50);

@@ -15,6 +15,16 @@ class UnkFileManager_800371D8 {
      * for the path (the parameter and result types are inferred). TGiPause calls it with the copy
      * that fn_80051810 makes of a texture dictionary's path before it reads the file. */
     /* 0x4 */ bool (*field_0x4)(const char *path);
+
+  private:
+    /* Reconstruction safeguards: the view is only borrowed through fn_800371D8's pointer. The
+     * native constructor (fn_80045290) installs the function at 0x4 (the store at 0x80045298 in
+     * the USA release) and the native copy contract is unknown, so construction, copying,
+     * assignment and destruction are declared private and left undefined. */
+    UnkFileManager_800371D8();
+    UnkFileManager_800371D8(const UnkFileManager_800371D8 &);
+    UnkFileManager_800371D8 &operator=(const UnkFileManager_800371D8 &);
+    ~UnkFileManager_800371D8();
 };
 /* Checks only the mapped prefix, not the object's size. */
 CHECK_SIZEOF(UnkFileManager_800371D8, 0x8);

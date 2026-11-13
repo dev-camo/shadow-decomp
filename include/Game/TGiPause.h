@@ -23,13 +23,18 @@ class TGiPause : public Task {
     virtual ~TGiPause();
     virtual void Update(float dt);
 
-    /* Loads the two project files and, when both load, the texture dictionary of the pause screen,
-     * which it gives to both projects. Returns whether both project files loaded. */
+    /* Loads the two project files. When both load, it loads the pause screen's texture dictionary
+     * with LoadTextures and, only when that returns true, passes m_texDict to fn_800421BC for each
+     * project, which attaches it only when the project and the dictionary are both non-null.
+     * Returns whether both project files loaded. */
     bool LoadProjects();
     /* Returns the project file name of the pause screen (through fn_800423B8). */
     const char *GetPauseProjectPath();
-    /* Reads the texture dictionary in the file at path into m_texDict when the file manager's
-     * check accepts the path. Returns whether it read one. */
+    /* When the file manager's check accepts the copy of path that fn_80051810 makes, reads the
+     * file at path, opens a memory stream on it and, when fn_8047CF50 finds the texture dictionary
+     * chunk, stores what fn_80483FBC reads from the stream in m_texDict. Returns true once it has
+     * found the chunk and called that reader, even when the reader returned null; otherwise
+     * false. */
     bool LoadTextures(const char *path);
     /* The draw layer's callback: when lbl_8057D6A0's byte at 0x148 is set, draws the target
      * window project and calls the folderTargetWindow's fn_800BBF9C, then draws the pause project

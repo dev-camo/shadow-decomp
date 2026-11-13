@@ -1928,15 +1928,21 @@ config.libs = [
             Object(Matching, "Game/PlayerShadowBehavior.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerWatch.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerWeaponBase.cpp", cflags=cflags_game_cpp),
-            # 55 of the 56 functions have identical instruction words and relocations, and .data,
-            # .bss, .sdata, .sbss and .sdata2 match once the linker-discarded copies are removed.
-            # LoadTextures is one instruction shorter (0xDC, original 0xE0): the original copies the
-            # file manager's address into r4 and loads the function pointer at 0x4 from there, this
-            # build loads it from r3. In .rodata, where the original also keeps the strings that no
-            # code references (LoadProjects reaches its strings from the section's start address),
-            # the type names of RCPtr<CScene>'s holder and of its functor base come before
-            # RCPtr<CTexList>'s instead of at the end of the section. Normal links use the original
-            # object.
+            # Normal links use the original object, so this compares the compiled object with it
+            # and no link of the compiled object is observed. 55 of the 56 functions have identical
+            # instruction words and relocation types; their relocation targets match once symbols
+            # are paired, including six one-byte local .sbss objects that are at 0x24-0x38 in the
+            # compiled section instead of 0x04-0x18. .data, .bss, .sdata and .sbss match once the
+            # weak copies and unreferenced objects that a link would strip are removed. The compiled
+            # .sdata2 holds the same five bytes but is writable and five bytes long; the original's
+            # is read-only and eight bytes with its alignment. LoadTextures is one instruction
+            # shorter (0xDC, original 0xE0): the original copies the file manager's address into r4,
+            # moves the path into r3 and then loads the function pointer at 0x4 from r4; this build
+            # loads the function pointer from r3 before it moves the path. In .rodata (0x53C bytes,
+            # the original 0x540 with its tail padding), where the original also keeps the strings
+            # that no code references (LoadProjects reaches its strings from the section's start
+            # address), the type names of RCPtr<CScene>'s holder and of its functor base come
+            # before RCPtr<CTexList>'s instead of at the end of the section.
             Object(NonMatching, "Game/TGiPause.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CharaColliBaseCharInfo.cpp", cflags=cflags_game_cpp),
             # The split covers the whole original file: USA (GUPE8P) .text 0x800CBC1C-0x800D216C
