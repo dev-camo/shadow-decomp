@@ -85,7 +85,13 @@ static void fn_8015A260(boost::shared_ptr<CharInfo> hit, void *arg) {
     float speed = s_launchSpeeds[index];
 
     if (index < 15) {
-        speed += (s_launchSpeeds[index + 1] - speed) * (level - index);
+        /* The step to the next entry is formed in a variable of its own in two statements
+         * (spelling inferred): the original keeps the entry and the step in one register while
+         * the index is converted, and reuses one stack slot for its conversions, which the step
+         * written inside the last expression does not give. */
+        float step = s_launchSpeeds[index + 1];
+        step -= speed;
+        speed += step * (level - index);
     }
 
     /* The launch direction: the panel's y axis turned by its x and z rotations. */

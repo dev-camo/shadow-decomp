@@ -634,15 +634,7 @@ config.libs = [
                 # template instances that follow ApplyState here, directly after ApplyState in the
                 # original.
                 Object(NonMatching, "Game/CandleStick.cpp", cflags=cflags_game_cpp),
-                # 35 of 36 functions are identical in every word and relocation. The hit callback
-                # (0x80130364) differs in 19 words: the float-to-int conversion of the level and
-                # the int-to-float conversion of the index get separate 8-byte stack slots (the
-                # original reuses one; frame 0xB0 instead of 0xA0), and the level and the
-                # difference of the two table entries are held in f3 and f2 instead of f2 and f3.
-                # The object also has a 32-byte local copy of std::swap (called by the weak
-                # boost::function1 swap that the callback assignment instantiates), which the
-                # original unit does not have.
-                Object(NonMatching, "Game/CircusBall.cpp", cflags=cflags_game_cpp),
+                Object(Matching, "Game/CircusBall.cpp", cflags=cflags_game_cpp),
                 # 23 of 29 functions are identical in every word and relocation (target and section
                 # offset). The other six differ only in where data sits in the unit's sections. The
                 # original has an unreferenced 0x40-byte table of floats (0, 0, 0, 0 and three rows of
@@ -1619,17 +1611,7 @@ config.libs = [
             # by position.
             Object(NonMatching, "Game/ElecSecurityCodeGenerator.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecBlock.cpp", cflags=cflags_game_cpp),
-            # 54 of the 55 functions have identical words and relocations, and the data matches
-            # once the linker-discarded weak and local copies are set aside, apart from the
-            # writable .sdata2 flag and section-end alignment (a USA DOL linked from
-            # this source object, a diagnostic only, differs from the original in 9 words, all in
-            # the hit callback). The hit callback (0x8015A260, USA) differs in 9 of its 188 words,
-            # positionally at the same size and frame (0xA0): the int-to-float conversion of the
-            # level index uses its own 8-byte stack slot (0x80) where the original reuses the slot
-            # of the float-to-int conversion of the level (0x78), and the level and the difference
-            # of the two table entries are held in f3 and f2 instead of f2 and f3, as in the
-            # Spring and LongSpring hit callbacks.
-            Object(NonMatching, "Game/SpringPanel.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/SpringPanel.cpp", cflags=cflags_game_cpp),
             # Matching workaround: -inline auto,deferred,level=1 for this unit only (cflags_game_cpp
             # has -inline noauto). The original expands fn_8015A858 and fn_8015A818 (owner load,
             # null test, call to fn_800C9A64 or fn_800C996C) into Gadget::IsFinished and still
@@ -1652,16 +1634,7 @@ config.libs = [
             # relocations otherwise), as in SuperComputer's constructor. Writing the call with get()
             # or operator* on either pointer gives the same order.
             Object(NonMatching, "Game/BreakWall.cpp", cflags=cflags_game_cpp),
-            # 35 of the 36 functions have identical instructions and relocations, and the data,
-            # symbols and relocations match once the linker-discarded weak and local copies are set
-            # aside. The launch function (0x80142C88, USA) differs in 19 of its 168 words (raw, in a
-            # USA DOL linked from this source object, a diagnostic only: the build links the
-            # original object): the float-to-int conversion of the level and the int-to-float
-            # conversion of the index get separate 8-byte stack slots where the original reuses
-            # one (frame 0xA0 instead of 0x90, which also moves the register save offsets), and
-            # the level and the difference of the two table entries are held in f3 and f2 instead
-            # of f2 and f3, as in the Spring, CircusBall, DashPanel and DashRing hit callbacks.
-            Object(NonMatching, "Game/Catapult.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/Catapult.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DamageBlock.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Door.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EggBalloon.cpp", cflags=cflags_game_cpp),
@@ -1669,17 +1642,14 @@ config.libs = [
             Object(Matching, "Game/Elevator.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/FootingMovable.cpp", cflags=cflags_game_cpp),
             # Word by word against the split original object (USA, Japan and PAL alike), with the
-            # linker-discarded weak and local copies set aside: 55 of the 58 functions have
+            # linker-discarded weak and local copies set aside: 56 of the 58 functions have
             # identical words and relocations. The preload hook (0x8014BD6C, USA) and the constructor (0x8014CB98)
             # differ in 3 words each, all immediate offsets into .rodata: the original's .rodata has
-            # an unreferenced 0x40-byte table of floats (three rows of 1, 0, 0, 0 and one of zeros)
-            # between the TNumEditFloat and CharaColliBaseCharInfo names, and 12 zero bytes after the
-            # CharaColliBase name, which this object does not have (as in ElecCoreWall), so the
-            # strings after them sit 0x40 or 0x4C lower here, which also moves the .rodata addends of
-            # the data relocations to them. The hit callback (0x8014D324) differs in 19 of 243 words,
-            # the interpolation of the launch speed as in Spring and DashRing: the int-to-float
-            # conversion of the index gets its own 8-byte stack slot (frame 0xB0 instead of 0xA0)
-            # and the level and the table difference are in f3 and f2 instead of f2 and f3. In
+            # 0x40 unreferenced bytes between the TNumEditFloat and CharaColliBaseCharInfo names
+            # (the unit vectors (1, 0, 0), (0, 1, 0) and (0, 0, 1), then 0x1C zero bytes), and 12
+            # zero bytes after the CharaColliBase name, which this object does not have (as in
+            # ElecCoreWall), so the strings after them sit 0x40 or 0x4C lower here, which also
+            # moves the .rodata addends of the data relocations to them. In
             # .sdata2 the original places 1.0f after 0.0f (0x805F4744), this build after 0.063f
             # (first used in the hit callback), so the 12 literals between them sit one slot
             # earlier. In .data the original keeps the discarded weak vtables between the kept
@@ -1758,20 +1728,8 @@ config.libs = [
             Object(Matching, "Game/ElecCristalWall.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/ElecKyuu.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/MagmaGuard.cpp", cflags=cflags_game_cpp),
-            # The data matches once the linker-discarded weak and local copies are set aside, and
-            # 33 of the 34 functions have the original's words. The hit callback (0x8010F028)
-            # differs in 22 words: the frame is 0xE0 instead of 0xD0 because the two int-to-float
-            # conversions of the level index get their own 8-byte stack slots (the original reuses
-            # the float-to-int slot), and the level and the difference of the two table entries are
-            # in f3 and f2 instead of f2 and f3.
-            Object(NonMatching, "Game/JumpBoard.cpp", cflags=cflags_game_cpp),
-            # The data matches once the linker-discarded weak and local copies are set aside, and
-            # 33 of the 34 functions have the original's words (the function-local statics of
-            # UpdateModelMatrix and ResetFromOwner have other compiler numbers than the names in
-            # symbols.txt). The hit callback (0x80110320) differs in 9 words: the int-to-float
-            # conversion of the level index gets its own stack slot and the level and the table
-            # difference are in f3 and f2 instead of f2 and f3.
-            Object(NonMatching, "Game/LongSpring.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/JumpBoard.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/LongSpring.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PoisonGas.cpp", cflags=cflags_game_cpp),
             # Relocatable-object comparison, the same in USA (GUPE8P), Japan (GUPJ8P) and PAL
             # (GUPP8P): the 5 functions have the original's words and relocations (0 differing
@@ -2377,14 +2335,7 @@ config.libs = [
             # the panel-space offset in place where the original calls the out-of-line three-float
             # constructor (0x80008E1C) for it.
             Object(NonMatching, "Game/DashPanel.cpp", cflags=cflags_game_cpp),
-            # 33 of 34 functions have identical words and relocations, and the data matches once
-            # the linker-discarded weak and local copies are set aside. Differences (raw words in
-            # a USA DOL linked from this source object, a diagnostic only: the build links the
-            # original object): the hit callback 9 of 220 (the original keeps the float-to-int
-            # conversion of the level and the int-to-float conversion of the index in one 8-byte
-            # slot, this build gives each its own, and the interpolation holds the level in f3 and
-            # loads the next table entry into f0 where the original uses f2 and f3).
-            Object(NonMatching, "Game/DashRing.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/DashRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EnergyCore.cpp", cflags=cflags_game_cpp),
             # 45 of 46 functions have identical words and relocation targets, and the data
             # matches once the linker-discarded weak and local copies are set aside. UpdateBody
@@ -2570,19 +2521,7 @@ config.libs = [
             Object(Matching, "Game/SetParticle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetVehicle.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/SetWeapon.cpp", cflags=cflags_game_cpp),
-            # 52 of 53 functions are identical in every word and relocation. The hit callback
-            # (0x801213E8) differs in 9 of its 276 words: the int-to-float conversion of the index
-            # uses a second 8-byte stack slot where the original reuses the slot of the float-to-int
-            # conversion of the level, and the level and the difference of the two table entries are
-            # held in f3 and f2 instead of f2 and f3. The weak vtables of bad_weak_ptr,
-            # sp_counted_base_impl for CharCommandUnit, std::exception, std::bad_alloc and
-            # sp_counted_base lie between kept base-class lists in .data; the original keeps their
-            # 0x60 bytes as zero-filled holes. Linked in place of the original object, this object's
-            # sp_counted_base_impl vtable, functions and type record for CharCommandUnit and its
-            # checked_deleter type record and name are kept, so .rodata is 0x2BC and .sdata 0x5C
-            # against the original's 0x238 and 0x50; the other data match when those copies are set
-            # aside.
-            Object(NonMatching, "Game/Spring.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/Spring.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Switch.cpp", cflags=cflags_game_cpp),
             # All 31 functions have identical instructions, and the other sections match by
             # contents with the discarded weak and local copies set aside (52 weak, 18 local).
