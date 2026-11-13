@@ -1,6 +1,8 @@
 /* Two virtual functions of SonicteamUSA::System::Camera::CameraModeMtnViewer (class name from
- * RTTI), the 3-float function between them and the out-of-line copies of the vector functions
- * that the first of them calls: USA (GUPE8P) 0x80008DA8-0x80009208. The rest of the class is not
+ * RTTI) and the out-of-line copies of the vector's inline functions that they call, each after
+ * the function that calls it: the three-float constructor (0x80008E1C) after UnkSlot2, and the
+ * scaling operator, the assignment and the copy constructor after UnkSlot1. USA (GUPE8P)
+ * 0x80008DA8-0x80009208. The rest of the class is not
  * recovered: its vtable (0x8051C40C) also has UnkSlot0 (0x80008D40), UnkSlot3 (0x80008DA4) and
  * the destructor (0x80009274), and 0x80008D4C creates an object. The original file name is
  * unknown. */
@@ -116,36 +118,14 @@ void CameraModeMtnViewer::UnkSlot1(UnkCameraModeEntry_801CCBF4 *, float) {
     fn_8000A5D4(this, &start, &end);
 }
 
-} // namespace Camera
-} // namespace System
-} // namespace SonicteamUSA
-
-/* Sets the three components of a 3-float vector and returns it (behaviour inferred; callers use
- * the returned address). The original names of the function and the vector type are unknown.
- * It follows the function with its lowest call (0x80008DD0), like the copies of the vector's
- * inline functions after UnkSlot1, so it may be such a copy itself; that is not established. */
-Fn8040Vector3 *fn_80008E1C(Fn8040Vector3 *vector, float x, float y, float z) {
-    vector->x = x;
-    vector->y = y;
-    vector->z = z;
-    return vector;
-}
-
-namespace SonicteamUSA {
-namespace System {
-namespace Camera {
-
-/* Clears field_0x18 and sets the points: the start to (0, 10, 20), then the end to the origin. */
+/* Clears field_0x18 and sets the points: the start to (0, 10, 20), then the end to the origin.
+ * Each new point is constructed in the argument of SetPoints, where the original calls the
+ * out-of-line copy of the vector's constructor (0x80008DD0, 0x80008DF4). */
 void CameraModeMtnViewer::UnkSlot2(UnkCameraModeEntry_801CCBF4 *) {
     field_0x18 = 0.0f;
 
-    Fn8040Vector3 start;
-    fn_80008E1C(&start, 0.0f, 10.0f, 20.0f);
-    fn_8000A5D4(this, &start, &m_end);
-
-    Fn8040Vector3 end;
-    fn_80008E1C(&end, 0.0f, 0.0f, 0.0f);
-    fn_8000A5D4(this, &m_start, &end);
+    SetPoints(Fn8040Vector3(0.0f, 10.0f, 20.0f), m_end);
+    SetPoints(m_start, Fn8040Vector3(0.0f, 0.0f, 0.0f));
 }
 
 } // namespace Camera

@@ -609,7 +609,6 @@ void Coaster::OnPathCallback(CameraUpdateEventArgs &args) {
     Fn8040Vector3 start;
     Fn8040Vector3 end;
     Fn8040Vector3 up;
-    Fn8040Vector3 startOffset;
 
     fn_8040C148(&matrix, &lbl_805E0720);
     fn_8040B80C(&matrix, m_rotation.z);
@@ -626,8 +625,7 @@ void Coaster::OnPathCallback(CameraUpdateEventArgs &args) {
     }
 
     start.Set(0.0f, s_stage->field_0x4, 0.0f);
-    fn_80008E1C(&startOffset, 0.0f, s_stage->field_0x18, s_stage->field_0x1C);
-    fn_8040CFF8(&start, &startOffset);
+    AddVector(&start, Fn8040Vector3(0.0f, s_stage->field_0x18, s_stage->field_0x1C));
 
     start = matrix * start + m_charInfo->m_position;
 

@@ -1718,7 +1718,7 @@ config.libs = [
             Object(NonMatching, "Game/ElecFan.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Meteor.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/Meteors.cpp", cflags=cflags_game_cpp),
-            # Constructor temporary cleanup, matrix calls, and literal/weak metadata layout differ.
+            # Constructor temporary cleanup and literal/weak metadata layout differ.
             Object(NonMatching, "Game/ElecRollHexa.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/WatchCamera.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DefenseShield.cpp", cflags=cflags_game_cpp),
@@ -2195,13 +2195,7 @@ config.libs = [
             Object(NonMatching, "Game/DevilDoomModeCtrlUnit.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/VacuumContainer.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/BaseDoor.cpp", cflags=cflags_game_cpp),
-            # 37 of 38 functions have identical words and relocations, and the data matches once the
-            # linker-discarded weak and local copies are set aside. Differences (raw words in a USA
-            # DOL linked from this source object, a diagnostic only: the build links the original
-            # object): the hit callback (7 of its 304 words differ as a relocatable object) builds
-            # the panel-space offset in place where the original calls the out-of-line three-float
-            # constructor (0x80008E1C) for it.
-            Object(NonMatching, "Game/DashPanel.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/DashPanel.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/DashRing.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/EnergyCore.cpp", cflags=cflags_game_cpp),
             # 45 of 46 functions have identical words and relocation targets, and the data
