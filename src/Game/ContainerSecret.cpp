@@ -25,7 +25,7 @@
 #include "Game/VacuumContainer.h"
 #include "Game/WeaponItem.h"
 #include "Game/fn_801BFC28.h"
-#include "Game/fn_8027B338.h"
+#include "Game/ThrowContainer.h"
 #include "Game/fn_8033E644.h"
 #include "Game/fn_8006_resource_list.h"
 #include "Game/fn_8040_vector_types.h"

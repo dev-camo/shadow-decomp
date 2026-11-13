@@ -1336,6 +1336,16 @@ Game/lbl_8054DB70.cpp:
 	.data       start:0x8054E1F8 end:0x8054E210
 	.sdata2     start:0x805F86D8 end:0x805F86E0
 
+Game/ThrowContainer.cpp:
+	.text       start:0x8027B738 end:0x8027BD0C
+	.ctors      start:0x804AA584 end:0x804AA588
+	.rodata     start:0x804F84F0 end:0x804F8518
+	.data       start:0x8054E210 end:0x8054E248
+	.bss        start:0x80584890 end:0x805848A0
+	.sdata      start:0x805EB1E8 end:0x805EB200
+	.sbss       start:0x805F0820 end:0x805F0828
+	.sdata2     start:0x805F86E0 end:0x805F86F8
+
 Game/Magma.cpp:
 	.text       start:0x8027BD0C end:0x8027C314
 	.rodata     start:0x804F8518 end:0x804F8540
