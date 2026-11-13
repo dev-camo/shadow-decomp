@@ -1407,6 +1407,14 @@ Game/WeaponSpecialShadowRifle.cpp:
 	.sdata      start:0x805EAAF8 end:0x805EAB18
 	.sdata2     start:0x805F7FB8 end:0x805F7FD0
 
+Game/ContainerSecret.cpp:
+	.text       start:0x8027807C end:0x8027A5CC
+	.rodata     start:0x804F7818 end:0x804F7C30
+	.data       start:0x8054D6A0 end:0x8054D8D8
+	.sdata      start:0x805EAB58 end:0x805EABC8
+	.sbss       start:0x805F01D8 end:0x805F0218
+	.sdata2     start:0x805F8010 end:0x805F8040
+
 Game/BulletSatelliteLaser.cpp:
 	.text       start:0x8027AE9C end:0x8027B324
 	.ctors      start:0x804A9F3C end:0x804A9F40
