@@ -1939,6 +1939,7 @@ config.libs = [
             # .sdata (pointers to those strings) and 3 in .sdata2. The other four are BkWingSmall's.
             Object(NonMatching, "Game/BkWorm.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerWatch.cpp", cflags=cflags_game_cpp),
+            Object(Matching, "Game/PlayerWeaponBase.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/CharaColliBaseCharInfo.cpp", cflags=cflags_game_cpp),
             # The split covers the whole original file: USA (GUPE8P) .text 0x800CBC1C-0x800D216C
             # (255 functions, the static initialiser at 0x800D202C among them) with its .ctors,
