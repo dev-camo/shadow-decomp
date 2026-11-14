@@ -1894,9 +1894,9 @@ config.libs = [
             # All 60 functions have identical instructions and the data bytes match, but the 0.0f
             # and 120.0f literals are pooled in the opposite order. Linked from source as a
             # diagnostic together with BkWorm (normal builds link the original object), the USA
-            # (GUPE8P) DOL differs in 232 words, four of them in this file's ranges: the two
+            # (GUPE8P) DOL differs in 219 words, four of them in this file's ranges: the two
             # .sdata2 literals (0x805F53A0, 0x805F53A4) and the two loads that address them
-            # (0x8019166C, 0x80191970). The other 228 are in BkWorm's ranges.
+            # (0x8019166C, 0x80191970). The other 215 are in BkWorm's ranges.
             Object(NonMatching, "Game/BkWingSmall.cpp", cflags=cflags_game_cpp),
             # The split covers the whole original file: USA (GUPE8P) .text 0x80191CF0-0x80193434 (67
             # functions: the static initialiser at 0x80193314 and 29 adjustment thunks among them)
@@ -1908,11 +1908,10 @@ config.libs = [
             # the model tables, where this build places it among the other type names. The compiled
             # .sdata2 section is writable (WA) where the original's is allocatable only (A). Linked
             # from source as a diagnostic together with BkWingSmall (normal builds link the original
-            # object) while fn_80192394 still differed in 13 words, the USA DOL differed in 232
-            # words, 228 of them in this file's ranges: 24 in .text (fn_80192394 and 11 references
-            # to the moved literals and tables), 162 in .rodata (the type name and the tables and
-            # strings after it), 13 in .data and 26 in .sdata (pointers to those strings) and 3 in
-            # .sdata2. The other four are BkWingSmall's.
+            # object), the USA DOL differs in 219 words, 215 of them in this file's ranges: 11 in
+            # .text (references to the moved literals and tables), 162 in .rodata (the type name and
+            # the tables and strings after it), 13 in .data and 26 in .sdata (pointers to those
+            # strings) and 3 in .sdata2. The other four are BkWingSmall's.
             Object(NonMatching, "Game/BkWorm.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerControl.cpp", cflags=cflags_game_cpp),
             Object(Matching, "Game/PlayerControlApproach.cpp", cflags=cflags_game_cpp),
